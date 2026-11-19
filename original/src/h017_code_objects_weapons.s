@@ -268,7 +268,7 @@ l_017_003F6:
         beq.b   l_017_00426                     ; 0041E
         jsr     (UpdateObject).l                ; 00420
 l_017_00426:
-        jsr     (sub_018_00036).l               ; 00426
+        jsr     (JudgeMission).l                ; 00426
         move.l  (a7)+,d5                        ; 0042C
         rts                                     ; 0042E
 sub_017_00430:
@@ -407,7 +407,7 @@ l_017_005BE:
 l_017_005DE:
         clr.b   (dat_071_00258).l               ; 005DE
 l_017_005E4:
-        cmpi.b  #$7d,(dat_071_00276).l          ; 005E4
+        cmpi.b  #$7d,(GameMode).l               ; 005E4
         bne.w   l_017_006C0                     ; 005EC
         bclr    #$3,$2(a1)                      ; 005F0
         beq.w   l_017_006C0                     ; 005F6
@@ -499,7 +499,7 @@ l_017_006C0:
 l_017_00728:
         rts                                     ; 00728
 sub_017_0072A:
-        cmpi.b  #$7d,(dat_071_00276).l          ; 0072A
+        cmpi.b  #$7d,(GameMode).l               ; 0072A
         bne.b   l_017_00756                     ; 00732
         btst    #$0,$2(a1)                      ; 00734
         bne.b   l_017_00756                     ; 0073A
@@ -513,7 +513,7 @@ l_017_00756:
         bne.w   l_017_008CA                     ; 0075C
         btst    #$0,$2(a1)                      ; 00760
         beq.w   l_017_008CA                     ; 00766
-        cmpi.b  #$2,(dat_071_00276).l           ; 0076A
+        cmpi.b  #$2,(GameMode).l                ; 0076A
         bne.b   l_017_007B8                     ; 00772
         tst.b   (dat_071_00163).l               ; 00774
         beq.w   l_017_008CA                     ; 0077A
@@ -521,7 +521,7 @@ l_017_00756:
         beq.b   l_017_007B8                     ; 00786
         move.l  a1,-(a7)                        ; 00788
         clr.w   $0(a1)                          ; 0078A
-        jsr     (sub_026_00002).l               ; 0078E
+        jsr     (SetupMode).l                   ; 0078E
         movea.l (a7)+,a1                        ; 00794
         bset    #$0,$2(a1)                      ; 00796
         move.b  #$60,$2b(a1)                    ; 0079C
@@ -537,7 +537,7 @@ l_017_007B8:
         ext.w   d0                              ; 007C4
         asl.w   #$3,d0                          ; 007C6
         bgt.b   l_017_007FA                     ; 007C8
-        cmpi.b  #$2,(dat_071_00276).l           ; 007CA
+        cmpi.b  #$2,(GameMode).l                ; 007CA
         bne.b   l_017_007FA                     ; 007D2
         move.b  #$60,$2b(a1)                    ; 007D4
         move.b  #$fe,(dat_071_00280).l          ; 007DA
@@ -560,7 +560,7 @@ l_017_00806:
         move.b  (a3),d0                         ; 00816
         bge.w   l_017_0089C                     ; 00818
 l_017_0081C:
-        cmpi.b  #$2,(dat_071_00276).l           ; 0081C
+        cmpi.b  #$2,(GameMode).l                ; 0081C
         beq.b   l_017_0086A                     ; 00824
         bclr    #$3,$2(a1)                      ; 00826
         bne.b   l_017_0086A                     ; 0082C
@@ -585,7 +585,7 @@ l_017_0086A:
         blt.b   l_017_00894                     ; 00878
         move.l  a1,-(a7)                        ; 0087A
         clr.w   $0(a1)                          ; 0087C
-        jsr     (sub_026_00002).l               ; 00880
+        jsr     (SetupMode).l                   ; 00880
         movea.l (a7)+,a1                        ; 00886
         bset    #$0,$2(a1)                      ; 00888
         move.b  #$60,$2b(a1)                    ; 0088E
@@ -645,7 +645,7 @@ l_017_0092A:
         move.l  (a5),d0                         ; 00946
         move.b  d0,(dat_071_00282).l            ; 00948
 l_017_0094E:
-        cmpi.b  #$2,(dat_071_00276).l           ; 0094E
+        cmpi.b  #$2,(GameMode).l                ; 0094E
         bne.b   l_017_00970                     ; 00956
         tst.b   (dat_071_00155).l               ; 00958
         beq.b   l_017_00970                     ; 0095E
@@ -1246,12 +1246,12 @@ l_017_01142:
         bgt.b   l_017_01170                     ; 01146
         cmpi.b  #$30,$62(a1)                    ; 01148
         bne.b   l_017_01170                     ; 0114E
-        tst.b   (dat_071_001FA).l               ; 01150
+        tst.b   (QuitRequest).l                 ; 01150
         bne.b   l_017_01170                     ; 01156
         cmpi.b  #$30,$62(a1)                    ; 01158
         bne.b   l_017_01170                     ; 0115E
-        move.b  #$2,(dat_071_001FA).l           ; 01160
-        move.b  #$4,(dat_071_001FC).l           ; 01168
+        move.b  #$2,(QuitRequest).l             ; 01160
+        move.b  #$4,(QuitDelay).l               ; 01168
 l_017_01170:
         cmpi.l  #$c0,d0                         ; 01170
         bge.b   l_017_0117E                     ; 01176
@@ -1613,7 +1613,7 @@ l_017_01526:
         beq.w   l_017_01654                     ; 01544
         cmpi.b  #$8,d0                          ; 01548
         bne.b   l_017_01564                     ; 0154C
-        cmpi.b  #$5,(dat_071_00276).l           ; 0154E
+        cmpi.b  #$5,(GameMode).l                ; 0154E
         bne.w   l_017_01654                     ; 01556
         tst.b   (dat_071_00187).l               ; 0155A
         beq.w   l_017_01654                     ; 01560
@@ -1689,7 +1689,7 @@ l_017_01620:
         beq.b   l_017_01650                     ; 0163C
         bclr    #$3,$1(a1)                      ; 0163E
         addq.b  #$1,(dat_071_00279).l           ; 01644
-        addq.b  #$1,(dat_071_0027A).l           ; 0164A
+        addq.b  #$1,(MissionTargets).l          ; 0164A
 l_017_01650:
         move.b  d0,$5(a1)                       ; 01650
 l_017_01654:

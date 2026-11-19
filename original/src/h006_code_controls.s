@@ -54,14 +54,14 @@ StartGunSound:
 ;-------------------------------------------------------------------------------
 ; FirePressed - The fire button went down: queues the fire event (bit 2 of JoyEvents); with the
 ; gun selected (the player's weapon byte, ObjectTable+$63, high nibble $10) turns the gun on
-; (bit 3 of GunFlags), with another weapon asks for a launch (LaunchRequest). In mode $7D
-; (dat_071_00276) it does something else (bit 3 of dat_071_01356).
+; (bit 3 of GunFlags), with another weapon asks for a launch (LaunchRequest). In practice
+; maneuvers (GameMode $7D) it does something else (bit 3 of dat_071_01356).
 ;-------------------------------------------------------------------------------
 FirePressed:
         move.b  (Player_7C).l,d4                ; 0008E
         andi.b  #$f,d4                          ; 00094
         bne.b   l_006_000B4                     ; 00098
-        cmpi.b  #$7d,(dat_071_00276).l          ; 0009A
+        cmpi.b  #$7d,(GameMode).l               ; 0009A
         bne.b   l_006_000B6                     ; 000A2
         tst.b   (dat_071_0016A).l               ; 000A4
         bge.b   l_006_000B4                     ; 000AA
@@ -114,14 +114,14 @@ sub_006_00132:
         move.w  #$4005,d0                       ; 00134
         jsr     (sub_020_00954).l               ; 00138
         swap    d0                              ; 0013E
-        cmpi.b  #$6,(dat_071_00276).l           ; 00140
+        cmpi.b  #$6,(GameMode).l                ; 00140
         bne.b   ResetPlayerAircraft             ; 00148
-        move.b  (dat_071_00168).l,d3            ; 0014A
+        move.b  (MissionResult).l,d3            ; 0014A
         subq.b  #$1,d3                          ; 00150
         beq.b   ResetPlayerAircraft             ; 00152
         addq.b  #$2,d3                          ; 00154
         beq.b   ResetPlayerAircraft             ; 00156
-        clr.b   (dat_071_00168).l               ; 00158
+        clr.b   (MissionResult).l               ; 00158
 
 ;-------------------------------------------------------------------------------
 ; ResetPlayerAircraft - Sets the player's aircraft (ObjectTable record 0) back to its starting

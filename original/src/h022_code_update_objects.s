@@ -135,7 +135,7 @@ l_022_00144:
         bne.b   l_022_0018C                     ; 0017C
         btst    #$7,$3(a1)                      ; 0017E
         bne.b   l_022_0018C                     ; 00184
-        addq.b  #$1,(dat_071_0027B).l           ; 00186
+        addq.b  #$1,(MissionTargetsDone).l      ; 00186
 l_022_0018C:
         tst.w   (CurrentObject).l               ; 0018C
         beq.b   l_022_001A4                     ; 00192
@@ -593,7 +593,7 @@ l_022_00710:
         movea.l (ConfigBuffer).l,a0             ; 0071C
         addq.w  #$1,$46(a0)                     ; 00722
         move.b  #$1,(dat_071_00195).l           ; 00726
-        move.b  #$4,(dat_071_00168).l           ; 0072E
+        move.b  #$4,(MissionResult).l           ; 0072E
 l_022_00736:
         tst.b   (dat_071_00155).l               ; 00736
         bne.b   l_022_00742                     ; 0073C

@@ -32,7 +32,7 @@ before each. Some parts run only every 2nd, 4th, 8th, 16th or 32nd frame (`Frame
 
 | Hunks | What they are |
 |---|---|
-| 0 | The C startup, `main`, `RunGame`, `GameFrame`; the IFF picture reader; memory and disk checks; the flight log and the flight recording files; the keyboard, joystick, timer and mouse; sound loading and `PlaySound` |
+| 0 | The C startup, `main`, `RunGame`, `GameFrame`; the game's states (`RunGameState` and the `State` routines: the screens and the flow of a flight, see GAME.md); the IFF picture reader; memory and disk checks; the flight log and the flight recording files; the keyboard, joystick, timer and mouse; sound loading and `PlaySound` |
 | 1, 2 | The program's data and variables: the library bases, the View, ViewPort, BitMaps and RastPorts, the picture BitMaps, the device requests |
 | 3 | `_UnPackRow`: ByteRun1 decompression (from the EA IFF code) |
 | 4 | Small helpers and game set-up (flight log setting, reset of the game state) |
@@ -44,14 +44,17 @@ before each. Some parts run only every 2nd, 4th, 8th, 16th or 32nd frame (`Frame
 | 30 | Steering from the orientation matrices: probably the computer pilots (they set the control bits, +$65) |
 | 32 | Attitude and camera: `UpdateAttitude`, `SetAttitude`, `AnglesToMatrix`, `SinCos`, `SetupCamera` |
 | 33 | The 3D view's outline (`PutEdge`, the view's corners: 320 x 180) |
-| 7, 9-16, 18-31, 34, 38-40 | The rest of the game: flight model, missions, terrain, instruments - being worked out |
-| 20 | Number and text output, the flight log page (`ShowFlightLog`, `ShowLogDate`), `ChecksumPlanes` |
+| 18 | Judging the missions (`JudgeMission`, `JudgeF1`..., `CheckMissionTargets`): sets `MissionResult` |
+| 26 | Setting up a mode (`SetupMode`), the camera's opening moves (`FlyBySetup`) |
+| 7, 9-16, 19, 21, 23-25, 27-29, 31, 34, 38-40 | The rest of the game: flight model, missions, terrain, instruments - being worked out |
+| 20 | Number and text output, the flight log page (`ShowFlightLog`, `ShowLogDate`), `ChecksumPlanes`; the text pages (`SetTextPage`); the security check (`MakeSecurityCode`, `CheckSecurityAnswer`) |
 | 35, 36 | Drawing: `Plot` and its variants, `DrawLine` (blitter line mode), the copper lists (double-buffered display) |
 | 37 | Blitter copies: the title picture and the instrument panel onto the screen |
 | 41-70 | Data tables (some partly mistaken for code by the first trace) |
 | 62 | Data in chip RAM (graphics) |
 | 63 | Tables: `SineTable` (a quarter wave in tenths of a degree, 2.14) and others |
-| 64 | The menu and briefing texts: the six missions (F1 VISUAL CONFIRMATION, F2 EMERGENCY DEFENSE, F3 INTERCEPT STOLEN AIRCRAFT, F4 SEARCH AND RESCUE, F5 INTERCEPT INCOMING CRUISE MISSILE, F6 CARRIER SUB MISSION), the flight log page, the training texts |
+| 64 | The menu and briefing texts: the six missions (F1 VISUAL CONFIRMATION, F2 EMERGENCY DEFENSE, F3 INTERCEPT STOLEN AIRCRAFT, F4 SEARCH AND RESCUE, F5 INTERCEPT INCOMING CRUISE MISSILE, F6 CARRIER SUB MISSION), the flight log page, the training texts; all addressed as numbered text pages (`TextPageTable`) |
+| 67 | `StartPoints` (the free flight's starting locations) and other tables |
 | 71-73 | The game's variables (zeros in the file): `ObjectTable` (512-byte records, from `dat_071_00B54`), `FrameStage`, `FrameCount`, the mouse position... |
 | 74-77 | The sound driver: the four audio channels' descriptors (`AudioChannels`), DMA and interrupt control, audio.device (`InitSound`, `CloseSound`) |
 | 78-83 | Sound loading (`LoadSound`, `CopySound`, `SoundTable`) and its arithmetic |

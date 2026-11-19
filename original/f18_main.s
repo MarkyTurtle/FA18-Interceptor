@@ -297,14 +297,17 @@
 ;         falling objects.
 	include	"src/h017_code_objects_weapons.s"
 
-; Hunk 18: Game logic not yet identified (used by hunks 16 and 17).
-	include	"src/h018_code_game18.s"
+; Hunk 18: Judging the missions: JudgeMission (each frame, from UpdateAllObjects) calls the
+;         mode's judge (JudgeF1-F5, JudgeQualification, JudgePractice, CheckMissionTargets),
+;         which sets MissionResult.
+	include	"src/h018_code_mission_judge.s"
 
 ; Hunk 19: Arithmetic for the 3D pipeline (used by hunks 12-14) (not worked out yet)
 	include	"src/h019_code_3d_maths.s"
 
 ; Hunk 20: Numbers into text (BinToBCD, PutNumber), the flight log page (ShowFlightLog,
-;         ShowLogDate), ChecksumPlanes.
+;         ShowLogDate), ChecksumPlanes, text pages (SetTextPage), the security check's code
+;         (MakeSecurityCode, CheckSecurityAnswer).
 	include	"src/h020_code_text_log.s"
 
 ; Hunk 21: Data: colour tables (the palette ShowDisplay flashes) (not worked out yet)
@@ -323,9 +326,9 @@
 ; Hunk 25: Game logic not yet identified (called by GameFrame; plots points).
 	include	"src/h025_code_game25.s"
 
-; Hunk 26: Game logic not yet identified (objects, the camera, the game modes; used by hunks 0
-;         and 17).
-	include	"src/h026_code_game26.s"
+; Hunk 26: Setting up a mode (SetupMode: the mode's objects from hunk 27's table) and the
+;         camera's opening moves (FlyBySetup, CameraSequence); more not identified yet.
+	include	"src/h026_code_mode_setup.s"
 
 ; Hunk 27: Routes: the computer aircraft's routes (waypoints).
 	include	"src/h027_code_routes.s"
@@ -451,8 +454,9 @@
 ; Hunk 66: Data: a table used by hunk 8 (not worked out yet)
 	include	"src/h066_code_table66.s"
 
-; Hunk 67: Data: a table used by hunks 66, 5, 4, 28 and 29 (not worked out yet)
-	include	"src/h067_code_table67.s"
+; Hunk 67: Data: the free flight's starting locations (StartPoints) and other tables used by
+;         hunks 66, 5, 4, 28 and 29 (not worked out yet).
+	include	"src/h067_code_start_points.s"
 
 ; Hunk 68: Data: a table used by hunk 28 (not worked out yet)
 	include	"src/h068_code_table68.s"

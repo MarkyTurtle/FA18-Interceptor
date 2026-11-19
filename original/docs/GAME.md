@@ -38,14 +38,15 @@ state in fixed global variables (hunk 71), often passing data through them (`BCD
 3. `CloseWorkbenchScreen`; the sound samples: `text201`, and the title music's instruments
    (`LoadMusicSamples`) only if more than 200,000 bytes of chip RAM are free.
 4. The display (`InitDisplay`: 320 x 200, a 5-plane BitMap for the display and a 4-plane one),
-   then the title picture's checksum (`ChecksumPlanes`): only for the original picture (`$C560`)
-   does the title sequence play.
-5. The instrument panel and front pictures (`pix/inst5`, `pix/frnt5`).
+   then the title picture's checksum (`ChecksumPlanes`, `TitleChecksum`): only for the
+   original picture (`$C560`) does the title sequence play.
+5. The instrument panel and front pictures (`pix/inst5`, `pix/frnt5`), and their checksums
+   (`PanelChecksum`, `FrontChecksum`).
 6. `RunGame`: frees the title pictures, allocates the display buffers, opens the input
    (`InitInput`: timer, keyboard, joystick, the mouse interrupt, the input handler; raises the
    priority), reads the flight log (`LoadConfig`), allocates the flight recording's buffers
    from free fast / public memory and loads the demo flight (`LoadDemoRecording`), fades the
-   palette in, and enters the main loop.
+   palette in, sets the first state (`StateStartup`) and enters the main loop.
 
 ## The main loop and the frame
 
@@ -70,7 +71,7 @@ stages (`?` = not worked out yet):
 
 | Stage | Routines | What |
 |---|---|---|
-| (first) | `ReadControls`, `MissionClock`, `sub_000_03C94` | the joystick, buttons and keys; the mission's clock and the flight log's time |
+| (first) | `ReadControls`, `RunGameState`, `sub_000_03C94` | the joystick, buttons and keys; **the game's state** (below) and the flight log's time |
 | `$08` | `sub_000_041E8` | ? (the view, the gun sound, the instruments) |
 | `$10` | `UpdateViewCell` (which calls `UpdateAllObjects`) | **the objects**: every object's update - computer pilots, the player's controls or the replay, engine, attitude, flight, missiles; the flight recording - and which map cell the view is in |
 | `$20` | `SetupCamera`, `sub_008_00286`, `sub_020_00738`, `sub_000_043F2`, `sub_008_00598` | the camera, and ? (the view's position and scenery) |
@@ -227,6 +228,110 @@ the speed from the throttle, and how the fuel is used, are not worked out yet.
   DESTROYED, and the training manoeuvres (AILERON ROLL, BARREL ROLL, INSIDE LOOP, BREAK TURN,
   SPLIT-S, VERTICAL HALF-LOOP, INVERTED FLIGHT, each started with the trigger).
 
+## The screens: the game's states
+
+Everything outside the flight itself - the title, the menus, the briefings, the security check,
+the start of a flight, the debriefing - is a **state machine**. `GameState` holds the routine of
+the current state (the `State` labels in hunk 0); `RunGameState` calls it once a frame, and a
+state moves on by storing the next one. Two things pace the states:
+
+* `StateTimer` is counted down every frame; a state that sets it waits until it goes negative.
+* The **text pages**. A screen's text is a queue of page numbers (`TextPages`, ended by 0); the
+  text printer in hunk 39 types the pages out one after another, and sets bit 7 of `TextStatus`
+  when the queue is done (or waits for typed input: the callsign, the security code). States wait
+  on it, and most let a key (`KeyPressed`) skip ahead. `TextPageTable` (hunk 64) gives each page's
+  text; `SetTextPage` picks a page from a mode's own list (`TextGroups`), which is how each
+  mission gets its briefing and result texts.
+
+`RunGameState` also acts on `QuitRequest`: `$FF` (Shift+Esc) goes back to the main menu, 1 (Esc)
+restarts the selection, 2 (set when the pilot's parachute lands, hunk 17) the bailout screen, 3
+(set by hunk 18 when the mission's targets are done) the debriefing. And while a mission is
+flown it adds the time to the flight log.
+
+### From start-up to the menu
+
+```
+StateStartup        the pictures' checksums --(wrong)--> StateChecksumError -> StateChecksumLock (stops)
+StateTitle          the credits page; any key ->
+StateTitleWait      music on, LoadConfig
+StateLogDisk        no log disk / not initialised / write-protected: says so and waits
+StateWelcome        first tour: "enter your callsign" (StateCallsign); else "welcome back" + callsign
+StateNewTour        counts a tour; the first time "you are now officially ..."
+StateMainMenu       the menu (below)
+StateMenuChoice     waits for a menu key (HandleKey sets GameMode)
+```
+
+The credits page (hunk 64): F/A-18 Interceptor, (c) 1988 Intellisoft; designed and programmed
+by Bob Dinnerman; design assistance Moses Ma; sounds and music by Dave Warhol; published by
+Electronic Arts, San Mateo.
+
+### The main menu and the modes
+
+The menu key sets `GameMode`, which then decides almost everything about the flight:
+
+| Key | Menu line | `GameMode` | Next |
+|---|---|---|---|
+| 1 | DEMO | `$7F` (only if a recording is loaded) | `StateDemoStart`: replays the recorded flight - mission F1 at difficulty 0 (`DemoSetup`, `RecordMode` 3) - and starts it again when it ends |
+| 2 | FREE FLIGHT, NO ENEMY CONFRONTATION | 1 | security check, the overview, "select your free flight starting location" (`StartPoints`), then the aircraft (F/A-18 or F-16) unless starting on the carrier; 5 aircraft |
+| 3 | TRAINING: DEMO OF MANEUVERS | 2 | security check, "basic flight maneuvers part 1"; you watch the instructor's aircraft (object 4) |
+| 4 | TRAINING: PRACTICE MANEUVERS | `$7D` | security check, "part 2", straight into the cockpit |
+| 5 | QUALIFICATION: REQUIRED FOR MISSIONS | 9 | security check, the carrier landing briefing; landing sets the log's "qualified" word |
+| 6 | SELECTABLE MISSIONS | -1 | `StateMissionList`: the missions the log allows, chosen with F1-F6 |
+| 7 | NEXT ACTIVE ADVANCED MISSION | the one after the log's last (3-8) | needs the qualification |
+| 8 | YOUR CURRENT FLIGHT LOG STATISTICS | -2 | `StateFlightLogPage`: 1 saves the log to disk, Shift+2 clears it |
+| F1-F6 | (the missions) | 3-8 | F1 always; F*n* once F*n*-1 has been completed |
+| Esc / Shift+Esc | | | restart the selection / back to the main menu |
+
+`StateFlightSetup` then sets up the world for the mode (hunk 26, `sub_026_00002`, from the mode's
+table in hunk 27), gives the player 3 aircraft (`AircraftLeft`) and starts the chain for the mode.
+
+### A mission
+
+```
+StateBriefingFade .. StateBriefing   fade in; NORAD STRATEGIC COMMAND and the mission's briefing
+StateFlyByStart .. StateFlyByWait    the camera flies round the mission's scene (CameraSequence 2 -> 3)
+StateSecurityCheck                   the copy protection (below)
+StateSecurityResult                  "CLEARANCE CONFIRMED - SCRAMBLE IMMEDIATELY"; counts a mission started
+StateClearance .. StateToCockpit     the camera comes to the aircraft and into the cockpit (CameraSequence 4 -> 6)
+StateReadyText                       "YOUR VECTOR XXX FOR BOGEY", "READY FOR TAKEOFF" / "READY TO LAUNCH" (on the carrier)
+StateReadyWait, StateGo              starts the mission's clock; the player has the controls
+StateFlying                          the flight
+```
+
+The other modes join the same chain at different points (the training and the qualification
+skip the briefing and the fly-by; the demo goes straight to `StateReady`).
+
+While flying, `StateFlying` watches for:
+
+* **A crash** (the player's flags bit 9): `StateCrashed` takes an aircraft; with one left a new
+  one is set up (`StateNewAircraft`), otherwise "HEY ROOKIE, F/A-18'S (or F-16'S) DON'T GROW ON
+  TREES" (`StateNoAircraftLeft`) and back to the menu.
+* **Pause** (`StatePause`: "- PAUSED -"; the time paused is not counted in the log).
+* **The mission's result** (`MissionResult`), shown by `StateDebrief`:
+  * `$FF` the objective achieved (hunk 18: `MissionTargetsDone` reached `MissionTargets`): the
+    mission's success text and "RETURN TO BASE" or "RETURN TO CARRIER"; for the qualification,
+    "LANDING SUCCESSFUL - YOU ARE NOW QUALIFIED" (the log's `+$00` set and saved).
+  * `$FE` the mission failed: Air Force One destroyed (F2), the stolen aircraft beyond recovery
+    range (F3), the rescue pod too far from the downed pilot (F4), the cruise missile exploded
+    (F5)...
+  * `$FD` in F2: "YOU HAVE DESTROYED AIR FORCE ONE".
+  * `$FC` the mission completed (back on the ground): "YOUR LOG NOW REFLECTS THIS COMPLETED
+    MISSION"; `MissionCompleted` records it (the log's last mission, the mission's count, the
+    missions completed) and raises the difficulty by one, to at most 3; the log is saved.
+  * then `$F0` back to the menu, or `$EF` (qualified) a restart.
+* **Bailing out**: "YOU HAVE SURVIVED YOUR BAILOUT" (`StateBailout`).
+
+### The security check
+
+Every mode except the demo passes through `StateSecurityCheck`, the game's **copy protection**:
+the DEFENSENET SECURITY CHECK. `MakeSecurityCode` takes four random hex digits from the clock and
+shows them; the player must type the countercode, which `CodeCheck` works out from the digits
+with its tables (`CodeHash`) - presumably what the game's documentation let a buyer look up.
+`CheckSecurityAnswer` sets `CodeResult`. There are three tries (`CodeTries`); after the third
+wrong answer, "UNAUTHORIZED CLEARANCE - DUE TO THREE FAILED ATTEMPTS ... - REBOOT -" and the game
+stops (`StateLockedUp`). Once passed, restarting the same selection with Esc skips the check and
+the briefing (`RestartMission`).
+
 ## The flight log and the missions
 
 The disk is also the **log disk**: `config` is the pilot's flight log (missions started and
@@ -236,9 +341,13 @@ only to a DOS disk that is not write-protected (`CheckDisk`: "NO LOG DISK PRESEN
 "UNINITIALIZED LOG DISK IN DF0:"...). The briefing's date comes from the flight time: one day
 for each hour flown, from September 1st, 1994.
 
-There are six missions, chosen with F1-F6 (hunk 64's texts): Visual Confirmation, Emergency
-Defense, Intercept Stolen Aircraft, Search and Rescue, Intercept Incoming Cruise Missile, Carrier
-Sub Mission. How a mission is set up and judged is not worked out yet.
+There are six missions, chosen with F1-F6 (hunk 64's texts; `GameMode` 3-8): Visual
+Confirmation, Emergency Defense Operation (Air Force One), Intercept Stolen Aircraft, Search and
+Rescue Operation, Intercept Incoming Cruise Missile, Carrier Sub Mission. They open one at a time:
+the log counts how often each was completed (`+$12`+mode), and F*n* needs F*n*-1. A mission
+needs the qualification (a carrier landing) first. The game flow above shows how one is
+briefed, started and judged; how each sets up its objects and decides success is in hunks 18
+and 26-27, not worked out in detail yet.
 
 ## The flight recording and the demo
 
@@ -271,10 +380,12 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
 
 ## Checks
 
-* The title picture's checksum must be `$C560` for the title sequence to play
-  (`ChecksumPlanes`) - an integrity check of the picture.
-* `CodeCheck` / `CodeHash` compute a 16-bit value from four numbers with tables and an LFSR:
-  probably a code check of some kind; where it is used is not known yet.
+* The pictures' checksums (`ChecksumPlanes`): the title (`$C560`), the instrument panel
+  (`$7E70`) and the front (`$4DE8`). The title sequence plays only for the original title
+  picture, and `StateStartup` stops the game at "CHECKSUM ERROR -" (with a code: 1 title, 2 panel,
+  4 front, and the sum in hex) if any differs - against altered pictures.
+* The security countercode (`MakeSecurityCode`, `CodeCheck` / `CodeHash`, `CheckSecurityAnswer`):
+  the copy protection, asked before every flight (above).
 
 ## Open questions
 
@@ -286,6 +397,6 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
 * The 3D pipeline (hunks 13-15) and the model format (hunks 41-58).
 * The ground, sky and scenery; the map and what is in each cell.
 * The head-up display and instruments (hunks 38-40).
-* The game's modes (`dat_071_00155`, `dat_071_0027E`, `dat_071_00276`...): the views, the menus,
-  the training.
+* The views (`dat_071_00155`, `CameraSequence`) and the training's manoeuvres; how each
+  mission sets up its objects and judges success (hunks 18, 26-27).
 * The rest of the flight log's words, and which sound file is which effect.

@@ -1,5 +1,5 @@
 ; F/A-18 Interceptor - hunk 26 (code)
-; Game logic not yet identified (objects, the camera, the game modes; used by hunks 0 and 17).
+; Setting up a mode (SetupMode) and the camera's opening moves (FlyBySetup); more not identified.
 ; Included by ../f18_main.s.
 
 ;===============================================================================
@@ -8,12 +8,18 @@
 	CODE_HUNK	h026
 l_026_00000:
         rts                                     ; 00000
-sub_026_00002:
+
+;-------------------------------------------------------------------------------
+; SetupMode - Sets up the world for GameMode (StateFlightSetup, DemoSetup): the date
+; (ShowLogDate), then from the mode's entry in hunk 27's table (dat_027_001F2; the demo uses
+; the entry of mode 10) MissionTargets and the list of objects to place (dat_071_0010A).
+;-------------------------------------------------------------------------------
+SetupMode:
         jsr     (ShowLogDate).l                 ; 00002
         clr.b   (dat_071_00279).l               ; 00008
-        clr.b   (dat_071_0027B).l               ; 0000E
+        clr.b   (MissionTargetsDone).l          ; 0000E
         clr.w   (dat_071_00152).l               ; 00014
-        move.b  (dat_071_00276).l,d0            ; 0001A
+        move.b  (GameMode).l,d0                 ; 0001A
         ext.w   d0                              ; 00020
         cmpi.b  #$7d,d0                         ; 00022
         beq.w   l_026_001A6                     ; 00026
@@ -35,7 +41,7 @@ l_026_00040:
         add.w   d0,d0                           ; 0004C
         add.w   d1,d0                           ; 0004E
         add.w   d0,d0                           ; 00050
-        tst.b   (dat_071_001FB).l               ; 00052
+        tst.b   (RestartMission).l              ; 00052
         beq.b   l_026_00062                     ; 00058
         move.w  (dat_071_004EC).l,d1            ; 0005A
         bra.b   l_026_00076                     ; 00060
@@ -52,7 +58,7 @@ l_026_00076:
         lea.l   (a0),a2                         ; 0007C
         adda.w  (a0,d0.w),a2                    ; 0007E
         move.w  $2(a0,d0.w),d0                  ; 00082
-        move.b  d0,(dat_071_0027A).l            ; 00086
+        move.b  d0,(MissionTargets).l           ; 00086
         bsr.w   sub_026_000BA                   ; 0008C
         adda.w  (a2,d0.w),a2                    ; 00090
         move.l  a2,(dat_071_0010A).l            ; 00094
@@ -71,7 +77,7 @@ l_026_000B8:
         rts                                     ; 000B8
 sub_026_000BA:
         moveq   #$0,d0                          ; 000BA
-        move.b  (dat_071_00276).l,d1            ; 000BC
+        move.b  (GameMode).l,d1                 ; 000BC
         cmpi.b  #$7e,d1                         ; 000C2
         beq.b   l_026_000DE                     ; 000C6
         cmpi.b  #$7f,d1                         ; 000C8
@@ -341,7 +347,7 @@ l_026_003F2:
 l_026_003F4:
         rts                                     ; 003F4
 sub_026_003F6:
-        move.b  (dat_071_00276).l,d0            ; 003F6
+        move.b  (GameMode).l,d0                 ; 003F6
         cmpi.b  #$2,d0                          ; 003FC
         ble.b   l_026_003F4                     ; 00400
         cmpi.b  #$7d,d0                         ; 00402
@@ -360,7 +366,7 @@ sub_026_00414:
         andi.w  #$f00,d3                        ; 00424
         beq.b   l_026_00436                     ; 00428
         lsr.w   #$8,d3                          ; 0042A
-        cmp.b   (dat_071_00276).l,d3            ; 0042C
+        cmp.b   (GameMode).l,d3                 ; 0042C
         bne.w   l_026_004C6                     ; 00432
 l_026_00436:
         move.w  (a2),d3                         ; 00436
@@ -401,7 +407,7 @@ l_026_00488:
         asl.w   #$8,d3                          ; 0049C
         add.w   d3,d3                           ; 0049E
         adda.w  d3,a0                           ; 004A0
-        move.b  (dat_071_0027A).l,d3            ; 004A2
+        move.b  (MissionTargets).l,d3           ; 004A2
         cmp.b   (dat_071_00279).l,d3            ; 004A8
         ble.b   l_026_004C6                     ; 004AE
         cmpi.b  #$15,$62(a0)                    ; 004B0
@@ -467,7 +473,7 @@ l_026_00556:
         move.w  d1,d0                           ; 0055C
         andi.w  #$1000,d1                       ; 0055E
         beq.b   l_026_005DC                     ; 00562
-        tst.b   (dat_071_001FB).l               ; 00564
+        tst.b   (RestartMission).l              ; 00564
         beq.b   l_026_0058E                     ; 0056A
         swap    d4                              ; 0056C
         move.w  d0,d4                           ; 0056E
@@ -738,7 +744,7 @@ sub_026_00922:
         bne.b   l_026_00920                     ; 0093E
         tst.b   (dat_071_0017D).l               ; 00940
         beq.b   l_026_0096E                     ; 00946
-        tst.b   (dat_071_0027E).l               ; 00948
+        tst.b   (CameraSequence).l              ; 00948
         bne.b   l_026_0096E                     ; 0094E
         lea.l   (ObjectTable).l,a0              ; 00950
         adda.w  (ViewObject).l,a0               ; 00956
@@ -747,9 +753,9 @@ sub_026_00922:
         move.l  $1c(a0),d7                      ; 00966
         bra.w   l_026_00AA8                     ; 0096A
 l_026_0096E:
-        cmpi.b  #$5,(dat_071_0027E).l           ; 0096E
+        cmpi.b  #$5,(CameraSequence).l          ; 0096E
         beq.b   l_026_00984                     ; 00976
-        cmpi.b  #$2,(dat_071_0027E).l           ; 00978
+        cmpi.b  #$2,(CameraSequence).l          ; 00978
         bge.w   l_026_00AB4                     ; 00980
 l_026_00984:
         lea.l   (ObjectTable).l,a0              ; 00984
@@ -964,7 +970,7 @@ sub_026_00BDA:
         cmpi.l  #$100000,d3                     ; 00BFC
         bgt.w   l_026_00E28                     ; 00C02
 l_026_00C06:
-        move.b  #$3,(dat_071_0027E).l           ; 00C06
+        move.b  #$3,(CameraSequence).l          ; 00C06
         move.b  #$8,(dat_071_00186).l           ; 00C0E
         jsr     (sub_004_00254).l               ; 00C16
         movem.l d0-d2,(dat_071_00626).l         ; 00C1C
@@ -976,9 +982,14 @@ sub_026_00C26:
         moveq   #$c,d4                          ; 00C32
         cmpi.l  #$100000,d3                     ; 00C34
         bgt.w   l_026_00E28                     ; 00C3A
-        move.b  #$4,(dat_071_0027E).l           ; 00C3E
+        move.b  #$4,(CameraSequence).l          ; 00C3E
         rts                                     ; 00C46
-sub_026_00C48:
+
+;-------------------------------------------------------------------------------
+; FlyBySetup - Starts the camera's fly-by of the mission's scene (CameraSequence;
+; StateFlyByStart).
+;-------------------------------------------------------------------------------
+FlyBySetup:
         move.b  #$1,(dat_071_0027F).l           ; 00C48
         clr.w   (dat_071_0038A).l               ; 00C50
         move.b  #$7,(dat_071_00186).l           ; 00C56
@@ -1075,9 +1086,9 @@ l_026_00D82:
 l_026_00D8C:
         movem.l d3-d7,-(a7)                     ; 00D8C
         moveq   #$4,d4                          ; 00D90
-        cmpi.b  #$1,(dat_071_00218).l           ; 00D92
+        cmpi.b  #$1,(StartPoint).l              ; 00D92
         beq.b   l_026_00DAC                     ; 00D9A
-        cmpi.b  #$2,(dat_071_00218).l           ; 00D9C
+        cmpi.b  #$2,(StartPoint).l              ; 00D9C
         beq.b   l_026_00DAC                     ; 00DA4
         moveq   #-6,d3                          ; 00DA6
         moveq   #-9,d5                          ; 00DA8
@@ -1090,9 +1101,9 @@ l_026_00DB2:
         movem.l d3-d7,-(a7)                     ; 00DB2
         moveq   #$1,d4                          ; 00DB6
         moveq   #$6,d5                          ; 00DB8
-        cmpi.b  #$1,(dat_071_00218).l           ; 00DBA
+        cmpi.b  #$1,(StartPoint).l              ; 00DBA
         beq.b   l_026_00DD2                     ; 00DC2
-        cmpi.b  #$2,(dat_071_00218).l           ; 00DC4
+        cmpi.b  #$2,(StartPoint).l              ; 00DC4
         beq.b   l_026_00DD2                     ; 00DCC
         moveq   #-6,d3                          ; 00DCE
         bra.b   l_026_00DD4                     ; 00DD0
@@ -1105,7 +1116,7 @@ l_026_00DD4:
 l_026_00DE6:
         cmpi.l  #$240,d3                        ; 00DE6
         bgt.b   l_026_00E28                     ; 00DEC
-        cmpi.b  #$6,(dat_071_0027E).l           ; 00DEE
+        cmpi.b  #$6,(CameraSequence).l          ; 00DEE
         blt.b   l_026_00E26                     ; 00DF6
         move.b  #$6,(dat_071_00186).l           ; 00DF8
         move.b  #$5,(dat_071_00275).l           ; 00E00
@@ -1114,7 +1125,7 @@ l_026_00E10:
         subq.b  #$1,(dat_071_00275).l           ; 00E10
         bgt.b   l_026_00E26                     ; 00E16
         ori.w   #$2,(GunFlags).l                ; 00E18
-        clr.b   (dat_071_0027E).l               ; 00E20
+        clr.b   (CameraSequence).l              ; 00E20
 l_026_00E26:
         rts                                     ; 00E26
 l_026_00E28:

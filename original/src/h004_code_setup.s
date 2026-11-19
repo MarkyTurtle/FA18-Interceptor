@@ -36,22 +36,27 @@ sub_004_0002C:
         move.b  #$f,(dat_071_00271).l           ; 0004C
         move.b  #$1,(dat_071_0027D).l           ; 00054
         move.b  #$1,(dat_071_001A4).l           ; 0005C
-        move.b  #$11,(dat_071_00219).l          ; 00064
+        move.b  #$11,(PlayerAircraftType).l     ; 00064
         rts                                     ; 0006C
-sub_004_0006E:
+
+;-------------------------------------------------------------------------------
+; ResetGame - Resets the world for a new flight: difficulty, objects, the text page queue and
+; the screen.
+;-------------------------------------------------------------------------------
+ResetGame:
         bsr.w   sub_004_0020A                   ; 0006E
         bsr.w   sub_004_0023A                   ; 00072
         move.b  (DifficultySaved).l,(Difficulty).l ; 00076
         clr.w   (dat_073_0162A).l               ; 00080
         clr.w   (dat_073_01628).l               ; 00086
-        clr.l   (dat_071_0011A).l               ; 0008C
+        clr.l   (TextPages).l                   ; 0008C
         moveq   #-1,d0                          ; 00092
         move.b  d0,(RedrawFlags).l              ; 00094
-        move.b  d0,(dat_071_001B0).l            ; 0009A
-        move.b  d0,(dat_071_0027E).l            ; 000A0
-        move.w  #$5,(dat_071_004A6).l           ; 000A6
+        move.b  d0,(TextStatus).l               ; 0009A
+        move.b  d0,(CameraSequence).l           ; 000A0
+        move.w  #$5,(StateTimer).l              ; 000A6
         move.l  #$1b8,(dat_071_0010E).l         ; 000AE
-        jsr     (sub_036_00892).l               ; 000B8
+        jsr     (ClearScreen).l                 ; 000B8
         lea.l   (ObjectTable).l,a0              ; 000BE
         moveq   #$f,d0                          ; 000C4
 l_004_000C6:
@@ -75,7 +80,7 @@ l_004_000E4:
         bsr.w   sub_004_00768                   ; 000F2
         move.w  #$140,(dat_071_00376).l         ; 000F6
         move.w  #$140,(dat_071_00378).l         ; 000FE
-        move.b  #$0,(dat_071_00218).l           ; 00106
+        move.b  #$0,(StartPoint).l              ; 00106
         move.b  #$1,(dat_071_00227).l           ; 0010E
         move.w  #$800,(dat_073_0165A).l         ; 00116
         bsr.w   sub_004_00254                   ; 0011E
@@ -109,7 +114,7 @@ l_004_001C2:
         dbra    d1,l_004_001C2                  ; 001C6
         moveq   #$30,d1                         ; 001CA
         lea.l   (dat_071_001CA).l,a0            ; 001CC
-        move.l  #dat_071_001FA,d0               ; 001D2
+        move.l  #QuitRequest,d0                 ; 001D2
         sub.l   a0,d0                           ; 001D8
         subq.w  #$1,d0                          ; 001DA
 l_004_001DC:
@@ -135,7 +140,7 @@ l_004_0021A:
         clr.b   (a0)+                           ; 0021A
         dbra    d0,l_004_0021A                  ; 0021C
         lea.l   (dat_071_00290).l,a0            ; 00220
-        move.l  #dat_071_002F8,d0               ; 00226
+        move.l  #LogDiskStatus,d0               ; 00226
         sub.l   a0,d0                           ; 0022C
         lsr.w   #$1,d0                          ; 0022E
         subq.w  #$1,d0                          ; 00230
@@ -270,7 +275,7 @@ sub_004_003E8:
         move.w  d0,(dat_071_0014C).l            ; 0040E
         move.b  #$fe,(dat_071_00280).l          ; 00414
         lea.l   (MissileModels).l,a0            ; 0041C
-        move.b  (dat_071_00219).l,d1            ; 00422
+        move.b  (PlayerAircraftType).l,d1       ; 00422
         cmpi.b  #$10,d1                         ; 00428
         bne.b   l_004_00434                     ; 0042C
         move.w  #$3c,d0                         ; 0042E
@@ -316,8 +321,8 @@ l_004_0046C:
         clr.b   (dat_071_0017B).l               ; 004DE
         clr.b   (dat_071_00212).l               ; 004E4
 l_004_004EA:
-        lea.l   (dat_067_00032).l,a0            ; 004EA
-        move.b  (dat_071_00218).l,d0            ; 004F0
+        lea.l   (StartPoints).l,a0              ; 004EA
+        move.b  (StartPoint).l,d0               ; 004F0
         ext.w   d0                              ; 004F6
         asl.w   #$4,d0                          ; 004F8
         adda.w  d0,a0                           ; 004FA
@@ -397,7 +402,7 @@ l_004_005E0:
         adda.w  d0,a1                           ; 005EA
         btst    #$6,$1(a1)                      ; 005EC
         bne.b   l_004_005FE                     ; 005F2
-        clr.b   (dat_071_00218).l               ; 005F4
+        clr.b   (StartPoint).l                  ; 005F4
         bra.w   l_004_004EA                     ; 005FA
 l_004_005FE:
         lea.l   (ObjectTable).l,a2              ; 005FE
@@ -519,9 +524,9 @@ sub_004_00768:
         move.b  #$ff,$71(a0)                    ; 007CC
         move.w  #$ffff,(dat_071_00390).l        ; 007D2
         clr.b   (dat_071_00238).l               ; 007DA
-        tst.b   (dat_071_00168).l               ; 007E0
+        tst.b   (MissionResult).l               ; 007E0
         beq.b   l_004_007F0                     ; 007E6
-        move.b  #$4,(dat_071_00168).l           ; 007E8
+        move.b  #$4,(MissionResult).l           ; 007E8
 l_004_007F0:
         rts                                     ; 007F0
 	dc.b	$00,$00

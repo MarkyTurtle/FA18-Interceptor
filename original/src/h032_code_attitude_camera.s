@@ -570,7 +570,7 @@ l_032_005E0:
         moveq   #$0,d3                          ; 005EE
         moveq   #$0,d4                          ; 005F0
         moveq   #$1,d5                          ; 005F2
-        cmpi.b  #$6,(dat_071_0027E).l           ; 005F4
+        cmpi.b  #$6,(CameraSequence).l          ; 005F4
         bne.b   l_032_00608                     ; 005FC
         moveq   #$5,d5                          ; 005FE
         bra.b   l_032_00608                     ; 00600
@@ -588,7 +588,7 @@ l_032_00608:
         sub.l   (CameraZ).l,d4                  ; 00620
         tst.b   (dat_071_00184).l               ; 00626
         blt.b   l_032_0065A                     ; 0062C
-        tst.b   (dat_071_0027E).l               ; 0062E
+        tst.b   (CameraSequence).l              ; 0062E
         beq.b   l_032_0063E                     ; 00634
         move.l  #$230,d5                        ; 00636
         bra.b   l_032_00664                     ; 0063C

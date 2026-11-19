@@ -353,7 +353,7 @@ l_008_003C6:
         asr.l   #$5,d0                          ; 003D0
         cmp.w   (dat_071_0042E).l,d0            ; 003D2
         beq.b   l_008_003EE                     ; 003D8
-        cmpi.b  #$2,(dat_071_0027E).l           ; 003DA
+        cmpi.b  #$2,(CameraSequence).l          ; 003DA
         beq.b   l_008_003E8                     ; 003E2
         ori.b   #$b,d5                          ; 003E4
 l_008_003E8:
@@ -420,7 +420,7 @@ l_008_0044E:
         add.b   d2,d3                           ; 004B8
         cmp.b   (ViewSubCell).l,d1              ; 004BA
         beq.b   l_008_004E0                     ; 004C0
-        cmpi.b  #$2,(dat_071_0027E).l           ; 004C2
+        cmpi.b  #$2,(CameraSequence).l          ; 004C2
         bne.b   l_008_004D8                     ; 004CA
         cmpi.l  #$fffff000,(dat_071_00448).l    ; 004CC
         ble.b   l_008_004DA                     ; 004D6
@@ -431,7 +431,7 @@ l_008_004DA:
 l_008_004E0:
         cmp.b   (dat_071_00220).l,d3            ; 004E0
         beq.b   l_008_00506                     ; 004E6
-        cmpi.b  #$2,(dat_071_0027E).l           ; 004E8
+        cmpi.b  #$2,(CameraSequence).l          ; 004E8
         bne.b   l_008_004FE                     ; 004F0
         cmpi.l  #$fffff000,(dat_071_00448).l    ; 004F2
         ble.b   l_008_00500                     ; 004FC

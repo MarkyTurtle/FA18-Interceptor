@@ -570,7 +570,7 @@ l_000_006BC:
         move.l  a3,-$14(a6)                     ; 0073A
         jsr     (ChecksumPlanes).l              ; 0073E
         lea.l   $18(a7),a7                      ; 00744
-        move.w  d0,(dat_071_00020).l            ; 00748
+        move.w  d0,(PanelChecksum).l            ; 00748
         movea.l (FrontBitMap).l,a1              ; 0074E
         movea.l $8(a1),a0                       ; 00754
         movea.l $c(a1),a2                       ; 00758
@@ -592,7 +592,7 @@ l_000_006BC:
         move.l  a3,-$14(a6)                     ; 0078C
         jsr     (ChecksumPlanes).l              ; 00790
         lea.l   $18(a7),a7                      ; 00796
-        move.w  d0,(dat_071_00024).l            ; 0079A
+        move.w  d0,(FrontChecksum).l            ; 0079A
         jsr     (RunGame).l                     ; 007A0
         movem.l (a7)+,d2/a2-a3                  ; 007A6
         unlk    a6                              ; 007AA
@@ -1452,7 +1452,7 @@ GameFrame:
         link.w  a6,#$fffe                       ; 01124
         move.w  (FrameCount).l,-$2(a6)          ; 01128
         bsr.w   ReadControls                    ; 01130
-        jsr     (MissionClock).l                ; 01134
+        jsr     (RunGameState).l                ; 01134
         jsr     (sub_000_03C94).l               ; 0113A
         tst.b   (dat_071_00165).l               ; 01140
         beq.w   l_000_014C0                     ; 01146
@@ -1619,7 +1619,7 @@ l_000_013F8:
         jsr     (sub_039_0071A).l               ; 0140E
         jsr     (sub_039_005B6).l               ; 01414
         nop                                     ; 0141A
-        move.b  (dat_071_00276).l,d0            ; 0141C
+        move.b  (GameMode).l,d0                 ; 0141C
         subq.b  #$2,d0                          ; 01422
         bne.b   l_000_0142C                     ; 01424
         jsr     (sub_039_009EE).l               ; 01426
@@ -1650,7 +1650,7 @@ l_000_01474:
         jsr     (sub_036_000F2).l               ; 01480
         bra.b   l_000_014A6                     ; 01486
 l_000_01488:
-        move.b  (dat_071_0027E).l,d0            ; 01488
+        move.b  (CameraSequence).l,d0           ; 01488
         tst.b   d0                              ; 0148E
         bne.b   l_000_014A6                     ; 01490
         move.w  -$2(a6),d0                      ; 01492
@@ -1809,11 +1809,16 @@ InitInput:
         clr.b   (RecordMode).l                  ; 0169A
         jsr     (sub_004_0002C).l               ; 016A0
         jsr     (GetDifficulty).l               ; 016A6
-        lea.l   State_01962(pc),a0              ; 016AC
+        lea.l   StateStartup(pc),a0             ; 016AC
         move.l  a0,(GameState).l                ; 016B0
         unlk    a6                              ; 016B6
         rts                                     ; 016B8
-sub_000_016BA:
+
+;-------------------------------------------------------------------------------
+; PutHex - PutHex(text, value, digits): writes value in hex, right-aligned, leading zeros as
+; spaces.
+;-------------------------------------------------------------------------------
+PutHex:
         link.w  a6,#$fffe                       ; 016BA
         move.b  $13(a6),d0                      ; 016BE
         ext.w   d0                              ; 016C2
@@ -1862,25 +1867,26 @@ l_000_01744:
         rts                                     ; 01746
 
 ;-------------------------------------------------------------------------------
-; MissionClock - The mission's clock: in a mission (dat_071_00276 > 0) the time flown since it
-; started (dat_071_002E4), less the time paused, is added to the flight log's flight time
-; (ConfigBuffer+$08, at most 18,000 seconds a go); then the mode's own routine is called
-; (a0)...
+; RunGameState - Each frame: in a mission (GameMode > 0) adds the time flown to the flight log
+; (ConfigBuffer+$08, at most 18,000 seconds a go); acts on QuitRequest ($FF: Shift+Esc, back to
+; the menu; 1: Esc, restart the selection via StateRestartFade; 2: bailed out, StateBailout; 3:
+; the mission's objective done, StateDebriefWait) once QuitDelay has run out; counts StateTimer
+; down by one; then calls the current state (GameState).
 ;-------------------------------------------------------------------------------
-MissionClock:
+RunGameState:
         link.w  a6,#$fffc                       ; 01748
-        move.b  (dat_071_00268).l,d0            ; 0174C
+        move.b  (CodeTries).l,d0                ; 0174C
         tst.b   d0                              ; 01752
         bmi.w   l_000_01922                     ; 01754
-        move.b  (dat_071_00276).l,d0            ; 01758
+        move.b  (GameMode).l,d0                 ; 01758
         tst.b   d0                              ; 0175E
         ble.w   l_000_01922                     ; 01760
-        tst.b   (dat_071_001FA).l               ; 01764
+        tst.b   (QuitRequest).l                 ; 01764
         beq.w   l_000_01820                     ; 0176A
         move.b  (dat_071_00160).l,d0            ; 0176E
         tst.b   d0                              ; 01774
         bne.w   l_000_01820                     ; 01776
-        move.b  (dat_071_001FC).l,d0            ; 0177A
+        move.b  (QuitDelay).l,d0                ; 0177A
         tst.b   d0                              ; 01780
         bpl.w   l_000_01820                     ; 01782
         tst.l   (MissionStartTime).l            ; 01786
@@ -1919,87 +1925,94 @@ l_000_0180C:
 l_000_0181A:
         clr.l   (MissionStartTime).l            ; 0181A
 l_000_01820:
-        move.b  (dat_071_00168).l,d0            ; 01820
+        move.b  (MissionResult).l,d0            ; 01820
         tst.b   d0                              ; 01826
         bmi.w   l_000_018EC                     ; 01828
-        move.b  (dat_071_001FA).l,d0            ; 0182C
+        move.b  (QuitRequest).l,d0              ; 0182C
         cmpi.b  #$ff,d0                         ; 01832
         bne.b   l_000_01854                     ; 01836
         moveq   #$0,d0                          ; 01838
-        move.b  d0,(dat_071_001FA).l            ; 0183A
-        move.b  d0,(dat_071_001FB).l            ; 01840
-        lea.l   State_01A70(pc),a0              ; 01846
+        move.b  d0,(QuitRequest).l              ; 0183A
+        move.b  d0,(RestartMission).l           ; 01840
+        lea.l   StateToMenu(pc),a0              ; 01846
         move.l  a0,(GameState).l                ; 0184A
         bra.w   l_000_01922                     ; 01850
 l_000_01854:
-        move.b  (dat_071_001FA).l,d0            ; 01854
+        move.b  (QuitRequest).l,d0              ; 01854
         subq.b  #$1,d0                          ; 0185A
         bne.b   l_000_018A0                     ; 0185C
-        clr.b   (dat_071_001FA).l               ; 0185E
-        tst.b   (dat_071_0027C).l               ; 01864
+        clr.b   (QuitRequest).l                 ; 0185E
+        tst.b   (CodeResult).l                  ; 01864
         beq.b   l_000_01874                     ; 0186A
-        move.b  #$1,(dat_071_001FB).l           ; 0186C
+        move.b  #$1,(RestartMission).l          ; 0186C
 l_000_01874:
         move.b  #$1,(dat_071_0017E).l           ; 01874
-        move.w  #$3,(dat_071_004A6).l           ; 0187C
+        move.w  #$3,(StateTimer).l              ; 0187C
         moveq   #$0,d0                          ; 01884
         move.b  d0,(dat_071_00165).l            ; 01886
         move.b  d0,(dat_071_00271).l            ; 0188C
-        lea.l   State_01A96(pc),a0              ; 01892
+        lea.l   StateRestartFade(pc),a0         ; 01892
         move.l  a0,(GameState).l                ; 01896
         bra.w   l_000_01922                     ; 0189C
 l_000_018A0:
-        move.b  (dat_071_001FA).l,d0            ; 018A0
+        move.b  (QuitRequest).l,d0              ; 018A0
         subq.b  #$2,d0                          ; 018A6
         bne.b   l_000_01922                     ; 018A8
         moveq   #$0,d0                          ; 018AA
-        move.b  d0,(dat_071_001FB).l            ; 018AC
-        move.b  (dat_071_001FC).l,d0            ; 018B2
+        move.b  d0,(RestartMission).l           ; 018AC
+        move.b  (QuitDelay).l,d0                ; 018B2
         tst.b   d0                              ; 018B8
         bpl.b   l_000_01922                     ; 018BA
-        move.b  #$f0,(dat_071_00168).l          ; 018BC
-        clr.b   (dat_071_001FA).l               ; 018C4
+        move.b  #$f0,(MissionResult).l          ; 018BC
+        clr.b   (QuitRequest).l                 ; 018C4
         moveq   #$1,d0                          ; 018CA
         move.b  d0,(dat_071_0027D).l            ; 018CC
         move.b  d0,(dat_071_0017E).l            ; 018D2
-        move.w  #$6,(dat_071_004A6).l           ; 018D8
-        lea.l   State_0319C(pc),a0              ; 018E0
+        move.w  #$6,(StateTimer).l              ; 018D8
+        lea.l   StateBailout(pc),a0             ; 018E0
         move.l  a0,(GameState).l                ; 018E4
         bra.b   l_000_01922                     ; 018EA
 l_000_018EC:
-        move.b  (dat_071_001FA).l,d0            ; 018EC
+        move.b  (QuitRequest).l,d0              ; 018EC
         subq.b  #$3,d0                          ; 018F2
         bne.b   l_000_01922                     ; 018F4
         moveq   #$0,d0                          ; 018F6
-        move.b  d0,(dat_071_001FB).l            ; 018F8
-        move.b  (dat_071_001FC).l,d0            ; 018FE
+        move.b  d0,(RestartMission).l           ; 018F8
+        move.b  (QuitDelay).l,d0                ; 018FE
         tst.b   d0                              ; 01904
         bpl.b   l_000_01922                     ; 01906
-        clr.b   (dat_071_001FA).l               ; 01908
-        move.w  (dat_071_00290).l,(dat_071_004A6).l ; 0190E
-        lea.l   State_031C8(pc),a0              ; 01918
+        clr.b   (QuitRequest).l                 ; 01908
+        move.w  (dat_071_00290).l,(StateTimer).l ; 0190E
+        lea.l   StateDebriefWait(pc),a0         ; 01918
         move.l  a0,(GameState).l                ; 0191C
 l_000_01922:
-        move.b  (dat_071_001FC).l,d0            ; 01922
+        move.b  (QuitDelay).l,d0                ; 01922
         tst.b   d0                              ; 01928
         bmi.b   l_000_01934                     ; 0192A
         subq.b  #$1,d0                          ; 0192C
-        move.b  d0,(dat_071_001FC).l            ; 0192E
+        move.b  d0,(QuitDelay).l                ; 0192E
 l_000_01934:
         move.b  (dat_071_00191).l,d0            ; 01934
         addq.b  #$1,d0                          ; 0193A
         move.b  d0,(dat_071_00191).l            ; 0193C
-        move.w  (dat_071_004A6).l,d0            ; 01942
+        move.w  (StateTimer).l,d0               ; 01942
         subq.w  #$1,d0                          ; 01948
-        move.w  d0,(dat_071_004A6).l            ; 0194A
+        move.w  d0,(StateTimer).l               ; 0194A
         movea.l (GameState).l,a0                ; 01950
         jsr     (a0)                            ; 01956
-        clr.b   (dat_071_00173).l               ; 01958
+        clr.b   (KeyPressed).l                  ; 01958
         unlk    a6                              ; 0195E
         rts                                     ; 01960
-State_01962:
+
+;-------------------------------------------------------------------------------
+; StateStartup - The first state (set by RunGame): sets the title picture's colours and checks
+; the pictures are the originals (TitleChecksum $C560, PanelChecksum $7E70, FrontChecksum
+; $4DE8). A mismatch writes '1', '2' or '4' and the sum in hex into the CHECKSUM ERROR text and
+; goes to StateChecksumError; otherwise StateTitle.
+;-------------------------------------------------------------------------------
+StateStartup:
         link.w  a6,#$fff2                       ; 01962
-        jsr     (sub_004_0006E).l               ; 01966
+        jsr     (ResetGame).l                   ; 01966
         move.l  (dat_071_00030).l,-$4(a6)       ; 0196C
         clr.w   -$a(a6)                         ; 01974
 l_000_01978:
@@ -2016,12 +2029,12 @@ l_000_01978:
         addq.w  #$1,-$a(a6)                     ; 01998
         bra.b   l_000_01978                     ; 0199C
 l_000_0199E:
-        clr.b   (dat_071_00276).l               ; 0199E
+        clr.b   (GameMode).l                    ; 0199E
         moveq   #-1,d0                          ; 019A4
         move.b  d0,(dat_071_0017D).l            ; 019A6
         move.b  d0,(dat_071_00227).l            ; 019AC
-        move.w  #$3,(dat_071_004A6).l           ; 019B2
-        move.l  #State_03596,(GameState).l      ; 019BA
+        move.w  #$3,(StateTimer).l              ; 019B2
+        move.l  #StateTitle,(GameState).l       ; 019BA
         lea.l   (dat_064_00340).l,a0            ; 019C4
         move.l  a0,-$e(a6)                      ; 019CA
         adda.w  #$15,a0                         ; 019CE
@@ -2035,7 +2048,7 @@ l_000_0199E:
         move.l  d0,-$8(a6)                      ; 019EE
 l_000_019F2:
         moveq   #$0,d0                          ; 019F2
-        move.w  (dat_071_00020).l,d0            ; 019F4
+        move.w  (PanelChecksum).l,d0            ; 019F4
         cmpi.l  #$7e70,d0                       ; 019FA
         beq.b   l_000_01A12                     ; 01A00
         movea.l -$e(a6),a0                      ; 01A02
@@ -2045,7 +2058,7 @@ l_000_019F2:
         move.l  d0,-$8(a6)                      ; 01A0E
 l_000_01A12:
         moveq   #$0,d0                          ; 01A12
-        move.w  (dat_071_00024).l,d0            ; 01A14
+        move.w  (FrontChecksum).l,d0            ; 01A14
         cmpi.l  #$4de8,d0                       ; 01A1A
         beq.b   l_000_01A32                     ; 01A20
         movea.l -$e(a6),a0                      ; 01A22
@@ -2063,9 +2076,9 @@ l_000_01A32:
         move.l  -$8(a6),-(a7)                   ; 01A42
         move.l  a0,-(a7)                        ; 01A46
         move.l  a0,-$e(a6)                      ; 01A48
-        bsr.w   h000+$16BA                      ; 01A4C
+        bsr.w   PutHex                          ; 01A4C
         lea.l   $c(a7),a7                       ; 01A50
-        move.l  #State_03534,(GameState).l      ; 01A54
+        move.l  #StateChecksumError,(GameState).l ; 01A54
         bra.b   l_000_01A6C                     ; 01A5E
 l_000_01A60:
         moveq   #$32,d0                         ; 01A60
@@ -2075,84 +2088,110 @@ l_000_01A60:
 l_000_01A6C:
         unlk    a6                              ; 01A6C
         rts                                     ; 01A6E
-State_01A70:
-        jsr     (sub_004_0006E).l               ; 01A70
+
+;-------------------------------------------------------------------------------
+; StateToMenu - Resets the world, clears GameMode and RecordMode: StateMainMenu.
+;-------------------------------------------------------------------------------
+StateToMenu:
+        jsr     (ResetGame).l                   ; 01A70
         moveq   #$0,d0                          ; 01A76
-        move.b  d0,(dat_071_0027C).l            ; 01A78
-        move.b  d0,(dat_071_00276).l            ; 01A7E
+        move.b  d0,(CodeResult).l               ; 01A78
+        move.b  d0,(GameMode).l                 ; 01A7E
         move.b  d0,(RecordMode).l               ; 01A84
-        lea.l   State_01D30(pc),a0              ; 01A8A
+        lea.l   StateMainMenu(pc),a0            ; 01A8A
         move.l  a0,(GameState).l                ; 01A8E
         rts                                     ; 01A94
-State_01A96:
-        move.w  (dat_071_004A6).l,d0            ; 01A96
+
+;-------------------------------------------------------------------------------
+; StateRestartFade - Esc: waits for the fade out, then StateRestartWait.
+;-------------------------------------------------------------------------------
+StateRestartFade:
+        move.w  (StateTimer).l,d0               ; 01A96
         tst.w   d0                              ; 01A9C
         bpl.b   l_000_01AC2                     ; 01A9E
         move.b  (dat_071_00270).l,d0            ; 01AA0
         move.b  (dat_071_00271).l,d1            ; 01AA6
         cmp.b   d1,d0                           ; 01AAC
         bne.b   l_000_01AC2                     ; 01AAE
-        move.w  #$2,(dat_071_004A6).l           ; 01AB0
-        lea.l   State_01AC4(pc),a0              ; 01AB8
+        move.w  #$2,(StateTimer).l              ; 01AB0
+        lea.l   StateRestartWait(pc),a0         ; 01AB8
         move.l  a0,(GameState).l                ; 01ABC
 l_000_01AC2:
         rts                                     ; 01AC2
-State_01AC4:
-        move.w  (dat_071_004A6).l,d0            ; 01AC4
+
+;-------------------------------------------------------------------------------
+; StateRestartWait - A pause, then StateRestart.
+;-------------------------------------------------------------------------------
+StateRestartWait:
+        move.w  (StateTimer).l,d0               ; 01AC4
         tst.w   d0                              ; 01ACA
         bpl.b   l_000_01AE0                     ; 01ACC
         move.b  #$1,(dat_071_00165).l           ; 01ACE
-        lea.l   State_01AE2(pc),a0               ; 01AD6
+        lea.l   StateRestart(pc),a0             ; 01AD6
         move.l  a0,(GameState).l                ; 01ADA
 l_000_01AE0:
         rts                                     ; 01AE0
-State_01AE2:
+
+;-------------------------------------------------------------------------------
+; StateRestart - Resets the world (ResetGame). The demo starts again (StateDemoStart);
+; otherwise the same choice is flown again (StateMenuChoice; a training demo becomes practice).
+;-------------------------------------------------------------------------------
+StateRestart:
         jsr     (sub_000_015F6).l               ; 01AE2
-        jsr     (sub_004_0006E).l               ; 01AE8
-        move.b  (dat_071_00276).l,d0            ; 01AEE
+        jsr     (ResetGame).l                   ; 01AE8
+        move.b  (GameMode).l,d0                 ; 01AEE
         subq.b  #$2,d0                          ; 01AF4
         bne.b   l_000_01B00                     ; 01AF6
-        move.b  #$7d,(dat_071_00276).l          ; 01AF8
+        move.b  #$7d,(GameMode).l               ; 01AF8
 l_000_01B00:
         move.b  (RecordMode).l,d0               ; 01B00
         subq.b  #$3,d0                          ; 01B06
         bne.b   l_000_01B34                     ; 01B08
         move.b  #$1,(dat_071_0017E).l           ; 01B0A
-        move.w  #$2,(dat_071_004A6).l           ; 01B12
+        move.w  #$2,(StateTimer).l              ; 01B12
         clr.b   (dat_071_00271).l               ; 01B1A
-        move.b  #$7f,(dat_071_00276).l          ; 01B20
-        lea.l   State_01B54(pc),a0               ; 01B28
+        move.b  #$7f,(GameMode).l               ; 01B20
+        lea.l   StateDemoStart(pc),a0           ; 01B28
         move.l  a0,(GameState).l                ; 01B2C
         bra.b   l_000_01B52                     ; 01B32
 l_000_01B34:
         clr.b   (RecordMode).l                  ; 01B34
         pea.l   (dat_021_00000).l               ; 01B3A
-        jsr     (sub_000_03C1C).l               ; 01B40
+        jsr     (SetPalette).l                  ; 01B40
         addq.l  #$4,a7                          ; 01B46
-        lea.l   State_01E04(pc),a0               ; 01B48
+        lea.l   StateMenuChoice(pc),a0          ; 01B48
         move.l  a0,(GameState).l                ; 01B4C
 l_000_01B52:
         rts                                     ; 01B52
-State_01B54:
-        move.w  (dat_071_004A6).l,d0            ; 01B54
+
+;-------------------------------------------------------------------------------
+; StateDemoStart - The demo: replays the recorded flight (RecordMode 3) of mission F1 at
+; difficulty 0 (DemoSetup), fades in, StateDemoFadeIn.
+;-------------------------------------------------------------------------------
+StateDemoStart:
+        move.w  (StateTimer).l,d0               ; 01B54
         tst.w   d0                              ; 01B5A
         bpl.b   l_000_01B94                     ; 01B5C
-        bsr.w   l_000_01BF4                     ; 01B5E
+        bsr.w   DemoSetup                       ; 01B5E
         move.b  #$3,(RecordMode).l              ; 01B62
         moveq   #$0,d0                          ; 01B6A
         move.b  d0,(dat_071_00155).l            ; 01B6C
-        move.w  #$2,(dat_071_004A6).l           ; 01B72
+        move.w  #$2,(StateTimer).l              ; 01B72
         move.b  #$f,(dat_071_00271).l           ; 01B7A
         move.b  d0,(dat_071_00270).l            ; 01B82
-        lea.l   State_01B9C(pc),a0               ; 01B88
+        lea.l   StateDemoFadeIn(pc),a0          ; 01B88
         move.l  a0,(GameState).l                ; 01B8C
         bra.b   l_000_01B9A                     ; 01B92
 l_000_01B94:
-        jsr     (sub_036_00892).l               ; 01B94
+        jsr     (ClearScreen).l                 ; 01B94
 l_000_01B9A:
         rts                                     ; 01B9A
-State_01B9C:
-        move.w  (dat_071_004A6).l,d0            ; 01B9C
+
+;-------------------------------------------------------------------------------
+; StateDemoFadeIn - Waits for the fade, then StateDemoGo.
+;-------------------------------------------------------------------------------
+StateDemoFadeIn:
+        move.w  (StateTimer).l,d0               ; 01B9C
         tst.w   d0                              ; 01BA2
         bpl.b   l_000_01BCE                     ; 01BA4
         clr.b   (dat_071_00165).l               ; 01BA6
@@ -2160,37 +2199,46 @@ State_01B9C:
         move.b  (dat_071_00271).l,d1            ; 01BB2
         cmp.b   d1,d0                           ; 01BB8
         bne.b   l_000_01BCE                     ; 01BBA
-        move.w  #$2,(dat_071_004A6).l           ; 01BBC
-        lea.l   State_01BD0(pc),a0               ; 01BC4
+        move.w  #$2,(StateTimer).l              ; 01BBC
+        lea.l   StateDemoGo(pc),a0              ; 01BC4
         move.l  a0,(GameState).l                ; 01BC8
 l_000_01BCE:
         rts                                     ; 01BCE
-State_01BD0:
-        move.w  (dat_071_004A6).l,d0            ; 01BD0
+
+;-------------------------------------------------------------------------------
+; StateDemoGo - Starts the demo flight: StateReady.
+;-------------------------------------------------------------------------------
+StateDemoGo:
+        move.w  (StateTimer).l,d0               ; 01BD0
         tst.w   d0                              ; 01BD6
         bpl.b   l_000_01BF2                     ; 01BD8
         clr.b   (dat_071_0017E).l               ; 01BDA
         move.b  #$1,(dat_071_00165).l           ; 01BE0
-        lea.l   State_02D58(pc),a0               ; 01BE8
+        lea.l   StateReady(pc),a0               ; 01BE8
         move.l  a0,(GameState).l                ; 01BEC
 l_000_01BF2:
         rts                                     ; 01BF2
-l_000_01BF4:
+
+;-------------------------------------------------------------------------------
+; DemoSetup - The demo's set-up: saves Difficulty and plays at 0, sets up mission F1 (GameMode
+; 3) with its objects, the panel redrawn.
+;-------------------------------------------------------------------------------
+DemoSetup:
         move.b  (Difficulty).l,(DifficultySaved).l ; 01BF4
         moveq   #$0,d0                          ; 01BFE
         move.b  d0,(Difficulty).l               ; 01C00
         moveq   #$4,d0                          ; 01C06
-        move.b  d0,(dat_071_00218).l            ; 01C08
+        move.b  d0,(StartPoint).l               ; 01C08
         subq.b  #$1,d0                          ; 01C0E
-        move.b  d0,(dat_071_00218).l            ; 01C10
+        move.b  d0,(StartPoint).l               ; 01C10
         moveq   #$0,d0                          ; 01C16
-        move.b  d0,(dat_071_0027E).l            ; 01C18
+        move.b  d0,(CameraSequence).l           ; 01C18
         move.b  d0,(dat_071_0017D).l            ; 01C1E
         move.b  #$1,(dat_071_00160).l           ; 01C24
-        jsr     (sub_026_00002).l               ; 01C2C
-        move.b  #$3,(dat_071_00276).l           ; 01C32
+        jsr     (SetupMode).l                   ; 01C2C
+        move.b  #$3,(GameMode).l                ; 01C32
         jsr     (sub_004_00392).l               ; 01C3A
-        bsr.w   h000+$3462                      ; 01C40
+        bsr.w   ClearTextPages                  ; 01C40
         clr.b   (dat_071_0027D).l               ; 01C44
         move.b  #$1,(dat_071_00165).l           ; 01C4A
         moveq   #$0,d0                          ; 01C52
@@ -2198,60 +2246,75 @@ l_000_01BF4:
         move.w  d0,(ViewX).l                    ; 01C5A
         jsr     (RedrawPanel).l                 ; 01C60
         move.b  #$ff,(RedrawFlags).l            ; 01C66
-        move.w  #$1,(dat_071_004A6).l           ; 01C6E
+        move.w  #$1,(StateTimer).l              ; 01C6E
         rts                                     ; 01C76
         move.b  (dat_071_0017E).l,d0            ; 01C78
         tst.b   d0                              ; 01C7E
         bne.b   l_000_01CBE                     ; 01C80
-        move.b  (dat_071_001B0).l,d0            ; 01C82
+        move.b  (TextStatus).l,d0               ; 01C82
         tst.b   d0                              ; 01C88
         bpl.b   l_000_01CBE                     ; 01C8A
         move.b  #$1,(dat_071_00165).l           ; 01C8C
-        bsr.w   h000+$3462                      ; 01C94
+        bsr.w   ClearTextPages                  ; 01C94
         moveq   #$0,d0                          ; 01C98
         move.w  d0,(dat_071_00356).l            ; 01C9A
         move.w  d0,(ViewX).l                    ; 01CA0
         jsr     (RedrawPanel).l                 ; 01CA6
         move.b  #$ff,(RedrawFlags).l            ; 01CAC
-        lea.l   State_02D58(pc),a0               ; 01CB4
+        lea.l   StateReady(pc),a0               ; 01CB4
         move.l  a0,(GameState).l                ; 01CB8
 l_000_01CBE:
         rts                                     ; 01CBE
-State_01CC0:
-        move.w  (dat_071_004A6).l,d0            ; 01CC0
+
+;-------------------------------------------------------------------------------
+; StateQualifyBriefing - Qualification: page $49 (carrier landing qualification), then
+; StateQualifyBriefingWait (or StateReady when restarting).
+;-------------------------------------------------------------------------------
+StateQualifyBriefing:
+        move.w  (StateTimer).l,d0               ; 01CC0
         tst.w   d0                              ; 01CC6
         bpl.b   l_000_01D04                     ; 01CC8
-        move.b  (dat_071_001FB).l,d0            ; 01CCA
+        move.b  (RestartMission).l,d0           ; 01CCA
         tst.b   d0                              ; 01CD0
         bne.b   l_000_01CEE                     ; 01CD2
         clr.b   (dat_071_00165).l               ; 01CD4
-        move.w  #$49,(dat_071_0011A).l          ; 01CDA
-        lea.l   State_01D06(pc),a0               ; 01CE2
+        move.w  #$49,(TextPages).l              ; 01CDA
+        lea.l   StateQualifyBriefingWait(pc),a0 ; 01CE2
         move.l  a0,(GameState).l                ; 01CE6
         bra.b   l_000_01D04                     ; 01CEC
 l_000_01CEE:
         move.b  #$1,(dat_071_00165).l           ; 01CEE
-        bsr.w   h000+$3462                      ; 01CF6
-        lea.l   State_02D58(pc),a0               ; 01CFA
+        bsr.w   ClearTextPages                  ; 01CF6
+        lea.l   StateReady(pc),a0               ; 01CFA
         move.l  a0,(GameState).l                ; 01CFE
 l_000_01D04:
         rts                                     ; 01D04
-State_01D06:
-        move.b  (dat_071_001B0).l,d0            ; 01D06
+
+;-------------------------------------------------------------------------------
+; StateQualifyBriefingWait - Waits for the text or a key, then StateReady.
+;-------------------------------------------------------------------------------
+StateQualifyBriefingWait:
+        move.b  (TextStatus).l,d0               ; 01D06
         tst.b   d0                              ; 01D0C
         bmi.b   l_000_01D18                     ; 01D0E
-        tst.b   (dat_071_00173).l               ; 01D10
+        tst.b   (KeyPressed).l                  ; 01D10
         beq.b   l_000_01D2E                     ; 01D16
 l_000_01D18:
         move.b  #$1,(dat_071_00165).l           ; 01D18
-        bsr.w   h000+$3462                      ; 01D20
-        lea.l   State_02D58(pc),a0               ; 01D24
+        bsr.w   ClearTextPages                  ; 01D20
+        lea.l   StateReady(pc),a0               ; 01D24
         move.l  a0,(GameState).l                ; 01D28
 l_000_01D2E:
         rts                                     ; 01D2E
-State_01D30:
+
+;-------------------------------------------------------------------------------
+; StateMainMenu - Plays the music, clears the screen and queues the main menu: text pages 6 and
+; $64-$6D (1 demo, 2 free flight, 3 training demo, 4 practice, 5 qualification, 6 selectable
+; missions, 7 next advanced mission, 8 flight log, Esc, Shift+Esc); then StateMenuChoice.
+;-------------------------------------------------------------------------------
+StateMainMenu:
         link.w  a6,#$fffc                       ; 01D30
-        move.l  #dat_071_0011A,-$4(a6)          ; 01D34
+        move.l  #TextPages,-$4(a6)              ; 01D34
         move.l  #$1f0000,(dat_071_00038).l      ; 01D3C
         btst    #$7,(dat_071_0052B).l           ; 01D46
         beq.b   l_000_01D64                     ; 01D4E
@@ -2265,14 +2328,14 @@ l_000_01D64:
         jsr     (sub_000_09CE6).l               ; 01D68
         addq.l  #$4,a7                          ; 01D6E
         move.b  #$1,(dat_071_001A7).l           ; 01D70
-        jsr     (sub_036_00892).l               ; 01D78
-        bsr.w   sub_000_03462                   ; 01D7E
+        jsr     (ClearScreen).l                 ; 01D78
+        bsr.w   ClearTextPages                  ; 01D7E
         move.l  #$c000,-(a7)                    ; 01D82
         jsr     (BusyWait).l                    ; 01D88
         addq.l  #$4,a7                          ; 01D8E
         clr.b   (dat_071_0027D).l               ; 01D90
         pea.l   (dat_021_00000).l               ; 01D96
-        jsr     (sub_000_03C1C).l               ; 01D9C
+        jsr     (SetPalette).l                  ; 01D9C
         addq.l  #$4,a7                          ; 01DA2
         move.l  #$1e0,(dat_071_0010E).l         ; 01DA4
         movea.l -$4(a6),a0                      ; 01DAE
@@ -2299,31 +2362,39 @@ l_000_01D64:
         move.w  #$6d,(a0)                       ; 01DEE
         addq.l  #$2,a0                          ; 01DF2
         clr.w   (a0)                            ; 01DF4
-        lea.l   State_01E04(pc),a1              ; 01DF6
+        lea.l   StateMenuChoice(pc),a1          ; 01DF6
         move.l  a1,(GameState).l                ; 01DFA
         unlk    a6                              ; 01E00
         rts                                     ; 01E02
-State_01E04:
+
+;-------------------------------------------------------------------------------
+; StateMenuChoice - Waits for a choice (HandleKey sets GameMode). A flight mode (> 0) shows the
+; chosen line alone (page $65 demo, $66 free flight, $67 training, $68 practice, $69
+; qualification, $6B next mission) and goes to StateFlightSetup; -1 StateMissionList; -2 the
+; flight log page (ShowFlightLog, page $57) and StateFlightLogPage. Esc returns to
+; StateMainMenu.
+;-------------------------------------------------------------------------------
+StateMenuChoice:
         link.w  a6,#$fffa                       ; 01E04
-        move.l  #dat_071_0011A,-$4(a6)          ; 01E08
-        move.b  (dat_071_00276).l,-$5(a6)       ; 01E10
-        tst.b   (dat_071_001FA).l               ; 01E18
+        move.l  #TextPages,-$4(a6)              ; 01E08
+        move.b  (GameMode).l,-$5(a6)            ; 01E10
+        tst.b   (QuitRequest).l                 ; 01E18
         beq.b   l_000_01E44                     ; 01E1E
-        clr.b   (dat_071_001FA).l               ; 01E20
-        move.w  (dat_071_00142).l,d0            ; 01E26
+        clr.b   (QuitRequest).l                 ; 01E20
+        move.w  (TextPageShown).l,d0            ; 01E26
         subq.w  #$6,d0                          ; 01E2C
         beq.w   l_000_01F82                     ; 01E2E
-        bsr.w   h000+$3462                      ; 01E32
-        lea.l   State_01D30(pc),a0               ; 01E36
+        bsr.w   ClearTextPages                  ; 01E32
+        lea.l   StateMainMenu(pc),a0            ; 01E36
         move.l  a0,(GameState).l                ; 01E3A
         bra.w   l_000_01F82                     ; 01E40
 l_000_01E44:
-        move.b  (dat_071_00276).l,d0            ; 01E44
+        move.b  (GameMode).l,d0                 ; 01E44
         tst.b   d0                              ; 01E4A
         ble.w   l_000_01F20                     ; 01E4C
         clr.l   (dat_071_00038).l               ; 01E50
-        bsr.w   h000+$3462                      ; 01E56
-        jsr     (sub_036_00892).l               ; 01E5A
+        bsr.w   ClearTextPages                  ; 01E56
+        jsr     (ClearScreen).l                 ; 01E5A
         cmpi.b  #$7f,-$5(a6)                    ; 01E60
         bne.b   l_000_01E76                     ; 01E66
         movea.l -$4(a6),a0                      ; 01E68
@@ -2359,67 +2430,73 @@ l_000_01EB8:
         addq.l  #$2,-$4(a6)                     ; 01EC8
         bra.b   l_000_01EE8                     ; 01ECC
 l_000_01ECE:
-        tst.b   (dat_071_00162).l               ; 01ECE
+        tst.b   (MenuOption).l                  ; 01ECE
         beq.b   l_000_01EE8                     ; 01ED4
         movea.l -$4(a6),a0                      ; 01ED6
         move.w  #$6b,(a0)                       ; 01EDA
         addq.l  #$2,-$4(a6)                     ; 01EDE
-        clr.b   (dat_071_00162).l               ; 01EE2
+        clr.b   (MenuOption).l                  ; 01EE2
 l_000_01EE8:
         movea.l -$4(a6),a0                      ; 01EE8
         clr.w   (a0)                            ; 01EEC
-        move.b  (dat_071_001FB).l,d0            ; 01EEE
+        move.b  (RestartMission).l,d0           ; 01EEE
         tst.b   d0                              ; 01EF4
         bne.b   l_000_01F0C                     ; 01EF6
         btst    #$7,(dat_071_0052B).l           ; 01EF8
         beq.b   l_000_01F0C                     ; 01F00
-        move.w  #$d2,(dat_071_004A6).l          ; 01F02
+        move.w  #$d2,(StateTimer).l             ; 01F02
         bra.b   l_000_01F14                     ; 01F0A
 l_000_01F0C:
-        move.w  #$96,(dat_071_004A6).l          ; 01F0C
+        move.w  #$96,(StateTimer).l             ; 01F0C
 l_000_01F14:
-        lea.l   State_0201E(pc),a0               ; 01F14
+        lea.l   StateFlightSetup(pc),a0         ; 01F14
         move.l  a0,(GameState).l                ; 01F18
         bra.b   l_000_01F82                     ; 01F1E
 l_000_01F20:
-        move.b  (dat_071_00276).l,d0            ; 01F20
+        move.b  (GameMode).l,d0                 ; 01F20
         tst.b   d0                              ; 01F26
         bpl.b   l_000_01F7C                     ; 01F28
-        bsr.w   h000+$3462                      ; 01F2A
-        jsr     (sub_036_00892).l               ; 01F2E
-        move.b  (dat_071_00276).l,d0            ; 01F34
+        bsr.w   ClearTextPages                  ; 01F2A
+        jsr     (ClearScreen).l                 ; 01F2E
+        move.b  (GameMode).l,d0                 ; 01F34
         cmpi.b  #$ff,d0                         ; 01F3A
         bne.b   l_000_01F4C                     ; 01F3E
-        lea.l   State_022CE(pc),a0               ; 01F40
+        lea.l   StateMissionList(pc),a0         ; 01F40
         move.l  a0,(GameState).l                ; 01F44
         bra.b   l_000_01F74                     ; 01F4A
 l_000_01F4C:
-        jsr     (sub_036_00892).l               ; 01F4C
+        jsr     (ClearScreen).l                 ; 01F4C
         jsr     (ShowFlightLog).l               ; 01F52
         movea.l -$4(a6),a0                      ; 01F58
         move.w  #$57,(a0)                       ; 01F5C
         addq.l  #$2,-$4(a6)                     ; 01F60
         movea.l -$4(a6),a0                      ; 01F64
         clr.w   (a0)                            ; 01F68
-        lea.l   State_01F86(pc),a0               ; 01F6A
+        lea.l   StateFlightLogPage(pc),a0       ; 01F6A
         move.l  a0,(GameState).l                ; 01F6E
 l_000_01F74:
-        clr.b   (dat_071_00276).l               ; 01F74
+        clr.b   (GameMode).l                    ; 01F74
         bra.b   l_000_01F82                     ; 01F7A
 l_000_01F7C:
-        clr.b   (dat_071_001FA).l               ; 01F7C
+        clr.b   (QuitRequest).l                 ; 01F7C
 l_000_01F82:
         unlk    a6                              ; 01F82
         rts                                     ; 01F84
-State_01F86:
-        tst.b   (dat_071_00162).l               ; 01F86
+
+;-------------------------------------------------------------------------------
+; StateFlightLogPage - The flight log page: MenuOption 1 saves the log (SaveConfig) and on a
+; first tour goes back to StateLogDisk; 2 clears it (ClearConfig) and shows it again; Esc,
+; StateMainMenu.
+;-------------------------------------------------------------------------------
+StateFlightLogPage:
+        tst.b   (MenuOption).l                  ; 01F86
         beq.b   l_000_02004                     ; 01F8C
-        move.b  (dat_071_00162).l,d0            ; 01F8E
+        move.b  (MenuOption).l,d0               ; 01F8E
         subq.b  #$1,d0                          ; 01F94
         bne.b   l_000_01FD4                     ; 01F96
         tst.b   (dat_071_00195).l               ; 01F98
         beq.b   l_000_01FFC                     ; 01F9E
-        move.w  (dat_071_002F8).l,d0            ; 01FA0
+        move.w  (LogDiskStatus).l,d0            ; 01FA0
         tst.w   d0                              ; 01FA6
         bne.b   l_000_01FFC                     ; 01FA8
         jsr     (SaveConfig).l                  ; 01FAA
@@ -2428,33 +2505,41 @@ State_01F86:
         move.w  $4(a0),d0                       ; 01FBE
         cmpi.w  #$1,d0                          ; 01FC2
         bhi.b   l_000_01FFC                     ; 01FC6
-        move.l  #State_03622,(GameState).l      ; 01FC8
+        move.l  #StateLogDisk,(GameState).l     ; 01FC8
         bra.b   l_000_01FFC                     ; 01FD2
 l_000_01FD4:
-        move.b  (dat_071_00162).l,d0            ; 01FD4
+        move.b  (MenuOption).l,d0               ; 01FD4
         subq.b  #$2,d0                          ; 01FDA
         bne.b   l_000_01FFC                     ; 01FDC
         jsr     (ClearConfig).l                 ; 01FDE
-        bsr.w   h000+$3462                      ; 01FE4
-        jsr     (sub_036_00892).l               ; 01FE8
+        bsr.w   ClearTextPages                  ; 01FE4
+        jsr     (ClearScreen).l                 ; 01FE8
         jsr     (ShowFlightLog).l               ; 01FEE
-        move.w  #$57,(dat_071_0011A).l          ; 01FF4
+        move.w  #$57,(TextPages).l              ; 01FF4
 l_000_01FFC:
-        clr.b   (dat_071_00162).l               ; 01FFC
+        clr.b   (MenuOption).l                  ; 01FFC
         bra.b   l_000_02016                     ; 02002
 l_000_02004:
-        tst.b   (dat_071_001FA).l               ; 02004
+        tst.b   (QuitRequest).l                 ; 02004
         beq.b   l_000_02016                     ; 0200A
-        lea.l   State_01D30(pc),a0               ; 0200C
+        lea.l   StateMainMenu(pc),a0            ; 0200C
         move.l  a0,(GameState).l                ; 02010
 l_000_02016:
-        clr.b   (dat_071_00276).l               ; 02016
+        clr.b   (GameMode).l                    ; 02016
         rts                                     ; 0201C
-State_0201E:
+
+;-------------------------------------------------------------------------------
+; StateFlightSetup - When StateTimer runs out: stops the sounds, starts the engine sound, sets
+; 3 aircraft (AircraftLeft) and 3 tries at the security code (CodeTries), sets up the world for
+; the mode (SetupMode) and branches by GameMode: demo StateDemoStart; free flight (5 aircraft)
+; and qualification StateFadeIn; training demo (watching the instructor, object 4) and practice
+; StateTrainingFadeIn; missions F1-F6 StateBriefingFade.
+;-------------------------------------------------------------------------------
+StateFlightSetup:
         link.w  a6,#$fffe                       ; 0201E
-        move.b  (dat_071_00276).l,d0            ; 02022
+        move.b  (GameMode).l,d0                 ; 02022
         ext.w   d0                              ; 02028
-        move.w  (dat_071_004A6).l,d1            ; 0202A
+        move.w  (StateTimer).l,d1               ; 0202A
         move.w  d0,-$2(a6)                      ; 02030
         tst.w   d1                              ; 02034
         bpl.w   l_000_022CA                     ; 02036
@@ -2493,20 +2578,20 @@ l_000_02096:
         addq.l  #$8,a7                          ; 020A6
 l_000_020A8:
         move.w  #$b3,(ClipY).l                  ; 020A8
-        bsr.w   h000+$3462                      ; 020B0
-        move.w  #$4,(dat_071_004A6).l           ; 020B4
-        move.b  #$3,(dat_071_00267).l           ; 020BC
-        move.b  #$2,(dat_071_00268).l           ; 020C4
-        jsr     (sub_026_00002).l               ; 020CC
+        bsr.w   ClearTextPages                  ; 020B0
+        move.w  #$4,(StateTimer).l              ; 020B4
+        move.b  #$3,(AircraftLeft).l            ; 020BC
+        move.b  #$2,(CodeTries).l               ; 020C4
+        jsr     (SetupMode).l                   ; 020CC
         clr.b   (dat_071_0017E).l               ; 020D2
         move.b  #$1,(dat_071_00165).l           ; 020D8
         move.b  #$3,(dat_071_00206).l           ; 020E0
         move.b  (dat_071_00270).l,(dat_071_00271).l ; 020E8
-        jsr     (sub_000_03C5E).l               ; 020F2
-        lea.l   State_02534(pc),a0               ; 020F8
+        jsr     (BlackPalette).l                ; 020F2
+        lea.l   StateBriefingFade(pc),a0        ; 020F8
         move.l  a0,(GameState).l                ; 020FC
-        move.b  #$3,(dat_071_00218).l           ; 02102
-        move.b  #$11,(dat_071_00219).l          ; 0210A
+        move.b  #$3,(StartPoint).l              ; 02102
+        move.b  #$11,(PlayerAircraftType).l     ; 0210A
         moveq   #$0,d0                          ; 02112
         move.w  -$2(a6),d0                      ; 02114
         moveq   #$30,d1                         ; 02118
@@ -2530,13 +2615,13 @@ l_000_0211A:
         bra.w   l_000_0215E                     ; 0215A
 l_000_0215E:
         move.b  #$1,(dat_071_0017E).l           ; 0215E
-        lea.l   State_01B54(pc),a0               ; 02166
+        lea.l   StateDemoStart(pc),a0           ; 02166
         move.l  a0,(GameState).l                ; 0216A
         bra.w   l_000_022B2                     ; 02170
 l_000_02174:
         jsr     (sub_004_00268).l               ; 02174
-        move.b  #$5,(dat_071_00267).l           ; 0217A
-        lea.l   State_0234C(pc),a0               ; 02182
+        move.b  #$5,(AircraftLeft).l            ; 0217A
+        lea.l   StateFadeIn(pc),a0              ; 02182
         move.l  a0,(GameState).l                ; 02186
         bra.w   l_000_022B2                     ; 0218C
 l_000_02190:
@@ -2547,7 +2632,7 @@ l_000_02190:
         move.b  d0,(dat_071_0017D).l            ; 021A8
         moveq   #$1,d0                          ; 021AE
         move.b  d0,(dat_071_00155).l            ; 021B0
-        clr.b   (dat_071_0027E).l               ; 021B6
+        clr.b   (CameraSequence).l              ; 021B6
         move.b  d0,(dat_071_00185).l            ; 021BC
         move.w  #$4,(dat_071_002AC).l           ; 021C2
         move.w  #$800,(ViewObject).l            ; 021CA
@@ -2555,34 +2640,34 @@ l_000_02190:
         move.w  (Object4_02).l,d0               ; 021DA
         ori.w   #$100,d0                        ; 021E0
         move.w  d0,(Object4_02).l               ; 021E4
-        lea.l   State_023C2(pc),a0               ; 021EA
+        lea.l   StateTrainingFadeIn(pc),a0      ; 021EA
         move.l  a0,(GameState).l                ; 021EE
         bra.w   l_000_022B2                     ; 021F4
 l_000_021F8:
-        clr.b   (dat_071_00218).l               ; 021F8
+        clr.b   (StartPoint).l                  ; 021F8
         bra.w   l_000_022B2                     ; 021FE
 l_000_02202:
-        move.b  #$1,(dat_071_00267).l           ; 02202
+        move.b  #$1,(AircraftLeft).l            ; 02202
         move.w  #$a7,(ClipY).l                  ; 0220A
         move.b  #$ff,(dat_071_00184).l          ; 02212
         move.b  #$3,(dat_071_00186).l           ; 0221A
-        move.b  #$2,(dat_071_00218).l           ; 02222
-        bsr.w   l_000_02CE0                     ; 0222A
+        move.b  #$2,(StartPoint).l              ; 02222
+        bsr.w   PlaceAircraft                   ; 0222A
         jsr     (sub_026_00D7A).l               ; 0222E
         jsr     (sub_004_00290).l               ; 02234
-        jsr     (sub_026_00002).l               ; 0223A
+        jsr     (SetupMode).l                   ; 0223A
         clr.b   (dat_071_0017D).l               ; 02240
-        lea.l   State_023C2(pc),a0               ; 02246
+        lea.l   StateTrainingFadeIn(pc),a0      ; 02246
         move.l  a0,(GameState).l                ; 0224A
         bra.b   l_000_022B2                     ; 02250
 l_000_02252:
-        move.b  #$3,(dat_071_00218).l           ; 02252
+        move.b  #$3,(StartPoint).l              ; 02252
         moveq   #$0,d0                          ; 0225A
-        move.b  d0,(dat_071_0027E).l            ; 0225C
+        move.b  d0,(CameraSequence).l           ; 0225C
         move.b  d0,(dat_071_0017D).l            ; 02262
-        jsr     (sub_026_00002).l               ; 02268
+        jsr     (SetupMode).l                   ; 02268
         jsr     (sub_004_00392).l               ; 0226E
-        bsr.w   h000+$3462                      ; 02274
+        bsr.w   ClearTextPages                  ; 02274
         moveq   #$1,d0                          ; 02278
         move.b  d0,(dat_071_0027D).l            ; 0227A
         move.b  d0,(dat_071_00165).l            ; 02280
@@ -2592,22 +2677,27 @@ l_000_02252:
         jsr     (RedrawPanel).l                 ; 02294
         move.b  #$ff,(RedrawFlags).l            ; 0229A
         clr.b   (dat_071_00155).l               ; 022A2
-        lea.l   State_0234C(pc),a0               ; 022A8
+        lea.l   StateFadeIn(pc),a0              ; 022A8
         move.l  a0,(GameState).l                ; 022AC
 l_000_022B2:
-        move.b  (dat_071_00218).l,d0            ; 022B2
+        move.b  (StartPoint).l,d0               ; 022B2
         subq.b  #$3,d0                          ; 022B8
         bne.b   l_000_022C4                     ; 022BA
-        move.b  #$11,(dat_071_00219).l          ; 022BC
+        move.b  #$11,(PlayerAircraftType).l     ; 022BC
 l_000_022C4:
         jsr     (sub_008_00598).l               ; 022C4
 l_000_022CA:
         unlk    a6                              ; 022CA
         rts                                     ; 022CC
-State_022CE:
+
+;-------------------------------------------------------------------------------
+; StateMissionList - The selectable missions page: page $40 and a line ($4D-$51, F2-F6) for
+; each mission the log has flown (ConfigBuffer+$12+mode), then StateMenuChoice for F1-F6.
+;-------------------------------------------------------------------------------
+StateMissionList:
         link.w  a6,#$fff6                       ; 022CE
-        jsr     (sub_036_00892).l               ; 022D2
-        lea.l   (dat_071_0011A).l,a0            ; 022D8
+        jsr     (ClearScreen).l                 ; 022D2
+        lea.l   (TextPages).l,a0                ; 022D8
         move.w  #$40,(a0)                       ; 022DE
         addq.l  #$2,a0                          ; 022E2
         move.l  #dat_064_00000,-$8(a6)          ; 022E4
@@ -2638,51 +2728,67 @@ l_000_0232C:
         addq.l  #$2,-$4(a6)                     ; 02334
         movea.l -$4(a6),a0                      ; 02338
         clr.w   (a0)                            ; 0233C
-        lea.l   State_01E04(pc),a0              ; 0233E
+        lea.l   StateMenuChoice(pc),a0          ; 0233E
         move.l  a0,(GameState).l                ; 02342
         unlk    a6                              ; 02348
         rts                                     ; 0234A
-State_0234C:
-        move.w  (dat_071_004A6).l,d0            ; 0234C
+
+;-------------------------------------------------------------------------------
+; StateFadeIn - Free flight and qualification: starts the fade in, StateFadeInWait.
+;-------------------------------------------------------------------------------
+StateFadeIn:
+        move.w  (StateTimer).l,d0               ; 0234C
         tst.w   d0                              ; 02352
         bpl.b   l_000_02376                     ; 02354
         moveq   #$0,d0                          ; 02356
         move.b  d0,(dat_071_00165).l            ; 02358
         move.b  #$f,(dat_071_00271).l           ; 0235E
         move.b  d0,(dat_071_00270).l            ; 02366
-        lea.l   State_02378(pc),a0               ; 0236C
+        lea.l   StateFadeInWait(pc),a0          ; 0236C
         move.l  a0,(GameState).l                ; 02370
 l_000_02376:
         rts                                     ; 02376
-State_02378:
+
+;-------------------------------------------------------------------------------
+; StateFadeInWait - When faded in: CameraSequence 4 and StateSecurityCheck.
+;-------------------------------------------------------------------------------
+StateFadeInWait:
         move.b  (dat_071_00270).l,d0            ; 02378
         move.b  (dat_071_00271).l,d1            ; 0237E
         cmp.b   d1,d0                           ; 02384
         bne.b   l_000_023C0                     ; 02386
-        move.w  #$2,(dat_071_004A6).l           ; 02388
+        move.w  #$2,(StateTimer).l              ; 02388
         moveq   #$1,d0                          ; 02390
         move.b  d0,(dat_071_00165).l            ; 02392
         move.b  #$ff,(RedrawFlags).l            ; 02398
-        move.b  #$4,(dat_071_0027E).l           ; 023A0
+        move.b  #$4,(CameraSequence).l          ; 023A0
         move.b  d0,(dat_071_0027D).l            ; 023A8
-        move.w  #$5,(dat_071_004A6).l           ; 023AE
-        lea.l   State_027C8(pc),a0               ; 023B6
+        move.w  #$5,(StateTimer).l              ; 023AE
+        lea.l   StateSecurityCheck(pc),a0       ; 023B6
         move.l  a0,(GameState).l                ; 023BA
 l_000_023C0:
         rts                                     ; 023C0
-State_023C2:
-        move.w  (dat_071_004A6).l,d0            ; 023C2
+
+;-------------------------------------------------------------------------------
+; StateTrainingFadeIn - Training demo and practice: starts the fade in.
+;-------------------------------------------------------------------------------
+StateTrainingFadeIn:
+        move.w  (StateTimer).l,d0               ; 023C2
         tst.w   d0                              ; 023C8
         bpl.b   l_000_023EC                     ; 023CA
         moveq   #$0,d0                          ; 023CC
         move.b  d0,(dat_071_00165).l            ; 023CE
         move.b  #$f,(dat_071_00271).l           ; 023D4
         move.b  d0,(dat_071_00270).l            ; 023DC
-        lea.l   State_023EE(pc),a0               ; 023E2
+        lea.l   StateTrainingFadeInWait(pc),a0  ; 023E2
         move.l  a0,(GameState).l                ; 023E6
 l_000_023EC:
         rts                                     ; 023EC
-State_023EE:
+
+;-------------------------------------------------------------------------------
+; StateTrainingFadeInWait - When faded in: StateSecurityCheck.
+;-------------------------------------------------------------------------------
+StateTrainingFadeInWait:
         move.b  (dat_071_00270).l,d0            ; 023EE
         move.b  (dat_071_00271).l,d1            ; 023F4
         cmp.b   d1,d0                           ; 023FA
@@ -2691,33 +2797,42 @@ State_023EE:
         move.b  d0,(dat_071_00165).l            ; 02400
         move.b  #$ff,(RedrawFlags).l            ; 02406
         move.b  d0,(dat_071_0027D).l            ; 0240E
-        move.w  #$5,(dat_071_004A6).l           ; 02414
-        lea.l   State_027C8(pc),a0               ; 0241C
+        move.w  #$5,(StateTimer).l              ; 02414
+        lea.l   StateSecurityCheck(pc),a0       ; 0241C
         move.l  a0,(GameState).l                ; 02420
 l_000_02426:
         rts                                     ; 02426
-State_02428:
+
+;-------------------------------------------------------------------------------
+; StateTraining - After the security check: StateTrainingText.
+;-------------------------------------------------------------------------------
+StateTraining:
         moveq   #$1,d0                          ; 02428
         move.b  d0,(dat_071_00165).l            ; 0242A
         move.b  #$ff,(RedrawFlags).l            ; 02430
         move.b  d0,(dat_071_0027D).l            ; 02438
-        move.w  #$5,(dat_071_004A6).l           ; 0243E
-        lea.l   State_02452(pc),a0               ; 02446
+        move.w  #$5,(StateTimer).l              ; 0243E
+        lea.l   StateTrainingText(pc),a0        ; 02446
         move.l  a0,(GameState).l                ; 0244A
         rts                                     ; 02450
-State_02452:
+
+;-------------------------------------------------------------------------------
+; StateTrainingText - Shows Basic flight maneuvers part 1 (page 9, training demo) or part 2
+; (page $A, practice), then StateTrainingStart.
+;-------------------------------------------------------------------------------
+StateTrainingText:
         link.w  a6,#$fffc                       ; 02452
-        move.l  #dat_071_0011A,-$4(a6)          ; 02456
-        tst.b   (dat_071_00173).l               ; 0245E
+        move.l  #TextPages,-$4(a6)              ; 02456
+        tst.b   (KeyPressed).l                  ; 0245E
         beq.b   l_000_0246A                     ; 02464
         bsr.b   l_000_024B2                     ; 02466
         bra.b   l_000_024AE                     ; 02468
 l_000_0246A:
-        move.w  (dat_071_004A6).l,d0            ; 0246A
+        move.w  (StateTimer).l,d0               ; 0246A
         tst.w   d0                              ; 02470
         bpl.b   l_000_024AE                     ; 02472
         clr.b   (dat_071_00165).l               ; 02474
-        move.b  (dat_071_00276).l,d0            ; 0247A
+        move.b  (GameMode).l,d0                 ; 0247A
         subq.b  #$2,d0                          ; 02480
         bne.b   l_000_02492                     ; 02482
         movea.l -$4(a6),a0                      ; 02484
@@ -2730,56 +2845,69 @@ l_000_02492:
         addq.l  #$2,-$4(a6)                     ; 0249A
         clr.b   (dat_071_0027D).l               ; 0249E
 l_000_024A4:
-        lea.l   State_024B2(pc),a0               ; 024A4
+        lea.l   StateTrainingStart(pc),a0       ; 024A4
         move.l  a0,(GameState).l                ; 024A8
 l_000_024AE:
         unlk    a6                              ; 024AE
         rts                                     ; 024B0
 l_000_024B2:
-State_024B2:
-        move.b  (dat_071_001B0).l,d0            ; 024B2
+
+;-------------------------------------------------------------------------------
+; StateTrainingStart - When the text is read: practice goes to StateReady in the cockpit
+; (CameraSequence 6), the training demo to StateReadyText.
+;-------------------------------------------------------------------------------
+StateTrainingStart:
+        move.b  (TextStatus).l,d0               ; 024B2
         tst.b   d0                              ; 024B8
         bmi.b   l_000_024C4                     ; 024BA
-        tst.b   (dat_071_00173).l               ; 024BC
+        tst.b   (KeyPressed).l                  ; 024BC
         beq.b   l_000_02532                     ; 024C2
 l_000_024C4:
         move.b  #$1,(dat_071_00165).l           ; 024C4
         move.b  #$ff,(RedrawFlags).l            ; 024CC
-        bsr.w   h000+$3462                      ; 024D4
+        bsr.w   ClearTextPages                  ; 024D4
         moveq   #$1,d0                          ; 024D8
         move.b  d0,(dat_071_00184).l            ; 024DA
         move.b  d0,(dat_071_00185).l            ; 024E0
         clr.b   (dat_071_0027D).l               ; 024E6
-        move.b  (dat_071_00276).l,d0            ; 024EC
+        move.b  (GameMode).l,d0                 ; 024EC
         cmpi.b  #$7d,d0                         ; 024F2
         bne.b   l_000_0250C                     ; 024F6
-        move.b  #$6,(dat_071_0027E).l           ; 024F8
-        lea.l   State_02D58(pc),a0               ; 02500
+        move.b  #$6,(CameraSequence).l          ; 024F8
+        lea.l   StateReady(pc),a0               ; 02500
         move.l  a0,(GameState).l                ; 02504
         bra.b   l_000_02532                     ; 0250A
 l_000_0250C:
         move.b  #$3,(dat_071_00206).l           ; 0250C
         clr.w   (dat_073_0162A).l               ; 02514
         clr.b   (dat_071_00158).l               ; 0251A
-        move.w  #$5,(dat_071_004A6).l           ; 02520
-        lea.l   State_02DB8(pc),a0               ; 02528
+        move.w  #$5,(StateTimer).l              ; 02520
+        lea.l   StateReadyText(pc),a0           ; 02528
         move.l  a0,(GameState).l                ; 0252C
 l_000_02532:
         rts                                     ; 02532
-State_02534:
+
+;-------------------------------------------------------------------------------
+; StateBriefingFade - A mission (F1-F6): starts the fade in, StateBriefingFadeWait.
+;-------------------------------------------------------------------------------
+StateBriefingFade:
         move.b  #$1,(dat_071_0027D).l           ; 02534
-        move.w  (dat_071_004A6).l,d0            ; 0253C
+        move.w  (StateTimer).l,d0               ; 0253C
         tst.w   d0                              ; 02542
         bpl.b   l_000_02566                     ; 02544
         moveq   #$0,d0                          ; 02546
         move.b  d0,(dat_071_00165).l            ; 02548
         move.b  #$f,(dat_071_00271).l           ; 0254E
         move.b  d0,(dat_071_00270).l            ; 02556
-        lea.l   State_02568(pc),a0               ; 0255C
+        lea.l   StateBriefingFadeWait(pc),a0    ; 0255C
         move.l  a0,(GameState).l                ; 02560
 l_000_02566:
         rts                                     ; 02566
-State_02568:
+
+;-------------------------------------------------------------------------------
+; StateBriefingFadeWait - When faded in: StateBriefingIntro.
+;-------------------------------------------------------------------------------
+StateBriefingFadeWait:
         move.b  (dat_071_00270).l,d0            ; 02568
         move.b  (dat_071_00271).l,d1            ; 0256E
         cmp.b   d1,d0                           ; 02574
@@ -2789,70 +2917,79 @@ State_02568:
         move.b  #$ff,(RedrawFlags).l            ; 02580
         move.b  d0,(dat_071_0017D).l            ; 02588
         move.b  d0,(dat_071_00227).l            ; 0258E
-        move.w  #$9,(dat_071_004A6).l           ; 02594
-        lea.l   State_025A8(pc),a0               ; 0259C
+        move.w  #$9,(StateTimer).l              ; 02594
+        lea.l   StateBriefingIntro(pc),a0       ; 0259C
         move.l  a0,(GameState).l                ; 025A0
 l_000_025A6:
         rts                                     ; 025A6
-State_025A8:
+
+;-------------------------------------------------------------------------------
+; StateBriefingIntro - A pause before the briefing; a key skips to StateFlyByStart.
+;-------------------------------------------------------------------------------
+StateBriefingIntro:
         move.b  (dat_071_00166).l,d0            ; 025A8
-        move.b  (dat_071_00173).l,d1            ; 025AE
+        move.b  (KeyPressed).l,d1               ; 025AE
         or.b    d1,d0                           ; 025B4
         move.b  d0,(dat_071_00166).l            ; 025B6
-        move.b  (dat_071_001FB).l,d0            ; 025BC
+        move.b  (RestartMission).l,d0           ; 025BC
         tst.b   d0                              ; 025C2
         bne.b   l_000_025EE                     ; 025C4
-        tst.b   (dat_071_00173).l               ; 025C6
+        tst.b   (KeyPressed).l                  ; 025C6
         beq.b   l_000_025EE                     ; 025CC
         move.b  #$1,(dat_071_00165).l           ; 025CE
-        bsr.w   h000+$3462                      ; 025D6
-        move.w  #$ffff,(dat_071_004A6).l        ; 025DA
-        lea.l   State_02744(pc),a0               ; 025E2
+        bsr.w   ClearTextPages                  ; 025D6
+        move.w  #$ffff,(StateTimer).l           ; 025DA
+        lea.l   StateFlyByStart(pc),a0          ; 025E2
         move.l  a0,(GameState).l                ; 025E6
         bra.b   l_000_02610                     ; 025EC
 l_000_025EE:
-        move.w  (dat_071_004A6).l,d0            ; 025EE
+        move.w  (StateTimer).l,d0               ; 025EE
         tst.w   d0                              ; 025F4
         bpl.b   l_000_02610                     ; 025F6
         clr.b   (dat_071_00227).l               ; 025F8
-        move.w  #$1,(dat_071_004A6).l           ; 025FE
-        lea.l   State_02612(pc),a0               ; 02606
+        move.w  #$1,(StateTimer).l              ; 025FE
+        lea.l   StateBriefing(pc),a0            ; 02606
         move.l  a0,(GameState).l                ; 0260A
 l_000_02610:
         rts                                     ; 02610
-State_02612:
+
+;-------------------------------------------------------------------------------
+; StateBriefing - The mission briefing: page $5B (NORAD strategic command) and the mission's
+; own text (group mode, first or repeat flight); then StateBriefingWait.
+;-------------------------------------------------------------------------------
+StateBriefing:
         link.w  a6,#$fffe                       ; 02612
         movem.l d2,-(a7)                        ; 02616
         moveq   #$0,d0                          ; 0261A
         move.b  d0,(dat_071_0017E).l            ; 0261C
         move.b  (dat_071_00166).l,d0            ; 02622
-        move.b  (dat_071_00173).l,d1            ; 02628
+        move.b  (KeyPressed).l,d1               ; 02628
         or.b    d1,d0                           ; 0262E
         move.b  d0,(dat_071_00166).l            ; 02630
-        move.b  (dat_071_001FB).l,d0            ; 02636
+        move.b  (RestartMission).l,d0           ; 02636
         tst.b   d0                              ; 0263C
         bne.b   l_000_0266A                     ; 0263E
-        tst.b   (dat_071_00173).l               ; 02640
+        tst.b   (KeyPressed).l                  ; 02640
         beq.b   l_000_0266A                     ; 02646
         move.b  #$1,(dat_071_00165).l           ; 02648
-        bsr.w   h000+$3462                      ; 02650
-        move.w  #$ffff,(dat_071_004A6).l        ; 02654
-        lea.l   State_02744(pc),a0               ; 0265C
+        bsr.w   ClearTextPages                  ; 02650
+        move.w  #$ffff,(StateTimer).l           ; 02654
+        lea.l   StateFlyByStart(pc),a0          ; 0265C
         move.l  a0,(GameState).l                ; 02660
         bra.w   l_000_026EE                     ; 02666
 l_000_0266A:
-        move.w  (dat_071_004A6).l,d0            ; 0266A
+        move.w  (StateTimer).l,d0               ; 0266A
         tst.w   d0                              ; 02670
         bpl.b   l_000_026EE                     ; 02672
         clr.b   (dat_071_00165).l               ; 02674
-        move.b  (dat_071_00276).l,d0            ; 0267A
+        move.b  (GameMode).l,d0                 ; 0267A
         ext.w   d0                              ; 02680
         move.w  d0,-$2(a6)                      ; 02682
         cmpi.w  #$3,d0                          ; 02686
         bcs.b   l_000_026E4                     ; 0268A
         cmpi.w  #$8,d0                          ; 0268C
         bhi.b   l_000_026E4                     ; 02690
-        move.w  #$5b,(dat_071_0011A).l          ; 02692
+        move.w  #$5b,(TextPages).l              ; 02692
         moveq   #$0,d1                          ; 0269A
         move.w  -$2(a6),d1                      ; 0269C
         movea.l (ConfigBuffer).l,a0             ; 026A0
@@ -2867,7 +3004,7 @@ l_000_0266A:
         moveq   #$1,d0                          ; 026BA
         move.l  d0,-(a7)                        ; 026BC
         move.l  d1,-(a7)                        ; 026BE
-        jsr     (sub_020_001F4).l               ; 026C0
+        jsr     (SetTextPage).l                 ; 026C0
         lea.l   $c(a7),a7                       ; 026C6
         bra.b   l_000_026E4                     ; 026CA
 l_000_026CC:
@@ -2877,87 +3014,110 @@ l_000_026CC:
         move.l  d1,-(a7)                        ; 026D4
         move.l  d1,-(a7)                        ; 026D6
         move.l  d0,-(a7)                        ; 026D8
-        jsr     (sub_020_001F4).l               ; 026DA
+        jsr     (SetTextPage).l                 ; 026DA
         lea.l   $c(a7),a7                       ; 026E0
 l_000_026E4:
-        lea.l   State_026F6(pc),a0               ; 026E4
+        lea.l   StateBriefingWait(pc),a0        ; 026E4
         move.l  a0,(GameState).l                ; 026E8
 l_000_026EE:
         movem.l (a7)+,d2                        ; 026EE
         unlk    a6                              ; 026F2
         rts                                     ; 026F4
-State_026F6:
-        move.b  (dat_071_001B0).l,d0            ; 026F6
+
+;-------------------------------------------------------------------------------
+; StateBriefingWait - Waits for the text or a key, then StateFlyByStart.
+;-------------------------------------------------------------------------------
+StateBriefingWait:
+        move.b  (TextStatus).l,d0               ; 026F6
         tst.b   d0                              ; 026FC
         bmi.b   l_000_02708                     ; 026FE
-        tst.b   (dat_071_00173).l               ; 02700
+        tst.b   (KeyPressed).l                  ; 02700
         beq.b   l_000_02742                     ; 02706
 l_000_02708:
         move.b  (dat_071_00166).l,d0            ; 02708
-        move.b  (dat_071_00173).l,d1            ; 0270E
+        move.b  (KeyPressed).l,d1               ; 0270E
         or.b    d1,d0                           ; 02714
         move.b  d0,(dat_071_00166).l            ; 02716
         move.b  #$1,(dat_071_00165).l           ; 0271C
-        bsr.w   h000+$3462                      ; 02724
-        move.w  #$ffff,(dat_071_004A6).l        ; 02728
+        bsr.w   ClearTextPages                  ; 02724
+        move.w  #$ffff,(StateTimer).l           ; 02728
         move.b  #$3,(dat_071_00206).l           ; 02730
-        lea.l   State_02744(pc),a0               ; 02738
+        lea.l   StateFlyByStart(pc),a0          ; 02738
         move.l  a0,(GameState).l                ; 0273C
 l_000_02742:
         rts                                     ; 02742
-State_02744:
-        move.w  (dat_071_004A6).l,d0            ; 02744
+
+;-------------------------------------------------------------------------------
+; StateFlyByStart - Starts the camera's fly-by of the mission scene (FlyBySetup).
+;-------------------------------------------------------------------------------
+StateFlyByStart:
+        move.w  (StateTimer).l,d0               ; 02744
         tst.w   d0                              ; 0274A
         bpl.b   l_000_02774                     ; 0274C
         moveq   #$1,d0                          ; 0274E
         move.b  d0,(dat_071_0017D).l            ; 02750
         move.b  d0,(dat_071_00227).l            ; 02756
-        move.w  #$1,(dat_071_004A6).l           ; 0275C
-        jsr     (sub_026_00C48).l               ; 02764
-        lea.l   State_02776(pc),a0               ; 0276A
+        move.w  #$1,(StateTimer).l              ; 0275C
+        jsr     (FlyBySetup).l                  ; 02764
+        lea.l   StateFlyBy(pc),a0               ; 0276A
         move.l  a0,(GameState).l                ; 0276E
 l_000_02774:
         rts                                     ; 02774
-State_02776:
-        move.w  (dat_071_004A6).l,d0            ; 02776
+
+;-------------------------------------------------------------------------------
+; StateFlyBy - CameraSequence 2: the fly-by runs, StateFlyByWait.
+;-------------------------------------------------------------------------------
+StateFlyBy:
+        move.w  (StateTimer).l,d0               ; 02776
         tst.w   d0                              ; 0277C
         bpl.b   l_000_0279A                     ; 0277E
-        move.b  #$2,(dat_071_0027E).l           ; 02780
+        move.b  #$2,(CameraSequence).l          ; 02780
         move.b  #$1,(dat_071_00185).l           ; 02788
-        lea.l   State_0279C(pc),a0               ; 02790
+        lea.l   StateFlyByWait(pc),a0           ; 02790
         move.l  a0,(GameState).l                ; 02794
 l_000_0279A:
         rts                                     ; 0279A
-State_0279C:
-        move.b  (dat_071_0027E).l,d0            ; 0279C
+
+;-------------------------------------------------------------------------------
+; StateFlyByWait - Waits for the fly-by to end (CameraSequence 3), then StateSecurityCheck.
+;-------------------------------------------------------------------------------
+StateFlyByWait:
+        move.b  (CameraSequence).l,d0           ; 0279C
         subq.b  #$3,d0                          ; 027A2
         bne.b   l_000_027C6                     ; 027A4
         moveq   #$0,d0                          ; 027A6
         move.b  d0,(dat_071_00185).l            ; 027A8
         move.b  d0,(dat_071_00227).l            ; 027AE
-        move.w  #$2,(dat_071_004A6).l           ; 027B4
-        lea.l   State_027C8(pc),a0               ; 027BC
+        move.w  #$2,(StateTimer).l              ; 027B4
+        lea.l   StateSecurityCheck(pc),a0       ; 027BC
         move.l  a0,(GameState).l                ; 027C0
 l_000_027C6:
         rts                                     ; 027C6
-State_027C8:
+
+;-------------------------------------------------------------------------------
+; StateSecurityCheck - The copy protection: unless restarting a mission it was passed for
+; (RestartMission), shows the DEFENSENET security check (page $5F for F1, else $60) and "enter
+; security countercode" ($47) with a new random question (MakeSecurityCode);
+; StateSecurityInput.
+;-------------------------------------------------------------------------------
+StateSecurityCheck:
         link.w  a6,#$fffa                       ; 027C8
-        move.w  (dat_071_004A6).l,d0            ; 027CC
+        move.w  (StateTimer).l,d0               ; 027CC
         tst.w   d0                              ; 027D2
         bpl.w   l_000_0287A                     ; 027D4
         clr.b   (dat_071_00165).l               ; 027D8
-        tst.b   (dat_071_001FB).l               ; 027DE
+        tst.b   (RestartMission).l              ; 027DE
         beq.b   l_000_0280A                     ; 027E4
-        move.b  #$1,(dat_071_0027C).l           ; 027E6
+        move.b  #$1,(CodeResult).l              ; 027E6
         move.b  #$2,(dat_071_0027D).l           ; 027EE
-        move.w  #$3,(dat_071_004A6).l           ; 027F6
-        lea.l   State_028DA(pc),a0               ; 027FE
+        move.w  #$3,(StateTimer).l              ; 027F6
+        lea.l   StateSecurityResult(pc),a0      ; 027FE
         move.l  a0,(GameState).l                ; 02802
         bra.b   l_000_0287A                     ; 02808
 l_000_0280A:
-        move.b  (dat_071_00276).l,d0            ; 0280A
+        move.b  (GameMode).l,d0                 ; 0280A
         ext.w   d0                              ; 02810
-        move.l  #dat_071_0011A,-$4(a6)          ; 02812
+        move.l  #TextPages,-$4(a6)              ; 02812
         move.b  (dat_071_00166).l,d1            ; 0281A
         move.w  d0,-$6(a6)                      ; 02820
         tst.b   d1                              ; 02824
@@ -2983,54 +3143,70 @@ l_000_02852:
         addq.l  #$2,-$4(a6)                     ; 02860
         movea.l -$4(a6),a0                      ; 02864
         clr.w   (a0)                            ; 02868
-        jsr     (sub_020_003C6).l               ; 0286A
-        lea.l   State_0287E(pc),a0               ; 02870
+        jsr     (MakeSecurityCode).l            ; 0286A
+        lea.l   StateSecurityInput(pc),a0       ; 02870
         move.l  a0,(GameState).l                ; 02874
 l_000_0287A:
         unlk    a6                              ; 0287A
         rts                                     ; 0287C
-State_0287E:
-        move.b  (dat_071_001B0).l,d0            ; 0287E
+
+;-------------------------------------------------------------------------------
+; StateSecurityInput - When the code is entered (TextStatus 1): page 4, StateSecurityEntered.
+;-------------------------------------------------------------------------------
+StateSecurityInput:
+        move.b  (TextStatus).l,d0               ; 0287E
         subq.b  #$1,d0                          ; 02884
         bne.b   l_000_028A8                     ; 02886
-        move.w  #$4,(dat_071_0011A).l           ; 02888
+        move.w  #$4,(TextPages).l               ; 02888
         clr.b   (dat_071_00193).l               ; 02890
-        move.b  #$3,(dat_071_001B0).l           ; 02896
-        lea.l   State_028AA(pc),a0               ; 0289E
+        move.b  #$3,(TextStatus).l              ; 02896
+        lea.l   StateSecurityEntered(pc),a0     ; 0289E
         move.l  a0,(GameState).l                ; 028A2
 l_000_028A8:
         rts                                     ; 028A8
-State_028AA:
-        tst.b   (dat_071_0027C).l               ; 028AA
+
+;-------------------------------------------------------------------------------
+; StateSecurityEntered - Once the code is judged (CodeResult): StateSecurityResult.
+;-------------------------------------------------------------------------------
+StateSecurityEntered:
+        tst.b   (CodeResult).l                  ; 028AA
         beq.b   l_000_028D8                     ; 028B0
         tst.b   (dat_071_00155).l               ; 028B2
         beq.b   l_000_028C2                     ; 028B8
         move.b  #$2,(dat_071_0027D).l           ; 028BA
 l_000_028C2:
-        bsr.w   h000+$3462                      ; 028C2
-        move.w  #$3,(dat_071_004A6).l           ; 028C6
-        lea.l   State_028DA(pc),a0               ; 028CE
+        bsr.w   ClearTextPages                  ; 028C2
+        move.w  #$3,(StateTimer).l              ; 028C6
+        lea.l   StateSecurityResult(pc),a0      ; 028CE
         move.l  a0,(GameState).l                ; 028D2
 l_000_028D8:
         rts                                     ; 028D8
-State_028DA:
+
+;-------------------------------------------------------------------------------
+; StateSecurityResult - Right (CodeResult > 0): a mission shows "clearance confirmed, scramble
+; immediately" (page $5D and the mission's text), counts a mission started (ConfigBuffer+$36)
+; and goes to StateClearance; free flight StateOverview; training and practice StateTraining;
+; qualification StateQualifyBriefing. Wrong (< 0): another try (StateSecurityCheck) until
+; CodeTries runs out, then StateSecurityFailed.
+;-------------------------------------------------------------------------------
+StateSecurityResult:
         link.w  a6,#$fffe                       ; 028DA
-        move.w  (dat_071_004A6).l,d0            ; 028DE
+        move.w  (StateTimer).l,d0               ; 028DE
         tst.w   d0                              ; 028E4
         bpl.w   l_000_02A26                     ; 028E6
-        move.b  (dat_071_00276).l,d0            ; 028EA
+        move.b  (GameMode).l,d0                 ; 028EA
         ext.w   d0                              ; 028F0
-        move.b  (dat_071_0027C).l,d1            ; 028F2
+        move.b  (CodeResult).l,d1               ; 028F2
         move.w  d0,-$2(a6)                      ; 028F8
         tst.b   d1                              ; 028FC
         ble.w   l_000_029DA                     ; 028FE
-        lea.l   State_02A50(pc),a0               ; 02902
+        lea.l   StateClearance(pc),a0           ; 02902
         move.l  a0,(GameState).l                ; 02906
         cmpi.w  #$3,d0                          ; 0290C
         bcs.b   l_000_0295C                     ; 02910
         cmpi.w  #$8,d0                          ; 02912
         bhi.b   l_000_0295C                     ; 02916
-        move.w  #$5d,(dat_071_0011A).l          ; 02918
+        move.w  #$5d,(TextPages).l              ; 02918
         moveq   #$0,d1                          ; 02920
         move.w  -$2(a6),d1                      ; 02922
         moveq   #$3,d0                          ; 02926
@@ -3038,7 +3214,7 @@ State_028DA:
         moveq   #$1,d0                          ; 0292A
         move.l  d0,-(a7)                        ; 0292C
         move.l  d1,-(a7)                        ; 0292E
-        jsr     (sub_020_001F4).l               ; 02930
+        jsr     (SetTextPage).l                 ; 02930
         lea.l   $c(a7),a7                       ; 02936
         movea.l (ConfigBuffer).l,a0             ; 0293A
         move.w  $36(a0),d0                      ; 02940
@@ -3066,218 +3242,263 @@ l_000_02964:
         ori.b   #$1,d0                          ; 02990
         bra.w   l_000_02998                     ; 02994
 l_000_02998:
-        lea.l   State_02AC0(pc),a0               ; 02998
+        lea.l   StateOverview(pc),a0            ; 02998
         move.l  a0,(GameState).l                ; 0299C
         bra.w   l_000_02A26                     ; 029A2
 l_000_029A6:
-        lea.l   State_02428(pc),a0               ; 029A6
+        lea.l   StateTraining(pc),a0            ; 029A6
         move.l  a0,(GameState).l                ; 029AA
         bra.b   l_000_02A26                     ; 029B0
 l_000_029B2:
-        lea.l   State_02428(pc),a0               ; 029B2
+        lea.l   StateTraining(pc),a0            ; 029B2
         move.l  a0,(GameState).l                ; 029B6
         bra.b   l_000_02A26                     ; 029BC
 l_000_029BE:
         move.b  #$1,(dat_071_00165).l           ; 029BE
-        move.w  #$3,(dat_071_004A6).l           ; 029C6
-        lea.l   State_01CC0(pc),a0               ; 029CE
+        move.w  #$3,(StateTimer).l              ; 029C6
+        lea.l   StateQualifyBriefing(pc),a0     ; 029CE
         move.l  a0,(GameState).l                ; 029D2
         bra.b   l_000_02A26                     ; 029D8
 l_000_029DA:
-        move.b  (dat_071_0027C).l,d0            ; 029DA
+        move.b  (CodeResult).l,d0               ; 029DA
         tst.b   d0                              ; 029E0
         bpl.b   l_000_02A26                     ; 029E2
-        clr.b   (dat_071_0027C).l               ; 029E4
+        clr.b   (CodeResult).l                  ; 029E4
         move.b  #$1,(dat_071_00165).l           ; 029EA
-        bsr.w   h000+$3462                      ; 029F2
-        move.w  #$3,(dat_071_004A6).l           ; 029F6
-        move.b  (dat_071_00268).l,d0            ; 029FE
+        bsr.w   ClearTextPages                  ; 029F2
+        move.w  #$3,(StateTimer).l              ; 029F6
+        move.b  (CodeTries).l,d0                ; 029FE
         subq.b  #$1,d0                          ; 02A04
-        move.b  d0,(dat_071_00268).l            ; 02A06
+        move.b  d0,(CodeTries).l                ; 02A06
         tst.b   d0                              ; 02A0C
         bmi.b   l_000_02A1C                     ; 02A0E
-        lea.l   State_027C8(pc),a0               ; 02A10
+        lea.l   StateSecurityCheck(pc),a0       ; 02A10
         move.l  a0,(GameState).l                ; 02A14
         bra.b   l_000_02A26                     ; 02A1A
 l_000_02A1C:
-        lea.l   State_02A2A(pc),a0               ; 02A1C
+        lea.l   StateSecurityFailed(pc),a0      ; 02A1C
         move.l  a0,(GameState).l                ; 02A20
 l_000_02A26:
         unlk    a6                              ; 02A26
         rts                                     ; 02A28
-State_02A2A:
-        move.w  (dat_071_004A6).l,d0            ; 02A2A
+
+;-------------------------------------------------------------------------------
+; StateSecurityFailed - Shows page $43 ("unauthorized clearance, due to three failed attempts
+; ... reboot"), then StateLockedUp.
+;-------------------------------------------------------------------------------
+StateSecurityFailed:
+        move.w  (StateTimer).l,d0               ; 02A2A
         tst.w   d0                              ; 02A30
         bpl.b   l_000_02A4C                     ; 02A32
         clr.b   (dat_071_00165).l               ; 02A34
-        move.w  #$43,(dat_071_0011A).l          ; 02A3A
-        lea.l   State_02A4E(pc),a0               ; 02A42
+        move.w  #$43,(TextPages).l              ; 02A3A
+        lea.l   StateLockedUp(pc),a0            ; 02A42
         move.l  a0,(GameState).l                ; 02A46
 l_000_02A4C:
         rts                                     ; 02A4C
-State_02A4E:
+
+;-------------------------------------------------------------------------------
+; StateLockedUp - Does nothing: the game stops here until the machine is reset.
+;-------------------------------------------------------------------------------
+StateLockedUp:
         rts                                     ; 02A4E
-State_02A50:
-        move.b  (dat_071_00173).l,d0            ; 02A50
+
+;-------------------------------------------------------------------------------
+; StateClearance - Waits for the clearance text, then StateLaunchView.
+;-------------------------------------------------------------------------------
+StateClearance:
+        move.b  (KeyPressed).l,d0               ; 02A50
         subq.b  #$2,d0                          ; 02A56
         bne.b   l_000_02A60                     ; 02A58
-        bsr.w   l_000_02CFE                     ; 02A5A
+        bsr.w   SkipToCockpit                   ; 02A5A
         bra.b   l_000_02A90                     ; 02A5E
 l_000_02A60:
-        move.b  (dat_071_001B0).l,d0            ; 02A60
+        move.b  (TextStatus).l,d0               ; 02A60
         tst.b   d0                              ; 02A66
         bpl.b   l_000_02A90                     ; 02A68
         move.b  #$1,(dat_071_00165).l           ; 02A6A
-        bsr.w   h000+$3462                      ; 02A72
+        bsr.w   ClearTextPages                  ; 02A72
         move.b  #$1,(dat_071_00227).l           ; 02A76
-        move.w  #$3,(dat_071_004A6).l           ; 02A7E
-        lea.l   State_02A92(pc),a0               ; 02A86
+        move.w  #$3,(StateTimer).l              ; 02A7E
+        lea.l   StateLaunchView(pc),a0          ; 02A86
         move.l  a0,(GameState).l                ; 02A8A
 l_000_02A90:
         rts                                     ; 02A90
-State_02A92:
-        move.b  (dat_071_00173).l,d0            ; 02A92
+
+;-------------------------------------------------------------------------------
+; StateLaunchView - A pause, then StateOverview.
+;-------------------------------------------------------------------------------
+StateLaunchView:
+        move.b  (KeyPressed).l,d0               ; 02A92
         subq.b  #$2,d0                          ; 02A98
         bne.b   l_000_02AA2                     ; 02A9A
-        bsr.w   l_000_02CFE                     ; 02A9C
+        bsr.w   SkipToCockpit                   ; 02A9C
         bra.b   l_000_02ABE                     ; 02AA0
 l_000_02AA2:
-        move.w  (dat_071_004A6).l,d0            ; 02AA2
+        move.w  (StateTimer).l,d0               ; 02AA2
         tst.w   d0                              ; 02AA8
         bpl.b   l_000_02ABE                     ; 02AAA
         move.b  #$1,(dat_071_00185).l           ; 02AAC
-        lea.l   State_02AC0(pc),a0               ; 02AB4
+        lea.l   StateOverview(pc),a0            ; 02AB4
         move.l  a0,(GameState).l                ; 02AB8
 l_000_02ABE:
         rts                                     ; 02ABE
-State_02AC0:
-        move.b  (dat_071_00173).l,d0            ; 02AC0
+
+;-------------------------------------------------------------------------------
+; StateOverview - Waits for the camera to reach the aircraft (CameraSequence 4), then
+; StateStartPoint.
+;-------------------------------------------------------------------------------
+StateOverview:
+        move.b  (KeyPressed).l,d0               ; 02AC0
         subq.b  #$2,d0                          ; 02AC6
         bne.b   l_000_02AD0                     ; 02AC8
-        bsr.w   l_000_02CFE                     ; 02ACA
+        bsr.w   SkipToCockpit                   ; 02ACA
         bra.b   l_000_02AFA                     ; 02ACE
 l_000_02AD0:
-        move.b  (dat_071_0027E).l,d0            ; 02AD0
+        move.b  (CameraSequence).l,d0           ; 02AD0
         subq.b  #$4,d0                          ; 02AD6
         bne.b   l_000_02AFA                     ; 02AD8
         moveq   #$0,d0                          ; 02ADA
         move.b  d0,(dat_071_00185).l            ; 02ADC
         move.b  d0,(dat_071_00227).l            ; 02AE2
-        move.w  #$2,(dat_071_004A6).l           ; 02AE8
-        lea.l   State_02AFC(pc),a0               ; 02AF0
+        move.w  #$2,(StateTimer).l              ; 02AE8
+        lea.l   StateStartPoint(pc),a0          ; 02AF0
         move.l  a0,(GameState).l                ; 02AF4
 l_000_02AFA:
         rts                                     ; 02AFA
-State_02AFC:
-        move.b  (dat_071_00173).l,d0            ; 02AFC
+
+;-------------------------------------------------------------------------------
+; StateStartPoint - Free flight: page 7, "select your free flight starting location"
+; (CameraSequence 5); then StateChooseStart.
+;-------------------------------------------------------------------------------
+StateStartPoint:
+        move.b  (KeyPressed).l,d0               ; 02AFC
         subq.b  #$2,d0                          ; 02B02
         bne.b   l_000_02B0C                     ; 02B04
-        bsr.w   l_000_02CFE                     ; 02B06
+        bsr.w   SkipToCockpit                   ; 02B06
         bra.b   l_000_02B72                     ; 02B0A
 l_000_02B0C:
-        move.w  (dat_071_004A6).l,d0            ; 02B0C
+        move.w  (StateTimer).l,d0               ; 02B0C
         tst.w   d0                              ; 02B12
         bpl.b   l_000_02B72                     ; 02B14
         clr.b   (dat_071_00165).l               ; 02B16
-        move.b  (dat_071_00276).l,d0            ; 02B1C
+        move.b  (GameMode).l,d0                 ; 02B1C
         cmpi.b  #$1,d0                          ; 02B22
         ble.b   l_000_02B30                     ; 02B26
         move.b  #$1,(dat_071_00185).l           ; 02B28
 l_000_02B30:
-        move.b  (dat_071_00276).l,d0            ; 02B30
+        move.b  (GameMode).l,d0                 ; 02B30
         ext.w   d0                              ; 02B36
         ext.l   d0                              ; 02B38
         cmpi.l  #$1,d0                          ; 02B3A
         bne.b   l_000_02B5A                     ; 02B40
-        move.w  #$7,(dat_071_0011A).l           ; 02B42
-        move.b  #$5,(dat_071_0027E).l           ; 02B4A
+        move.w  #$7,(TextPages).l               ; 02B42
+        move.b  #$5,(CameraSequence).l          ; 02B4A
         move.b  #$1,(dat_071_00227).l           ; 02B52
 l_000_02B5A:
         moveq   #$0,d0                          ; 02B5A
         move.b  d0,(dat_071_0027D).l            ; 02B5C
         move.b  d0,(dat_071_00193).l            ; 02B62
-        lea.l   State_02B74(pc),a0               ; 02B68
+        lea.l   StateChooseStart(pc),a0         ; 02B68
         move.l  a0,(GameState).l                ; 02B6C
 l_000_02B72:
         rts                                     ; 02B72
-State_02B74:
-        move.b  (dat_071_00173).l,d0            ; 02B74
+
+;-------------------------------------------------------------------------------
+; StateChooseStart - Waits for the start to be chosen (StartPoint), then StateAircraftSelect;
+; a start on the carrier (StartPoint 3) goes straight to StateToCockpit (the F/A-18).
+;-------------------------------------------------------------------------------
+StateChooseStart:
+        move.b  (KeyPressed).l,d0               ; 02B74
         subq.b  #$2,d0                          ; 02B7A
         bne.b   l_000_02B84                     ; 02B7C
-        bsr.w   l_000_02CFE                     ; 02B7E
+        bsr.w   SkipToCockpit                   ; 02B7E
         bra.b   l_000_02C00                     ; 02B82
 l_000_02B84:
         tst.b   (dat_071_00185).l               ; 02B84
         beq.b   l_000_02BEE                     ; 02B8A
         clr.b   (dat_071_00185).l               ; 02B8C
-        bsr.w   h000+$3462                      ; 02B92
+        bsr.w   ClearTextPages                  ; 02B92
         moveq   #$0,d0                          ; 02B96
         move.b  d0,(dat_071_0017D).l            ; 02B98
         moveq   #$3,d0                          ; 02B9E
         move.b  d0,(dat_071_00206).l            ; 02BA0
         moveq   #$1,d0                          ; 02BA6
         move.b  d0,(dat_071_00165).l            ; 02BA8
-        move.w  #$2,(dat_071_004A6).l           ; 02BAE
-        move.b  (dat_071_00218).l,d0            ; 02BB6
+        move.w  #$2,(StateTimer).l              ; 02BAE
+        move.b  (StartPoint).l,d0               ; 02BB6
         subq.b  #$3,d0                          ; 02BBC
         beq.b   l_000_02BE2                     ; 02BBE
-        lea.l   State_02C02(pc),a0               ; 02BC0
+        lea.l   StateAircraftSelect(pc),a0      ; 02BC0
         move.l  a0,(GameState).l                ; 02BC4
-        move.b  #$1,(dat_071_00161).l           ; 02BCA
+        move.b  #$1,(AircraftChosen).l          ; 02BCA
         clr.b   (dat_071_00227).l               ; 02BD2
-        move.b  #$6,(dat_071_0027E).l           ; 02BD8
+        move.b  #$6,(CameraSequence).l          ; 02BD8
         bra.b   l_000_02C00                     ; 02BE0
 l_000_02BE2:
-        lea.l   State_02C6E(pc),a0               ; 02BE2
+        lea.l   StateToCockpit(pc),a0           ; 02BE2
         move.l  a0,(GameState).l                ; 02BE6
         bra.b   l_000_02C00                     ; 02BEC
 l_000_02BEE:
-        move.b  (dat_071_001B0).l,d0            ; 02BEE
+        move.b  (TextStatus).l,d0               ; 02BEE
         subq.b  #$1,d0                          ; 02BF4
         bne.b   l_000_02C00                     ; 02BF6
         move.b  #$1,(dat_071_00165).l           ; 02BF8
 l_000_02C00:
         rts                                     ; 02C00
-State_02C02:
+
+;-------------------------------------------------------------------------------
+; StateAircraftSelect - Page $4B: 1 F/A-18 Hornet, 2 F-16 Falcon; StateAircraftSelectWait.
+;-------------------------------------------------------------------------------
+StateAircraftSelect:
         moveq   #$0,d0                          ; 02C02
         move.b  d0,(dat_071_00185).l            ; 02C04
-        move.w  (dat_071_004A6).l,d0            ; 02C0A
+        move.w  (StateTimer).l,d0               ; 02C0A
         tst.w   d0                              ; 02C10
         bpl.b   l_000_02C34                     ; 02C12
         moveq   #$0,d0                          ; 02C14
         move.b  d0,(dat_071_00165).l            ; 02C16
-        move.w  #$4b,(dat_071_0011A).l          ; 02C1C
+        move.w  #$4b,(TextPages).l              ; 02C1C
         move.b  d0,(dat_071_00193).l            ; 02C24
-        lea.l   State_02C36(pc),a0               ; 02C2A
+        lea.l   StateAircraftSelectWait(pc),a0  ; 02C2A
         move.l  a0,(GameState).l                ; 02C2E
 l_000_02C34:
         rts                                     ; 02C34
-State_02C36:
-        move.b  (dat_071_00161).l,d0            ; 02C36
+
+;-------------------------------------------------------------------------------
+; StateAircraftSelectWait - Waits for the choice (AircraftChosen cleared), then StateToCockpit.
+;-------------------------------------------------------------------------------
+StateAircraftSelectWait:
+        move.b  (AircraftChosen).l,d0           ; 02C36
         tst.b   d0                              ; 02C3C
         bne.b   l_000_02C6C                     ; 02C3E
-        move.w  #$2,(dat_071_004A6).l           ; 02C40
+        move.w  #$2,(StateTimer).l              ; 02C40
         move.b  #$1,(dat_071_00165).l           ; 02C48
-        bsr.w   h000+$3462                      ; 02C50
+        bsr.w   ClearTextPages                  ; 02C50
         moveq   #$1,d0                          ; 02C54
         move.b  d0,(dat_071_00227).l            ; 02C56
         move.b  d0,(dat_071_0027D).l            ; 02C5C
-        lea.l   State_02C6E(pc),a0               ; 02C62
+        lea.l   StateToCockpit(pc),a0           ; 02C62
         move.l  a0,(GameState).l                ; 02C66
 l_000_02C6C:
         rts                                     ; 02C6C
-State_02C6E:
-        move.w  (dat_071_004A6).l,d0            ; 02C6E
+
+;-------------------------------------------------------------------------------
+; StateToCockpit - Places the aircraft, zooms into the cockpit (CameraSequence 6) and starts
+; the mission music; StateReady.
+;-------------------------------------------------------------------------------
+StateToCockpit:
+        move.w  (StateTimer).l,d0               ; 02C6E
         tst.w   d0                              ; 02C74
         bpl.b   l_000_02CDE                     ; 02C76
         move.b  #$1,(dat_071_00185).l           ; 02C78
-        bsr.b   l_000_02CE0                     ; 02C80
+        bsr.b   PlaceAircraft                   ; 02C80
         jsr     (sub_004_002DA).l               ; 02C82
         moveq   #$0,d0                          ; 02C88
         move.b  d0,(dat_071_00186).l            ; 02C8A
-        move.b  #$6,(dat_071_0027E).l           ; 02C90
+        move.b  #$6,(CameraSequence).l          ; 02C90
         move.b  d0,(dat_071_0027D).l            ; 02C98
-        move.b  (dat_071_00276).l,d0            ; 02C9E
+        move.b  (GameMode).l,d0                 ; 02C9E
         cmpi.b  #$3,d0                          ; 02CA4
         blt.b   l_000_02CD4                     ; 02CA8
         cmpi.b  #$8,d0                          ; 02CAA
@@ -3295,23 +3516,31 @@ l_000_02CC8:
         jsr     (sub_000_09E46).l               ; 02CCC
         addq.l  #$4,a7                          ; 02CD2
 l_000_02CD4:
-        lea.l   State_02D58(pc),a0               ; 02CD4
+        lea.l   StateReady(pc),a0               ; 02CD4
         move.l  a0,(GameState).l                ; 02CD8
 l_000_02CDE:
         rts                                     ; 02CDE
-l_000_02CE0:
+
+;-------------------------------------------------------------------------------
+; PlaceAircraft - Places the objects for the flight (sub_004_003AE) and updates them.
+;-------------------------------------------------------------------------------
+PlaceAircraft:
         jsr     (sub_004_003AE).l               ; 02CE0
         move.w  (dat_071_0029C).l,d0            ; 02CE6
         ori.w   #$800,d0                        ; 02CEC
         move.w  d0,(dat_071_0029C).l            ; 02CF0
         jsr     (UpdateAllObjects).l            ; 02CF6
         rts                                     ; 02CFC
-l_000_02CFE:
+
+;-------------------------------------------------------------------------------
+; SkipToCockpit - A key during the start: places the aircraft and goes to StateReadyText.
+;-------------------------------------------------------------------------------
+SkipToCockpit:
         move.b  #$1,(dat_071_00165).l           ; 02CFE
-        bsr.b   l_000_02CE0                     ; 02D06
+        bsr.b   PlaceAircraft                   ; 02D06
         move.b  #$ff,(RedrawFlags).l            ; 02D08
-        clr.b   (dat_071_0027E).l               ; 02D10
-        bsr.w   h000+$3462                      ; 02D16
+        clr.b   (CameraSequence).l              ; 02D10
+        bsr.w   ClearTextPages                  ; 02D16
         moveq   #$0,d0                          ; 02D1A
         move.b  d0,(dat_071_0017E).l            ; 02D1C
         move.b  d0,(dat_071_00185).l            ; 02D22
@@ -3321,40 +3550,50 @@ l_000_02CFE:
         moveq   #$0,d0                          ; 02D36
         move.b  d0,(dat_071_0027D).l            ; 02D38
         move.b  d0,(dat_071_00158).l            ; 02D3E
-        move.w  #$5,(dat_071_004A6).l           ; 02D44
-        lea.l   State_02DB8(pc),a0               ; 02D4C
+        move.w  #$5,(StateTimer).l              ; 02D44
+        lea.l   StateReadyText(pc),a0           ; 02D4C
         move.l  a0,(GameState).l                ; 02D50
         rts                                     ; 02D56
-State_02D58:
+
+;-------------------------------------------------------------------------------
+; StateReady - In the cockpit: StateReadyText (or StatePause when paused).
+;-------------------------------------------------------------------------------
+StateReady:
         move.b  (dat_071_00155).l,d0            ; 02D58
         tst.b   d0                              ; 02D5E
         bne.b   l_000_02D92                     ; 02D60
         move.b  #$1,(dat_071_00184).l           ; 02D62
         moveq   #$0,d0                          ; 02D6A
-        move.b  d0,(dat_071_0027E).l            ; 02D6C
+        move.b  d0,(CameraSequence).l           ; 02D6C
         move.b  d0,(dat_071_0027D).l            ; 02D72
         move.b  d0,(dat_071_00158).l            ; 02D78
-        move.w  #$5,(dat_071_004A6).l           ; 02D7E
-        lea.l   State_02DB8(pc),a0              ; 02D86
+        move.w  #$5,(StateTimer).l              ; 02D7E
+        lea.l   StateReadyText(pc),a0           ; 02D86
         move.l  a0,(GameState).l                ; 02D8A
         bra.b   l_000_02DB6                     ; 02D90
 l_000_02D92:
         move.b  (dat_071_0017E).l,d0            ; 02D92
         tst.b   d0                              ; 02D98
         bpl.b   l_000_02DB6                     ; 02D9A
-        move.w  #$2,(dat_071_004A6).l           ; 02D9C
+        move.w  #$2,(StateTimer).l              ; 02D9C
         move.b  #$a,(dat_071_00271).l           ; 02DA4
-        move.l  #State_03B76,(GameState).l      ; 02DAC
+        move.l  #StatePause,(GameState).l       ; 02DAC
 l_000_02DB6:
         rts                                     ; 02DB6
-State_02DB8:
+
+;-------------------------------------------------------------------------------
+; StateReadyText - A mission shows "your vector xxx for bogey" (page $58) if there is a target;
+; then "ready for takeoff" ($59) or, on the carrier, "ready to launch" ($5A); then
+; StateReadyWait.
+;-------------------------------------------------------------------------------
+StateReadyText:
         link.w  a6,#$fffa                       ; 02DB8
-        move.w  (dat_071_004A6).l,d0            ; 02DBC
+        move.w  (StateTimer).l,d0               ; 02DBC
         tst.w   d0                              ; 02DC2
         bpl.w   l_000_02E4A                     ; 02DC4
-        move.b  (dat_071_00276).l,d0            ; 02DC8
+        move.b  (GameMode).l,d0                 ; 02DC8
         clr.b   (dat_071_00165).l               ; 02DCE
-        move.l  #dat_071_0011A,-$4(a6)          ; 02DD4
+        move.l  #TextPages,-$4(a6)              ; 02DD4
         move.b  d0,-$5(a6)                      ; 02DDC
         cmpi.b  #$3,d0                          ; 02DE0
         blt.b   l_000_02E02                     ; 02DE4
@@ -3382,17 +3621,22 @@ l_000_02E24:
         addq.l  #$2,-$4(a6)                     ; 02E2C
         bra.b   l_000_02E3A                     ; 02E30
 l_000_02E32:
-        move.b  #$ff,(dat_071_001B0).l          ; 02E32
+        move.b  #$ff,(TextStatus).l             ; 02E32
 l_000_02E3A:
         movea.l -$4(a6),a0                      ; 02E3A
         clr.w   (a0)                            ; 02E3E
-        lea.l   State_02E4E(pc),a0               ; 02E40
+        lea.l   StateReadyWait(pc),a0           ; 02E40
         move.l  a0,(GameState).l                ; 02E44
 l_000_02E4A:
         unlk    a6                              ; 02E4A
         rts                                     ; 02E4C
-State_02E4E:
-        move.b  (dat_071_001B0).l,d0            ; 02E4E
+
+;-------------------------------------------------------------------------------
+; StateReadyWait - When the text is done: starts the mission clock (MissionStartTime) and
+; StateGo.
+;-------------------------------------------------------------------------------
+StateReadyWait:
+        move.b  (TextStatus).l,d0               ; 02E4E
         tst.b   d0                              ; 02E54
         bpl.w   l_000_02ED8                     ; 02E56
         moveq   #$1,d0                          ; 02E5A
@@ -3406,7 +3650,7 @@ State_02E4E:
         move.w  (dat_071_002A2).l,d0            ; 02E82
         ori.w   #$2,d0                          ; 02E88
         move.w  d0,(dat_071_002A2).l            ; 02E8C
-        move.b  (dat_071_00276).l,d0            ; 02E92
+        move.b  (GameMode).l,d0                 ; 02E92
         subq.b  #$2,d0                          ; 02E98
         bne.b   l_000_02EA4                     ; 02E9A
         move.b  #$1,(dat_071_00163).l           ; 02E9C
@@ -3416,24 +3660,35 @@ l_000_02EA4:
         move.l  d0,(MissionStartTime).l         ; 02EB0
         move.l  (TimeSeconds).l,(dat_071_002DC).l ; 02EB6
         clr.w   (FrameCount).l                  ; 02EC0
-        move.w  #$3,(dat_071_004A6).l           ; 02EC6
-        lea.l   State_02EDA(pc),a0               ; 02ECE
+        move.w  #$3,(StateTimer).l              ; 02EC6
+        lea.l   StateGo(pc),a0                  ; 02ECE
         move.l  a0,(GameState).l                ; 02ED2
 l_000_02ED8:
         rts                                     ; 02ED8
-State_02EDA:
-        move.w  (dat_071_004A6).l,d0            ; 02EDA
+
+;-------------------------------------------------------------------------------
+; StateGo - Hands the controls to the player, then StateFlying.
+;-------------------------------------------------------------------------------
+StateGo:
+        move.w  (StateTimer).l,d0               ; 02EDA
         tst.w   d0                              ; 02EE0
         bpl.b   l_000_02EFC                     ; 02EE2
         move.b  #$1,(dat_071_00171).l           ; 02EE4
         jsr     (l_039_01880).l                 ; 02EEC
-        lea.l   State_02EFE(pc),a0               ; 02EF2
+        lea.l   StateFlying(pc),a0              ; 02EF2
         move.l  a0,(GameState).l                ; 02EF6
 l_000_02EFC:
         rts                                     ; 02EFC
-State_02EFE:
+
+;-------------------------------------------------------------------------------
+; StateFlying - Flying. Checks for a crash (the player's flags bit 9: counts it in the log,
+; ConfigBuffer+$10, and goes to StateCrashed), the pause key (StatePause), the mission result
+; (MissionResult $FF/$FE/$FC: the end of the mission is shown), Shift+Esc and MissionResult $F0
+; (StateMissionOver) and $EF (StateQualified).
+;-------------------------------------------------------------------------------
+StateFlying:
         link.w  a6,#$fffe                       ; 02EFE
-        move.b  (dat_071_00168).l,-$1(a6)       ; 02F02
+        move.b  (MissionResult).l,-$1(a6)       ; 02F02
         move.w  (ObjectTable).l,d0              ; 02F0A
         btst    #$9,d0                          ; 02F10
         beq.w   l_000_02FE6                     ; 02F14
@@ -3473,7 +3728,7 @@ State_02EFE:
         jsr     (sub_000_0A0DC).l               ; 02FAE
         addq.l  #$8,a7                          ; 02FB4
 l_000_02FB6:
-        move.l  #State_038D8,(GameState).l      ; 02FB6
+        move.l  #StateCrashed,(GameState).l     ; 02FB6
         bra.w   l_000_03198                     ; 02FC0
 l_000_02FC4:
         move.w  (ObjectTable).l,d0              ; 02FC4
@@ -3487,11 +3742,11 @@ l_000_02FE6:
         move.b  (dat_071_0017E).l,d0            ; 02FE6
         tst.b   d0                              ; 02FEC
         bpl.b   l_000_0301E                     ; 02FEE
-        move.w  #$2,(dat_071_004A6).l           ; 02FF0
+        move.w  #$2,(StateTimer).l              ; 02FF0
         move.b  #$a,(dat_071_00271).l           ; 02FF8
         jsr     (ReadTime).l                    ; 03000
         move.l  (TimeSeconds).l,(dat_071_002D4).l ; 03006
-        move.l  #State_03B76,(GameState).l      ; 03010
+        move.l  #StatePause,(GameState).l       ; 03010
         bra.w   l_000_03198                     ; 0301A
 l_000_0301E:
         move.b  -$1(a6),d0                      ; 0301E
@@ -3501,24 +3756,24 @@ l_000_0301E:
         blt.w   l_000_03118                     ; 0302E
         tst.b   (dat_071_00193).l               ; 03032
         beq.w   l_000_03118                     ; 03038
-        tst.b   (dat_071_001B0).l               ; 0303C
+        tst.b   (TextStatus).l                  ; 0303C
         beq.w   l_000_03118                     ; 03042
         cmpi.b  #$ff,d0                         ; 03046
         bne.b   l_000_03056                     ; 0304A
-        move.b  #$1,(dat_071_00168).l           ; 0304C
+        move.b  #$1,(MissionResult).l           ; 0304C
         bra.b   l_000_03078                     ; 03054
 l_000_03056:
         cmpi.b  #$fe,-$1(a6)                    ; 03056
         bne.b   l_000_03068                     ; 0305C
-        move.b  #$2,(dat_071_00168).l           ; 0305E
+        move.b  #$2,(MissionResult).l           ; 0305E
         bra.b   l_000_03078                     ; 03066
 l_000_03068:
         cmpi.b  #$fc,-$1(a6)                    ; 03068
         bne.b   l_000_03078                     ; 0306E
-        move.b  #$4,(dat_071_00168).l           ; 03070
+        move.b  #$4,(MissionResult).l           ; 03070
 l_000_03078:
         move.b  #$1,(dat_071_00165).l           ; 03078
-        bsr.w   sub_000_03462                   ; 03080
+        bsr.w   ClearTextPages                  ; 03080
         moveq   #$0,d0                          ; 03084
         move.b  d0,(dat_071_0027D).l            ; 03086
         move.b  #$fe,(dat_071_00280).l          ; 0308C
@@ -3550,22 +3805,22 @@ l_000_030EA:
         move.b  d0,(dat_071_00282).l            ; 0310E
         bra.w   l_000_03198                     ; 03114
 l_000_03118:
-        move.b  (dat_071_001FA).l,d0            ; 03118
+        move.b  (QuitRequest).l,d0              ; 03118
         cmpi.b  #$ff,d0                         ; 0311E
         bne.b   l_000_0313E                     ; 03122
-        clr.b   (dat_071_001FA).l               ; 03124
-        move.b  #$ff,(dat_071_001B0).l          ; 0312A
-        move.l  #State_03A4C,(GameState).l      ; 03132
+        clr.b   (QuitRequest).l                 ; 03124
+        move.b  #$ff,(TextStatus).l             ; 0312A
+        move.l  #StateMissionOver,(GameState).l ; 03132
         bra.b   l_000_03198                     ; 0313C
 l_000_0313E:
         cmpi.b  #$f0,-$1(a6)                    ; 0313E
         bne.b   l_000_03152                     ; 03144
-        move.l  #State_03A4C,(GameState).l      ; 03146
+        move.l  #StateMissionOver,(GameState).l ; 03146
         bra.b   l_000_03198                     ; 03150
 l_000_03152:
         cmpi.b  #$ef,-$1(a6)                    ; 03152
         bne.b   l_000_03166                     ; 03158
-        move.l  #State_03AA8,(GameState).l      ; 0315A
+        move.l  #StateQualified,(GameState).l   ; 0315A
         bra.b   l_000_03198                     ; 03164
 l_000_03166:
         move.w  (ViewObject).l,d0               ; 03166
@@ -3584,43 +3839,62 @@ l_000_03190:
 l_000_03198:
         unlk    a6                              ; 03198
         rts                                     ; 0319A
-State_0319C:
-        move.w  (dat_071_004A6).l,d0            ; 0319C
+
+;-------------------------------------------------------------------------------
+; StateBailout - Bailed out (QuitRequest 2): "you have survived your bailout" (page $E), then
+; StateMissionOver.
+;-------------------------------------------------------------------------------
+StateBailout:
+        move.w  (StateTimer).l,d0               ; 0319C
         tst.w   d0                              ; 031A2
         bpl.b   l_000_031C6                     ; 031A4
         moveq   #$0,d0                          ; 031A6
         move.b  d0,(dat_071_00165).l            ; 031A8
-        move.w  #$e,(dat_071_0011A).l           ; 031AE
-        move.b  d0,(dat_071_001B0).l            ; 031B6
-        move.l  #State_03A4C,(GameState).l      ; 031BC
+        move.w  #$e,(TextPages).l               ; 031AE
+        move.b  d0,(TextStatus).l               ; 031B6
+        move.l  #StateMissionOver,(GameState).l ; 031BC
 l_000_031C6:
         rts                                     ; 031C6
-State_031C8:
-        move.w  (dat_071_004A6).l,d0            ; 031C8
+
+;-------------------------------------------------------------------------------
+; StateDebriefWait - The objective is done (QuitRequest 3): a pause, then StateDebrief.
+;-------------------------------------------------------------------------------
+StateDebriefWait:
+        move.w  (StateTimer).l,d0               ; 031C8
         tst.w   d0                              ; 031CE
         bpl.b   l_000_031F2                     ; 031D0
         moveq   #$1,d0                          ; 031D2
         move.b  d0,(dat_071_0017E).l            ; 031D4
-        move.w  #$2,(dat_071_004A6).l           ; 031DA
-        lea.l   State_031F4(pc),a0               ; 031E2
+        move.w  #$2,(StateTimer).l              ; 031DA
+        lea.l   StateDebrief(pc),a0             ; 031E2
         move.l  a0,(GameState).l                ; 031E6
         move.b  d0,(dat_071_0027D).l            ; 031EC
 l_000_031F2:
         rts                                     ; 031F2
-State_031F4:
+
+;-------------------------------------------------------------------------------
+; StateDebrief - The result. MissionResult $FF: a mission's success text and "return to base"
+; or "return to carrier" ($8055/$8056); qualification: "landing successful, you are now
+; qualified" (ConfigBuffer+$00 = 1, saved), $EF; practice: page $48, $F0. $FE: the mission
+; failed (Air Force One destroyed $24/$25, stolen aircraft beyond range $2C, rescue pod too far
+; $33, cruise missile exploded $39), else $42. $FD in F2: "you have destroyed Air Force One"
+; ($4C). $FC: "your log now reflects this completed mission" ($54), MissionCompleted and
+; SaveConfig. Back to StateFlying to show it.
+;-------------------------------------------------------------------------------
+StateDebrief:
         link.w  a6,#$fffa                       ; 031F4
-        move.w  (dat_071_004A6).l,d0            ; 031F8
+        move.w  (StateTimer).l,d0               ; 031F8
         tst.w   d0                              ; 031FE
         bpl.w   l_000_0345E                     ; 03200
-        move.b  (dat_071_00276).l,d0            ; 03204
+        move.b  (GameMode).l,d0                 ; 03204
         ext.w   d0                              ; 0320A
-        move.l  #dat_071_0011A,-$6(a6)          ; 0320C
+        move.l  #TextPages,-$6(a6)              ; 0320C
         clr.b   (dat_071_00165).l               ; 03214
-        lea.l   State_02EFE(pc),a0               ; 0321A
+        lea.l   StateFlying(pc),a0              ; 0321A
         move.l  a0,(GameState).l                ; 0321E
         move.w  d0,-$2(a6)                      ; 03224
-        bsr.w   h000+$3462                      ; 03228
-        move.b  (dat_071_00168).l,d0            ; 0322C
+        bsr.w   ClearTextPages                  ; 03228
+        move.b  (MissionResult).l,d0            ; 0322C
         cmpi.b  #$ff,d0                         ; 03232
         bne.w   l_000_0330A                     ; 03236
         move.w  -$2(a6),d0                      ; 0323A
@@ -3634,7 +3908,7 @@ State_031F4:
         move.l  d0,-(a7)                        ; 03252
         clr.l   -(a7)                           ; 03254
         move.l  d1,-(a7)                        ; 03256
-        jsr     (sub_020_001F4).l               ; 03258
+        jsr     (SetTextPage).l                 ; 03258
         lea.l   $c(a7),a7                       ; 0325E
         movea.l -$6(a6),a0                      ; 03262
         addq.l  #$2,a0                          ; 03266
@@ -3650,7 +3924,7 @@ l_000_03280:
         addq.l  #$2,-$6(a6)                     ; 03288
         bra.w   l_000_0342C                     ; 0328C
 l_000_03290:
-        move.b  (dat_071_00276).l,d0            ; 03290
+        move.b  (GameMode).l,d0                 ; 03290
         ext.w   d0                              ; 03296
         ext.l   d0                              ; 03298
         cmpi.l  #$9,d0                          ; 0329A
@@ -3660,7 +3934,7 @@ l_000_03290:
         movea.l -$6(a6),a0                      ; 032AA
         move.w  #$48,(a0)                       ; 032AE
         addq.l  #$2,-$6(a6)                     ; 032B2
-        move.b  #$f0,(dat_071_00168).l          ; 032B6
+        move.b  #$f0,(MissionResult).l          ; 032B6
         bra.w   l_000_0342C                     ; 032BE
 l_000_032C2:
         movea.l (ConfigBuffer).l,a0             ; 032C2
@@ -3671,8 +3945,8 @@ l_000_032C2:
         addq.l  #$2,a0                          ; 032DA
         move.w  #$8053,(a0)                     ; 032DC
         addq.l  #$2,a0                          ; 032E0
-        move.b  #$1,(dat_071_001FB).l           ; 032E2
-        move.b  #$ef,(dat_071_00168).l          ; 032EA
+        move.b  #$1,(RestartMission).l          ; 032E2
+        move.b  #$ef,(MissionResult).l          ; 032EA
         move.l  a0,-$6(a6)                      ; 032F2
         bra.w   l_000_0342C                     ; 032F6
 l_000_032FA:
@@ -3681,10 +3955,10 @@ l_000_032FA:
         addq.l  #$2,-$6(a6)                     ; 03302
         bra.w   l_000_0342C                     ; 03306
 l_000_0330A:
-        move.b  (dat_071_00168).l,d0            ; 0330A
+        move.b  (MissionResult).l,d0            ; 0330A
         cmpi.b  #$fe,d0                         ; 03310
         bne.w   l_000_033FA                     ; 03314
-        move.b  (dat_071_00276).l,d0            ; 03318
+        move.b  (GameMode).l,d0                 ; 03318
         ext.w   d0                              ; 0331E
         ext.l   d0                              ; 03320
         subi.l  #$4,d0                          ; 03322
@@ -3714,7 +3988,7 @@ l_000_0336C:
         movea.l -$6(a6),a0                      ; 0336C
         move.w  #$2c,(a0)                       ; 03370
         addq.l  #$2,-$6(a6)                     ; 03374
-        move.b  #$f0,(dat_071_00168).l          ; 03378
+        move.b  #$f0,(MissionResult).l          ; 03378
         bra.b   l_000_033D6                     ; 03380
 l_000_03382:
         movea.l -$6(a6),a0                      ; 03382
@@ -3731,7 +4005,7 @@ l_000_03390:
         beq.b   l_000_033BC                     ; 033A8
         move.w  #$803a,(a0)                     ; 033AA
         addq.l  #$2,-$6(a6)                     ; 033AE
-        move.b  #$f0,(dat_071_00168).l          ; 033B2
+        move.b  #$f0,(MissionResult).l          ; 033B2
         bra.b   l_000_033D6                     ; 033BA
 l_000_033BC:
         movea.l -$6(a6),a0                      ; 033BC
@@ -3743,7 +4017,7 @@ l_000_033CA:
         move.w  #$42,(a0)                       ; 033CE
         addq.l  #$2,-$6(a6)                     ; 033D2
 l_000_033D6:
-        move.b  (dat_071_00168).l,d0            ; 033D6
+        move.b  (MissionResult).l,d0            ; 033D6
         cmpi.b  #$f0,d0                         ; 033DC
         beq.b   l_000_0342C                     ; 033E0
         movea.l -$6(a6),a0                      ; 033E2
@@ -3755,10 +4029,10 @@ l_000_033D6:
         move.l  a0,-$6(a6)                      ; 033F4
         bra.b   l_000_0342C                     ; 033F8
 l_000_033FA:
-        move.b  (dat_071_00168).l,d0            ; 033FA
+        move.b  (MissionResult).l,d0            ; 033FA
         cmpi.b  #$fd,d0                         ; 03400
         bne.b   l_000_0342C                     ; 03404
-        move.b  (dat_071_00276).l,d0            ; 03406
+        move.b  (GameMode).l,d0                 ; 03406
         ext.w   d0                              ; 0340C
         ext.l   d0                              ; 0340E
         cmpi.l  #$4,d0                          ; 03410
@@ -3766,9 +4040,9 @@ l_000_033FA:
         movea.l -$6(a6),a0                      ; 03418
         move.w  #$4c,(a0)                       ; 0341C
         addq.l  #$2,-$6(a6)                     ; 03420
-        move.b  #$f0,(dat_071_00168).l          ; 03424
+        move.b  #$f0,(MissionResult).l          ; 03424
 l_000_0342C:
-        move.b  (dat_071_00168).l,d0            ; 0342C
+        move.b  (MissionResult).l,d0            ; 0342C
         cmpi.b  #$fc,d0                         ; 03432
         bne.b   l_000_03458                     ; 03436
         movea.l -$6(a6),a0                      ; 03438
@@ -3777,7 +4051,7 @@ l_000_0342C:
         move.w  #$8053,(a0)                     ; 03442
         addq.l  #$2,a0                          ; 03446
         move.l  a0,-$6(a6)                      ; 03448
-        jsr     (sub_000_034A0).l               ; 0344C
+        jsr     (MissionCompleted).l            ; 0344C
         jsr     (SaveConfig).l                  ; 03452
 l_000_03458:
         movea.l -$6(a6),a0                      ; 03458
@@ -3785,9 +4059,13 @@ l_000_03458:
 l_000_0345E:
         unlk    a6                              ; 0345E
         rts                                     ; 03460
-sub_000_03462:
+
+;-------------------------------------------------------------------------------
+; ClearTextPages - Empties the text page queue (TextPages) and resets the text printer.
+;-------------------------------------------------------------------------------
+ClearTextPages:
         link.w  a6,#$fffc                       ; 03462
-        lea.l   (dat_071_0011A).l,a0            ; 03466
+        lea.l   (TextPages).l,a0                ; 03466
         moveq   #$0,d0                          ; 0346C
         move.w  d0,(a0)                         ; 0346E
         addq.l  #$2,a0                          ; 03470
@@ -3797,14 +4075,20 @@ sub_000_03462:
         moveq   #$0,d0                          ; 03480
         move.b  d0,(dat_071_00196).l            ; 03482
         move.b  d0,(dat_071_00193).l            ; 03488
-        move.b  d0,(dat_071_001B0).l            ; 0348E
+        move.b  d0,(TextStatus).l               ; 0348E
         move.b  d0,(dat_071_00241).l            ; 03494
         unlk    a6                              ; 0349A
         rts                                     ; 0349C
 	dc.b	$00,$00
-sub_000_034A0:
+
+;-------------------------------------------------------------------------------
+; MissionCompleted - Records a completed mission in the flight log: the last mission
+; (ConfigBuffer+$06) and its rating (+$07), missions completed (+$38) and the times the mission
+; was completed (+$12+mode, at most 3); raises the difficulty by one (at most 3).
+;-------------------------------------------------------------------------------
+MissionCompleted:
         link.w  a6,#$fffc                       ; 034A0
-        move.b  (dat_071_00276).l,d0            ; 034A4
+        move.b  (GameMode).l,d0                 ; 034A4
         ext.w   d0                              ; 034AA
         ext.l   d0                              ; 034AC
         movea.l (ConfigBuffer).l,a0             ; 034AE
@@ -3813,7 +4097,7 @@ sub_000_034A0:
         move.l  a0,-$4(a6)                      ; 034BA
         jsr     (PutDifficulty).l               ; 034BE
         movea.l (ConfigBuffer).l,a0             ; 034C4
-        move.b  (dat_071_00276).l,$6(a0)        ; 034CA
+        move.b  (GameMode).l,$6(a0)             ; 034CA
         movea.l -$4(a6),a0                      ; 034D2
         movea.l (ConfigBuffer).l,a1             ; 034D6
         move.b  (a0),$7(a1)                     ; 034DC
@@ -3840,93 +4124,118 @@ l_000_03526:
         move.b  (Difficulty).l,(DifficultySaved).l ; 03526
         unlk    a6                              ; 03530
         rts                                     ; 03532
-State_03534:
-        move.w  (dat_071_004A6).l,d0            ; 03534
+
+;-------------------------------------------------------------------------------
+; StateChecksumError - Shows text page $61 (CHECKSUM ERROR -) then StateChecksumLock.
+;-------------------------------------------------------------------------------
+StateChecksumError:
+        move.w  (StateTimer).l,d0               ; 03534
         tst.w   d0                              ; 0353A
         bpl.b   l_000_03566                     ; 0353C
         pea.l   (dat_021_00000).l               ; 0353E
-        bsr.w   sub_000_03C1C                   ; 03544
+        bsr.w   SetPalette                      ; 03544
         addq.l  #$4,a7                          ; 03548
-        move.w  #$61,(dat_071_0011A).l          ; 0354A
-        move.w  #$1f4,(dat_071_004A6).l         ; 03552
-        lea.l   State_0356E(pc),a0              ; 0355A
+        move.w  #$61,(TextPages).l              ; 0354A
+        move.w  #$1f4,(StateTimer).l            ; 03552
+        lea.l   StateChecksumLock(pc),a0        ; 0355A
         move.l  a0,(GameState).l                ; 0355E
         bra.b   l_000_0356C                     ; 03564
 l_000_03566:
-        jsr     (sub_036_00892).l               ; 03566
+        jsr     (ClearScreen).l                 ; 03566
 l_000_0356C:
         rts                                     ; 0356C
-State_0356E:
-        move.b  (dat_071_001B0).l,d0            ; 0356E
+
+;-------------------------------------------------------------------------------
+; StateChecksumLock - Stops the game: sets itself again for ever.
+;-------------------------------------------------------------------------------
+StateChecksumLock:
+        move.b  (TextStatus).l,d0               ; 0356E
         tst.b   d0                              ; 03574
         bpl.b   l_000_03594                     ; 03576
-        move.w  (dat_071_004A6).l,d0            ; 03578
+        move.w  (StateTimer).l,d0               ; 03578
         tst.w   d0                              ; 0357E
         bpl.b   l_000_03594                     ; 03580
-        move.w  #$3,(dat_071_004A6).l           ; 03582
-        lea.l   State_0356E(pc),a0              ; 0358A
+        move.w  #$3,(StateTimer).l              ; 03582
+        lea.l   StateChecksumLock(pc),a0        ; 0358A
         move.l  a0,(GameState).l                ; 0358E
 l_000_03594:
         rts                                     ; 03594
-State_03596:
-        move.w  (dat_071_004A6).l,d0            ; 03596
+
+;-------------------------------------------------------------------------------
+; StateTitle - Sets the colours and shows text page $F, the credits (1988 Intellisoft, Bob
+; Dinnerman, Moses Ma, Dave Warhol, Electronic Arts); then StateTitleWait.
+;-------------------------------------------------------------------------------
+StateTitle:
+        move.w  (StateTimer).l,d0               ; 03596
         tst.w   d0                              ; 0359C
         bpl.b   l_000_035C0                     ; 0359E
         pea.l   (dat_021_00000).l               ; 035A0
-        bsr.w   sub_000_03C1C                   ; 035A6
+        bsr.w   SetPalette                      ; 035A6
         addq.l  #$4,a7                          ; 035AA
-        move.w  #$f,(dat_071_0011A).l           ; 035AC
-        lea.l   State_035C8(pc),a0              ; 035B4
+        move.w  #$f,(TextPages).l               ; 035AC
+        lea.l   StateTitleWait(pc),a0           ; 035B4
         move.l  a0,(GameState).l                ; 035B8
         bra.b   l_000_035C6                     ; 035BE
 l_000_035C0:
-        jsr     (sub_036_00892).l               ; 035C0
+        jsr     (ClearScreen).l                 ; 035C0
 l_000_035C6:
         rts                                     ; 035C6
-State_035C8:
-        tst.b   (dat_071_00173).l               ; 035C8
+
+;-------------------------------------------------------------------------------
+; StateTitleWait - Waits for a key or button (KeyPressed), then starts the music, clears the
+; screen, loads the flight log (LoadConfig) and goes to StateLogDisk.
+;-------------------------------------------------------------------------------
+StateTitleWait:
+        tst.b   (KeyPressed).l                  ; 035C8
         beq.b   l_000_03620                     ; 035CE
         move.l  #$1f0000,(dat_071_00038).l      ; 035D0
         move.b  #$1,(dat_071_001A7).l           ; 035DA
         pea.l   (dat_021_00080).l               ; 035E2
-        bsr.w   h000+$3C1C                      ; 035E8
+        bsr.w   SetPalette                      ; 035E8
         addq.l  #$4,a7                          ; 035EC
-        jsr     (sub_000_03462).l               ; 035EE
-        jsr     (sub_036_00892).l               ; 035F4
-        move.b  #$1,(dat_071_001A3).l           ; 035FA
-        move.w  #$5,(dat_071_004A6).l           ; 03602
-        clr.b   (dat_071_00276).l               ; 0360A
+        jsr     (ClearTextPages).l              ; 035EE
+        jsr     (ClearScreen).l                 ; 035F4
+        move.b  #$1,(LogDiskCheck).l            ; 035FA
+        move.w  #$5,(StateTimer).l              ; 03602
+        clr.b   (GameMode).l                    ; 0360A
         jsr     (LoadConfig).l                  ; 03610
-        lea.l   State_03622(pc),a0               ; 03616
+        lea.l   StateLogDisk(pc),a0             ; 03616
         move.l  a0,(GameState).l                ; 0361A
 l_000_03620:
         rts                                     ; 03620
-State_03622:
+
+;-------------------------------------------------------------------------------
+; StateLogDisk - Checks the log disk (LogDiskStatus): 1 no log disk in df0:, 2 not initialised,
+; 3 write protected; shows the matching text (pages $44/$45/$46) and "insert an initialised log
+; disk" ($5E), then StateLogDiskWait; with a good disk, or once the player goes on without one,
+; StateWelcome.
+;-------------------------------------------------------------------------------
+StateLogDisk:
         link.w  a6,#$fffc                       ; 03622
-        jsr     (sub_036_00892).l               ; 03626
-        move.w  #$5,(dat_071_004A6).l           ; 0362C
-        move.b  (dat_071_001A3).l,d0            ; 03634
+        jsr     (ClearScreen).l                 ; 03626
+        move.w  #$5,(StateTimer).l              ; 0362C
+        move.b  (LogDiskCheck).l,d0             ; 03634
         tst.b   d0                              ; 0363A
         bne.b   l_000_0365A                     ; 0363C
         jsr     (LoadConfig).l                  ; 0363E
         move.b  #$ff,(dat_071_001A5).l          ; 03644
-        lea.l   State_0370A(pc),a0              ; 0364C
+        lea.l   StateWelcome(pc),a0             ; 0364C
         move.l  a0,(GameState).l                ; 03650
         bra.w   l_000_036EA                     ; 03656
 l_000_0365A:
-        move.w  (dat_071_002F8).l,d0            ; 0365A
+        move.w  (LogDiskStatus).l,d0            ; 0365A
         tst.w   d0                              ; 03660
         bne.b   l_000_03676                     ; 03662
-        clr.b   (dat_071_001A3).l               ; 03664
-        lea.l   State_0370A(pc),a0              ; 0366A
+        clr.b   (LogDiskCheck).l                ; 03664
+        lea.l   StateWelcome(pc),a0             ; 0366A
         move.l  a0,(GameState).l                ; 0366E
         bra.b   l_000_036EA                     ; 03674
 l_000_03676:
         pea.l   (dat_021_00000).l               ; 03676
-        bsr.w   sub_000_03C1C                   ; 0367C
+        bsr.w   SetPalette                      ; 0367C
         addq.l  #$4,a7                          ; 03680
-        lea.l   (dat_071_0011A).l,a0            ; 03682
-        move.w  (dat_071_002F8).l,d0            ; 03688
+        lea.l   (TextPages).l,a0                ; 03682
+        move.w  (LogDiskStatus).l,d0            ; 03688
         move.l  a0,-$4(a6)                      ; 0368E
         subq.w  #$1,d0                          ; 03692
         bne.b   l_000_036A0                     ; 03694
@@ -3934,7 +4243,7 @@ l_000_03676:
         addq.l  #$2,-$4(a6)                     ; 0369A
         bra.b   l_000_036CE                     ; 0369E
 l_000_036A0:
-        move.w  (dat_071_002F8).l,d0            ; 036A0
+        move.w  (LogDiskStatus).l,d0            ; 036A0
         subq.w  #$2,d0                          ; 036A6
         bne.b   l_000_036B8                     ; 036A8
         movea.l -$4(a6),a0                      ; 036AA
@@ -3942,7 +4251,7 @@ l_000_036A0:
         addq.l  #$2,-$4(a6)                     ; 036B2
         bra.b   l_000_036CE                     ; 036B6
 l_000_036B8:
-        move.w  (dat_071_002F8).l,d0            ; 036B8
+        move.w  (LogDiskStatus).l,d0            ; 036B8
         subq.w  #$3,d0                          ; 036BE
         bne.b   l_000_036CE                     ; 036C0
         movea.l -$4(a6),a0                      ; 036C2
@@ -3954,45 +4263,56 @@ l_000_036CE:
         addq.l  #$2,-$4(a6)                     ; 036D6
         movea.l -$4(a6),a0                      ; 036DA
         clr.w   (a0)                            ; 036DE
-        lea.l   State_036EE(pc),a0              ; 036E0
+        lea.l   StateLogDiskWait(pc),a0         ; 036E0
         move.l  a0,(GameState).l                ; 036E4
 l_000_036EA:
         unlk    a6                              ; 036EA
         rts                                     ; 036EC
-State_036EE:
-        move.b  (dat_071_001A3).l,d0            ; 036EE
+
+;-------------------------------------------------------------------------------
+; StateLogDiskWait - Waits for the player (LogDiskCheck cleared), then StateLogDisk again.
+;-------------------------------------------------------------------------------
+StateLogDiskWait:
+        move.b  (LogDiskCheck).l,d0             ; 036EE
         tst.b   d0                              ; 036F4
         bne.b   l_000_03708                     ; 036F6
-        jsr     (sub_036_00892).l               ; 036F8
-        lea.l   State_03622(pc),a0               ; 036FE
+        jsr     (ClearScreen).l                 ; 036F8
+        lea.l   StateLogDisk(pc),a0             ; 036FE
         move.l  a0,(GameState).l                ; 03702
 l_000_03708:
         rts                                     ; 03708
-State_0370A:
+
+;-------------------------------------------------------------------------------
+; StateWelcome - A first tour of duty (ConfigBuffer+$04 = 0): text page 1 ("welcome to your
+; first tour of duty, enter your callsign"), StateCallsign. Otherwise page 2, "welcome to your
+; continuing tour of duty" with the callsign (ConfigBuffer+$1E, up to 24 letters) copied in,
+; StateWelcomeBack.
+;-------------------------------------------------------------------------------
+StateWelcome:
         link.w  a6,#$fff6                       ; 0370A
-        move.w  (dat_071_002F8).l,d0            ; 0370E
+        move.w  (LogDiskStatus).l,d0            ; 0370E
         tst.w   d0                              ; 03714
         bne.w   l_000_037D6                     ; 03716
-        move.w  (dat_071_004A6).l,d0            ; 0371A
+        move.w  (StateTimer).l,d0               ; 0371A
         tst.w   d0                              ; 03720
         bpl.w   l_000_037CE                     ; 03722
         move.b  #$1,(dat_071_0027D).l           ; 03726
         pea.l   (dat_021_00000).l               ; 0372E
-        bsr.w   h000+$3C1C                      ; 03734
+        bsr.w   SetPalette                      ; 03734
         addq.l  #$4,a7                          ; 03738
         moveq   #$0,d0                          ; 0373A
-        move.b  d0,(dat_071_001B0).l            ; 0373C
+        move.b  d0,(TextStatus).l               ; 0373C
         move.b  d0,(dat_071_00193).l            ; 03742
         movea.l (ConfigBuffer).l,a0             ; 03748
         move.w  $4(a0),d0                       ; 0374E
         cmpi.w  #$0,d0                          ; 03752
         bhi.b   l_000_0376C                     ; 03756
-        move.w  #$1,(dat_071_0011A).l           ; 03758
-        lea.l   State_037EA(pc),a0               ; 03760
+        move.w  #$1,(TextPages).l               ; 03758
+        lea.l   StateCallsign(pc),a0            ; 03760
         move.l  a0,(GameState).l                ; 03764
         bra.b   l_000_037E6                     ; 0376A
 l_000_0376C:
-        move.w  #$2,(dat_071_0011A).l           ; 0376C
+        move.w  #$2,(TextPages).l               ; 0376C
         lea.l   (dat_064_004E3).l,a0            ; 03774
         move.l  a0,-$6(a6)                      ; 0377A
         adda.w  #$a,a0                          ; 0377E
@@ -4016,53 +4336,66 @@ l_000_03798:
         addq.w  #$1,-$2(a6)                     ; 037BC
         bra.b   l_000_03798                     ; 037C0
 l_000_037C2:
-        lea.l   State_03800(pc),a0               ; 037C2
+        lea.l   StateWelcomeBack(pc),a0         ; 037C2
         move.l  a0,(GameState).l                ; 037C6
         bra.b   l_000_037E6                     ; 037CC
 l_000_037CE:
-        jsr     (sub_036_00892).l               ; 037CE
+        jsr     (ClearScreen).l                 ; 037CE
         bra.b   l_000_037E6                     ; 037D4
 l_000_037D6:
-        jsr     (sub_000_03462).l               ; 037D6
-        move.l  #State_01D30,(GameState).l      ; 037DC
+        jsr     (ClearTextPages).l              ; 037D6
+        move.l  #StateMainMenu,(GameState).l    ; 037DC
 l_000_037E6:
         unlk    a6                              ; 037E6
         rts                                     ; 037E8
-State_037EA:
-        move.b  (dat_071_001B0).l,d0            ; 037EA
+
+;-------------------------------------------------------------------------------
+; StateCallsign - Waits for the callsign to be typed (TextStatus bit 7), then StateNewTour.
+;-------------------------------------------------------------------------------
+StateCallsign:
+        move.b  (TextStatus).l,d0               ; 037EA
         tst.b   d0                              ; 037F0
         bpl.b   l_000_037FE                     ; 037F2
-        lea.l   State_0381E(pc),a0               ; 037F4
+        lea.l   StateNewTour(pc),a0             ; 037F4
         move.l  a0,(GameState).l                ; 037F8
 l_000_037FE:
         rts                                     ; 037FE
-State_03800:
-        move.b  (dat_071_001B0).l,d0            ; 03800
+
+;-------------------------------------------------------------------------------
+; StateWelcomeBack - Waits for the text to finish or a key, then StateNewTour.
+;-------------------------------------------------------------------------------
+StateWelcomeBack:
+        move.b  (TextStatus).l,d0               ; 03800
         tst.b   d0                              ; 03806
         bmi.b   l_000_03812                     ; 03808
-        tst.b   (dat_071_00173).l               ; 0380A
+        tst.b   (KeyPressed).l                  ; 0380A
         beq.b   l_000_0381C                     ; 03810
 l_000_03812:
-        lea.l   State_0381E(pc),a0               ; 03812
+        lea.l   StateNewTour(pc),a0             ; 03812
         move.l  a0,(GameState).l                ; 03816
 l_000_0381C:
         rts                                     ; 0381C
-State_0381E:
-        jsr     (sub_000_03462).l               ; 0381E
-        move.w  #$5,(dat_071_004A6).l           ; 03824
+
+;-------------------------------------------------------------------------------
+; StateNewTour - Counts a tour in the flight log (ConfigBuffer+$04). The first time shows page
+; 3 ("you are now officially ...") and StateFirstTourWait; otherwise StateMainMenu.
+;-------------------------------------------------------------------------------
+StateNewTour:
+        jsr     (ClearTextPages).l              ; 0381E
+        move.w  #$5,(StateTimer).l              ; 03824
         movea.l (ConfigBuffer).l,a0             ; 0382C
         move.w  $4(a0),d0                       ; 03832
         cmpi.w  #$0,d0                          ; 03836
         bhi.b   l_000_03866                     ; 0383A
-        move.w  #$3,(dat_071_0011A).l           ; 0383C
+        move.w  #$3,(TextPages).l               ; 0383C
         clr.b   (dat_071_00193).l               ; 03844
-        move.b  #$2,(dat_071_001B0).l           ; 0384A
-        move.b  #$14,(dat_071_001C5).l          ; 03852
-        lea.l   State_03888(pc),a0               ; 0385A
+        move.b  #$2,(TextStatus).l              ; 0384A
+        move.b  #$14,(InputLength).l            ; 03852
+        lea.l   StateFirstTourWait(pc),a0       ; 0385A
         move.l  a0,(GameState).l                ; 0385E
         bra.b   l_000_03870                     ; 03864
 l_000_03866:
-        move.l  #State_01D30,(GameState).l      ; 03866
+        move.l  #StateMainMenu,(GameState).l    ; 03866
 l_000_03870:
         movea.l (ConfigBuffer).l,a0             ; 03870
         move.w  $4(a0),d0                       ; 03876
@@ -4070,27 +4403,36 @@ l_000_03870:
         movea.l (ConfigBuffer).l,a0             ; 0387C
         move.w  d0,$4(a0)                       ; 03882
         rts                                     ; 03886
-State_03888:
-        move.b  (dat_071_001B0).l,d0            ; 03888
+
+;-------------------------------------------------------------------------------
+; StateFirstTourWait - Waits for the text, then StateMainMenu.
+;-------------------------------------------------------------------------------
+StateFirstTourWait:
+        move.b  (TextStatus).l,d0               ; 03888
         tst.b   d0                              ; 0388E
         bpl.b   l_000_038AA                     ; 03890
-        jsr     (sub_000_03462).l               ; 03892
-        move.w  #$5,(dat_071_004A6).l           ; 03898
-        move.l  #State_01D30,(GameState).l      ; 038A0
+        jsr     (ClearTextPages).l              ; 03892
+        move.w  #$5,(StateTimer).l              ; 03898
+        move.l  #StateMainMenu,(GameState).l    ; 038A0
 l_000_038AA:
         rts                                     ; 038AA
-        move.w  (dat_071_004A6).l,d0            ; 038AC
+        move.w  (StateTimer).l,d0               ; 038AC
         tst.w   d0                              ; 038B2
         bpl.b   l_000_038C8                     ; 038B4
         clr.w   (FrameCount).l                  ; 038B6
-        move.l  #State_02EFE,(GameState).l      ; 038BC
+        move.l  #StateFlying,(GameState).l      ; 038BC
         bra.b   l_000_038D6                     ; 038C6
 l_000_038C8:
         move.b  #$1,(dat_071_00165).l           ; 038C8
-        jsr     (sub_000_03462).l               ; 038D0
+        jsr     (ClearTextPages).l              ; 038D0
 l_000_038D6:
         rts                                     ; 038D6
-State_038D8:
+
+;-------------------------------------------------------------------------------
+; StateCrashed - Loses an aircraft (AircraftLeft): with more left StateNewAircraft, otherwise
+; StateNoAircraftLeft.
+;-------------------------------------------------------------------------------
+StateCrashed:
         move.b  (dat_071_00155).l,d0            ; 038D8
         tst.b   d0                              ; 038DE
         bne.b   l_000_038EC                     ; 038E0
@@ -4116,23 +4458,27 @@ l_000_03902:
         move.w  (dat_071_002A4).l,d0            ; 03932
         andi.w  #$fbff,d0                       ; 03938
         move.w  d0,(dat_071_002A4).l            ; 0393C
-        move.b  (dat_071_00267).l,d0            ; 03942
+        move.b  (AircraftLeft).l,d0             ; 03942
         subq.b  #$1,d0                          ; 03948
-        move.b  d0,(dat_071_00267).l            ; 0394A
+        move.b  d0,(AircraftLeft).l             ; 0394A
         tst.b   d0                              ; 03950
         bgt.b   l_000_03974                     ; 03952
-        jsr     (sub_036_00892).l               ; 03954
-        move.w  #$5,(dat_071_004A6).l           ; 0395A
+        jsr     (ClearScreen).l                 ; 03954
+        move.w  #$5,(StateTimer).l              ; 0395A
         clr.b   (dat_071_00165).l               ; 03962
-        lea.l   State_039F0(pc),a0              ; 03968
+        lea.l   StateNoAircraftLeft(pc),a0      ; 03968
         move.l  a0,(GameState).l                ; 0396C
         bra.b   l_000_0397E                     ; 03972
 l_000_03974:
-        lea.l   State_03980(pc),a0              ; 03974
+        lea.l   StateNewAircraft(pc),a0         ; 03974
         move.l  a0,(GameState).l                ; 03978
 l_000_0397E:
         rts                                     ; 0397E
-State_03980:
+
+;-------------------------------------------------------------------------------
+; StateNewAircraft - Sets up a new aircraft, StateNewAircraftWait.
+;-------------------------------------------------------------------------------
+StateNewAircraft:
         moveq   #$0,d0                          ; 03980
         move.b  d0,(dat_071_0026A).l            ; 03982
         move.w  (Player_02).l,d0                ; 03988
@@ -4144,50 +4490,67 @@ State_03980:
         jsr     (sub_005_00CEE).l               ; 039A2
 l_000_039A8:
         jsr     (sub_004_003E8).l               ; 039A8
-        move.w  #$5,(dat_071_004A6).l           ; 039AE
-        lea.l   State_039C2(pc),a0               ; 039B6
+        move.w  #$5,(StateTimer).l              ; 039AE
+        lea.l   StateNewAircraftWait(pc),a0     ; 039B6
         move.l  a0,(GameState).l                ; 039BA
         rts                                     ; 039C0
-State_039C2:
-        move.w  (dat_071_004A6).l,d0            ; 039C2
+
+;-------------------------------------------------------------------------------
+; StateNewAircraftWait - Then StateFlying again.
+;-------------------------------------------------------------------------------
+StateNewAircraftWait:
+        move.w  (StateTimer).l,d0               ; 039C2
         tst.w   d0                              ; 039C8
         bpl.b   l_000_039EE                     ; 039CA
         move.w  (dat_071_0029C).l,d0            ; 039CC
         ori.w   #$40,d0                         ; 039D2
         move.w  d0,(dat_071_0029C).l            ; 039D6
         move.b  #$fe,(dat_071_00280).l          ; 039DC
-        move.l  #State_02EFE,(GameState).l      ; 039E4
+        move.l  #StateFlying,(GameState).l      ; 039E4
 l_000_039EE:
         rts                                     ; 039EE
-State_039F0:
-        move.w  (dat_071_004A6).l,d0            ; 039F0
+
+;-------------------------------------------------------------------------------
+; StateNoAircraftLeft - "Hey rookie, F/A-18s (or F-16s) don't grow on trees" (page $63 or $62
+; by PlayerAircraftType), then StateRookieWait.
+;-------------------------------------------------------------------------------
+StateNoAircraftLeft:
+        move.w  (StateTimer).l,d0               ; 039F0
         tst.w   d0                              ; 039F6
         bpl.b   l_000_03A34                     ; 039F8
         pea.l   (dat_021_00000).l               ; 039FA
-        bsr.w   h000+$3C1C                      ; 03A00
+        bsr.w   SetPalette                      ; 03A00
         addq.l  #$4,a7                          ; 03A04
-        move.b  (dat_071_00219).l,d0            ; 03A06
+        move.b  (PlayerAircraftType).l,d0       ; 03A06
         cmpi.b  #$10,d0                         ; 03A0C
         bne.b   l_000_03A1C                     ; 03A10
-        move.w  #$62,(dat_071_0011A).l          ; 03A12
+        move.w  #$62,(TextPages).l              ; 03A12
         bra.b   l_000_03A24                     ; 03A1A
 l_000_03A1C:
-        move.w  #$63,(dat_071_0011A).l          ; 03A1C
+        move.w  #$63,(TextPages).l              ; 03A1C
 l_000_03A24:
-        clr.b   (dat_071_001FB).l               ; 03A24
-        lea.l   State_03A36(pc),a0               ; 03A2A
+        clr.b   (RestartMission).l              ; 03A24
+        lea.l   StateRookieWait(pc),a0          ; 03A2A
         move.l  a0,(GameState).l                ; 03A2E
 l_000_03A34:
         rts                                     ; 03A34
-State_03A36:
-        move.b  (dat_071_001B0).l,d0            ; 03A36
+
+;-------------------------------------------------------------------------------
+; StateRookieWait - When the text is read: StateToMenu.
+;-------------------------------------------------------------------------------
+StateRookieWait:
+        move.b  (TextStatus).l,d0               ; 03A36
         tst.b   d0                              ; 03A3C
         bpl.b   l_000_03A4A                     ; 03A3E
-        move.l  #State_01A70,(GameState).l      ; 03A40
+        move.l  #StateToMenu,(GameState).l      ; 03A40
 l_000_03A4A:
         rts                                     ; 03A4A
-State_03A4C:
-        move.b  (dat_071_001B0).l,d0            ; 03A4C
+
+;-------------------------------------------------------------------------------
+; StateMissionOver - When the text is read: StateMissionOverWait.
+;-------------------------------------------------------------------------------
+StateMissionOver:
+        move.b  (TextStatus).l,d0               ; 03A4C
         tst.b   d0                              ; 03A52
         bpl.b   l_000_03A82                     ; 03A54
         move.w  (dat_071_0029C).l,d0            ; 03A56
@@ -4195,23 +4558,31 @@ State_03A4C:
         move.w  d0,(dat_071_0029C).l            ; 03A60
         andi.w  #$9fff,d0                       ; 03A66
         move.w  d0,(dat_071_0029C).l            ; 03A6A
-        move.w  #$64,(dat_071_004A6).l          ; 03A70
-        lea.l   State_03A84(pc),a0              ; 03A78
+        move.w  #$64,(StateTimer).l             ; 03A70
+        lea.l   StateMissionOverWait(pc),a0     ; 03A78
         move.l  a0,(GameState).l                ; 03A7C
 l_000_03A82:
         rts                                     ; 03A82
-State_03A84:
-        move.w  (dat_071_004A6).l,d0            ; 03A84
+
+;-------------------------------------------------------------------------------
+; StateMissionOverWait - After 100 frames: StateToMenu.
+;-------------------------------------------------------------------------------
+StateMissionOverWait:
+        move.w  (StateTimer).l,d0               ; 03A84
         tst.w   d0                              ; 03A8A
         bpl.b   l_000_03AA6                     ; 03A8C
         moveq   #$0,d0                          ; 03A8E
-        move.b  d0,(dat_071_001FA).l            ; 03A90
-        move.b  d0,(dat_071_00168).l            ; 03A96
-        move.l  #State_01A70,(GameState).l      ; 03A9C
+        move.b  d0,(QuitRequest).l              ; 03A90
+        move.b  d0,(MissionResult).l            ; 03A96
+        move.l  #StateToMenu,(GameState).l      ; 03A9C
 l_000_03AA6:
         rts                                     ; 03AA6
-State_03AA8:
-        move.b  (dat_071_001B0).l,d0            ; 03AA8
+
+;-------------------------------------------------------------------------------
+; StateQualified - When the text is read (or Esc): StateQualifiedWait; Shift+Esc StateToMenu.
+;-------------------------------------------------------------------------------
+StateQualified:
+        move.b  (TextStatus).l,d0               ; 03AA8
         tst.b   d0                              ; 03AAE
         bpl.b   l_000_03AE0                     ; 03AB0
         move.w  (dat_071_0029C).l,d0            ; 03AB2
@@ -4219,69 +4590,82 @@ State_03AA8:
         move.w  d0,(dat_071_0029C).l            ; 03ABC
         andi.w  #$9fff,d0                       ; 03AC2
         move.w  d0,(dat_071_0029C).l            ; 03AC6
-        move.w  #$64,(dat_071_004A6).l          ; 03ACC
-        lea.l   State_03B24(pc),a0              ; 03AD4
+        move.w  #$64,(StateTimer).l             ; 03ACC
+        lea.l   StateQualifiedWait(pc),a0       ; 03AD4
         move.l  a0,(GameState).l                ; 03AD8
         bra.b   l_000_03B22                     ; 03ADE
 l_000_03AE0:
-        move.b  (dat_071_001FA).l,d0            ; 03AE0
+        move.b  (QuitRequest).l,d0              ; 03AE0
         cmpi.b  #$ff,d0                         ; 03AE6
         bne.b   l_000_03B06                     ; 03AEA
         moveq   #$0,d0                          ; 03AEC
-        move.b  d0,(dat_071_001FA).l            ; 03AEE
-        move.b  d0,(dat_071_001FB).l            ; 03AF4
-        move.l  #State_01A70,(GameState).l      ; 03AFA
+        move.b  d0,(QuitRequest).l              ; 03AEE
+        move.b  d0,(RestartMission).l           ; 03AF4
+        move.l  #StateToMenu,(GameState).l      ; 03AFA
         bra.b   l_000_03B22                     ; 03B04
 l_000_03B06:
-        move.b  (dat_071_001FA).l,d0            ; 03B06
+        move.b  (QuitRequest).l,d0              ; 03B06
         subq.b  #$1,d0                          ; 03B0C
         bne.b   l_000_03B22                     ; 03B0E
-        move.w  #$ffff,(dat_071_004A6).l        ; 03B10
-        lea.l   State_03B24(pc),a0              ; 03B18
+        move.w  #$ffff,(StateTimer).l           ; 03B10
+        lea.l   StateQualifiedWait(pc),a0       ; 03B18
         move.l  a0,(GameState).l                ; 03B1C
 l_000_03B22:
         rts                                     ; 03B22
-State_03B24:
-        move.w  (dat_071_004A6).l,d0            ; 03B24
+
+;-------------------------------------------------------------------------------
+; StateQualifiedWait - After 100 frames: restarts the selection (StateRestartFade), skipping
+; the security check.
+;-------------------------------------------------------------------------------
+StateQualifiedWait:
+        move.w  (StateTimer).l,d0               ; 03B24
         tst.w   d0                              ; 03B2A
         bpl.b   l_000_03B74                     ; 03B2C
         moveq   #$0,d0                          ; 03B2E
-        move.b  d0,(dat_071_001FA).l            ; 03B30
-        move.b  d0,(dat_071_00168).l            ; 03B36
-        tst.b   (dat_071_0027C).l               ; 03B3C
+        move.b  d0,(QuitRequest).l              ; 03B30
+        move.b  d0,(MissionResult).l            ; 03B36
+        tst.b   (CodeResult).l                  ; 03B3C
         beq.b   l_000_03B4C                     ; 03B42
-        move.b  #$1,(dat_071_001FB).l           ; 03B44
+        move.b  #$1,(RestartMission).l          ; 03B44
 l_000_03B4C:
         move.b  #$1,(dat_071_0017E).l           ; 03B4C
-        move.w  #$3,(dat_071_004A6).l           ; 03B54
+        move.w  #$3,(StateTimer).l              ; 03B54
         moveq   #$0,d0                          ; 03B5C
         move.b  d0,(dat_071_00165).l            ; 03B5E
         move.b  d0,(dat_071_00271).l            ; 03B64
-        move.l  #State_01A96,(GameState).l      ; 03B6A
+        move.l  #StateRestartFade,(GameState).l ; 03B6A
 l_000_03B74:
         rts                                     ; 03B74
-State_03B76:
+
+;-------------------------------------------------------------------------------
+; StatePause - Shows "- PAUSED -" (page $26), StatePaused.
+;-------------------------------------------------------------------------------
+StatePause:
         clr.b   (dat_071_00165).l               ; 03B76
         move.b  (dat_071_00270).l,d0            ; 03B7C
         move.b  (dat_071_00271).l,d1            ; 03B82
         cmp.b   d1,d0                           ; 03B88
         bne.b   l_000_03B9E                     ; 03B8A
-        move.w  #$26,(dat_071_0011A).l          ; 03B8C
-        lea.l   State_03BA0(pc),a0              ; 03B94
+        move.w  #$26,(TextPages).l              ; 03B8C
+        lea.l   StatePaused(pc),a0              ; 03B94
         move.l  a0,(GameState).l                ; 03B98
 l_000_03B9E:
         rts                                     ; 03B9E
-State_03BA0:
+
+;-------------------------------------------------------------------------------
+; StatePaused - Waits for the pause key, then StateFlying (the paused time is not counted).
+;-------------------------------------------------------------------------------
+StatePaused:
         move.b  (dat_071_0017E).l,d0            ; 03BA0
         tst.b   d0                              ; 03BA6
         bmi.b   l_000_03C1A                     ; 03BA8
         move.b  #$1,(dat_071_00165).l           ; 03BAA
-        jsr     (sub_000_03462).l               ; 03BB2
+        jsr     (ClearTextPages).l              ; 03BB2
         move.b  #$f,(dat_071_00271).l           ; 03BB8
-        move.b  (dat_071_0027E).l,d0            ; 03BC0
+        move.b  (CameraSequence).l,d0           ; 03BC0
         subq.b  #$6,d0                          ; 03BC6
         bne.b   l_000_03BD6                     ; 03BC8
-        move.l  #State_02D58,(GameState).l      ; 03BCA
+        move.l  #StateReady,(GameState).l       ; 03BCA
         bra.b   l_000_03C1A                     ; 03BD4
 l_000_03BD6:
         jsr     (ReadTime).l                    ; 03BD6
@@ -4296,10 +4680,14 @@ l_000_03BD6:
         add.l   d0,(dat_071_002DC).l            ; 03C04
 l_000_03C0A:
         clr.l   (dat_071_002D4).l               ; 03C0A
-        move.l  #State_02EFE,(GameState).l      ; 03C10
+        move.l  #StateFlying,(GameState).l      ; 03C10
 l_000_03C1A:
         rts                                     ; 03C1A
-sub_000_03C1C:
+
+;-------------------------------------------------------------------------------
+; SetPalette - SetPalette(colours): copies 32 colours (16 longs) into the palette.
+;-------------------------------------------------------------------------------
+SetPalette:
         link.w  a6,#$fff6                       ; 03C1C
         move.l  $8(a6),-$6(a6)                  ; 03C20
         move.l  (dat_071_00030).l,-$a(a6)       ; 03C26
@@ -4318,7 +4706,11 @@ l_000_03C52:
         move.b  #$2,(dat_071_00274).l           ; 03C52
         unlk    a6                              ; 03C5A
         rts                                     ; 03C5C
-sub_000_03C5E:
+
+;-------------------------------------------------------------------------------
+; BlackPalette - Clears the palette (all colours black).
+;-------------------------------------------------------------------------------
+BlackPalette:
         link.w  a6,#$fffa                       ; 03C5E
         move.b  #$2,(dat_071_00274).l           ; 03C62
         move.l  (dat_071_00030).l,-$6(a6)       ; 03C6A
@@ -4763,7 +5155,7 @@ l_000_04330:
         eori.b  #$1,d0                          ; 04354
         move.b  d0,(dat_071_0017C).l            ; 04358
 l_000_0435E:
-        move.b  (dat_071_0027E).l,d0            ; 0435E
+        move.b  (CameraSequence).l,d0           ; 0435E
         subq.b  #$6,d0                          ; 04364
         bne.b   l_000_0438E                     ; 04366
         cmpi.l  #$24000,(CameraY).l             ; 04368

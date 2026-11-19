@@ -9,9 +9,9 @@
 l_029_00000:
         rts                                     ; 00000
 sub_029_00002:
-        cmpi.b  #$1,(dat_071_00276).l           ; 00002
+        cmpi.b  #$1,(GameMode).l                ; 00002
         bne.b   l_029_00000                     ; 0000A
-        cmpi.b  #$5,(dat_071_0027E).l           ; 0000C
+        cmpi.b  #$5,(CameraSequence).l          ; 0000C
         blt.b   l_029_00000                     ; 00014
         cmpi.l  #$fe800000,(dat_071_00436).l    ; 00016
         bge.b   l_029_00000                     ; 00020
@@ -25,17 +25,17 @@ l_029_00038:
         move.w  (ViewObject).l,d2               ; 0003E
         lea.l   $14(a4,d2.w),a4                 ; 00044
 l_029_00048:
-        lea.l   (dat_067_00032).l,a0            ; 00048
+        lea.l   (StartPoints).l,a0              ; 00048
         move.w  #$0,(dat_071_0037A).l           ; 0004E
 l_029_00056:
-        cmpi.b  #$5,(dat_071_0027E).l           ; 00056
+        cmpi.b  #$5,(CameraSequence).l          ; 00056
         ble.b   l_029_000A0                     ; 0005E
         tst.b   (dat_071_0017E).l               ; 00060
         bne.b   l_029_000A0                     ; 00066
         move.w  (dat_071_0037A).l,d0            ; 00068
-        cmp.b   (dat_071_00218).l,d0            ; 0006E
+        cmp.b   (StartPoint).l,d0               ; 0006E
         beq.b   l_029_00080                     ; 00074
-        cmpi.b  #$6,(dat_071_0027E).l           ; 00076
+        cmpi.b  #$6,(CameraSequence).l          ; 00076
         beq.b   l_029_00094                     ; 0007E
 l_029_00080:
         move.b  (dat_071_00227).l,d0            ; 00080
@@ -304,7 +304,7 @@ l_029_00398:
         bsr.w   sub_029_00568                   ; 003D0
         bra.b   l_029_00410                     ; 003D4
 l_029_003D6:
-        cmpi.b  #$3,(dat_071_00276).l           ; 003D6
+        cmpi.b  #$3,(GameMode).l                ; 003D6
         bne.b   l_029_003E8                     ; 003DE
         btst    #$6,$20(a0)                     ; 003E0
         beq.b   l_029_00404                     ; 003E6

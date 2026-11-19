@@ -370,7 +370,7 @@ l_000_04846:
 l_000_04854:
         tst.l   $1c(a6)                         ; 04854
         bmi.b   l_000_0486C                     ; 04858
-        move.b  (dat_071_0027E).l,d0            ; 0485A
+        move.b  (CameraSequence).l,d0           ; 0485A
         move.b  (dat_071_00176).l,d1            ; 04860
         or.b    d1,d0                           ; 04866
         tst.b   d0                              ; 04868
@@ -577,7 +577,7 @@ CockpitSounds:
         move.b  (dat_071_00280).l,-$11(a6)      ; 04AC4
         movea.l d0,a0                           ; 04ACC
         addq.l  #$2,a0                          ; 04ACE
-        move.b  (dat_071_0027E).l,d0            ; 04AD0
+        move.b  (CameraSequence).l,d0           ; 04AD0
         move.l  a0,-$10(a6)                     ; 04AD6
         tst.b   d0                              ; 04ADA
         bne.w   l_000_052BE                     ; 04ADC
@@ -933,7 +933,7 @@ l_000_04EFA:
 l_000_04F14:
         tst.b   (dat_071_00155).l               ; 04F14
         beq.w   l_000_05088                     ; 04F1A
-        move.b  (dat_071_0027E).l,d0            ; 04F1E
+        move.b  (CameraSequence).l,d0           ; 04F1E
         tst.b   d0                              ; 04F24
         bne.w   l_000_05088                     ; 04F26
         move.w  -$4(a6),d0                      ; 04F2A
@@ -2495,7 +2495,7 @@ l_000_061AC:
 l_000_061BC:
         tst.w   -$32(a6)                        ; 061BC
         bne.w   l_000_0629E                     ; 061C0
-        move.b  (dat_071_00276).l,d0            ; 061C4
+        move.b  (GameMode).l,d0                 ; 061C4
         subq.b  #$2,d0                          ; 061CA
         beq.w   l_000_0629E                     ; 061CC
         tst.b   (dat_071_001A8).l               ; 061D0
@@ -3626,7 +3626,7 @@ l_000_06F30:
         movea.l (ConfigBuffer).l,a0             ; 06FB0
         move.w  d0,$46(a0)                      ; 06FB6
         move.b  #$1,(dat_071_00195).l           ; 06FBA
-        move.b  #$4,(dat_071_00168).l           ; 06FC2
+        move.b  #$4,(MissionResult).l           ; 06FC2
         bra.w   l_000_07178                     ; 06FCA
 l_000_06FCE:
         tst.w   (Player_6E).l                   ; 06FCE

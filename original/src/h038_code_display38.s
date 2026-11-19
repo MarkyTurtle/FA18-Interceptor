@@ -253,7 +253,7 @@ l_038_0036A:
         bclr    #$6,$0(a1)                      ; 0036A
         bra.w   l_038_005EC                     ; 00370
 l_038_00374:
-        move.b  (dat_071_00276).l,d1            ; 00374
+        move.b  (GameMode).l,d1                 ; 00374
         cmpi.b  #$7d,d1                         ; 0037A
         beq.w   l_038_00488                     ; 0037E
         subq.b  #$2,d1                          ; 00382
@@ -502,13 +502,13 @@ l_038_0068E:
         beq.b   l_038_006DE                     ; 00692
         btst    #$1,d1                          ; 00694
         bne.b   l_038_006DE                     ; 00698
-        cmpi.b  #$5,(dat_071_00276).l           ; 0069A
+        cmpi.b  #$5,(GameMode).l                ; 0069A
         beq.b   l_038_006DE                     ; 006A2
         bra.b   l_038_006BC                     ; 006A4
 l_038_006A6:
         btst    #$1,d0                          ; 006A6
         beq.b   l_038_006C8                     ; 006AA
-        cmpi.b  #$5,(dat_071_00276).l           ; 006AC
+        cmpi.b  #$5,(GameMode).l                ; 006AC
         beq.b   l_038_006C8                     ; 006B4
         btst    #$1,d1                          ; 006B6
         bne.b   l_038_006DE                     ; 006BA

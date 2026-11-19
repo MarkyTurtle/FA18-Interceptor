@@ -9,7 +9,10 @@
 	CODE_HUNK	h064
 dat_064_00000:
 	dc.b	$00,$4D,$00,$4E,$00,$4F,$00,$50,$00,$51
-dat_064_0000A:
+; TextPageTable - The text pages: entry n-1 is the offset (from this table) of page n: a row,
+; then lines of text. A page number with bit 15 set is printed at the bottom, bit 14 set
+; continues the page before.
+TextPageTable:
 	dc.b	$04,$24,$04,$D7,$04,$86,$02,$D4,$04,$24,$05,$2D,$03,$EE,$03,$EE
 	dc.b	$0A,$9C,$0C,$1A
 	dc.b	'#F#M#T!*!'
@@ -25,7 +28,8 @@ dat_064_0000A:
 	dc.b	$26,$21,$64,$21,$85,$21,$9E,$10,$4A,$1E,$7C,$11,$E2,$01,$96,$02
 	dc.b	$2A,$02,$8A,$03,$36,$03,$55,$03,$A1,$05,$53,$05,$61,$05,$72,$05
 	dc.b	$A2,$05,$CB,$05,$F5,$06,$26,$06,$46,$06,$6F,$06,$9D,$0A,$1B
-dat_064_000E6:
+; TextGroups - Offsets to lists of page numbers, one list per game mode (missions' texts).
+TextGroups:
 	dc.b	$00,$E8,$00,$F2,$00,$FE,$01,$08,$01,$12,$01,$1C,$00,$1A,$00,$1B
 	dc.b	$00,$5F,$00,$1D,$00,$1E,$00,$1F,$00,$20,$00,$5F,$00,$22,$00,$23
 	dc.b	$13,$DA,$00,$27,$00,$28,$00,$5F,$00,$2A,$00,$2B,$00,$2E,$00,$2F

@@ -1,5 +1,5 @@
 ; F/A-18 Interceptor - hunk 67 (code)
-; Data: a table used by hunks 66, 5, 4, 28 and 29 (not worked out yet)
+; Data: the free flight's starting locations (StartPoints) and other tables (not worked out yet).
 ; Included by ../f18_main.s.
 
 ;===============================================================================
@@ -14,7 +14,11 @@ dat_067_0001C:
 	dc.b	$0B,$56,$00,$50,$08,$80,$FF,$FF
 dat_067_00024:
 	dc.b	$0A,$57,$06,$00,$06,$00,$07,$2D,$05,$00,$00,$10,$FF,$FF
-dat_067_00032:
+; StartPoints - The free flight's starting locations, 16 bytes each, ended by $FFFF: the map
+; cell X, Z and the position in it; or, with bit 15 of the first word set, on that object (3
+; and 4: objects 14 and 15, the carriers). A start on an object that is not there becomes start
+; 0.
+StartPoints:
 	dc.b	$00,$10,$00,$10,$00,$06,$04,$A0,$09,$E0,$1D,$92,$C8,$4F,$00,$1C
 	dc.b	$00,$0F,$00,$11,$00,$0C,$00,$70,$03,$F0,$D4,$C9,$DB,$9F,$01,$36
 	dc.b	$00,$0F,$00,$0F,$00,$03,$09,$90,$04,$1F,$EC,$78,$CA,$7F,$01,$54

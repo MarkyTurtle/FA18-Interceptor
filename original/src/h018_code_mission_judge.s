@@ -1,5 +1,5 @@
 ; F/A-18 Interceptor - hunk 18 (code)
-; Game logic not yet identified (used by hunks 16 and 17).
+; Judging the missions: JudgeMission calls the mode's judge, which sets MissionResult.
 ; Included by ../f18_main.s.
 
 ;===============================================================================
@@ -20,7 +20,13 @@ sub_018_00000:
 l_018_00032:
         move.l  (a7)+,d0                        ; 00032
         rts                                     ; 00034
-sub_018_00036:
+
+;-------------------------------------------------------------------------------
+; JudgeMission - Each frame of a mission (not the demo, GameMode above 2): calls the mode's
+; judge, which sets MissionResult: JudgeF1-JudgeF5, JudgeQualification, JudgePractice; F6 uses
+; CheckMissionTargets.
+;-------------------------------------------------------------------------------
+JudgeMission:
         clr.b   (LaunchRequest).l               ; 00036
         clr.b   (dat_071_0018B).l               ; 0003C
         clr.b   (dat_071_0018C).l               ; 00042
@@ -29,63 +35,73 @@ sub_018_00036:
         beq.b   l_018_000C4                     ; 00056
         tst.b   (dat_071_00160).l               ; 00058
         bne.b   l_018_000C4                     ; 0005E
-        move.b  (dat_071_00276).l,d0            ; 00060
+        move.b  (GameMode).l,d0                 ; 00060
         cmpi.b  #$2,d0                          ; 00066
         ble.b   l_018_000C4                     ; 0006A
         cmpi.b  #$3,d0                          ; 0006C
         bne.b   l_018_00078                     ; 00070
-        bsr.w   sub_018_000C8                   ; 00072
+        bsr.w   JudgeF1                         ; 00072
         bra.b   l_018_000C4                     ; 00076
 l_018_00078:
         cmpi.b  #$4,d0                          ; 00078
         bne.b   l_018_00084                     ; 0007C
-        bsr.w   sub_018_000F4                   ; 0007E
+        bsr.w   JudgeF2                         ; 0007E
         bra.b   l_018_000C4                     ; 00082
 l_018_00084:
         cmpi.b  #$5,d0                          ; 00084
         bne.b   l_018_00090                     ; 00088
-        bsr.w   sub_018_00232                   ; 0008A
+        bsr.w   JudgeF3                         ; 0008A
         bra.b   l_018_000C4                     ; 0008E
 l_018_00090:
         cmpi.b  #$6,d0                          ; 00090
         bne.b   l_018_0009C                     ; 00094
-        bsr.w   sub_018_0038C                   ; 00096
+        bsr.w   JudgeF4                         ; 00096
         bra.b   l_018_000C4                     ; 0009A
 l_018_0009C:
         cmpi.b  #$7,d0                          ; 0009C
         bne.b   l_018_000A8                     ; 000A0
-        bsr.w   sub_018_00410                   ; 000A2
+        bsr.w   JudgeF5                         ; 000A2
         bra.b   l_018_000C4                     ; 000A6
 l_018_000A8:
         cmpi.b  #$9,d0                          ; 000A8
         bne.b   l_018_000B4                     ; 000AC
-        bsr.w   sub_018_00520                   ; 000AE
+        bsr.w   JudgeQualification              ; 000AE
         bra.b   l_018_000C4                     ; 000B2
 l_018_000B4:
         cmpi.b  #$7d,d0                         ; 000B4
         bne.b   l_018_000C0                     ; 000B8
-        bsr.w   sub_018_00564                   ; 000BA
+        bsr.w   JudgePractice                   ; 000BA
         bra.b   l_018_000C4                     ; 000BE
 l_018_000C0:
-        bsr.w   sub_018_00594                   ; 000C0
+        bsr.w   CheckMissionTargets             ; 000C0
 l_018_000C4:
         rts                                     ; 000C4
 l_018_000C6:
         rts                                     ; 000C6
-sub_018_000C8:
-        tst.b   (dat_071_00168).l               ; 000C8
+
+;-------------------------------------------------------------------------------
+; JudgeF1 - Visual confirmation: success ($FF) once dat_071_0023F goes negative.
+;-------------------------------------------------------------------------------
+JudgeF1:
+        tst.b   (MissionResult).l               ; 000C8
         bne.w   l_018_005F6                     ; 000CE
         tst.b   (dat_071_0023F).l               ; 000D2
         bge.b   l_018_000C6                     ; 000D8
-        cmpi.b  #$3,(dat_071_001FA).l           ; 000DA
+        cmpi.b  #$3,(QuitRequest).l             ; 000DA
         beq.b   l_018_000C6                     ; 000E2
-        move.b  #$ff,(dat_071_00168).l          ; 000E4
+        move.b  #$ff,(MissionResult).l          ; 000E4
         moveq   #$0,d0                          ; 000EC
         bra.w   l_018_005D6                     ; 000EE
 l_018_000F2:
         rts                                     ; 000F2
-sub_018_000F4:
-        tst.b   (dat_071_00168).l               ; 000F4
+
+;-------------------------------------------------------------------------------
+; JudgeF2 - Emergency defense, Air Force One (object 4): success ($FF) when it is down and slow
+; (speed at most $320) and the attackers (objects 8 and 10) are gone; if it is destroyed, $FD
+; when the player shot it (its +$20 bit 7), else $FE.
+;-------------------------------------------------------------------------------
+JudgeF2:
+        tst.b   (MissionResult).l               ; 000F4
         bne.w   l_018_005F6                     ; 000FA
         lea.l   (Object4).l,a1                  ; 000FE
         move.w  #$4,(CurrentObject).l           ; 00104
@@ -133,28 +149,32 @@ l_018_001D8:
         beq.b   l_018_00206                     ; 001DE
         move.w  (CurrentObject).l,d1            ; 001E0
         jsr     (sub_005_012D0).l               ; 001E6
-        cmpi.b  #$3,(dat_071_001FA).l           ; 001EC
+        cmpi.b  #$3,(QuitRequest).l             ; 001EC
         beq.b   l_018_00204                     ; 001F4
-        move.b  #$ff,(dat_071_00168).l          ; 001F6
+        move.b  #$ff,(MissionResult).l          ; 001F6
         moveq   #$4,d0                          ; 001FE
         bra.w   l_018_005D6                     ; 00200
 l_018_00204:
         rts                                     ; 00204
 l_018_00206:
-        cmpi.b  #$3,(dat_071_001FA).l           ; 00206
+        cmpi.b  #$3,(QuitRequest).l             ; 00206
         beq.b   l_018_00204                     ; 0020E
         btst    #$7,$20(a1)                     ; 00210
         beq.b   l_018_00222                     ; 00216
-        move.b  #$fd,(dat_071_00168).l          ; 00218
+        move.b  #$fd,(MissionResult).l          ; 00218
         bra.b   l_018_0022A                     ; 00220
 l_018_00222:
-        move.b  #$fe,(dat_071_00168).l          ; 00222
+        move.b  #$fe,(MissionResult).l          ; 00222
 l_018_0022A:
         moveq   #$0,d0                          ; 0022A
         bra.w   l_018_005D6                     ; 0022C
 	dc.b	$4E,$75
-sub_018_00232:
-        tst.b   (dat_071_00168).l               ; 00232
+
+;-------------------------------------------------------------------------------
+; JudgeF3 - Intercept stolen aircraft (objects 4 and 6...).
+;-------------------------------------------------------------------------------
+JudgeF3:
+        tst.b   (MissionResult).l               ; 00232
         bne.w   l_018_005F6                     ; 00238
         lea.l   (Object4).l,a2                  ; 0023C
         lea.l   (Object6).l,a3                  ; 00242
@@ -221,8 +241,8 @@ l_018_002FE:
         tst.w   (dat_071_00152).l               ; 002FE
         bge.b   l_018_0035C                     ; 00304
 l_018_00306:
-        move.b  (dat_071_0027A).l,d0            ; 00306
-        cmp.b   (dat_071_0027B).l,d0            ; 0030C
+        move.b  (MissionTargets).l,d0           ; 00306
+        cmp.b   (MissionTargetsDone).l,d0       ; 0030C
         bgt.b   l_018_0035C                     ; 00312
         tst.b   (dat_071_0017E).l               ; 00314
         bne.b   l_018_00324                     ; 0031A
@@ -230,15 +250,15 @@ l_018_00306:
 l_018_00324:
         subq.b  #$1,(dat_071_0017E).l           ; 00324
         bne.b   l_018_0035C                     ; 0032A
-        cmpi.b  #$3,(dat_071_001FA).l           ; 0032C
+        cmpi.b  #$3,(QuitRequest).l             ; 0032C
         beq.b   l_018_0035C                     ; 00334
-        move.b  #$ff,(dat_071_00168).l          ; 00336
+        move.b  #$ff,(MissionResult).l          ; 00336
         moveq   #$0,d0                          ; 0033E
         bra.w   l_018_005D6                     ; 00340
 l_018_00344:
-        cmpi.b  #$3,(dat_071_001FA).l           ; 00344
+        cmpi.b  #$3,(QuitRequest).l             ; 00344
         beq.b   l_018_0035C                     ; 0034C
-        move.b  #$fe,(dat_071_00168).l          ; 0034E
+        move.b  #$fe,(MissionResult).l          ; 0034E
         moveq   #$0,d0                          ; 00356
         bra.w   l_018_005D6                     ; 00358
 l_018_0035C:
@@ -258,8 +278,12 @@ sub_018_0035E:
         rts                                     ; 00388
 l_018_0038A:
         rts                                     ; 0038A
-sub_018_0038C:
-        tst.b   (dat_071_00168).l               ; 0038C
+
+;-------------------------------------------------------------------------------
+; JudgeF4 - Search and rescue.
+;-------------------------------------------------------------------------------
+JudgeF4:
+        tst.b   (MissionResult).l               ; 0038C
         bne.w   l_018_005F6                     ; 00392
         move.w  (dat_071_00292).l,d0            ; 00396
         beq.b   l_018_0038A                     ; 0039C
@@ -282,23 +306,27 @@ l_018_003CC:
         bgt.b   l_018_003F6                     ; 003D2
         cmpi.l  #$10000,d2                      ; 003D4
         bgt.b   l_018_003F6                     ; 003DA
-        cmpi.b  #$3,(dat_071_001FA).l           ; 003DC
+        cmpi.b  #$3,(QuitRequest).l             ; 003DC
         beq.b   l_018_003F4                     ; 003E4
-        move.b  #$ff,(dat_071_00168).l          ; 003E6
+        move.b  #$ff,(MissionResult).l          ; 003E6
         moveq   #$0,d0                          ; 003EE
         bra.w   l_018_005D6                     ; 003F0
 l_018_003F4:
         rts                                     ; 003F4
 l_018_003F6:
-        cmpi.b  #$3,(dat_071_001FA).l           ; 003F6
+        cmpi.b  #$3,(QuitRequest).l             ; 003F6
         beq.b   l_018_003F4                     ; 003FE
-        move.b  #$fe,(dat_071_00168).l          ; 00400
+        move.b  #$fe,(MissionResult).l          ; 00400
         moveq   #$0,d0                          ; 00408
         bra.w   l_018_005D6                     ; 0040A
 l_018_0040E:
         rts                                     ; 0040E
-sub_018_00410:
-        tst.b   (dat_071_00168).l               ; 00410
+
+;-------------------------------------------------------------------------------
+; JudgeF5 - Intercept the incoming cruise missile.
+;-------------------------------------------------------------------------------
+JudgeF5:
+        tst.b   (MissionResult).l               ; 00410
         bne.w   l_018_005F6                     ; 00416
         lea.l   (Object4).l,a1                  ; 0041A
         move.w  #$4,(CurrentObject).l           ; 00420
@@ -340,23 +368,27 @@ l_018_004D8:
         bne.b   l_018_00504                     ; 004DE
         move.w  (CurrentObject).l,d1            ; 004E0
         jsr     (sub_005_012D0).l               ; 004E6
-        cmpi.b  #$3,(dat_071_001FA).l           ; 004EC
+        cmpi.b  #$3,(QuitRequest).l             ; 004EC
         beq.b   l_018_0051C                     ; 004F4
-        move.b  #$fe,(dat_071_00168).l          ; 004F6
+        move.b  #$fe,(MissionResult).l          ; 004F6
         moveq   #$7,d0                          ; 004FE
         bra.w   l_018_005D6                     ; 00500
 l_018_00504:
-        cmpi.b  #$3,(dat_071_001FA).l           ; 00504
+        cmpi.b  #$3,(QuitRequest).l             ; 00504
         beq.b   l_018_0051C                     ; 0050C
-        move.b  #$ff,(dat_071_00168).l          ; 0050E
+        move.b  #$ff,(MissionResult).l          ; 0050E
         moveq   #$0,d0                          ; 00516
         bra.w   l_018_005D6                     ; 00518
 l_018_0051C:
         rts                                     ; 0051C
 l_018_0051E:
         rts                                     ; 0051E
-sub_018_00520:
-        tst.b   (dat_071_00168).l               ; 00520
+
+;-------------------------------------------------------------------------------
+; JudgeQualification - The qualification's carrier landing.
+;-------------------------------------------------------------------------------
+JudgeQualification:
+        tst.b   (MissionResult).l               ; 00520
         bne.b   l_018_0051E                     ; 00526
         lea.l   (ObjectTable).l,a1              ; 00528
         btst    #$6,$1(a1)                      ; 0052E
@@ -367,31 +399,40 @@ sub_018_00520:
         bne.b   l_018_0051E                     ; 00542
         tst.w   $6e(a1)                         ; 00544
         bne.b   l_018_0051E                     ; 00548
-        cmpi.b  #$3,(dat_071_001FA).l           ; 0054A
+        cmpi.b  #$3,(QuitRequest).l             ; 0054A
         beq.b   l_018_0051E                     ; 00552
-        move.b  #$ff,(dat_071_00168).l          ; 00554
+        move.b  #$ff,(MissionResult).l          ; 00554
         moveq   #$0,d0                          ; 0055C
         bra.w   l_018_005D6                     ; 0055E
 l_018_00562:
         rts                                     ; 00562
-sub_018_00564:
-        tst.b   (dat_071_00168).l               ; 00564
+
+;-------------------------------------------------------------------------------
+; JudgePractice - Practice maneuvers.
+;-------------------------------------------------------------------------------
+JudgePractice:
+        tst.b   (MissionResult).l               ; 00564
         bne.b   l_018_00562                     ; 0056A
         lea.l   (Object4).l,a1                  ; 0056C
         btst    #$6,$1(a1)                      ; 00572
         bne.b   l_018_00562                     ; 00578
-        cmpi.b  #$3,(dat_071_001FA).l           ; 0057A
+        cmpi.b  #$3,(QuitRequest).l             ; 0057A
         beq.b   l_018_00562                     ; 00582
-        move.b  #$fe,(dat_071_00168).l          ; 00584
+        move.b  #$fe,(MissionResult).l          ; 00584
         moveq   #$0,d0                          ; 0058C
         bra.w   l_018_005D6                     ; 0058E
 l_018_00592:
         rts                                     ; 00592
-sub_018_00594:
-        tst.b   (dat_071_00168).l               ; 00594
+
+;-------------------------------------------------------------------------------
+; CheckMissionTargets - When MissionTargetsDone reaches MissionTargets (and no result is set
+; yet): MissionResult $FF and, after a pause, QuitRequest 3 (QuitDelay 4).
+;-------------------------------------------------------------------------------
+CheckMissionTargets:
+        tst.b   (MissionResult).l               ; 00594
         bne.w   l_018_005F6                     ; 0059A
-        move.b  (dat_071_0027A).l,d0            ; 0059E
-        cmp.b   (dat_071_0027B).l,d0            ; 005A4
+        move.b  (MissionTargets).l,d0           ; 0059E
+        cmp.b   (MissionTargetsDone).l,d0       ; 005A4
         bgt.b   l_018_00592                     ; 005AA
         tst.b   (dat_071_0017E).l               ; 005AC
         bne.b   l_018_005BC                     ; 005B2
@@ -399,18 +440,18 @@ sub_018_00594:
 l_018_005BC:
         subq.b  #$1,(dat_071_0017E).l           ; 005BC
         bne.b   l_018_005F4                     ; 005C2
-        cmpi.b  #$3,(dat_071_001FA).l           ; 005C4
+        cmpi.b  #$3,(QuitRequest).l             ; 005C4
         beq.b   l_018_005F4                     ; 005CC
-        move.b  #$ff,(dat_071_00168).l          ; 005CE
+        move.b  #$ff,(MissionResult).l          ; 005CE
 l_018_005D6:
         move.w  d0,(dat_071_00290).l            ; 005D6
-        move.b  #$3,(dat_071_001FA).l           ; 005DC
-        move.b  #$4,(dat_071_001FC).l           ; 005E4
+        move.b  #$3,(QuitRequest).l             ; 005DC
+        move.b  #$4,(QuitDelay).l               ; 005E4
         move.b  #$1,(dat_071_0027D).l           ; 005EC
 l_018_005F4:
         rts                                     ; 005F4
 l_018_005F6:
-        move.b  (dat_071_00168).l,d0            ; 005F6
+        move.b  (MissionResult).l,d0            ; 005F6
         cmpi.b  #$ff,d0                         ; 005FC
         beq.b   l_018_00606                     ; 00600
         subq.b  #$1,d0                          ; 00602
@@ -418,7 +459,7 @@ l_018_005F6:
 l_018_00606:
         bsr.w   sub_018_0061A                   ; 00606
         bne.b   l_018_00618                     ; 0060A
-        move.b  #$fc,(dat_071_00168).l          ; 0060C
+        move.b  #$fc,(MissionResult).l          ; 0060C
         moveq   #$0,d0                          ; 00614
         bra.b   l_018_005D6                     ; 00616
 l_018_00618:
@@ -429,7 +470,7 @@ sub_018_0061A:
         beq.b   l_018_00658                     ; 00626
         btst    #$7,$3(a0)                      ; 00628
         beq.b   l_018_00658                     ; 0062E
-        cmpi.b  #$3,(dat_071_00218).l           ; 00630
+        cmpi.b  #$3,(StartPoint).l              ; 00630
         beq.b   l_018_00644                     ; 00638
         btst    #$2,$4(a0)                      ; 0063A
         beq.b   l_018_00658                     ; 00640

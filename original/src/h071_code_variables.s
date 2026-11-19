@@ -42,12 +42,16 @@ TitleChecksum:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00020:
+; PanelChecksum - ChecksumPlanes of the instrument panel picture (pix/inst5): $7E70 in the
+; original (StateStartup).
+PanelChecksum:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00024:
+; FrontChecksum - ChecksumPlanes of the front picture (pix/frnt5): $4DE8 in the original
+; (StateStartup).
+FrontChecksum:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -264,7 +268,8 @@ dat_071_0010E:
 dat_071_00112:
 	dc.b	$00
 	dc.b	$00
-dat_071_00114:
+; TextHoldTimer - Frames the last page stays up before TextStatus bit 7 is set.
+TextHoldTimer:
 	dc.b	$00
 	dc.b	$00
 dat_071_00116:
@@ -273,9 +278,12 @@ dat_071_00116:
 dat_071_00118:
 	dc.b	$00
 	dc.b	$00
-dat_071_0011A:
+; TextPages - The queue of text pages to show (words, ended by 0): each state queues the pages
+; for its screen; the text printer (hunk 39) shows them in turn.
+TextPages:
 	dcb.b	40,$00
-dat_071_00142:
+; TextPageShown - The first page of the queue last shown.
+TextPageShown:
 	dc.b	$00
 	dc.b	$00
 dat_071_00144:
@@ -329,9 +337,11 @@ dat_071_0015F:
 	dc.b	$00
 dat_071_00160:
 	dc.b	$00
-dat_071_00161:
+; AircraftChosen - Set while the aircraft select page waits for 1 or 2.
+AircraftChosen:
 	dc.b	$00
-dat_071_00162:
+; MenuOption - A second choice with a menu key: 1 next mission/save log, 2 clear log.
+MenuOption:
 	dc.b	$00
 dat_071_00163:
 	dc.b	$00
@@ -342,7 +352,9 @@ dat_071_00166:
 	dc.b	$00
 dat_071_00167:
 	dc.b	$00
-dat_071_00168:
+; MissionResult - $FF objective achieved, $FE mission failed, $FD Air Force One shot down, $FC
+; mission completed (landed); then $F0 back to the menu, $EF qualified.
+MissionResult:
 	dc.b	$00
 dat_071_00169:
 	dc.b	$00
@@ -363,7 +375,9 @@ dat_071_00171:
 	dc.b	$00
 dat_071_00172:
 	dc.b	$00
-dat_071_00173:
+; KeyPressed - Set by HandleKey when a key or button is pressed this frame (2 for the skip key
+; during the start).
+KeyPressed:
 	dc.b	$00
 dat_071_00174:
 	dc.b	$00
@@ -432,12 +446,14 @@ dat_071_00195:
 	dc.b	$00
 dat_071_00196:
 	dc.b	$00
-dat_071_00197:
+; SecurityCode - The security check's four digits (0-15), shown to the player.
+SecurityCode:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0019B:
+; SecurityAnswer - The countercode expected, as ASCII digits ended by 0 (MakeSecurityCode).
+SecurityAnswer:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -446,7 +462,8 @@ dat_071_0019B:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_001A3:
+; LogDiskCheck - Set while the log disk is checked; cleared when the player goes on.
+LogDiskCheck:
 	dc.b	$00
 dat_071_001A4:
 	dc.b	$00
@@ -471,7 +488,9 @@ dat_071_001AE:
 	dc.b	$00
 dat_071_001AF:
 	dc.b	$00
-dat_071_001B0:
+; TextStatus - The text printer's state: 1 waiting for input, 2/3 typing, bit 7 set when the
+; queue has been shown (states wait for it).
+TextStatus:
 	dc.b	$00
 dat_071_001B1:
 	dc.b	$00
@@ -484,7 +503,8 @@ dat_071_001B1:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_001BB:
+; SecurityInput - What the player typed at the security check.
+SecurityInput:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -495,7 +515,9 @@ dat_071_001BB:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_001C5:
+; InputLength - The most characters the text input takes (20 for the callsign; the
+; countercode's length).
+InputLength:
 	dc.b	$00
 dat_071_001C6:
 	dc.b	$00
@@ -562,11 +584,17 @@ dat_071_001F1:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_001FA:
+; QuitRequest - Set by the keys and the game: $FF Shift+Esc (back to the menu), 1 Esc (restart
+; the selection), 2 bailed out (hunk 17, when the pilot's parachute object lands), 3 the
+; mission's objective is done (hunk 18).
+QuitRequest:
 	dc.b	$00
-dat_071_001FB:
+; RestartMission - Set when a selection is restarted after the security code was passed: the
+; briefing and the security check are skipped.
+RestartMission:
 	dc.b	$00
-dat_071_001FC:
+; QuitDelay - Frames before QuitRequest 2 or 3 is acted on (4).
+QuitDelay:
 	dc.b	$00
 dat_071_001FD:
 	dc.b	$00
@@ -625,9 +653,12 @@ dat_071_00216:
 	dc.b	$00
 dat_071_00217:
 	dc.b	$00
-dat_071_00218:
+; StartPoint - Where the flight starts: an entry of StartPoints (chosen by key in free flight;
+; 3, on the carrier, by default; 0 in mission F1).
+StartPoint:
 	dc.b	$00
-dat_071_00219:
+; PlayerAircraftType - The player's aircraft: $11 F/A-18, $10 F-16.
+PlayerAircraftType:
 	dc.b	$00
 	dc.b	$00
 ; RecordMode - The flight recording's mode: 0 recording, 1-3 replaying (1: the events' second
@@ -767,9 +798,11 @@ dat_071_00263:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00267:
+; AircraftLeft - The aircraft the player has left (3; 5 in free flight).
+AircraftLeft:
 	dc.b	$00
-dat_071_00268:
+; CodeTries - Tries left at the security code (2, so 3 tries).
+CodeTries:
 	dc.b	$00
 dat_071_00269:
 	dc.b	$00
@@ -796,7 +829,10 @@ dat_071_00274:
 	dc.b	$00
 dat_071_00275:
 	dc.b	$00
-dat_071_00276:
+; GameMode - The flight chosen at the menu: 1 free flight, 2 training demo, 3-8 missions F1-F6,
+; 9 qualification, $7D practice maneuvers, $7F demo; -1 the selectable missions page, -2 the
+; flight log page; 0 at the menu.
+GameMode:
 	dc.b	$00
 ; Difficulty - The difficulty (the flight log's +$02): how often computer aircraft may fire.
 Difficulty:
@@ -806,15 +842,21 @@ DifficultySaved:
 	dc.b	$00
 dat_071_00279:
 	dc.b	$00
-dat_071_0027A:
+; MissionTargets - How many targets the mission needs (from the mode's set-up table).
+MissionTargets:
 	dc.b	$00
-dat_071_0027B:
+; MissionTargetsDone - Targets done so far; when it reaches MissionTargets hunk 18 sets
+; MissionResult $FF and QuitRequest 3.
+MissionTargetsDone:
 	dc.b	$00
-dat_071_0027C:
+; CodeResult - The security code's result: > 0 right, < 0 wrong.
+CodeResult:
 	dc.b	$00
 dat_071_0027D:
 	dc.b	$00
-dat_071_0027E:
+; CameraSequence - The camera's opening move: 2 the mission fly-by, 3 when it ends, 4 at the
+; aircraft, 5 choosing the start, 6 into the cockpit, 0 done.
+CameraSequence:
 	dc.b	$00
 dat_071_0027F:
 	dc.b	$00
@@ -989,7 +1031,9 @@ dat_071_002F4:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_002F8:
+; LogDiskStatus - 0 the log disk is good, 1 no disk in df0:, 2 not initialised, 3 write
+; protected.
+LogDiskStatus:
 	dc.b	$00
 	dc.b	$00
 dat_071_002FA:
@@ -1450,7 +1494,9 @@ dat_071_004A2:
 FrameStage:
 	dc.b	$00
 	dc.b	$00
-dat_071_004A6:
+; StateTimer - Counted down by one every frame (RunGameState); a state waits for it to go
+; negative.
+StateTimer:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00

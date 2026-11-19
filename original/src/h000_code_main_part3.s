@@ -1038,7 +1038,7 @@ FreeSprites:
 LoadConfig:
         jsr     (_DisownBlitter).l              ; 08434
         jsr     (CheckDisk).l                   ; 0843A
-        move.w  d0,(dat_071_002F8).l            ; 08440
+        move.w  d0,(LogDiskStatus).l            ; 08440
         tst.w   d0                              ; 08446
         bne.b   l_000_08464                     ; 08448
         bsr.w   ReadConfig                      ; 0844A
@@ -1159,13 +1159,13 @@ l_000_0857E:
 ;-------------------------------------------------------------------------------
 SaveConfig:
         link.w  a6,#$fff4                       ; 0858A
-        move.w  (dat_071_002F8).l,d0            ; 0858E
+        move.w  (LogDiskStatus).l,d0            ; 0858E
         tst.w   d0                              ; 08594
         bne.w   l_000_0865E                     ; 08596
         jsr     (_DisownBlitter).l              ; 0859A
         clr.b   (dat_071_00195).l               ; 085A0
         jsr     (CheckDisk).l                   ; 085A6
-        move.w  d0,(dat_071_002F8).l            ; 085AC
+        move.w  d0,(LogDiskStatus).l            ; 085AC
         tst.w   d0                              ; 085B2
         bne.w   l_000_08658                     ; 085B4
         clr.l   -(a7)                           ; 085B8

@@ -617,10 +617,10 @@ l_030_00896:
 ;-------------------------------------------------------------------------------
 ; ComputerPilot - Flies a computer aircraft (a1) for the frame, by setting its control bits:
 ; its state (+$05) chooses what it does, through PilotStates (state - 1). It steers towards its
-; destination: map cell +$2C / +$2E, position in the cell +$30 / +$32, height +$34. In mode 5
-; (dat_071_00276) an aircraft follows a route (Routes, number +$3A): each waypoint is loaded
-; into the destination in turn (state 8). An aircraft sinking too near the ground for its speed
-; (height under speed x 64) goes into state 1 for 30 frames (pulls up).
+; destination: map cell +$2C / +$2E, position in the cell +$30 / +$32, height +$34. In mission
+; F3 (GameMode 5, the stolen aircraft) an aircraft follows a route (Routes, number +$3A): each
+; waypoint is loaded into the destination in turn (state 8). An aircraft sinking too near the
+; ground for its speed (height under speed x 64) goes into state 1 for 30 frames (pulls up).
 ;-------------------------------------------------------------------------------
 ComputerPilot:
         link.w  a6,#$ffd4                       ; 0089A
@@ -662,7 +662,7 @@ l_030_00908:
 l_030_00916:
         cmpi.b  #$8,d0                          ; 00916
         beq.b   l_030_00966                     ; 0091A
-        cmpi.b  #$5,(dat_071_00276).l           ; 0091C
+        cmpi.b  #$5,(GameMode).l                ; 0091C
         bne.b   l_030_00966                     ; 00924
         btst    #$3,$1(a1)                      ; 00926
         beq.b   l_030_00966                     ; 0092C

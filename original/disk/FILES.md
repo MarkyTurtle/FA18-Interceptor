@@ -34,8 +34,8 @@ the chunks in the order the files have them - `BMHD`, `CMAP` (32 colours), one 4
 RAM; the colours become RGB4 words.
 
 `main` checks the title picture: `ChecksumPlanes` adds up every word of its first four planes,
-each rotated left 2 bits, and only when the sum is `$C560` (the original picture) does the
-title sequence play.
+each rotated left 2 bits. `StateStartup` checks the sum is `$C560` (and the instrument panel's
+`$7E70`, the front picture's `$4DE8`); if not, the game stops at a CHECKSUM ERROR screen.
 
 ### The sound samples (`text/`)
 
@@ -73,8 +73,14 @@ disk is a DOS disk and not write-protected (`CheckDisk`).
 
 | Offset | Size | | In this file |
 |---|---|---|---|
+| `+$00` | word | qualified for missions (1 after a successful carrier landing in QUALIFICATION) | 1 |
 | `+$02` | word | a setting the game keeps in `dat_071_00277` (`GetLogSetting`) | 2 |
+| `+$04` | word | tours of duty: 0 makes the game ask for a callsign; counted at each start-up | 1 |
+| `+$06`, `+$07` | byte | the last mission completed (`GameMode` 3-8 = F1-F6) and its count before then | 5 (F3), 0 |
 | `+$08` | long | accumulated flight time, in seconds; also sets the briefing's date: one day per hour flown from September 1st, 1994 (`ShowLogDate`) | 1,163 |
+| `+$10` | word | counted in `StateFlying` when the aircraft is lost in some way (not identified yet) | 0 |
+| `+$12`+mode | byte | times each mission was completed (`GameMode` 3-8, so `+$15`-`+$1A` for F1-F6; at most 3). Mission F*n* can be chosen once F*n*-1 has been completed | 1, 1, 1, 0, 0, 0 |
+| `+$1E` | 24 bytes | the callsign, ended by a 0 byte | `R` |
 | `+$36` | word | missions started | 3 |
 | `+$38` | word | missions successfully completed | 3 |
 | `+$3A`, `+$3C` | word | M61 cannon rounds fired, hits | 15, 0 |
@@ -83,7 +89,8 @@ disk is a DOS disk and not write-protected (`CheckDisk`).
 | `+$46` | word | crashes | 0 |
 | `+$48` | word | hits from missiles | 0 |
 
-The other words are not identified yet (`+$1E`-`+$23` hold the bytes `R`, `O`, `IE`).
+The other words are not identified yet. (The bytes after the callsign's 0, `O` and `IE`, look
+like what was left in the buffer when the log was written.)
 
 ### The flight recording (`textply`, `textctl`)
 

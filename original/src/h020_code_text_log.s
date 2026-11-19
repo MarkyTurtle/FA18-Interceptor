@@ -187,15 +187,20 @@ PutNumber:
         adda.w  d3,a0                           ; 001D6
         move.l  a0,d0                           ; 001D8
         movem.l d0-d2,-(a7)                     ; 001DA
-        jsr     (sub_000_016BA).l               ; 001DE
+        jsr     (PutHex).l                      ; 001DE
         adda.l  #$c,a7                          ; 001E4
         moveq   #$0,d0                          ; 001EA
         movea.l (ConfigBuffer).l,a1             ; 001EC
         rts                                     ; 001F2
-sub_020_001F4:
+
+;-------------------------------------------------------------------------------
+; SetTextPage - SetTextPage(group, slot, index): puts the text page TextGroups[group-3] [index]
+; into TextPages[slot].
+;-------------------------------------------------------------------------------
+SetTextPage:
         link.w  a6,#$0                          ; 001F4
-        lea.l   (dat_064_0000A).l,a0            ; 001F8
-        lea.l   (dat_064_000E6).l,a1            ; 001FE
+        lea.l   (TextPageTable).l,a0            ; 001F8
+        lea.l   (TextGroups).l,a1               ; 001FE
         move.l  $8(a6),d0                       ; 00204
         subq.w  #$3,d0                          ; 00208
         add.w   d0,d0                           ; 0020A
@@ -206,7 +211,7 @@ sub_020_001F4:
         move.w  (a2,d0.w),d1                    ; 00218
         move.l  $c(a6),d0                       ; 0021C
         add.w   d0,d0                           ; 00220
-        lea.l   (dat_071_0011A).l,a2            ; 00222
+        lea.l   (TextPages).l,a2                ; 00222
         move.w  d1,(a2,d0.w)                    ; 00228
         clr.w   $2(a2,d0.w)                     ; 0022C
         unlk    a6                              ; 00230
@@ -322,10 +327,17 @@ l_020_0039C:
         move.b  d1,(a1)+                        ; 003C0
         moveq   #$0,d0                          ; 003C2
         rts                                     ; 003C4
-sub_020_003C6:
+
+;-------------------------------------------------------------------------------
+; MakeSecurityCode - The security check's question: four random hex digits from the clock's
+; microseconds (SecurityCode, and dat_002_02972-02978), written into the "enter security
+; countercode" text; CodeCheck works out the answer, which is kept as octal digits in
+; SecurityAnswer (dat_002_0297A + 3 of them, the length the input takes: InputLength).
+;-------------------------------------------------------------------------------
+MakeSecurityCode:
         jsr     (ReadTime).l                    ; 003C6
         move.l  (TimeMicros).l,d0               ; 003CC
-        lea.l   (dat_071_00197).l,a1            ; 003D2
+        lea.l   (SecurityCode).l,a1             ; 003D2
         move.l  d0,d1                           ; 003D8
         andi.w  #$f,d0                          ; 003DA
         move.w  d0,(dat_002_02972).l            ; 003DE
@@ -347,20 +359,20 @@ sub_020_003C6:
         jsr     (CodeCheck).l                   ; 00414
         move.w  (dat_002_0297A).l,d1            ; 0041A
         addq.b  #$3,d1                          ; 00420
-        move.b  d1,(dat_071_001C5).l            ; 00422
-        lea.l   (dat_071_00197).l,a1            ; 00428
+        move.b  d1,(InputLength).l              ; 00422
+        lea.l   (SecurityCode).l,a1             ; 00428
         move.b  (dat_002_02975).l,$1(a1)        ; 0042E
         lea.l   (dat_064_002B6).l,a0            ; 00436
         adda.w  #$1f,a0                         ; 0043C
         move.b  (a1)+,d1                        ; 00440
-        bsr.w   sub_020_00486                   ; 00442
+        bsr.w   PutHexDigit                     ; 00442
         move.b  (a1)+,d1                        ; 00446
-        bsr.w   sub_020_00486                   ; 00448
+        bsr.w   PutHexDigit                     ; 00448
         move.b  (a1)+,d1                        ; 0044C
-        bsr.w   sub_020_00486                   ; 0044E
+        bsr.w   PutHexDigit                     ; 0044E
         move.b  (a1)+,d1                        ; 00452
-        bsr.w   sub_020_00486                   ; 00454
-        lea.l   (dat_071_0019B).l,a0            ; 00458
+        bsr.w   PutHexDigit                     ; 00454
+        lea.l   (SecurityAnswer).l,a0           ; 00458
         move.w  (dat_002_0297A).l,d2            ; 0045E
         addq.w  #$2,d2                          ; 00464
         move.w  d2,d3                           ; 00466
@@ -372,11 +384,15 @@ l_020_00468:
         move.w  d0,d1                           ; 00470
         lsr.w   d2,d1                           ; 00472
         andi.b  #$7,d1                          ; 00474
-        bsr.w   sub_020_00486                   ; 00478
+        bsr.w   PutHexDigit                     ; 00478
         dbra    d3,l_020_00468                  ; 0047C
         move.b  #$0,(a0)                        ; 00480
         rts                                     ; 00484
-sub_020_00486:
+
+;-------------------------------------------------------------------------------
+; PutHexDigit - Writes d1 (0-15) at a0 as a hex digit '0'-'9' / 'A'-'F'.
+;-------------------------------------------------------------------------------
+PutHexDigit:
         cmpi.b  #$9,d1                          ; 00486
         ble.b   l_020_0048E                     ; 0048A
         addq.w  #$7,d1                          ; 0048C
@@ -384,9 +400,14 @@ l_020_0048E:
         addi.w  #$30,d1                         ; 0048E
         move.b  d1,(a0)+                        ; 00492
         rts                                     ; 00494
-sub_020_00496:
-        lea.l   (dat_071_001BB).l,a0            ; 00496
-        lea.l   (dat_071_0019B).l,a1            ; 0049C
+
+;-------------------------------------------------------------------------------
+; CheckSecurityAnswer - Compares what was typed (SecurityInput) with SecurityAnswer and sets
+; CodeResult: 1 right, -1 wrong.
+;-------------------------------------------------------------------------------
+CheckSecurityAnswer:
+        lea.l   (SecurityInput).l,a0            ; 00496
+        lea.l   (SecurityAnswer).l,a1           ; 0049C
         move.w  (dat_002_0297A).l,d1            ; 004A2
         addq.w  #$2,d1                          ; 004A8
 l_020_004AA:
@@ -396,10 +417,10 @@ l_020_004AA:
         bne.b   l_020_004C0                     ; 004B0
         dbra    d1,l_020_004AA                  ; 004B2
 l_020_004B6:
-        move.b  #$1,(dat_071_0027C).l           ; 004B6
+        move.b  #$1,(CodeResult).l              ; 004B6
         rts                                     ; 004BE
 l_020_004C0:
-        move.b  #$ff,(dat_071_0027C).l          ; 004C0
+        move.b  #$ff,(CodeResult).l             ; 004C0
         rts                                     ; 004C8
 l_020_004CA:
         rts                                     ; 004CA
@@ -990,7 +1011,7 @@ sub_020_00B18:
         bne.w   l_020_00BCE                     ; 00B28
         tst.b   (dat_071_00184).l               ; 00B2C
         bne.w   l_020_00BCE                     ; 00B32
-        tst.b   (dat_071_0027E).l               ; 00B36
+        tst.b   (CameraSequence).l              ; 00B36
         bne.w   l_020_00BCE                     ; 00B3C
         move.w  (dat_071_00464).l,d4            ; 00B40
         move.w  (dat_071_00466).l,d1            ; 00B46
