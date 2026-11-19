@@ -1,5 +1,5 @@
 ; F/A-18 Interceptor - hunk 52 (code)
-; A 3D model (shape data, used through ObjectDrawTable).
+; The carrier's 3D model (ModelTable $A0, $B4).
 ; Included by ../f18_main.s.
 
 ;===============================================================================

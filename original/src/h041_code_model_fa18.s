@@ -1,5 +1,5 @@
 ; F/A-18 Interceptor - hunk 41 (code)
-; A 3D model (shape data, used through ObjectDrawTable).
+; The F/A-18's 3D model (ModelTable $50).
 ; Included by ../f18_main.s.
 
 ;===============================================================================

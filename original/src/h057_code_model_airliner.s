@@ -1,5 +1,5 @@
 ; F/A-18 Interceptor - hunk 57 (code)
-; A 3D model (shape data, used through ObjectDrawTable).
+; The airliner's 3D model: Air Force One, the 707 and the 767 (ModelTable $64, $118, $12C).
 ; Included by ../f18_main.s.
 
 ;===============================================================================

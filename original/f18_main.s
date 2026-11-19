@@ -290,7 +290,7 @@
 	include	"src/h015_code_3d_pipeline3.s"
 
 ; Hunk 16: ObjectDrawTable: each object's draw routine and model (the models are in hunks
-;         41-58, 69, 70); MissileModels.
+;         41-58, 69, 70); ModelTable.
 	include	"src/h016_code_model_table.s"
 
 ; Hunk 17: UpdateAllObjects (every object's update, each frame), LaunchMissile, UpdateMissile,
@@ -378,8 +378,8 @@
 ;         not worked out yet).
 	include	"src/h040_code_hud.s"
 
-; Hunk 41: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h041_code_model41.s"
+; Hunk 41: The F/A-18's 3D model (ModelTable $50).
+	include	"src/h041_code_model_fa18.s"
 
 ; Hunk 42: A 3D model (shape data, used through ObjectDrawTable).
 	include	"src/h042_code_model42.s"
@@ -408,29 +408,29 @@
 ; Hunk 50: A 3D model (shape data, used through ObjectDrawTable).
 	include	"src/h050_code_model50.s"
 
-; Hunk 51: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h051_code_model51.s"
+; Hunk 51: 3D models: the Sidewinder ($00), the AMRAAM ($14), the F-16 ($3C) and the MiGs ($78, $8C).
+	include	"src/h051_code_models_missiles_f16_mig.s"
 
-; Hunk 52: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h052_code_model52.s"
+; Hunk 52: The carrier's 3D model (ModelTable $A0, $B4).
+	include	"src/h052_code_model_carrier.s"
 
-; Hunk 53: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h053_code_model53.s"
+; Hunk 53: A 3D model: object 15 of mission F6, probably the shadow submarine (ModelTable $F0).
+	include	"src/h053_code_model_f6_object.s"
 
 ; Hunk 54: A 3D model (shape data, used through ObjectDrawTable).
 	include	"src/h054_code_model54.s"
 
-; Hunk 55: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h055_code_model55.s"
+; Hunk 55: The cruise missile's 3D model (ModelTable $C8).
+	include	"src/h055_code_model_cruise_missile.s"
 
 ; Hunk 56: A 3D model (shape data, used through ObjectDrawTable).
 	include	"src/h056_code_model56.s"
 
-; Hunk 57: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h057_code_model57.s"
+; Hunk 57: The airliner's 3D model: Air Force One, the 707 and the 767 (ModelTable $64, $118, $12C).
+	include	"src/h057_code_model_airliner.s"
 
-; Hunk 58: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h058_code_model58.s"
+; Hunk 58: Animated 3D models: an object of mission F4 (ModelTable $28, $104) and the ejected pilot's parachute ($DC).
+	include	"src/h058_code_models_animated.s"
 
 ; Hunk 59: Text: the head-up display's warning messages (STALL, LOW FUEL - CRITICAL...).
 	include	"src/h059_code_messages.s"

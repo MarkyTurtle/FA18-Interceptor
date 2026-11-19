@@ -833,7 +833,7 @@ l_017_00BBC:
         addq.w  #$1,$42(a0)                     ; 00BCE
         move.b  #$1,(dat_071_00195).l           ; 00BD2
 l_017_00BDA:
-        lea.l   (MissileModels).l,a4            ; 00BDA
+        lea.l   (ModelTable).l,a4               ; 00BDA
         adda.w  d0,a4                           ; 00BE0
         lea.l   (ObjectDrawTable).l,a5          ; 00BE2
         move.w  (CurrentObject).l,d3            ; 00BE8

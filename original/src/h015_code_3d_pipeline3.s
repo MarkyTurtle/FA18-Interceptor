@@ -7,7 +7,7 @@
 ;===============================================================================
 	CODE_HUNK	h015
 sub_015_00000:
-        lea.l   (dat_072_00000).l,a3            ; 00000
+        lea.l   (VertexBuffer).l,a3             ; 00000
         adda.w  (a2)+,a3                        ; 00006
         move.w  (a2)+,(DrawColour).l            ; 00008
         move.w  (a2)+,d6                        ; 0000E
@@ -22,7 +22,7 @@ sub_015_0001E:
 l_015_0002A:
         tst.w   -$6e(a6)                        ; 0002A
         bne.b   l_015_00058                     ; 0002E
-        lea.l   (dat_072_00000).l,a3            ; 00030
+        lea.l   (VertexBuffer).l,a3             ; 00030
         adda.w  (a2)+,a3                        ; 00036
         move.w  (a2)+,(DrawColour).l            ; 00038
         move.w  (a2)+,d6                        ; 0003E
@@ -343,7 +343,7 @@ sub_015_0039C:
         addi.w  #$a4,d0                         ; 003A8
         adda.w  d0,a3                           ; 003AC
         bsr.w   sub_015_003EC                   ; 003AE
-        lea.l   (dat_072_00000).l,a3            ; 003B2
+        lea.l   (VertexBuffer).l,a3             ; 003B2
         adda.w  (a2)+,a3                        ; 003B8
         bsr.w   sub_015_003EC                   ; 003BA
         movem.w $6c(a3),d0-d5                   ; 003BE
@@ -514,7 +514,7 @@ sub_015_0058C:
         addi.w  #$a4,d0                         ; 00598
         adda.w  d0,a3                           ; 0059C
         bsr.w   sub_015_005A8                   ; 0059E
-        lea.l   (dat_072_00000).l,a3            ; 005A2
+        lea.l   (VertexBuffer).l,a3             ; 005A2
 sub_015_005A8:
         movem.w $18(a3),d0-d2                   ; 005A8
         movem.w $2a(a3),d3-d7/a4                ; 005AE
@@ -604,7 +604,7 @@ sub_015_00684:
         addi.w  #$a4,d0                         ; 00690
         adda.w  d0,a3                           ; 00694
         bsr.w   sub_015_006A0                   ; 00696
-        lea.l   (dat_072_00000).l,a3            ; 0069A
+        lea.l   (VertexBuffer).l,a3             ; 0069A
 sub_015_006A0:
         movem.w (a3),d0-d7/a4                   ; 006A0
         sub.w   d0,d6                           ; 006A4
@@ -662,7 +662,7 @@ sub_015_0072C:
         addi.w  #$a4,d0                         ; 00738
         adda.w  d0,a3                           ; 0073C
         bsr.w   sub_015_00748                   ; 0073E
-        lea.l   (dat_072_00000).l,a3            ; 00742
+        lea.l   (VertexBuffer).l,a3             ; 00742
 sub_015_00748:
         movem.w (a3),d0-d7/a4                   ; 00748
         sub.w   d0,d6                           ; 0074C

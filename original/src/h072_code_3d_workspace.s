@@ -6,7 +6,8 @@
 ; Hunk 72: CODE, $63DC bytes
 ;===============================================================================
 	CODE_HUNK	h072
-dat_072_00000:
+; VertexBuffer - The current model's vertices moved to the camera (3 words each), DrawModel.
+VertexBuffer:
 	dcb.b	10752,$00
 dat_072_02A00:
 	dcb.b	1536,$00

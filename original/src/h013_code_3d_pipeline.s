@@ -90,7 +90,7 @@ sub_013_00138:
         moveq   #$0,d0                          ; 00138
         rts                                     ; 0013A
 sub_013_0013C:
-        lea.l   (dat_072_00000).l,a3            ; 0013C
+        lea.l   (VertexBuffer).l,a3             ; 0013C
         adda.w  (a2)+,a3                        ; 00142
         movem.w (a3),d0-d2                      ; 00144
         move.w  (a2)+,(DrawColour).l            ; 00148
@@ -99,7 +99,7 @@ sub_013_0013C:
         movem.l (a7)+,a1-a2                     ; 00158
         rts                                     ; 0015C
 sub_013_0015E:
-        lea.l   (dat_072_00000).l,a3            ; 0015E
+        lea.l   (VertexBuffer).l,a3             ; 0015E
         adda.w  (a2)+,a3                        ; 00164
         movem.w (a3),d0-d2                      ; 00166
         move.w  (a2)+,(DrawColour).l            ; 0016A
@@ -174,7 +174,7 @@ l_013_0021A:
         rts                                     ; 00220
 sub_013_00222:
         lea.l   (dat_072_03C04).l,a0            ; 00222
-        lea.l   (dat_072_00000).l,a3            ; 00228
+        lea.l   (VertexBuffer).l,a3             ; 00228
         movem.w (a2)+,d0-d2                     ; 0022E
         move.l  (a3,d0.w),(a0)+                 ; 00232
         move.w  $4(a3,d0.w),(a0)+               ; 00236
@@ -192,7 +192,7 @@ l_013_00258:
         rts                                     ; 0025C
 sub_013_0025E:
         lea.l   (dat_072_03C04).l,a0            ; 0025E
-        lea.l   (dat_072_00000).l,a3            ; 00264
+        lea.l   (VertexBuffer).l,a3             ; 00264
         movem.w (a2)+,d0-d2                     ; 0026A
         move.l  (a3,d0.w),(a0)+                 ; 0026E
         move.w  $4(a3,d0.w),(a0)+               ; 00272
@@ -226,7 +226,7 @@ l_013_002CC:
 l_013_002D2:
         move.l  #$ffffffff,(dat_071_000B6).l    ; 002D2
         lea.l   (dat_072_04202).l,a0            ; 002DC
-        lea.l   (dat_072_00000).l,a3            ; 002E2
+        lea.l   (VertexBuffer).l,a3             ; 002E2
         move.w  (a2)+,d1                        ; 002E8
         move.l  (a3,d1.w),(a0)+                 ; 002EA
         move.w  $4(a3,d1.w),d6                  ; 002EE
@@ -246,7 +246,7 @@ l_013_00316:
         moveq   #$0,d0                          ; 00316
         rts                                     ; 00318
 sub_013_0031A:
-        lea.l   (dat_072_00000).l,a3            ; 0031A
+        lea.l   (VertexBuffer).l,a3             ; 0031A
         lea.l   (dat_072_03C00).l,a0            ; 00320
         move.l  #$4,(a0)+                       ; 00326
         movem.w (a2)+,d1-d3                     ; 0032C
@@ -278,7 +278,7 @@ sub_013_00374:
         lea.l   (dat_072_03C00).l,a0            ; 00374
         clr.w   (a0)+                           ; 0037A
         addq.w  #$2,a0                          ; 0037C
-        lea.l   (dat_072_00000).l,a3            ; 0037E
+        lea.l   (VertexBuffer).l,a3             ; 0037E
         moveq   #$3,d7                          ; 00384
         move.w  (a2)+,d1                        ; 00386
         lea.l   (a3,d1.w),a4                    ; 00388
@@ -350,7 +350,7 @@ l_013_00428:
         move.l  a4,-(a7)                        ; 0042C
         adda.w  d1,a4                           ; 0042E
         lea.l   (dat_072_03C04).l,a0            ; 00430
-        lea.l   (dat_072_00000).l,a3            ; 00436
+        lea.l   (VertexBuffer).l,a3             ; 00436
         moveq   #$3,d7                          ; 0043C
         move.w  (a4)+,d1                        ; 0043E
         move.l  (a3,d1.w),(a0)+                 ; 00440
@@ -594,7 +594,7 @@ sub_013_006E8:
         clr.w   -$7e(a6)                        ; 006E8
         move.l  (a2)+,d0                        ; 006EC
         move.w  (a2)+,-$5e(a6)                  ; 006EE
-        lea.l   (dat_072_00000).l,a3            ; 006F2
+        lea.l   (VertexBuffer).l,a3             ; 006F2
         movem.w $6(a3),d1-d3                    ; 006F8
         cmp.w   d3,d1                           ; 006FE
         bgt.b   l_013_006E4                     ; 00700
@@ -667,7 +667,7 @@ l_013_00774:
         tst.b   (dat_071_00156).l               ; 007BC
         beq.w   l_013_0089C                     ; 007C2
         lea.l   (dat_072_03C04).l,a0            ; 007C6
-        lea.l   (dat_072_00000).l,a3            ; 007CC
+        lea.l   (VertexBuffer).l,a3             ; 007CC
         move.l  $12(a0),$c(a0)                  ; 007D2
         move.w  $16(a0),$10(a0)                 ; 007D8
         movem.w (a3),d0-d7/a4                   ; 007DE
@@ -710,7 +710,7 @@ l_013_00816:
         tst.b   (dat_071_00156).l               ; 00852
         beq.b   l_013_0089C                     ; 00858
         lea.l   (dat_072_03C04).l,a0            ; 0085A
-        lea.l   (dat_072_00000).l,a3            ; 00860
+        lea.l   (VertexBuffer).l,a3             ; 00860
         movem.w (a3),d0-d2                      ; 00866
         movem.w d0-d2,(a0)                      ; 0086A
         movem.w $c(a0),d3-d7/a4                 ; 0086E
@@ -735,7 +735,7 @@ l_013_008A6:
         rts                                     ; 008A8
 sub_013_008AA:
         move.l  (a2)+,d0                        ; 008AA
-        lea.l   (dat_072_00000).l,a3            ; 008AC
+        lea.l   (VertexBuffer).l,a3             ; 008AC
         movem.w $6(a3),d1-d3                    ; 008B2
         cmp.w   d3,d1                           ; 008B8
         bgt.b   l_013_008A6                     ; 008BA
@@ -807,7 +807,7 @@ l_013_00958:
 sub_013_0096E:
         movem.l a1/a5,-(a7)                     ; 0096E
         lea.l   (dat_072_03C04).l,a0            ; 00972
-        lea.l   (dat_072_00000).l,a3            ; 00978
+        lea.l   (VertexBuffer).l,a3             ; 00978
         move.w  (a2)+,d1                        ; 0097E
         lea.l   (a3,d1.w),a4                    ; 00980
         move.l  (a4)+,(a0)+                     ; 00984
@@ -829,7 +829,7 @@ sub_013_0096E:
 l_013_009B0:
         move.w  (a2)+,(DrawColour).l            ; 009B0
         move.w  (a2)+,-$a(a6)                   ; 009B6
-        lea.l   (dat_072_00000).l,a3            ; 009BA
+        lea.l   (VertexBuffer).l,a3             ; 009BA
 l_013_009C0:
         subq.w  #$1,-$a(a6)                     ; 009C0
         blt.b   l_013_009F4                     ; 009C4
@@ -856,7 +856,7 @@ l_013_009F4:
         rts                                     ; 009FA
 sub_013_009FC:
         clr.w   -$7e(a6)                        ; 009FC
-        lea.l   (dat_072_00000).l,a3            ; 00A00
+        lea.l   (VertexBuffer).l,a3             ; 00A00
         lea.l   (dat_072_02A00).l,a4            ; 00A06
         lea.l   $c(a4),a0                       ; 00A0C
         move.w  (a2)+,d0                        ; 00A10
@@ -1053,7 +1053,7 @@ sub_013_00C1C:
         movem.w d0-d3,(dat_071_000B6).l         ; 00C28
         move.w  (a2)+,(DrawColour).l            ; 00C30
         clr.w   -$7e(a6)                        ; 00C36
-        lea.l   (dat_072_00000).l,a3            ; 00C3A
+        lea.l   (VertexBuffer).l,a3             ; 00C3A
         adda.w  (a2)+,a3                        ; 00C40
         move.w  (a2),-$38(a6)                   ; 00C42
         move.w  (a2)+,-$3a(a6)                  ; 00C46
@@ -1153,7 +1153,7 @@ sub_013_00D6A:
         clr.w   d3                              ; 00D7E
         movem.w d0-d3,(dat_071_000B6).l         ; 00D80
 l_013_00D88:
-        lea.l   (dat_072_00000).l,a3            ; 00D88
+        lea.l   (VertexBuffer).l,a3             ; 00D88
         adda.w  (a2)+,a3                        ; 00D8E
         move.w  (a2),-$38(a6)                   ; 00D90
         move.w  (a2)+,-$3a(a6)                  ; 00D94
@@ -1299,7 +1299,7 @@ sub_013_00F50:
         clr.w   d3                              ; 00F68
         movem.w d0-d3,(dat_071_000B6).l         ; 00F6A
 l_013_00F72:
-        lea.l   (dat_072_00000).l,a3            ; 00F72
+        lea.l   (VertexBuffer).l,a3             ; 00F72
         adda.w  (a2)+,a3                        ; 00F78
         move.w  (a2)+,-$38(a6)                  ; 00F7A
         movem.w (a3)+,d1-d6                     ; 00F7E
@@ -1387,7 +1387,7 @@ sub_013_01080:
         clr.w   d3                              ; 0108E
         movem.w d0-d3,(dat_071_000B6).l         ; 01090
         move.w  (a2)+,(DrawColour).l            ; 01098
-        lea.l   (dat_072_00000).l,a3            ; 0109E
+        lea.l   (VertexBuffer).l,a3             ; 0109E
         adda.w  (a2)+,a3                        ; 010A4
         move.w  (a2)+,-$38(a6)                  ; 010A6
         movem.w (a3)+,d1-d6                     ; 010AA
@@ -1456,7 +1456,7 @@ l_013_01170:
         clr.w   d3                              ; 01170
         movem.w d0-d3,(dat_071_000B6).l         ; 01172
         move.w  (a2)+,(DrawColour).l            ; 0117A
-        lea.l   (dat_072_00000).l,a3            ; 01180
+        lea.l   (VertexBuffer).l,a3             ; 01180
         adda.w  (a2)+,a3                        ; 01186
         movem.l a1-a2/a5,-(a7)                  ; 01188
         lea.l   (dat_072_03C00).l,a0            ; 0118C
@@ -1487,7 +1487,7 @@ l_013_011D4:
         moveq   #$0,d0                          ; 011D8
         rts                                     ; 011DA
 sub_013_011DC:
-        lea.l   (dat_072_00000).l,a3            ; 011DC
+        lea.l   (VertexBuffer).l,a3             ; 011DC
         adda.w  (a2)+,a3                        ; 011E2
         movem.w $6(a3),d0-d7/a4                 ; 011E4
         sub.w   d3,d0                           ; 011EA
@@ -1520,7 +1520,7 @@ l_013_0120C:
         movem.w d6-d7/a4,$36(a3)                ; 01220
         bra.b   l_013_01230                     ; 01226
 sub_013_01228:
-        lea.l   (dat_072_00000).l,a3            ; 01228
+        lea.l   (VertexBuffer).l,a3             ; 01228
         adda.w  (a2)+,a3                        ; 0122E
 l_013_01230:
         movem.w (a3)+,d0-d7/a4                  ; 01230
@@ -1560,7 +1560,7 @@ l_013_01230:
         moveq   #$0,d0                          ; 0128C
         rts                                     ; 0128E
 sub_013_01290:
-        lea.l   (dat_072_00000).l,a3            ; 01290
+        lea.l   (VertexBuffer).l,a3             ; 01290
         adda.w  (a2)+,a3                        ; 01296
         movem.w $c(a3),d0-d7/a4                 ; 01298
         sub.w   d3,d0                           ; 0129E
@@ -1593,7 +1593,7 @@ l_013_012C0:
         movem.w d6-d7/a4,$4e(a3)                ; 012D4
         bra.b   l_013_012E4                     ; 012DA
 sub_013_012DC:
-        lea.l   (dat_072_00000).l,a3            ; 012DC
+        lea.l   (VertexBuffer).l,a3             ; 012DC
         adda.w  (a2)+,a3                        ; 012E2
 l_013_012E4:
         movem.w (a3)+,d0-d7/a4                  ; 012E4

@@ -14,7 +14,18 @@ sub_010_00004:
         bge.b   l_010_00000                     ; 0000E
 l_010_00010:
         bra.w   l_010_000DC                     ; 00010
-sub_010_00014:
+
+;-------------------------------------------------------------------------------
+; DrawModel - Draws an object's model: picks the shape by distance from the model's list (a
+; word each: the distance in bits 0-13, bit 14 a 4-byte entry, a negative word the shape's
+; offset), reads the shape's header (two distance limits, the scale shifts, flags, the vertex
+; counts), turns its vertices by the object's matrix (+$92) and moves them to the camera (into
+; VertexBuffer; the first one, the centre, also gives the locked target's place on the screen,
+; TargetScreenPos), then runs the shape's drawing list: plane tests on three vertices choose
+; which branch is drawn first, so the nearer faces cover the further ones, and the faces and
+; lines are drawn.
+;-------------------------------------------------------------------------------
+DrawModel:
         btst    #$6,(dat_071_0022B).l           ; 00014
         bne.b   l_010_00000                     ; 0001C
         tst.b   (OutsideView).l                 ; 0001E
@@ -28,10 +39,10 @@ sub_010_00014:
         cmpi.b  #$9,d0                          ; 00044
         ble.w   l_010_000CC                     ; 00048
 l_010_0004C:
-        move.l  (dat_071_0040A).l,d0            ; 0004C
-        cmp.l   (dat_071_00406).l,d0            ; 00052
+        move.l  (ShapeNext).l,d0                ; 0004C
+        cmp.l   (ShapeNow).l,d0                 ; 00052
         beq.w   l_010_000DC                     ; 00058
-        move.l  d0,(dat_071_00406).l            ; 0005C
+        move.l  d0,(ShapeNow).l                 ; 0005C
         tst.b   (dat_071_00205).l               ; 00062
         bne.w   l_010_000DC                     ; 00068
         move.b  (dat_071_0023B).l,d1            ; 0006C
@@ -44,12 +55,12 @@ l_010_0004C:
         cmpi.l  #$ffffffe0,d3                   ; 0008A
         bge.w   l_010_000DC                     ; 00090
 l_010_00094:
-        movea.l (dat_071_00406).l,a2            ; 00094
+        movea.l (ShapeNow).l,a2                 ; 00094
         move.w  (a2)+,d0                        ; 0009A
         blt.b   l_010_000B0                     ; 0009C
         andi.w  #$4000,d0                       ; 0009E
         beq.b   l_010_000BE                     ; 000A2
-        addq.l  #$6,(dat_071_00406).l           ; 000A4
+        addq.l  #$6,(ShapeNow).l                ; 000A4
         bra.b   l_010_000DC                     ; 000AA
 l_010_000AC:
         moveq   #$0,d0                          ; 000AC
@@ -57,13 +68,13 @@ l_010_000AC:
 l_010_000B0:
         cmpi.w  #$ffff,d0                       ; 000B0
         beq.b   l_010_000AC                     ; 000B4
-        addq.l  #$4,(dat_071_00406).l           ; 000B6
+        addq.l  #$4,(ShapeNow).l                ; 000B6
         bra.b   l_010_000DC                     ; 000BC
 l_010_000BE:
         move.w  (a2),d0                         ; 000BE
         blt.b   l_010_000AC                     ; 000C0
         ext.l   d0                              ; 000C2
-        add.l   d0,(dat_071_00406).l            ; 000C4
+        add.l   d0,(ShapeNow).l                 ; 000C4
         bra.b   l_010_000DC                     ; 000CA
 l_010_000CC:
         link.w  a6,#$ff68                       ; 000CC
@@ -86,7 +97,7 @@ l_010_000E4:
         asr.l   #$8,d1                          ; 00106
 l_010_00108:
         move.w  d1,-$28(a6)                     ; 00108
-        movea.l (dat_071_00406).l,a2            ; 0010C
+        movea.l (ShapeNow).l,a2                 ; 0010C
         move.l  a0,-$2c(a6)                     ; 00112
         move.w  (dat_071_00488).l,d3            ; 00116
 l_010_0011C:
@@ -163,7 +174,7 @@ l_010_001C2:
         movea.l -$2c(a6),a3                     ; 001CA
         lea.l   (a3,d0.w),a1                    ; 001CE
         move.l  a1,(dat_071_00402).l            ; 001D2
-        move.l  a2,(dat_071_00406).l            ; 001D8
+        move.l  a2,(ShapeNow).l                 ; 001D8
         move.w  (a1)+,d0                        ; 001DE
         move.b  d0,-$88(a6)                     ; 001E0
         move.w  (a1)+,d4                        ; 001E4
@@ -232,7 +243,7 @@ l_010_002A0:
         blt.w   l_010_00168                     ; 002AA
 l_010_002AE:
         move.w  #$0,(dat_072_03C00).l           ; 002AE
-        lea.l   (dat_072_00000).l,a3            ; 002B6
+        lea.l   (VertexBuffer).l,a3             ; 002B6
         move.b  -$64(a6),d6                     ; 002BC
         btst    #$0,d6                          ; 002C0
         beq.w   l_010_0072C                     ; 002C4
@@ -398,7 +409,7 @@ l_010_00428:
         jsr     (sub_035_00020).l               ; 00498
         sub.w   (ViewX).l,d0                    ; 0049E
         sub.w   (ViewY).l,d1                    ; 004A4
-        movem.w d0-d1,(dat_071_00306).l         ; 004AA
+        movem.w d0-d1,(TargetScreenPos).l       ; 004AA
         movem.w (a7)+,d0-d1/d4/d7               ; 004B2
 l_010_004B6:
         cmpi.w  #$1,-$62(a6)                    ; 004B6
@@ -950,7 +961,7 @@ l_010_009B4:
 l_010_009C0:
         move.l  #$fffff,(dat_071_000B6).l       ; 009C0
         clr.l   (dat_071_000BA).l               ; 009CA
-        movea.l (dat_071_00406).l,a5            ; 009D0
+        movea.l (ShapeNow).l,a5                 ; 009D0
         clr.w   -$66(a6)                        ; 009D6
         clr.w   -$7c(a6)                        ; 009DA
 l_010_009DE:
@@ -965,7 +976,7 @@ l_010_009DE:
         beq.b   l_010_00A56                     ; 009F8
         andi.w  #$c00,d1                        ; 009FA
         bne.b   l_010_00A44                     ; 009FE
-        lea.l   (dat_072_00000).l,a3            ; 00A00
+        lea.l   (VertexBuffer).l,a3             ; 00A00
         move.w  d7,d1                           ; 00A06
         andi.w  #$2000,d1                       ; 00A08
         bne.b   l_010_00A38                     ; 00A0C
@@ -1186,7 +1197,7 @@ l_010_00C46:
         or.w    d0,-$7c(a6)                     ; 00C5A
         bra.w   l_010_00BD2                     ; 00C5E
 sub_010_00C62:
-        lea.l   (dat_072_00000).l,a3            ; 00C62
+        lea.l   (VertexBuffer).l,a3             ; 00C62
         move.l  a1,-(a7)                        ; 00C68
         move.w  d0,-$a(a6)                      ; 00C6A
         movea.l (dat_071_00402).l,a1            ; 00C6E

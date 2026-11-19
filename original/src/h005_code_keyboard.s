@@ -1093,7 +1093,7 @@ l_005_00DB4:
         move.b  #$3,(dat_071_00206).l           ; 00DBA
 l_005_00DC2:
         jsr     (StartGunSound).l               ; 00DC2
-        move.w  #$ffff,(dat_071_00306).l        ; 00DC8
+        move.w  #$ffff,(TargetScreenPos).l      ; 00DC8
         move.b  #$ff,(RedrawFlags).l            ; 00DD0
         move.b  #$0,(dat_071_00179).l           ; 00DD8
         move.b  #$ff,(dat_071_00261).l          ; 00DE0

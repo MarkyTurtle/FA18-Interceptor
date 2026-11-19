@@ -1,91 +1,95 @@
 ; F/A-18 Interceptor - hunk 16 (code)
 ; ObjectDrawTable: each object's draw routine and model (the models are in hunks 41-58, 69,
-; 70); MissileModels.
+; 70); ModelTable.
 ; Included by ../f18_main.s.
 
 ;===============================================================================
 ; Hunk 16: CODE, $C2C bytes
 ;===============================================================================
 	CODE_HUNK	h016
-; MissileModels - The missiles' entries for ObjectDrawTable (20 bytes each: Sidewinder at +0,
-; AMRAAM at +$14).
-MissileModels:
-        dc.l    sub_010_00014                   ; 00000
+; ModelTable - The models, 20 bytes each, copied into an object's ObjectDrawTable entry when it
+; is placed: +$00 the draw routine, +$04 and +$08 the shape now drawn (changed for animation),
+; +$0C the model (its distance list), +$10 a second model or 0. $00 Sidewinder, $14 AMRAAM, $28
+; and $104 an animated object of hunk 58 (the downed pilot in F4), $3C F-16, $50 F/A-18, $64
+; Air Force One, $78 and $8C the MiGs, $A0 and $B4 the carrier, $C8 the cruise missile, $DC the
+; ejected pilot's parachute, $F0 object 15 of F6 (probably the shadow submarine), $118 and $12C the airliners.
+ModelTable:
+        dc.l    DrawModel                       ; 00000
         dc.l    dat_051_00A6C                   ; 00004
         dc.l    dat_051_00A6C                   ; 00008
         dc.l    dat_051_00A6A                   ; 0000C
 	dc.b	$00,$00,$00,$00
-        dc.l    sub_010_00014                   ; 00014
+        dc.l    DrawModel                       ; 00014
         dc.l    dat_051_00BA2                   ; 00018
         dc.l    dat_051_00BA2                   ; 0001C
         dc.l    dat_051_00BA0                   ; 00020
 	dc.b	$00,$00,$00,$00
-        dc.l    sub_016_00AD2                   ; 00028
+        dc.l    DrawAnimated                    ; 00028
         dc.l    dat_058_00000                   ; 0002C
         dc.l    dat_058_00000                   ; 00030
         dc.l    dat_058_00000                   ; 00034
 	dc.b	$00,$00,$00,$00
-        dc.l    sub_016_00A78                   ; 0003C
+        dc.l    DrawAircraft                    ; 0003C
         dc.l    dat_051_00008                   ; 00040
         dc.l    dat_051_00008                   ; 00044
         dc.l    dat_051_00000                   ; 00048
 	dc.b	$00,$00,$00,$00
-        dc.l    sub_016_00A78                   ; 00050
+        dc.l    DrawAircraft                    ; 00050
         dc.l    dat_041_00008                   ; 00054
         dc.l    dat_041_00008                   ; 00058
         dc.l    dat_041_00000                   ; 0005C
 	dc.b	$00,$00,$00,$00
-        dc.l    sub_016_00A78                   ; 00064
+        dc.l    DrawAircraft                    ; 00064
         dc.l    dat_057_00008                   ; 00068
         dc.l    dat_057_00008                   ; 0006C
         dc.l    dat_057_00000                   ; 00070
 	dc.b	$00,$00,$00,$00
-        dc.l    sub_016_00A78                   ; 00078
+        dc.l    DrawAircraft                    ; 00078
         dc.l    dat_051_000AE                   ; 0007C
         dc.l    dat_051_000AE                   ; 00080
         dc.l    dat_051_000A6                   ; 00084
 	dc.b	$00,$00,$00,$00
-        dc.l    sub_016_00A78                   ; 0008C
+        dc.l    DrawAircraft                    ; 0008C
         dc.l    dat_051_000AE                   ; 00090
         dc.l    dat_051_000AE                   ; 00094
         dc.l    dat_051_000A6                   ; 00098
 	dc.b	$00,$00,$00,$00
-        dc.l    sub_016_00A78                   ; 000A0
+        dc.l    DrawAircraft                    ; 000A0
         dc.l    dat_052_000DE                   ; 000A4
         dc.l    dat_052_000DE                   ; 000A8
         dc.l    dat_052_000DE                   ; 000AC
         dc.l    dat_052_000A8                   ; 000B0
-        dc.l    sub_016_00A78                   ; 000B4
+        dc.l    DrawAircraft                    ; 000B4
         dc.l    dat_052_000DE                   ; 000B8
         dc.l    dat_052_000DE                   ; 000BC
         dc.l    dat_052_000DE                   ; 000C0
         dc.l    dat_052_000A8                   ; 000C4
-        dc.l    sub_016_00A78                   ; 000C8
+        dc.l    DrawAircraft                    ; 000C8
         dc.l    dat_055_0062E                   ; 000CC
         dc.l    dat_055_0062E                   ; 000D0
         dc.l    dat_055_00626                   ; 000D4
 	dc.b	$00,$00,$00,$00
-        dc.l    sub_016_00B72                   ; 000DC
+        dc.l    DrawParachute                   ; 000DC
         dc.l    dat_058_002A6                   ; 000E0
         dc.l    dat_058_002A6                   ; 000E4
         dc.l    dat_058_002A6                   ; 000E8
 	dc.b	$00,$00,$00,$00
-        dc.l    sub_016_00A78                   ; 000F0
+        dc.l    DrawAircraft                    ; 000F0
         dc.l    dat_053_0006E                   ; 000F4
         dc.l    dat_053_0006E                   ; 000F8
         dc.l    dat_053_0006E                   ; 000FC
         dc.l    dat_053_0004C                   ; 00100
-        dc.l    sub_016_00AD2                   ; 00104
+        dc.l    DrawAnimated                    ; 00104
         dc.l    dat_058_00000                   ; 00108
         dc.l    dat_058_00000                   ; 0010C
         dc.l    dat_058_00000                   ; 00110
 	dc.b	$00,$00,$00,$00
-        dc.l    sub_016_00A78                   ; 00118
+        dc.l    DrawAircraft                    ; 00118
         dc.l    dat_057_00008                   ; 0011C
         dc.l    dat_057_00008                   ; 00120
         dc.l    dat_057_00000                   ; 00124
 	dc.b	$00,$00,$00,$00
-        dc.l    sub_016_00A78                   ; 0012C
+        dc.l    DrawAircraft                    ; 0012C
         dc.l    dat_057_00008                   ; 00130
         dc.l    dat_057_00008                   ; 00134
         dc.l    dat_057_00000                   ; 00138
@@ -607,7 +611,12 @@ dat_016_00144:
         dc.l    dat_056_00000                   ; 00A6C
         dc.l    dat_056_00000                   ; 00A70
 	dc.b	$00,$00,$00,$00
-sub_016_00A78:
+
+;-------------------------------------------------------------------------------
+; DrawAircraft - The draw routine of the aircraft and most models: an object just hit (flags
+; bit 9) starts its explosion (timer 15, flags bit 10); then DrawModel.
+;-------------------------------------------------------------------------------
+DrawAircraft:
         lea.l   (ObjectTable).l,a1              ; 00A78
         adda.w  (CurrentObjectOffset).l,a1      ; 00A7E
         move.w  $0(a1),d1                       ; 00A84
@@ -624,7 +633,7 @@ sub_016_00A78:
         jsr     (sub_018_00000).l               ; 00AAE
         movea.l (a7)+,a0                        ; 00AB4
 l_016_00AB6:
-        jmp     (sub_010_00014).l               ; 00AB6
+        jmp     (DrawModel).l                   ; 00AB6
 l_016_00ABC:
         cmpi.b  #$5,$7a(a1)                     ; 00ABC
         beq.b   l_016_00AD0                     ; 00AC2
@@ -633,7 +642,12 @@ l_016_00ABC:
         ori.w   #$40,$0(a1)                     ; 00ACA
 l_016_00AD0:
         rts                                     ; 00AD0
-sub_016_00AD2:
+
+;-------------------------------------------------------------------------------
+; DrawAnimated - Draws hunk 58's animated object, its shape chosen by the timer (+$4C): 5 and
+; over, 3-4, 1-2, 0, negative.
+;-------------------------------------------------------------------------------
+DrawAnimated:
         lea.l   (ObjectTable).l,a1              ; 00AD2
         adda.w  (CurrentObjectOffset).l,a1      ; 00AD8
         lea.l   (dat_058_00000).l,a0            ; 00ADE
@@ -645,27 +659,32 @@ sub_016_00AD2:
         beq.b   l_016_00B12                     ; 00AF4
         cmpi.w  #$2,d0                          ; 00AF6
         beq.b   l_016_00B12                     ; 00AFA
-        move.l  #dat_058_00020,(dat_071_00406).l ; 00AFC
-        move.l  #dat_058_00020,(dat_071_0040A).l ; 00B06
+        move.l  #dat_058_00020,(ShapeNow).l     ; 00AFC
+        move.l  #dat_058_00020,(ShapeNext).l    ; 00B06
         bra.b   l_016_00AB6                     ; 00B10
 l_016_00B12:
-        move.l  #dat_058_0002E,(dat_071_00406).l ; 00B12
-        move.l  #dat_058_0002E,(dat_071_0040A).l ; 00B1C
+        move.l  #dat_058_0002E,(ShapeNow).l     ; 00B12
+        move.l  #dat_058_0002E,(ShapeNext).l    ; 00B1C
         bra.b   l_016_00AB6                     ; 00B26
 l_016_00B28:
         blt.b   l_016_00B42                     ; 00B28
-        move.l  #dat_058_00040,(dat_071_00406).l ; 00B2A
-        move.l  #dat_058_00040,(dat_071_0040A).l ; 00B34
+        move.l  #dat_058_00040,(ShapeNow).l     ; 00B2A
+        move.l  #dat_058_00040,(ShapeNext).l    ; 00B34
         bra.w   l_016_00AB6                     ; 00B3E
 l_016_00B42:
-        move.l  #dat_058_0003C,(dat_071_00406).l ; 00B42
-        move.l  #dat_058_0003C,(dat_071_0040A).l ; 00B4C
+        move.l  #dat_058_0003C,(ShapeNow).l     ; 00B42
+        move.l  #dat_058_0003C,(ShapeNext).l    ; 00B4C
         bra.w   l_016_00AB6                     ; 00B56
 l_016_00B5A:
-        move.l  #dat_058_00000,(dat_071_00406).l ; 00B5A
-        move.l  #dat_058_00000,(dat_071_0040A).l ; 00B64
+        move.l  #dat_058_00000,(ShapeNow).l     ; 00B5A
+        move.l  #dat_058_00000,(ShapeNext).l    ; 00B64
         bra.w   l_016_00AB6                     ; 00B6E
-sub_016_00B72:
+
+;-------------------------------------------------------------------------------
+; DrawParachute - Draws the ejected pilot (hunk 58 at $2A6), the shape chosen by the timer
+; (+$4C) and the ejection's step (+$7C).
+;-------------------------------------------------------------------------------
+DrawParachute:
         lea.l   (ObjectTable).l,a1              ; 00B72
         adda.w  (CurrentObjectOffset).l,a1      ; 00B78
         lea.l   (dat_058_002A6).l,a0            ; 00B7E
@@ -678,28 +697,28 @@ sub_016_00B72:
         beq.b   l_016_00BBC                     ; 00B9C
         cmpi.w  #$2,d0                          ; 00B9E
         beq.b   l_016_00BBC                     ; 00BA2
-        move.l  #dat_058_002C6,(dat_071_00406).l ; 00BA4
-        move.l  #dat_058_002C6,(dat_071_0040A).l ; 00BAE
+        move.l  #dat_058_002C6,(ShapeNow).l     ; 00BA4
+        move.l  #dat_058_002C6,(ShapeNext).l    ; 00BAE
         bra.w   l_016_00AB6                     ; 00BB8
 l_016_00BBC:
-        move.l  #dat_058_002D4,(dat_071_00406).l ; 00BBC
-        move.l  #dat_058_002D4,(dat_071_0040A).l ; 00BC6
+        move.l  #dat_058_002D4,(ShapeNow).l     ; 00BBC
+        move.l  #dat_058_002D4,(ShapeNext).l    ; 00BC6
         bra.w   l_016_00AB6                     ; 00BD0
 l_016_00BD4:
         blt.b   l_016_00BF8                     ; 00BD4
         move.b  $7c(a1),d0                      ; 00BD6
         andi.b  #$f,d0                          ; 00BDA
         beq.b   l_016_00BF8                     ; 00BDE
-        move.l  #dat_058_002A2,(dat_071_00406).l ; 00BE0
-        move.l  #dat_058_002A2,(dat_071_0040A).l ; 00BEA
+        move.l  #dat_058_002A2,(ShapeNow).l     ; 00BE0
+        move.l  #dat_058_002A2,(ShapeNext).l    ; 00BEA
         bra.w   l_016_00AB6                     ; 00BF4
 l_016_00BF8:
-        move.l  #dat_058_002E2,(dat_071_00406).l ; 00BF8
-        move.l  #dat_058_002E2,(dat_071_0040A).l ; 00C02
+        move.l  #dat_058_002E2,(ShapeNow).l     ; 00BF8
+        move.l  #dat_058_002E2,(ShapeNext).l    ; 00C02
         bra.w   l_016_00AB6                     ; 00C0C
 l_016_00C10:
-        move.l  #dat_058_002A6,(dat_071_00406).l ; 00C10
-        move.l  #dat_058_002A6,(dat_071_0040A).l ; 00C1A
+        move.l  #dat_058_002A6,(ShapeNow).l     ; 00C10
+        move.l  #dat_058_002A6,(ShapeNext).l    ; 00C1A
         bra.w   l_016_00AB6                     ; 00C24
 sub_016_00C28:
         rts                                     ; 00C28

@@ -54,7 +54,7 @@ dat_027_001BC:
 ; ModeTable - What each GameMode starts with (SetupMode): 12 bytes a mode (1-9; 10 for the
 ; demo), three variants of (word offset from here to a list chosen by how often the mission was
 ; completed, word MissionTargets). The lists give offsets to object lists of 10-byte records
-; (ended by a negative word): +$00 the model (in MissileModels), +$04 the object number (low 7
+; (ended by a negative word): +$00 the model (in ModelTable), +$04 the object number (low 7
 ; bits), +$08 the lowest Difficulty it appears at (low 7 bits) and in bits 8-11 a GameMode it
 ; is only for; +$02 and +$06 not worked out.
 ModeTable:

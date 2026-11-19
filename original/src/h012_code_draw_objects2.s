@@ -32,14 +32,14 @@ l_012_0001E:
 l_012_00050:
         move.w  d2,-$28(a6)                     ; 00050
 l_012_00054:
-        movea.l (dat_071_00406).l,a2            ; 00054
+        movea.l (ShapeNow).l,a2                 ; 00054
         move.w  (a2)+,d0                        ; 0005A
         blt.b   l_012_0007A                     ; 0005C
         move.w  (dat_071_00488).l,d1            ; 0005E
         asr.w   d1,d0                           ; 00064
         cmp.w   d2,d0                           ; 00066
         bge.b   l_012_00078                     ; 00068
-        move.l  (a2),(dat_071_00406).l          ; 0006A
+        move.l  (a2),(ShapeNow).l               ; 0006A
         bge.b   l_012_00054                     ; 00070
 l_012_00072:
         moveq   #$0,d0                          ; 00072
@@ -52,7 +52,7 @@ l_012_0007A:
         beq.b   l_012_00072                     ; 0007E
         movea.l (a2)+,a1                        ; 00080
         move.l  a1,(dat_071_00402).l            ; 00082
-        move.l  a2,(dat_071_00406).l            ; 00088
+        move.l  a2,(ShapeNow).l                 ; 00088
         move.w  (dat_071_00442).l,d0            ; 0008E
         move.l  (dat_071_00436).l,d1            ; 00094
         asr.l   #$8,d1                          ; 0009A
@@ -68,7 +68,7 @@ l_012_0007A:
 l_012_000BA:
         movem.w d0-d2,-$86(a6)                  ; 000BA
         clr.w   (dat_072_03C00).l               ; 000C0
-        lea.l   (dat_072_00000).l,a3            ; 000C6
+        lea.l   (VertexBuffer).l,a3             ; 000C6
         lea.l   (dat_071_005A8).l,a2            ; 000CC
         lea.l   (a2),a4                         ; 000D2
         move.w  (dat_071_004FA).l,d0            ; 000D4
@@ -125,7 +125,7 @@ l_012_00112:
         subq.w  #$1,(a0)                        ; 00156
         bgt.b   l_012_00112                     ; 00158
         clr.w   -$7c(a6)                        ; 0015A
-        movea.l (dat_071_00406).l,a2            ; 0015E
+        movea.l (ShapeNow).l,a2                 ; 0015E
         clr.w   -$6a(a6)                        ; 00164
 l_012_00168:
         tst.w   -$6a(a6)                        ; 00168
@@ -194,7 +194,7 @@ l_012_001F2:
         or.w    d0,-$7c(a6)                     ; 00206
         bra.w   l_012_00168                     ; 0020A
 sub_012_0020E:
-        lea.l   (dat_072_00000).l,a3            ; 0020E
+        lea.l   (VertexBuffer).l,a3             ; 0020E
         move.w  d7,d2                           ; 00214
         asr.w   #$1,d2                          ; 00216
         add.w   d7,d2                           ; 00218
@@ -250,7 +250,7 @@ sub_012_0029A:
         move.w  (a2)+,d7                        ; 0029A
         lea.l   (dat_072_03C00).l,a0            ; 0029C
         move.w  #$0,(a0)+                       ; 002A2
-        lea.l   (dat_072_00000).l,a3            ; 002A6
+        lea.l   (VertexBuffer).l,a3             ; 002A6
         move.w  d7,(a0)+                        ; 002AC
         subq.w  #$3,d7                          ; 002AE
         move.w  (a2)+,d1                        ; 002B0
@@ -285,7 +285,7 @@ sub_012_002F2:
         move.w  (a2)+,d7                        ; 002F2
         lea.l   (dat_072_03C00).l,a0            ; 002F4
         move.w  #$0,(a0)+                       ; 002FA
-        lea.l   (dat_072_00000).l,a3            ; 002FE
+        lea.l   (VertexBuffer).l,a3             ; 002FE
         move.w  d7,(a0)+                        ; 00304
         subq.w  #$4,d7                          ; 00306
         move.l  (a3)+,(a0)+                     ; 00308
@@ -316,7 +316,7 @@ sub_012_0033E:
         move.w  (a2)+,d7                        ; 0033E
         lea.l   (dat_072_03C00).l,a0            ; 00340
         clr.w   (a0)+                           ; 00346
-        lea.l   (dat_072_00000).l,a3            ; 00348
+        lea.l   (VertexBuffer).l,a3             ; 00348
         adda.w  (a2)+,a3                        ; 0034E
         move.w  d7,(a0)+                        ; 00350
         subq.w  #$3,d7                          ; 00352

@@ -761,8 +761,8 @@ l_008_00988:
         cmp.w   (dat_071_00382).l,d1            ; 0099E
         movea.l (a1)+,a2                        ; 009A4
         movea.l (a1)+,a0                        ; 009A6
-        move.l  (a1)+,(dat_071_00406).l         ; 009A8
-        move.l  (a1)+,(dat_071_0040A).l         ; 009AE
+        move.l  (a1)+,(ShapeNow).l              ; 009A8
+        move.l  (a1)+,(ShapeNext).l             ; 009AE
         lsr.w   #$8,d7                          ; 009B4
         ext.w   d7                              ; 009B6
         move.w  d7,(CurrentObject).l            ; 009B8
@@ -903,8 +903,8 @@ l_008_00AEA:
         adda.w  d1,a1                           ; 00B52
         movea.l (a1)+,a2                        ; 00B54
         movea.l (a1)+,a0                        ; 00B56
-        move.l  (a1)+,(dat_071_00406).l         ; 00B58
-        move.l  (a1)+,(dat_071_0040A).l         ; 00B5E
+        move.l  (a1)+,(ShapeNow).l              ; 00B58
+        move.l  (a1)+,(ShapeNext).l             ; 00B5E
         jsr     (a2)                            ; 00B64
         addq.w  #$2,(dat_071_0037A).l           ; 00B66
         bra.w   l_008_00A1C                     ; 00B6C
@@ -1009,8 +1009,8 @@ l_008_00CC8:
 l_008_00CCE:
         movea.l (a1)+,a2                        ; 00CCE
         movea.l (a1)+,a0                        ; 00CD0
-        move.l  (a1)+,(dat_071_00406).l         ; 00CD2
-        move.l  (a1)+,(dat_071_0040A).l         ; 00CD8
+        move.l  (a1)+,(ShapeNow).l              ; 00CD2
+        move.l  (a1)+,(ShapeNext).l             ; 00CD8
         jsr     (a2)                            ; 00CDE
         lea.l   (SceneryList).l,a0              ; 00CE0
         move.w  (dat_071_0037A).l,d1            ; 00CE6
@@ -1210,7 +1210,7 @@ l_008_00F6C:
         lea.l   (dat_065_000C0).l,a1            ; 00F9E
         adda.w  d0,a1                           ; 00FA4
         move.l  a1,-$3a(a6)                     ; 00FA6
-        lea.l   (dat_072_00000).l,a1            ; 00FAA
+        lea.l   (VertexBuffer).l,a1             ; 00FAA
         move.w  #$ffff,d0                       ; 00FB0
         move.w  #$60,d1                         ; 00FB4
         moveq   #$d,d2                          ; 00FB8
@@ -1270,7 +1270,7 @@ l_008_0105A:
         ble.b   l_008_01044                     ; 01062
         adda.w  d0,a0                           ; 01064
         move.l  a0,-(a7)                        ; 01066
-        lea.l   (dat_072_00000).l,a3            ; 01068
+        lea.l   (VertexBuffer).l,a3             ; 01068
         moveq   #$e,d4                          ; 0106E
 l_008_01070:
         move.b  (a0)+,d0                        ; 01070

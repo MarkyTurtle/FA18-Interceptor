@@ -1,5 +1,5 @@
 ; F/A-18 Interceptor - hunk 58 (code)
-; A 3D model (shape data, used through ObjectDrawTable).
+; Animated 3D models: an object of mission F4 (ModelTable $28, $104) and the ejected pilot's parachute ($DC).
 ; Included by ../f18_main.s.
 
 ;===============================================================================

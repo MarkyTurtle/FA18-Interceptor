@@ -136,7 +136,7 @@ The types (`+$62`) seen so far:
 | Type | Object |
 |---|---|
 | `$00`, `$01` | Sidewinder, AMRAAM missiles |
-| `$10` | F-16 (the player's, if chosen; the unknown aircraft of mission F1) |
+| `$10` | F-16 (the player's, if chosen; the stolen aircraft of F3; the instructor) |
 | `$11` | F/A-18 (the player's) |
 | `$12`, `$13` | MiG-29, MiG-25 |
 | `$14` | Air Force One |
@@ -281,6 +281,34 @@ by `HandleKey`, turned into letters by `KeyToAscii`).
   are shifted down by it, and its draw routine from `ObjectDrawTable` (hunk 16) draws its model
   (hunks 41-58, 69, 70). Then the scenery (`SceneryList`, 24-byte entries), then the small
   objects.
+* Each object's `ObjectDrawTable` entry is a copy of a `ModelTable` entry (20 bytes: the draw
+  routine, the shape being drawn twice - for animations - and the model), made when the object
+  is placed (`PlaceObject` takes the entry's offset from the mission's list). The models:
+
+  | `ModelTable` | Model | Hunk |
+  |---|---|---|
+  | `$00`, `$14` | Sidewinder, AMRAAM | 51 |
+  | `$28`, `$104` | an animated object (object 11 of F4, the downed pilot) | 58 |
+  | `$3C` | F-16 | 51 |
+  | `$50` | F/A-18 | 41 |
+  | `$64`, `$118`, `$12C` | the airliner: Air Force One, 707, 767 | 57 |
+  | `$78`, `$8C` | MiG (one shape for both) | 51 |
+  | `$A0`, `$B4` | the carrier (always object 14) | 52 |
+  | `$C8` | the cruise missile | 55 |
+  | `$DC` | the ejected pilot's parachute (animated) | 58 |
+  | `$F0` | object 15 of F6, probably the shadow submarine | 53 |
+
+* **A model** (`DrawModel`, hunk 10) starts with a list of shapes by distance: each word is the
+  furthest distance it is used at (bits 0-13), or with the top bit set the shape's offset - the
+  levels of detail. A shape begins with a header: a number, two distance limits, two scale
+  shifts (a byte's nibbles), flags and the vertex counts; then the vertices (three words each),
+  which are turned by the object's matrix and moved to the camera (`VertexBuffer`). Then comes
+  the shape's **drawing list**: entries that test which side of a plane (three of the
+  vertices) the camera is on and jump to one branch or the other, and lists of faces and lines.
+  This orders the drawing without sorting - the far side of the model is drawn first and the near
+  side over it, like a BSP tree. The details of the list's entries are not worked out yet.
+* Animated objects (`DrawAnimated`, `DrawParachute`) change the shape drawn each frame by their
+  timer; an aircraft that is hit starts its explosion (`DrawAircraft`).
 * The 3D pipeline (hunks 13-15, 19, 34, 35; its workspace in hunk 72) transforms, projects and
   clips; the view is 320 x 180 (`PutCornerBR` = (319, 179)), its outline built by `PutEdge`.
 * The drawing: points (`Plot` and its variants: one pixel, 2 pixels, big points, in the 16
@@ -503,7 +531,7 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
 * The countermeasures (flares, chaff), damage, landing on the carrier (the flags the judges test).
 * The computer pilots' states one by one (hunk 30), their attacks and firing; the object
   records' unknown fields in `ModeTable`.
-* The 3D pipeline (hunks 13-15) and the model format (hunks 41-58).
+* The 3D pipeline (hunks 13-15) and the details of a shape's drawing list (hunk 10).
 * The ground, sky and scenery; the map and what is in each cell.
 * The head-up display and most instruments (hunks 39-40).
 * The views (`OutsideView`, `ViewChoice`, `CameraSequence`) and the training's manoeuvres.

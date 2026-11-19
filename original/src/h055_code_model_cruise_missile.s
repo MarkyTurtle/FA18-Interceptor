@@ -1,5 +1,5 @@
 ; F/A-18 Interceptor - hunk 55 (code)
-; A 3D model (shape data, used through ObjectDrawTable).
+; The cruise missile's 3D model (ModelTable $C8).
 ; Included by ../f18_main.s.
 
 ;===============================================================================

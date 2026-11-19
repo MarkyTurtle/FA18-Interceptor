@@ -50,7 +50,8 @@ before each. Some parts run only every 2nd, 4th, 8th, 16th or 32nd frame (`Frame
 | 20 | Number and text output, the flight log page (`ShowFlightLog`, `ShowLogDate`), `ChecksumPlanes`; the text pages (`SetTextPage`); the security check (`MakeSecurityCode`, `CheckSecurityAnswer`) |
 | 35, 36 | Drawing: `Plot` and its variants, `DrawLine` (blitter line mode), the copper lists (double-buffered display) |
 | 37 | Blitter copies: the title picture and the instrument panel onto the screen |
-| 41-70 | Data tables (some partly mistaken for code by the first trace) |
+| 41-58 | The 3D models (see GAME.md: 41 the F/A-18, 51 missiles, F-16 and MiG, 52 the carrier, 55 the cruise missile, 57 the airliner, 58 animated objects...), drawn by `DrawModel` (hunk 10) through `ModelTable` (hunk 16) |
+| 59-70 | Data tables (some partly mistaken for code by the first trace) |
 | 62 | Data in chip RAM (graphics) |
 | 63 | Tables: `SineTable` (a quarter wave in tenths of a degree, 2.14) and others |
 | 64 | The menu and briefing texts: the six missions (F1 VISUAL CONFIRMATION, F2 EMERGENCY DEFENSE, F3 INTERCEPT STOLEN AIRCRAFT, F4 SEARCH AND RESCUE, F5 INTERCEPT INCOMING CRUISE MISSILE, F6 CARRIER SUB MISSION), the flight log page, the training texts; all addressed as numbered text pages (`TextPageTable`) |

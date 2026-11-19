@@ -178,7 +178,7 @@ l_026_001A6:
 l_026_001CA:
         move.l  (a4)+,(a5)+                     ; 001CA
         dbra    d0,l_026_001CA                  ; 001CC
-        lea.l   (MissileModels).l,a0            ; 001D0
+        lea.l   (ModelTable).l,a0               ; 001D0
         move.w  #$3c,d0                         ; 001D6
         adda.w  d0,a0                           ; 001DA
         movem.l (a0),d0-d4                      ; 001DC
@@ -375,7 +375,7 @@ sub_026_003F6:
         subq.w  #$1,d0                          ; 0040E
         blt.w   l_026_006F2                     ; 00410
 sub_026_00414:
-        lea.l   (MissileModels).l,a1            ; 00414
+        lea.l   (ModelTable).l,a1               ; 00414
         adda.w  (a2)+,a1                        ; 0041A
         swap    d0                              ; 0041C
         move.w  (a2)+,d0                        ; 0041E

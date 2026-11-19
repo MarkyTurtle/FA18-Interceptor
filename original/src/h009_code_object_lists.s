@@ -28,7 +28,7 @@ l_009_00032:
         clr.b   (dat_071_0022C).l               ; 00044
         clr.b   (dat_071_0022E).l               ; 0004A
         clr.b   (dat_071_00237).l               ; 00050
-        lea.l   (dat_072_00000).l,a4            ; 00056
+        lea.l   (VertexBuffer).l,a4             ; 00056
 l_009_0005C:
         move.b  (a0)+,d0                        ; 0005C
         blt.w   l_009_00584                     ; 0005E
@@ -656,7 +656,7 @@ l_009_0084E:
         dbra    d0,l_009_00792                  ; 00854
         bsr.w   sub_009_008BE                   ; 00858
         lea.l   (a2),a1                         ; 0085C
-        lea.l   (dat_072_00000).l,a5            ; 0085E
+        lea.l   (VertexBuffer).l,a5             ; 0085E
         lea.l   (a5),a4                         ; 00864
         subq.w  #$1,d7                          ; 00866
         move.w  d7,d6                           ; 00868
@@ -1268,7 +1268,7 @@ l_009_00F04:
         ble.b   l_009_00F00                     ; 00F0A
         move.w  d7,d6                           ; 00F0C
         lea.l   (SceneryList).l,a0              ; 00F0E
-        lea.l   (dat_072_00000).l,a1            ; 00F14
+        lea.l   (VertexBuffer).l,a1             ; 00F14
         move.w  (dat_073_015E4).l,d0            ; 00F1A
         blt.b   l_009_00F00                     ; 00F20
         asl.w   #$3,d0                          ; 00F22

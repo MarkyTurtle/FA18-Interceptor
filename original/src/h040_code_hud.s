@@ -768,7 +768,7 @@ sub_040_00B70:
         andi.b  #$f0,d5                         ; 00B88
         cmpi.b  #$10,d5                         ; 00B8C
         beq.b   sub_040_00B4C                   ; 00B90
-        movem.w (dat_071_00312).l,d0-d1         ; 00B92
+        movem.w (TargetBoxPos).l,d0-d1          ; 00B92
         tst.w   d0                              ; 00B9A
         blt.b   sub_040_00B4C                   ; 00B9C
         cmpi.w  #$60,d0                         ; 00B9E
@@ -1139,10 +1139,10 @@ DrawTargetBox:
         clr.w   (dat_071_0037A).l               ; 01078
         move.w  #$a,(DrawColour).l              ; 0107E
 l_040_01086:
-        movem.w (dat_071_00306).l,d0-d1         ; 01086
+        movem.w (TargetScreenPos).l,d0-d1       ; 01086
         tst.b   (dat_071_0017E).l               ; 0108E
         bne.w   l_040_011BC                     ; 01094
-        movem.w (dat_071_00312).l,d2-d3         ; 01098
+        movem.w (TargetBoxPos).l,d2-d3          ; 01098
         moveq   #$0,d5                          ; 010A0
         lea.l   (ObjectTable).l,a1              ; 010A2
         adda.w  (ViewObject).l,a1               ; 010A8
@@ -1266,7 +1266,7 @@ l_040_011A6:
 l_040_011AE:
         sub.w   d3,d2                           ; 011AE
 l_040_011B0:
-        move.w  d4,(dat_071_00312).l            ; 011B0
+        move.w  d4,(TargetBoxPos).l             ; 011B0
         move.w  d2,(dat_071_00314).l            ; 011B6
 l_040_011BC:
         tst.w   (Player_56).l                   ; 011BC
@@ -1370,8 +1370,8 @@ l_040_012C2:
         addq.w  #$4,(dat_071_0037A).l           ; 012C2
         cmpi.w  #$10,(dat_071_0037A).l          ; 012C8
         blt.w   l_040_01086                     ; 012D0
-        move.l  (dat_071_00306).l,(dat_071_0030A).l ; 012D4
-        move.w  #$ffff,(dat_071_00306).l        ; 012DE
+        move.l  (TargetScreenPos).l,(dat_071_0030A).l ; 012D4
+        move.w  #$ffff,(TargetScreenPos).l      ; 012DE
 l_040_012E6:
         rts                                     ; 012E6
 dat_040_012E8:

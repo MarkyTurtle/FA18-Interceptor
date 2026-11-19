@@ -1085,7 +1085,9 @@ dat_071_00302:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00306:
+; TargetScreenPos - Where the locked target's centre is on the screen (x, y), set by DrawModel;
+; the head-up display's target box moves towards it.
+TargetScreenPos:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1102,7 +1104,8 @@ dat_071_0030E:
 dat_071_00310:
 	dc.b	$00
 	dc.b	$00
-dat_071_00312:
+; TargetBoxPos - Where the head-up display's target box is (x, y), DrawTargetBox.
+TargetBoxPos:
 	dc.b	$00
 	dc.b	$00
 dat_071_00314:
@@ -1328,12 +1331,14 @@ dat_071_00402:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00406:
+; ShapeNow - The shape DrawModel is drawing (the entry's +$04).
+ShapeNow:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0040A:
+; ShapeNext - The shape to draw next (the entry's +$08; an animation sets both).
+ShapeNext:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00

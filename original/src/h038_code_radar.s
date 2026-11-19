@@ -158,7 +158,7 @@ l_038_001E6:
 ; (RadarBlips, one list per display buffer) and plots each object of RadarList that is in range
 ; ($1B either side, $16 ahead and $10 behind, in units of $2000). An aircraft that comes within
 ; $10000 has its signature confirmed (+$20 bit 6, the target readout then names it); in mission
-; F1 an F-16 held there counts down VisualConfirmTimer.
+; F1 any aircraft (type $1x) held there counts down VisualConfirmTimer.
 ;-------------------------------------------------------------------------------
 DrawRadarBlips:
         move.w  #$9d,d0                         ; 001EA

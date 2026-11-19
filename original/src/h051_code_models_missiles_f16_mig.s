@@ -1,5 +1,5 @@
 ; F/A-18 Interceptor - hunk 51 (code)
-; A 3D model (shape data, used through ObjectDrawTable).
+; 3D models: the Sidewinder ($00), the AMRAAM ($14), the F-16 ($3C) and the MiGs ($78, $8C).
 ; Included by ../f18_main.s.
 
 ;===============================================================================

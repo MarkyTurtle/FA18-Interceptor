@@ -274,7 +274,7 @@ sub_004_003E8:
         move.w  d0,(MouseY).l                   ; 00408
         move.w  d0,(dat_071_0014C).l            ; 0040E
         move.b  #$fe,(dat_071_00280).l          ; 00414
-        lea.l   (MissileModels).l,a0            ; 0041C
+        lea.l   (ModelTable).l,a0               ; 0041C
         move.b  (PlayerAircraftType).l,d1       ; 00422
         cmpi.b  #$10,d1                         ; 00428
         bne.b   l_004_00434                     ; 0042C
@@ -286,7 +286,7 @@ l_004_00438:
         move.b  d1,(PlayerType).l               ; 00438
         adda.w  d0,a0                           ; 0043E
         movem.l (a0),d0-d4                      ; 00440
-        move.l  #sub_010_00014,d0               ; 00444
+        move.l  #DrawModel,d0                   ; 00444
         movem.l d0-d4,(ObjectDrawTable).l       ; 0044A
         movea.l (dat_016_00144).l,a1            ; 00452
         move.w  (a1),d2                         ; 00458
