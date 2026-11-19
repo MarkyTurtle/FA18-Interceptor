@@ -359,7 +359,7 @@ l_008_003C6:
 l_008_003E8:
         move.w  d0,(dat_071_0042E).l            ; 003E8
 l_008_003EE:
-        jsr     (sub_017_00000).l               ; 003EE
+        jsr     (UpdateAllObjects).l            ; 003EE
         tst.b   (dat_071_00155).l               ; 003F4
         bne.b   l_008_0044E                     ; 003FA
         lea.l   (ObjectTable).l,a3              ; 003FC

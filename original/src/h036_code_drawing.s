@@ -13,7 +13,7 @@ sub_036_00000:
 sub_036_0000C:
         move.l  #$fffff,(dat_071_000B6).l       ; 0000C
         move.w  #$d,(DrawColour).l              ; 00016
-        tst.w   (dat_071_0003C).l               ; 0001E
+        tst.w   (DisplayBuffer).l               ; 0001E
         beq.b   l_036_0004C                     ; 00024
         move.w  #$0,d0                          ; 00026
         move.w  #$0,d1                          ; 0002A
@@ -30,7 +30,7 @@ l_036_00048:
 l_036_0004C:
         rts                                     ; 0004C
 sub_036_0004E:
-        lea.l   (dat_071_0003E).l,a0            ; 0004E
+        lea.l   (BufferPlanes).l,a0             ; 0004E
         move.l  (dat_071_0009A).l,(a0)+         ; 00054
         move.l  (dat_071_00096).l,(a0)+         ; 0005A
         move.l  (dat_071_00092).l,(a0)+         ; 00060
@@ -51,10 +51,15 @@ sub_036_0004E:
         move.l  (dat_071_000A6).l,(a0)+         ; 000BA
         move.l  (dat_071_000A2).l,(a0)          ; 000C0
         rts                                     ; 000C6
-sub_036_000C8:
-        lea.l   (dat_071_0003E).l,a0            ; 000C8
+
+;-------------------------------------------------------------------------------
+; SelectDrawBuffer - Points DrawPlanes (and dat_071_0008A) at the planes of the buffer to draw
+; into, by DisplayBuffer: the double buffering's swap.
+;-------------------------------------------------------------------------------
+SelectDrawBuffer:
+        lea.l   (BufferPlanes).l,a0             ; 000C8
         lea.l   (dat_071_0005E).l,a1            ; 000CE
-        tst.w   (dat_071_0003C).l               ; 000D4
+        tst.w   (DisplayBuffer).l               ; 000D4
         beq.b   l_036_000E4                     ; 000DA
         adda.w  #$10,a0                         ; 000DC
         adda.w  #$14,a1                         ; 000E0
@@ -63,9 +68,9 @@ l_036_000E4:
         move.l  a1,(dat_071_0008A).l            ; 000EA
         rts                                     ; 000F0
 sub_036_000F2:
-        lea.l   (dat_071_0003E).l,a1            ; 000F2
+        lea.l   (BufferPlanes).l,a1             ; 000F2
         bsr.w   sub_036_00106                   ; 000F8
-        lea.l   (dat_071_0003E).l,a1            ; 000FC
+        lea.l   (BufferPlanes).l,a1             ; 000FC
         adda.w  #$10,a1                         ; 00102
 sub_036_00106:
         movem.l (a1),a0-a3                      ; 00106

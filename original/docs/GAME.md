@@ -52,7 +52,7 @@ state in fixed global variables (hunk 71), often passing data through them (`BCD
 `RunGame` never returns. Each pass is one frame:
 
 ```
-sub_036_000C8      (swap the display buffers - not yet checked)
+SelectDrawBuffer   point the drawing at the buffer not being shown
 OwnBlitter
 GameFrame          everything for this frame
 DisownBlitter
@@ -63,20 +63,28 @@ The display is double-buffered: two copper lists (`MakeDisplay`), the drawing go
 buffer (`DrawPlanes`) while the other is shown. Anything drawn once has to be drawn into both,
 which is why the instruments have redraw counters set to 3 (`RedrawInstruments`).
 
-`GameFrame` runs the frame's parts in a fixed order, setting `FrameStage` before each one (a
-number from `$08` to `$1D4` - if the game stopped, it said where). `FrameCount` counts frames;
-some parts run only every 2nd, 4th, 8th, 16th or 32nd frame, and the 16 objects' slower work is
-spread out by object number (`FrameCount & 31 == the object`). The order, as far as worked out:
+`GameFrame` runs the frame's parts in a fixed order, setting `FrameStage` before each one (if
+the game stopped, it said where). `FrameCount` counts frames; some parts run only every 2nd, 4th,
+8th, 16th or 32nd frame, and the objects' slower work is spread out by object number. The
+stages (`?` = not worked out yet):
 
-1. `ReadControls`: the joystick and buttons, every key waiting (`HandleKey`).
-2. The objects: `UpdateObject` for each (the computer pilots, the player's controls or the
-   replay, the flight model, the missiles), `RecordFrame`.
-3. The camera (`SetupCamera`), which map cell the view is in (`UpdateViewCell`).
-4. The 3D view: the ground and sky (not yet checked), `DrawObjects` (the visible objects and
-   the scenery).
-5. The cockpit: the instrument panel (`DrawPanel`), the head-up display and instruments (hunks
-   38-40), the messages.
-6. The sound: `CockpitSounds` (the requested warning tones, the engine following the throttle).
+| Stage | Routines | What |
+|---|---|---|
+| (first) | `ReadControls`, `MissionClock`, `sub_000_03C94` | the joystick, buttons and keys; the mission's clock and the flight log's time |
+| `$08` | `sub_000_041E8` | ? (the view, the gun sound, the instruments) |
+| `$10` | `UpdateViewCell` (which calls `UpdateAllObjects`) | **the objects**: every object's update - computer pilots, the player's controls or the replay, engine, attitude, flight, missiles; the flight recording - and which map cell the view is in |
+| `$20` | `SetupCamera`, `sub_008_00286`, `sub_020_00738`, `sub_000_043F2`, `sub_008_00598` | the camera, and ? (the view's position and scenery) |
+| `$60` | `sub_020_007EA`, `sub_020_00AB4`, `sub_033_00010` | ? (the 3D view's outline) |
+| `$68` | `sub_028_00B9C` | ? |
+| `$70` | `sub_033_003CE` | ? (3D: through hunk 35) |
+| `$78`, `$80` | `sub_008_0084C`, `sub_008_0085E` | ? (the scenery list) |
+| `$90` | `sub_025_00000` | ? (points: the ground or the sky) |
+| `$A0`-`$B0` | `sub_023_00000`, `DrawObjects`, `sub_000_072DC` | **the 3D view's objects and scenery** |
+| `$C0` | `sub_000_03D4C`, `CockpitSounds` | ? (uses the custom chips), the cockpit's sounds |
+| `$D0` | `DrawPanel`, `sub_037_002F6`, `sub_038_000FE`, `sub_040_00064`, `sub_038_00002`, `sub_037_008B8`, hunk 39 (several, some every 4th / 8th / 16th frame) | **the cockpit**: the instrument panel and the instruments |
+| `$1A0` | `sub_036_00BAA`, hunks 37 and 39 | ? (the head-up display) |
+| `$1D0`, `$1D4` | hunk 39, `sub_000_04392`, `sub_029_001A4`, `sub_020_00562` (the time: `ReadTime`), and every 8 / 16 / 32 frames more | ? (the outside views; the clock) |
+| `$210`-`$220` | `sub_036_0000C`, `sub_039_00276`, `sub_039_013EE` (the flight log page, `SaveConfig`) | the menus and pages |
 
 ## Input
 

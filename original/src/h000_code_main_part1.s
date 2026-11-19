@@ -481,7 +481,7 @@ l_000_005A8:
         cmpi.w  #$c560,d0                       ; 005DA
         bne.w   l_000_00698                     ; 005DE
         jsr     (_OwnBlitter).l                 ; 005E2
-        jsr     (sub_036_000C8).l               ; 005E8
+        jsr     (SelectDrawBuffer).l            ; 005E8
         jsr     (_WaitBlit).l                   ; 005EE
         jsr     (CopyTitleToScreen).l           ; 005F4
         jsr     (_WaitBlit).l                   ; 005FA
@@ -1452,7 +1452,7 @@ GameFrame:
         link.w  a6,#$fffe                       ; 01124
         move.w  (FrameCount).l,-$2(a6)          ; 01128
         bsr.w   ReadControls                    ; 01130
-        jsr     (sub_000_01748).l               ; 01134
+        jsr     (MissionClock).l                ; 01134
         jsr     (sub_000_03C94).l               ; 0113A
         tst.b   (dat_071_00165).l               ; 01140
         beq.w   l_000_014C0                     ; 01146
@@ -1860,7 +1860,14 @@ l_000_0171E:
 l_000_01744:
         unlk    a6                              ; 01744
         rts                                     ; 01746
-sub_000_01748:
+
+;-------------------------------------------------------------------------------
+; MissionClock - The mission's clock: in a mission (dat_071_00276 > 0) the time flown since it
+; started (dat_071_002E4), less the time paused, is added to the flight log's flight time
+; (ConfigBuffer+$08, at most 18,000 seconds a go); then the mode's own routine is called
+; (a0)...
+;-------------------------------------------------------------------------------
+MissionClock:
         link.w  a6,#$fffc                       ; 01748
         move.b  (dat_071_00268).l,d0            ; 0174C
         tst.b   d0                              ; 01752
@@ -1876,10 +1883,10 @@ sub_000_01748:
         move.b  (dat_071_001FC).l,d0            ; 0177A
         tst.b   d0                              ; 01780
         bpl.w   l_000_01820                     ; 01782
-        tst.l   (dat_071_002E4).l               ; 01786
+        tst.l   (MissionStartTime).l            ; 01786
         beq.w   l_000_01820                     ; 0178C
         move.l  (TimeSeconds).l,d0              ; 01790
-        sub.l   (dat_071_002E4).l,d0            ; 01796
+        sub.l   (MissionStartTime).l,d0         ; 01796
         sub.l   (dat_071_002D8).l,d0            ; 0179C
         move.l  d0,-$4(a6)                      ; 017A2
         tst.l   (dat_071_002D4).l               ; 017A6
@@ -1910,7 +1917,7 @@ l_000_0180C:
         move.w  #$3f,(dat_071_0036E).l          ; 0180C
         jsr     (Nop).l                         ; 01814
 l_000_0181A:
-        clr.l   (dat_071_002E4).l               ; 0181A
+        clr.l   (MissionStartTime).l            ; 0181A
 l_000_01820:
         move.b  (dat_071_00168).l,d0            ; 01820
         tst.b   d0                              ; 01826
@@ -3259,7 +3266,7 @@ l_000_02CE0:
         move.w  (dat_071_0029C).l,d0            ; 02CE6
         ori.w   #$800,d0                        ; 02CEC
         move.w  d0,(dat_071_0029C).l            ; 02CF0
-        jsr     (sub_017_00000).l               ; 02CF6
+        jsr     (UpdateAllObjects).l            ; 02CF6
         rts                                     ; 02CFC
 l_000_02CFE:
         move.b  #$1,(dat_071_00165).l           ; 02CFE
@@ -3367,7 +3374,7 @@ l_000_02E4A:
 l_000_02EA4:
         jsr     (ReadTime).l                    ; 02EA4
         move.l  (TimeSeconds).l,d0              ; 02EAA
-        move.l  d0,(dat_071_002E4).l            ; 02EB0
+        move.l  d0,(MissionStartTime).l         ; 02EB0
         move.l  (TimeSeconds).l,(dat_071_002DC).l ; 02EB6
         clr.w   (FrameCount).l                  ; 02EC0
         move.w  #$3,(dat_071_004A6).l           ; 02EC6

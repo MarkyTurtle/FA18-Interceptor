@@ -168,7 +168,7 @@ l_038_0026A:
         tst.b   (dat_071_00208).l               ; 0026A
         beq.w   l_038_000FC                     ; 00270
         lea.l   (dat_072_0638C).l,a2            ; 00274
-        tst.w   (dat_071_0003C).l               ; 0027A
+        tst.w   (DisplayBuffer).l               ; 0027A
         beq.b   l_038_00286                     ; 00280
         adda.w  #$28,a2                         ; 00282
 l_038_00286:
@@ -201,7 +201,7 @@ l_038_002C0:
         lea.l   (dat_072_05F2C).l,a0            ; 002CE
         moveq   #$1,d6                          ; 002D4
         lea.l   (dat_072_0638C).l,a2            ; 002D6
-        tst.w   (dat_071_0003C).l               ; 002DC
+        tst.w   (DisplayBuffer).l               ; 002DC
         beq.b   l_038_002E8                     ; 002E2
         adda.w  #$28,a2                         ; 002E4
 l_038_002E8:
@@ -420,7 +420,7 @@ l_038_0058E:
 l_038_00590:
         move.w  d2,(DrawColour).l               ; 00590
         movea.l (a7)+,a0                        ; 00596
-        tst.w   (dat_071_0003C).l               ; 00598
+        tst.w   (DisplayBuffer).l               ; 00598
         bne.b   l_038_005A8                     ; 0059E
         cmpa.l  #dat_072_063B4,a2               ; 005A0
         bra.b   l_038_005AE                     ; 005A6

@@ -77,10 +77,13 @@ dat_071_00038:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0003C:
+; DisplayBuffer - Which of the two display buffers is being drawn (0 / 1).
+DisplayBuffer:
 	dc.b	$00
 	dc.b	$00
-dat_071_0003E:
+; BufferPlanes - The two display buffers' plane pointers (two sets of four longs, 16 bytes
+; apart).
+BufferPlanes:
 	dcb.b	32,$00
 dat_071_0005E:
 	dcb.b	40,$00
@@ -960,7 +963,8 @@ dat_071_002E0:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_002E4:
+; MissionStartTime - When the mission started (TimeSeconds).
+MissionStartTime:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00

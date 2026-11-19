@@ -1,13 +1,20 @@
 ; F/A-18 Interceptor - hunk 17 (code)
-; Aircraft and weapons: LaunchMissile (pylons, the flight log's counts) and the missiles' and
-; aircraft's updates (not worked out yet)
+; UpdateAllObjects (every object's update, each frame), LaunchMissile, UpdateMissile,
+; falling objects.
 ; Included by ../f18_main.s.
 
 ;===============================================================================
 ; Hunk 17: CODE, $1A00 bytes
 ;===============================================================================
 	CODE_HUNK	h017
-sub_017_00000:
+
+;-------------------------------------------------------------------------------
+; UpdateAllObjects - Updates every object for the frame: the small objects' timers count down;
+; every 16 frames sub_026_00276; each object's per-frame flag (+$02 bit 0) is cleared; then for
+; each of the 16 objects in turn (unrolled): its timer (+$4C), sub_017_005A8, UpdateMissile,
+; sub_017_01862 and UpdateObject.
+;-------------------------------------------------------------------------------
+UpdateAllObjects:
         move.l  d5,-(a7)                        ; 00000
         tst.b   (dat_071_0017E).l               ; 00002
         bne.b   l_017_0004E                     ; 00008

@@ -293,9 +293,9 @@
 ;         41-58, 69, 70); MissileModels.
 	include	"src/h016_code_model_table.s"
 
-; Hunk 17: Aircraft and weapons: LaunchMissile (pylons, the flight log's counts) and the
-;         missiles' and aircraft's updates (not worked out yet)
-	include	"src/h017_code_weapons.s"
+; Hunk 17: UpdateAllObjects (every object's update, each frame), LaunchMissile, UpdateMissile,
+;         falling objects.
+	include	"src/h017_code_objects_weapons.s"
 
 ; Hunk 18: Game logic not yet identified (used by hunks 16 and 17).
 	include	"src/h018_code_game18.s"

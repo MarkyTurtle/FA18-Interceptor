@@ -701,7 +701,7 @@ l_000_07ED8:
         jsr     (BusyWait).l                    ; 07EDE
         addq.l  #$4,a7                          ; 07EE4
 l_000_07EE6:
-        jsr     (sub_036_000C8).l               ; 07EE6
+        jsr     (SelectDrawBuffer).l            ; 07EE6
         jsr     (_OwnBlitter).l                 ; 07EEC
         jsr     (GameFrame).l                   ; 07EF2
         jsr     (_DisownBlitter).l              ; 07EF8
@@ -900,7 +900,7 @@ MakeDisplay:
         addq.l  #$4,a7                          ; 0825E
         move.l  (dat_002_00014).l,(dat_002_000B6).l ; 08260
         move.l  (dat_002_0002A).l,(dat_002_000BE).l ; 0826A
-        clr.w   (dat_071_0003C).l               ; 08274
+        clr.w   (DisplayBuffer).l               ; 08274
         rts                                     ; 0827A
 
 ;-------------------------------------------------------------------------------
@@ -913,7 +913,7 @@ ShowDisplay:
         pea.l   (GameViewPort).l                ; 08280
         jsr     (_WaitBOVP).l                   ; 08286
         addq.l  #$4,a7                          ; 0828C
-        move.w  (dat_071_0003C).l,d0            ; 0828E
+        move.w  (DisplayBuffer).l,d0            ; 0828E
         move.w  d0,$0(a7)                       ; 08294
         ext.l   d0                              ; 08298
         asl.l   #$2,d0                          ; 0829A
@@ -986,10 +986,10 @@ l_000_08376:
         jsr     (_LoadRGB4).l                   ; 083B6
         lea.l   $c(a7),a7                       ; 083BC
 l_000_083C0:
-        move.w  (dat_071_0003C).l,d0            ; 083C0
+        move.w  (DisplayBuffer).l,d0            ; 083C0
         moveq   #$1,d1                          ; 083C6
         sub.w   d0,d1                           ; 083C8
-        move.w  d1,(dat_071_0003C).l            ; 083CA
+        move.w  d1,(DisplayBuffer).l            ; 083CA
         unlk    a6                              ; 083D0
         rts                                     ; 083D2
 
@@ -2357,7 +2357,7 @@ l_000_09480:
         move.l  a0,-$10(a6)                     ; 094A6
         jsr     (_LoadRGB4).l                   ; 094AA
         lea.l   $c(a7),a7                       ; 094B0
-        move.w  (dat_071_0003C).l,d0            ; 094B4
+        move.w  (DisplayBuffer).l,d0            ; 094B4
         moveq   #$1,d1                          ; 094BA
         sub.w   d0,d1                           ; 094BC
         move.w  d1,-$16(a6)                     ; 094BE
