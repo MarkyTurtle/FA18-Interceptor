@@ -192,7 +192,7 @@ l_022_00240:
         bne.b   l_022_002BA                     ; 00246
         cmpi.w  #$9c06,(dat_071_004B0).l        ; 00248
         beq.b   l_022_002BA                     ; 00250
-        ori.l   #$80,(dat_071_00524).l          ; 00252
+        ori.l   #$80,(SoundRequests).l          ; 00252
         move.w  #$9c06,d0                       ; 0025C
         bra.b   l_022_002B2                     ; 00260
 l_022_00262:
@@ -217,7 +217,7 @@ l_022_00288:
         blt.b   l_022_002BA                     ; 00298
         cmpi.w  #$d02a,(dat_071_004B0).l        ; 0029A
         beq.b   l_022_002BA                     ; 002A2
-        ori.l   #$40,(dat_071_00524).l          ; 002A4
+        ori.l   #$40,(SoundRequests).l          ; 002A4
         move.w  #$d02a,d0                       ; 002AE
 l_022_002B2:
         jsr     (sub_020_00954).l               ; 002B2
@@ -234,7 +234,7 @@ l_022_002BA:
         beq.b   l_022_002F6                     ; 002E0
         move.w  #$d00a,d0                       ; 002E2
         jsr     (sub_020_00954).l               ; 002E6
-        ori.l   #$80,(dat_071_00524).l          ; 002EC
+        ori.l   #$80,(SoundRequests).l          ; 002EC
 l_022_002F6:
         btst    #$1,$20(a1)                     ; 002F6
         bne.b   l_022_0031E                     ; 002FC
@@ -245,7 +245,7 @@ l_022_002F6:
         btst    #$4,$0(a1)                      ; 0030C
         beq.b   l_022_0031E                     ; 00312
         move.l  a1,-(a7)                        ; 00314
-        jsr     (sub_000_05ED4).l               ; 00316
+        jsr     (EngineAndSpeed).l              ; 00316
         movea.l (a7)+,a1                        ; 0031C
 l_022_0031E:
         move.b  $62(a1),d0                      ; 0031E
@@ -751,12 +751,14 @@ l_022_00926:
         move.b  #$ff,(RedrawFlags).l            ; 0092A
 l_022_00932:
         rts                                     ; 00932
-dat_022_00934:
+; LiftTable - ClimbDivePhysics: the lift for each speed flown (31 words, speed / 128).
+LiftTable:
 	dc.b	$02,$00,$01,$E0,$01,$C0,$01,$A0,$01,$68,$01,$30,$01,$10,$00,$E8
 	dc.b	$00,$C8,$00,$B0,$00,$90,$00,$68,$00,$60,$00,$58,$00,$50,$00,$40
 	dc.b	$00,$32,$00,$26,$00,$1D,$00,$17,$00,$12,$00,$0E,$00,$0B,$00,$08
 	dc.b	$00,$05,$00,$04,$00,$03,$00,$03,$00,$02,$00,$02,$00,$01,$00,$01
-dat_022_00974:
+; ClimbDiveTable - ClimbDivePhysics: a value for each speed (31 words, speed / 128).
+ClimbDiveTable:
 	dc.b	$01,$80,$01,$60,$01,$40,$01,$20,$01,$00,$00,$E0,$00,$C0,$00,$A0
 	dc.b	$00,$90,$00,$84,$00,$7E,$00,$78,$00,$72,$00,$6C,$00,$66,$00,$60
 	dc.b	$00,$5A,$00,$54,$00,$4E,$00,$48,$00,$42,$00,$3C,$00,$36,$00,$30
@@ -766,10 +768,17 @@ l_022_009B6:
         clr.w   $76(a1)                         ; 009B6
         clr.w   $78(a1)                         ; 009BA
         rts                                     ; 009BE
-sub_022_009C0:
+
+;-------------------------------------------------------------------------------
+; ClimbDivePhysics - Only when FlightPhysics is set: the speed lost climbing and gained diving
+; (+$78: from the speed (+$6C / 128, 0-30) in ClimbDiveTable, times a term from the sine of the
+; pitch (+$66)), and the lift / sink (+$76, added to the vertical velocity by FlyAircraft) from
+; the speed flown (+$6E / 128) in LiftTable.
+;-------------------------------------------------------------------------------
+ClimbDivePhysics:
         lea.l   (ObjectTable).l,a1              ; 009C0
         adda.w  (CurrentObjectOffset).l,a1      ; 009C6
-        tst.b   (dat_071_00154).l               ; 009CC
+        tst.b   (FlightPhysics).l               ; 009CC
         beq.b   l_022_009B6                     ; 009D2
         move.w  $6c(a1),d0                      ; 009D4
         bge.b   l_022_009DC                     ; 009D8
@@ -780,7 +789,7 @@ l_022_009DC:
         ble.b   l_022_009E6                     ; 009E2
         moveq   #$1e,d0                         ; 009E4
 l_022_009E6:
-        lea.l   dat_022_00974(pc),a0            ; 009E6
+        lea.l   ClimbDiveTable(pc),a0           ; 009E6
         add.w   d0,d0                           ; 009EA
         move.w  (a0,d0.w),d1                    ; 009EC
         lea.l   (SineTable).l,a0                ; 009F0
@@ -856,7 +865,7 @@ l_022_00A8E:
         ble.b   l_022_00A98                     ; 00A94
         moveq   #$1e,d0                         ; 00A96
 l_022_00A98:
-        lea.l   dat_022_00934(pc),a0            ; 00A98
+        lea.l   LiftTable(pc),a0                ; 00A98
         add.w   d0,d0                           ; 00A9C
         move.w  (a0,d0.w),d2                    ; 00A9E
         move.w  $76(a1),d0                      ; 00AA2

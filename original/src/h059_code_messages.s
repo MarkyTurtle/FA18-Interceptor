@@ -6,7 +6,14 @@
 ; Hunk 59: CODE, $5E8 bytes
 ;===============================================================================
 	CODE_HUNK	h059
-dat_059_00000:
+; Messages - The head-up display's messages: 54 of 28 bytes (an attribute byte, 26 characters,
+; an end byte): STALL, LOW FUEL - CRITICAL, FUEL EXHAUSTED, RE-FUELED AND RE-ARMED, CRASH
+; IMMINENT - PULL UP, AT MAXIMUM ALTITUDE, COLLISION PROXIMITY, the damage, ALERT: ENEMY IN
+; VICINITY, IR / RH MISSILE, CRUISE MISSILE, TURBINE FAILURE, TARGET DESTROYED, the training
+; manoeuvres (AILERON ROLL, BARREL ROLL, INSIDE LOOP, BREAK TURN, SPLIT-S, VERTICAL HALF-LOOP,
+; INVERTED FLIGHT and their TRIGGER FOR: prompts), the arrestor hook, the flares and chaff,
+; EJECT.
+Messages:
 	dc.b	'@                          '
 	dc.b	$00,$80
 	dc.b	'           STALL          '

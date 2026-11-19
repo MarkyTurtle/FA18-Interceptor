@@ -300,7 +300,9 @@ dat_071_00150:
 dat_071_00152:
 	dc.b	$00
 	dc.b	$00
-dat_071_00154:
+; FlightPhysics - Set: the fuller flight model - the stall check (UpdateAttitude), the speed
+; lost climbing and gained diving and the lift (ClimbDivePhysics).
+FlightPhysics:
 	dc.b	$00
 dat_071_00155:
 	dc.b	$00
@@ -1614,7 +1616,9 @@ WarningFlags:
 	dc.b	$00
 dat_071_00523:
 	dc.b	$00
-dat_071_00524:
+; SoundRequests - Sound request bits for CockpitSounds (4 bytes: $00524-$00527), set by the
+; game (UpdateObject sets $80 for a warning...).
+SoundRequests:
 	dc.b	$00
 	dc.b	$00
 dat_071_00526:
@@ -1967,14 +1971,15 @@ dat_071_00B52:
 	dc.b	$00
 ; ObjectTable - The 16 objects (aircraft, missiles, ships...; the player's aircraft is record 0):
 ; records of 512 bytes, $00B54-$02B53 (an object's offset = its number << 9). What is known:
-;   +$00 w  flags                       +$01 b  bit 6 the object exists, bit 4 in a cell being drawn
+;   +$00 w  flags ($2000 throttle at full, $0008 probably the afterburner, $0400 spent...)
+;                                       +$01 b  bit 6 the object exists, bit 4 in a cell being drawn
 ;   +$03 b  bit 7   +$05 b  state (0, 1, 6, 8, $A...)   +$06 w  map cell X   +$08 w  map cell Z
 ;   +$0A b  sub-cell                    +$10 l
 ;   +$14 l  position X (low 22 bits: inside the cell)   +$18 l  Y (height; negative is up)
 ;   +$1C l  position Z (low 22 bits: inside the cell)   +$26 w  (a missile: $14 at launch)
 ;   +$22 w  (a weight-like term in the stall check)   +$26 w  responsiveness (at most 15)
-;   +$28 b, +$29 b, +$2A b  stick deflection (signed: pitch and the other two axes)
-;   +$2B b  the throttle, probably (moved towards dat_071_00240)   +$38 b  (copied to its missiles)
+;   +$28 b  pitch stick (-20..20)   +$29 b  rudder (-20..20)   +$2A b  roll stick (-60..60)
+;   +$2B b  the throttle (0-120)   +$39 b  low nibble: the throttle's step   +$38 b  (copied to its missiles)
 ;   +$3E l  velocity X   +$42 l  velocity Y   +$46 l  velocity Z
 ;   +$4C w  a timer (a missile: $96 / $C8 at launch)
 ;   +$50 w, +$52 w, +$54 w  target rotation rates (computer aircraft)
@@ -1982,10 +1987,11 @@ dat_071_00B52:
 ;   +$5F b  missiles left: low nibble AMRAAMs, high nibble Sidewinders ($24 at the start)
 ;   +$62 b  type (0 Sidewinder, 1 AMRAAM; $1x aircraft flown by rotation rates; $3x ...)   +$64 b  more control bits
 ;   +$63 b  selected weapon (high nibble: $10 gun, $30 AMRAAM, else Sidewinder)
-;   +$65 b  control bits ($80/$40 the , and . keys, $20/$10 pitch, $08/$04 roll)
+;   +$65 b  control bits: $80/$40 rudder (the , and . keys), $20/$10 pitch, $08/$04 roll, $02/$01 throttle
 ;   +$66 w  pitch   +$68 w  heading   +$6A w  roll  (1/80 degree; SetAttitude, UpdateAttitude)
 ;   +$80-$90 w  a 3 x 3 rotation matrix made from them (2.14)
-;   +$6C w  speed   +$6E w  speed (FlyAircraft flies at it)   +$76 w  added to the vertical velocity
+;   +$6C w  speed   +$6E w  the speed flown (+$6C + +$78)   +$76 w  lift / sink (vertical velocity)
+;   +$78 w  speed lost climbing / gained diving (ClimbDivePhysics)
 ;   +$78 w, +$7E w   +$71 b   +$72 l  fuel (6,400,000 at the start)
 ;   +$7C b  bit 7
 ;   +$92-$A2 w  the opposite rotation (from the negated angles; rows at +$92, +$98, +$9E)

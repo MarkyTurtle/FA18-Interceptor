@@ -310,8 +310,8 @@
 ; Hunk 21: Data: colour tables (the palette ShowDisplay flashes) (not worked out yet)
 	include	"src/h021_code_colours.s"
 
-; Hunk 22: UpdateObject (each object's frame: states, computer pilots, warnings) and RecordFrame
-;         (the flight recording).
+; Hunk 22: UpdateObject (each object's frame: states, computer pilots, warnings), RecordFrame
+;         (the flight recording), ClimbDivePhysics.
 	include	"src/h022_code_update_objects.s"
 
 ; Hunk 23: Game logic not yet identified (objects; called by GameFrame).

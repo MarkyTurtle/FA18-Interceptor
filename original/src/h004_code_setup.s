@@ -144,7 +144,7 @@ l_004_00232:
         dbra    d0,l_004_00232                  ; 00234
         rts                                     ; 00238
 sub_004_0023A:
-        lea.l   (dat_071_00154).l,a0            ; 0023A
+        lea.l   (FlightPhysics).l,a0            ; 0023A
         move.l  #dat_071_00160,d0               ; 00240
         sub.l   a0,d0                           ; 00246
         subq.w  #$1,d0                          ; 00248
@@ -494,7 +494,7 @@ sub_004_00708:
         move.b  #$9,$2b(a1)                     ; 0073A
         andi.w  #$7fff,$0(a1)                   ; 00740
         clr.l   (WarningFlags).l                ; 00746
-        clr.l   (dat_071_00524).l               ; 0074C
+        clr.l   (SoundRequests).l               ; 0074C
         clr.w   (dat_071_004B0).l               ; 00752
         clr.w   (dat_071_004AE).l               ; 00758
         move.w  #$ffff,(dat_071_004B4).l        ; 0075E

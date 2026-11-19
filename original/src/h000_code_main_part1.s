@@ -1513,7 +1513,7 @@ l_000_01258:
 l_000_01274:
         move.w  #$c0,(FrameStage).l             ; 01274
         jsr     (sub_000_03D4C).l               ; 0127C
-        jsr     (sub_000_04AA0).l               ; 01282
+        jsr     (CockpitSounds).l               ; 01282
         move.w  #$d0,(FrameStage).l             ; 01288
         move.b  (dat_071_00155).l,d0            ; 01290
         tst.b   d0                              ; 01296
@@ -1667,7 +1667,7 @@ l_000_014A6:
         move.w  d0,(FrameCount).l               ; 014B8
         bra.b   l_000_014D0                     ; 014BE
 l_000_014C0:
-        jsr     (sub_000_04AA0).l               ; 014C0
+        jsr     (CockpitSounds).l               ; 014C0
         clr.l   -(a7)                           ; 014C6
         jsr     (_FreeSprite).l                 ; 014C8
         addq.l  #$4,a7                          ; 014CE
@@ -4365,12 +4365,12 @@ l_000_03EEA:
         move.w  d0,-$2(a6)                      ; 03F52
         ext.l   d0                              ; 03F56
         movea.l d0,a0                           ; 03F58
-        adda.l  #dat_059_00000,a0               ; 03F5A
+        adda.l  #Messages,a0                    ; 03F5A
         move.b  (a0),d1                         ; 03F60
         move.b  d1,(dat_071_00232).l            ; 03F62
         addi.l  #$1b,d0                         ; 03F68
         movea.l d0,a0                           ; 03F6E
-        adda.l  #dat_059_00000,a0               ; 03F70
+        adda.l  #Messages,a0                    ; 03F70
         move.b  (a0),(dat_071_00233).l          ; 03F76
         move.b  (dat_071_00232).l,d0            ; 03F7C
         andi.b  #$3f,d0                         ; 03F82

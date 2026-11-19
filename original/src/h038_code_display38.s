@@ -467,19 +467,19 @@ l_038_005FA:
         beq.b   l_038_00646                     ; 00618
         btst    #$5,d1                          ; 0061A
         bne.w   l_038_006DE                     ; 0061E
-        ori.l   #$1,(dat_071_00524).l           ; 00622
+        ori.l   #$1,(SoundRequests).l           ; 00622
         bra.w   l_038_006DE                     ; 0062C
 l_038_00630:
         btst    #$4,d1                          ; 00630
         bne.w   l_038_006DE                     ; 00634
-        ori.l   #$1,(dat_071_00524).l           ; 00638
+        ori.l   #$1,(SoundRequests).l           ; 00638
         bra.w   l_038_006DE                     ; 00642
 l_038_00646:
         btst    #$3,d0                          ; 00646
         beq.b   l_038_0066E                     ; 0064A
         btst    #$3,d1                          ; 0064C
         bne.b   l_038_0065E                     ; 00650
-        ori.l   #$2,(dat_071_00524).l           ; 00652
+        ori.l   #$2,(SoundRequests).l           ; 00652
         bra.b   l_038_00684                     ; 0065C
 l_038_0065E:
         btst    #$2,d0                          ; 0065E
@@ -493,7 +493,7 @@ l_038_0066E:
         btst    #$2,d1                          ; 00674
         bne.b   l_038_0068E                     ; 00678
 l_038_0067A:
-        ori.l   #$2,(dat_071_00524).l           ; 0067A
+        ori.l   #$2,(SoundRequests).l           ; 0067A
 l_038_00684:
         move.b  #$18,(dat_071_00257).l          ; 00684
         bra.b   l_038_006DE                     ; 0068C
@@ -513,7 +513,7 @@ l_038_006A6:
         btst    #$1,d1                          ; 006B6
         bne.b   l_038_006DE                     ; 006BA
 l_038_006BC:
-        ori.l   #$800,(dat_071_00524).l         ; 006BC
+        ori.l   #$800,(SoundRequests).l         ; 006BC
         bra.b   l_038_006DE                     ; 006C6
 l_038_006C8:
         move.w  (dat_071_004B0).l,d1            ; 006C8

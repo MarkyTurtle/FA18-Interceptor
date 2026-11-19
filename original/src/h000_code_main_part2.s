@@ -556,7 +556,14 @@ l_000_04A84:
         movem.l (a7)+,d2                        ; 04A98
         unlk    a6                              ; 04A9C
         rts                                     ; 04A9E
-sub_000_04AA0:
+
+;-------------------------------------------------------------------------------
+; CockpitSounds - The cockpit's sounds for the frame: each request bit of SoundRequests
+; (warnings and events, set by the rest of the game) starts its tone (sub_000_0A042, nine
+; parameters each) and the requests are cleared; the engine's sound follows the throttle (+$2B,
+; 0-120)...
+;-------------------------------------------------------------------------------
+CockpitSounds:
         link.w  a6,#$ffe2                       ; 04AA0
         movem.l d2,-(a7)                        ; 04AA4
         move.w  (dat_071_002AC).l,d0            ; 04AA8
@@ -610,7 +617,7 @@ l_000_04B44:
         jsr     (sub_000_0A24C).l               ; 04B4E
         clr.b   (dat_071_00255).l               ; 04B54
 l_000_04B5A:
-        tst.l   (dat_071_00524).l               ; 04B5A
+        tst.l   (SoundRequests).l               ; 04B5A
         beq.w   l_000_04DD4                     ; 04B60
         move.b  (dat_071_0025A).l,d0            ; 04B64
         tst.b   d0                              ; 04B6A
@@ -820,7 +827,7 @@ l_000_04DB8:
         jsr     (StopSound).l                   ; 04DC6
         addq.l  #$4,a7                          ; 04DCC
 l_000_04DCE:
-        clr.l   (dat_071_00524).l               ; 04DCE
+        clr.l   (SoundRequests).l               ; 04DCE
 l_000_04DD4:
         tst.b   (dat_071_00188).l               ; 04DD4
         beq.b   l_000_04E40                     ; 04DDA
@@ -2230,7 +2237,17 @@ l_000_05ECC:
         clr.w   (dat_071_00150).l               ; 05ECC
 l_000_05ED2:
         rts                                     ; 05ED2
-sub_000_05ED4:
+
+;-------------------------------------------------------------------------------
+; EngineAndSpeed - An aircraft's engine and speed for the frame (CurrentObject), while it has
+; fuel (+$72): the throttle bits of its control byte (+$65: 1 up, 2 down) move the throttle
+; (+$2B, 0-120) by a step that grows while the bit is held (+$39's low nibble, up to 8,
+; halved); at 120 a held throttle-up sets flag $2000 and a further one flag $8 (probably the
+; afterburner); throttle-down clears them. For the player the mouse's vertical movement
+; (dat_071_0014C - MouseY) is read too. The speed (+$6C) then changes towards what the throttle
+; gives (through Decay); ClimbDivePhysics; and the speed flown (+$6E) = +$6C + +$78.
+;-------------------------------------------------------------------------------
+EngineAndSpeed:
         link.w  a6,#$ffce                       ; 05ED4
         movem.l d2/a2-a5,-(a7)                  ; 05ED8
         move.w  (CurrentObject).l,d0            ; 05EDC
@@ -3027,7 +3044,7 @@ l_000_06868:
         moveq   #$7,d0                          ; 06880
         move.l  d0,-(a7)                        ; 06882
         move.l  -$20(a6),-(a7)                  ; 06884
-        bsr.w   sub_000_069F2                   ; 06888
+        bsr.w   Decay                           ; 06888
         lea.l   $c(a7),a7                       ; 0688C
         bra.w   l_000_06940                     ; 06890
 l_000_06894:
@@ -3048,7 +3065,7 @@ l_000_06894:
         moveq   #$f,d0                          ; 068BC
         move.l  d0,-(a7)                        ; 068BE
         move.l  a0,-(a7)                        ; 068C0
-        bsr.w   sub_000_069F2                   ; 068C2
+        bsr.w   Decay                           ; 068C2
         lea.l   $c(a7),a7                       ; 068C6
         bra.b   l_000_06940                     ; 068CA
 l_000_068CC:
@@ -3065,7 +3082,7 @@ l_000_068CC:
         moveq   #$1f,d0                         ; 068EC
         move.l  d0,-(a7)                        ; 068EE
         move.l  -$20(a6),-(a7)                  ; 068F0
-        bsr.w   sub_000_069F2                   ; 068F4
+        bsr.w   Decay                           ; 068F4
         lea.l   $c(a7),a7                       ; 068F8
         bra.b   l_000_06940                     ; 068FC
 l_000_068FE:
@@ -3078,7 +3095,7 @@ l_000_068FE:
         moveq   #$3,d0                          ; 0690E
         move.l  d0,-(a7)                        ; 06910
         move.l  -$20(a6),-(a7)                  ; 06912
-        bsr.w   sub_000_069F2                   ; 06916
+        bsr.w   Decay                           ; 06916
         lea.l   $c(a7),a7                       ; 0691A
         bra.b   l_000_06940                     ; 0691E
 l_000_06920:
@@ -3116,7 +3133,7 @@ l_000_06940:
         moveq   #$7,d0                          ; 06970
         move.l  d0,-(a7)                        ; 06972
         move.l  -$20(a6),-(a7)                  ; 06974
-        bsr.w   sub_000_069F2                   ; 06978
+        bsr.w   Decay                           ; 06978
         lea.l   $c(a7),a7                       ; 0697C
         bra.b   l_000_0699C                     ; 06980
 l_000_06982:
@@ -3131,7 +3148,7 @@ l_000_06990:
         movea.l -$20(a6),a0                     ; 06996
         move.w  d0,(a0)                         ; 0699A
 l_000_0699C:
-        jsr     (sub_022_009C0).l               ; 0699C
+        jsr     (ClimbDivePhysics).l            ; 0699C
         movea.l (dat_002_00008).l,a0            ; 069A2
         move.w  $78(a0),d0                      ; 069A8
         movea.l -$20(a6),a0                     ; 069AC
@@ -3155,7 +3172,11 @@ sub_000_069C6:
         move.w  d1,$26(a0)                      ; 069EA
         unlk    a6                              ; 069EE
         rts                                     ; 069F0
-sub_000_069F2:
+
+;-------------------------------------------------------------------------------
+; Decay - Decay(p, limit, shift): *p -= *p >> shift while |*p| > limit; then 0.
+;-------------------------------------------------------------------------------
+Decay:
         link.w  a6,#$fffe                       ; 069F2
         movea.l $8(a6),a0                       ; 069F6
         move.w  (a0),d0                         ; 069FA

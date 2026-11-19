@@ -348,7 +348,7 @@ l_032_003BC:
         moveq   #$0,d4                          ; 003BC
         bra.w   l_032_00546                     ; 003BE
 l_032_003C2:
-        tst.b   (dat_071_00154).l               ; 003C2
+        tst.b   (FlightPhysics).l               ; 003C2
         beq.w   l_032_004A0                     ; 003C8
         tst.w   (CurrentObject).l               ; 003CC
         bne.b   l_032_003DE                     ; 003D2

@@ -611,7 +611,7 @@ l_040_0095C:
         bne.b   l_040_0098C                     ; 00970
         tst.w   (dat_071_00390).l               ; 00972
         blt.b   l_040_00994                     ; 00978
-        ori.l   #$4,(dat_071_00524).l           ; 0097A
+        ori.l   #$4,(SoundRequests).l           ; 0097A
         move.b  #$1,(dat_071_00284).l           ; 00984
 l_040_0098C:
         jsr     (sub_039_0056C).l               ; 0098C
@@ -620,7 +620,7 @@ l_040_00994:
         tst.b   (dat_071_00284).l               ; 00994
         beq.b   l_040_009AC                     ; 0099A
         clr.b   (dat_071_00284).l               ; 0099C
-        ori.l   #$8,(dat_071_00524).l           ; 009A2
+        ori.l   #$8,(SoundRequests).l           ; 009A2
 l_040_009AC:
         movem.w (dat_071_0030E).l,d0-d1         ; 009AC
         tst.w   d0                              ; 009B4
@@ -745,7 +745,7 @@ sub_040_00B4C:
         andi.l  #$4200,d5                       ; 00B52
         beq.b   l_040_00B6E                     ; 00B58
         andi.l  #$ffffbdff,(WarningFlags).l     ; 00B5A
-        ori.l   #$8,(dat_071_00524).l           ; 00B64
+        ori.l   #$8,(SoundRequests).l           ; 00B64
 l_040_00B6E:
         rts                                     ; 00B6E
 sub_040_00B70:
@@ -805,13 +805,13 @@ l_040_00C0E:
         beq.b   l_040_00C44                     ; 00C3E
         bra.w   l_040_00CE0                     ; 00C40
 l_040_00C44:
-        ori.l   #$4,(dat_071_00524).l           ; 00C44
+        ori.l   #$4,(SoundRequests).l           ; 00C44
         move.b  #$1,(dat_071_00284).l           ; 00C4E
         bra.w   l_040_00CE0                     ; 00C56
 l_040_00C5A:
         cmpi.b  #$2,(dat_071_00284).l           ; 00C5A
         beq.b   l_040_00CE0                     ; 00C62
-        ori.l   #$10,(dat_071_00524).l          ; 00C64
+        ori.l   #$10,(SoundRequests).l          ; 00C64
         move.b  #$2,(dat_071_00284).l           ; 00C6E
         bra.b   l_040_00CE0                     ; 00C76
 l_040_00C78:
@@ -840,7 +840,7 @@ l_040_00CAE:
 l_040_00CC2:
         andi.l  #$ffffbfff,(WarningFlags).l     ; 00CC2
         ori.l   #$200,(WarningFlags).l          ; 00CCC
-        ori.l   #$100,(dat_071_00524).l         ; 00CD6
+        ori.l   #$100,(SoundRequests).l         ; 00CD6
 l_040_00CE0:
         move.w  #$a,(DrawColour).l              ; 00CE0
         bsr.w   sub_040_0165A                   ; 00CE8

@@ -76,7 +76,7 @@ spread out by object number (`FrameCount & 31 == the object`). The order, as far
    the scenery).
 5. The cockpit: the instrument panel (`DrawPanel`), the head-up display and instruments (hunks
    38-40), the messages.
-6. The sound (not yet checked).
+6. The sound: `CockpitSounds` (the requested warning tones, the engine following the throttle).
 
 ## Input
 
@@ -92,7 +92,8 @@ spread out by object number (`FrameCount & 31 == the object`). The order, as far
 
 The stick and keys set three bytes - `PitchInput`, `RollInput`, `CommaPeriodInput` - which are
 packed into the player's **control bits** (the object record's `+$65`: `$20` / `$10` pitch, `$08` /
-`$04` roll, `$80` / `$40` the `,` and `.` keys). Every aircraft is flown through its control bits:
+`$04` roll, `$80` / `$40` the rudder - the `,` and `.` keys - and `$02` / `$01` the throttle down /
+up). Every aircraft is flown through its control bits:
 the player's come from the stick, the computer pilots set theirs (hunk 30), and a replay reads
 them back from the recording.
 
@@ -160,6 +161,20 @@ Each frame `UpdateObject` (hunk 22) does one object's work:
   inertia; `+$76` is added vertically;
 * the position moves by the velocity.
 
+### The controls, the engine and the speed
+
+* **Stick deflection** builds up from the control bits each frame (`PlayerFrameControls`):
+  pitch (`+$28`) by 1 a frame to +-20, rudder (`+$29`) by 1 to +-20, roll (`+$2A`) by 3 to +-60;
+  reversing starts again from +-1, and letting go returns it to 0 at once.
+* **Throttle** (`+$2B`, 0-120; `EngineAndSpeed`): while the throttle-up bit is held the step
+  grows (to 4 a frame); at 120 a held throttle-up sets one flag and a further one another,
+  probably the afterburner; throttle-down takes them off. The player's mouse is read here too.
+* **Speed**: `+$6C` moves towards what the throttle gives; the speed flown is `+$6E` = `+$6C` +
+  `+$78`. With `FlightPhysics` set, `ClimbDivePhysics` makes `+$78` the speed lost climbing and
+  gained diving (a table by speed times the sine of the pitch), and `+$76` the lift or sink (a
+  table by speed), which `FlyAircraft` adds to the vertical velocity; the stall check also runs
+  only then. Without it the aircraft flies simply where it points.
+
 **Fuel** is the record's `+$72` (`PlayerFuel`: 6,400,000 at the start); `FlightControls` sets
 the low-fuel warnings at 768,000 and 460,800 (`WarningFlags`) and out-of-fuel at 0. What sets
 the speed from the throttle, and how the fuel is used, are not worked out yet.
@@ -193,7 +208,12 @@ the speed from the throttle, and how the fuel is used, are not worked out yet.
   colours of 4 planes) and lines (`DrawLine`, the blitter's line mode).
 * The cockpit: the instrument panel picture (`pix/inst5`, 320 x 55) is blitted to rows 145-199
   (`DrawPanel`); the head-up display and instruments are drawn over the view (hunks 38-40); the
-  warnings (STALL, LOW FUEL - CRITICAL...) come from hunk 59.
+  messages come from hunk 59 (`Messages`, 54 of 28 bytes):
+  the warnings (STALL, the fuel levels, CRASH IMMINENT - PULL UP, AT MAXIMUM ALTITUDE, COLLISION
+  PROXIMITY, damage, TURBINE FAILURE), the threat alerts (ENEMY IN VICINITY, IR / RH MISSILE,
+  CRUISE MISSILE), the countermeasures (flares, chaff), the arrestor hook, EJECT, TARGET
+  DESTROYED, and the training manoeuvres (AILERON ROLL, BARREL ROLL, INSIDE LOOP, BREAK TURN,
+  SPLIT-S, VERTICAL HALF-LOOP, INVERTED FLIGHT, each started with the trigger).
 
 ## The flight log and the missions
 
@@ -246,8 +266,9 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
 
 ## Open questions
 
-* How the control bits build up the stick deflection; the speed and throttle; lift, drag, the
-  fuel use; what `dat_071_00154` switches (the stall check is one thing).
+* What speed the throttle gives (the target of `+$6C`), the afterburner, the fuel use, and what
+  sets `FlightPhysics` (a game option, probably).
+* The countermeasures (flares, chaff), damage, ejecting, landing on the carrier.
 * The computer pilots (hunk 30) and the missions (setting them up, success and failure).
 * The 3D pipeline (hunks 13-15) and the model format (hunks 41-58).
 * The ground, sky and scenery; the map and what is in each cell.

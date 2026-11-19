@@ -726,7 +726,7 @@ sub_017_00ACC:
         andi.l  #$4000,d6                       ; 00AE0
         beq.b   l_017_00B38                     ; 00AE6
         andi.l  #$ffffbfff,(WarningFlags).l     ; 00AE8
-        ori.l   #$8,(dat_071_00524).l           ; 00AF2
+        ori.l   #$8,(SoundRequests).l           ; 00AF2
         bra.b   l_017_00B38                     ; 00AFC
 
 ;-------------------------------------------------------------------------------

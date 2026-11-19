@@ -873,7 +873,7 @@ l_039_00C1C:
         add.w   d0,d0                           ; 00C3E
         add.w   d0,d1                           ; 00C40
         addq.w  #$1,d1                          ; 00C42
-        lea.l   (dat_059_00000).l,a1            ; 00C44
+        lea.l   (Messages).l,a1                 ; 00C44
         adda.w  d1,a1                           ; 00C4A
         lea.l   (dat_071_001DA).l,a2            ; 00C4C
         moveq   #$1a,d1                         ; 00C52
@@ -891,7 +891,7 @@ l_039_00C6E:
 	dc.b	$13,$FC,$00,$02
         dc.l    dat_071_0020C                   ; 00C7A
 l_039_00C7E:
-        lea.l   (dat_059_00000).l,a1            ; 00C7E
+        lea.l   (Messages).l,a1                 ; 00C7E
         addq.w  #$1,a1                          ; 00C84
         lea.l   (dat_071_001DA).l,a2            ; 00C86
         moveq   #$1a,d1                         ; 00C8C
