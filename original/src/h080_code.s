@@ -160,7 +160,7 @@ l_080_001C2:
 l_080_001DA:
         pea.l   (dat_081_000A0).l               ; 001DA
         move.l  $8(a6),-(a7)                    ; 001E0
-        jsr     (sub_105_00000).l               ; 001E4
+        jsr     (fopen).l                       ; 001E4
         addq.l  #$8,a7                          ; 001EA
         move.l  d0,-$4(a6)                      ; 001EC
         tst.l   d0                              ; 001F0
@@ -175,10 +175,10 @@ l_080_001DA:
         move.l  d1,-(a7)                        ; 00208
         move.l  -$8(a6),-(a7)                   ; 0020A
         move.l  (a1),-(a7)                      ; 0020E
-        jsr     (sub_111_00000).l               ; 00210
+        jsr     (fread).l                       ; 00210
         lea.l   $10(a7),a7                      ; 00216
         move.l  -$4(a6),-(a7)                   ; 0021A
-        jsr     (sub_105_0025A).l               ; 0021E
+        jsr     (fclose).l                      ; 0021E
         addq.l  #$4,a7                          ; 00224
 l_080_00226:
         moveq   #$1,d0                          ; 00226

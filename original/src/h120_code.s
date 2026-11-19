@@ -5,7 +5,12 @@
 ; Hunk 120: CODE, $3F0 bytes
 ;===============================================================================
 	CODE_HUNK	h120
-sub_120_00000:
+
+;-------------------------------------------------------------------------------
+; _filbuf - _filbuf(fp): refills a stream's buffer with read(); returns its first character or
+; EOF.
+;-------------------------------------------------------------------------------
+_filbuf:
         link.w  a6,#$fff8                       ; 00000
         movea.l $8(a6),a0                       ; 00004
         move.b  $10(a0),d0                      ; 00008
@@ -23,7 +28,7 @@ l_120_0001A:
         btst    #$2,d0                          ; 00028
         bne.b   l_120_00040                     ; 0002C
         move.l  a0,-(a7)                        ; 0002E
-        bsr.w   sub_120_00382                   ; 00030
+        bsr.w   _getbuf                         ; 00030
         addq.l  #$4,a7                          ; 00034
         tst.l   d0                              ; 00036
         beq.b   l_120_00040                     ; 00038
@@ -59,7 +64,7 @@ l_120_00080:
         move.l  -$8(a6),-(a7)                   ; 0008A
         move.l  $c(a0),-(a7)                    ; 0008E
         move.l  d0,-(a7)                        ; 00092
-        jsr     (sub_117_00222).l               ; 00094
+        jsr     (read).l                        ; 00094
         lea.l   $c(a7),a7                       ; 0009A
         move.l  d0,-$4(a6)                      ; 0009E
         tst.l   d0                              ; 000A2
@@ -104,12 +109,17 @@ l_120_000F6:
         bra.b   l_120_0011C                     ; 00110
 l_120_00112:
         move.l  $8(a6),-(a7)                    ; 00112
-        bsr.w   sub_120_00000                   ; 00116
+        bsr.w   _filbuf                         ; 00116
         addq.l  #$4,a7                          ; 0011A
 l_120_0011C:
         unlk    a6                              ; 0011C
         rts                                     ; 0011E
-sub_120_00120:
+
+;-------------------------------------------------------------------------------
+; _flsbuf - _flsbuf(c, fp): writes out a stream's buffer with write() and stores c; returns c
+; or EOF.
+;-------------------------------------------------------------------------------
+_flsbuf:
         link.w  a6,#$fff2                       ; 00120
         move.l  $8(a6),-$a(a6)                  ; 00124
         movea.l $c(a6),a0                       ; 0012A
@@ -134,7 +144,7 @@ l_120_00140:
         rts                                     ; 00162
 l_120_00164:
         move.l  $c(a6),-(a7)                    ; 00164
-        bsr.w   sub_120_00382                   ; 00168
+        bsr.w   _getbuf                         ; 00168
         addq.l  #$4,a7                          ; 0016C
         tst.l   d0                              ; 0016E
         beq.b   l_120_00178                     ; 00170
@@ -162,7 +172,7 @@ l_120_00178:
 l_120_001AA:
         move.l  $c(a6),-(a7)                    ; 001AA
         move.l  $8(a6),-(a7)                    ; 001AE
-        bsr.w   sub_120_00120                   ; 001B2
+        bsr.w   _flsbuf                         ; 001B2
         addq.l  #$8,a7                          ; 001B6
         move.l  d0,d1                           ; 001B8
 l_120_001BA:
@@ -190,7 +200,7 @@ l_120_001DE:
         pea.l   -$1(a6)                         ; 001F4
         move.l  d0,-(a7)                        ; 001F8
         move.l  d1,-$e(a6)                      ; 001FA
-        jsr     (sub_117_0028A).l               ; 001FE
+        jsr     (write).l                       ; 001FE
         lea.l   $c(a7),a7                       ; 00204
         moveq   #-1,d1                          ; 00208
         move.l  d1,$8(a6)                       ; 0020A
@@ -228,7 +238,7 @@ l_120_0022A:
 l_120_00268:
         move.l  $c(a6),-(a7)                    ; 00268
         move.l  $8(a6),-(a7)                    ; 0026C
-        bsr.w   sub_120_00120                   ; 00270
+        bsr.w   _flsbuf                         ; 00270
         addq.l  #$8,a7                          ; 00274
         move.l  d0,d1                           ; 00276
 l_120_00278:
@@ -255,7 +265,7 @@ l_120_002A8:
         move.l  -$e(a6),-(a7)                   ; 002B2
         move.l  $c(a0),-(a7)                    ; 002B6
         move.l  d0,-(a7)                        ; 002BA
-        jsr     (sub_117_0028A).l               ; 002BC
+        jsr     (write).l                       ; 002BC
         lea.l   $c(a7),a7                       ; 002C2
         move.l  d0,-$6(a6)                      ; 002C6
         bra.b   l_120_002D6                     ; 002CA
@@ -302,7 +312,7 @@ l_120_0030C:
 l_120_00344:
         move.l  $c(a6),-(a7)                    ; 00344
         move.l  $8(a6),-(a7)                    ; 00348
-        bsr.w   sub_120_00120                   ; 0034C
+        bsr.w   _flsbuf                         ; 0034C
         addq.l  #$8,a7                          ; 00350
         move.l  d0,d1                           ; 00352
 l_120_00354:
@@ -324,7 +334,12 @@ l_120_0037A:
         move.l  -$a(a6),d0                      ; 0037A
         unlk    a6                              ; 0037E
         rts                                     ; 00380
-sub_120_00382:
+
+;-------------------------------------------------------------------------------
+; _getbuf - _getbuf(fp): gives a stream its buffer (malloc'd, _bufsiz bytes) or makes it
+; unbuffered.
+;-------------------------------------------------------------------------------
+_getbuf:
         link.w  a6,#$0                          ; 00382
         movea.l $8(a6),a0                       ; 00386
         tst.l   $12(a0)                         ; 0038A
@@ -337,7 +352,7 @@ sub_120_00382:
         rts                                     ; 0039E
 l_120_003A0:
         move.l  (dat_088_00000).l,-(a7)         ; 003A0
-        jsr     (sub_126_00010).l               ; 003A6
+        jsr     (malloc).l                      ; 003A6
         addq.l  #$4,a7                          ; 003AC
         movea.l $8(a6),a0                       ; 003AE
         move.l  d0,(a0)                         ; 003B2
@@ -345,7 +360,7 @@ l_120_003A0:
         tst.l   d0                              ; 003B8
         bne.b   l_120_003CA                     ; 003BA
         moveq   #$c,d0                          ; 003BC
-        move.l  d0,(dat_094_00000).l            ; 003BE
+        move.l  d0,(errno).l                    ; 003BE
         moveq   #-1,d0                          ; 003C4
         unlk    a6                              ; 003C6
         rts                                     ; 003C8

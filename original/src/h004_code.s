@@ -31,7 +31,7 @@ sub_004_0002C:
 sub_004_0006E:
         bsr.w   sub_004_0020A                   ; 0006E
         bsr.w   sub_004_0023A                   ; 00072
-        move.b  (dat_071_00278).l,(dat_071_00277).l; 00076
+        move.b  (dat_071_00278).l,(dat_071_00277).l ; 00076
         clr.w   (dat_073_0162A).l               ; 00080
         clr.w   (dat_073_01628).l               ; 00086
         clr.l   (dat_071_0011A).l               ; 0008C
@@ -241,10 +241,10 @@ sub_004_00392:
         move.b  #$1,(dat_071_00185).l           ; 0039E
         move.b  #$1,(dat_071_00184).l           ; 003A6
 sub_004_003AE:
-        move.l  (dat_073_0162C).l,(dat_073_01634).l; 003AE
-        move.l  (dat_073_01638).l,(dat_073_0163C).l; 003B8
-        move.l  (dat_073_0162C).l,(dat_073_01644).l; 003C2
-        move.l  (dat_073_01638).l,(dat_073_01640).l; 003CC
+        move.l  (dat_073_0162C).l,(dat_073_01634).l ; 003AE
+        move.l  (dat_073_01638).l,(dat_073_0163C).l ; 003B8
+        move.l  (dat_073_0162C).l,(dat_073_01644).l ; 003C2
+        move.l  (dat_073_01638).l,(dat_073_01640).l ; 003CC
         addq.l  #$4,(dat_073_01640).l           ; 003D6
         clr.w   (dat_071_002FC).l               ; 003DC
         clr.w   (dat_071_00300).l               ; 003E2

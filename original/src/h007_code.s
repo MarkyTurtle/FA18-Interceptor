@@ -6,9 +6,9 @@
 ;===============================================================================
 	CODE_HUNK	h007
 l_007_00000:
-        jsr     (sub_000_095DC).l               ; 00000
+        jsr     (RemoveMouseInterrupt).l        ; 00000
         bsr.w   sub_007_00012                   ; 00006
-        jsr     (sub_000_095A6).l               ; 0000A
+        jsr     (AddMouseInterrupt).l           ; 0000A
         rts                                     ; 00010
 sub_007_00012:
         rts                                     ; 00012

@@ -1648,7 +1648,7 @@ l_039_015AE:
         bra.w   l_039_013EC                     ; 015C6
 l_039_015CA:
         andi.b  #$fd,(dat_071_001B0).l          ; 015CA
-        jsr     (sub_000_0858A).l               ; 015D2
+        jsr     (SaveConfig).l                  ; 015D2
         move.b  #$ff,(dat_071_001A5).l          ; 015D8
         bra.w   l_039_013EC                     ; 015E0
 l_039_015E4:

@@ -5,14 +5,18 @@
 ; Hunk 153: CODE, $A0 bytes
 ;===============================================================================
 	CODE_HUNK	h153
-sub_153_00000:
+
+;-------------------------------------------------------------------------------
+; fp_DoubleDiv - Double d0:d1 / d2:d3 (SetFPErr 3 on divide by zero).
+;-------------------------------------------------------------------------------
+fp_DoubleDiv:
         movem.l d2-d7,-(a7)                     ; 00000
         move.l  d2,-(a7)                        ; 00004
         andi.w  #$7fff,(a7)                     ; 00006
         or.l    d3,(a7)+                        ; 0000A
         bne.b   l_153_00024                     ; 0000C
         move.l  #$3,-(a7)                       ; 0000E
-        jsr     (sub_155_00000).l               ; 00014
+        jsr     (SetFPErr).l                    ; 00014
         lea.l   $4(a7),a7                       ; 0001A
         clr.l   d0                              ; 0001E
         clr.l   d1                              ; 00020
@@ -23,13 +27,13 @@ l_153_00024:
         or.l    d1,(a7)+                        ; 0002A
         beq.b   l_153_00068                     ; 0002C
         move.l  d2,-(a7)                        ; 0002E
-        jsr     (sub_159_00000).l               ; 00030
+        jsr     (fp_DoubleUnpack).l             ; 00030
         move.l  d0,d4                           ; 00036
         move.l  d1,d5                           ; 00038
         move.l  d2,d6                           ; 0003A
         move.l  (a7)+,d0                        ; 0003C
         move.l  d3,d1                           ; 0003E
-        jsr     (sub_159_00000).l               ; 00040
+        jsr     (fp_DoubleUnpack).l             ; 00040
         exg.l   d2,d6                           ; 00046
         sub.w   d6,d2                           ; 00048
         swap    d6                              ; 0004A
@@ -44,7 +48,7 @@ l_153_00024:
         bsr.b   sub_153_0006E                   ; 0005C
         move.l  d1,d0                           ; 0005E
         bsr.b   sub_153_0006E                   ; 00060
-        jsr     (sub_159_00036).l               ; 00062
+        jsr     (fp_DoublePack).l               ; 00062
 l_153_00068:
         movem.l (a7)+,d2-d7                     ; 00068
         rts                                     ; 0006C

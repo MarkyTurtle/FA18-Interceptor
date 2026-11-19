@@ -11,6 +11,7 @@
 ; dat_HHH_OOOOO (data); hHHH is the start of hunk HHH and hHHH_end its end.
 
 	include	"f18_hunks.i"
+	include	"f18_os.i"
 
 ;===============================================================================
 ; The hunk header (the -Fbin build only: with -Fhunkexe vasm writes its own)

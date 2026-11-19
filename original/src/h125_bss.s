@@ -5,7 +5,8 @@
 ; Hunk 125: BSS, $C bytes
 ;===============================================================================
 	BSS_HUNK	h125
-dat_125_00000:
+; _MemList - The list of AllocMemTracked blocks (head, tail), freed at exit.
+_MemList:
         ds.b    $C                              ; 00000
 h125_end:
 	ifnd	HUNKEXE

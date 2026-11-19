@@ -5,14 +5,19 @@
 ; Hunk 166: CODE, $394 bytes
 ;===============================================================================
 	CODE_HUNK	h166
-sub_166_00000:
+
+;-------------------------------------------------------------------------------
+; fp_DoubleToDigits - Converts a double to decimal digits and an exponent, for printf's
+; %e/%f/%g.
+;-------------------------------------------------------------------------------
+fp_DoubleToDigits:
         link.w  a0,#$ffe2                       ; 00000
         link.w  a1,#$0                          ; 00004
         movem.l d1-d7/a2-a3,-(a7)               ; 00008
         movea.l $8(a0),a2                       ; 0000C
         move.l  (a2)+,d0                        ; 00010
         move.l  (a2),d1                         ; 00012
-        jsr     (sub_159_00000).l               ; 00014
+        jsr     (fp_DoubleUnpack).l             ; 00014
         clr.w   $8(a1)                          ; 0001A
         clr.w   $6(a1)                          ; 0001E
         move.l  d0,-(a7)                        ; 00022
@@ -313,7 +318,7 @@ l_166_00316:
         beq.b   l_166_0032A                     ; 00324
         bset    #$1f,d2                         ; 00326
 l_166_0032A:
-        jsr     (sub_159_00036).l               ; 0032A
+        jsr     (fp_DoublePack).l               ; 0032A
 l_166_00330:
         movea.l $18(a0),a2                      ; 00330
         move.l  d0,(a2)+                        ; 00334

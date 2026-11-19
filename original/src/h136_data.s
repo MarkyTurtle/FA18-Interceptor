@@ -5,7 +5,8 @@
 ; Hunk 136: DATA, $4 bytes
 ;===============================================================================
 	DATA_HUNK	h136
-dat_136_00000:
+; _nufbs - How many low-level files (_ufbs entries) there are.
+_nufbs:
 	dc.b	$00,$00,$00,$14
 h136_end:
 	ifnd	HUNKEXE

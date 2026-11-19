@@ -8,7 +8,7 @@
 _CloseWorkBench:
         move.l  a6,-(a7)                        ; 00000
         movea.l (dat_002_00000).l,a6            ; 00002
-        jsr     -$4e(a6)                        ; 00008
+        jsr     _LVOCloseWorkBench(a6)          ; 00008
         movea.l (a7)+,a6                        ; 0000C
         rts                                     ; 0000E
 h184_end:

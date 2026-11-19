@@ -7,152 +7,152 @@
 	CODE_HUNK	h172
 _AddIntServer:
         move.l  a6,-(a7)                        ; 00000
-        movea.l (dat_001_0002C).l,a6            ; 00002
+        movea.l (_SysBase).l,a6                 ; 00002
         movem.l $8(a7),d0/a1                    ; 00008
-        jsr     -$a8(a6)                        ; 0000E
+        jsr     _LVOAddIntServer(a6)            ; 0000E
         movea.l (a7)+,a6                        ; 00012
         rts                                     ; 00014
 	dc.b	$00,$00
 _RemIntServer:
         move.l  a6,-(a7)                        ; 00018
-        movea.l (dat_001_0002C).l,a6            ; 0001A
+        movea.l (_SysBase).l,a6                 ; 0001A
         movem.l $8(a7),d0/a1                    ; 00020
-        jsr     -$ae(a6)                        ; 00026
+        jsr     _LVORemIntServer(a6)            ; 00026
         movea.l (a7)+,a6                        ; 0002A
         rts                                     ; 0002C
 	dc.b	$00,$00
 _AllocMem:
         move.l  a6,-(a7)                        ; 00030
-        movea.l (dat_001_0002C).l,a6            ; 00032
+        movea.l (_SysBase).l,a6                 ; 00032
         movem.l $8(a7),d0-d1                    ; 00038
-        jsr     -$c6(a6)                        ; 0003E
+        jsr     _LVOAllocMem(a6)                ; 0003E
         movea.l (a7)+,a6                        ; 00042
         rts                                     ; 00044
 	dc.b	$00,$00
 _FreeMem:
         move.l  a6,-(a7)                        ; 00048
-        movea.l (dat_001_0002C).l,a6            ; 0004A
+        movea.l (_SysBase).l,a6                 ; 0004A
         movea.l $8(a7),a1                       ; 00050
         move.l  $c(a7),d0                       ; 00054
-        jsr     -$d2(a6)                        ; 00058
+        jsr     _LVOFreeMem(a6)                 ; 00058
         movea.l (a7)+,a6                        ; 0005C
         rts                                     ; 0005E
 _AvailMem:
         move.l  a6,-(a7)                        ; 00060
-        movea.l (dat_001_0002C).l,a6            ; 00062
+        movea.l (_SysBase).l,a6                 ; 00062
         move.l  $8(a7),d1                       ; 00068
-        jsr     -$d8(a6)                        ; 0006C
+        jsr     _LVOAvailMem(a6)                ; 0006C
         movea.l (a7)+,a6                        ; 00070
         rts                                     ; 00072
 _FindTask:
         move.l  a6,-(a7)                        ; 00074
-        movea.l (dat_001_0002C).l,a6            ; 00076
+        movea.l (_SysBase).l,a6                 ; 00076
         movea.l $8(a7),a1                       ; 0007C
-        jsr     -$126(a6)                       ; 00080
+        jsr     _LVOFindTask(a6)                ; 00080
         movea.l (a7)+,a6                        ; 00084
         rts                                     ; 00086
 _SetTaskPri:
         move.l  a6,-(a7)                        ; 00088
-        movea.l (dat_001_0002C).l,a6            ; 0008A
+        movea.l (_SysBase).l,a6                 ; 0008A
         movea.l $8(a7),a1                       ; 00090
         move.l  $c(a7),d0                       ; 00094
-        jsr     -$12c(a6)                       ; 00098
+        jsr     _LVOSetTaskPri(a6)              ; 00098
         movea.l (a7)+,a6                        ; 0009C
         rts                                     ; 0009E
 _SetSignal:
         move.l  a6,-(a7)                        ; 000A0
-        movea.l (dat_001_0002C).l,a6            ; 000A2
+        movea.l (_SysBase).l,a6                 ; 000A2
         movem.l $8(a7),d0-d1                    ; 000A8
-        jsr     -$132(a6)                       ; 000AE
+        jsr     _LVOSetSignal(a6)               ; 000AE
         movea.l (a7)+,a6                        ; 000B2
         rts                                     ; 000B4
 	dc.b	$00,$00
 _AllocSignal:
         move.l  a6,-(a7)                        ; 000B8
-        movea.l (dat_001_0002C).l,a6            ; 000BA
+        movea.l (_SysBase).l,a6                 ; 000BA
         move.l  $8(a7),d0                       ; 000C0
-        jsr     -$14a(a6)                       ; 000C4
+        jsr     _LVOAllocSignal(a6)             ; 000C4
         movea.l (a7)+,a6                        ; 000C8
         rts                                     ; 000CA
 _FreeSignal:
         move.l  a6,-(a7)                        ; 000CC
-        movea.l (dat_001_0002C).l,a6            ; 000CE
+        movea.l (_SysBase).l,a6                 ; 000CE
         move.l  $8(a7),d0                       ; 000D4
-        jsr     -$150(a6)                       ; 000D8
+        jsr     _LVOFreeSignal(a6)              ; 000D8
         movea.l (a7)+,a6                        ; 000DC
         rts                                     ; 000DE
 _AddPort:
         move.l  a6,-(a7)                        ; 000E0
-        movea.l (dat_001_0002C).l,a6            ; 000E2
+        movea.l (_SysBase).l,a6                 ; 000E2
         movea.l $8(a7),a1                       ; 000E8
-        jsr     -$162(a6)                       ; 000EC
+        jsr     _LVOAddPort(a6)                 ; 000EC
         movea.l (a7)+,a6                        ; 000F0
         rts                                     ; 000F2
 _RemPort:
         move.l  a6,-(a7)                        ; 000F4
-        movea.l (dat_001_0002C).l,a6            ; 000F6
+        movea.l (_SysBase).l,a6                 ; 000F6
         movea.l $8(a7),a1                       ; 000FC
-        jsr     -$168(a6)                       ; 00100
+        jsr     _LVORemPort(a6)                 ; 00100
         movea.l (a7)+,a6                        ; 00104
         rts                                     ; 00106
 _GetMsg:
         move.l  a6,-(a7)                        ; 00108
-        movea.l (dat_001_0002C).l,a6            ; 0010A
+        movea.l (_SysBase).l,a6                 ; 0010A
         movea.l $8(a7),a0                       ; 00110
-        jsr     -$174(a6)                       ; 00114
+        jsr     _LVOGetMsg(a6)                  ; 00114
         movea.l (a7)+,a6                        ; 00118
         rts                                     ; 0011A
 _WaitPort:
         move.l  a6,-(a7)                        ; 0011C
-        movea.l (dat_001_0002C).l,a6            ; 0011E
+        movea.l (_SysBase).l,a6                 ; 0011E
         movea.l $8(a7),a0                       ; 00124
-        jsr     -$180(a6)                       ; 00128
+        jsr     _LVOWaitPort(a6)                ; 00128
         movea.l (a7)+,a6                        ; 0012C
         rts                                     ; 0012E
 _CloseLibrary:
         move.l  a6,-(a7)                        ; 00130
-        movea.l (dat_001_0002C).l,a6            ; 00132
+        movea.l (_SysBase).l,a6                 ; 00132
         movea.l $8(a7),a1                       ; 00138
-        jsr     -$19e(a6)                       ; 0013C
+        jsr     _LVOCloseLibrary(a6)            ; 0013C
         movea.l (a7)+,a6                        ; 00140
         rts                                     ; 00142
 _OpenDevice:
         move.l  a6,-(a7)                        ; 00144
-        movea.l (dat_001_0002C).l,a6            ; 00146
+        movea.l (_SysBase).l,a6                 ; 00146
         movea.l $8(a7),a0                       ; 0014C
         movem.l $c(a7),d0/a1                    ; 00150
         move.l  $14(a7),d1                      ; 00156
-        jsr     -$1bc(a6)                       ; 0015A
+        jsr     _LVOOpenDevice(a6)              ; 0015A
         movea.l (a7)+,a6                        ; 0015E
         rts                                     ; 00160
 	dc.b	$00,$00
 _CloseDevice:
         move.l  a6,-(a7)                        ; 00164
-        movea.l (dat_001_0002C).l,a6            ; 00166
+        movea.l (_SysBase).l,a6                 ; 00166
         movea.l $8(a7),a1                       ; 0016C
-        jsr     -$1c2(a6)                       ; 00170
+        jsr     _LVOCloseDevice(a6)             ; 00170
         movea.l (a7)+,a6                        ; 00174
         rts                                     ; 00176
 _DoIO:
         move.l  a6,-(a7)                        ; 00178
-        movea.l (dat_001_0002C).l,a6            ; 0017A
+        movea.l (_SysBase).l,a6                 ; 0017A
         movea.l $8(a7),a1                       ; 00180
-        jsr     -$1c8(a6)                       ; 00184
+        jsr     _LVODoIO(a6)                    ; 00184
         movea.l (a7)+,a6                        ; 00188
         rts                                     ; 0018A
 _SendIO:
         move.l  a6,-(a7)                        ; 0018C
-        movea.l (dat_001_0002C).l,a6            ; 0018E
+        movea.l (_SysBase).l,a6                 ; 0018E
         movea.l $8(a7),a1                       ; 00194
-        jsr     -$1ce(a6)                       ; 00198
+        jsr     _LVOSendIO(a6)                  ; 00198
         movea.l (a7)+,a6                        ; 0019C
         rts                                     ; 0019E
 _OpenLibrary:
         move.l  a6,-(a7)                        ; 001A0
-        movea.l (dat_001_0002C).l,a6            ; 001A2
+        movea.l (_SysBase).l,a6                 ; 001A2
         movea.l $8(a7),a1                       ; 001A8
         move.l  $c(a7),d0                       ; 001AC
-        jsr     -$228(a6)                       ; 001B0
+        jsr     _LVOOpenLibrary(a6)             ; 001B0
         movea.l (a7)+,a6                        ; 001B4
         rts                                     ; 001B6
 h172_end:

@@ -294,7 +294,7 @@ l_020_0039C:
         moveq   #$0,d0                          ; 003C2
         rts                                     ; 003C4
 sub_020_003C6:
-        jsr     (sub_000_08E54).l               ; 003C6
+        jsr     (ReadTime).l                    ; 003C6
         move.l  (dat_071_004C6).l,d0            ; 003CC
         lea.l   (dat_071_00197).l,a1            ; 003D2
         move.l  d0,d1                           ; 003D8
@@ -315,7 +315,7 @@ sub_020_003C6:
         andi.w  #$f,d1                          ; 00408
         move.w  d1,(dat_002_02978).l            ; 0040C
         move.b  d1,(a1)+                        ; 00412
-        jsr     (sub_000_088E0).l               ; 00414
+        jsr     (CodeCheck).l                   ; 00414
         move.w  (dat_002_0297A).l,d1            ; 0041A
         addq.b  #$3,d1                          ; 00420
         move.b  d1,(dat_071_001C5).l            ; 00422
@@ -429,7 +429,7 @@ l_020_004DE:
         adda.w  #$14,a1                         ; 0055A
         bra.w   l_020_004DE                     ; 0055E
 sub_020_00562:
-        jsr     (sub_000_08E54).l               ; 00562
+        jsr     (ReadTime).l                    ; 00562
         move.l  (dat_071_004D2).l,d1            ; 00568
         blt.w   l_020_005F4                     ; 0056E
         move.w  (dat_071_0029E).l,d0            ; 00572
@@ -495,9 +495,9 @@ l_020_0065A:
 l_020_00660:
         move.b  d1,(dat_071_00259).l            ; 00660
 l_020_00666:
-        move.l  (dat_071_004C6).l,(dat_071_004D6).l; 00666
+        move.l  (dat_071_004C6).l,(dat_071_004D6).l ; 00666
 l_020_00670:
-        jsr     (sub_000_08E54).l               ; 00670
+        jsr     (ReadTime).l                    ; 00670
         move.l  (dat_071_004CA).l,d1            ; 00676
         blt.b   l_020_006D0                     ; 0067C
         sub.l   (dat_071_004C2).l,d1            ; 0067E
@@ -551,8 +551,8 @@ l_020_0070E:
 l_020_0071C:
         move.w  d0,(dat_071_004B6).l            ; 0071C
 l_020_00722:
-        move.l  (dat_071_004C2).l,(dat_071_004CA).l; 00722
-        move.l  (dat_071_004C6).l,(dat_071_004CE).l; 0072C
+        move.l  (dat_071_004C2).l,(dat_071_004CA).l ; 00722
+        move.l  (dat_071_004C6).l,(dat_071_004CE).l ; 0072C
         rts                                     ; 00736
 sub_020_00738:
         tst.b   (dat_071_00155).l               ; 00738
@@ -913,7 +913,7 @@ l_020_00AA2:
         rts                                     ; 00AB2
 sub_020_00AB4:
         clr.w   (dat_071_00B52).l               ; 00AB4
-        move.l  #dat_072_05F2C,(dat_071_0039A).l; 00ABA
+        move.l  #dat_072_05F2C,(dat_071_0039A).l ; 00ABA
         rts                                     ; 00AC4
 sub_020_00AC6:
         move.w  d7,d5                           ; 00AC6

@@ -5,7 +5,8 @@
 ; Hunk 94: DATA, $4 bytes
 ;===============================================================================
 	DATA_HUNK	h094
-dat_094_00000:
+; errno - The C library's error number.
+errno:
 	dc.b	$00,$00,$00,$00
 h094_end:
 	ifnd	HUNKEXE

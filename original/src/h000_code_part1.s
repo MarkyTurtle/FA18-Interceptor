@@ -6,41 +6,49 @@
 ; Lattice C startup (c.o) first, then the game's first module.
 ;===============================================================================
 	CODE_HUNK	h000
-sub_000_00000:
-        move.l  d0,(dat_001_00040).l            ; 00000
-        move.l  a0,(dat_001_00044).l            ; 00006
+
+;-------------------------------------------------------------------------------
+; _start - Lattice C startup (c.o), the program's entry point. Saves the command line (d0/a0),
+; ExecBase and the stack, opens dos.library. From the CLI: builds the program name and
+; arguments on the stack and calls __main (which calls main). From Workbench: waits for the
+; startup message, makes its lock the current directory, opens its tool window if it has one,
+; and calls main(0) directly. Falls into XCEXIT when main returns.
+;-------------------------------------------------------------------------------
+_start:
+        move.l  d0,(_ArgLen).l                  ; 00000
+        move.l  a0,(_ArgPtr).l                  ; 00006
         move.l  a7,d0                           ; 0000C
         movem.l d1-d6/a0-a6,-(a7)               ; 0000E
         movea.l d0,a5                           ; 00012
         movea.l (AbsExecBase).l,a6              ; 00014
-        move.l  a6,(dat_001_0002C).l            ; 0001A
-        move.l  a7,(dat_001_0003C).l            ; 00020
-        clr.l   (dat_001_00038).l               ; 00026
+        move.l  a6,(_SysBase).l                 ; 0001A
+        move.l  a7,(__savsp).l                  ; 00020
+        clr.l   (_WBenchMsg).l                  ; 00026
         suba.l  a1,a1                           ; 0002C
-        jsr     -$126(a6)                       ; 0002E
+        jsr     _LVOFindTask(a6)                ; 0002E
         movea.l d0,a4                           ; 00032
-        move.l  $98(a4),(dat_001_00024).l       ; 00034
-        tst.l   $ac(a4)                         ; 0003C
-        beq.w   l_000_000D8                     ; 00040
+        move.l  pr_CurrentDir(a4),(_StartDir).l ; 00034
+        tst.l   pr_CLI(a4)                      ; 0003C
+        beq.w   _start_fromWorkbench            ; 00040
         move.l  a5,d0                           ; 00044
         sub.l   $4(a5),d0                       ; 00046
-        move.l  d0,(dat_001_00004).l            ; 0004A
-        bsr.w   sub_000_001B0                   ; 00050
-        movea.l #sub_000_00000,a0               ; 00054
+        move.l  d0,(_StackSize).l               ; 0004A
+        bsr.w   OpenDOSLibrary                  ; 00050
+        movea.l #_start,a0                      ; 00054
         clr.l   -(a7)                           ; 0005A
         jsr     (_FindTask).l                   ; 0005C
         addq.l  #$4,a7                          ; 00062
         movea.l d0,a0                           ; 00064
-        movea.l $ac(a0),a0                      ; 00066
+        movea.l pr_CLI(a0),a0                   ; 00066
         adda.l  a0,a0                           ; 0006A
         adda.l  a0,a0                           ; 0006C
-        movea.l $10(a0),a1                      ; 0006E
+        movea.l cli_CommandName(a0),a1          ; 0006E
         adda.l  a1,a1                           ; 00072
         adda.l  a1,a1                           ; 00074
-        move.l  (dat_001_00040).l,d0            ; 00076
+        move.l  (_ArgLen).l,d0                  ; 00076
         moveq   #$0,d1                          ; 0007C
         move.b  (a1)+,d1                        ; 0007E
-        move.l  a1,(dat_001_0004C).l            ; 00080
+        move.l  a1,(_ProgramName).l             ; 00080
         add.l   d1,d0                           ; 00086
         addq.l  #$1,d0                          ; 00088
         clr.w   -(a7)                           ; 0008A
@@ -49,8 +57,8 @@ sub_000_00000:
         suba.l  d0,a7                           ; 00092
         subq.l  #$2,d0                          ; 00094
         clr.w   (a7,d0.w)                       ; 00096
-        move.l  (dat_001_00040).l,d0            ; 0009A
-        movea.l (dat_001_00044).l,a0            ; 000A0
+        move.l  (_ArgLen).l,d0                  ; 0009A
+        movea.l (_ArgPtr).l,a0                  ; 000A0
         move.l  d0,d2                           ; 000A6
         subq.l  #$1,d0                          ; 000A8
         add.l   d1,d2                           ; 000AA
@@ -65,88 +73,118 @@ l_000_000C0:
         dbra    d2,l_000_000C0                  ; 000C6
         movea.l a7,a1                           ; 000CA
         move.l  a1,-(a7)                        ; 000CC
-        jsr     (sub_167_00000).l               ; 000CE
+        jsr     (__main).l                      ; 000CE
         moveq   #$0,d0                          ; 000D4
-        bra.b   l_000_0013A                     ; 000D6
-l_000_000D8:
-        move.l  $3a(a4),(dat_001_00004).l       ; 000D8
-        bsr.w   sub_000_001B0                   ; 000E0
-        bsr.w   sub_000_0019E                   ; 000E4
-        move.l  d0,(dat_001_00038).l            ; 000E8
+        bra.b   XCEXIT_d0                       ; 000D6
+_start_fromWorkbench:
+        move.l  $3a(a4),(_StackSize).l          ; 000D8
+        bsr.w   OpenDOSLibrary                  ; 000E0
+        bsr.w   WaitWBMessage                   ; 000E4
+        move.l  d0,(_WBenchMsg).l               ; 000E8
         move.l  d0,-(a7)                        ; 000EE
         movea.l d0,a2                           ; 000F0
-        move.l  $24(a2),d0                      ; 000F2
+        move.l  sm_ArgList(a2),d0               ; 000F2
         beq.b   l_000_00108                     ; 000F6
-        movea.l (dat_001_00030).l,a6            ; 000F8
+        movea.l (_DOSBase).l,a6                 ; 000F8
         movea.l d0,a0                           ; 000FE
-        move.l  $0(a0),d1                       ; 00100
-        jsr     -$7e(a6)                        ; 00104
+        move.l  wa_Lock(a0),d1                  ; 00100
+        jsr     _LVOCurrentDir(a6)              ; 00104
 l_000_00108:
-        move.l  $20(a2),d1                      ; 00108
+        move.l  sm_ToolWindow(a2),d1            ; 00108
         beq.b   l_000_0012A                     ; 0010C
-        move.l  #$3ed,d2                        ; 0010E
-        jsr     -$1e(a6)                        ; 00114
-        move.l  d0,(dat_001_00048).l            ; 00118
+        move.l  #MODE_OLDFILE,d2                ; 0010E
+        jsr     _LVOOpen(a6)                    ; 00114
+        move.l  d0,(_WBConsole).l               ; 00118
         beq.b   l_000_0012A                     ; 0011E
         lsl.l   #$2,d0                          ; 00120
         movea.l d0,a0                           ; 00122
-        move.l  $8(a0),$a4(a4)                  ; 00124
+        move.l  $8(a0),pr_ConsoleTask(a4)       ; 00124
 l_000_0012A:
         clr.l   -(a7)                           ; 0012A
-        jsr     (sub_000_003CE).l               ; 0012C
+        jsr     (main).l                        ; 0012C
         moveq   #$0,d0                          ; 00132
-        bra.b   l_000_0013A                     ; 00134
-sub_000_00136:
+        bra.b   XCEXIT_d0                       ; 00134
+
+;-------------------------------------------------------------------------------
+; XCEXIT - exit(code) from anywhere: the code (4(sp)) goes back to whoever started the program.
+; Frees what was allocated through AllocMemTracked, closes the Workbench window and current
+; directory lock, replies to the Workbench message (inside Forbid), restores the startup stack
+; and returns.
+;-------------------------------------------------------------------------------
+XCEXIT:
         move.l  $4(a7),d0                       ; 00136
-l_000_0013A:
+XCEXIT_d0:
         move.l  d0,-(a7)                        ; 0013A
-        jsr     (sub_123_000B4).l               ; 0013C
-        tst.l   (dat_001_00038).l               ; 00142
+        jsr     (FreeAllTracked).l              ; 0013C
+        tst.l   (_WBenchMsg).l                  ; 00142
         beq.b   l_000_00176                     ; 00148
-        move.l  (dat_001_00028).l,d1            ; 0014A
+        move.l  (_ConsoleHandle).l,d1           ; 0014A
         beq.b   l_000_00156                     ; 00150
-        jsr     -$24(a6)                        ; 00152
+        jsr     _LVOClose(a6)                   ; 00152
 l_000_00156:
-        move.l  (dat_001_00048).l,d1            ; 00156
+        move.l  (_WBConsole).l,d1               ; 00156
         beq.b   l_000_00162                     ; 0015C
-        jsr     -$24(a6)                        ; 0015E
+        jsr     _LVOClose(a6)                   ; 0015E
 l_000_00162:
         movea.l (AbsExecBase).l,a6              ; 00162
-        jsr     -$84(a6)                        ; 00168
-        movea.l (dat_001_00038).l,a1            ; 0016C
-        jsr     -$17a(a6)                       ; 00172
+        jsr     _LVOForbid(a6)                  ; 00168
+        movea.l (_WBenchMsg).l,a1               ; 0016C
+        jsr     _LVOReplyMsg(a6)                ; 00172
 l_000_00176:
         move.l  (a7)+,d0                        ; 00176
-        movea.l (dat_001_0003C).l,a7            ; 00178
+        movea.l (__savsp).l,a7                  ; 00178
         movem.l (a7)+,d1-d6/a0-a6               ; 0017E
         rts                                     ; 00182
-l_000_00184:
+
+;-------------------------------------------------------------------------------
+; NoDOSLibrary - dos.library did not open: Alert(AG_OpenLib|AO_DOSLib) and exit with 100.
+;-------------------------------------------------------------------------------
+NoDOSLibrary:
         movem.l d7/a5-a6,-(a7)                  ; 00184
-        move.l  #$30007,d7                      ; 00188
+        move.l  #AG_OpenLib|AO_DOSLib,d7        ; 00188
         movea.l $4.w,a6                         ; 0018E
-        jsr     -$6c(a6)                        ; 00192
+        jsr     _LVOAlert(a6)                   ; 00192
         movem.l (a7)+,d7/a5-a6                  ; 00196
         moveq   #$64,d0                         ; 0019A
-        bra.b   l_000_0013A                     ; 0019C
-sub_000_0019E:
-        lea.l   $5c(a4),a0                      ; 0019E
-        jsr     -$180(a6)                       ; 001A2
-        lea.l   $5c(a4),a0                      ; 001A6
-        jsr     -$174(a6)                       ; 001AA
+        bra.b   XCEXIT_d0                       ; 0019C
+
+;-------------------------------------------------------------------------------
+; WaitWBMessage - Waits for and takes the Workbench startup message from the process's message
+; port (pr_MsgPort, a4 = the process).
+;-------------------------------------------------------------------------------
+WaitWBMessage:
+        lea.l   pr_MsgPort(a4),a0               ; 0019E
+        jsr     _LVOWaitPort(a6)                ; 001A2
+        lea.l   pr_MsgPort(a4),a0               ; 001A6
+        jsr     _LVOGetMsg(a6)                  ; 001AA
         rts                                     ; 001AE
-sub_000_001B0:
-        lea.l   (dat_001_00050).l,a1            ; 001B0
+
+;-------------------------------------------------------------------------------
+; OpenDOSLibrary - Opens dos.library (any version) into _DOSBase; NoDOSLibrary if it fails.
+;-------------------------------------------------------------------------------
+OpenDOSLibrary:
+        lea.l   (s_dos_library).l,a1            ; 001B0
         moveq   #$0,d0                          ; 001B6
-        jsr     -$228(a6)                       ; 001B8
-        move.l  d0,(dat_001_00030).l            ; 001BC
-        beq.b   l_000_00184                     ; 001C2
+        jsr     _LVOOpenLibrary(a6)             ; 001B8
+        move.l  d0,(_DOSBase).l                 ; 001BC
+        beq.b   NoDOSLibrary                    ; 001C2
         rts                                     ; 001C4
 	dc.b	$00,$00
-sub_000_001C8:
+
+;-------------------------------------------------------------------------------
+; LoadPicture - LoadPicture(name, colours, bmhd): loads an IFF ILBM picture from the disk.
+; Opens the file and the IFF context (OpenRIFF), reads the FORM header, the BMHD (20 bytes,
+; into bmhd), the CMAP (up to 32 colours, as RGB4 words, into colours: GetCMAP), skips the
+; 4-byte CAMG, allocates a BitMap ($28 bytes) and its planes in chip RAM (InitBitMap with the
+; BMHD's depth, width and height) and a row buffer, and decompresses the BODY into it
+; (GetBODY). The chunks must come in that order. Returns the BitMap (0 if the file did not
+; open).
+;-------------------------------------------------------------------------------
+LoadPicture:
         link.w  a6,#$ffae                       ; 001C8
         movem.l d2-d3,-(a7)                     ; 001CC
         move.l  $10(a6),-$8(a6)                 ; 001D0
-        move.l  #$3ed,-(a7)                     ; 001D6
+        move.l  #MODE_OLDFILE,-(a7)             ; 001D6
         move.l  $8(a6),-(a7)                    ; 001DC
         jsr     (_Open).l                       ; 001E0
         addq.l  #$8,a7                          ; 001E6
@@ -161,7 +199,7 @@ l_000_001FA:
         clr.l   -(a7)                           ; 001FA
         pea.l   -$34(a6)                        ; 001FC
         move.l  -$10(a6),-(a7)                  ; 00200
-        jsr     (sub_000_00C46).l               ; 00204
+        jsr     (OpenRIFF).l                    ; 00204
         lea.l   $c(a7),a7                       ; 0020A
         move.l  d0,-$c(a6)                      ; 0020E
         tst.l   d0                              ; 00212
@@ -172,43 +210,43 @@ l_000_001FA:
         rts                                     ; 0021E
 l_000_00220:
         pea.l   -$34(a6)                        ; 00220
-        jsr     (sub_000_00F7C).l               ; 00224
+        jsr     (GetFChunkHdr).l                ; 00224
         addq.l  #$4,a7                          ; 0022A
         moveq   #$8,d0                          ; 0022C
         move.l  d0,-(a7)                        ; 0022E
         pea.l   -$49(a6)                        ; 00230
         pea.l   -$34(a6)                        ; 00234
-        jsr     (sub_000_00EF4).l               ; 00238
+        jsr     (IFFReadBytes).l                ; 00238
         lea.l   $c(a7),a7                       ; 0023E
         moveq   #$14,d0                         ; 00242
         move.l  d0,-(a7)                        ; 00244
         move.l  -$8(a6),-(a7)                   ; 00246
         pea.l   -$34(a6)                        ; 0024A
-        jsr     (sub_000_00EF4).l               ; 0024E
+        jsr     (IFFReadBytes).l                ; 0024E
         lea.l   $c(a7),a7                       ; 00254
         moveq   #$8,d0                          ; 00258
         move.l  d0,-(a7)                        ; 0025A
         pea.l   -$49(a6)                        ; 0025C
         pea.l   -$34(a6)                        ; 00260
-        jsr     (sub_000_00EF4).l               ; 00264
+        jsr     (IFFReadBytes).l                ; 00264
         lea.l   $c(a7),a7                       ; 0026A
         move.b  #$20,-$41(a6)                   ; 0026E
         pea.l   -$41(a6)                        ; 00274
         move.l  $c(a6),-(a7)                    ; 00278
         pea.l   -$34(a6)                        ; 0027C
-        jsr     (sub_000_00900).l               ; 00280
+        jsr     (GetCMAP).l                     ; 00280
         lea.l   $c(a7),a7                       ; 00286
         moveq   #$8,d0                          ; 0028A
         move.l  d0,-(a7)                        ; 0028C
         pea.l   -$49(a6)                        ; 0028E
         pea.l   -$34(a6)                        ; 00292
-        jsr     (sub_000_00EF4).l               ; 00296
+        jsr     (IFFReadBytes).l                ; 00296
         lea.l   $c(a7),a7                       ; 0029C
         moveq   #$4,d0                          ; 002A0
         move.l  d0,-(a7)                        ; 002A2
         pea.l   -$49(a6)                        ; 002A4
         pea.l   -$34(a6)                        ; 002A8
-        jsr     (sub_000_00EF4).l               ; 002AC
+        jsr     (IFFReadBytes).l                ; 002AC
         lea.l   $c(a7),a7                       ; 002B2
         move.l  #$10002,-(a7)                   ; 002B6
         moveq   #$28,d0                         ; 002BC
@@ -275,7 +313,7 @@ l_000_00340:
         pea.l   -$49(a6)                        ; 00374
         pea.l   -$34(a6)                        ; 00378
         move.l  d0,-$38(a6)                     ; 0037C
-        jsr     (sub_000_00EF4).l               ; 00380
+        jsr     (IFFReadBytes).l                ; 00380
         lea.l   $c(a7),a7                       ; 00386
         move.l  -$3c(a6),-(a7)                  ; 0038A
         move.l  -$38(a6),-(a7)                  ; 0038E
@@ -283,10 +321,10 @@ l_000_00340:
         clr.l   -(a7)                           ; 00396
         move.l  -$4e(a6),-(a7)                  ; 00398
         pea.l   -$34(a6)                        ; 0039C
-        jsr     (sub_000_00996).l               ; 003A0
+        jsr     (GetBODY).l                     ; 003A0
         lea.l   $18(a7),a7                      ; 003A6
         pea.l   -$34(a6)                        ; 003AA
-        jsr     (sub_000_00CCE).l               ; 003AE
+        jsr     (CloseRGroup).l                 ; 003AE
         addq.l  #$4,a7                          ; 003B4
         move.l  -$10(a6),-(a7)                  ; 003B6
         jsr     (_Close).l                      ; 003BA
@@ -295,7 +333,13 @@ l_000_00340:
         movem.l (a7)+,d2-d3                     ; 003C6
         unlk    a6                              ; 003CA
         rts                                     ; 003CC
-sub_000_003CE:
+
+;-------------------------------------------------------------------------------
+; main - The game's main(): opens graphics.library and the sound, loads the title picture
+; (pix/splsh), checks it, sets up the display, runs the title sequence, then loads the other
+; two pictures (pix/inst5, pix/frnt5) and goes on into the game.
+;-------------------------------------------------------------------------------
+main:
         link.w  a6,#$ffe8                       ; 003CE
         movem.l d2/a2-a3,-(a7)                  ; 003D2
         move.w  #$3,(dat_071_00112).l           ; 003D6
@@ -308,7 +352,7 @@ sub_000_003CE:
         tst.l   d0                              ; 003F6
         bne.b   l_000_00404                     ; 003F8
         clr.l   -(a7)                           ; 003FA
-        jsr     (sub_096_00000).l               ; 003FC
+        jsr     (exit).l                        ; 003FC
         addq.l  #$4,a7                          ; 00402
 l_000_00404:
         jsr     (sub_077_00000).l               ; 00404
@@ -323,13 +367,13 @@ l_000_00418:
         pea.l   (dat_002_028D8).l               ; 0042C
         pea.l   (dat_002_02894).l               ; 00432
         pea.l   (dat_001_0006D).l               ; 00438
-        bsr.w   sub_000_001C8                   ; 0043E
+        bsr.w   LoadPicture                     ; 0043E
         lea.l   $c(a7),a7                       ; 00442
         move.l  d0,(dat_002_028D4).l            ; 00446
         clr.l   -(a7)                           ; 0044C
         jsr     (_FreeSprite).l                 ; 0044E
         addq.l  #$4,a7                          ; 00454
-        jsr     (sub_000_09660).l               ; 00456
+        jsr     (LoadSound201).l                ; 00456
         clr.l   -(a7)                           ; 0045C
         jsr     (_FreeSprite).l                 ; 0045E
         addq.l  #$4,a7                          ; 00464
@@ -340,13 +384,13 @@ l_000_00418:
         move.l  d0,-$4(a6)                      ; 00472
         cmpi.l  #$30d40,d0                      ; 00476
         ble.b   l_000_00484                     ; 0047C
-        jsr     (sub_000_096BA).l               ; 0047E
+        jsr     (LoadMusicSamples).l            ; 0047E
 l_000_00484:
         clr.l   -(a7)                           ; 00484
         jsr     (_FreeSprite).l                 ; 00486
         addq.l  #$4,a7                          ; 0048C
-        jsr     (sub_000_07F04).l               ; 0048E
-        bsr.w   sub_000_007AE                   ; 00494
+        jsr     (InitDisplay).l                 ; 0048E
+        bsr.w   CloseWorkbenchScreen            ; 00494
         pea.l   (dat_002_00022).l               ; 00498
         jsr     (_WaitBOVP).l                   ; 0049E
         addq.l  #$4,a7                          ; 004A4
@@ -382,7 +426,7 @@ l_000_00484:
         jsr     (_WaitBOVP).l                   ; 00518
         addq.l  #$4,a7                          ; 0051E
         move.l  #$21000,-(a7)                   ; 00520
-        bsr.w   sub_000_008DA                   ; 00526
+        bsr.w   BusyWait                        ; 00526
         addq.l  #$4,a7                          ; 0052A
         clr.l   -(a7)                           ; 0052C
         jsr     (_FreeSprite).l                 ; 0052E
@@ -404,9 +448,9 @@ l_000_00560:
         addq.l  #$4,a7                          ; 0056A
 l_000_0056C:
         move.l  #$43000,-(a7)                   ; 0056C
-        bsr.w   sub_000_008DA                   ; 00572
+        bsr.w   BusyWait                        ; 00572
         addq.l  #$4,a7                          ; 00576
-        jsr     (sub_000_08A82).l               ; 00578
+        jsr     (SaveTitleBitMap).l             ; 00578
 l_000_0057E:
         movea.l (dat_002_0004A).l,a0            ; 0057E
         move.l  $4(a0),-$8(a6)                  ; 00584
@@ -468,7 +512,7 @@ l_000_0063C:
         btst    #$7,(dat_071_0052B).l           ; 00668
         beq.b   l_000_00680                     ; 00670
         move.l  #$20000,-(a7)                   ; 00672
-        bsr.w   sub_000_008DA                   ; 00678
+        bsr.w   BusyWait                        ; 00678
         addq.l  #$4,a7                          ; 0067C
         bra.b   l_000_00698                     ; 0067E
 l_000_00680:
@@ -477,10 +521,10 @@ l_000_00680:
         jsr     (sub_000_09D7A).l               ; 00684
         addq.l  #$4,a7                          ; 0068A
         move.l  #$a000,-(a7)                    ; 0068C
-        bsr.w   sub_000_008DA                   ; 00692
+        bsr.w   BusyWait                        ; 00692
         addq.l  #$4,a7                          ; 00696
 l_000_00698:
-        bsr.w   sub_000_00806                   ; 00698
+        bsr.w   SetupGameDisplay                ; 00698
         clr.l   -(a7)                           ; 0069C
         jsr     (_FreeSprite).l                 ; 0069E
         addq.l  #$4,a7                          ; 006A4
@@ -493,13 +537,13 @@ l_000_006BC:
         pea.l   (dat_002_02904).l               ; 006BC
         pea.l   (dat_002_02894).l               ; 006C2
         pea.l   (dat_001_0007B).l               ; 006C8
-        bsr.w   sub_000_001C8                   ; 006CE
+        bsr.w   LoadPicture                     ; 006CE
         lea.l   $c(a7),a7                       ; 006D2
         move.l  d0,(dat_002_02900).l            ; 006D6
         pea.l   (dat_002_02934).l               ; 006DC
         pea.l   (dat_002_02894).l               ; 006E2
         pea.l   (dat_001_00089).l               ; 006E8
-        bsr.w   sub_000_001C8                   ; 006EE
+        bsr.w   LoadPicture                     ; 006EE
         lea.l   $c(a7),a7                       ; 006F2
         move.l  d0,(dat_002_02930).l            ; 006F6
         movea.l (dat_002_02900).l,a1            ; 006FC
@@ -546,11 +590,16 @@ l_000_006BC:
         jsr     (sub_020_00000).l               ; 00790
         lea.l   $18(a7),a7                      ; 00796
         move.w  d0,(dat_071_00024).l            ; 0079A
-        jsr     (sub_000_07D48).l               ; 007A0
+        jsr     (InitGame).l                    ; 007A0
         movem.l (a7)+,d2/a2-a3                  ; 007A6
         unlk    a6                              ; 007AA
         rts                                     ; 007AC
-sub_000_007AE:
+
+;-------------------------------------------------------------------------------
+; CloseWorkbenchScreen - Opens intuition.library just to close the Workbench screen
+; (CloseWorkBench, frees chip RAM), then closes it again.
+;-------------------------------------------------------------------------------
+CloseWorkbenchScreen:
         moveq   #$1d,d0                         ; 007AE
         move.l  d0,-(a7)                        ; 007B0
         pea.l   (dat_001_00097).l               ; 007B2
@@ -560,7 +609,7 @@ sub_000_007AE:
         tst.l   d0                              ; 007C6
         bne.b   l_000_007D4                     ; 007C8
         clr.l   -(a7)                           ; 007CA
-        jsr     (sub_096_00000).l               ; 007CC
+        jsr     (exit).l                        ; 007CC
         addq.l  #$4,a7                          ; 007D2
 l_000_007D4:
         clr.l   -(a7)                           ; 007D4
@@ -577,7 +626,14 @@ l_000_007D4:
         addq.l  #$4,a7                          ; 00802
 l_000_00804:
         rts                                     ; 00804
-sub_000_00806:
+
+;-------------------------------------------------------------------------------
+; SetupGameDisplay - Gives the title picture's planes to the game display: frees the display's
+; own first plane buffer and points the game BitMap's four planes at the picture's (also kept
+; in dat_071_000A2-000AE), makes the copper lists (sub_036_0004E), and allocates two $1F40-byte
+; chip buffers.
+;-------------------------------------------------------------------------------
+SetupGameDisplay:
         movem.l a2,-(a7)                        ; 00806
         moveq   #$0,d0                          ; 0080A
         move.w  (dat_002_028D8).l,d0            ; 0080C
@@ -615,7 +671,7 @@ sub_000_00806:
         tst.l   d0                              ; 008A8
         bne.b   l_000_008BA                     ; 008AA
         move.l  #$fffffc18,-(a7)                ; 008AC
-        jsr     (sub_096_00000).l               ; 008B2
+        jsr     (exit).l                        ; 008B2
         addq.l  #$4,a7                          ; 008B8
 l_000_008BA:
         move.l  #$10001,-(a7)                   ; 008BA
@@ -625,7 +681,11 @@ l_000_008BA:
         move.l  d0,(dat_073_016A4).l            ; 008CE
         movem.l (a7)+,a2                        ; 008D4
         rts                                     ; 008D8
-sub_000_008DA:
+
+;-------------------------------------------------------------------------------
+; BusyWait - BusyWait(count): counts to count (a delay), then FreeSprite(0).
+;-------------------------------------------------------------------------------
+BusyWait:
         link.w  a6,#$fffc                       ; 008DA
         clr.l   -$4(a6)                         ; 008DE
 l_000_008E2:
@@ -640,12 +700,18 @@ l_000_008F2:
         addq.l  #$4,a7                          ; 008FA
         unlk    a6                              ; 008FC
         rts                                     ; 008FE
-sub_000_00900:
+
+;-------------------------------------------------------------------------------
+; GetCMAP - GetCMAP(context, colours, &ncolours): reads the CMAP chunk's RGB triplets (3 bytes
+; each) and stores each as an RGB4 word ($0RGB, the top 4 bits of each); *ncolours = min(its
+; value, the chunk's size / 3).
+;-------------------------------------------------------------------------------
+GetCMAP:
         link.w  a6,#$fff4                       ; 00900
         movea.l $8(a6),a0                       ; 00904
         move.l  $18(a0),d0                      ; 00908
         moveq   #$3,d1                          ; 0090C
-        jsr     (sub_152_00000).l               ; 0090E
+        jsr     (CXD33).l                       ; 0090E
         moveq   #$0,d1                          ; 00914
         movea.l $10(a6),a0                      ; 00916
         move.b  (a0),d1                         ; 0091A
@@ -667,7 +733,7 @@ l_000_00936:
         move.l  d0,-(a7)                        ; 00942
         move.l  a0,-(a7)                        ; 00944
         move.l  $8(a6),-(a7)                    ; 00946
-        jsr     (sub_000_00EF4).l               ; 0094A
+        jsr     (IFFReadBytes).l                ; 0094A
         lea.l   $c(a7),a7                       ; 00950
         move.l  d0,-$8(a6)                      ; 00954
         tst.l   d0                              ; 00958
@@ -697,7 +763,14 @@ l_000_00990:
         moveq   #$0,d0                          ; 00990
         unlk    a6                              ; 00992
         rts                                     ; 00994
-sub_000_00996:
+
+;-------------------------------------------------------------------------------
+; GetBODY - GetBODY(context, bitmap, mask, bmhd, buffer, bufsize): reads the BODY chunk into
+; the BitMap's planes row by row: uncompressed (IFFReadBytes), or ByteRun1 (compression 1)
+; through _UnPackRow; an extra mask plane (masking 1) goes to mask if given. CLIENT_ERROR (-6)
+; for an unknown compression or a BitMap too small, BAD_FORM (-7) for bad compressed data.
+;-------------------------------------------------------------------------------
+GetBODY:
         link.w  a6,#$ff8c                       ; 00996
         movem.l d2,-(a7)                        ; 0099A
         movea.l $14(a6),a0                      ; 0099E
@@ -828,7 +901,7 @@ l_000_00AFC:
         movea.l -$30(a6),a0                     ; 00B06
         move.l  (a0),-(a7)                      ; 00B0A
         move.l  $8(a6),-(a7)                    ; 00B0C
-        jsr     (sub_000_00EF4).l               ; 00B10
+        jsr     (IFFReadBytes).l                ; 00B10
         lea.l   $c(a7),a7                       ; 00B16
         move.l  d0,-$4(a6)                      ; 00B1A
         tst.l   d0                              ; 00B1E
@@ -851,7 +924,7 @@ l_000_00B38:
         move.l  -$28(a6),-(a7)                  ; 00B4C
         move.l  d0,-$20(a6)                     ; 00B50
         move.l  d1,-$24(a6)                     ; 00B54
-        jsr     (sub_150_00000).l               ; 00B58
+        jsr     (movmem).l                      ; 00B58
         lea.l   $c(a7),a7                       ; 00B5E
         movea.l $8(a6),a0                       ; 00B62
         move.l  $18(a0),d0                      ; 00B66
@@ -869,7 +942,7 @@ l_000_00B84:
         move.l  -$20(a6),-(a7)                  ; 00B8C
         move.l  a0,-(a7)                        ; 00B90
         move.l  $8(a6),-(a7)                    ; 00B92
-        jsr     (sub_000_00EF4).l               ; 00B96
+        jsr     (IFFReadBytes).l                ; 00B96
         lea.l   $c(a7),a7                       ; 00B9C
         move.l  d0,-$4(a6)                      ; 00BA0
         tst.l   d0                              ; 00BA4
@@ -902,7 +975,12 @@ l_000_00BEE:
         movem.l (a7)+,d2                        ; 00BF0
         unlk    a6                              ; 00BF4
         rts                                     ; 00BF6
-sub_000_00BF8:
+
+;-------------------------------------------------------------------------------
+; FileLength - FileLength(file): the file's length (Seek to the end and back), NO_FILE (-5) if
+; there is no file, DOS_ERROR (-3) if Seek fails.
+;-------------------------------------------------------------------------------
+FileLength:
         link.w  a6,#$fffc                       ; 00BF8
         moveq   #-5,d0                          ; 00BFC
         move.l  d0,-$4(a6)                      ; 00BFE
@@ -929,7 +1007,12 @@ l_000_00C3E:
         move.l  -$4(a6),d0                      ; 00C3E
         unlk    a6                              ; 00C42
         rts                                     ; 00C44
-sub_000_00C46:
+
+;-------------------------------------------------------------------------------
+; OpenRIFF - OpenRIFF(file, context, clientFrame): makes the context for reading an IFF file
+; (its bound = the file's length); NOT_IFF (-4) if it is shorter than 8 bytes.
+;-------------------------------------------------------------------------------
+OpenRIFF:
         link.w  a6,#$fff4                       ; 00C46
         move.l  $8(a6),d0                       ; 00C4A
         move.l  $c(a6),-$8(a6)                  ; 00C4E
@@ -946,7 +1029,7 @@ sub_000_00C46:
         move.l  d0,-(a7)                        ; 00C7A
         move.l  d0,-$4(a6)                      ; 00C7C
         move.l  d1,-$c(a6)                      ; 00C80
-        bsr.w   sub_000_00BF8                   ; 00C84
+        bsr.w   FileLength                      ; 00C84
         addq.l  #$4,a7                          ; 00C88
         movea.l -$8(a6),a0                      ; 00C8A
         move.l  d0,$10(a0)                      ; 00C8E
@@ -972,7 +1055,11 @@ l_000_00CC6:
         move.l  -$c(a6),d0                      ; 00CC6
         unlk    a6                              ; 00CCA
         rts                                     ; 00CCC
-sub_000_00CCE:
+
+;-------------------------------------------------------------------------------
+; CloseRGroup - CloseRGroup(context): adds what was read in the group to its parent's position.
+;-------------------------------------------------------------------------------
+CloseRGroup:
         link.w  a6,#$fffc                       ; 00CCE
         movea.l $8(a6),a0                       ; 00CD2
         tst.l   (a0)                            ; 00CD6
@@ -988,7 +1075,11 @@ l_000_00CF6:
         moveq   #$0,d0                          ; 00CF6
         unlk    a6                              ; 00CF8
         rts                                     ; 00CFA
-sub_000_00CFC:
+
+;-------------------------------------------------------------------------------
+; SkipFwd - SkipFwd(context, bytes): Seek forward; BAD_IFF (-9) if that fails.
+;-------------------------------------------------------------------------------
+SkipFwd:
         link.w  a6,#$fffc                       ; 00CFC
         moveq   #$0,d0                          ; 00D00
         move.l  d0,-$4(a6)                      ; 00D02
@@ -1013,7 +1104,14 @@ l_000_00D3C:
         move.l  -$4(a6),d0                      ; 00D3C
         unlk    a6                              ; 00D40
         rts                                     ; 00D42
-sub_000_00D44:
+
+;-------------------------------------------------------------------------------
+; GetChunkHdr - GetChunkHdr(context): skips what is left of the current chunk (and its pad
+; byte) and reads the next chunk's header (ID and size, into the context); for a group chunk
+; (FORM, CAT, LIST, PROP) also its type ID. Returns the chunk ID, END_MARK (-1) at the end of
+; the group, or BAD_IFF (-9).
+;-------------------------------------------------------------------------------
+GetChunkHdr:
         link.w  a6,#$fff4                       ; 00D44
         movea.l $8(a6),a0                       ; 00D48
         move.l  $18(a0),d0                      ; 00D4C
@@ -1024,7 +1122,7 @@ sub_000_00D44:
         move.l  d0,-(a7)                        ; 00D60
         move.l  a0,-(a7)                        ; 00D62
         move.l  a0,-$4(a6)                      ; 00D64
-        bsr.b   sub_000_00CFC                   ; 00D68
+        bsr.b   SkipFwd                         ; 00D68
         addq.l  #$8,a7                          ; 00D6A
         move.l  d0,-$8(a6)                      ; 00D6C
         tst.l   d0                              ; 00D70
@@ -1142,7 +1240,13 @@ l_000_00EE8:
         move.l  $14(a0),d0                      ; 00EEC
         unlk    a6                              ; 00EF0
         rts                                     ; 00EF2
-sub_000_00EF4:
+
+;-------------------------------------------------------------------------------
+; IFFReadBytes - IFFReadBytes(context, buffer, nbytes): reads from the current chunk;
+; CLIENT_ERROR (-6) for a negative count, SHORT_CHUNK (-8) if the chunk is shorter, DOS_ERROR
+; (-3), BAD_IFF (-9) at the end of the file.
+;-------------------------------------------------------------------------------
+IFFReadBytes:
         link.w  a6,#$fffc                       ; 00EF4
         moveq   #$0,d0                          ; 00EF8
         move.l  d0,-$4(a6)                      ; 00EFA
@@ -1190,10 +1294,15 @@ l_000_00F74:
         move.l  -$4(a6),d0                      ; 00F74
         unlk    a6                              ; 00F78
         rts                                     ; 00F7A
-sub_000_00F7C:
+
+;-------------------------------------------------------------------------------
+; GetFChunkHdr - GetFChunkHdr(context): GetChunkHdr inside a FORM, where a PROP is not allowed
+; (BAD_IFF).
+;-------------------------------------------------------------------------------
+GetFChunkHdr:
         link.w  a6,#$fffc                       ; 00F7C
         move.l  $8(a6),-(a7)                    ; 00F80
-        bsr.w   sub_000_00D44                   ; 00F84
+        bsr.w   GetChunkHdr                     ; 00F84
         addq.l  #$4,a7                          ; 00F88
         move.l  d0,-$4(a6)                      ; 00F8A
         cmpi.l  #$50524f50,d0                   ; 00F8E
@@ -1206,7 +1315,14 @@ l_000_00FA4:
         move.l  -$4(a6),d0                      ; 00FA4
         unlk    a6                              ; 00FA8
         rts                                     ; 00FAA
-sub_000_00FAC:
+
+;-------------------------------------------------------------------------------
+; AllocRecordBuffers - Allocates the flight recording's buffers from what fast/public memory is
+; free: half of AvailMem(MEMF_PUBLIC|MEMF_FAST), at most 125,000 bytes, /16 - RecordLength
+; bytes for the positions (RecordBuffer) and 4 * that + 8 for the controls (RecordControls).
+; Returns 1 if both were allocated, else 0 (no recording).
+;-------------------------------------------------------------------------------
+AllocRecordBuffers:
         link.w  a6,#$fffa                       ; 00FAC
         clr.w   -$2(a6)                         ; 00FB0
         move.l  #$10001,-(a7)                   ; 00FB4
@@ -1256,7 +1372,12 @@ l_000_0104E:
         ext.l   d0                              ; 01052
         unlk    a6                              ; 01054
         rts                                     ; 01056
-sub_000_01058:
+
+;-------------------------------------------------------------------------------
+; CheckDisk - Info() on df0:: returns 1 if that fails, 2 if the disk is not a DOS disk
+; ('BAD\0'), 3 if it is write protected (ID_WRITE_PROTECTED), 0 if the config can be written.
+;-------------------------------------------------------------------------------
+CheckDisk:
         link.w  a6,#$fff0                       ; 01058
         move.l  #$10001,-(a7)                   ; 0105C
         moveq   #$28,d0                         ; 01062
@@ -1317,7 +1438,14 @@ l_000_0111A:
         unlk    a6                              ; 0111E
         rts                                     ; 01120
 	dc.b	$00,$00
-sub_000_01124:
+
+;-------------------------------------------------------------------------------
+; GameFrame - One frame of the game: the cockpit and the flight model, the other aircraft and
+; the weapons, the 3D view and the instruments, the sound, the keyboard and the flight
+; recording, in a fixed order; FrameStage is set before each part (so a crash says where it
+; was).
+;-------------------------------------------------------------------------------
+GameFrame:
         link.w  a6,#$fffe                       ; 01124
         move.w  (dat_071_002AA).l,-$2(a6)       ; 01128
         bsr.w   sub_000_01514                   ; 01130
@@ -1557,8 +1685,8 @@ l_000_01502:
         rts                                     ; 01512
 sub_000_01514:
         link.w  a6,#$fffa                       ; 01514
-        jsr     (sub_000_08FFE).l               ; 01518
-        jsr     (sub_000_092AC).l               ; 0151E
+        jsr     (ReadJoystick).l                ; 01518
+        jsr     (ReadButtons).l                 ; 0151E
         move.w  (dat_071_0014E).l,d1            ; 01524
         move.w  d0,-$6(a6)                      ; 0152A
         cmp.w   d0,d1                           ; 0152E
@@ -1590,7 +1718,7 @@ l_000_01570:
         jsr     (sub_005_00010).l               ; 01582
         bra.b   l_000_01570                     ; 01588
 l_000_0158A:
-        jsr     (sub_000_08DA6).l               ; 0158A
+        jsr     (GetKey).l                      ; 0158A
         move.b  d0,-$1(a6)                      ; 01590
         cmpi.b  #$ff,d0                         ; 01594
         beq.b   l_000_015B0                     ; 01598
@@ -1603,8 +1731,8 @@ l_000_0158A:
 l_000_015B0:
         tst.b   -$2(a6)                         ; 015B0
         bne.b   l_000_015DA                     ; 015B4
-        move.w  (dat_071_0036A).l,(dat_071_00366).l; 015B6
-        move.w  (dat_071_0036C).l,(dat_071_00368).l; 015C0
+        move.w  (dat_071_0036A).l,(dat_071_00366).l ; 015B6
+        move.w  (dat_071_0036C).l,(dat_071_00368).l ; 015C0
         moveq   #$0,d0                          ; 015CA
         move.w  d0,(dat_071_0036A).l            ; 015CC
         move.w  d0,(dat_071_0036C).l            ; 015D2
@@ -1612,33 +1740,38 @@ l_000_015B0:
 l_000_015DA:
         cmpi.b  #$1,-$2(a6)                     ; 015DA
         bne.b   l_000_015F2                     ; 015E0
-        move.w  (dat_071_0036C).l,(dat_071_00368).l; 015E2
+        move.w  (dat_071_0036C).l,(dat_071_00368).l ; 015E2
         clr.w   (dat_071_0036C).l               ; 015EC
 l_000_015F2:
         unlk    a6                              ; 015F2
         rts                                     ; 015F4
 sub_000_015F6:
         clr.l   -(a7)                           ; 015F6
-        jsr     (sub_000_09C58).l               ; 015F8
+        jsr     (StopSound).l                   ; 015F8
         addq.l  #$4,a7                          ; 015FE
         moveq   #$1,d0                          ; 01600
         move.l  d0,-(a7)                        ; 01602
-        jsr     (sub_000_09C58).l               ; 01604
+        jsr     (StopSound).l                   ; 01604
         addq.l  #$4,a7                          ; 0160A
         moveq   #$2,d0                          ; 0160C
         move.l  d0,-(a7)                        ; 0160E
-        jsr     (sub_000_09C58).l               ; 01610
+        jsr     (StopSound).l                   ; 01610
         addq.l  #$4,a7                          ; 01616
         moveq   #$3,d0                          ; 01618
         move.l  d0,-(a7)                        ; 0161A
-        jsr     (sub_000_09C58).l               ; 0161C
+        jsr     (StopSound).l                   ; 0161C
         addq.l  #$4,a7                          ; 01622
         rts                                     ; 01624
 	dc.b	$00,$00
-sub_000_01628:
+
+;-------------------------------------------------------------------------------
+; InitInput - Opens the input: the timer, the keyboard, the joystick (gameport), the mouse
+; interrupt; raises the task's priority (SetTaskPri) and installs the input.device handler.
+;-------------------------------------------------------------------------------
+InitInput:
         link.w  a6,#$fffc                       ; 01628
-        jsr     (sub_000_08E28).l               ; 0162C
-        jsr     (sub_000_08CDC).l               ; 01632
+        jsr     (OpenTimer).l                   ; 0162C
+        jsr     (OpenKeyboard).l                ; 01632
         pea.l   (dat_001_000B4).l               ; 01638
         jsr     (_FindTask).l                   ; 0163E
         addq.l  #$4,a7                          ; 01644
@@ -1648,26 +1781,26 @@ sub_000_01628:
         move.l  d0,-$4(a6)                      ; 0164C
         jsr     (_SetTaskPri).l                 ; 01650
         addq.l  #$8,a7                          ; 01656
-        jsr     (sub_000_08E9C).l               ; 01658
+        jsr     (OpenJoystick).l                ; 01658
         jsr     (sub_020_004CC).l               ; 0165E
-        jsr     (sub_000_099CA).l               ; 01664
+        jsr     (LoadEngineSounds).l            ; 01664
         move.l  #$3c0,d0                        ; 0166A
         move.l  d0,-(a7)                        ; 01670
         move.l  d0,-(a7)                        ; 01672
         move.l  #$fffffc40,d0                   ; 01674
         move.l  d0,-(a7)                        ; 0167A
         move.l  d0,-(a7)                        ; 0167C
-        jsr     (sub_000_09254).l               ; 0167E
+        jsr     (SetMouseLimits).l              ; 0167E
         lea.l   $10(a7),a7                      ; 01684
         moveq   #$64,d0                         ; 01688
         move.l  d0,-(a7)                        ; 0168A
         move.l  #$a0,-(a7)                      ; 0168C
-        jsr     (sub_000_0927C).l               ; 01692
+        jsr     (InitMouse).l                   ; 01692
         addq.l  #$8,a7                          ; 01698
         clr.b   (dat_071_0021B).l               ; 0169A
         jsr     (sub_004_0002C).l               ; 016A0
         jsr     (sub_004_00000).l               ; 016A6
-        lea.l   dat_000_01962(pc),a0            ; 016AC
+        lea.l   sub_000_01962(pc),a0            ; 016AC
         move.l  a0,(dat_002_00004).l            ; 016B0
         unlk    a6                              ; 016B6
         rts                                     ; 016B8
@@ -1827,7 +1960,7 @@ l_000_018EC:
         tst.b   d0                              ; 01904
         bpl.b   l_000_01922                     ; 01906
         clr.b   (dat_071_001FA).l               ; 01908
-        move.w  (dat_071_00290).l,(dat_071_004A6).l; 0190E
+        move.w  (dat_071_00290).l,(dat_071_004A6).l ; 0190E
         lea.l   dat_000_031C8(pc),a0            ; 01918
         move.l  a0,(dat_002_00004).l            ; 0191C
 l_000_01922:
@@ -1848,45 +1981,84 @@ l_000_01934:
         clr.b   (dat_071_00173).l               ; 01958
         unlk    a6                              ; 0195E
         rts                                     ; 01960
-dat_000_01962:
-	dc.b	$4E,$56,$FF,$F2,$4E,$B9
-        dc.l    sub_004_0006E                   ; 01968
-	dc.b	$2D,$79
-        dc.l    dat_071_00030                   ; 0196E
-	dc.b	$FF,$FC,$42,$6E,$FF,$F6,$30,$2E,$FF,$F6,$0C,$40,$00,$20,$6C,$1C
-	dc.b	$48,$C0,$E3,$80,$20,$40,$D1,$FC
-        dc.l    dat_021_00080                   ; 0198A
-	dc.b	$22,$6E,$FF,$FC,$32,$90,$54,$AE,$FF,$FC,$52,$6E,$FF,$F6,$60,$DA
-	dc.b	$42,$39
-        dc.l    dat_071_00276                   ; 019A0
-	dc.b	$70,$FF,$13,$C0
-        dc.l    dat_071_0017D                   ; 019A8
-	dc.b	$13,$C0
-        dc.l    dat_071_00227                   ; 019AE
-	dc.b	$33,$FC,$00,$03
-        dc.l    dat_071_004A6                   ; 019B6
-	dc.b	$23,$FC
-        dc.l    sub_000_03596                   ; 019BC
-        dc.l    dat_002_00004                   ; 019C0
-	dc.b	$41,$F9
-        dc.l    dat_064_00340                   ; 019C6
-	dc.b	$2D,$48,$FF,$F2,$D0,$FC,$00,$15,$42,$AE,$FF,$F8,$70,$00,$30,$39
-        dc.l    dat_071_0001C                   ; 019DA
-	dc.b	$2D,$48,$FF,$F2,$0C,$80,$00,$00,$C5,$60,$67,$08,$10,$BC,$00,$31
-	dc.b	$2D,$40,$FF,$F8,$70,$00,$30,$39
-        dc.l    dat_071_00020                   ; 019F6
-	dc.b	$0C,$80,$00,$00,$7E,$70,$67,$10,$20,$6E,$FF,$F2,$12,$10,$00,$01
-	dc.b	$00,$32,$10,$81,$2D,$40,$FF,$F8,$70,$00,$30,$39
-        dc.l    dat_071_00024                   ; 01A16
-	dc.b	$0C,$80,$00,$00,$4D,$E8,$67,$10,$20,$6E,$FF,$F2,$12,$10,$00,$01
-	dc.b	$00,$34,$10,$81,$2D,$40,$FF,$F8,$4A,$AE,$FF,$F8,$67,$28,$20,$6E
-	dc.b	$FF,$F2,$52,$88,$70,$04,$2F,$00,$2F,$2E,$FF,$F8,$2F,$08,$2D,$48
-	dc.b	$FF,$F2,$61,$00,$FC,$6C,$4F,$EF,$00,$0C,$23,$FC
-        dc.l    sub_000_03534                   ; 01A56
-        dc.l    dat_002_00004                   ; 01A5A
-	dc.b	$60,$0C,$70,$32,$2F,$00,$4E,$B9
-        dc.l    sub_000_09CE6                   ; 01A66
-	dc.b	$58,$8F,$4E,$5E,$4E,$75
+sub_000_01962:
+        link.w  a6,#$fff2                       ; 01962
+        jsr     (sub_004_0006E).l               ; 01966
+        move.l  (dat_071_00030).l,-$4(a6)       ; 0196C
+        clr.w   -$a(a6)                         ; 01974
+l_000_01978:
+        move.w  -$a(a6),d0                      ; 01978
+        cmpi.w  #$20,d0                         ; 0197C
+        bge.b   l_000_0199E                     ; 01980
+        ext.l   d0                              ; 01982
+        asl.l   #$1,d0                          ; 01984
+        movea.l d0,a0                           ; 01986
+        adda.l  #dat_021_00080,a0               ; 01988
+        movea.l -$4(a6),a1                      ; 0198E
+        move.w  (a0),(a1)                       ; 01992
+        addq.l  #$2,-$4(a6)                     ; 01994
+        addq.w  #$1,-$a(a6)                     ; 01998
+        bra.b   l_000_01978                     ; 0199C
+l_000_0199E:
+        clr.b   (dat_071_00276).l               ; 0199E
+        moveq   #-1,d0                          ; 019A4
+        move.b  d0,(dat_071_0017D).l            ; 019A6
+        move.b  d0,(dat_071_00227).l            ; 019AC
+        move.w  #$3,(dat_071_004A6).l           ; 019B2
+        move.l  #sub_000_03596,(dat_002_00004).l ; 019BA
+        lea.l   (dat_064_00340).l,a0            ; 019C4
+        move.l  a0,-$e(a6)                      ; 019CA
+        adda.w  #$15,a0                         ; 019CE
+        clr.l   -$8(a6)                         ; 019D2
+        moveq   #$0,d0                          ; 019D6
+        move.w  (dat_071_0001C).l,d0            ; 019D8
+        move.l  a0,-$e(a6)                      ; 019DE
+        cmpi.l  #$c560,d0                       ; 019E2
+        beq.b   l_000_019F2                     ; 019E8
+        move.b  #$31,(a0)                       ; 019EA
+        move.l  d0,-$8(a6)                      ; 019EE
+l_000_019F2:
+        moveq   #$0,d0                          ; 019F2
+        move.w  (dat_071_00020).l,d0            ; 019F4
+        cmpi.l  #$7e70,d0                       ; 019FA
+        beq.b   l_000_01A12                     ; 01A00
+        movea.l -$e(a6),a0                      ; 01A02
+        move.b  (a0),d1                         ; 01A06
+        ori.b   #$32,d1                         ; 01A08
+        move.b  d1,(a0)                         ; 01A0C
+        move.l  d0,-$8(a6)                      ; 01A0E
+l_000_01A12:
+        moveq   #$0,d0                          ; 01A12
+        move.w  (dat_071_00024).l,d0            ; 01A14
+        cmpi.l  #$4de8,d0                       ; 01A1A
+        beq.b   l_000_01A32                     ; 01A20
+        movea.l -$e(a6),a0                      ; 01A22
+        move.b  (a0),d1                         ; 01A26
+        ori.b   #$34,d1                         ; 01A28
+        move.b  d1,(a0)                         ; 01A2C
+        move.l  d0,-$8(a6)                      ; 01A2E
+l_000_01A32:
+        tst.l   -$8(a6)                         ; 01A32
+        beq.b   l_000_01A60                     ; 01A36
+        movea.l -$e(a6),a0                      ; 01A38
+        addq.l  #$1,a0                          ; 01A3C
+        moveq   #$4,d0                          ; 01A3E
+        move.l  d0,-(a7)                        ; 01A40
+        move.l  -$8(a6),-(a7)                   ; 01A42
+        move.l  a0,-(a7)                        ; 01A46
+        move.l  a0,-$e(a6)                      ; 01A48
+        bsr.w   h000+$16BA                      ; 01A4C
+        lea.l   $c(a7),a7                       ; 01A50
+        move.l  #sub_000_03534,(dat_002_00004).l ; 01A54
+        bra.b   l_000_01A6C                     ; 01A5E
+l_000_01A60:
+        moveq   #$32,d0                         ; 01A60
+        move.l  d0,-(a7)                        ; 01A62
+        jsr     (sub_000_09CE6).l               ; 01A64
+        addq.l  #$4,a7                          ; 01A6A
+l_000_01A6C:
+        unlk    a6                              ; 01A6C
+        rts                                     ; 01A6E
 sub_000_01A70:
         jsr     (sub_004_0006E).l               ; 01A70
         moveq   #$0,d0                          ; 01A76
@@ -1905,155 +2077,156 @@ sub_000_01A96:
         cmp.b   d1,d0                           ; 01AAC
         bne.b   l_000_01AC2                     ; 01AAE
         move.w  #$2,(dat_071_004A6).l           ; 01AB0
-        lea.l   dat_000_01AC4(pc),a0            ; 01AB8
+        lea.l   sub_000_01AC4(pc),a0            ; 01AB8
         move.l  a0,(dat_002_00004).l            ; 01ABC
 l_000_01AC2:
         rts                                     ; 01AC2
-dat_000_01AC4:
-	dc.b	$30,$39
-        dc.l    dat_071_004A6                   ; 01AC6
-	dc.b	$4A,$40,$6A,$12,$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 01AD2
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 01ADC
-	dc.b	$4E,$75,$4E,$B9
-        dc.l    sub_000_015F6                   ; 01AE4
-	dc.b	$4E,$B9
-        dc.l    sub_004_0006E                   ; 01AEA
-	dc.b	$10,$39
-        dc.l    dat_071_00276                   ; 01AF0
-	dc.b	$55,$00,$66,$08,$13,$FC,$00,$7D
-        dc.l    dat_071_00276                   ; 01AFC
-	dc.b	$10,$39
-        dc.l    dat_071_0021B                   ; 01B02
-	dc.b	$57,$00,$66,$2A,$13,$FC,$00,$01
-        dc.l    dat_071_0017E                   ; 01B0E
-	dc.b	$33,$FC,$00,$02
-        dc.l    dat_071_004A6                   ; 01B16
-	dc.b	$42,$39
-        dc.l    dat_071_00271                   ; 01B1C
-	dc.b	$13,$FC,$00,$7F
-        dc.l    dat_071_00276                   ; 01B24
-	dc.b	$41,$FA,$00,$2A,$23,$C8
-        dc.l    dat_002_00004                   ; 01B2E
-	dc.b	$60,$1E,$42,$39
-        dc.l    dat_071_0021B                   ; 01B36
-	dc.b	$48,$79
-        dc.l    dat_021_00000                   ; 01B3C
-	dc.b	$4E,$B9
-        dc.l    sub_000_03C1C                   ; 01B42
-	dc.b	$58,$8F,$41,$FA,$02,$BA,$23,$C8
-        dc.l    dat_002_00004                   ; 01B4E
-	dc.b	$4E,$75,$30,$39
-        dc.l    dat_071_004A6                   ; 01B56
-	dc.b	$4A,$40,$6A,$36,$61,$00,$00,$94,$13,$FC,$00,$03
-        dc.l    dat_071_0021B                   ; 01B66
-	dc.b	$70,$00,$13,$C0
-        dc.l    dat_071_00155                   ; 01B6E
-	dc.b	$33,$FC,$00,$02
-        dc.l    dat_071_004A6                   ; 01B76
-	dc.b	$13,$FC,$00,$0F
-        dc.l    dat_071_00271                   ; 01B7E
-	dc.b	$13,$C0
-        dc.l    dat_071_00270                   ; 01B84
-	dc.b	$41,$FA,$00,$12,$23,$C8
-        dc.l    dat_002_00004                   ; 01B8E
-	dc.b	$60,$06,$4E,$B9
-        dc.l    sub_036_00892                   ; 01B96
-	dc.b	$4E,$75,$30,$39
-        dc.l    dat_071_004A6                   ; 01B9E
-	dc.b	'J@j(B9'
-        dc.l    dat_071_00165                   ; 01BA8
-	dc.b	$10,$39
-        dc.l    dat_071_00270                   ; 01BAE
-	dc.b	$12,$39
-        dc.l    dat_071_00271                   ; 01BB4
-	dc.b	$B0,$01,$66,$12,$33,$FC,$00,$02
-        dc.l    dat_071_004A6                   ; 01BC0
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 01BCA
-	dc.b	$4E,$75,$30,$39
-        dc.l    dat_071_004A6                   ; 01BD2
-	dc.b	$4A,$40,$6A,$18,$42,$39
-        dc.l    dat_071_0017E                   ; 01BDC
-	dc.b	$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 01BE4
-	dc.b	$41,$FA,$11,$6E,$23,$C8
-        dc.l    dat_002_00004                   ; 01BEE
-	dc.b	$4E,$75,$13,$F9
-        dc.l    dat_071_00277                   ; 01BF6
-        dc.l    dat_071_00278                   ; 01BFA
-	dc.b	$70,$00,$13,$C0
-        dc.l    dat_071_00277                   ; 01C02
-	dc.b	$70,$04,$13,$C0
-        dc.l    dat_071_00218                   ; 01C0A
-	dc.b	$53,$00,$13,$C0
-        dc.l    dat_071_00218                   ; 01C12
-	dc.b	$70,$00,$13,$C0
-        dc.l    dat_071_0027E                   ; 01C1A
-	dc.b	$13,$C0
-        dc.l    dat_071_0017D                   ; 01C20
-	dc.b	$13,$FC,$00,$01
-        dc.l    dat_071_00160                   ; 01C28
-	dc.b	$4E,$B9
-        dc.l    sub_026_00002                   ; 01C2E
-	dc.b	$13,$FC,$00,$03
-        dc.l    dat_071_00276                   ; 01C36
-	dc.b	$4E,$B9
-        dc.l    sub_004_00392                   ; 01C3C
-	dc.b	$61,$00,$18,$20,$42,$39
-        dc.l    dat_071_0027D                   ; 01C46
-	dc.b	$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 01C4E
-	dc.b	$70,$00,$33,$C0
-        dc.l    dat_071_00356                   ; 01C56
-	dc.b	$33,$C0
-        dc.l    dat_071_00358                   ; 01C5C
-	dc.b	$4E,$B9
-        dc.l    sub_006_00000                   ; 01C62
-	dc.b	$13,$FC,$00,$FF
-        dc.l    dat_071_00228                   ; 01C6A
-	dc.b	$33,$FC,$00,$01
-        dc.l    dat_071_004A6                   ; 01C72
-	dc.b	$4E,$75,$10,$39
-        dc.l    dat_071_0017E                   ; 01C7A
-	dc.b	$4A,$00,$66,$3C,$10,$39
-        dc.l    dat_071_001B0                   ; 01C84
-	dc.b	$4A,$00,$6A,$32,$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 01C90
-	dc.b	$61,$00,$17,$CC,$70,$00,$33,$C0
-        dc.l    dat_071_00356                   ; 01C9C
-	dc.b	$33,$C0
-        dc.l    dat_071_00358                   ; 01CA2
-	dc.b	$4E,$B9
-        dc.l    sub_006_00000                   ; 01CA8
-	dc.b	$13,$FC,$00,$FF
-        dc.l    dat_071_00228                   ; 01CB0
-	dc.b	$41,$FA,$10,$A2,$23,$C8
-        dc.l    dat_002_00004                   ; 01CBA
-	dc.b	$4E,$75,$30,$39
-        dc.l    dat_071_004A6                   ; 01CC2
-	dc.b	$4A,$40,$6A,$3A,$10,$39
-        dc.l    dat_071_001FB                   ; 01CCC
-	dc.b	$4A,$00,$66,$1A,$42,$39
-        dc.l    dat_071_00165                   ; 01CD6
-	dc.b	$33,$FC,$00,$49
-        dc.l    dat_071_0011A                   ; 01CDE
-	dc.b	$41,$FA,$00,$22,$23,$C8
-        dc.l    dat_002_00004                   ; 01CE8
-	dc.b	$60,$16,$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 01CF2
-	dc.b	$61,$00,$17,$6A,$41,$FA,$10,$5C,$23,$C8
-        dc.l    dat_002_00004                   ; 01D00
-	dc.b	$4E,$75,$10,$39
-        dc.l    dat_071_001B0                   ; 01D08
-	dc.b	$4A,$00,$6B,$08,$4A,$39
-        dc.l    dat_071_00173                   ; 01D12
-	dc.b	$67,$16,$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 01D1C
-	dc.b	$61,$00,$17,$40,$41,$FA,$10,$32,$23,$C8
-        dc.l    dat_002_00004                   ; 01D2A
-	dc.b	$4E,$75
+sub_000_01AC4:
+        move.w  (dat_071_004A6).l,d0            ; 01AC4
+        tst.w   d0                              ; 01ACA
+        bpl.b   l_000_01AE0                     ; 01ACC
+        move.b  #$1,(dat_071_00165).l           ; 01ACE
+        lea.l   h000+$1AE2(pc),a0               ; 01AD6
+        move.l  a0,(dat_002_00004).l            ; 01ADA
+l_000_01AE0:
+        rts                                     ; 01AE0
+        jsr     (sub_000_015F6).l               ; 01AE2
+        jsr     (sub_004_0006E).l               ; 01AE8
+        move.b  (dat_071_00276).l,d0            ; 01AEE
+        subq.b  #$2,d0                          ; 01AF4
+        bne.b   l_000_01B00                     ; 01AF6
+        move.b  #$7d,(dat_071_00276).l          ; 01AF8
+l_000_01B00:
+        move.b  (dat_071_0021B).l,d0            ; 01B00
+        subq.b  #$3,d0                          ; 01B06
+        bne.b   l_000_01B34                     ; 01B08
+        move.b  #$1,(dat_071_0017E).l           ; 01B0A
+        move.w  #$2,(dat_071_004A6).l           ; 01B12
+        clr.b   (dat_071_00271).l               ; 01B1A
+        move.b  #$7f,(dat_071_00276).l          ; 01B20
+        lea.l   h000+$1B54(pc),a0               ; 01B28
+        move.l  a0,(dat_002_00004).l            ; 01B2C
+        bra.b   l_000_01B52                     ; 01B32
+l_000_01B34:
+        clr.b   (dat_071_0021B).l               ; 01B34
+        pea.l   (dat_021_00000).l               ; 01B3A
+        jsr     (sub_000_03C1C).l               ; 01B40
+        addq.l  #$4,a7                          ; 01B46
+        lea.l   h000+$1E04(pc),a0               ; 01B48
+        move.l  a0,(dat_002_00004).l            ; 01B4C
+l_000_01B52:
+        rts                                     ; 01B52
+        move.w  (dat_071_004A6).l,d0            ; 01B54
+        tst.w   d0                              ; 01B5A
+        bpl.b   l_000_01B94                     ; 01B5C
+        bsr.w   l_000_01BF4                     ; 01B5E
+        move.b  #$3,(dat_071_0021B).l           ; 01B62
+        moveq   #$0,d0                          ; 01B6A
+        move.b  d0,(dat_071_00155).l            ; 01B6C
+        move.w  #$2,(dat_071_004A6).l           ; 01B72
+        move.b  #$f,(dat_071_00271).l           ; 01B7A
+        move.b  d0,(dat_071_00270).l            ; 01B82
+        lea.l   h000+$1B9C(pc),a0               ; 01B88
+        move.l  a0,(dat_002_00004).l            ; 01B8C
+        bra.b   l_000_01B9A                     ; 01B92
+l_000_01B94:
+        jsr     (sub_036_00892).l               ; 01B94
+l_000_01B9A:
+        rts                                     ; 01B9A
+        move.w  (dat_071_004A6).l,d0            ; 01B9C
+        tst.w   d0                              ; 01BA2
+        bpl.b   l_000_01BCE                     ; 01BA4
+        clr.b   (dat_071_00165).l               ; 01BA6
+        move.b  (dat_071_00270).l,d0            ; 01BAC
+        move.b  (dat_071_00271).l,d1            ; 01BB2
+        cmp.b   d1,d0                           ; 01BB8
+        bne.b   l_000_01BCE                     ; 01BBA
+        move.w  #$2,(dat_071_004A6).l           ; 01BBC
+        lea.l   h000+$1BD0(pc),a0               ; 01BC4
+        move.l  a0,(dat_002_00004).l            ; 01BC8
+l_000_01BCE:
+        rts                                     ; 01BCE
+        move.w  (dat_071_004A6).l,d0            ; 01BD0
+        tst.w   d0                              ; 01BD6
+        bpl.b   l_000_01BF2                     ; 01BD8
+        clr.b   (dat_071_0017E).l               ; 01BDA
+        move.b  #$1,(dat_071_00165).l           ; 01BE0
+        lea.l   h000+$2D58(pc),a0               ; 01BE8
+        move.l  a0,(dat_002_00004).l            ; 01BEC
+l_000_01BF2:
+        rts                                     ; 01BF2
+l_000_01BF4:
+        move.b  (dat_071_00277).l,(dat_071_00278).l ; 01BF4
+        moveq   #$0,d0                          ; 01BFE
+        move.b  d0,(dat_071_00277).l            ; 01C00
+        moveq   #$4,d0                          ; 01C06
+        move.b  d0,(dat_071_00218).l            ; 01C08
+        subq.b  #$1,d0                          ; 01C0E
+        move.b  d0,(dat_071_00218).l            ; 01C10
+        moveq   #$0,d0                          ; 01C16
+        move.b  d0,(dat_071_0027E).l            ; 01C18
+        move.b  d0,(dat_071_0017D).l            ; 01C1E
+        move.b  #$1,(dat_071_00160).l           ; 01C24
+        jsr     (sub_026_00002).l               ; 01C2C
+        move.b  #$3,(dat_071_00276).l           ; 01C32
+        jsr     (sub_004_00392).l               ; 01C3A
+        bsr.w   h000+$3462                      ; 01C40
+        clr.b   (dat_071_0027D).l               ; 01C44
+        move.b  #$1,(dat_071_00165).l           ; 01C4A
+        moveq   #$0,d0                          ; 01C52
+        move.w  d0,(dat_071_00356).l            ; 01C54
+        move.w  d0,(dat_071_00358).l            ; 01C5A
+        jsr     (sub_006_00000).l               ; 01C60
+        move.b  #$ff,(dat_071_00228).l          ; 01C66
+        move.w  #$1,(dat_071_004A6).l           ; 01C6E
+        rts                                     ; 01C76
+        move.b  (dat_071_0017E).l,d0            ; 01C78
+        tst.b   d0                              ; 01C7E
+        bne.b   l_000_01CBE                     ; 01C80
+        move.b  (dat_071_001B0).l,d0            ; 01C82
+        tst.b   d0                              ; 01C88
+        bpl.b   l_000_01CBE                     ; 01C8A
+        move.b  #$1,(dat_071_00165).l           ; 01C8C
+        bsr.w   h000+$3462                      ; 01C94
+        moveq   #$0,d0                          ; 01C98
+        move.w  d0,(dat_071_00356).l            ; 01C9A
+        move.w  d0,(dat_071_00358).l            ; 01CA0
+        jsr     (sub_006_00000).l               ; 01CA6
+        move.b  #$ff,(dat_071_00228).l          ; 01CAC
+        lea.l   h000+$2D58(pc),a0               ; 01CB4
+        move.l  a0,(dat_002_00004).l            ; 01CB8
+l_000_01CBE:
+        rts                                     ; 01CBE
+        move.w  (dat_071_004A6).l,d0            ; 01CC0
+        tst.w   d0                              ; 01CC6
+        bpl.b   l_000_01D04                     ; 01CC8
+        move.b  (dat_071_001FB).l,d0            ; 01CCA
+        tst.b   d0                              ; 01CD0
+        bne.b   l_000_01CEE                     ; 01CD2
+        clr.b   (dat_071_00165).l               ; 01CD4
+        move.w  #$49,(dat_071_0011A).l          ; 01CDA
+        lea.l   h000+$1D06(pc),a0               ; 01CE2
+        move.l  a0,(dat_002_00004).l            ; 01CE6
+        bra.b   l_000_01D04                     ; 01CEC
+l_000_01CEE:
+        move.b  #$1,(dat_071_00165).l           ; 01CEE
+        bsr.w   h000+$3462                      ; 01CF6
+        lea.l   h000+$2D58(pc),a0               ; 01CFA
+        move.l  a0,(dat_002_00004).l            ; 01CFE
+l_000_01D04:
+        rts                                     ; 01D04
+        move.b  (dat_071_001B0).l,d0            ; 01D06
+        tst.b   d0                              ; 01D0C
+        bmi.b   l_000_01D18                     ; 01D0E
+        tst.b   (dat_071_00173).l               ; 01D10
+        beq.b   l_000_01D2E                     ; 01D16
+l_000_01D18:
+        move.b  #$1,(dat_071_00165).l           ; 01D18
+        bsr.w   h000+$3462                      ; 01D20
+        lea.l   h000+$2D58(pc),a0               ; 01D24
+        move.l  a0,(dat_002_00004).l            ; 01D28
+l_000_01D2E:
+        rts                                     ; 01D2E
 sub_000_01D30:
         link.w  a6,#$fffc                       ; 01D30
         move.l  #dat_071_0011A,-$4(a6)          ; 01D34
@@ -2073,7 +2246,7 @@ l_000_01D64:
         jsr     (sub_036_00892).l               ; 01D78
         bsr.w   sub_000_03462                   ; 01D7E
         move.l  #$c000,-(a7)                    ; 01D82
-        jsr     (sub_000_008DA).l               ; 01D88
+        jsr     (BusyWait).l                    ; 01D88
         addq.l  #$4,a7                          ; 01D8E
         clr.b   (dat_071_0027D).l               ; 01D90
         pea.l   (dat_021_00000).l               ; 01D96
@@ -2104,777 +2277,1000 @@ l_000_01D64:
         move.w  #$6d,(a0)                       ; 01DEE
         addq.l  #$2,a0                          ; 01DF2
         clr.w   (a0)                            ; 01DF4
-        lea.l   dat_000_01E04(pc),a1            ; 01DF6
+        lea.l   sub_000_01E04(pc),a1            ; 01DF6
         move.l  a1,(dat_002_00004).l            ; 01DFA
         unlk    a6                              ; 01E00
         rts                                     ; 01E02
-dat_000_01E04:
-	dc.b	$4E,$56,$FF,$FA,$2D,$7C
-        dc.l    dat_071_0011A                   ; 01E0A
-	dc.b	$FF,$FC,$1D,$79
-        dc.l    dat_071_00276                   ; 01E12
-	dc.b	$FF,$FB,$4A,$39
-        dc.l    dat_071_001FA                   ; 01E1A
-	dc.b	$67,$24,$42,$39
-        dc.l    dat_071_001FA                   ; 01E22
-	dc.b	$30,$39
-        dc.l    dat_071_00142                   ; 01E28
-	dc.b	$5D,$40,$67,$00,$01,$52,$61,$00,$16,$2E,$41,$FA,$FE,$F8,$23,$C8
-        dc.l    dat_002_00004                   ; 01E3C
-	dc.b	$60,$00,$01,$40,$10,$39
-        dc.l    dat_071_00276                   ; 01E46
-	dc.b	$4A,$00,$6F,$00,$00,$D2,$42,$B9
-        dc.l    dat_071_00038                   ; 01E52
-	dc.b	$61,$00,$16,$0A,$4E,$B9
-        dc.l    sub_036_00892                   ; 01E5C
-	dc.b	$0C,$2E,$00,$7F,$FF,$FB,$66,$0E,$20,$6E,$FF,$FC,$30,$BC,$00,$65
-	dc.b	$54,$AE,$FF,$FC,$60,$72,$0C,$2E,$00,$01,$FF,$FB,$66,$0E,$20,$6E
-	dc.b	$FF,$FC,$30,$BC,$00,$66,$54,$AE,$FF,$FC,$60,$5C,$0C,$2E,$00,$02
-	dc.b	$FF,$FB,$66,$0E,$20,$6E,$FF,$FC,$30,$BC,$00,$67,$54,$AE,$FF,$FC
-	dc.b	$60,$46,$0C,$2E,$00,$7D,$FF,$FB,$66,$0E,$20,$6E,$FF,$FC,$30,$BC
-	dc.b	$00,$68,$54,$AE,$FF,$FC,$60,$30,$0C,$2E,$00,$09,$FF,$FB,$66,$0E
-	dc.b	$20,$6E,$FF,$FC,$30,$BC,$00,$69,$54,$AE,$FF,$FC,$60,$1A,$4A,$39
-        dc.l    dat_071_00162                   ; 01ED0
-	dc.b	$67,$12,$20,$6E,$FF,$FC,$30,$BC,$00,$6B,$54,$AE,$FF,$FC,$42,$39
-        dc.l    dat_071_00162                   ; 01EE4
-	dc.b	$20,$6E,$FF,$FC,$42,$50,$10,$39
-        dc.l    dat_071_001FB                   ; 01EF0
-	dc.b	$4A,$00,$66,$14,$08,$39,$00,$07
-        dc.l    dat_071_0052B                   ; 01EFC
-	dc.b	$67,$0A,$33,$FC,$00,$D2
-        dc.l    dat_071_004A6                   ; 01F06
-	dc.b	$60,$08,$33,$FC,$00,$96
-        dc.l    dat_071_004A6                   ; 01F10
-	dc.b	$41,$FA,$01,$08,$23,$C8
-        dc.l    dat_002_00004                   ; 01F1A
-	dc.b	$60,$62,$10,$39
-        dc.l    dat_071_00276                   ; 01F22
-	dc.b	$4A,$00,$6A,$52,$61,$00,$15,$36,$4E,$B9
-        dc.l    sub_036_00892                   ; 01F30
-	dc.b	$10,$39
-        dc.l    dat_071_00276                   ; 01F36
-	dc.b	$0C,$00,$00,$FF,$66,$0C,$41,$FA,$03,$8C,$23,$C8
-        dc.l    dat_002_00004                   ; 01F46
-	dc.b	$60,$28,$4E,$B9
-        dc.l    sub_036_00892                   ; 01F4E
-	dc.b	$4E,$B9
-        dc.l    sub_020_000DA                   ; 01F54
-	dc.b	$20,$6E,$FF,$FC,$30,$BC,$00,$57,$54,$AE,$FF,$FC,$20,$6E,$FF,$FC
-	dc.b	$42,$50,$41,$FA,$00,$1A,$23,$C8
-        dc.l    dat_002_00004                   ; 01F70
-	dc.b	$42,$39
-        dc.l    dat_071_00276                   ; 01F76
-	dc.b	$60,$06,$42,$39
-        dc.l    dat_071_001FA                   ; 01F7E
-	dc.b	'N^NuJ9'
-        dc.l    dat_071_00162                   ; 01F88
-	dc.b	$67,$76,$10,$39
-        dc.l    dat_071_00162                   ; 01F90
-	dc.b	$53,$00,$66,$3C,$4A,$39
-        dc.l    dat_071_00195                   ; 01F9A
-	dc.b	$67,$5C,$30,$39
-        dc.l    dat_071_002F8                   ; 01FA2
-	dc.b	$4A,$40,$66,$52,$4E,$B9
-        dc.l    sub_000_0858A                   ; 01FAC
-	dc.b	$13,$FC,$00,$FF
-        dc.l    dat_071_001A5                   ; 01FB4
-	dc.b	$20,$79
-        dc.l    dat_002_0296C                   ; 01FBA
-	dc.b	$30,$28,$00,$04,$0C,$40,$00,$01,$62,$34,$23,$FC
-        dc.l    sub_000_03622                   ; 01FCA
-        dc.l    dat_002_00004                   ; 01FCE
-	dc.b	$60,$28,$10,$39
-        dc.l    dat_071_00162                   ; 01FD6
-	dc.b	$55,$00,$66,$1E,$4E,$B9
-        dc.l    sub_000_08556                   ; 01FE0
-	dc.b	$61,$00,$14,$7C,$4E,$B9
-        dc.l    sub_036_00892                   ; 01FEA
-	dc.b	$4E,$B9
-        dc.l    sub_020_000DA                   ; 01FF0
-	dc.b	$33,$FC,$00,$57
-        dc.l    dat_071_0011A                   ; 01FF8
-	dc.b	$42,$39
-        dc.l    dat_071_00162                   ; 01FFE
-	dc.b	$60,$12,$4A,$39
-        dc.l    dat_071_001FA                   ; 02006
-	dc.b	$67,$0A,$41,$FA,$FD,$22,$23,$C8
-        dc.l    dat_002_00004                   ; 02012
-	dc.b	$42,$39
-        dc.l    dat_071_00276                   ; 02018
-	dc.b	$4E,$75,$4E,$56,$FF,$FE,$10,$39
-        dc.l    dat_071_00276                   ; 02024
-	dc.b	$48,$80,$32,$39
-        dc.l    dat_071_004A6                   ; 0202C
-	dc.b	$3D,$40,$FF,$FE,$4A,$41,$6A,$00,$02,$92,$42,$39
-        dc.l    dat_071_001A7                   ; 0203C
-	dc.b	$42,$A7,$4E,$B9
-        dc.l    sub_000_09C58                   ; 02044
-	dc.b	$58,$8F,$70,$01,$2F,$00,$4E,$B9
-        dc.l    sub_000_09C58                   ; 02050
-	dc.b	$58,$8F,$23,$FC,$00,$3F,$00,$00
-        dc.l    dat_074_000FE                   ; 0205C
-	dc.b	$30,$2E,$FF,$FE,$0C,$40,$00,$03,$65,$14,$0C,$40,$00,$08,$62,$0E
-	dc.b	$70,$28,$2F,$00,$4E,$B9
-        dc.l    sub_000_09D7A                   ; 02076
-	dc.b	$58,$8F,$60,$2A,$08,$39,$00,$04
-        dc.l    dat_071_0052B                   ; 02082
-	dc.b	$67,$0E,$70,$08,$2F,$00,$4E,$B9
-        dc.l    sub_000_09F9A                   ; 0208E
-	dc.b	$58,$8F,$60,$12,$70,$08,$2F,$00,$2F,$3C,$00,$00,$03,$00,$4E,$B9
-        dc.l    sub_000_09E46                   ; 020A2
-	dc.b	$50,$8F,$33,$FC,$00,$B3
-        dc.l    dat_071_00354                   ; 020AC
-	dc.b	$61,$00,$13,$B0,$33,$FC,$00,$04
-        dc.l    dat_071_004A6                   ; 020B8
-	dc.b	$13,$FC,$00,$03
-        dc.l    dat_071_00267                   ; 020C0
-	dc.b	$13,$FC,$00,$02
-        dc.l    dat_071_00268                   ; 020C8
-	dc.b	$4E,$B9
-        dc.l    sub_026_00002                   ; 020CE
-	dc.b	$42,$39
-        dc.l    dat_071_0017E                   ; 020D4
-	dc.b	$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 020DC
-	dc.b	$13,$FC,$00,$03
-        dc.l    dat_071_00206                   ; 020E4
-	dc.b	$13,$F9
-        dc.l    dat_071_00270                   ; 020EA
-        dc.l    dat_071_00271                   ; 020EE
-	dc.b	$4E,$B9
-        dc.l    sub_000_03C5E                   ; 020F4
-	dc.b	$41,$FA,$04,$3A,$23,$C8
-        dc.l    dat_002_00004                   ; 020FE
-	dc.b	$13,$FC,$00,$03
-        dc.l    dat_071_00218                   ; 02106
-	dc.b	$13,$FC,$00,$11
-        dc.l    dat_071_00219                   ; 0210E
-	dc.b	$70,$00,$30,$2E,$FF,$FE,$72,$30,$04,$81,$00,$00,$00,$08,$6B,$00
-	dc.b	$01,$90,$B0,$BB,$18,$08,$66,$F0,$4E,$FB,$18,$06,$00,$00,$00,$09
-	dc.b	$60,$00,$01,$1E,$00,$00,$00,$7D,$60,$00,$00,$C6,$00,$00,$00,$03
-	dc.b	$60,$00,$00,$B4,$00,$00,$00,$02,$60,$00,$00,$44,$00,$00,$00,$01
-	dc.b	$60,$00,$00,$20,$00,$00,$00,$7F,$60,$00,$00,$02,$13,$FC,$00,$01
-        dc.l    dat_071_0017E                   ; 02162
-	dc.b	$41,$FA,$F9,$EC,$23,$C8
-        dc.l    dat_002_00004                   ; 0216C
-	dc.b	$60,$00,$01,$40,$4E,$B9
-        dc.l    sub_004_00268                   ; 02176
-	dc.b	$13,$FC,$00,$05
-        dc.l    dat_071_00267                   ; 0217E
-	dc.b	$41,$FA,$01,$C8,$23,$C8
-        dc.l    dat_002_00004                   ; 02188
-	dc.b	$60,$00,$01,$24,$33,$FC,$00,$A7
-        dc.l    dat_071_00354                   ; 02194
-	dc.b	$13,$FC,$00,$FF
-        dc.l    dat_071_00184                   ; 0219C
-	dc.b	$4E,$B9
-        dc.l    sub_026_00D70                   ; 021A2
-	dc.b	$70,$00,$13,$C0
-        dc.l    dat_071_0017D                   ; 021AA
-	dc.b	$70,$01,$13,$C0
-        dc.l    dat_071_00155                   ; 021B2
-	dc.b	$42,$39
-        dc.l    dat_071_0027E                   ; 021B8
-	dc.b	$13,$C0
-        dc.l    dat_071_00185                   ; 021BE
-	dc.b	$33,$FC,$00,$04
-        dc.l    dat_071_002AC                   ; 021C6
-	dc.b	$33,$FC,$08,$00
-        dc.l    dat_071_002AE                   ; 021CE
-	dc.b	$13,$FC,$00,$03
-        dc.l    dat_071_00282                   ; 021D6
-	dc.b	$30,$39
-        dc.l    dat_071_01356                   ; 021DC
-	dc.b	$00,$40,$01,$00,$33,$C0
-        dc.l    dat_071_01356                   ; 021E6
-	dc.b	$41,$FA,$01,$D6,$23,$C8
-        dc.l    dat_002_00004                   ; 021F0
-	dc.b	$60,$00,$00,$BC,$42,$39
-        dc.l    dat_071_00218                   ; 021FA
-	dc.b	$60,$00,$00,$B2,$13,$FC,$00,$01
-        dc.l    dat_071_00267                   ; 02206
-	dc.b	$33,$FC,$00,$A7
-        dc.l    dat_071_00354                   ; 0220E
-	dc.b	$13,$FC,$00,$FF
-        dc.l    dat_071_00184                   ; 02216
-	dc.b	$13,$FC,$00,$03
-        dc.l    dat_071_00186                   ; 0221E
-	dc.b	$13,$FC,$00,$02
-        dc.l    dat_071_00218                   ; 02226
-	dc.b	$61,$00,$0A,$B4,$4E,$B9
-        dc.l    sub_026_00D7A                   ; 02230
-	dc.b	$4E,$B9
-        dc.l    sub_004_00290                   ; 02236
-	dc.b	$4E,$B9
-        dc.l    sub_026_00002                   ; 0223C
-	dc.b	$42,$39
-        dc.l    dat_071_0017D                   ; 02242
-	dc.b	$41,$FA,$01,$7A,$23,$C8
-        dc.l    dat_002_00004                   ; 0224C
-	dc.b	$60,$60,$13,$FC,$00,$03
-        dc.l    dat_071_00218                   ; 02256
-	dc.b	$70,$00,$13,$C0
-        dc.l    dat_071_0027E                   ; 0225E
-	dc.b	$13,$C0
-        dc.l    dat_071_0017D                   ; 02264
-	dc.b	$4E,$B9
-        dc.l    sub_026_00002                   ; 0226A
-	dc.b	$4E,$B9
-        dc.l    sub_004_00392                   ; 02270
-	dc.b	$61,$00,$11,$EC,$70,$01,$13,$C0
-        dc.l    dat_071_0027D                   ; 0227C
-	dc.b	$13,$C0
-        dc.l    dat_071_00165                   ; 02282
-	dc.b	$70,$00,$33,$C0
-        dc.l    dat_071_00356                   ; 0228A
-	dc.b	$33,$C0
-        dc.l    dat_071_00358                   ; 02290
-	dc.b	$4E,$B9
-        dc.l    sub_006_00000                   ; 02296
-	dc.b	$13,$FC,$00,$FF
-        dc.l    dat_071_00228                   ; 0229E
-	dc.b	$42,$39
-        dc.l    dat_071_00155                   ; 022A4
-	dc.b	$41,$FA,$00,$A2,$23,$C8
-        dc.l    dat_002_00004                   ; 022AE
-	dc.b	$10,$39
-        dc.l    dat_071_00218                   ; 022B4
-	dc.b	$57,$00,$66,$08,$13,$FC,$00,$11
-        dc.l    dat_071_00219                   ; 022C0
-	dc.b	$4E,$B9
-        dc.l    sub_008_00598                   ; 022C6
-	dc.b	'N^NuNV'
-	dc.b	$FF,$F6,$4E,$B9
-        dc.l    sub_036_00892                   ; 022D4
-	dc.b	$41,$F9
-        dc.l    dat_071_0011A                   ; 022DA
-	dc.b	$30,$BC,$00,$40,$54,$88,$2D,$7C
-        dc.l    dat_064_00000                   ; 022E6
-	dc.b	$FF,$F8,$1D,$7C,$00,$03,$FF,$F7,$2D,$48,$FF,$FC,$10,$2E,$FF,$F7
-	dc.b	$0C,$00,$00,$09,$6C,$2C,$48,$80,$48,$C0,$20,$79
-        dc.l    dat_002_0296C                   ; 02306
-	dc.b	$D0,$FC,$00,$12,$D1,$C0,$4A,$10,$67,$12,$20,$6E,$FF,$F8,$22,$6E
-	dc.b	$FF,$FC,$32,$90,$54,$AE,$FF,$F8,$54,$AE,$FF,$FC,$52,$2E,$FF,$F7
-	dc.b	$60,$CA,$20,$6E,$FF,$FC,$30,$BC,$80,$6E,$54,$AE,$FF,$FC,$20,$6E
-	dc.b	$FF,$FC,$42,$50,$41,$FA,$FA,$C4,$23,$C8
-        dc.l    dat_002_00004                   ; 02344
-	dc.b	'N^Nu09'
-        dc.l    dat_071_004A6                   ; 0234E
-	dc.b	$4A,$40,$6A,$20,$70,$00,$13,$C0
-        dc.l    dat_071_00165                   ; 0235A
-	dc.b	$13,$FC,$00,$0F
-        dc.l    dat_071_00271                   ; 02362
-	dc.b	$13,$C0
-        dc.l    dat_071_00270                   ; 02368
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 02372
-	dc.b	$4E,$75,$10,$39
-        dc.l    dat_071_00270                   ; 0237A
-	dc.b	$12,$39
-        dc.l    dat_071_00271                   ; 02380
-	dc.b	$B0,$01,$66,$38,$33,$FC,$00,$02
-        dc.l    dat_071_004A6                   ; 0238C
-	dc.b	$70,$01,$13,$C0
-        dc.l    dat_071_00165                   ; 02394
-	dc.b	$13,$FC,$00,$FF
-        dc.l    dat_071_00228                   ; 0239C
-	dc.b	$13,$FC,$00,$04
-        dc.l    dat_071_0027E                   ; 023A4
-	dc.b	$13,$C0
-        dc.l    dat_071_0027D                   ; 023AA
-	dc.b	$33,$FC,$00,$05
-        dc.l    dat_071_004A6                   ; 023B2
-	dc.b	$41,$FA,$04,$10,$23,$C8
-        dc.l    dat_002_00004                   ; 023BC
-	dc.b	$4E,$75,$30,$39
-        dc.l    dat_071_004A6                   ; 023C4
-	dc.b	$4A,$40,$6A,$20,$70,$00,$13,$C0
-        dc.l    dat_071_00165                   ; 023D0
-	dc.b	$13,$FC,$00,$0F
-        dc.l    dat_071_00271                   ; 023D8
-	dc.b	$13,$C0
-        dc.l    dat_071_00270                   ; 023DE
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 023E8
-	dc.b	$4E,$75,$10,$39
-        dc.l    dat_071_00270                   ; 023F0
-	dc.b	$12,$39
-        dc.l    dat_071_00271                   ; 023F6
-	dc.b	$B0,$01,$66,$28,$70,$01,$13,$C0
-        dc.l    dat_071_00165                   ; 02402
-	dc.b	$13,$FC,$00,$FF
-        dc.l    dat_071_00228                   ; 0240A
-	dc.b	$13,$C0
-        dc.l    dat_071_0027D                   ; 02410
-	dc.b	$33,$FC,$00,$05
-        dc.l    dat_071_004A6                   ; 02418
-	dc.b	$41,$FA,$03,$AA,$23,$C8
-        dc.l    dat_002_00004                   ; 02422
-	dc.b	$4E,$75,$70,$01,$13,$C0
-        dc.l    dat_071_00165                   ; 0242C
-	dc.b	$13,$FC,$00,$FF
-        dc.l    dat_071_00228                   ; 02434
-	dc.b	$13,$C0
-        dc.l    dat_071_0027D                   ; 0243A
-	dc.b	$33,$FC,$00,$05
-        dc.l    dat_071_004A6                   ; 02442
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 0244C
-	dc.b	$4E,$75,$4E,$56,$FF,$FC,$2D,$7C
-        dc.l    dat_071_0011A                   ; 02458
-	dc.b	$FF,$FC,$4A,$39
-        dc.l    dat_071_00173                   ; 02460
-	dc.b	$67,$04
-	dc.b	'aJ`D09'
-        dc.l    dat_071_004A6                   ; 0246C
-	dc.b	'J@j:B9'
-        dc.l    dat_071_00165                   ; 02476
-	dc.b	$10,$39
-        dc.l    dat_071_00276                   ; 0247C
-	dc.b	$55,$00,$66,$0E,$20,$6E,$FF,$FC,$30,$BC,$00,$09,$54,$AE,$FF,$FC
-	dc.b	$60,$12,$20,$6E,$FF,$FC,$30,$BC,$00,$0A,$54,$AE,$FF,$FC,$42,$39
-        dc.l    dat_071_0027D                   ; 024A0
-	dc.b	$41,$FA,$00,$0C,$23,$C8
-        dc.l    dat_002_00004                   ; 024AA
-	dc.b	$4E,$5E,$4E,$75,$10,$39
-        dc.l    dat_071_001B0                   ; 024B4
-	dc.b	$4A,$00,$6B,$08,$4A,$39
-        dc.l    dat_071_00173                   ; 024BE
-	dc.b	$67,$6E,$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 024C8
-	dc.b	$13,$FC,$00,$FF
-        dc.l    dat_071_00228                   ; 024D0
-	dc.b	$61,$00,$0F,$8C,$70,$01,$13,$C0
-        dc.l    dat_071_00184                   ; 024DC
-	dc.b	$13,$C0
-        dc.l    dat_071_00185                   ; 024E2
-	dc.b	$42,$39
-        dc.l    dat_071_0027D                   ; 024E8
-	dc.b	$10,$39
-        dc.l    dat_071_00276                   ; 024EE
-	dc.b	$0C,$00,$00,$7D,$66,$14,$13,$FC,$00,$06
-        dc.l    dat_071_0027E                   ; 024FC
-	dc.b	$41,$FA,$08,$56,$23,$C8
-        dc.l    dat_002_00004                   ; 02506
-	dc.b	$60,$26,$13,$FC,$00,$03
-        dc.l    dat_071_00206                   ; 02510
-	dc.b	$42,$79
-        dc.l    dat_073_0162A                   ; 02516
-	dc.b	$42,$39
-        dc.l    dat_071_00158                   ; 0251C
-	dc.b	$33,$FC,$00,$05
-        dc.l    dat_071_004A6                   ; 02524
-	dc.b	$41,$FA,$08,$8E,$23,$C8
-        dc.l    dat_002_00004                   ; 0252E
-	dc.b	$4E,$75,$13,$FC,$00,$01
-        dc.l    dat_071_0027D                   ; 02538
-	dc.b	$30,$39
-        dc.l    dat_071_004A6                   ; 0253E
-	dc.b	$4A,$40,$6A,$20,$70,$00,$13,$C0
-        dc.l    dat_071_00165                   ; 0254A
-	dc.b	$13,$FC,$00,$0F
-        dc.l    dat_071_00271                   ; 02552
-	dc.b	$13,$C0
-        dc.l    dat_071_00270                   ; 02558
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 02562
-	dc.b	$4E,$75,$10,$39
-        dc.l    dat_071_00270                   ; 0256A
-	dc.b	$12,$39
-        dc.l    dat_071_00271                   ; 02570
-	dc.b	$B0,$01,$66,$2E,$70,$01,$13,$C0
-        dc.l    dat_071_00165                   ; 0257C
-	dc.b	$13,$FC,$00,$FF
-        dc.l    dat_071_00228                   ; 02584
-	dc.b	$13,$C0
-        dc.l    dat_071_0017D                   ; 0258A
-	dc.b	$13,$C0
-        dc.l    dat_071_00227                   ; 02590
-	dc.b	$33,$FC,$00,$09
-        dc.l    dat_071_004A6                   ; 02598
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 025A2
-	dc.b	$4E,$75,$10,$39
-        dc.l    dat_071_00166                   ; 025AA
-	dc.b	$12,$39
-        dc.l    dat_071_00173                   ; 025B0
-	dc.b	$80,$01,$13,$C0
-        dc.l    dat_071_00166                   ; 025B8
-	dc.b	$10,$39
-        dc.l    dat_071_001FB                   ; 025BE
-	dc.b	$4A,$00,$66,$28,$4A,$39
-        dc.l    dat_071_00173                   ; 025C8
-	dc.b	$67,$20,$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 025D2
-	dc.b	$61,$00,$0E,$8A,$33,$FC,$FF,$FF
-        dc.l    dat_071_004A6                   ; 025DE
-	dc.b	$41,$FA,$01,$60,$23,$C8
-        dc.l    dat_002_00004                   ; 025E8
-	dc.b	$60,$22,$30,$39
-        dc.l    dat_071_004A6                   ; 025F0
-	dc.b	$4A,$40,$6A,$18,$42,$39
-        dc.l    dat_071_00227                   ; 025FA
-	dc.b	$33,$FC,$00,$01
-        dc.l    dat_071_004A6                   ; 02602
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 0260C
-	dc.b	$4E,$75,$4E,$56,$FF,$FE,$48,$E7,$20,$00,$70,$00,$13,$C0
-        dc.l    dat_071_0017E                   ; 0261E
-	dc.b	$10,$39
-        dc.l    dat_071_00166                   ; 02624
-	dc.b	$12,$39
-        dc.l    dat_071_00173                   ; 0262A
-	dc.b	$80,$01,$13,$C0
-        dc.l    dat_071_00166                   ; 02632
-	dc.b	$10,$39
-        dc.l    dat_071_001FB                   ; 02638
-	dc.b	$4A,$00,$66,$2A,$4A,$39
-        dc.l    dat_071_00173                   ; 02642
-	dc.b	$67,$22,$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 0264C
-	dc.b	$61,$00,$0E,$10,$33,$FC,$FF,$FF
-        dc.l    dat_071_004A6                   ; 02658
-	dc.b	$41,$FA,$00,$E6,$23,$C8
-        dc.l    dat_002_00004                   ; 02662
-	dc.b	$60,$00,$00,$86,$30,$39
-        dc.l    dat_071_004A6                   ; 0266C
-	dc.b	'J@jzB9'
-        dc.l    dat_071_00165                   ; 02676
-	dc.b	$10,$39
-        dc.l    dat_071_00276                   ; 0267C
-	dc.b	$48,$80,$3D,$40,$FF,$FE,$0C,$40,$00,$03,$65,$58,$0C,$40,$00,$08
-	dc.b	$62,$52,$33,$FC,$00,$5B
-        dc.l    dat_071_0011A                   ; 02696
-	dc.b	$72,$00,$32,$2E,$FF,$FE,$20,$79
-        dc.l    dat_002_0296C                   ; 026A2
-	dc.b	$D0,$FC,$00,$12,$D1,$C1,$14,$10,$4A,$02,$66,$1A,$72,$00,$32,$2E
-	dc.b	$FF,$FE,$42,$A7,$70,$01,$2F,$00,$2F,$01,$4E,$B9
-        dc.l    sub_020_001F4                   ; 026C2
-	dc.b	$4F,$EF,$00,$0C,$60,$18,$70,$00,$30,$2E,$FF,$FE,$72,$01,$2F,$01
-	dc.b	$2F,$01,$2F,$00,$4E,$B9
-        dc.l    sub_020_001F4                   ; 026DC
-	dc.b	$4F,$EF,$00,$0C,$41,$FA,$00,$10,$23,$C8
-        dc.l    dat_002_00004                   ; 026EA
-	dc.b	$4C,$DF,$00,$04,$4E,$5E,$4E,$75,$10,$39
-        dc.l    dat_071_001B0                   ; 026F8
-	dc.b	$4A,$00,$6B,$08,$4A,$39
-        dc.l    dat_071_00173                   ; 02702
-	dc.b	$67,$3A,$10,$39
-        dc.l    dat_071_00166                   ; 0270A
-	dc.b	$12,$39
-        dc.l    dat_071_00173                   ; 02710
-	dc.b	$80,$01,$13,$C0
-        dc.l    dat_071_00166                   ; 02718
-	dc.b	$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 02720
-	dc.b	$61,$00,$0D,$3C,$33,$FC,$FF,$FF
-        dc.l    dat_071_004A6                   ; 0272C
-	dc.b	$13,$FC,$00,$03
-        dc.l    dat_071_00206                   ; 02734
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 0273E
-	dc.b	$4E,$75,$30,$39
-        dc.l    dat_071_004A6                   ; 02746
-	dc.b	$4A,$40,$6A,$26,$70,$01,$13,$C0
-        dc.l    dat_071_0017D                   ; 02752
-	dc.b	$13,$C0
-        dc.l    dat_071_00227                   ; 02758
-	dc.b	$33,$FC,$00,$01
-        dc.l    dat_071_004A6                   ; 02760
-	dc.b	$4E,$B9
-        dc.l    sub_026_00C48                   ; 02766
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 02770
-	dc.b	$4E,$75,$30,$39
-        dc.l    dat_071_004A6                   ; 02778
-	dc.b	$4A,$40,$6A,$1A,$13,$FC,$00,$02
-        dc.l    dat_071_0027E                   ; 02784
-	dc.b	$13,$FC,$00,$01
-        dc.l    dat_071_00185                   ; 0278C
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 02796
-	dc.b	$4E,$75,$10,$39
-        dc.l    dat_071_0027E                   ; 0279E
-	dc.b	$57,$00,$66,$20,$70,$00,$13,$C0
-        dc.l    dat_071_00185                   ; 027AA
-	dc.b	$13,$C0
-        dc.l    dat_071_00227                   ; 027B0
-	dc.b	$33,$FC,$00,$02
-        dc.l    dat_071_004A6                   ; 027B8
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 027C2
-	dc.b	$4E,$75,$4E,$56,$FF,$FA,$30,$39
-        dc.l    dat_071_004A6                   ; 027CE
-	dc.b	$4A,$40,$6A,$00,$00,$A4,$42,$39
-        dc.l    dat_071_00165                   ; 027DA
-	dc.b	$4A,$39
-        dc.l    dat_071_001FB                   ; 027E0
-	dc.b	$67,$24,$13,$FC,$00,$01
-        dc.l    dat_071_0027C                   ; 027EA
-	dc.b	$13,$FC,$00,$02
-        dc.l    dat_071_0027D                   ; 027F2
-	dc.b	$33,$FC,$00,$03
-        dc.l    dat_071_004A6                   ; 027FA
-	dc.b	$41,$FA,$00,$DA,$23,$C8
-        dc.l    dat_002_00004                   ; 02804
-	dc.b	$60,$70,$10,$39
-        dc.l    dat_071_00276                   ; 0280C
-	dc.b	$48,$80,$2D,$7C
-        dc.l    dat_071_0011A                   ; 02814
-	dc.b	$FF,$FC,$12,$39
-        dc.l    dat_071_00166                   ; 0281C
-	dc.b	$3D,$40,$FF,$FA,$4A,$01,$66,$2A,$0C,$40,$00,$03,$65,$24,$0C,$40
-	dc.b	$00,$08,$62,$1E,$57,$40,$66,$0E,$20,$6E,$FF,$FC,$30,$BC,$00,$5F
-	dc.b	$54,$AE,$FF,$FC,$60,$0C,$20,$6E,$FF,$FC,$30,$BC,$00,$60,$54,$AE
-	dc.b	$FF,$FC,$42,$39
-        dc.l    dat_071_00166                   ; 02854
-	dc.b	$20,$6E,$FF,$FC,$30,$BC,$00,$47,$54,$AE,$FF,$FC,$20,$6E,$FF,$FC
-	dc.b	$42,$50,$4E,$B9
-        dc.l    sub_020_003C6                   ; 0286C
-	dc.b	$41,$FA,$00,$0C,$23,$C8
-        dc.l    dat_002_00004                   ; 02876
-	dc.b	$4E,$5E,$4E,$75,$10,$39
-        dc.l    dat_071_001B0                   ; 02880
-	dc.b	$53,$00,$66,$20,$33,$FC,$00,$04
-        dc.l    dat_071_0011A                   ; 0288C
-	dc.b	$42,$39
-        dc.l    dat_071_00193                   ; 02892
-	dc.b	$13,$FC,$00,$03
-        dc.l    dat_071_001B0                   ; 0289A
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 028A4
-	dc.b	$4E,$75,$4A,$39
-        dc.l    dat_071_0027C                   ; 028AC
-	dc.b	$67,$26,$4A,$39
-        dc.l    dat_071_00155                   ; 028B4
-	dc.b	$67,$08,$13,$FC,$00,$02
-        dc.l    dat_071_0027D                   ; 028BE
-	dc.b	$61,$00,$0B,$9E,$33,$FC,$00,$03
-        dc.l    dat_071_004A6                   ; 028CA
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 028D4
-	dc.b	$4E,$75,$4E,$56,$FF,$FE,$30,$39
-        dc.l    dat_071_004A6                   ; 028E0
-	dc.b	$4A,$40,$6A,$00,$01,$3E,$10,$39
-        dc.l    dat_071_00276                   ; 028EC
-	dc.b	$48,$80,$12,$39
-        dc.l    dat_071_0027C                   ; 028F4
-	dc.b	$3D,$40,$FF,$FE,$4A,$01,$6F,$00,$00,$DA,$41,$FA,$01,$4C,$23,$C8
-        dc.l    dat_002_00004                   ; 02908
-	dc.b	$0C,$40,$00,$03,$65,$4A,$0C,$40,$00,$08,$62,$44,$33,$FC,$00,$5D
-        dc.l    dat_071_0011A                   ; 0291C
-	dc.b	$72,$00,$32,$2E,$FF,$FE,$70,$03,$2F,$00,$70,$01,$2F,$00,$2F,$01
-	dc.b	$4E,$B9
-        dc.l    sub_020_001F4                   ; 02932
-	dc.b	$4F,$EF,$00,$0C,$20,$79
-        dc.l    dat_002_0296C                   ; 0293C
-	dc.b	$30,$28,$00,$36,$52,$40,$20,$79
-        dc.l    dat_002_0296C                   ; 02948
-	dc.b	$31,$40,$00,$36,$13,$FC,$00,$01
-        dc.l    dat_071_00195                   ; 02954
-	dc.b	$60,$00,$00,$CC,$70,$00,$30,$2E,$FF,$FE,$72,$20,$04,$81,$00,$00
-	dc.b	$00,$08,$6B,$00,$00,$BA,$B0,$BB,$18,$08,$66,$F0,$4E,$FB,$18,$06
-	dc.b	$00,$00,$00,$09,$60,$00,$00,$40,$00,$00,$00,$7D,$60,$00,$00,$2C
-	dc.b	$00,$00,$00,$02,$60,$00,$00,$18,$00,$00,$00,$01,$60,$00,$00,$02
-	dc.b	$41,$FA,$01,$26,$23,$C8
-        dc.l    dat_002_00004                   ; 0299E
-	dc.b	$60,$00,$00,$82,$41,$FA,$FA,$80,$23,$C8
-        dc.l    dat_002_00004                   ; 029AC
-	dc.b	$60,$74,$41,$FA,$FA,$74,$23,$C8
-        dc.l    dat_002_00004                   ; 029B8
-	dc.b	$60,$68,$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 029C2
-	dc.b	$33,$FC,$00,$03
-        dc.l    dat_071_004A6                   ; 029CA
-	dc.b	$41,$FA,$F2,$F0,$23,$C8
-        dc.l    dat_002_00004                   ; 029D4
-	dc.b	$60,$4C,$10,$39
-        dc.l    dat_071_0027C                   ; 029DC
-	dc.b	$4A,$00,$6A,$42,$42,$39
-        dc.l    dat_071_0027C                   ; 029E6
-	dc.b	$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 029EE
-	dc.b	$61,$00,$0A,$6E,$33,$FC,$00,$03
-        dc.l    dat_071_004A6                   ; 029FA
-	dc.b	$10,$39
-        dc.l    dat_071_00268                   ; 02A00
-	dc.b	$53,$00,$13,$C0
-        dc.l    dat_071_00268                   ; 02A08
-	dc.b	$4A,$00,$6B,$0C,$41,$FA,$FD,$B6,$23,$C8
-        dc.l    dat_002_00004                   ; 02A16
-	dc.b	$60,$0A,$41,$FA,$00,$0C,$23,$C8
-        dc.l    dat_002_00004                   ; 02A22
-	dc.b	'N^Nu09'
-        dc.l    dat_071_004A6                   ; 02A2C
-	dc.b	$4A,$40,$6A,$18,$42,$39
-        dc.l    dat_071_00165                   ; 02A36
-	dc.b	$33,$FC,$00,$43
-        dc.l    dat_071_0011A                   ; 02A3E
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 02A48
-	dc.b	$4E,$75,$4E,$75,$10,$39
-        dc.l    dat_071_00173                   ; 02A52
-	dc.b	$55,$00,$66,$06,$61,$00,$02,$A2,$60,$30,$10,$39
-        dc.l    dat_071_001B0                   ; 02A62
-	dc.b	$4A,$00,$6A,$26,$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 02A6E
-	dc.b	$61,$00,$09,$EE,$13,$FC,$00,$01
-        dc.l    dat_071_00227                   ; 02A7A
-	dc.b	$33,$FC,$00,$03
-        dc.l    dat_071_004A6                   ; 02A82
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 02A8C
-	dc.b	$4E,$75,$10,$39
-        dc.l    dat_071_00173                   ; 02A94
-	dc.b	$55,$00,$66,$06,$61,$00,$02,$60,$60,$1C,$30,$39
-        dc.l    dat_071_004A6                   ; 02AA4
-	dc.b	$4A,$40,$6A,$12,$13,$FC,$00,$01
-        dc.l    dat_071_00185                   ; 02AB0
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 02ABA
-	dc.b	$4E,$75,$10,$39
-        dc.l    dat_071_00173                   ; 02AC2
-	dc.b	$55,$00,$66,$06,$61,$00,$02,$32,$60,$2A,$10,$39
-        dc.l    dat_071_0027E                   ; 02AD2
-	dc.b	$59,$00,$66,$20,$70,$00,$13,$C0
-        dc.l    dat_071_00185                   ; 02ADE
-	dc.b	$13,$C0
-        dc.l    dat_071_00227                   ; 02AE4
-	dc.b	$33,$FC,$00,$02
-        dc.l    dat_071_004A6                   ; 02AEC
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 02AF6
-	dc.b	$4E,$75,$10,$39
-        dc.l    dat_071_00173                   ; 02AFE
-	dc.b	$55,$00,$66,$06,$61,$00,$01,$F6,$60,$66,$30,$39
-        dc.l    dat_071_004A6                   ; 02B0E
-	dc.b	$4A,$40,$6A,$5C,$42,$39
-        dc.l    dat_071_00165                   ; 02B18
-	dc.b	$10,$39
-        dc.l    dat_071_00276                   ; 02B1E
-	dc.b	$0C,$00,$00,$01,$6F,$08,$13,$FC,$00,$01
-        dc.l    dat_071_00185                   ; 02B2C
-	dc.b	$10,$39
-        dc.l    dat_071_00276                   ; 02B32
-	dc.b	$48,$80,$48,$C0,$0C,$80,$00,$00,$00,$01,$66,$18,$33,$FC,$00,$07
-        dc.l    dat_071_0011A                   ; 02B46
-	dc.b	$13,$FC,$00,$05
-        dc.l    dat_071_0027E                   ; 02B4E
-	dc.b	$13,$FC,$00,$01
-        dc.l    dat_071_00227                   ; 02B56
-	dc.b	$70,$00,$13,$C0
-        dc.l    dat_071_0027D                   ; 02B5E
-	dc.b	$13,$C0
-        dc.l    dat_071_00193                   ; 02B64
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 02B6E
-	dc.b	$4E,$75,$10,$39
-        dc.l    dat_071_00173                   ; 02B76
-	dc.b	$55,$00,$66,$06,$61,$00,$01,$7E,$60,$7C,$4A,$39
-        dc.l    dat_071_00185                   ; 02B86
-	dc.b	$67,$62,$42,$39
-        dc.l    dat_071_00185                   ; 02B8E
-	dc.b	$61,$00,$08,$CE,$70,$00,$13,$C0
-        dc.l    dat_071_0017D                   ; 02B9A
-	dc.b	$70,$03,$13,$C0
-        dc.l    dat_071_00206                   ; 02BA2
-	dc.b	$70,$01,$13,$C0
-        dc.l    dat_071_00165                   ; 02BAA
-	dc.b	$33,$FC,$00,$02
-        dc.l    dat_071_004A6                   ; 02BB2
-	dc.b	$10,$39
-        dc.l    dat_071_00218                   ; 02BB8
-	dc.b	$57,$00,$67,$22,$41,$FA,$00,$40,$23,$C8
-        dc.l    dat_002_00004                   ; 02BC6
-	dc.b	$13,$FC,$00,$01
-        dc.l    dat_071_00161                   ; 02BCE
-	dc.b	$42,$39
-        dc.l    dat_071_00227                   ; 02BD4
-	dc.b	$13,$FC,$00,$06
-        dc.l    dat_071_0027E                   ; 02BDC
-	dc.b	$60,$1E,$41,$FA,$00,$8A,$23,$C8
-        dc.l    dat_002_00004                   ; 02BE8
-	dc.b	$60,$12,$10,$39
-        dc.l    dat_071_001B0                   ; 02BF0
-	dc.b	$53,$00,$66,$08,$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 02BFC
-	dc.b	$4E,$75,$70,$00,$13,$C0
-        dc.l    dat_071_00185                   ; 02C06
-	dc.b	$30,$39
-        dc.l    dat_071_004A6                   ; 02C0C
-	dc.b	$4A,$40,$6A,$20,$70,$00,$13,$C0
-        dc.l    dat_071_00165                   ; 02C18
-	dc.b	$33,$FC,$00,$4B
-        dc.l    dat_071_0011A                   ; 02C20
-	dc.b	$13,$C0
-        dc.l    dat_071_00193                   ; 02C26
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 02C30
-	dc.b	$4E,$75,$10,$39
-        dc.l    dat_071_00161                   ; 02C38
-	dc.b	$4A,$00,$66,$2C,$33,$FC,$00,$02
-        dc.l    dat_071_004A6                   ; 02C44
-	dc.b	$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 02C4C
-	dc.b	$61,$00,$08,$10,$70,$01,$13,$C0
-        dc.l    dat_071_00227                   ; 02C58
-	dc.b	$13,$C0
-        dc.l    dat_071_0027D                   ; 02C5E
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 02C68
-	dc.b	$4E,$75,$30,$39
-        dc.l    dat_071_004A6                   ; 02C70
-	dc.b	$4A,$40,$6A,$66,$13,$FC,$00,$01
-        dc.l    dat_071_00185                   ; 02C7C
-	dc.b	$61,$5E,$4E,$B9
-        dc.l    sub_004_002DA                   ; 02C84
-	dc.b	$70,$00,$13,$C0
-        dc.l    dat_071_00186                   ; 02C8C
-	dc.b	$13,$FC,$00,$06
-        dc.l    dat_071_0027E                   ; 02C94
-	dc.b	$13,$C0
-        dc.l    dat_071_0027D                   ; 02C9A
-	dc.b	$10,$39
-        dc.l    dat_071_00276                   ; 02CA0
-	dc.b	$0C,$00,$00,$03,$6D,$2A,$0C,$00,$00,$08,$6E,$24,$08,$39,$00,$04
-        dc.l    dat_071_0052B                   ; 02CB4
-	dc.b	$67,$0E,$70,$08,$2F,$00,$4E,$B9
-        dc.l    sub_000_09F9A                   ; 02CC0
-	dc.b	$58,$8F,$60,$0C,$70,$08,$2F,$00,$4E,$B9
-        dc.l    sub_000_09E46                   ; 02CCE
-	dc.b	$58,$8F,$41,$FA,$00,$82,$23,$C8
-        dc.l    dat_002_00004                   ; 02CDA
-	dc.b	$4E,$75,$4E,$B9
-        dc.l    sub_004_003AE                   ; 02CE2
-	dc.b	$30,$39
-        dc.l    dat_071_0029C                   ; 02CE8
-	dc.b	$00,$40,$08,$00,$33,$C0
-        dc.l    dat_071_0029C                   ; 02CF2
-	dc.b	$4E,$B9
-        dc.l    sub_017_00000                   ; 02CF8
-	dc.b	$4E,$75,$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 02D02
-	dc.b	$61,$D8,$13,$FC,$00,$FF
-        dc.l    dat_071_00228                   ; 02D0C
-	dc.b	$42,$39
-        dc.l    dat_071_0027E                   ; 02D12
-	dc.b	$61,$00,$07,$4A,$70,$00,$13,$C0
-        dc.l    dat_071_0017E                   ; 02D1E
-	dc.b	$13,$C0
-        dc.l    dat_071_00185                   ; 02D24
-	dc.b	$70,$01,$13,$C0
-        dc.l    dat_071_00227                   ; 02D2C
-	dc.b	$13,$C0
-        dc.l    dat_071_00184                   ; 02D32
-	dc.b	$70,$00,$13,$C0
-        dc.l    dat_071_0027D                   ; 02D3A
-	dc.b	$13,$C0
-        dc.l    dat_071_00158                   ; 02D40
-	dc.b	$33,$FC,$00,$05
-        dc.l    dat_071_004A6                   ; 02D48
-	dc.b	$41,$FA,$00,$6A,$23,$C8
-        dc.l    dat_002_00004                   ; 02D52
-	dc.b	$4E,$75
+sub_000_01E04:
+        link.w  a6,#$fffa                       ; 01E04
+        move.l  #dat_071_0011A,-$4(a6)          ; 01E08
+        move.b  (dat_071_00276).l,-$5(a6)       ; 01E10
+        tst.b   (dat_071_001FA).l               ; 01E18
+        beq.b   l_000_01E44                     ; 01E1E
+        clr.b   (dat_071_001FA).l               ; 01E20
+        move.w  (dat_071_00142).l,d0            ; 01E26
+        subq.w  #$6,d0                          ; 01E2C
+        beq.w   l_000_01F82                     ; 01E2E
+        bsr.w   h000+$3462                      ; 01E32
+        lea.l   h000+$1D30(pc),a0               ; 01E36
+        move.l  a0,(dat_002_00004).l            ; 01E3A
+        bra.w   l_000_01F82                     ; 01E40
+l_000_01E44:
+        move.b  (dat_071_00276).l,d0            ; 01E44
+        tst.b   d0                              ; 01E4A
+        ble.w   l_000_01F20                     ; 01E4C
+        clr.l   (dat_071_00038).l               ; 01E50
+        bsr.w   h000+$3462                      ; 01E56
+        jsr     (sub_036_00892).l               ; 01E5A
+        cmpi.b  #$7f,-$5(a6)                    ; 01E60
+        bne.b   l_000_01E76                     ; 01E66
+        movea.l -$4(a6),a0                      ; 01E68
+        move.w  #$65,(a0)                       ; 01E6C
+        addq.l  #$2,-$4(a6)                     ; 01E70
+        bra.b   l_000_01EE8                     ; 01E74
+l_000_01E76:
+        cmpi.b  #$1,-$5(a6)                     ; 01E76
+        bne.b   l_000_01E8C                     ; 01E7C
+        movea.l -$4(a6),a0                      ; 01E7E
+        move.w  #$66,(a0)                       ; 01E82
+        addq.l  #$2,-$4(a6)                     ; 01E86
+        bra.b   l_000_01EE8                     ; 01E8A
+l_000_01E8C:
+        cmpi.b  #$2,-$5(a6)                     ; 01E8C
+        bne.b   l_000_01EA2                     ; 01E92
+        movea.l -$4(a6),a0                      ; 01E94
+        move.w  #$67,(a0)                       ; 01E98
+        addq.l  #$2,-$4(a6)                     ; 01E9C
+        bra.b   l_000_01EE8                     ; 01EA0
+l_000_01EA2:
+        cmpi.b  #$7d,-$5(a6)                    ; 01EA2
+        bne.b   l_000_01EB8                     ; 01EA8
+        movea.l -$4(a6),a0                      ; 01EAA
+        move.w  #$68,(a0)                       ; 01EAE
+        addq.l  #$2,-$4(a6)                     ; 01EB2
+        bra.b   l_000_01EE8                     ; 01EB6
+l_000_01EB8:
+        cmpi.b  #$9,-$5(a6)                     ; 01EB8
+        bne.b   l_000_01ECE                     ; 01EBE
+        movea.l -$4(a6),a0                      ; 01EC0
+        move.w  #$69,(a0)                       ; 01EC4
+        addq.l  #$2,-$4(a6)                     ; 01EC8
+        bra.b   l_000_01EE8                     ; 01ECC
+l_000_01ECE:
+        tst.b   (dat_071_00162).l               ; 01ECE
+        beq.b   l_000_01EE8                     ; 01ED4
+        movea.l -$4(a6),a0                      ; 01ED6
+        move.w  #$6b,(a0)                       ; 01EDA
+        addq.l  #$2,-$4(a6)                     ; 01EDE
+        clr.b   (dat_071_00162).l               ; 01EE2
+l_000_01EE8:
+        movea.l -$4(a6),a0                      ; 01EE8
+        clr.w   (a0)                            ; 01EEC
+        move.b  (dat_071_001FB).l,d0            ; 01EEE
+        tst.b   d0                              ; 01EF4
+        bne.b   l_000_01F0C                     ; 01EF6
+        btst    #$7,(dat_071_0052B).l           ; 01EF8
+        beq.b   l_000_01F0C                     ; 01F00
+        move.w  #$d2,(dat_071_004A6).l          ; 01F02
+        bra.b   l_000_01F14                     ; 01F0A
+l_000_01F0C:
+        move.w  #$96,(dat_071_004A6).l          ; 01F0C
+l_000_01F14:
+        lea.l   h000+$201E(pc),a0               ; 01F14
+        move.l  a0,(dat_002_00004).l            ; 01F18
+        bra.b   l_000_01F82                     ; 01F1E
+l_000_01F20:
+        move.b  (dat_071_00276).l,d0            ; 01F20
+        tst.b   d0                              ; 01F26
+        bpl.b   l_000_01F7C                     ; 01F28
+        bsr.w   h000+$3462                      ; 01F2A
+        jsr     (sub_036_00892).l               ; 01F2E
+        move.b  (dat_071_00276).l,d0            ; 01F34
+        cmpi.b  #$ff,d0                         ; 01F3A
+        bne.b   l_000_01F4C                     ; 01F3E
+        lea.l   h000+$22CE(pc),a0               ; 01F40
+        move.l  a0,(dat_002_00004).l            ; 01F44
+        bra.b   l_000_01F74                     ; 01F4A
+l_000_01F4C:
+        jsr     (sub_036_00892).l               ; 01F4C
+        jsr     (sub_020_000DA).l               ; 01F52
+        movea.l -$4(a6),a0                      ; 01F58
+        move.w  #$57,(a0)                       ; 01F5C
+        addq.l  #$2,-$4(a6)                     ; 01F60
+        movea.l -$4(a6),a0                      ; 01F64
+        clr.w   (a0)                            ; 01F68
+        lea.l   h000+$1F86(pc),a0               ; 01F6A
+        move.l  a0,(dat_002_00004).l            ; 01F6E
+l_000_01F74:
+        clr.b   (dat_071_00276).l               ; 01F74
+        bra.b   l_000_01F82                     ; 01F7A
+l_000_01F7C:
+        clr.b   (dat_071_001FA).l               ; 01F7C
+l_000_01F82:
+        unlk    a6                              ; 01F82
+        rts                                     ; 01F84
+        tst.b   (dat_071_00162).l               ; 01F86
+        beq.b   l_000_02004                     ; 01F8C
+        move.b  (dat_071_00162).l,d0            ; 01F8E
+        subq.b  #$1,d0                          ; 01F94
+        bne.b   l_000_01FD4                     ; 01F96
+        tst.b   (dat_071_00195).l               ; 01F98
+        beq.b   l_000_01FFC                     ; 01F9E
+        move.w  (dat_071_002F8).l,d0            ; 01FA0
+        tst.w   d0                              ; 01FA6
+        bne.b   l_000_01FFC                     ; 01FA8
+        jsr     (SaveConfig).l                  ; 01FAA
+        move.b  #$ff,(dat_071_001A5).l          ; 01FB0
+        movea.l (dat_002_0296C).l,a0            ; 01FB8
+        move.w  $4(a0),d0                       ; 01FBE
+        cmpi.w  #$1,d0                          ; 01FC2
+        bhi.b   l_000_01FFC                     ; 01FC6
+        move.l  #sub_000_03622,(dat_002_00004).l ; 01FC8
+        bra.b   l_000_01FFC                     ; 01FD2
+l_000_01FD4:
+        move.b  (dat_071_00162).l,d0            ; 01FD4
+        subq.b  #$2,d0                          ; 01FDA
+        bne.b   l_000_01FFC                     ; 01FDC
+        jsr     (ClearConfig).l                 ; 01FDE
+        bsr.w   h000+$3462                      ; 01FE4
+        jsr     (sub_036_00892).l               ; 01FE8
+        jsr     (sub_020_000DA).l               ; 01FEE
+        move.w  #$57,(dat_071_0011A).l          ; 01FF4
+l_000_01FFC:
+        clr.b   (dat_071_00162).l               ; 01FFC
+        bra.b   l_000_02016                     ; 02002
+l_000_02004:
+        tst.b   (dat_071_001FA).l               ; 02004
+        beq.b   l_000_02016                     ; 0200A
+        lea.l   h000+$1D30(pc),a0               ; 0200C
+        move.l  a0,(dat_002_00004).l            ; 02010
+l_000_02016:
+        clr.b   (dat_071_00276).l               ; 02016
+        rts                                     ; 0201C
+        link.w  a6,#$fffe                       ; 0201E
+        move.b  (dat_071_00276).l,d0            ; 02022
+        ext.w   d0                              ; 02028
+        move.w  (dat_071_004A6).l,d1            ; 0202A
+        move.w  d0,-$2(a6)                      ; 02030
+        tst.w   d1                              ; 02034
+        bpl.w   l_000_022CA                     ; 02036
+        clr.b   (dat_071_001A7).l               ; 0203A
+        clr.l   -(a7)                           ; 02040
+        jsr     (StopSound).l                   ; 02042
+        addq.l  #$4,a7                          ; 02048
+        moveq   #$1,d0                          ; 0204A
+        move.l  d0,-(a7)                        ; 0204C
+        jsr     (StopSound).l                   ; 0204E
+        addq.l  #$4,a7                          ; 02054
+        move.l  #$3f0000,(dat_074_000FE).l      ; 02056
+        move.w  -$2(a6),d0                      ; 02060
+        cmpi.w  #$3,d0                          ; 02064
+        bcs.b   l_000_0207E                     ; 02068
+        cmpi.w  #$8,d0                          ; 0206A
+        bhi.b   l_000_0207E                     ; 0206E
+        moveq   #$28,d0                         ; 02070
+        move.l  d0,-(a7)                        ; 02072
+        jsr     (sub_000_09D7A).l               ; 02074
+        addq.l  #$4,a7                          ; 0207A
+        bra.b   l_000_020A8                     ; 0207C
+l_000_0207E:
+        btst    #$4,(dat_071_0052B).l           ; 0207E
+        beq.b   l_000_02096                     ; 02086
+        moveq   #$8,d0                          ; 02088
+        move.l  d0,-(a7)                        ; 0208A
+        jsr     (sub_000_09F9A).l               ; 0208C
+        addq.l  #$4,a7                          ; 02092
+        bra.b   l_000_020A8                     ; 02094
+l_000_02096:
+        moveq   #$8,d0                          ; 02096
+        move.l  d0,-(a7)                        ; 02098
+        move.l  #$300,-(a7)                     ; 0209A
+        jsr     (sub_000_09E46).l               ; 020A0
+        addq.l  #$8,a7                          ; 020A6
+l_000_020A8:
+        move.w  #$b3,(dat_071_00354).l          ; 020A8
+        bsr.w   h000+$3462                      ; 020B0
+        move.w  #$4,(dat_071_004A6).l           ; 020B4
+        move.b  #$3,(dat_071_00267).l           ; 020BC
+        move.b  #$2,(dat_071_00268).l           ; 020C4
+        jsr     (sub_026_00002).l               ; 020CC
+        clr.b   (dat_071_0017E).l               ; 020D2
+        move.b  #$1,(dat_071_00165).l           ; 020D8
+        move.b  #$3,(dat_071_00206).l           ; 020E0
+        move.b  (dat_071_00270).l,(dat_071_00271).l ; 020E8
+        jsr     (sub_000_03C5E).l               ; 020F2
+        lea.l   h000+$2534(pc),a0               ; 020F8
+        move.l  a0,(dat_002_00004).l            ; 020FC
+        move.b  #$3,(dat_071_00218).l           ; 02102
+        move.b  #$11,(dat_071_00219).l          ; 0210A
+        moveq   #$0,d0                          ; 02112
+        move.w  -$2(a6),d0                      ; 02114
+        moveq   #$30,d1                         ; 02118
+l_000_0211A:
+        subi.l  #$8,d1                          ; 0211A
+        bmi.w   l_000_022B2                     ; 02120
+        cmp.l   h000+$212E(pc,d1.l),d0          ; 02124
+        bne.b   l_000_0211A                     ; 02128
+        jmp     h000+$2132(pc,d1.l)             ; 0212A
+        ori.b   #$9,d0                          ; 0212E
+        bra.w   l_000_02252                     ; 02132
+        ori.b   #$7d,d0                         ; 02136
+        bra.w   l_000_02202                     ; 0213A
+        ori.b   #$3,d0                          ; 0213E
+        bra.w   l_000_021F8                     ; 02142
+        ori.b   #$2,d0                          ; 02146
+        bra.w   l_000_02190                     ; 0214A
+        ori.b   #$1,d0                          ; 0214E
+        bra.w   l_000_02174                     ; 02152
+        ori.b   #$7f,d0                         ; 02156
+        bra.w   l_000_0215E                     ; 0215A
+l_000_0215E:
+        move.b  #$1,(dat_071_0017E).l           ; 0215E
+        lea.l   h000+$1B54(pc),a0               ; 02166
+        move.l  a0,(dat_002_00004).l            ; 0216A
+        bra.w   l_000_022B2                     ; 02170
+l_000_02174:
+        jsr     (sub_004_00268).l               ; 02174
+        move.b  #$5,(dat_071_00267).l           ; 0217A
+        lea.l   h000+$234C(pc),a0               ; 02182
+        move.l  a0,(dat_002_00004).l            ; 02186
+        bra.w   l_000_022B2                     ; 0218C
+l_000_02190:
+        move.w  #$a7,(dat_071_00354).l          ; 02190
+        move.b  #$ff,(dat_071_00184).l          ; 02198
+        jsr     (sub_026_00D70).l               ; 021A0
+        moveq   #$0,d0                          ; 021A6
+        move.b  d0,(dat_071_0017D).l            ; 021A8
+        moveq   #$1,d0                          ; 021AE
+        move.b  d0,(dat_071_00155).l            ; 021B0
+        clr.b   (dat_071_0027E).l               ; 021B6
+        move.b  d0,(dat_071_00185).l            ; 021BC
+        move.w  #$4,(dat_071_002AC).l           ; 021C2
+        move.w  #$800,(dat_071_002AE).l         ; 021CA
+        move.b  #$3,(dat_071_00282).l           ; 021D2
+        move.w  (dat_071_01356).l,d0            ; 021DA
+        ori.w   #$100,d0                        ; 021E0
+        move.w  d0,(dat_071_01356).l            ; 021E4
+        lea.l   h000+$23C2(pc),a0               ; 021EA
+        move.l  a0,(dat_002_00004).l            ; 021EE
+        bra.w   l_000_022B2                     ; 021F4
+l_000_021F8:
+        clr.b   (dat_071_00218).l               ; 021F8
+        bra.w   l_000_022B2                     ; 021FE
+l_000_02202:
+        move.b  #$1,(dat_071_00267).l           ; 02202
+        move.w  #$a7,(dat_071_00354).l          ; 0220A
+        move.b  #$ff,(dat_071_00184).l          ; 02212
+        move.b  #$3,(dat_071_00186).l           ; 0221A
+        move.b  #$2,(dat_071_00218).l           ; 02222
+        bsr.w   l_000_02CE0                     ; 0222A
+        jsr     (sub_026_00D7A).l               ; 0222E
+        jsr     (sub_004_00290).l               ; 02234
+        jsr     (sub_026_00002).l               ; 0223A
+        clr.b   (dat_071_0017D).l               ; 02240
+        lea.l   h000+$23C2(pc),a0               ; 02246
+        move.l  a0,(dat_002_00004).l            ; 0224A
+        bra.b   l_000_022B2                     ; 02250
+l_000_02252:
+        move.b  #$3,(dat_071_00218).l           ; 02252
+        moveq   #$0,d0                          ; 0225A
+        move.b  d0,(dat_071_0027E).l            ; 0225C
+        move.b  d0,(dat_071_0017D).l            ; 02262
+        jsr     (sub_026_00002).l               ; 02268
+        jsr     (sub_004_00392).l               ; 0226E
+        bsr.w   h000+$3462                      ; 02274
+        moveq   #$1,d0                          ; 02278
+        move.b  d0,(dat_071_0027D).l            ; 0227A
+        move.b  d0,(dat_071_00165).l            ; 02280
+        moveq   #$0,d0                          ; 02286
+        move.w  d0,(dat_071_00356).l            ; 02288
+        move.w  d0,(dat_071_00358).l            ; 0228E
+        jsr     (sub_006_00000).l               ; 02294
+        move.b  #$ff,(dat_071_00228).l          ; 0229A
+        clr.b   (dat_071_00155).l               ; 022A2
+        lea.l   h000+$234C(pc),a0               ; 022A8
+        move.l  a0,(dat_002_00004).l            ; 022AC
+l_000_022B2:
+        move.b  (dat_071_00218).l,d0            ; 022B2
+        subq.b  #$3,d0                          ; 022B8
+        bne.b   l_000_022C4                     ; 022BA
+        move.b  #$11,(dat_071_00219).l          ; 022BC
+l_000_022C4:
+        jsr     (sub_008_00598).l               ; 022C4
+l_000_022CA:
+        unlk    a6                              ; 022CA
+        rts                                     ; 022CC
+        link.w  a6,#$fff6                       ; 022CE
+        jsr     (sub_036_00892).l               ; 022D2
+        lea.l   (dat_071_0011A).l,a0            ; 022D8
+        move.w  #$40,(a0)                       ; 022DE
+        addq.l  #$2,a0                          ; 022E2
+        move.l  #dat_064_00000,-$8(a6)          ; 022E4
+        move.b  #$3,-$9(a6)                     ; 022EC
+        move.l  a0,-$4(a6)                      ; 022F2
+l_000_022F6:
+        move.b  -$9(a6),d0                      ; 022F6
+        cmpi.b  #$9,d0                          ; 022FA
+        bge.b   l_000_0232C                     ; 022FE
+        ext.w   d0                              ; 02300
+        ext.l   d0                              ; 02302
+        movea.l (dat_002_0296C).l,a0            ; 02304
+        adda.w  #$12,a0                         ; 0230A
+        adda.l  d0,a0                           ; 0230E
+        tst.b   (a0)                            ; 02310
+        beq.b   l_000_02326                     ; 02312
+        movea.l -$8(a6),a0                      ; 02314
+        movea.l -$4(a6),a1                      ; 02318
+        move.w  (a0),(a1)                       ; 0231C
+        addq.l  #$2,-$8(a6)                     ; 0231E
+        addq.l  #$2,-$4(a6)                     ; 02322
+l_000_02326:
+        addq.b  #$1,-$9(a6)                     ; 02326
+        bra.b   l_000_022F6                     ; 0232A
+l_000_0232C:
+        movea.l -$4(a6),a0                      ; 0232C
+        move.w  #$806e,(a0)                     ; 02330
+        addq.l  #$2,-$4(a6)                     ; 02334
+        movea.l -$4(a6),a0                      ; 02338
+        clr.w   (a0)                            ; 0233C
+        lea.l   sub_000_01E04(pc),a0            ; 0233E
+        move.l  a0,(dat_002_00004).l            ; 02342
+        unlk    a6                              ; 02348
+        rts                                     ; 0234A
+        move.w  (dat_071_004A6).l,d0            ; 0234C
+        tst.w   d0                              ; 02352
+        bpl.b   l_000_02376                     ; 02354
+        moveq   #$0,d0                          ; 02356
+        move.b  d0,(dat_071_00165).l            ; 02358
+        move.b  #$f,(dat_071_00271).l           ; 0235E
+        move.b  d0,(dat_071_00270).l            ; 02366
+        lea.l   h000+$2378(pc),a0               ; 0236C
+        move.l  a0,(dat_002_00004).l            ; 02370
+l_000_02376:
+        rts                                     ; 02376
+        move.b  (dat_071_00270).l,d0            ; 02378
+        move.b  (dat_071_00271).l,d1            ; 0237E
+        cmp.b   d1,d0                           ; 02384
+        bne.b   l_000_023C0                     ; 02386
+        move.w  #$2,(dat_071_004A6).l           ; 02388
+        moveq   #$1,d0                          ; 02390
+        move.b  d0,(dat_071_00165).l            ; 02392
+        move.b  #$ff,(dat_071_00228).l          ; 02398
+        move.b  #$4,(dat_071_0027E).l           ; 023A0
+        move.b  d0,(dat_071_0027D).l            ; 023A8
+        move.w  #$5,(dat_071_004A6).l           ; 023AE
+        lea.l   h000+$27C8(pc),a0               ; 023B6
+        move.l  a0,(dat_002_00004).l            ; 023BA
+l_000_023C0:
+        rts                                     ; 023C0
+        move.w  (dat_071_004A6).l,d0            ; 023C2
+        tst.w   d0                              ; 023C8
+        bpl.b   l_000_023EC                     ; 023CA
+        moveq   #$0,d0                          ; 023CC
+        move.b  d0,(dat_071_00165).l            ; 023CE
+        move.b  #$f,(dat_071_00271).l           ; 023D4
+        move.b  d0,(dat_071_00270).l            ; 023DC
+        lea.l   h000+$23EE(pc),a0               ; 023E2
+        move.l  a0,(dat_002_00004).l            ; 023E6
+l_000_023EC:
+        rts                                     ; 023EC
+        move.b  (dat_071_00270).l,d0            ; 023EE
+        move.b  (dat_071_00271).l,d1            ; 023F4
+        cmp.b   d1,d0                           ; 023FA
+        bne.b   l_000_02426                     ; 023FC
+        moveq   #$1,d0                          ; 023FE
+        move.b  d0,(dat_071_00165).l            ; 02400
+        move.b  #$ff,(dat_071_00228).l          ; 02406
+        move.b  d0,(dat_071_0027D).l            ; 0240E
+        move.w  #$5,(dat_071_004A6).l           ; 02414
+        lea.l   h000+$27C8(pc),a0               ; 0241C
+        move.l  a0,(dat_002_00004).l            ; 02420
+l_000_02426:
+        rts                                     ; 02426
+        moveq   #$1,d0                          ; 02428
+        move.b  d0,(dat_071_00165).l            ; 0242A
+        move.b  #$ff,(dat_071_00228).l          ; 02430
+        move.b  d0,(dat_071_0027D).l            ; 02438
+        move.w  #$5,(dat_071_004A6).l           ; 0243E
+        lea.l   h000+$2452(pc),a0               ; 02446
+        move.l  a0,(dat_002_00004).l            ; 0244A
+        rts                                     ; 02450
+        link.w  a6,#$fffc                       ; 02452
+        move.l  #dat_071_0011A,-$4(a6)          ; 02456
+        tst.b   (dat_071_00173).l               ; 0245E
+        beq.b   l_000_0246A                     ; 02464
+        bsr.b   l_000_024B2                     ; 02466
+        bra.b   l_000_024AE                     ; 02468
+l_000_0246A:
+        move.w  (dat_071_004A6).l,d0            ; 0246A
+        tst.w   d0                              ; 02470
+        bpl.b   l_000_024AE                     ; 02472
+        clr.b   (dat_071_00165).l               ; 02474
+        move.b  (dat_071_00276).l,d0            ; 0247A
+        subq.b  #$2,d0                          ; 02480
+        bne.b   l_000_02492                     ; 02482
+        movea.l -$4(a6),a0                      ; 02484
+        move.w  #$9,(a0)                        ; 02488
+        addq.l  #$2,-$4(a6)                     ; 0248C
+        bra.b   l_000_024A4                     ; 02490
+l_000_02492:
+        movea.l -$4(a6),a0                      ; 02492
+        move.w  #$a,(a0)                        ; 02496
+        addq.l  #$2,-$4(a6)                     ; 0249A
+        clr.b   (dat_071_0027D).l               ; 0249E
+l_000_024A4:
+        lea.l   h000+$24B2(pc),a0               ; 024A4
+        move.l  a0,(dat_002_00004).l            ; 024A8
+l_000_024AE:
+        unlk    a6                              ; 024AE
+        rts                                     ; 024B0
+l_000_024B2:
+        move.b  (dat_071_001B0).l,d0            ; 024B2
+        tst.b   d0                              ; 024B8
+        bmi.b   l_000_024C4                     ; 024BA
+        tst.b   (dat_071_00173).l               ; 024BC
+        beq.b   l_000_02532                     ; 024C2
+l_000_024C4:
+        move.b  #$1,(dat_071_00165).l           ; 024C4
+        move.b  #$ff,(dat_071_00228).l          ; 024CC
+        bsr.w   h000+$3462                      ; 024D4
+        moveq   #$1,d0                          ; 024D8
+        move.b  d0,(dat_071_00184).l            ; 024DA
+        move.b  d0,(dat_071_00185).l            ; 024E0
+        clr.b   (dat_071_0027D).l               ; 024E6
+        move.b  (dat_071_00276).l,d0            ; 024EC
+        cmpi.b  #$7d,d0                         ; 024F2
+        bne.b   l_000_0250C                     ; 024F6
+        move.b  #$6,(dat_071_0027E).l           ; 024F8
+        lea.l   h000+$2D58(pc),a0               ; 02500
+        move.l  a0,(dat_002_00004).l            ; 02504
+        bra.b   l_000_02532                     ; 0250A
+l_000_0250C:
+        move.b  #$3,(dat_071_00206).l           ; 0250C
+        clr.w   (dat_073_0162A).l               ; 02514
+        clr.b   (dat_071_00158).l               ; 0251A
+        move.w  #$5,(dat_071_004A6).l           ; 02520
+        lea.l   h000+$2DB8(pc),a0               ; 02528
+        move.l  a0,(dat_002_00004).l            ; 0252C
+l_000_02532:
+        rts                                     ; 02532
+        move.b  #$1,(dat_071_0027D).l           ; 02534
+        move.w  (dat_071_004A6).l,d0            ; 0253C
+        tst.w   d0                              ; 02542
+        bpl.b   l_000_02566                     ; 02544
+        moveq   #$0,d0                          ; 02546
+        move.b  d0,(dat_071_00165).l            ; 02548
+        move.b  #$f,(dat_071_00271).l           ; 0254E
+        move.b  d0,(dat_071_00270).l            ; 02556
+        lea.l   h000+$2568(pc),a0               ; 0255C
+        move.l  a0,(dat_002_00004).l            ; 02560
+l_000_02566:
+        rts                                     ; 02566
+        move.b  (dat_071_00270).l,d0            ; 02568
+        move.b  (dat_071_00271).l,d1            ; 0256E
+        cmp.b   d1,d0                           ; 02574
+        bne.b   l_000_025A6                     ; 02576
+        moveq   #$1,d0                          ; 02578
+        move.b  d0,(dat_071_00165).l            ; 0257A
+        move.b  #$ff,(dat_071_00228).l          ; 02580
+        move.b  d0,(dat_071_0017D).l            ; 02588
+        move.b  d0,(dat_071_00227).l            ; 0258E
+        move.w  #$9,(dat_071_004A6).l           ; 02594
+        lea.l   h000+$25A8(pc),a0               ; 0259C
+        move.l  a0,(dat_002_00004).l            ; 025A0
+l_000_025A6:
+        rts                                     ; 025A6
+        move.b  (dat_071_00166).l,d0            ; 025A8
+        move.b  (dat_071_00173).l,d1            ; 025AE
+        or.b    d1,d0                           ; 025B4
+        move.b  d0,(dat_071_00166).l            ; 025B6
+        move.b  (dat_071_001FB).l,d0            ; 025BC
+        tst.b   d0                              ; 025C2
+        bne.b   l_000_025EE                     ; 025C4
+        tst.b   (dat_071_00173).l               ; 025C6
+        beq.b   l_000_025EE                     ; 025CC
+        move.b  #$1,(dat_071_00165).l           ; 025CE
+        bsr.w   h000+$3462                      ; 025D6
+        move.w  #$ffff,(dat_071_004A6).l        ; 025DA
+        lea.l   h000+$2744(pc),a0               ; 025E2
+        move.l  a0,(dat_002_00004).l            ; 025E6
+        bra.b   l_000_02610                     ; 025EC
+l_000_025EE:
+        move.w  (dat_071_004A6).l,d0            ; 025EE
+        tst.w   d0                              ; 025F4
+        bpl.b   l_000_02610                     ; 025F6
+        clr.b   (dat_071_00227).l               ; 025F8
+        move.w  #$1,(dat_071_004A6).l           ; 025FE
+        lea.l   h000+$2612(pc),a0               ; 02606
+        move.l  a0,(dat_002_00004).l            ; 0260A
+l_000_02610:
+        rts                                     ; 02610
+        link.w  a6,#$fffe                       ; 02612
+        movem.l d2,-(a7)                        ; 02616
+        moveq   #$0,d0                          ; 0261A
+        move.b  d0,(dat_071_0017E).l            ; 0261C
+        move.b  (dat_071_00166).l,d0            ; 02622
+        move.b  (dat_071_00173).l,d1            ; 02628
+        or.b    d1,d0                           ; 0262E
+        move.b  d0,(dat_071_00166).l            ; 02630
+        move.b  (dat_071_001FB).l,d0            ; 02636
+        tst.b   d0                              ; 0263C
+        bne.b   l_000_0266A                     ; 0263E
+        tst.b   (dat_071_00173).l               ; 02640
+        beq.b   l_000_0266A                     ; 02646
+        move.b  #$1,(dat_071_00165).l           ; 02648
+        bsr.w   h000+$3462                      ; 02650
+        move.w  #$ffff,(dat_071_004A6).l        ; 02654
+        lea.l   h000+$2744(pc),a0               ; 0265C
+        move.l  a0,(dat_002_00004).l            ; 02660
+        bra.w   l_000_026EE                     ; 02666
+l_000_0266A:
+        move.w  (dat_071_004A6).l,d0            ; 0266A
+        tst.w   d0                              ; 02670
+        bpl.b   l_000_026EE                     ; 02672
+        clr.b   (dat_071_00165).l               ; 02674
+        move.b  (dat_071_00276).l,d0            ; 0267A
+        ext.w   d0                              ; 02680
+        move.w  d0,-$2(a6)                      ; 02682
+        cmpi.w  #$3,d0                          ; 02686
+        bcs.b   l_000_026E4                     ; 0268A
+        cmpi.w  #$8,d0                          ; 0268C
+        bhi.b   l_000_026E4                     ; 02690
+        move.w  #$5b,(dat_071_0011A).l          ; 02692
+        moveq   #$0,d1                          ; 0269A
+        move.w  -$2(a6),d1                      ; 0269C
+        movea.l (dat_002_0296C).l,a0            ; 026A0
+        adda.w  #$12,a0                         ; 026A6
+        adda.l  d1,a0                           ; 026AA
+        move.b  (a0),d2                         ; 026AC
+        tst.b   d2                              ; 026AE
+        bne.b   l_000_026CC                     ; 026B0
+        moveq   #$0,d1                          ; 026B2
+        move.w  -$2(a6),d1                      ; 026B4
+        clr.l   -(a7)                           ; 026B8
+        moveq   #$1,d0                          ; 026BA
+        move.l  d0,-(a7)                        ; 026BC
+        move.l  d1,-(a7)                        ; 026BE
+        jsr     (sub_020_001F4).l               ; 026C0
+        lea.l   $c(a7),a7                       ; 026C6
+        bra.b   l_000_026E4                     ; 026CA
+l_000_026CC:
+        moveq   #$0,d0                          ; 026CC
+        move.w  -$2(a6),d0                      ; 026CE
+        moveq   #$1,d1                          ; 026D2
+        move.l  d1,-(a7)                        ; 026D4
+        move.l  d1,-(a7)                        ; 026D6
+        move.l  d0,-(a7)                        ; 026D8
+        jsr     (sub_020_001F4).l               ; 026DA
+        lea.l   $c(a7),a7                       ; 026E0
+l_000_026E4:
+        lea.l   h000+$26F6(pc),a0               ; 026E4
+        move.l  a0,(dat_002_00004).l            ; 026E8
+l_000_026EE:
+        movem.l (a7)+,d2                        ; 026EE
+        unlk    a6                              ; 026F2
+        rts                                     ; 026F4
+        move.b  (dat_071_001B0).l,d0            ; 026F6
+        tst.b   d0                              ; 026FC
+        bmi.b   l_000_02708                     ; 026FE
+        tst.b   (dat_071_00173).l               ; 02700
+        beq.b   l_000_02742                     ; 02706
+l_000_02708:
+        move.b  (dat_071_00166).l,d0            ; 02708
+        move.b  (dat_071_00173).l,d1            ; 0270E
+        or.b    d1,d0                           ; 02714
+        move.b  d0,(dat_071_00166).l            ; 02716
+        move.b  #$1,(dat_071_00165).l           ; 0271C
+        bsr.w   h000+$3462                      ; 02724
+        move.w  #$ffff,(dat_071_004A6).l        ; 02728
+        move.b  #$3,(dat_071_00206).l           ; 02730
+        lea.l   h000+$2744(pc),a0               ; 02738
+        move.l  a0,(dat_002_00004).l            ; 0273C
+l_000_02742:
+        rts                                     ; 02742
+        move.w  (dat_071_004A6).l,d0            ; 02744
+        tst.w   d0                              ; 0274A
+        bpl.b   l_000_02774                     ; 0274C
+        moveq   #$1,d0                          ; 0274E
+        move.b  d0,(dat_071_0017D).l            ; 02750
+        move.b  d0,(dat_071_00227).l            ; 02756
+        move.w  #$1,(dat_071_004A6).l           ; 0275C
+        jsr     (sub_026_00C48).l               ; 02764
+        lea.l   h000+$2776(pc),a0               ; 0276A
+        move.l  a0,(dat_002_00004).l            ; 0276E
+l_000_02774:
+        rts                                     ; 02774
+        move.w  (dat_071_004A6).l,d0            ; 02776
+        tst.w   d0                              ; 0277C
+        bpl.b   l_000_0279A                     ; 0277E
+        move.b  #$2,(dat_071_0027E).l           ; 02780
+        move.b  #$1,(dat_071_00185).l           ; 02788
+        lea.l   h000+$279C(pc),a0               ; 02790
+        move.l  a0,(dat_002_00004).l            ; 02794
+l_000_0279A:
+        rts                                     ; 0279A
+        move.b  (dat_071_0027E).l,d0            ; 0279C
+        subq.b  #$3,d0                          ; 027A2
+        bne.b   l_000_027C6                     ; 027A4
+        moveq   #$0,d0                          ; 027A6
+        move.b  d0,(dat_071_00185).l            ; 027A8
+        move.b  d0,(dat_071_00227).l            ; 027AE
+        move.w  #$2,(dat_071_004A6).l           ; 027B4
+        lea.l   h000+$27C8(pc),a0               ; 027BC
+        move.l  a0,(dat_002_00004).l            ; 027C0
+l_000_027C6:
+        rts                                     ; 027C6
+        link.w  a6,#$fffa                       ; 027C8
+        move.w  (dat_071_004A6).l,d0            ; 027CC
+        tst.w   d0                              ; 027D2
+        bpl.w   l_000_0287A                     ; 027D4
+        clr.b   (dat_071_00165).l               ; 027D8
+        tst.b   (dat_071_001FB).l               ; 027DE
+        beq.b   l_000_0280A                     ; 027E4
+        move.b  #$1,(dat_071_0027C).l           ; 027E6
+        move.b  #$2,(dat_071_0027D).l           ; 027EE
+        move.w  #$3,(dat_071_004A6).l           ; 027F6
+        lea.l   h000+$28DA(pc),a0               ; 027FE
+        move.l  a0,(dat_002_00004).l            ; 02802
+        bra.b   l_000_0287A                     ; 02808
+l_000_0280A:
+        move.b  (dat_071_00276).l,d0            ; 0280A
+        ext.w   d0                              ; 02810
+        move.l  #dat_071_0011A,-$4(a6)          ; 02812
+        move.b  (dat_071_00166).l,d1            ; 0281A
+        move.w  d0,-$6(a6)                      ; 02820
+        tst.b   d1                              ; 02824
+        bne.b   l_000_02852                     ; 02826
+        cmpi.w  #$3,d0                          ; 02828
+        bcs.b   l_000_02852                     ; 0282C
+        cmpi.w  #$8,d0                          ; 0282E
+        bhi.b   l_000_02852                     ; 02832
+        subq.w  #$3,d0                          ; 02834
+        bne.b   l_000_02846                     ; 02836
+        movea.l -$4(a6),a0                      ; 02838
+        move.w  #$5f,(a0)                       ; 0283C
+        addq.l  #$2,-$4(a6)                     ; 02840
+        bra.b   l_000_02852                     ; 02844
+l_000_02846:
+        movea.l -$4(a6),a0                      ; 02846
+        move.w  #$60,(a0)                       ; 0284A
+        addq.l  #$2,-$4(a6)                     ; 0284E
+l_000_02852:
+        clr.b   (dat_071_00166).l               ; 02852
+        movea.l -$4(a6),a0                      ; 02858
+        move.w  #$47,(a0)                       ; 0285C
+        addq.l  #$2,-$4(a6)                     ; 02860
+        movea.l -$4(a6),a0                      ; 02864
+        clr.w   (a0)                            ; 02868
+        jsr     (sub_020_003C6).l               ; 0286A
+        lea.l   h000+$287E(pc),a0               ; 02870
+        move.l  a0,(dat_002_00004).l            ; 02874
+l_000_0287A:
+        unlk    a6                              ; 0287A
+        rts                                     ; 0287C
+        move.b  (dat_071_001B0).l,d0            ; 0287E
+        subq.b  #$1,d0                          ; 02884
+        bne.b   l_000_028A8                     ; 02886
+        move.w  #$4,(dat_071_0011A).l           ; 02888
+        clr.b   (dat_071_00193).l               ; 02890
+        move.b  #$3,(dat_071_001B0).l           ; 02896
+        lea.l   h000+$28AA(pc),a0               ; 0289E
+        move.l  a0,(dat_002_00004).l            ; 028A2
+l_000_028A8:
+        rts                                     ; 028A8
+        tst.b   (dat_071_0027C).l               ; 028AA
+        beq.b   l_000_028D8                     ; 028B0
+        tst.b   (dat_071_00155).l               ; 028B2
+        beq.b   l_000_028C2                     ; 028B8
+        move.b  #$2,(dat_071_0027D).l           ; 028BA
+l_000_028C2:
+        bsr.w   h000+$3462                      ; 028C2
+        move.w  #$3,(dat_071_004A6).l           ; 028C6
+        lea.l   h000+$28DA(pc),a0               ; 028CE
+        move.l  a0,(dat_002_00004).l            ; 028D2
+l_000_028D8:
+        rts                                     ; 028D8
+        link.w  a6,#$fffe                       ; 028DA
+        move.w  (dat_071_004A6).l,d0            ; 028DE
+        tst.w   d0                              ; 028E4
+        bpl.w   l_000_02A26                     ; 028E6
+        move.b  (dat_071_00276).l,d0            ; 028EA
+        ext.w   d0                              ; 028F0
+        move.b  (dat_071_0027C).l,d1            ; 028F2
+        move.w  d0,-$2(a6)                      ; 028F8
+        tst.b   d1                              ; 028FC
+        ble.w   l_000_029DA                     ; 028FE
+        lea.l   h000+$2A50(pc),a0               ; 02902
+        move.l  a0,(dat_002_00004).l            ; 02906
+        cmpi.w  #$3,d0                          ; 0290C
+        bcs.b   l_000_0295C                     ; 02910
+        cmpi.w  #$8,d0                          ; 02912
+        bhi.b   l_000_0295C                     ; 02916
+        move.w  #$5d,(dat_071_0011A).l          ; 02918
+        moveq   #$0,d1                          ; 02920
+        move.w  -$2(a6),d1                      ; 02922
+        moveq   #$3,d0                          ; 02926
+        move.l  d0,-(a7)                        ; 02928
+        moveq   #$1,d0                          ; 0292A
+        move.l  d0,-(a7)                        ; 0292C
+        move.l  d1,-(a7)                        ; 0292E
+        jsr     (sub_020_001F4).l               ; 02930
+        lea.l   $c(a7),a7                       ; 02936
+        movea.l (dat_002_0296C).l,a0            ; 0293A
+        move.w  $36(a0),d0                      ; 02940
+        addq.w  #$1,d0                          ; 02944
+        movea.l (dat_002_0296C).l,a0            ; 02946
+        move.w  d0,$36(a0)                      ; 0294C
+        move.b  #$1,(dat_071_00195).l           ; 02950
+        bra.w   l_000_02A26                     ; 02958
+l_000_0295C:
+        moveq   #$0,d0                          ; 0295C
+        move.w  -$2(a6),d0                      ; 0295E
+        moveq   #$20,d1                         ; 02962
+l_000_02964:
+        subi.l  #$8,d1                          ; 02964
+        bmi.w   l_000_02A26                     ; 0296A
+        cmp.l   h000+$2978(pc,d1.l),d0          ; 0296E
+        bne.b   l_000_02964                     ; 02972
+        jmp     h000+$297C(pc,d1.l)             ; 02974
+        ori.b   #$9,d0                          ; 02978
+        bra.w   l_000_029BE                     ; 0297C
+        ori.b   #$7d,d0                         ; 02980
+        bra.w   l_000_029B2                     ; 02984
+        ori.b   #$2,d0                          ; 02988
+        bra.w   l_000_029A6                     ; 0298C
+        ori.b   #$1,d0                          ; 02990
+        bra.w   l_000_02998                     ; 02994
+l_000_02998:
+        lea.l   h000+$2AC0(pc),a0               ; 02998
+        move.l  a0,(dat_002_00004).l            ; 0299C
+        bra.w   l_000_02A26                     ; 029A2
+l_000_029A6:
+        lea.l   h000+$2428(pc),a0               ; 029A6
+        move.l  a0,(dat_002_00004).l            ; 029AA
+        bra.b   l_000_02A26                     ; 029B0
+l_000_029B2:
+        lea.l   h000+$2428(pc),a0               ; 029B2
+        move.l  a0,(dat_002_00004).l            ; 029B6
+        bra.b   l_000_02A26                     ; 029BC
+l_000_029BE:
+        move.b  #$1,(dat_071_00165).l           ; 029BE
+        move.w  #$3,(dat_071_004A6).l           ; 029C6
+        lea.l   h000+$1CC0(pc),a0               ; 029CE
+        move.l  a0,(dat_002_00004).l            ; 029D2
+        bra.b   l_000_02A26                     ; 029D8
+l_000_029DA:
+        move.b  (dat_071_0027C).l,d0            ; 029DA
+        tst.b   d0                              ; 029E0
+        bpl.b   l_000_02A26                     ; 029E2
+        clr.b   (dat_071_0027C).l               ; 029E4
+        move.b  #$1,(dat_071_00165).l           ; 029EA
+        bsr.w   h000+$3462                      ; 029F2
+        move.w  #$3,(dat_071_004A6).l           ; 029F6
+        move.b  (dat_071_00268).l,d0            ; 029FE
+        subq.b  #$1,d0                          ; 02A04
+        move.b  d0,(dat_071_00268).l            ; 02A06
+        tst.b   d0                              ; 02A0C
+        bmi.b   l_000_02A1C                     ; 02A0E
+        lea.l   h000+$27C8(pc),a0               ; 02A10
+        move.l  a0,(dat_002_00004).l            ; 02A14
+        bra.b   l_000_02A26                     ; 02A1A
+l_000_02A1C:
+        lea.l   h000+$2A2A(pc),a0               ; 02A1C
+        move.l  a0,(dat_002_00004).l            ; 02A20
+l_000_02A26:
+        unlk    a6                              ; 02A26
+        rts                                     ; 02A28
+        move.w  (dat_071_004A6).l,d0            ; 02A2A
+        tst.w   d0                              ; 02A30
+        bpl.b   l_000_02A4C                     ; 02A32
+        clr.b   (dat_071_00165).l               ; 02A34
+        move.w  #$43,(dat_071_0011A).l          ; 02A3A
+        lea.l   h000+$2A4E(pc),a0               ; 02A42
+        move.l  a0,(dat_002_00004).l            ; 02A46
+l_000_02A4C:
+        rts                                     ; 02A4C
+        rts                                     ; 02A4E
+        move.b  (dat_071_00173).l,d0            ; 02A50
+        subq.b  #$2,d0                          ; 02A56
+        bne.b   l_000_02A60                     ; 02A58
+        bsr.w   l_000_02CFE                     ; 02A5A
+        bra.b   l_000_02A90                     ; 02A5E
+l_000_02A60:
+        move.b  (dat_071_001B0).l,d0            ; 02A60
+        tst.b   d0                              ; 02A66
+        bpl.b   l_000_02A90                     ; 02A68
+        move.b  #$1,(dat_071_00165).l           ; 02A6A
+        bsr.w   h000+$3462                      ; 02A72
+        move.b  #$1,(dat_071_00227).l           ; 02A76
+        move.w  #$3,(dat_071_004A6).l           ; 02A7E
+        lea.l   h000+$2A92(pc),a0               ; 02A86
+        move.l  a0,(dat_002_00004).l            ; 02A8A
+l_000_02A90:
+        rts                                     ; 02A90
+        move.b  (dat_071_00173).l,d0            ; 02A92
+        subq.b  #$2,d0                          ; 02A98
+        bne.b   l_000_02AA2                     ; 02A9A
+        bsr.w   l_000_02CFE                     ; 02A9C
+        bra.b   l_000_02ABE                     ; 02AA0
+l_000_02AA2:
+        move.w  (dat_071_004A6).l,d0            ; 02AA2
+        tst.w   d0                              ; 02AA8
+        bpl.b   l_000_02ABE                     ; 02AAA
+        move.b  #$1,(dat_071_00185).l           ; 02AAC
+        lea.l   h000+$2AC0(pc),a0               ; 02AB4
+        move.l  a0,(dat_002_00004).l            ; 02AB8
+l_000_02ABE:
+        rts                                     ; 02ABE
+        move.b  (dat_071_00173).l,d0            ; 02AC0
+        subq.b  #$2,d0                          ; 02AC6
+        bne.b   l_000_02AD0                     ; 02AC8
+        bsr.w   l_000_02CFE                     ; 02ACA
+        bra.b   l_000_02AFA                     ; 02ACE
+l_000_02AD0:
+        move.b  (dat_071_0027E).l,d0            ; 02AD0
+        subq.b  #$4,d0                          ; 02AD6
+        bne.b   l_000_02AFA                     ; 02AD8
+        moveq   #$0,d0                          ; 02ADA
+        move.b  d0,(dat_071_00185).l            ; 02ADC
+        move.b  d0,(dat_071_00227).l            ; 02AE2
+        move.w  #$2,(dat_071_004A6).l           ; 02AE8
+        lea.l   h000+$2AFC(pc),a0               ; 02AF0
+        move.l  a0,(dat_002_00004).l            ; 02AF4
+l_000_02AFA:
+        rts                                     ; 02AFA
+        move.b  (dat_071_00173).l,d0            ; 02AFC
+        subq.b  #$2,d0                          ; 02B02
+        bne.b   l_000_02B0C                     ; 02B04
+        bsr.w   l_000_02CFE                     ; 02B06
+        bra.b   l_000_02B72                     ; 02B0A
+l_000_02B0C:
+        move.w  (dat_071_004A6).l,d0            ; 02B0C
+        tst.w   d0                              ; 02B12
+        bpl.b   l_000_02B72                     ; 02B14
+        clr.b   (dat_071_00165).l               ; 02B16
+        move.b  (dat_071_00276).l,d0            ; 02B1C
+        cmpi.b  #$1,d0                          ; 02B22
+        ble.b   l_000_02B30                     ; 02B26
+        move.b  #$1,(dat_071_00185).l           ; 02B28
+l_000_02B30:
+        move.b  (dat_071_00276).l,d0            ; 02B30
+        ext.w   d0                              ; 02B36
+        ext.l   d0                              ; 02B38
+        cmpi.l  #$1,d0                          ; 02B3A
+        bne.b   l_000_02B5A                     ; 02B40
+        move.w  #$7,(dat_071_0011A).l           ; 02B42
+        move.b  #$5,(dat_071_0027E).l           ; 02B4A
+        move.b  #$1,(dat_071_00227).l           ; 02B52
+l_000_02B5A:
+        moveq   #$0,d0                          ; 02B5A
+        move.b  d0,(dat_071_0027D).l            ; 02B5C
+        move.b  d0,(dat_071_00193).l            ; 02B62
+        lea.l   h000+$2B74(pc),a0               ; 02B68
+        move.l  a0,(dat_002_00004).l            ; 02B6C
+l_000_02B72:
+        rts                                     ; 02B72
+        move.b  (dat_071_00173).l,d0            ; 02B74
+        subq.b  #$2,d0                          ; 02B7A
+        bne.b   l_000_02B84                     ; 02B7C
+        bsr.w   l_000_02CFE                     ; 02B7E
+        bra.b   l_000_02C00                     ; 02B82
+l_000_02B84:
+        tst.b   (dat_071_00185).l               ; 02B84
+        beq.b   l_000_02BEE                     ; 02B8A
+        clr.b   (dat_071_00185).l               ; 02B8C
+        bsr.w   h000+$3462                      ; 02B92
+        moveq   #$0,d0                          ; 02B96
+        move.b  d0,(dat_071_0017D).l            ; 02B98
+        moveq   #$3,d0                          ; 02B9E
+        move.b  d0,(dat_071_00206).l            ; 02BA0
+        moveq   #$1,d0                          ; 02BA6
+        move.b  d0,(dat_071_00165).l            ; 02BA8
+        move.w  #$2,(dat_071_004A6).l           ; 02BAE
+        move.b  (dat_071_00218).l,d0            ; 02BB6
+        subq.b  #$3,d0                          ; 02BBC
+        beq.b   l_000_02BE2                     ; 02BBE
+        lea.l   h000+$2C02(pc),a0               ; 02BC0
+        move.l  a0,(dat_002_00004).l            ; 02BC4
+        move.b  #$1,(dat_071_00161).l           ; 02BCA
+        clr.b   (dat_071_00227).l               ; 02BD2
+        move.b  #$6,(dat_071_0027E).l           ; 02BD8
+        bra.b   l_000_02C00                     ; 02BE0
+l_000_02BE2:
+        lea.l   h000+$2C6E(pc),a0               ; 02BE2
+        move.l  a0,(dat_002_00004).l            ; 02BE6
+        bra.b   l_000_02C00                     ; 02BEC
+l_000_02BEE:
+        move.b  (dat_071_001B0).l,d0            ; 02BEE
+        subq.b  #$1,d0                          ; 02BF4
+        bne.b   l_000_02C00                     ; 02BF6
+        move.b  #$1,(dat_071_00165).l           ; 02BF8
+l_000_02C00:
+        rts                                     ; 02C00
+        moveq   #$0,d0                          ; 02C02
+        move.b  d0,(dat_071_00185).l            ; 02C04
+        move.w  (dat_071_004A6).l,d0            ; 02C0A
+        tst.w   d0                              ; 02C10
+        bpl.b   l_000_02C34                     ; 02C12
+        moveq   #$0,d0                          ; 02C14
+        move.b  d0,(dat_071_00165).l            ; 02C16
+        move.w  #$4b,(dat_071_0011A).l          ; 02C1C
+        move.b  d0,(dat_071_00193).l            ; 02C24
+        lea.l   h000+$2C36(pc),a0               ; 02C2A
+        move.l  a0,(dat_002_00004).l            ; 02C2E
+l_000_02C34:
+        rts                                     ; 02C34
+        move.b  (dat_071_00161).l,d0            ; 02C36
+        tst.b   d0                              ; 02C3C
+        bne.b   l_000_02C6C                     ; 02C3E
+        move.w  #$2,(dat_071_004A6).l           ; 02C40
+        move.b  #$1,(dat_071_00165).l           ; 02C48
+        bsr.w   h000+$3462                      ; 02C50
+        moveq   #$1,d0                          ; 02C54
+        move.b  d0,(dat_071_00227).l            ; 02C56
+        move.b  d0,(dat_071_0027D).l            ; 02C5C
+        lea.l   h000+$2C6E(pc),a0               ; 02C62
+        move.l  a0,(dat_002_00004).l            ; 02C66
+l_000_02C6C:
+        rts                                     ; 02C6C
+        move.w  (dat_071_004A6).l,d0            ; 02C6E
+        tst.w   d0                              ; 02C74
+        bpl.b   l_000_02CDE                     ; 02C76
+        move.b  #$1,(dat_071_00185).l           ; 02C78
+        bsr.b   l_000_02CE0                     ; 02C80
+        jsr     (sub_004_002DA).l               ; 02C82
+        moveq   #$0,d0                          ; 02C88
+        move.b  d0,(dat_071_00186).l            ; 02C8A
+        move.b  #$6,(dat_071_0027E).l           ; 02C90
+        move.b  d0,(dat_071_0027D).l            ; 02C98
+        move.b  (dat_071_00276).l,d0            ; 02C9E
+        cmpi.b  #$3,d0                          ; 02CA4
+        blt.b   l_000_02CD4                     ; 02CA8
+        cmpi.b  #$8,d0                          ; 02CAA
+        bgt.b   l_000_02CD4                     ; 02CAE
+        btst    #$4,(dat_071_0052B).l           ; 02CB0
+        beq.b   l_000_02CC8                     ; 02CB8
+        moveq   #$8,d0                          ; 02CBA
+        move.l  d0,-(a7)                        ; 02CBC
+        jsr     (sub_000_09F9A).l               ; 02CBE
+        addq.l  #$4,a7                          ; 02CC4
+        bra.b   l_000_02CD4                     ; 02CC6
+l_000_02CC8:
+        moveq   #$8,d0                          ; 02CC8
+        move.l  d0,-(a7)                        ; 02CCA
+        jsr     (sub_000_09E46).l               ; 02CCC
+        addq.l  #$4,a7                          ; 02CD2
+l_000_02CD4:
+        lea.l   h000+$2D58(pc),a0               ; 02CD4
+        move.l  a0,(dat_002_00004).l            ; 02CD8
+l_000_02CDE:
+        rts                                     ; 02CDE
+l_000_02CE0:
+        jsr     (sub_004_003AE).l               ; 02CE0
+        move.w  (dat_071_0029C).l,d0            ; 02CE6
+        ori.w   #$800,d0                        ; 02CEC
+        move.w  d0,(dat_071_0029C).l            ; 02CF0
+        jsr     (sub_017_00000).l               ; 02CF6
+        rts                                     ; 02CFC
+l_000_02CFE:
+        move.b  #$1,(dat_071_00165).l           ; 02CFE
+        bsr.b   l_000_02CE0                     ; 02D06
+        move.b  #$ff,(dat_071_00228).l          ; 02D08
+        clr.b   (dat_071_0027E).l               ; 02D10
+        bsr.w   h000+$3462                      ; 02D16
+        moveq   #$0,d0                          ; 02D1A
+        move.b  d0,(dat_071_0017E).l            ; 02D1C
+        move.b  d0,(dat_071_00185).l            ; 02D22
+        moveq   #$1,d0                          ; 02D28
+        move.b  d0,(dat_071_00227).l            ; 02D2A
+        move.b  d0,(dat_071_00184).l            ; 02D30
+        moveq   #$0,d0                          ; 02D36
+        move.b  d0,(dat_071_0027D).l            ; 02D38
+        move.b  d0,(dat_071_00158).l            ; 02D3E
+        move.w  #$5,(dat_071_004A6).l           ; 02D44
+        lea.l   h000+$2DB8(pc),a0               ; 02D4C
+        move.l  a0,(dat_002_00004).l            ; 02D50
+        rts                                     ; 02D56
 sub_000_02D58:
         move.b  (dat_071_00155).l,d0            ; 02D58
         tst.b   d0                              ; 02D5E
@@ -2885,7 +3281,7 @@ sub_000_02D58:
         move.b  d0,(dat_071_0027D).l            ; 02D72
         move.b  d0,(dat_071_00158).l            ; 02D78
         move.w  #$5,(dat_071_004A6).l           ; 02D7E
-        lea.l   dat_000_02DB8(pc),a0            ; 02D86
+        lea.l   sub_000_02DB8(pc),a0            ; 02D86
         move.l  a0,(dat_002_00004).l            ; 02D8A
         bra.b   l_000_02DB6                     ; 02D90
 l_000_02D92:
@@ -2894,74 +3290,91 @@ l_000_02D92:
         bpl.b   l_000_02DB6                     ; 02D9A
         move.w  #$2,(dat_071_004A6).l           ; 02D9C
         move.b  #$a,(dat_071_00271).l           ; 02DA4
-        move.l  #sub_000_03B76,(dat_002_00004).l; 02DAC
+        move.l  #sub_000_03B76,(dat_002_00004).l ; 02DAC
 l_000_02DB6:
         rts                                     ; 02DB6
-dat_000_02DB8:
-	dc.b	$4E,$56,$FF,$FA,$30,$39
-        dc.l    dat_071_004A6                   ; 02DBE
-	dc.b	$4A,$40,$6A,$00,$00,$84,$10,$39
-        dc.l    dat_071_00276                   ; 02DCA
-	dc.b	$42,$39
-        dc.l    dat_071_00165                   ; 02DD0
-	dc.b	$2D,$7C
-        dc.l    dat_071_0011A                   ; 02DD6
-	dc.b	$FF,$FC,$1D,$40,$FF,$FB,$0C,$00,$00,$03,$6D,$1C,$0C,$00,$00,$08
-	dc.b	$6E,$16,$4E,$B9
-        dc.l    sub_020_002C0                   ; 02DEE
-	dc.b	$4A,$80,$6B,$0C,$20,$6E,$FF,$FC,$30,$BC,$00,$58,$54,$AE,$FF,$FC
-	dc.b	$0C,$2E,$00,$02,$FF,$FB,$67,$28,$10,$39
-        dc.l    dat_071_00B58                   ; 02E0C
-	dc.b	$08,$00,$00,$03,$67,$0E,$20,$6E,$FF,$FC,$30,$BC,$00,$5A,$54,$AE
-	dc.b	$FF,$FC,$60,$16,$20,$6E,$FF,$FC,$30,$BC,$00,$59,$54,$AE,$FF,$FC
-	dc.b	$60,$08,$13,$FC,$00,$FF
-        dc.l    dat_071_001B0                   ; 02E36
-	dc.b	$20,$6E,$FF,$FC,$42,$50,$41,$FA,$00,$0C,$23,$C8
-        dc.l    dat_002_00004                   ; 02E46
-	dc.b	$4E,$5E,$4E,$75,$10,$39
-        dc.l    dat_071_001B0                   ; 02E50
-	dc.b	$4A,$00,$6A,$00,$00,$80,$70,$01,$13,$C0
-        dc.l    dat_071_00165                   ; 02E5E
-	dc.b	$30,$39
-        dc.l    dat_071_0029C                   ; 02E64
-	dc.b	$00,$40,$00,$40,$33,$C0
-        dc.l    dat_071_0029C                   ; 02E6E
-	dc.b	$30,$39
-        dc.l    dat_071_0029E                   ; 02E74
-	dc.b	$00,$40,$01,$00,$33,$C0
-        dc.l    dat_071_0029E                   ; 02E7E
-	dc.b	$30,$39
-        dc.l    dat_071_002A2                   ; 02E84
-	dc.b	$00,$40,$00,$02,$33,$C0
-        dc.l    dat_071_002A2                   ; 02E8E
-	dc.b	$10,$39
-        dc.l    dat_071_00276                   ; 02E94
-	dc.b	$55,$00,$66,$08,$13,$FC,$00,$01
-        dc.l    dat_071_00163                   ; 02EA0
-	dc.b	$4E,$B9
-        dc.l    sub_000_08E54                   ; 02EA6
-	dc.b	$20,$39
-        dc.l    dat_071_004C2                   ; 02EAC
-	dc.b	$23,$C0
-        dc.l    dat_071_002E4                   ; 02EB2
-	dc.b	$23,$F9
-        dc.l    dat_071_004C2                   ; 02EB8
-        dc.l    dat_071_002DC                   ; 02EBC
-	dc.b	$42,$79
-        dc.l    dat_071_002AA                   ; 02EC2
-	dc.b	$33,$FC,$00,$03
-        dc.l    dat_071_004A6                   ; 02ECA
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 02ED4
-	dc.b	$4E,$75,$30,$39
-        dc.l    dat_071_004A6                   ; 02EDC
-	dc.b	$4A,$40,$6A,$18,$13,$FC,$00,$01
-        dc.l    dat_071_00171                   ; 02EE8
-	dc.b	$4E,$B9
-        dc.l    l_039_01880                     ; 02EEE
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 02EF8
-	dc.b	$4E,$75
+sub_000_02DB8:
+        link.w  a6,#$fffa                       ; 02DB8
+        move.w  (dat_071_004A6).l,d0            ; 02DBC
+        tst.w   d0                              ; 02DC2
+        bpl.w   l_000_02E4A                     ; 02DC4
+        move.b  (dat_071_00276).l,d0            ; 02DC8
+        clr.b   (dat_071_00165).l               ; 02DCE
+        move.l  #dat_071_0011A,-$4(a6)          ; 02DD4
+        move.b  d0,-$5(a6)                      ; 02DDC
+        cmpi.b  #$3,d0                          ; 02DE0
+        blt.b   l_000_02E02                     ; 02DE4
+        cmpi.b  #$8,d0                          ; 02DE6
+        bgt.b   l_000_02E02                     ; 02DEA
+        jsr     (sub_020_002C0).l               ; 02DEC
+        tst.l   d0                              ; 02DF2
+        bmi.b   l_000_02E02                     ; 02DF4
+        movea.l -$4(a6),a0                      ; 02DF6
+        move.w  #$58,(a0)                       ; 02DFA
+        addq.l  #$2,-$4(a6)                     ; 02DFE
+l_000_02E02:
+        cmpi.b  #$2,-$5(a6)                     ; 02E02
+        beq.b   l_000_02E32                     ; 02E08
+        move.b  (dat_071_00B58).l,d0            ; 02E0A
+        btst    #$3,d0                          ; 02E10
+        beq.b   l_000_02E24                     ; 02E14
+        movea.l -$4(a6),a0                      ; 02E16
+        move.w  #$5a,(a0)                       ; 02E1A
+        addq.l  #$2,-$4(a6)                     ; 02E1E
+        bra.b   l_000_02E3A                     ; 02E22
+l_000_02E24:
+        movea.l -$4(a6),a0                      ; 02E24
+        move.w  #$59,(a0)                       ; 02E28
+        addq.l  #$2,-$4(a6)                     ; 02E2C
+        bra.b   l_000_02E3A                     ; 02E30
+l_000_02E32:
+        move.b  #$ff,(dat_071_001B0).l          ; 02E32
+l_000_02E3A:
+        movea.l -$4(a6),a0                      ; 02E3A
+        clr.w   (a0)                            ; 02E3E
+        lea.l   h000+$2E4E(pc),a0               ; 02E40
+        move.l  a0,(dat_002_00004).l            ; 02E44
+l_000_02E4A:
+        unlk    a6                              ; 02E4A
+        rts                                     ; 02E4C
+        move.b  (dat_071_001B0).l,d0            ; 02E4E
+        tst.b   d0                              ; 02E54
+        bpl.w   l_000_02ED8                     ; 02E56
+        moveq   #$1,d0                          ; 02E5A
+        move.b  d0,(dat_071_00165).l            ; 02E5C
+        move.w  (dat_071_0029C).l,d0            ; 02E62
+        ori.w   #$40,d0                         ; 02E68
+        move.w  d0,(dat_071_0029C).l            ; 02E6C
+        move.w  (dat_071_0029E).l,d0            ; 02E72
+        ori.w   #$100,d0                        ; 02E78
+        move.w  d0,(dat_071_0029E).l            ; 02E7C
+        move.w  (dat_071_002A2).l,d0            ; 02E82
+        ori.w   #$2,d0                          ; 02E88
+        move.w  d0,(dat_071_002A2).l            ; 02E8C
+        move.b  (dat_071_00276).l,d0            ; 02E92
+        subq.b  #$2,d0                          ; 02E98
+        bne.b   l_000_02EA4                     ; 02E9A
+        move.b  #$1,(dat_071_00163).l           ; 02E9C
+l_000_02EA4:
+        jsr     (ReadTime).l                    ; 02EA4
+        move.l  (dat_071_004C2).l,d0            ; 02EAA
+        move.l  d0,(dat_071_002E4).l            ; 02EB0
+        move.l  (dat_071_004C2).l,(dat_071_002DC).l ; 02EB6
+        clr.w   (dat_071_002AA).l               ; 02EC0
+        move.w  #$3,(dat_071_004A6).l           ; 02EC6
+        lea.l   h000+$2EDA(pc),a0               ; 02ECE
+        move.l  a0,(dat_002_00004).l            ; 02ED2
+l_000_02ED8:
+        rts                                     ; 02ED8
+        move.w  (dat_071_004A6).l,d0            ; 02EDA
+        tst.w   d0                              ; 02EE0
+        bpl.b   l_000_02EFC                     ; 02EE2
+        move.b  #$1,(dat_071_00171).l           ; 02EE4
+        jsr     (l_039_01880).l                 ; 02EEC
+        lea.l   h000+$2EFE(pc),a0               ; 02EF2
+        move.l  a0,(dat_002_00004).l            ; 02EF6
+l_000_02EFC:
+        rts                                     ; 02EFC
 sub_000_02EFE:
         link.w  a6,#$fffe                       ; 02EFE
         move.b  (dat_071_00168).l,-$1(a6)       ; 02F02
@@ -3004,7 +3417,7 @@ sub_000_02EFE:
         jsr     (sub_000_0A0DC).l               ; 02FAE
         addq.l  #$8,a7                          ; 02FB4
 l_000_02FB6:
-        move.l  #sub_000_038D8,(dat_002_00004).l; 02FB6
+        move.l  #sub_000_038D8,(dat_002_00004).l ; 02FB6
         bra.w   l_000_03198                     ; 02FC0
 l_000_02FC4:
         move.w  (dat_071_00B54).l,d0            ; 02FC4
@@ -3020,9 +3433,9 @@ l_000_02FE6:
         bpl.b   l_000_0301E                     ; 02FEE
         move.w  #$2,(dat_071_004A6).l           ; 02FF0
         move.b  #$a,(dat_071_00271).l           ; 02FF8
-        jsr     (sub_000_08E54).l               ; 03000
-        move.l  (dat_071_004C2).l,(dat_071_002D4).l; 03006
-        move.l  #sub_000_03B76,(dat_002_00004).l; 03010
+        jsr     (ReadTime).l                    ; 03000
+        move.l  (dat_071_004C2).l,(dat_071_002D4).l ; 03006
+        move.l  #sub_000_03B76,(dat_002_00004).l ; 03010
         bra.w   l_000_03198                     ; 0301A
 l_000_0301E:
         move.b  -$1(a6),d0                      ; 0301E
@@ -3086,17 +3499,17 @@ l_000_03118:
         bne.b   l_000_0313E                     ; 03122
         clr.b   (dat_071_001FA).l               ; 03124
         move.b  #$ff,(dat_071_001B0).l          ; 0312A
-        move.l  #sub_000_03A4C,(dat_002_00004).l; 03132
+        move.l  #sub_000_03A4C,(dat_002_00004).l ; 03132
         bra.b   l_000_03198                     ; 0313C
 l_000_0313E:
         cmpi.b  #$f0,-$1(a6)                    ; 0313E
         bne.b   l_000_03152                     ; 03144
-        move.l  #sub_000_03A4C,(dat_002_00004).l; 03146
+        move.l  #sub_000_03A4C,(dat_002_00004).l ; 03146
         bra.b   l_000_03198                     ; 03150
 l_000_03152:
         cmpi.b  #$ef,-$1(a6)                    ; 03152
         bne.b   l_000_03166                     ; 03158
-        move.l  #sub_000_03AA8,(dat_002_00004).l; 0315A
+        move.l  #sub_000_03AA8,(dat_002_00004).l ; 0315A
         bra.b   l_000_03198                     ; 03164
 l_000_03166:
         move.w  (dat_071_002AE).l,d0            ; 03166
@@ -3167,7 +3580,7 @@ dat_000_031C8:
 	dc.b	$60,$00,$01,$6C,$20,$79
         dc.l    dat_002_0296C                   ; 032C4
 	dc.b	$30,$BC,$00,$01,$4E,$B9
-        dc.l    sub_000_0858A                   ; 032CE
+        dc.l    SaveConfig                      ; 032CE
 	dc.b	$20,$6E,$FF,$FA,$30,$BC,$00,$4A,$54,$88,$30,$BC,$80,$53,$54,$88
 	dc.b	$13,$FC,$00,$01
         dc.l    dat_071_001FB                   ; 032E6
@@ -3210,7 +3623,7 @@ dat_000_031C8:
 	dc.b	$30,$BC,$80,$53,$54,$88,$2D,$48,$FF,$FA,$4E,$B9
         dc.l    sub_000_034A0                   ; 0344E
 	dc.b	$4E,$B9
-        dc.l    sub_000_0858A                   ; 03454
+        dc.l    SaveConfig                      ; 03454
 	dc.b	$20,$6E,$FF,$FA
 	dc.b	'BPN^Nu'
 sub_000_03462:
@@ -3265,7 +3678,7 @@ l_000_03512:
         bls.b   l_000_03526                     ; 03520
         move.b  #$3,(a0)                        ; 03522
 l_000_03526:
-        move.b  (dat_071_00277).l,(dat_071_00278).l; 03526
+        move.b  (dat_071_00277).l,(dat_071_00278).l ; 03526
         unlk    a6                              ; 03530
         rts                                     ; 03532
 sub_000_03534:
@@ -3277,23 +3690,25 @@ sub_000_03534:
         addq.l  #$4,a7                          ; 03548
         move.w  #$61,(dat_071_0011A).l          ; 0354A
         move.w  #$1f4,(dat_071_004A6).l         ; 03552
-        lea.l   dat_000_0356E(pc),a0            ; 0355A
+        lea.l   sub_000_0356E(pc),a0            ; 0355A
         move.l  a0,(dat_002_00004).l            ; 0355E
         bra.b   l_000_0356C                     ; 03564
 l_000_03566:
         jsr     (sub_036_00892).l               ; 03566
 l_000_0356C:
         rts                                     ; 0356C
-dat_000_0356E:
-	dc.b	$10,$39
-        dc.l    dat_071_001B0                   ; 03570
-	dc.b	$4A,$00,$6A,$1C,$30,$39
-        dc.l    dat_071_004A6                   ; 0357A
-	dc.b	$4A,$40,$6A,$12,$33,$FC,$00,$03
-        dc.l    dat_071_004A6                   ; 03586
-	dc.b	$41,$FA,$FF,$E2,$23,$C8
-        dc.l    dat_002_00004                   ; 03590
-	dc.b	$4E,$75
+sub_000_0356E:
+        move.b  (dat_071_001B0).l,d0            ; 0356E
+        tst.b   d0                              ; 03574
+        bpl.b   l_000_03594                     ; 03576
+        move.w  (dat_071_004A6).l,d0            ; 03578
+        tst.w   d0                              ; 0357E
+        bpl.b   l_000_03594                     ; 03580
+        move.w  #$3,(dat_071_004A6).l           ; 03582
+        lea.l   sub_000_0356E(pc),a0            ; 0358A
+        move.l  a0,(dat_002_00004).l            ; 0358E
+l_000_03594:
+        rts                                     ; 03594
 sub_000_03596:
         move.w  (dat_071_004A6).l,d0            ; 03596
         tst.w   d0                              ; 0359C
@@ -3302,37 +3717,31 @@ sub_000_03596:
         bsr.w   sub_000_03C1C                   ; 035A6
         addq.l  #$4,a7                          ; 035AA
         move.w  #$f,(dat_071_0011A).l           ; 035AC
-        lea.l   dat_000_035C8(pc),a0            ; 035B4
+        lea.l   sub_000_035C8(pc),a0            ; 035B4
         move.l  a0,(dat_002_00004).l            ; 035B8
         bra.b   l_000_035C6                     ; 035BE
 l_000_035C0:
         jsr     (sub_036_00892).l               ; 035C0
 l_000_035C6:
         rts                                     ; 035C6
-dat_000_035C8:
-	dc.b	$4A,$39
-        dc.l    dat_071_00173                   ; 035CA
-	dc.b	$67,$50,$23,$FC,$00,$1F,$00,$00
-        dc.l    dat_071_00038                   ; 035D6
-	dc.b	$13,$FC,$00,$01
-        dc.l    dat_071_001A7                   ; 035DE
-	dc.b	$48,$79
-        dc.l    dat_021_00080                   ; 035E4
-	dc.b	$61,$00,$06,$32,$58,$8F,$4E,$B9
-        dc.l    sub_000_03462                   ; 035F0
-	dc.b	$4E,$B9
-        dc.l    sub_036_00892                   ; 035F6
-	dc.b	$13,$FC,$00,$01
-        dc.l    dat_071_001A3                   ; 035FE
-	dc.b	$33,$FC,$00,$05
-        dc.l    dat_071_004A6                   ; 03606
-	dc.b	$42,$39
-        dc.l    dat_071_00276                   ; 0360C
-	dc.b	$4E,$B9
-        dc.l    sub_000_08434                   ; 03612
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 0361C
-	dc.b	$4E,$75
+sub_000_035C8:
+        tst.b   (dat_071_00173).l               ; 035C8
+        beq.b   l_000_03620                     ; 035CE
+        move.l  #$1f0000,(dat_071_00038).l      ; 035D0
+        move.b  #$1,(dat_071_001A7).l           ; 035DA
+        pea.l   (dat_021_00080).l               ; 035E2
+        bsr.w   h000+$3C1C                      ; 035E8
+        addq.l  #$4,a7                          ; 035EC
+        jsr     (sub_000_03462).l               ; 035EE
+        jsr     (sub_036_00892).l               ; 035F4
+        move.b  #$1,(dat_071_001A3).l           ; 035FA
+        move.w  #$5,(dat_071_004A6).l           ; 03602
+        clr.b   (dat_071_00276).l               ; 0360A
+        jsr     (LoadConfig).l                  ; 03610
+        lea.l   h000+$3622(pc),a0               ; 03616
+        move.l  a0,(dat_002_00004).l            ; 0361A
+l_000_03620:
+        rts                                     ; 03620
 sub_000_03622:
         link.w  a6,#$fffc                       ; 03622
         jsr     (sub_036_00892).l               ; 03626
@@ -3340,9 +3749,9 @@ sub_000_03622:
         move.b  (dat_071_001A3).l,d0            ; 03634
         tst.b   d0                              ; 0363A
         bne.b   l_000_0365A                     ; 0363C
-        jsr     (sub_000_08434).l               ; 0363E
+        jsr     (LoadConfig).l                  ; 0363E
         move.b  #$ff,(dat_071_001A5).l          ; 03644
-        lea.l   dat_000_0370A(pc),a0            ; 0364C
+        lea.l   sub_000_0370A(pc),a0            ; 0364C
         move.l  a0,(dat_002_00004).l            ; 03650
         bra.w   l_000_036EA                     ; 03656
 l_000_0365A:
@@ -3350,7 +3759,7 @@ l_000_0365A:
         tst.w   d0                              ; 03660
         bne.b   l_000_03676                     ; 03662
         clr.b   (dat_071_001A3).l               ; 03664
-        lea.l   dat_000_0370A(pc),a0            ; 0366A
+        lea.l   sub_000_0370A(pc),a0            ; 0366A
         move.l  a0,(dat_002_00004).l            ; 0366E
         bra.b   l_000_036EA                     ; 03674
 l_000_03676:
@@ -3399,97 +3808,124 @@ dat_000_036EE:
 	dc.b	$41,$FA,$FF,$22,$23,$C8
         dc.l    dat_002_00004                   ; 03704
 	dc.b	$4E,$75
-dat_000_0370A:
-	dc.b	$4E,$56,$FF,$F6,$30,$39
-        dc.l    dat_071_002F8                   ; 03710
-	dc.b	$4A,$40,$66,$00,$00,$BE,$30,$39
-        dc.l    dat_071_004A6                   ; 0371C
-	dc.b	$4A,$40,$6A,$00,$00,$AA,$13,$FC,$00,$01
-        dc.l    dat_071_0027D                   ; 0372A
-	dc.b	$48,$79
-        dc.l    dat_021_00000                   ; 03730
-	dc.b	$61,$00,$04,$E6,$58,$8F,$70,$00,$13,$C0
-        dc.l    dat_071_001B0                   ; 0373E
-	dc.b	$13,$C0
-        dc.l    dat_071_00193                   ; 03744
-	dc.b	$20,$79
-        dc.l    dat_002_0296C                   ; 0374A
-	dc.b	$30,$28,$00,$04,$0C,$40,$00,$00,$62,$14,$33,$FC,$00,$01
-        dc.l    dat_071_0011A                   ; 0375C
-	dc.b	$41,$FA,$00,$88,$23,$C8
-        dc.l    dat_002_00004                   ; 03766
-	dc.b	$60,$7A,$33,$FC,$00,$02
-        dc.l    dat_071_0011A                   ; 03770
-	dc.b	$41,$F9
-        dc.l    dat_064_004E3                   ; 03776
-	dc.b	$2D,$48,$FF,$FA,$D0,$FC,$00,$0A,$22,$79
-        dc.l    dat_002_0296C                   ; 03784
-	dc.b	$D2,$FC,$00,$1E,$42,$6E,$FF,$FE,$2D,$48,$FF,$FA,$2D,$49,$FF,$F6
-	dc.b	$0C,$6E,$00,$18,$FF,$FE,$6C,$22,$20,$6E,$FF,$F6,$10,$10,$4A,$00
-	dc.b	$67,$18,$20,$6E,$FF,$F6,$22,$6E,$FF,$FA,$12,$90,$52,$AE,$FF,$F6
-	dc.b	$52,$AE,$FF,$FA,$52,$6E,$FF,$FE,$60,$D6,$41,$FA,$00,$3C,$23,$C8
-        dc.l    dat_002_00004                   ; 037C8
-	dc.b	$60,$18,$4E,$B9
-        dc.l    sub_036_00892                   ; 037D0
-	dc.b	$60,$10,$4E,$B9
-        dc.l    sub_000_03462                   ; 037D8
-	dc.b	$23,$FC
-        dc.l    sub_000_01D30                   ; 037DE
-        dc.l    dat_002_00004                   ; 037E2
-	dc.b	$4E,$5E,$4E,$75,$10,$39
-        dc.l    dat_071_001B0                   ; 037EC
-	dc.b	$4A,$00,$6A,$0A,$41,$FA,$00,$28,$23,$C8
-        dc.l    dat_002_00004                   ; 037FA
-	dc.b	$4E,$75,$10,$39
-        dc.l    dat_071_001B0                   ; 03802
-	dc.b	$4A,$00,$6B,$08,$4A,$39
-        dc.l    dat_071_00173                   ; 0380C
-	dc.b	$67,$0A,$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 03818
-	dc.b	$4E,$75,$4E,$B9
-        dc.l    sub_000_03462                   ; 03820
-	dc.b	$33,$FC,$00,$05
-        dc.l    dat_071_004A6                   ; 03828
-	dc.b	$20,$79
-        dc.l    dat_002_0296C                   ; 0382E
-	dc.b	$30,$28,$00,$04,$0C,$40,$00,$00,$62,$2A,$33,$FC,$00,$03
-        dc.l    dat_071_0011A                   ; 03840
-	dc.b	$42,$39
-        dc.l    dat_071_00193                   ; 03846
-	dc.b	$13,$FC,$00,$02
-        dc.l    dat_071_001B0                   ; 0384E
-	dc.b	$13,$FC,$00,$14
-        dc.l    dat_071_001C5                   ; 03856
-	dc.b	$41,$FA,$00,$2C,$23,$C8
-        dc.l    dat_002_00004                   ; 03860
-	dc.b	$60,$0A,$23,$FC
-        dc.l    sub_000_01D30                   ; 03868
-        dc.l    dat_002_00004                   ; 0386C
-	dc.b	$20,$79
-        dc.l    dat_002_0296C                   ; 03872
-	dc.b	$30,$28,$00,$04,$52,$40,$20,$79
-        dc.l    dat_002_0296C                   ; 0387E
-	dc.b	$31,$40,$00,$04,$4E,$75,$10,$39
-        dc.l    dat_071_001B0                   ; 0388A
-	dc.b	$4A,$00,$6A,$18,$4E,$B9
-        dc.l    sub_000_03462                   ; 03894
-	dc.b	$33,$FC,$00,$05
-        dc.l    dat_071_004A6                   ; 0389C
-	dc.b	$23,$FC
-        dc.l    sub_000_01D30                   ; 038A2
-        dc.l    dat_002_00004                   ; 038A6
-	dc.b	$4E,$75,$30,$39
-        dc.l    dat_071_004A6                   ; 038AE
-	dc.b	$4A,$40,$6A,$12,$42,$79
-        dc.l    dat_071_002AA                   ; 038B8
-	dc.b	$23,$FC
-        dc.l    sub_000_02EFE                   ; 038BE
-        dc.l    dat_002_00004                   ; 038C2
-	dc.b	$60,$0E,$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 038CC
-	dc.b	$4E,$B9
-        dc.l    sub_000_03462                   ; 038D2
-	dc.b	$4E,$75
+sub_000_0370A:
+        link.w  a6,#$fff6                       ; 0370A
+        move.w  (dat_071_002F8).l,d0            ; 0370E
+        tst.w   d0                              ; 03714
+        bne.w   l_000_037D6                     ; 03716
+        move.w  (dat_071_004A6).l,d0            ; 0371A
+        tst.w   d0                              ; 03720
+        bpl.w   l_000_037CE                     ; 03722
+        move.b  #$1,(dat_071_0027D).l           ; 03726
+        pea.l   (dat_021_00000).l               ; 0372E
+        bsr.w   h000+$3C1C                      ; 03734
+        addq.l  #$4,a7                          ; 03738
+        moveq   #$0,d0                          ; 0373A
+        move.b  d0,(dat_071_001B0).l            ; 0373C
+        move.b  d0,(dat_071_00193).l            ; 03742
+        movea.l (dat_002_0296C).l,a0            ; 03748
+        move.w  $4(a0),d0                       ; 0374E
+        cmpi.w  #$0,d0                          ; 03752
+        bhi.b   l_000_0376C                     ; 03756
+        move.w  #$1,(dat_071_0011A).l           ; 03758
+        lea.l   h000+$37EA(pc),a0               ; 03760
+        move.l  a0,(dat_002_00004).l            ; 03764
+        bra.b   l_000_037E6                     ; 0376A
+l_000_0376C:
+        move.w  #$2,(dat_071_0011A).l           ; 0376C
+        lea.l   (dat_064_004E3).l,a0            ; 03774
+        move.l  a0,-$6(a6)                      ; 0377A
+        adda.w  #$a,a0                          ; 0377E
+        movea.l (dat_002_0296C).l,a1            ; 03782
+        adda.w  #$1e,a1                         ; 03788
+        clr.w   -$2(a6)                         ; 0378C
+        move.l  a0,-$6(a6)                      ; 03790
+        move.l  a1,-$a(a6)                      ; 03794
+l_000_03798:
+        cmpi.w  #$18,-$2(a6)                    ; 03798
+        bge.b   l_000_037C2                     ; 0379E
+        movea.l -$a(a6),a0                      ; 037A0
+        move.b  (a0),d0                         ; 037A4
+        tst.b   d0                              ; 037A6
+        beq.b   l_000_037C2                     ; 037A8
+        movea.l -$a(a6),a0                      ; 037AA
+        movea.l -$6(a6),a1                      ; 037AE
+        move.b  (a0),(a1)                       ; 037B2
+        addq.l  #$1,-$a(a6)                     ; 037B4
+        addq.l  #$1,-$6(a6)                     ; 037B8
+        addq.w  #$1,-$2(a6)                     ; 037BC
+        bra.b   l_000_03798                     ; 037C0
+l_000_037C2:
+        lea.l   h000+$3800(pc),a0               ; 037C2
+        move.l  a0,(dat_002_00004).l            ; 037C6
+        bra.b   l_000_037E6                     ; 037CC
+l_000_037CE:
+        jsr     (sub_036_00892).l               ; 037CE
+        bra.b   l_000_037E6                     ; 037D4
+l_000_037D6:
+        jsr     (sub_000_03462).l               ; 037D6
+        move.l  #sub_000_01D30,(dat_002_00004).l ; 037DC
+l_000_037E6:
+        unlk    a6                              ; 037E6
+        rts                                     ; 037E8
+        move.b  (dat_071_001B0).l,d0            ; 037EA
+        tst.b   d0                              ; 037F0
+        bpl.b   l_000_037FE                     ; 037F2
+        lea.l   h000+$381E(pc),a0               ; 037F4
+        move.l  a0,(dat_002_00004).l            ; 037F8
+l_000_037FE:
+        rts                                     ; 037FE
+        move.b  (dat_071_001B0).l,d0            ; 03800
+        tst.b   d0                              ; 03806
+        bmi.b   l_000_03812                     ; 03808
+        tst.b   (dat_071_00173).l               ; 0380A
+        beq.b   l_000_0381C                     ; 03810
+l_000_03812:
+        lea.l   h000+$381E(pc),a0               ; 03812
+        move.l  a0,(dat_002_00004).l            ; 03816
+l_000_0381C:
+        rts                                     ; 0381C
+        jsr     (sub_000_03462).l               ; 0381E
+        move.w  #$5,(dat_071_004A6).l           ; 03824
+        movea.l (dat_002_0296C).l,a0            ; 0382C
+        move.w  $4(a0),d0                       ; 03832
+        cmpi.w  #$0,d0                          ; 03836
+        bhi.b   l_000_03866                     ; 0383A
+        move.w  #$3,(dat_071_0011A).l           ; 0383C
+        clr.b   (dat_071_00193).l               ; 03844
+        move.b  #$2,(dat_071_001B0).l           ; 0384A
+        move.b  #$14,(dat_071_001C5).l          ; 03852
+        lea.l   h000+$3888(pc),a0               ; 0385A
+        move.l  a0,(dat_002_00004).l            ; 0385E
+        bra.b   l_000_03870                     ; 03864
+l_000_03866:
+        move.l  #sub_000_01D30,(dat_002_00004).l ; 03866
+l_000_03870:
+        movea.l (dat_002_0296C).l,a0            ; 03870
+        move.w  $4(a0),d0                       ; 03876
+        addq.w  #$1,d0                          ; 0387A
+        movea.l (dat_002_0296C).l,a0            ; 0387C
+        move.w  d0,$4(a0)                       ; 03882
+        rts                                     ; 03886
+        move.b  (dat_071_001B0).l,d0            ; 03888
+        tst.b   d0                              ; 0388E
+        bpl.b   l_000_038AA                     ; 03890
+        jsr     (sub_000_03462).l               ; 03892
+        move.w  #$5,(dat_071_004A6).l           ; 03898
+        move.l  #sub_000_01D30,(dat_002_00004).l ; 038A0
+l_000_038AA:
+        rts                                     ; 038AA
+        move.w  (dat_071_004A6).l,d0            ; 038AC
+        tst.w   d0                              ; 038B2
+        bpl.b   l_000_038C8                     ; 038B4
+        clr.w   (dat_071_002AA).l               ; 038B6
+        move.l  #sub_000_02EFE,(dat_002_00004).l ; 038BC
+        bra.b   l_000_038D6                     ; 038C6
+l_000_038C8:
+        move.b  #$1,(dat_071_00165).l           ; 038C8
+        jsr     (sub_000_03462).l               ; 038D0
+l_000_038D6:
+        rts                                     ; 038D6
 sub_000_038D8:
         move.b  (dat_071_00155).l,d0            ; 038D8
         tst.b   d0                              ; 038DE
@@ -3592,21 +4028,20 @@ sub_000_03A4C:
         andi.w  #$9fff,d0                       ; 03A66
         move.w  d0,(dat_071_0029C).l            ; 03A6A
         move.w  #$64,(dat_071_004A6).l          ; 03A70
-        lea.l   dat_000_03A84(pc),a0            ; 03A78
+        lea.l   sub_000_03A84(pc),a0            ; 03A78
         move.l  a0,(dat_002_00004).l            ; 03A7C
 l_000_03A82:
         rts                                     ; 03A82
-dat_000_03A84:
-	dc.b	$30,$39
-        dc.l    dat_071_004A6                   ; 03A86
-	dc.b	$4A,$40,$6A,$18,$70,$00,$13,$C0
-        dc.l    dat_071_001FA                   ; 03A92
-	dc.b	$13,$C0
-        dc.l    dat_071_00168                   ; 03A98
-	dc.b	$23,$FC
-        dc.l    sub_000_01A70                   ; 03A9E
-        dc.l    dat_002_00004                   ; 03AA2
-	dc.b	$4E,$75
+sub_000_03A84:
+        move.w  (dat_071_004A6).l,d0            ; 03A84
+        tst.w   d0                              ; 03A8A
+        bpl.b   l_000_03AA6                     ; 03A8C
+        moveq   #$0,d0                          ; 03A8E
+        move.b  d0,(dat_071_001FA).l            ; 03A90
+        move.b  d0,(dat_071_00168).l            ; 03A96
+        move.l  #sub_000_01A70,(dat_002_00004).l ; 03A9C
+l_000_03AA6:
+        rts                                     ; 03AA6
 sub_000_03AA8:
         move.b  (dat_071_001B0).l,d0            ; 03AA8
         tst.b   d0                              ; 03AAE
@@ -3617,7 +4052,7 @@ sub_000_03AA8:
         andi.w  #$9fff,d0                       ; 03AC2
         move.w  d0,(dat_071_0029C).l            ; 03AC6
         move.w  #$64,(dat_071_004A6).l          ; 03ACC
-        lea.l   dat_000_03B24(pc),a0            ; 03AD4
+        lea.l   sub_000_03B24(pc),a0            ; 03AD4
         move.l  a0,(dat_002_00004).l            ; 03AD8
         bra.b   l_000_03B22                     ; 03ADE
 l_000_03AE0:
@@ -3627,40 +4062,36 @@ l_000_03AE0:
         moveq   #$0,d0                          ; 03AEC
         move.b  d0,(dat_071_001FA).l            ; 03AEE
         move.b  d0,(dat_071_001FB).l            ; 03AF4
-        move.l  #sub_000_01A70,(dat_002_00004).l; 03AFA
+        move.l  #sub_000_01A70,(dat_002_00004).l ; 03AFA
         bra.b   l_000_03B22                     ; 03B04
 l_000_03B06:
         move.b  (dat_071_001FA).l,d0            ; 03B06
         subq.b  #$1,d0                          ; 03B0C
         bne.b   l_000_03B22                     ; 03B0E
         move.w  #$ffff,(dat_071_004A6).l        ; 03B10
-        lea.l   dat_000_03B24(pc),a0            ; 03B18
+        lea.l   sub_000_03B24(pc),a0            ; 03B18
         move.l  a0,(dat_002_00004).l            ; 03B1C
 l_000_03B22:
         rts                                     ; 03B22
-dat_000_03B24:
-	dc.b	$30,$39
-        dc.l    dat_071_004A6                   ; 03B26
-	dc.b	$4A,$40,$6A,$46,$70,$00,$13,$C0
-        dc.l    dat_071_001FA                   ; 03B32
-	dc.b	$13,$C0
-        dc.l    dat_071_00168                   ; 03B38
-	dc.b	$4A,$39
-        dc.l    dat_071_0027C                   ; 03B3E
-	dc.b	$67,$08,$13,$FC,$00,$01
-        dc.l    dat_071_001FB                   ; 03B48
-	dc.b	$13,$FC,$00,$01
-        dc.l    dat_071_0017E                   ; 03B50
-	dc.b	$33,$FC,$00,$03
-        dc.l    dat_071_004A6                   ; 03B58
-	dc.b	$70,$00,$13,$C0
-        dc.l    dat_071_00165                   ; 03B60
-	dc.b	$13,$C0
-        dc.l    dat_071_00271                   ; 03B66
-	dc.b	$23,$FC
-        dc.l    sub_000_01A96                   ; 03B6C
-        dc.l    dat_002_00004                   ; 03B70
-	dc.b	$4E,$75
+sub_000_03B24:
+        move.w  (dat_071_004A6).l,d0            ; 03B24
+        tst.w   d0                              ; 03B2A
+        bpl.b   l_000_03B74                     ; 03B2C
+        moveq   #$0,d0                          ; 03B2E
+        move.b  d0,(dat_071_001FA).l            ; 03B30
+        move.b  d0,(dat_071_00168).l            ; 03B36
+        tst.b   (dat_071_0027C).l               ; 03B3C
+        beq.b   l_000_03B4C                     ; 03B42
+        move.b  #$1,(dat_071_001FB).l           ; 03B44
+l_000_03B4C:
+        move.b  #$1,(dat_071_0017E).l           ; 03B4C
+        move.w  #$3,(dat_071_004A6).l           ; 03B54
+        moveq   #$0,d0                          ; 03B5C
+        move.b  d0,(dat_071_00165).l            ; 03B5E
+        move.b  d0,(dat_071_00271).l            ; 03B64
+        move.l  #sub_000_01A96,(dat_002_00004).l ; 03B6A
+l_000_03B74:
+        rts                                     ; 03B74
 sub_000_03B76:
         clr.b   (dat_071_00165).l               ; 03B76
         move.b  (dat_071_00270).l,d0            ; 03B7C
@@ -3668,46 +4099,38 @@ sub_000_03B76:
         cmp.b   d1,d0                           ; 03B88
         bne.b   l_000_03B9E                     ; 03B8A
         move.w  #$26,(dat_071_0011A).l          ; 03B8C
-        lea.l   dat_000_03BA0(pc),a0            ; 03B94
+        lea.l   sub_000_03BA0(pc),a0            ; 03B94
         move.l  a0,(dat_002_00004).l            ; 03B98
 l_000_03B9E:
         rts                                     ; 03B9E
-dat_000_03BA0:
-	dc.b	$10,$39
-        dc.l    dat_071_0017E                   ; 03BA2
-	dc.b	$4A,$00,$6B,$70,$13,$FC,$00,$01
-        dc.l    dat_071_00165                   ; 03BAE
-	dc.b	$4E,$B9
-        dc.l    sub_000_03462                   ; 03BB4
-	dc.b	$13,$FC,$00,$0F
-        dc.l    dat_071_00271                   ; 03BBC
-	dc.b	$10,$39
-        dc.l    dat_071_0027E                   ; 03BC2
-	dc.b	$5D,$00,$66,$0C,$23,$FC
-        dc.l    sub_000_02D58                   ; 03BCC
-        dc.l    dat_002_00004                   ; 03BD0
-	dc.b	$60,$44,$4E,$B9
-        dc.l    sub_000_08E54                   ; 03BD8
-	dc.b	$20,$39
-        dc.l    dat_071_002D4                   ; 03BDE
-	dc.b	$22,$39
-        dc.l    dat_071_004C2                   ; 03BE4
-	dc.b	$92,$80,$23,$C1
-        dc.l    dat_071_002D4                   ; 03BEC
-	dc.b	$D3,$B9
-        dc.l    dat_071_002D8                   ; 03BF2
-	dc.b	$4A,$B9
-        dc.l    dat_071_002DC                   ; 03BF8
-	dc.b	$67,$0C,$20,$39
-        dc.l    dat_071_002D4                   ; 03C00
-	dc.b	$D1,$B9
-        dc.l    dat_071_002DC                   ; 03C06
-	dc.b	$42,$B9
-        dc.l    dat_071_002D4                   ; 03C0C
-	dc.b	$23,$FC
-        dc.l    sub_000_02EFE                   ; 03C12
-        dc.l    dat_002_00004                   ; 03C16
-	dc.b	$4E,$75
+sub_000_03BA0:
+        move.b  (dat_071_0017E).l,d0            ; 03BA0
+        tst.b   d0                              ; 03BA6
+        bmi.b   l_000_03C1A                     ; 03BA8
+        move.b  #$1,(dat_071_00165).l           ; 03BAA
+        jsr     (sub_000_03462).l               ; 03BB2
+        move.b  #$f,(dat_071_00271).l           ; 03BB8
+        move.b  (dat_071_0027E).l,d0            ; 03BC0
+        subq.b  #$6,d0                          ; 03BC6
+        bne.b   l_000_03BD6                     ; 03BC8
+        move.l  #sub_000_02D58,(dat_002_00004).l ; 03BCA
+        bra.b   l_000_03C1A                     ; 03BD4
+l_000_03BD6:
+        jsr     (ReadTime).l                    ; 03BD6
+        move.l  (dat_071_002D4).l,d0            ; 03BDC
+        move.l  (dat_071_004C2).l,d1            ; 03BE2
+        sub.l   d0,d1                           ; 03BE8
+        move.l  d1,(dat_071_002D4).l            ; 03BEA
+        add.l   d1,(dat_071_002D8).l            ; 03BF0
+        tst.l   (dat_071_002DC).l               ; 03BF6
+        beq.b   l_000_03C0A                     ; 03BFC
+        move.l  (dat_071_002D4).l,d0            ; 03BFE
+        add.l   d0,(dat_071_002DC).l            ; 03C04
+l_000_03C0A:
+        clr.l   (dat_071_002D4).l               ; 03C0A
+        move.l  #sub_000_02EFE,(dat_002_00004).l ; 03C10
+l_000_03C1A:
+        rts                                     ; 03C1A
 sub_000_03C1C:
         link.w  a6,#$fff6                       ; 03C1C
         move.l  $8(a6),-$6(a6)                  ; 03C20
@@ -3956,10 +4379,10 @@ l_000_03F8C:
         move.w  (dat_071_002A6).l,d0            ; 03FB2
         btst    #$5,d0                          ; 03FB8
         bne.b   l_000_03FCA                     ; 03FBC
-        move.b  (dat_071_00263).l,(dat_071_00262).l; 03FBE
+        move.b  (dat_071_00263).l,(dat_071_00262).l ; 03FBE
         bra.b   l_000_03FD4                     ; 03FC8
 l_000_03FCA:
-        move.b  (dat_071_00544).l,(dat_071_00262).l; 03FCA
+        move.b  (dat_071_00544).l,(dat_071_00262).l ; 03FCA
 l_000_03FD4:
         move.w  (dat_071_004B0).l,d0            ; 03FD4
         btst    #$c,d0                          ; 03FDA
@@ -4001,7 +4424,7 @@ l_000_04060:
         move.w  (dat_071_0029E).l,d0            ; 04060
         ori.w   #$20,d0                         ; 04066
         move.w  d0,(dat_071_0029E).l            ; 0406A
-        move.w  (dat_071_004B0).l,(dat_071_004AE).l; 04070
+        move.w  (dat_071_004B0).l,(dat_071_004AE).l ; 04070
         tst.b   (dat_071_00233).l               ; 0407A
         beq.b   l_000_0408A                     ; 04080
         bset    #$2,(dat_071_00527).l           ; 04082
@@ -4041,12 +4464,12 @@ l_000_040F8:
         move.w  (dat_071_002A6).l,d0            ; 04122
         btst    #$5,d0                          ; 04128
         bne.b   l_000_0413A                     ; 0412C
-        move.b  (dat_071_00263).l,(dat_071_00262).l; 0412E
+        move.b  (dat_071_00263).l,(dat_071_00262).l ; 0412E
         bra.b   l_000_04144                     ; 04138
 l_000_0413A:
-        move.b  (dat_071_00544).l,(dat_071_00262).l; 0413A
+        move.b  (dat_071_00544).l,(dat_071_00262).l ; 0413A
 l_000_04144:
-        move.w  (dat_071_004B0).l,(dat_071_004AE).l; 04144
+        move.w  (dat_071_004B0).l,(dat_071_004AE).l ; 04144
 l_000_0414E:
         move.b  (dat_071_0025E).l,d0            ; 0414E
         btst    #$1,d0                          ; 04154
@@ -4070,7 +4493,7 @@ l_000_0414E:
         move.w  d0,(dat_071_0029C).l            ; 041A4
         bra.b   l_000_041B6                     ; 041AA
 l_000_041AC:
-        move.w  (dat_071_004B0).l,(dat_071_004AE).l; 041AC
+        move.w  (dat_071_004B0).l,(dat_071_004AE).l ; 041AC
 l_000_041B6:
         move.b  (dat_071_00232).l,d0            ; 041B6
         andi.b  #$c0,d0                         ; 041BC
@@ -4118,12 +4541,12 @@ l_000_04206:
         move.b  #$1,(dat_071_00205).l           ; 04262
         bra.b   l_000_0427E                     ; 0426A
 l_000_0426C:
-        move.b  (dat_071_00203).l,(dat_071_00155).l; 0426C
+        move.b  (dat_071_00203).l,(dat_071_00155).l ; 0426C
         move.w  #$32,(dat_071_00356).l          ; 04276
 l_000_0427E:
         moveq   #$3,d0                          ; 0427E
         move.l  d0,-(a7)                        ; 04280
-        jsr     (sub_000_09C58).l               ; 04282
+        jsr     (StopSound).l                   ; 04282
         addq.l  #$4,a7                          ; 04288
         cmpi.b  #$30,-$1(a6)                    ; 0428A
         bne.b   l_000_0429A                     ; 04290

@@ -5,7 +5,13 @@
 ; Hunk 167: CODE, $26C bytes
 ;===============================================================================
 	CODE_HUNK	h167
-sub_167_00000:
+
+;-------------------------------------------------------------------------------
+; __main - Lattice C __main(cmdline): splits the command line into argc/argv (quotes allowed:
+; "Error: non-terminated quoted string"), sets up stdin, stdout and stderr (the CLI's
+; Input()/Output(), or a con: window), and calls main(argc, argv), then exit().
+;-------------------------------------------------------------------------------
+__main:
         link.w  a6,#$fffa                       ; 00000
 l_167_00004:
         cmpi.l  #$20,(dat_169_00000).l          ; 00004
@@ -17,7 +23,7 @@ l_167_00012:
         ext.l   d0                              ; 0001A
         addq.l  #$1,d0                          ; 0001C
         movea.l d0,a1                           ; 0001E
-        adda.l  #dat_091_00000,a1               ; 00020
+        adda.l  #_ctype,a1                      ; 00020
         move.b  (a1),d0                         ; 00026
         btst    #$3,d0                          ; 00028
         beq.b   l_167_00034                     ; 0002C
@@ -56,11 +62,11 @@ l_167_00080:
         bne.b   l_167_000AE                     ; 00088
         pea.l   (dat_168_00028).l               ; 0008A
         pea.l   (dat_143_00030).l               ; 00090
-        jsr     (sub_108_00000).l               ; 00096
+        jsr     (fprintf).l                     ; 00096
         addq.l  #$8,a7                          ; 0009C
         moveq   #$1,d0                          ; 0009E
         move.l  d0,-(a7)                        ; 000A0
-        jsr     (sub_096_00000).l               ; 000A2
+        jsr     (exit).l                        ; 000A2
         addq.l  #$4,a7                          ; 000A8
         bra.w   l_167_00004                     ; 000AA
 l_167_000AE:
@@ -84,7 +90,7 @@ l_167_000D6:
         beq.b   l_167_000FC                     ; 000E2
         addq.l  #$1,d0                          ; 000E4
         movea.l d0,a1                           ; 000E6
-        adda.l  #dat_091_00000,a1               ; 000E8
+        adda.l  #_ctype,a1                      ; 000E8
         move.b  (a1),d0                         ; 000EE
         btst    #$3,d0                          ; 000F0
         bne.b   l_167_000FC                     ; 000F4
@@ -112,16 +118,16 @@ l_167_00116:
         move.b  d0,(dat_143_00040).l            ; 00138
         tst.l   (dat_169_00000).l               ; 0013E
         bne.w   l_167_001CA                     ; 00144
-        movea.l (dat_001_00038).l,a1            ; 00148
+        movea.l (_WBenchMsg).l,a1               ; 00148
         movea.l $24(a1),a0                      ; 0014E
         moveq   #$28,d0                         ; 00152
         move.l  d0,-(a7)                        ; 00154
         move.l  $4(a0),-(a7)                    ; 00156
-        pea.l   (dat_168_00000).l               ; 0015A
-        jsr     (sub_129_0003A).l               ; 00160
+        pea.l   (s_ConsoleWindow).l             ; 0015A
+        jsr     (strncat).l                     ; 00160
         lea.l   $c(a7),a7                       ; 00166
         move.l  #$3ee,-(a7)                     ; 0016A
-        pea.l   (dat_168_00000).l               ; 00170
+        pea.l   (s_ConsoleWindow).l             ; 00170
         jsr     (_Open).l                       ; 00176
         addq.l  #$8,a7                          ; 0017C
         move.l  d0,(dat_137_00002).l            ; 0017E
@@ -156,11 +162,11 @@ l_167_001CA:
 l_167_00202:
         move.l  -$6(a6),d0                      ; 00202
         ori.l   #$c0,d0                         ; 00206
-        move.b  (dat_137_00000).l,d1            ; 0020C
+        move.b  (_ufbs).l,d1                    ; 0020C
         ext.w   d1                              ; 00212
         ext.l   d1                              ; 00214
         or.l    d0,d1                           ; 00216
-        move.b  d1,(dat_137_00000).l            ; 00218
+        move.b  d1,(_ufbs).l                    ; 00218
         move.l  -$6(a6),d0                      ; 0021E
         ori.l   #$a0,d0                         ; 00222
         move.b  (dat_137_00006).l,d1            ; 00228
@@ -173,10 +179,10 @@ l_167_00202:
         move.b  d0,(dat_137_0000C).l            ; 00244
         pea.l   (dat_169_00004).l               ; 0024A
         move.l  (dat_169_00000).l,-(a7)         ; 00250
-        jsr     (sub_000_003CE).l               ; 00256
+        jsr     (main).l                        ; 00256
         addq.l  #$8,a7                          ; 0025C
         clr.l   -(a7)                           ; 0025E
-        jsr     (sub_096_00000).l               ; 00260
+        jsr     (exit).l                        ; 00260
         addq.l  #$4,a7                          ; 00266
         unlk    a6                              ; 00268
         rts                                     ; 0026A

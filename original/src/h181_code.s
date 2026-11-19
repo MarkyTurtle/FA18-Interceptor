@@ -10,7 +10,7 @@ _LoadRGB4:
         movem.l $8(a7),a0-a1                    ; 00002
         move.l  $10(a7),d0                      ; 00008
         movea.l (dat_002_000C2).l,a6            ; 0000C
-        jsr     -$c0(a6)                        ; 00012
+        jsr     _LVOLoadRGB4(a6)                ; 00012
         movea.l (a7)+,a6                        ; 00016
         rts                                     ; 00018
 	dc.b	$00,$00
@@ -18,28 +18,28 @@ _InitRastPort:
         move.l  a6,-(a7)                        ; 0001C
         movea.l $8(a7),a1                       ; 0001E
         movea.l (dat_002_000C2).l,a6            ; 00022
-        jsr     -$c6(a6)                        ; 00028
+        jsr     _LVOInitRastPort(a6)            ; 00028
         movea.l (a7)+,a6                        ; 0002C
         rts                                     ; 0002E
 _InitVPort:
         move.l  a6,-(a7)                        ; 00030
         movea.l $8(a7),a0                       ; 00032
         movea.l (dat_002_000C2).l,a6            ; 00036
-        jsr     -$cc(a6)                        ; 0003C
+        jsr     _LVOInitVPort(a6)               ; 0003C
         movea.l (a7)+,a6                        ; 00040
         rts                                     ; 00042
 _MrgCop:
         move.l  a6,-(a7)                        ; 00044
         movea.l $8(a7),a1                       ; 00046
         movea.l (dat_002_000C2).l,a6            ; 0004A
-        jsr     -$d2(a6)                        ; 00050
+        jsr     _LVOMrgCop(a6)                  ; 00050
         movea.l (a7)+,a6                        ; 00054
         rts                                     ; 00056
 _MakeVPort:
         move.l  a6,-(a7)                        ; 00058
         movem.l $8(a7),a0-a1                    ; 0005A
         movea.l (dat_002_000C2).l,a6            ; 00060
-        jsr     -$d8(a6)                        ; 00066
+        jsr     _LVOMakeVPort(a6)               ; 00066
         movea.l (a7)+,a6                        ; 0006A
         rts                                     ; 0006C
 	dc.b	$00,$00
@@ -47,20 +47,20 @@ _LoadView:
         move.l  a6,-(a7)                        ; 00070
         movea.l $8(a7),a1                       ; 00072
         movea.l (dat_002_000C2).l,a6            ; 00076
-        jsr     -$de(a6)                        ; 0007C
+        jsr     _LVOLoadView(a6)                ; 0007C
         movea.l (a7)+,a6                        ; 00080
         rts                                     ; 00082
 _WaitBlit:
         move.l  a6,-(a7)                        ; 00084
         movea.l (dat_002_000C2).l,a6            ; 00086
-        jsr     -$e4(a6)                        ; 0008C
+        jsr     _LVOWaitBlit(a6)                ; 0008C
         movea.l (a7)+,a6                        ; 00090
         rts                                     ; 00092
 _InitView:
         move.l  a6,-(a7)                        ; 00094
         movea.l $8(a7),a1                       ; 00096
         movea.l (dat_002_000C2).l,a6            ; 0009A
-        jsr     -$168(a6)                       ; 000A0
+        jsr     _LVOInitView(a6)                ; 000A0
         movea.l (a7)+,a6                        ; 000A4
         rts                                     ; 000A6
 _InitBitMap:
@@ -68,7 +68,7 @@ _InitBitMap:
         movea.l $c(a7),a0                       ; 000AC
         movem.l $10(a7),d0-d2                   ; 000B0
         movea.l (dat_002_000C2).l,a6            ; 000B6
-        jsr     -$186(a6)                       ; 000BC
+        jsr     _LVOInitBitMap(a6)              ; 000BC
         movem.l (a7)+,d2/a6                     ; 000C0
         rts                                     ; 000C4
 	dc.b	$00,$00
@@ -76,26 +76,26 @@ _WaitBOVP:
         move.l  a6,-(a7)                        ; 000C8
         movea.l $8(a7),a0                       ; 000CA
         movea.l (dat_002_000C2).l,a6            ; 000CE
-        jsr     -$192(a6)                       ; 000D4
+        jsr     _LVOWaitBOVP(a6)                ; 000D4
         movea.l (a7)+,a6                        ; 000D8
         rts                                     ; 000DA
 _FreeSprite:
         move.l  a6,-(a7)                        ; 000DC
         move.l  $8(a7),d0                       ; 000DE
         movea.l (dat_002_000C2).l,a6            ; 000E2
-        jsr     -$19e(a6)                       ; 000E8
+        jsr     _LVOFreeSprite(a6)              ; 000E8
         movea.l (a7)+,a6                        ; 000EC
         rts                                     ; 000EE
 _OwnBlitter:
         move.l  a6,-(a7)                        ; 000F0
         movea.l (dat_002_000C2).l,a6            ; 000F2
-        jsr     -$1c8(a6)                       ; 000F8
+        jsr     _LVOOwnBlitter(a6)              ; 000F8
         movea.l (a7)+,a6                        ; 000FC
         rts                                     ; 000FE
 _DisownBlitter:
         move.l  a6,-(a7)                        ; 00100
         movea.l (dat_002_000C2).l,a6            ; 00102
-        jsr     -$1ce(a6)                       ; 00108
+        jsr     _LVODisownBlitter(a6)           ; 00108
         movea.l (a7)+,a6                        ; 0010C
         rts                                     ; 0010E
 _FreeRaster:
@@ -103,7 +103,7 @@ _FreeRaster:
         movea.l $8(a7),a0                       ; 00112
         movem.l $c(a7),d0-d1                    ; 00116
         movea.l (dat_002_000C2).l,a6            ; 0011C
-        jsr     -$1f2(a6)                       ; 00122
+        jsr     _LVOFreeRaster(a6)              ; 00122
         movea.l (a7)+,a6                        ; 00126
         rts                                     ; 00128
 	dc.b	$00,$00
@@ -111,7 +111,7 @@ _GetColorMap:
         move.l  a6,-(a7)                        ; 0012C
         move.l  $8(a7),d0                       ; 0012E
         movea.l (dat_002_000C2).l,a6            ; 00132
-        jsr     -$23a(a6)                       ; 00138
+        jsr     _LVOGetColorMap(a6)             ; 00138
         movea.l (a7)+,a6                        ; 0013C
         rts                                     ; 0013E
 h181_end:

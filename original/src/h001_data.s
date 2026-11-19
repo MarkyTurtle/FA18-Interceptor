@@ -6,7 +6,8 @@
 ;===============================================================================
 	DATA_HUNK	h001
 	dc.b	$00,$00,$00,$00
-dat_001_00004:
+; _StackSize - The stack size.
+_StackSize:
 	dc.b	$00,$00,$00,$00
 dat_001_00008:
 	dc.b	$00,$00,$00,$00
@@ -14,53 +15,66 @@ dat_001_0000C:
 	dc.b	$00,$00,$00,$00
 dat_001_00010:
 	dc.b	$00,$00,$00,$00
-dat_001_00014:
+; _MSTEP - How much the heap grows by when malloc runs out.
+_MSTEP:
 	dc.b	$00,$00,$04
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_001_0001C:
+; _OSERR - The last AmigaDOS error (IoErr).
+_OSERR:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_001_00020:
+; _FPERR - The last floating-point error (SetFPErr).
+_FPERR:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_001_00024:
+; _StartDir - The process's current directory at startup (pr_CurrentDir).
+_StartDir:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_001_00028:
+; _ConsoleHandle - The console window opened by OpenConsole.
+_ConsoleHandle:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_001_0002C:
+; _SysBase - ExecBase.
+_SysBase:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_001_00030:
+; _DOSBase - dos.library.
+_DOSBase:
 	dc.b	$00,$00,$00,$00,$00,$00,$00,$00
-dat_001_00038:
+; _WBenchMsg - The Workbench startup message (0 when started from the CLI).
+_WBenchMsg:
 	dc.b	$00,$00,$00,$00
-dat_001_0003C:
+; __savsp - The stack pointer at _start (XCEXIT returns through it).
+__savsp:
 	dc.b	$00,$00,$00,$00
-dat_001_00040:
+; _ArgLen - The command line's length (d0 at _start).
+_ArgLen:
 	dc.b	$00,$00,$00,$00
-dat_001_00044:
+; _ArgPtr - The command line (a0 at _start).
+_ArgPtr:
 	dc.b	$00,$00,$00,$00
-dat_001_00048:
+; _WBConsole - From Workbench: the tool window's file handle, if the icon gives one.
+_WBConsole:
 	dc.b	$00,$00,$00,$00
-dat_001_0004C:
+; _ProgramName - The program's name (from the CLI structure).
+_ProgramName:
 	dc.b	$00,$00,$00,$00
-dat_001_00050:
+s_dos_library:
 	dc.b	'dos.library'
 	dc.b	$00
 dat_001_0005C:

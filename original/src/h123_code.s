@@ -5,7 +5,13 @@
 ; Hunk 123: CODE, $16C bytes
 ;===============================================================================
 	CODE_HUNK	h123
-sub_123_00000:
+
+;-------------------------------------------------------------------------------
+; AllocMemTracked - Lattice getmem: AllocMem(size+12) and links the block into a list
+; (dat_125_00000) so XCEXIT can free everything; returns the memory after the 12-byte header
+; (next, prev, size).
+;-------------------------------------------------------------------------------
+AllocMemTracked:
         link.w  a6,#$fffc                       ; 00000
         move.l  $8(a6),d0                       ; 00004
         addi.l  #$c,d0                          ; 00008
@@ -28,18 +34,22 @@ l_123_00028:
         addi.l  #$c,d0                          ; 00038
         move.l  d0,$8(a0)                       ; 0003E
         move.l  -$4(a6),-(a7)                   ; 00042
-        pea.l   (dat_125_00000).l               ; 00046
-        bsr.w   sub_123_000E8                   ; 0004C
+        pea.l   (_MemList).l                    ; 00046
+        bsr.w   ListAddTail                     ; 0004C
         addq.l  #$8,a7                          ; 00050
         movea.l -$4(a6),a0                      ; 00052
         adda.w  #$c,a0                          ; 00056
         move.l  a0,d0                           ; 0005A
         unlk    a6                              ; 0005C
         rts                                     ; 0005E
-sub_123_00060:
+
+;-------------------------------------------------------------------------------
+; sbrk - sbrk(size): AllocMemTracked(size), or -1.
+;-------------------------------------------------------------------------------
+sbrk:
         link.w  a6,#$fffc                       ; 00060
         move.l  $8(a6),-(a7)                    ; 00064
-        bsr.b   sub_123_00000                   ; 00068
+        bsr.b   AllocMemTracked                 ; 00068
         addq.l  #$4,a7                          ; 0006A
         move.l  d0,-$4(a6)                      ; 0006C
         tst.l   d0                              ; 00070
@@ -51,8 +61,12 @@ l_123_00078:
         move.l  a0,d0                           ; 0007E
         unlk    a6                              ; 00080
         rts                                     ; 00082
-sub_123_00084:
-        bsr.b   sub_123_000B4                   ; 00084
+
+;-------------------------------------------------------------------------------
+; rbrk - Frees every tracked block and clears the heap's variables.
+;-------------------------------------------------------------------------------
+rbrk:
+        bsr.b   FreeAllTracked                  ; 00084
         moveq   #$0,d0                          ; 00086
         move.l  d0,(dat_001_00010).l            ; 00088
         move.l  d0,(dat_001_00008).l            ; 0008E
@@ -62,9 +76,13 @@ sub_123_00084:
         move.l  d0,(dat_148_0000C).l            ; 000A6
         move.l  d0,(dat_148_00004).l            ; 000AC
         rts                                     ; 000B2
-sub_123_000B4:
+
+;-------------------------------------------------------------------------------
+; FreeAllTracked - FreeMem every block in the tracked list.
+;-------------------------------------------------------------------------------
+FreeAllTracked:
         link.w  a6,#$fff8                       ; 000B4
-        move.l  (dat_125_00000).l,-$4(a6)       ; 000B8
+        move.l  (_MemList).l,-$4(a6)            ; 000B8
 l_123_000C0:
         tst.l   -$4(a6)                         ; 000C0
         beq.b   l_123_000E4                     ; 000C4
@@ -79,7 +97,11 @@ l_123_000C0:
 l_123_000E4:
         unlk    a6                              ; 000E4
         rts                                     ; 000E6
-sub_123_000E8:
+
+;-------------------------------------------------------------------------------
+; ListAddTail - Adds a node to the end of a (head, tail) list.
+;-------------------------------------------------------------------------------
+ListAddTail:
         link.w  a6,#$0                          ; 000E8
         movea.l $8(a6),a1                       ; 000EC
         movea.l $4(a1),a0                       ; 000F0
@@ -102,7 +124,11 @@ l_123_00110:
 l_123_00122:
         unlk    a6                              ; 00122
         rts                                     ; 00124
-sub_123_00126:
+
+;-------------------------------------------------------------------------------
+; ListRemove - Removes a node from a (head, tail) list.
+;-------------------------------------------------------------------------------
+ListRemove:
         link.w  a6,#$0                          ; 00126
         movea.l $c(a6),a0                       ; 0012A
         tst.l   (a0)                            ; 0012E

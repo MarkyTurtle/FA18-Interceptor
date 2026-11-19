@@ -5,77 +5,129 @@
 ; Hunk 83: CODE, $2DC bytes
 ;===============================================================================
 	CODE_HUNK	h083
-	dc.b	$4E,$56,$FF,$F0,$42,$AE,$FF,$F8,$42,$AE,$FF,$FC,$20,$2E,$00,$0C
-	dc.b	$72,$04,$4E,$B9
-        dc.l    sub_152_00000                   ; 00014
-	dc.b	$22,$2E,$FF,$FC,$B2,$80,$6C,$7C,$20,$2E,$FF,$F8,$4E,$B9
-        dc.l    sub_162_00000                   ; 00026
-	dc.b	$20,$6E,$00,$08,$10,$80,$52,$AE,$00,$08,$20,$2E,$00,$0C,$72,$04
-	dc.b	$4E,$B9
-        dc.l    sub_152_00000                   ; 0003C
-	dc.b	$4E,$B9
-        dc.l    sub_160_00000                   ; 00042
-	dc.b	$4E,$B9
-        dc.l    sub_164_00000                   ; 00048
-	dc.b	$2F,$40,$00,$00,$20,$3C,$40,$5F,$80,$00,$2F,$41,$00,$04,$72,$00
-	dc.b	$24,$2F,$00,$00,$26,$2F,$00,$04,$4E,$B9
-        dc.l    sub_153_00000                   ; 00066
-	dc.b	$2F,$40,$00,$00,$20,$2E,$FF,$F8,$2F,$41,$00,$04,$4E,$B9
-        dc.l    sub_164_00000                   ; 00078
-	dc.b	$24,$2F,$00,$00,$26,$2F,$00,$04,$4E,$B9
-        dc.l    sub_151_00000                   ; 00086
-	dc.b	$4E,$B9
-        dc.l    sub_165_00000                   ; 0008C
-	dc.b	$2D,$40,$FF,$F8,$52,$AE,$FF,$FC,$60,$00,$FF,$72,$42,$AE,$FF,$FC
-	dc.b	$20,$2E,$00,$0C,$72,$02,$4E,$B9
-        dc.l    sub_152_00000                   ; 000A8
-	dc.b	$22,$2E,$FF,$FC,$B2,$80,$6C,$7C,$20,$2E,$FF,$F8,$4E,$B9
-        dc.l    sub_162_00000                   ; 000BA
-	dc.b	$20,$6E,$00,$08,$10,$80,$52,$AE,$00,$08,$20,$2E,$00,$0C,$72,$04
-	dc.b	$4E,$B9
-        dc.l    sub_152_00000                   ; 000D0
-	dc.b	$4E,$B9
-        dc.l    sub_160_00000                   ; 000D6
-	dc.b	$4E,$B9
-        dc.l    sub_164_00000                   ; 000DC
-	dc.b	$2F,$40,$00,$00,$20,$3C,$40,$5F,$80,$00,$2F,$41,$00,$04,$72,$00
-	dc.b	$24,$2F,$00,$00,$26,$2F,$00,$04,$4E,$B9
-        dc.l    sub_153_00000                   ; 000FA
-	dc.b	$2F,$40,$00,$00,$20,$2E,$FF,$F8,$2F,$41,$00,$04,$4E,$B9
-        dc.l    sub_164_00000                   ; 0010C
-	dc.b	$24,$2F,$00,$00,$26,$2F,$00,$04,$4E,$B9
-        dc.l    sub_151_00008                   ; 0011A
-	dc.b	$4E,$B9
-        dc.l    sub_165_00000                   ; 00120
-	dc.b	$2D,$40,$FF,$F8,$52,$AE,$FF,$FC,$60,$00,$FF,$72,$42,$AE,$FF,$FC
-	dc.b	$20,$2E,$00,$0C,$72,$04,$4E,$B9
-        dc.l    sub_152_00000                   ; 0013C
-	dc.b	$22,$2E,$FF,$FC,$B2,$80,$6C,$7C,$20,$2E,$FF,$F8,$4E,$B9
-        dc.l    sub_162_00000                   ; 0014E
-	dc.b	$20,$6E,$00,$08,$10,$80,$52,$AE,$00,$08,$20,$2E,$00,$0C,$72,$04
-	dc.b	$4E,$B9
-        dc.l    sub_152_00000                   ; 00164
-	dc.b	$4E,$B9
-        dc.l    sub_160_00000                   ; 0016A
-	dc.b	$4E,$B9
-        dc.l    sub_164_00000                   ; 00170
-	dc.b	$2F,$40,$00,$00,$20,$3C,$40,$5F,$80,$00,$2F,$41,$00,$04,$72,$00
-	dc.b	$24,$2F,$00,$00,$26,$2F,$00,$04,$4E,$B9
-        dc.l    sub_153_00000                   ; 0018E
-	dc.b	$2F,$40,$00,$00,$20,$2E,$FF,$F8,$2F,$41,$00,$04,$4E,$B9
-        dc.l    sub_164_00000                   ; 001A0
-	dc.b	$24,$2F,$00,$00,$26,$2F,$00,$04,$4E,$B9
-        dc.l    sub_151_00000                   ; 001AE
-	dc.b	$4E,$B9
-        dc.l    sub_165_00000                   ; 001B4
-	dc.b	$2D,$40,$FF,$F8,$52,$AE,$FF,$FC,$60,$00,$FF,$72,$4E,$5E,$4E,$75
+sub_083_00000:
+        link.w  a6,#$fff0                       ; 00000
+        clr.l   -$8(a6)                         ; 00004
+        clr.l   -$4(a6)                         ; 00008
+l_083_0000C:
+        move.l  $c(a6),d0                       ; 0000C
+        moveq   #$4,d1                          ; 00010
+        jsr     (CXD33).l                       ; 00012
+        move.l  -$4(a6),d1                      ; 00018
+        cmp.l   d0,d1                           ; 0001C
+        bge.b   l_083_0009C                     ; 0001E
+        move.l  -$8(a6),d0                      ; 00020
+        jsr     (fp_SingleToLong).l             ; 00024
+        movea.l $8(a6),a0                       ; 0002A
+        move.b  d0,(a0)                         ; 0002E
+        addq.l  #$1,$8(a6)                      ; 00030
+        move.l  $c(a6),d0                       ; 00034
+        moveq   #$4,d1                          ; 00038
+        jsr     (CXD33).l                       ; 0003A
+        jsr     (fp_LongToSingle).l             ; 00040
+        jsr     (fp_SingleToDouble).l           ; 00046
+        move.l  d0,$0(a7)                       ; 0004C
+        move.l  #$405f8000,d0                   ; 00050
+        move.l  d1,$4(a7)                       ; 00056
+        moveq   #$0,d1                          ; 0005A
+        move.l  $0(a7),d2                       ; 0005C
+        move.l  $4(a7),d3                       ; 00060
+        jsr     (fp_DoubleDiv).l                ; 00064
+        move.l  d0,$0(a7)                       ; 0006A
+        move.l  -$8(a6),d0                      ; 0006E
+        move.l  d1,$4(a7)                       ; 00072
+        jsr     (fp_SingleToDouble).l           ; 00076
+        move.l  $0(a7),d2                       ; 0007C
+        move.l  $4(a7),d3                       ; 00080
+        jsr     (fp_DoubleSub).l                ; 00084
+        jsr     (fp_DoubleToSingle).l           ; 0008A
+        move.l  d0,-$8(a6)                      ; 00090
+        addq.l  #$1,-$4(a6)                     ; 00094
+        bra.w   l_083_0000C                     ; 00098
+l_083_0009C:
+        clr.l   -$4(a6)                         ; 0009C
+l_083_000A0:
+        move.l  $c(a6),d0                       ; 000A0
+        moveq   #$2,d1                          ; 000A4
+        jsr     (CXD33).l                       ; 000A6
+        move.l  -$4(a6),d1                      ; 000AC
+        cmp.l   d0,d1                           ; 000B0
+        bge.b   l_083_00130                     ; 000B2
+        move.l  -$8(a6),d0                      ; 000B4
+        jsr     (fp_SingleToLong).l             ; 000B8
+        movea.l $8(a6),a0                       ; 000BE
+        move.b  d0,(a0)                         ; 000C2
+        addq.l  #$1,$8(a6)                      ; 000C4
+        move.l  $c(a6),d0                       ; 000C8
+        moveq   #$4,d1                          ; 000CC
+        jsr     (CXD33).l                       ; 000CE
+        jsr     (fp_LongToSingle).l             ; 000D4
+        jsr     (fp_SingleToDouble).l           ; 000DA
+        move.l  d0,$0(a7)                       ; 000E0
+        move.l  #$405f8000,d0                   ; 000E4
+        move.l  d1,$4(a7)                       ; 000EA
+        moveq   #$0,d1                          ; 000EE
+        move.l  $0(a7),d2                       ; 000F0
+        move.l  $4(a7),d3                       ; 000F4
+        jsr     (fp_DoubleDiv).l                ; 000F8
+        move.l  d0,$0(a7)                       ; 000FE
+        move.l  -$8(a6),d0                      ; 00102
+        move.l  d1,$4(a7)                       ; 00106
+        jsr     (fp_SingleToDouble).l           ; 0010A
+        move.l  $0(a7),d2                       ; 00110
+        move.l  $4(a7),d3                       ; 00114
+        jsr     (fp_DoubleAdd).l                ; 00118
+        jsr     (fp_DoubleToSingle).l           ; 0011E
+        move.l  d0,-$8(a6)                      ; 00124
+        addq.l  #$1,-$4(a6)                     ; 00128
+        bra.w   l_083_000A0                     ; 0012C
+l_083_00130:
+        clr.l   -$4(a6)                         ; 00130
+l_083_00134:
+        move.l  $c(a6),d0                       ; 00134
+        moveq   #$4,d1                          ; 00138
+        jsr     (CXD33).l                       ; 0013A
+        move.l  -$4(a6),d1                      ; 00140
+        cmp.l   d0,d1                           ; 00144
+        bge.b   l_083_001C4                     ; 00146
+        move.l  -$8(a6),d0                      ; 00148
+        jsr     (fp_SingleToLong).l             ; 0014C
+        movea.l $8(a6),a0                       ; 00152
+        move.b  d0,(a0)                         ; 00156
+        addq.l  #$1,$8(a6)                      ; 00158
+        move.l  $c(a6),d0                       ; 0015C
+        moveq   #$4,d1                          ; 00160
+        jsr     (CXD33).l                       ; 00162
+        jsr     (fp_LongToSingle).l             ; 00168
+        jsr     (fp_SingleToDouble).l           ; 0016E
+        move.l  d0,$0(a7)                       ; 00174
+        move.l  #$405f8000,d0                   ; 00178
+        move.l  d1,$4(a7)                       ; 0017E
+        moveq   #$0,d1                          ; 00182
+        move.l  $0(a7),d2                       ; 00184
+        move.l  $4(a7),d3                       ; 00188
+        jsr     (fp_DoubleDiv).l                ; 0018C
+        move.l  d0,$0(a7)                       ; 00192
+        move.l  -$8(a6),d0                      ; 00196
+        move.l  d1,$4(a7)                       ; 0019A
+        jsr     (fp_SingleToDouble).l           ; 0019E
+        move.l  $0(a7),d2                       ; 001A4
+        move.l  $4(a7),d3                       ; 001A8
+        jsr     (fp_DoubleSub).l                ; 001AC
+        jsr     (fp_DoubleToSingle).l           ; 001B2
+        move.l  d0,-$8(a6)                      ; 001B8
+        addq.l  #$1,-$4(a6)                     ; 001BC
+        bra.w   l_083_00134                     ; 001C0
+l_083_001C4:
+        unlk    a6                              ; 001C4
+        rts                                     ; 001C6
 sub_083_001C8:
         link.w  a6,#$fffc                       ; 001C8
         clr.l   -$4(a6)                         ; 001CC
 l_083_001D0:
         move.l  $c(a6),d0                       ; 001D0
         moveq   #$2,d1                          ; 001D4
-        jsr     (sub_152_00000).l               ; 001D6
+        jsr     (CXD33).l                       ; 001D6
         move.l  -$4(a6),d1                      ; 001DC
         cmp.l   d0,d1                           ; 001E0
         bge.b   l_083_001F6                     ; 001E2
@@ -89,7 +141,7 @@ l_083_001F6:
 l_083_001FA:
         move.l  $c(a6),d0                       ; 001FA
         moveq   #$2,d1                          ; 001FE
-        jsr     (sub_152_00000).l               ; 00200
+        jsr     (CXD33).l                       ; 00200
         move.l  -$4(a6),d1                      ; 00206
         cmp.l   d0,d1                           ; 0020A
         bge.b   l_083_00220                     ; 0020C

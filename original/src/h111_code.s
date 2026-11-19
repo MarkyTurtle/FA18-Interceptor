@@ -5,7 +5,12 @@
 ; Hunk 111: CODE, $7C bytes
 ;===============================================================================
 	CODE_HUNK	h111
-sub_111_00000:
+
+;-------------------------------------------------------------------------------
+; fread - fread(buf, size, count, fp): reads size*count bytes one at a time (getc, _filbuf when
+; the buffer is empty); returns the number of whole items.
+;-------------------------------------------------------------------------------
+fread:
         link.w  a6,#$fff4                       ; 00000
         clr.l   -$4(a6)                         ; 00004
 l_111_00008:
@@ -30,7 +35,7 @@ l_111_00016:
         bra.b   l_111_00048                     ; 0003A
 l_111_0003C:
         move.l  $14(a6),-(a7)                   ; 0003C
-        jsr     (sub_120_00000).l               ; 00040
+        jsr     (_filbuf).l                     ; 00040
         addq.l  #$4,a7                          ; 00046
 l_111_00048:
         move.l  d0,-$c(a6)                      ; 00048

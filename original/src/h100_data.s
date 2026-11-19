@@ -5,7 +5,8 @@
 ; Hunk 100: DATA, $4 bytes
 ;===============================================================================
 	DATA_HUNK	h100
-dat_100_00000:
+; Enable_Abort - Non-zero: CTRL-C / CTRL-D end the program (Chk_Abort).
+Enable_Abort:
 	dc.b	$00,$00,$00,$00
 h100_end:
 	ifnd	HUNKEXE

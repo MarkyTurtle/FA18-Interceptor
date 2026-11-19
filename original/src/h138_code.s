@@ -5,10 +5,15 @@
 ; Hunk 138: CODE, $68 bytes
 ;===============================================================================
 	CODE_HUNK	h138
-sub_138_00000:
+
+;-------------------------------------------------------------------------------
+; _exit - _exit(code): closes the AmigaDOS file of every open low-level file (_ufbs) and leaves
+; through XCEXIT.
+;-------------------------------------------------------------------------------
+_exit:
         link.w  a6,#$fffa                       ; 00000
         movem.l d5-d7,-(a7)                     ; 00004
-        move.l  (dat_136_00000).l,d6            ; 00008
+        move.l  (_nufbs).l,d6                   ; 00008
         moveq   #$0,d7                          ; 0000E
 l_138_00010:
         cmp.w   d6,d7                           ; 00010
@@ -16,7 +21,7 @@ l_138_00010:
         move.l  d7,d0                           ; 00014
         muls.w  #$6,d0                          ; 00016
         movea.l d0,a0                           ; 0001A
-        adda.l  #dat_137_00000,a0               ; 0001C
+        adda.l  #_ufbs,a0                       ; 0001C
         move.b  (a0),d5                         ; 00022
         tst.b   d5                              ; 00024
         beq.b   l_138_0004A                     ; 00026
@@ -26,7 +31,7 @@ l_138_00010:
         move.l  d7,d0                           ; 00030
         muls.w  #$6,d0                          ; 00032
         movea.l d0,a0                           ; 00036
-        adda.l  #dat_137_00000,a0               ; 00038
+        adda.l  #_ufbs,a0                       ; 00038
         move.l  $2(a0),-(a7)                    ; 0003E
         jsr     (_Close).l                      ; 00042
         addq.l  #$4,a7                          ; 00048
@@ -36,7 +41,7 @@ l_138_0004A:
 l_138_0004E:
         move.l  $c(a6),-(a7)                    ; 0004E
         move.l  $8(a6),-(a7)                    ; 00052
-        jsr     (sub_000_00136).l               ; 00056
+        jsr     (XCEXIT).l                      ; 00056
         addq.l  #$8,a7                          ; 0005C
         movem.l (a7)+,d5-d7                     ; 0005E
         unlk    a6                              ; 00062

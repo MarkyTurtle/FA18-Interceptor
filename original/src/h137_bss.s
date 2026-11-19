@@ -5,7 +5,8 @@
 ; Hunk 137: BSS, $78 bytes
 ;===============================================================================
 	BSS_HUNK	h137
-dat_137_00000:
+; _ufbs - The low-level files: 6 bytes each (flags.w, AmigaDOS file handle.l).
+_ufbs:
         ds.b    $2                              ; 00000
 dat_137_00002:
         ds.b    $4                              ; 00002

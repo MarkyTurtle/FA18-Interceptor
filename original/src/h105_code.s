@@ -5,9 +5,14 @@
 ; Hunk 105: CODE, $2C8 bytes
 ;===============================================================================
 	CODE_HUNK	h105
-sub_105_00000:
+
+;-------------------------------------------------------------------------------
+; fopen - fopen(name, mode): takes the first free FILE of _iob (20, 24 bytes each) and opens it
+; with freopen.
+;-------------------------------------------------------------------------------
+fopen:
         link.w  a6,#$fff8                       ; 00000
-        move.l  #dat_143_00000,-$4(a6)          ; 00004
+        move.l  #_iob,-$4(a6)                   ; 00004
 l_105_0000C:
         movea.l -$4(a6),a0                      ; 0000C
         cmpa.l  #h143_end,a0                    ; 00010
@@ -28,17 +33,22 @@ l_105_0003C:
         move.l  -$4(a6),-(a7)                   ; 0003C
         move.l  $c(a6),-(a7)                    ; 00040
         move.l  $8(a6),-(a7)                    ; 00044
-        bsr.b   sub_105_00052                   ; 00048
+        bsr.b   freopen                         ; 00048
         lea.l   $c(a7),a7                       ; 0004A
         unlk    a6                              ; 0004E
         rts                                     ; 00050
-sub_105_00052:
+
+;-------------------------------------------------------------------------------
+; freopen - freopen(name, mode, fp): mode r/w/a, + and b; opens the file with open() and fills
+; in the FILE.
+;-------------------------------------------------------------------------------
+freopen:
         link.w  a6,#$ffea                       ; 00052
         movea.l $10(a6),a0                      ; 00056
         tst.b   $10(a0)                         ; 0005A
         beq.b   l_105_00068                     ; 0005E
         move.l  a0,-(a7)                        ; 00060
-        bsr.w   sub_105_0025A                   ; 00062
+        bsr.w   fclose                          ; 00062
         addq.l  #$4,a7                          ; 00066
 l_105_00068:
         move.l  (dat_103_00000).l,-$c(a6)       ; 00068
@@ -90,7 +100,7 @@ l_105_000FA:
         move.l  #$1a4,-(a7)                     ; 00106
         move.l  d0,-(a7)                        ; 0010C
         move.l  $8(a6),-(a7)                    ; 0010E
-        jsr     (sub_117_00064).l               ; 00112
+        jsr     (open).l                        ; 00112
         lea.l   $c(a7),a7                       ; 00118
         move.l  d0,-$8(a6)                      ; 0011C
         addq.l  #$1,d0                          ; 00120
@@ -103,7 +113,7 @@ l_105_0012A:
         move.l  d0,-(a7)                        ; 0012C
         clr.l   -(a7)                           ; 0012E
         move.l  -$8(a6),-(a7)                   ; 00130
-        jsr     (sub_117_0030E).l               ; 00134
+        jsr     (lseek).l                       ; 00134
         lea.l   $c(a7),a7                       ; 0013A
         tst.b   -$11(a6)                        ; 0013E
         beq.b   l_105_0014C                     ; 00142
@@ -126,7 +136,7 @@ l_105_00162:
         or.l    d0,d1                           ; 00166
         move.l  d1,-(a7)                        ; 00168
         move.l  $8(a6),-(a7)                    ; 0016A
-        jsr     (sub_117_00064).l               ; 0016E
+        jsr     (open).l                        ; 0016E
         addq.l  #$8,a7                          ; 00174
         move.l  d0,-$8(a6)                      ; 00176
         addq.l  #$1,d0                          ; 0017A
@@ -159,7 +169,7 @@ l_105_001A6:
         move.l  #$1a4,-(a7)                     ; 001B8
         move.l  d1,-(a7)                        ; 001BE
         move.l  $8(a6),-(a7)                    ; 001C0
-        jsr     (sub_117_00064).l               ; 001C4
+        jsr     (open).l                        ; 001C4
         lea.l   $c(a7),a7                       ; 001CA
         move.l  d0,-$8(a6)                      ; 001CE
         addq.l  #$1,d0                          ; 001D2
@@ -184,9 +194,9 @@ l_105_001F2:
 l_105_001F8:
         move.l  -$8(a6),d0                      ; 001F8
         moveq   #$6,d1                          ; 001FC
-        jsr     (sub_154_00000).l               ; 001FE
+        jsr     (CXM33).l                       ; 001FE
         movea.l d0,a0                           ; 00204
-        adda.l  #dat_137_00000,a0               ; 00206
+        adda.l  #_ufbs,a0                       ; 00206
         tst.b   $1(a0)                          ; 0020C
         beq.b   l_105_0022A                     ; 00210
         bset    #$2,-$1(a6)                     ; 00212
@@ -211,7 +221,11 @@ l_105_00232:
         move.l  a0,d0                           ; 00254
         unlk    a6                              ; 00256
         rts                                     ; 00258
-sub_105_0025A:
+
+;-------------------------------------------------------------------------------
+; fclose - fclose(fp): flushes the buffer, closes the file and frees the buffer.
+;-------------------------------------------------------------------------------
+fclose:
         link.w  a6,#$0                          ; 0025A
         movea.l $8(a6),a0                       ; 0025E
         move.b  $10(a0),d0                      ; 00262
@@ -220,7 +234,7 @@ sub_105_0025A:
         move.l  a0,-(a7)                        ; 0026C
         moveq   #-1,d0                          ; 0026E
         move.l  d0,-(a7)                        ; 00270
-        jsr     (sub_120_00120).l               ; 00272
+        jsr     (_flsbuf).l                     ; 00272
         addq.l  #$8,a7                          ; 00278
 l_105_0027A:
         movea.l $8(a6),a0                       ; 0027A
@@ -232,7 +246,7 @@ l_105_0027A:
         beq.b   l_105_002A0                     ; 0028E
         move.l  $12(a0),-(a7)                   ; 00290
         move.l  $c(a0),-(a7)                    ; 00294
-        jsr     (sub_126_0010A).l               ; 00298
+        jsr     (free).l                        ; 00298
         addq.l  #$8,a7                          ; 0029E
 l_105_002A0:
         suba.l  a0,a0                           ; 002A0
@@ -243,7 +257,7 @@ l_105_002A0:
         moveq   #$0,d0                          ; 002B2
         move.b  $11(a1),d0                      ; 002B4
         move.l  d0,-(a7)                        ; 002B8
-        jsr     (sub_117_00396).l               ; 002BA
+        jsr     (close).l                       ; 002BA
         addq.l  #$4,a7                          ; 002C0
         unlk    a6                              ; 002C2
         rts                                     ; 002C4

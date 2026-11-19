@@ -540,7 +540,7 @@ sub_036_005E8:
 sub_036_005EE:
         movea.w (dat_071_00354).l,a2            ; 005EE
 l_036_005F4:
-        move.w  (dat_071_00324).l,(dat_071_00326).l; 005F4
+        move.w  (dat_071_00324).l,(dat_071_00326).l ; 005F4
         cmp.w   d1,d3                           ; 005FE
         beq.b   l_036_005E0                     ; 00600
         bls.b   l_036_0062A                     ; 00602
@@ -1303,7 +1303,7 @@ l_036_00E5C:
 l_036_00E62:
         exg.l   d1,d2                           ; 00E62
         movem.w d0-d3,(dat_071_0034C).l         ; 00E64
-        move.w  (dat_071_00324).l,(dat_071_00326).l; 00E6C
+        move.w  (dat_071_00324).l,(dat_071_00326).l ; 00E6C
         lea.l   (dat_072_03000).l,a2            ; 00E76
         lea.l   (dat_071_00340).l,a3            ; 00E7C
         move.w  (a2)+,(a3)                      ; 00E82

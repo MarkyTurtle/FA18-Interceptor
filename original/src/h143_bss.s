@@ -5,7 +5,8 @@
 ; Hunk 143: BSS, $1E0 bytes
 ;===============================================================================
 	BSS_HUNK	h143
-dat_143_00000:
+; _iob - The stdio FILEs: 20 of 24 bytes (stdin, stdout, stderr first).
+_iob:
         ds.b    $10                             ; 00000
 dat_143_00010:
         ds.b    $1                              ; 00010

@@ -5,7 +5,12 @@
 ; Hunk 144: CODE, $87C bytes
 ;===============================================================================
 	CODE_HUNK	h144
-sub_144_00000:
+
+;-------------------------------------------------------------------------------
+; _pfmt - The printf formatter: one conversion (%[-][0][width][.prec][l]c) from the format into
+; a buffer; returns where the format goes on.
+;-------------------------------------------------------------------------------
+_pfmt:
         link.w  a6,#$ffb4                       ; 00000
         movem.l a2,-(a7)                        ; 00004
         moveq   #$0,d0                          ; 00008
@@ -31,7 +36,7 @@ l_144_0003C:
         move.l  d0,$4(a7)                       ; 00044
         addq.l  #$1,d0                          ; 00048
         movea.l d0,a0                           ; 0004A
-        adda.l  #dat_091_00000,a0               ; 0004C
+        adda.l  #_ctype,a0                      ; 0004C
         move.b  (a0),d0                         ; 00052
         btst    #$2,d0                          ; 00054
         beq.b   l_144_000BC                     ; 00058
@@ -52,13 +57,13 @@ l_144_00080:
         move.b  (a0),d0                         ; 00086
         addq.l  #$1,d0                          ; 00088
         movea.l d0,a1                           ; 0008A
-        adda.l  #dat_091_00000,a1               ; 0008C
+        adda.l  #_ctype,a1                      ; 0008C
         move.b  (a1),d0                         ; 00092
         btst    #$2,d0                          ; 00094
         beq.b   l_144_000BC                     ; 00098
         move.l  -$24(a6),d0                     ; 0009A
         moveq   #$a,d1                          ; 0009E
-        jsr     (sub_154_00000).l               ; 000A0
+        jsr     (CXM33).l                       ; 000A0
         moveq   #$0,d1                          ; 000A6
         move.b  (a0),d1                         ; 000A8
         addq.l  #$1,$8(a6)                      ; 000AA
@@ -79,13 +84,13 @@ l_144_000D0:
         move.b  (a0),d0                         ; 000D6
         addq.l  #$1,d0                          ; 000D8
         movea.l d0,a1                           ; 000DA
-        adda.l  #dat_091_00000,a1               ; 000DC
+        adda.l  #_ctype,a1                      ; 000DC
         move.b  (a1),d0                         ; 000E2
         btst    #$2,d0                          ; 000E4
         beq.b   l_144_0010C                     ; 000E8
         move.l  -$1c(a6),d0                     ; 000EA
         moveq   #$a,d1                          ; 000EE
-        jsr     (sub_154_00000).l               ; 000F0
+        jsr     (CXM33).l                       ; 000F0
         moveq   #$0,d1                          ; 000F6
         move.b  (a0),d1                         ; 000F8
         addq.l  #$1,$8(a6)                      ; 000FA
@@ -134,11 +139,11 @@ sub_144_00156:
 	dc.b	$FF,$EC,$67,$0E,$22,$6E,$00,$10,$20,$51,$58,$91,$2D,$50,$FF,$CC
 	dc.b	$60,$0C,$22,$6E,$00,$10,$20,$51,$58,$91,$2D,$50,$FF,$CC,$70,$0B
 	dc.b	$2D,$40,$FF,$FC,$20,$2E,$FF,$CC,$72,$0A,$4E,$B9
-        dc.l    sub_152_00000                   ; 001E8
+        dc.l    CXD33                           ; 001E8
 	dc.b	$2D,$41,$FF,$F8,$4A,$81,$6A,$04,$44,$AE,$FF,$F8,$53,$AE,$FF,$FC
 	dc.b	$20,$2E,$FF,$F8,$06,$80,$00,$00,$00,$30,$22,$2E,$FF,$FC,$1D,$80
 	dc.b	$18,$B8,$20,$2E,$FF,$CC,$72,$0A,$4E,$B9
-        dc.l    sub_152_00000                   ; 00216
+        dc.l    CXD33                           ; 00216
 	dc.b	$2D,$40,$FF,$CC,$4A,$AE,$FF,$CC,$66,$BC,$0C,$AE,$00,$00,$00,$01
 	dc.b	$FF,$E8,$66,$0E,$53,$AE,$FF,$FC,$20,$2E,$FF,$FC,$1D,$BC,$00,$2D
 	dc.b	$08,$B8,$41,$EE,$FF,$B8,$20,$2E,$FF,$FC,$D1,$C0,$72,$0B,$92,$80
@@ -147,7 +152,7 @@ sub_144_00156:
 	dc.b	$22,$6E,$00,$10,$20,$51,$58,$91,$2D,$50,$FF,$CC,$70,$08,$2D,$40
 	dc.b	$FF,$FC,$53,$AE,$FF,$FC,$20,$2E,$FF,$CC,$02,$80,$00,$00,$00,$0F
 	dc.b	$20,$40,$D1,$FC
-        dc.l    dat_145_00000                   ; 0028E
+        dc.l    _HexDigits                      ; 0028E
 	dc.b	$20,$2E,$FF,$FC,$1D,$90,$08,$B8,$20,$2E,$FF,$CC,$E8,$80,$02,$80
 	dc.b	$0F,$FF,$FF,$FF,$2D,$40,$FF,$CC,$4A,$AE,$FF,$CC,$66,$CC,$41,$EE
 	dc.b	$FF,$B8,$20,$2E,$FF,$FC,$D1,$C0,$72,$08,$92,$80,$2D,$41,$FF,$F4
@@ -314,7 +319,7 @@ l_144_004C4:
         move.l  d0,-(a7)                        ; 004E8
         movea.l $10(a6),a0                      ; 004EA
         move.l  (a0),-(a7)                      ; 004EE
-        jsr     (sub_166_00000).l               ; 004F0
+        jsr     (fp_DoubleToDigits).l           ; 004F0
         lea.l   $18(a7),a7                      ; 004F6
         movea.l $10(a6),a0                      ; 004FA
         addq.l  #$8,(a0)                        ; 004FE
@@ -568,13 +573,13 @@ l_144_007C8:
         subq.l  #$1,-$c(a6)                     ; 007C8
         move.l  -$28(a6),d0                     ; 007CC
         moveq   #$a,d1                          ; 007D0
-        jsr     (sub_152_00000).l               ; 007D2
+        jsr     (CXD33).l                       ; 007D2
         addi.l  #$30,d1                         ; 007D8
         move.l  -$c(a6),d0                      ; 007DE
         move.b  d1,-$48(a6,d0.l)                ; 007E2
         move.l  -$28(a6),d0                     ; 007E6
         moveq   #$a,d1                          ; 007EA
-        jsr     (sub_152_00000).l               ; 007EC
+        jsr     (CXD33).l                       ; 007EC
         move.l  d0,-$28(a6)                     ; 007F2
         cmpi.l  #$9,-$c(a6)                     ; 007F6
         bgt.b   l_144_007C8                     ; 007FE

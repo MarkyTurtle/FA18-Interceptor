@@ -5,19 +5,27 @@
 ; Hunk 126: CODE, $284 bytes
 ;===============================================================================
 	CODE_HUNK	h126
-	dc.b	$4E,$56,$FF,$FC,$20,$39
-        dc.l    dat_148_0000C                   ; 00006
-	dc.b	$E7,$80,$4E,$5E,$4E,$75
-sub_126_00010:
+sub_126_00000:
+        link.w  a6,#$fffc                       ; 00000
+        move.l  (dat_148_0000C).l,d0            ; 00004
+        asl.l   #$3,d0                          ; 0000A
+        unlk    a6                              ; 0000C
+        rts                                     ; 0000E
+malloc:
         link.w  a6,#$fffc                       ; 00010
         move.l  $8(a6),d0                       ; 00014
         move.l  d0,-(a7)                        ; 00018
         move.l  d0,-$4(a6)                      ; 0001A
-        bsr.b   sub_126_00026                   ; 0001E
+        bsr.b   _malloc                         ; 0001E
         addq.l  #$4,a7                          ; 00020
         unlk    a6                              ; 00022
         rts                                     ; 00024
-sub_126_00026:
+
+;-------------------------------------------------------------------------------
+; _malloc - The allocator: first fit from the free list (8-byte units); grows the heap by
+; _MSTEP with AllocMemTracked when nothing fits.
+;-------------------------------------------------------------------------------
+_malloc:
         link.w  a6,#$ffec                       ; 00026
         tst.l   $8(a6)                          ; 0002A
         bgt.b   l_126_00036                     ; 0002E
@@ -28,7 +36,7 @@ l_126_00036:
         move.l  $8(a6),d0                       ; 00036
         addq.l  #$7,d0                          ; 0003A
         moveq   #$8,d1                          ; 0003C
-        jsr     (sub_152_00000).l               ; 0003E
+        jsr     (CXD33).l                       ; 0003E
         move.l  #dat_148_00008,-$8(a6)          ; 00044
         movea.l -$8(a6),a0                      ; 0004C
         move.l  (a0),-$4(a6)                    ; 00050
@@ -68,25 +76,25 @@ l_126_000A4:
 l_126_000B4:
         move.l  -$10(a6),d0                     ; 000B4
         asl.l   #$3,d0                          ; 000B8
-        move.l  (dat_001_00014).l,d1            ; 000BA
+        move.l  (_MSTEP).l,d1                   ; 000BA
         add.l   d1,d0                           ; 000C0
         subq.l  #$1,d0                          ; 000C2
-        jsr     (sub_152_00000).l               ; 000C4
-        move.l  (dat_001_00014).l,d1            ; 000CA
-        jsr     (sub_154_00000).l               ; 000D0
+        jsr     (CXD33).l                       ; 000C4
+        move.l  (_MSTEP).l,d1                   ; 000CA
+        jsr     (CXM33).l                       ; 000D0
         move.l  d0,-(a7)                        ; 000D6
         move.l  d0,-$14(a6)                     ; 000D8
-        jsr     (sub_123_00000).l               ; 000DC
+        jsr     (AllocMemTracked).l             ; 000DC
         addq.l  #$4,a7                          ; 000E2
         move.l  d0,-$c(a6)                      ; 000E4
         tst.l   d0                              ; 000E8
         beq.b   l_126_00104                     ; 000EA
         move.l  -$14(a6),-(a7)                  ; 000EC
         move.l  d0,-(a7)                        ; 000F0
-        bsr.b   sub_126_0010A                   ; 000F2
+        bsr.b   free                            ; 000F2
         addq.l  #$8,a7                          ; 000F4
         move.l  $8(a6),-(a7)                    ; 000F6
-        bsr.w   sub_126_00026                   ; 000FA
+        bsr.w   _malloc                         ; 000FA
         addq.l  #$4,a7                          ; 000FE
         unlk    a6                              ; 00100
         rts                                     ; 00102
@@ -94,17 +102,25 @@ l_126_00104:
         moveq   #$0,d0                          ; 00104
         unlk    a6                              ; 00106
         rts                                     ; 00108
-sub_126_0010A:
+
+;-------------------------------------------------------------------------------
+; free - free(block, size).
+;-------------------------------------------------------------------------------
+free:
         link.w  a6,#$fffc                       ; 0010A
         move.l  $c(a6),d0                       ; 0010E
         move.l  d0,-(a7)                        ; 00112
         move.l  $8(a6),-(a7)                    ; 00114
         move.l  d0,-$4(a6)                      ; 00118
-        bsr.b   sub_126_00124                   ; 0011C
+        bsr.b   _free                           ; 0011C
         addq.l  #$8,a7                          ; 0011E
         unlk    a6                              ; 00120
         rts                                     ; 00122
-sub_126_00124:
+
+;-------------------------------------------------------------------------------
+; _free - Puts a block back on the free list, merging it with its neighbours.
+;-------------------------------------------------------------------------------
+_free:
         link.w  a6,#$ffe4                       ; 00124
         tst.l   $c(a6)                          ; 00128
         bgt.b   l_126_00134                     ; 0012C
@@ -119,7 +135,7 @@ l_126_00134:
         move.l  $c(a6),d0                       ; 00140
         addq.l  #$7,d0                          ; 00144
         moveq   #$8,d1                          ; 00146
-        jsr     (sub_152_00000).l               ; 00148
+        jsr     (CXD33).l                       ; 00148
         move.l  d0,-$1c(a6)                     ; 0014E
         asl.l   #$3,d0                          ; 00152
         move.l  a0,-$14(a6)                     ; 00154

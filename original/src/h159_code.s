@@ -5,7 +5,11 @@
 ; Hunk 159: CODE, $D8 bytes
 ;===============================================================================
 	CODE_HUNK	h159
-sub_159_00000:
+
+;-------------------------------------------------------------------------------
+; fp_DoubleUnpack - Unpacks an IEEE double (d0:d1): mantissa d0:d1, sign and exponent d2.
+;-------------------------------------------------------------------------------
+fp_DoubleUnpack:
         move.l  d0,d2                           ; 00000
         and.l   #$7fffffff,d0                   ; 00002
         bne.b   l_159_00012                     ; 00008
@@ -29,7 +33,12 @@ l_159_00026:
         move.l  (a7)+,d2                        ; 00032
 l_159_00034:
         rts                                     ; 00034
-sub_159_00036:
+
+;-------------------------------------------------------------------------------
+; fp_DoublePack - Packs mantissa d0:d1 / exponent d2 into an IEEE double (rounds; SetFPErr on
+; under/overflow).
+;-------------------------------------------------------------------------------
+fp_DoublePack:
         move.l  d3,-(a7)                        ; 00036
         move.l  d0,-(a7)                        ; 00038
         or.l    d1,(a7)+                        ; 0003A
@@ -82,12 +91,12 @@ l_159_000A2:
         rts                                     ; 000A4
 l_159_000A6:
         move.l  #$1,-(a7)                       ; 000A6
-        jsr     (sub_155_00000).l               ; 000AC
+        jsr     (SetFPErr).l                    ; 000AC
         moveq   #$0,d0                          ; 000B2
         bra.b   l_159_000CE                     ; 000B4
 l_159_000B6:
         move.l  #$2,-(a7)                       ; 000B6
-        jsr     (sub_155_00000).l               ; 000BC
+        jsr     (SetFPErr).l                    ; 000BC
         move.w  #$7ff0,d0                       ; 000C2
         swap    d2                              ; 000C6
         or.w    d2,d0                           ; 000C8

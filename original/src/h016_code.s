@@ -639,25 +639,25 @@ sub_016_00AD2:
         beq.b   l_016_00B12                     ; 00AF4
         cmpi.w  #$2,d0                          ; 00AF6
         beq.b   l_016_00B12                     ; 00AFA
-        move.l  #dat_058_00020,(dat_071_00406).l; 00AFC
-        move.l  #dat_058_00020,(dat_071_0040A).l; 00B06
+        move.l  #dat_058_00020,(dat_071_00406).l ; 00AFC
+        move.l  #dat_058_00020,(dat_071_0040A).l ; 00B06
         bra.b   l_016_00AB6                     ; 00B10
 l_016_00B12:
-        move.l  #dat_058_0002E,(dat_071_00406).l; 00B12
-        move.l  #dat_058_0002E,(dat_071_0040A).l; 00B1C
+        move.l  #dat_058_0002E,(dat_071_00406).l ; 00B12
+        move.l  #dat_058_0002E,(dat_071_0040A).l ; 00B1C
         bra.b   l_016_00AB6                     ; 00B26
 l_016_00B28:
         blt.b   l_016_00B42                     ; 00B28
-        move.l  #dat_058_00040,(dat_071_00406).l; 00B2A
-        move.l  #dat_058_00040,(dat_071_0040A).l; 00B34
+        move.l  #dat_058_00040,(dat_071_00406).l ; 00B2A
+        move.l  #dat_058_00040,(dat_071_0040A).l ; 00B34
         bra.w   l_016_00AB6                     ; 00B3E
 l_016_00B42:
-        move.l  #dat_058_0003C,(dat_071_00406).l; 00B42
-        move.l  #dat_058_0003C,(dat_071_0040A).l; 00B4C
+        move.l  #dat_058_0003C,(dat_071_00406).l ; 00B42
+        move.l  #dat_058_0003C,(dat_071_0040A).l ; 00B4C
         bra.w   l_016_00AB6                     ; 00B56
 l_016_00B5A:
-        move.l  #dat_058_00000,(dat_071_00406).l; 00B5A
-        move.l  #dat_058_00000,(dat_071_0040A).l; 00B64
+        move.l  #dat_058_00000,(dat_071_00406).l ; 00B5A
+        move.l  #dat_058_00000,(dat_071_0040A).l ; 00B64
         bra.w   l_016_00AB6                     ; 00B6E
 sub_016_00B72:
         lea.l   (dat_071_00B54).l,a1            ; 00B72
@@ -672,28 +672,28 @@ sub_016_00B72:
         beq.b   l_016_00BBC                     ; 00B9C
         cmpi.w  #$2,d0                          ; 00B9E
         beq.b   l_016_00BBC                     ; 00BA2
-        move.l  #dat_058_002C6,(dat_071_00406).l; 00BA4
-        move.l  #dat_058_002C6,(dat_071_0040A).l; 00BAE
+        move.l  #dat_058_002C6,(dat_071_00406).l ; 00BA4
+        move.l  #dat_058_002C6,(dat_071_0040A).l ; 00BAE
         bra.w   l_016_00AB6                     ; 00BB8
 l_016_00BBC:
-        move.l  #dat_058_002D4,(dat_071_00406).l; 00BBC
-        move.l  #dat_058_002D4,(dat_071_0040A).l; 00BC6
+        move.l  #dat_058_002D4,(dat_071_00406).l ; 00BBC
+        move.l  #dat_058_002D4,(dat_071_0040A).l ; 00BC6
         bra.w   l_016_00AB6                     ; 00BD0
 l_016_00BD4:
         blt.b   l_016_00BF8                     ; 00BD4
         move.b  $7c(a1),d0                      ; 00BD6
         andi.b  #$f,d0                          ; 00BDA
         beq.b   l_016_00BF8                     ; 00BDE
-        move.l  #dat_058_002A2,(dat_071_00406).l; 00BE0
-        move.l  #dat_058_002A2,(dat_071_0040A).l; 00BEA
+        move.l  #dat_058_002A2,(dat_071_00406).l ; 00BE0
+        move.l  #dat_058_002A2,(dat_071_0040A).l ; 00BEA
         bra.w   l_016_00AB6                     ; 00BF4
 l_016_00BF8:
-        move.l  #dat_058_002E2,(dat_071_00406).l; 00BF8
-        move.l  #dat_058_002E2,(dat_071_0040A).l; 00C02
+        move.l  #dat_058_002E2,(dat_071_00406).l ; 00BF8
+        move.l  #dat_058_002E2,(dat_071_0040A).l ; 00C02
         bra.w   l_016_00AB6                     ; 00C0C
 l_016_00C10:
-        move.l  #dat_058_002A6,(dat_071_00406).l; 00C10
-        move.l  #dat_058_002A6,(dat_071_0040A).l; 00C1A
+        move.l  #dat_058_002A6,(dat_071_00406).l ; 00C10
+        move.l  #dat_058_002A6,(dat_071_0040A).l ; 00C1A
         bra.w   l_016_00AB6                     ; 00C24
 sub_016_00C28:
         rts                                     ; 00C28
