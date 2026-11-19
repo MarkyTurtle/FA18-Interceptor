@@ -1,12 +1,18 @@
 ; F/A-18 Interceptor - hunk 66 (code)
-; Data: a table used by hunk 8 (not worked out yet)
+; Data: the three scenery maps (SceneryMap0-2: per map row, the cells with scenery and their
+; items).
 ; Included by ../f18_main.s.
 
 ;===============================================================================
 ; Hunk 66: CODE, $738 bytes
 ;===============================================================================
 	CODE_HUNK	h066
-dat_066_00000:
+; SceneryMap0 - A scenery map (one of three): 128 words, one per map row (Z), each the offset
+; (from the map) of that row's list: a byte count, the columns (X) that have scenery in
+; increasing order (words, searched by FindSceneryColumn), then a pointer to each such cell's
+; list of scenery items. Map 0 and map 1 cover cells 0-30 (used while dat_071_00234 is clear,
+; picked by dat_071_00235); map 2 the whole 128 x 128 (dat_071_00234 set).
+SceneryMap0:
 	dc.b	$03,$00,$03,$14,$03,$14,$03,$14,$03,$14,$03,$14,$03,$14,$03,$14
 	dc.b	$03,$14,$03,$14,$03,$14,$03,$16,$03,$16,$03,$16,$03,$3A,$03,$64
 	dc.b	$03,$78,$03,$92,$03,$B2,$03,$B2,$03,$B2,$03,$B2,$03,$B2,$03,$B2
@@ -23,7 +29,8 @@ dat_066_00000:
 	dc.b	$03,$B2,$03,$B2,$03,$B2,$03,$B2,$03,$B2,$03,$B2,$03,$B2,$03,$B2
 	dc.b	$03,$B2,$03,$B2,$03,$B2,$03,$B2,$03,$B2,$03,$B2,$03,$B2,$03,$B2
 	dc.b	$03,$B2,$03,$B2,$03,$B2,$03,$B2,$03,$B2,$03,$B2,$03,$B2,$03,$B2
-dat_066_00100:
+; SceneryMap1 - The second scenery map (see SceneryMap0).
+SceneryMap1:
 	dc.b	$03,$3C,$03,$3C,$03,$3C,$03,$3C,$03,$3C,$03,$3C,$03,$3C,$03,$3C
 	dc.b	$03,$3C,$03,$3C,$03,$3C,$03,$3C,$03,$3C,$03,$3C,$03,$3C,$03,$3E
 	dc.b	$03,$4C,$03,$60,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74
@@ -40,7 +47,9 @@ dat_066_00100:
 	dc.b	$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74
 	dc.b	$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74
 	dc.b	$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74
-dat_066_00200:
+; SceneryMap2 - The third scenery map, over the whole 128 x 128 cells (see SceneryMap0): a
+; regular pattern of cells around X 41-70, Z 44-70 among others.
+SceneryMap2:
 	dc.b	$03,$64,$03,$64,$03,$64,$03,$64,$03,$64,$03,$64,$03,$64,$03,$64
 	dc.b	$03,$64,$03,$64,$03,$64,$03,$64,$03,$64,$03,$64,$03,$64,$03,$64
 	dc.b	$03,$64,$03,$64,$03,$64,$03,$64,$03,$64,$03,$64,$03,$64,$03,$64

@@ -701,9 +701,14 @@ ViewSubCell:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00224:
+; ViewOctant - Which eighth of a turn the view's heading is in (0-7, 45 degrees each, worked
+; out in hunk 20): picks the order the cells are visited in (BuildSceneryList), so the far ones
+; are drawn first.
+ViewOctant:
 	dc.b	$00
-dat_071_00225:
+; ViewOctantShown - ViewOctant when the scenery was last built; a change asks for a rebuild
+; (UpdateViewCell).
+ViewOctantShown:
 	dc.b	$00
 dat_071_00226:
 	dc.b	$00

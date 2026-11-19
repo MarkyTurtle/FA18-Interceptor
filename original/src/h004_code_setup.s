@@ -97,7 +97,7 @@ l_004_000E4:
         moveq   #-1,d0                          ; 0016A
         move.l  d0,(dat_071_004CA).l            ; 0016C
         move.l  d0,(dat_071_004D2).l            ; 00172
-        move.b  d0,(dat_071_00225).l            ; 00178
+        move.b  d0,(ViewOctantShown).l          ; 00178
         move.b  #$f,(dat_071_0028E).l           ; 0017E
         move.w  #$7fff,(dat_071_004B8).l        ; 00186
         move.l  #$800000,(dat_071_000CA).l      ; 0018E
@@ -127,7 +127,7 @@ l_004_001EC:
         move.b  d1,(a0)+                        ; 001EC
         dbra    d0,l_004_001EC                  ; 001EE
         bsr.w   sub_004_003AE                   ; 001F2
-        jsr     (sub_008_00144).l               ; 001F6
+        jsr     (BuildSceneryBits).l            ; 001F6
         jsr     (UpdateViewCell).l              ; 001FC
         jsr     (sub_008_00598).l               ; 00202
         rts                                     ; 00208

@@ -89,11 +89,15 @@ dat_002_00132:
         ds.b    $60                             ; 00132
 dat_002_00192:
         ds.b    $F02                            ; 00192
-dat_002_01094:
+; SceneryBits0 - A bit for each of the 128 x 128 map cells that has scenery in SceneryMap0 (16
+; bytes a row), made by BuildSceneryBits for a quick test.
+SceneryBits0:
         ds.b    $800                            ; 01094
-dat_002_01894:
+; SceneryBits1 - SceneryMap1's cells as bits (see SceneryBits0).
+SceneryBits1:
         ds.b    $800                            ; 01894
-dat_002_02094:
+; SceneryBits2 - SceneryMap2's cells as bits (see SceneryBits0).
+SceneryBits2:
         ds.b    $800                            ; 02094
 ; PictureColours - The colours read from a picture's CMAP (32 RGB4 words).
 PictureColours:

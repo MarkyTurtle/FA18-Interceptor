@@ -337,7 +337,7 @@ l_028_00D36:
         lea.l   dat_028_001C2(pc),a0            ; 00D36
         bra.w   l_028_00E00                     ; 00D3A
 l_028_00D3E:
-        move.b  (dat_071_00224).l,d2            ; 00D3E
+        move.b  (ViewOctant).l,d2               ; 00D3E
         ext.w   d2                              ; 00D44
         cmpi.l  #$3a0,-$28(a6)                  ; 00D46
         bgt.w   l_028_00DAA                     ; 00D4E

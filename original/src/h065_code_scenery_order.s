@@ -1,5 +1,6 @@
 ; F/A-18 Interceptor - hunk 65 (code)
-; Data: a table used by hunk 8 (not worked out yet)
+; Data: the orders in which the cells around the viewer are visited for the scenery
+; (BuildSceneryList).
 ; Included by ../f18_main.s.
 
 ;===============================================================================

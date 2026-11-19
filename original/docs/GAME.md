@@ -155,6 +155,20 @@ asks for the scenery to be redrawn when it changes (`RedrawFlags`); `FindObjects
 the objects in a cell. Distances to objects are taken relative to the viewer's cell, so the
 32-bit coordinates never have to cover the whole world at once.
 
+The map is 128 x 128 cells. The **scenery** (the ground's features: runways, buildings and the
+like, drawn as shapes) is kept in three maps in hunk 66 (`SceneryMap0`-`2`): for each map row,
+the columns that have something and, for each such cell, a list of items (its place in the
+cell and a shape). At start-up `BuildSceneryBits` turns each into a bit per cell
+(`SceneryBits0`-`2`) for a quick test. Map 2 covers the whole world - mostly a regular pattern of
+cells around X 41-70, Z 44-70; maps 0 and 1 the cells 0-30 near the start, used in another mode
+(`dat_071_00234`), picked by `dat_071_00235`. The free flight's starting locations are in that
+corner too (cells 15-17).
+
+Each time the view enters a new cell or turns into a new eighth of the compass (`ViewOctant`),
+`BuildSceneryList` goes through the cells around it in an order from hunk 65 chosen by the
+sub-cell and the octant (presumably the furthest first, as nothing is sorted) and adds each cell's scenery and objects
+(`AddCellScenery`) to the list that is drawn.
+
 ### Units
 
 * Angles: 1/80 degree, a full turn = `$7080` (28,800). Shifted down 3 bits they are tenths of a
@@ -543,7 +557,7 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
 * The computer pilots' states one by one (hunk 30), their attacks and firing; the object
   records' unknown fields in `ModeTable`.
 * The 3D pipeline's special shape operations (hunks 12-15) and the clipping (hunk 19).
-* The ground, sky and scenery; the map and what is in each cell.
+* The scenery items' shapes and what `dat_071_00234` / `00235` are; the ground and sky.
 * The head-up display and most instruments (hunks 39-40).
 * The views (`OutsideView`, `ViewChoice`, `CameraSequence`) and the training's manoeuvres.
 * The rest of the flight log's words, and which sound file is which effect.

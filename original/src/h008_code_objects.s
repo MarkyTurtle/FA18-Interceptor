@@ -127,7 +127,12 @@ l_008_0012C:
         move.l  d4,(dat_071_0043A).l            ; 00138
         movem.l (a7)+,d0-d6                     ; 0013E
         rts                                     ; 00142
-sub_008_00144:
+
+;-------------------------------------------------------------------------------
+; BuildSceneryBits - Clears SceneryBits0-2 and sets a bit for every cell listed in
+; SceneryMap0-2.
+;-------------------------------------------------------------------------------
+BuildSceneryBits:
         moveq   #$0,d0                          ; 00144
         move.l  d0,d1                           ; 00146
         move.l  d0,d2                           ; 00148
@@ -137,9 +142,9 @@ sub_008_00144:
         move.l  d0,d6                           ; 00150
         movea.l d0,a3                           ; 00152
         moveq   #$3f,d7                         ; 00154
-        lea.l   (dat_002_01094).l,a0            ; 00156
-        lea.l   (dat_002_01894).l,a1            ; 0015C
-        lea.l   (dat_002_02094).l,a2            ; 00162
+        lea.l   (SceneryBits0).l,a0             ; 00156
+        lea.l   (SceneryBits1).l,a1             ; 0015C
+        lea.l   (SceneryBits2).l,a2             ; 00162
 l_008_00168:
         movem.l d0-d6/a3,(a0)                   ; 00168
         movem.l d0-d6/a3,(a1)                   ; 0016C
@@ -148,13 +153,13 @@ l_008_00168:
         adda.w  #$20,a1                         ; 00178
         adda.w  #$20,a2                         ; 0017C
         dbra    d7,l_008_00168                  ; 00180
-        lea.l   (dat_066_00000).l,a0            ; 00184
-        lea.l   (dat_002_01094).l,a2            ; 0018A
+        lea.l   (SceneryMap0).l,a0              ; 00184
+        lea.l   (SceneryBits0).l,a2             ; 0018A
         move.w  #$7f,d2                         ; 00190
 l_008_00194:
         move.w  (a0),d3                         ; 00194
         ble.w   l_008_00268                     ; 00196
-        lea.l   (dat_066_00000).l,a1            ; 0019A
+        lea.l   (SceneryMap0).l,a1              ; 0019A
         adda.w  d3,a1                           ; 001A0
         move.w  (a1)+,d1                        ; 001A2
         blt.b   l_008_001C6                     ; 001A4
@@ -175,13 +180,13 @@ l_008_001C6:
         addq.w  #$2,a0                          ; 001C6
         adda.w  #$10,a2                         ; 001C8
         dbra    d2,l_008_00194                  ; 001CC
-        lea.l   (dat_066_00100).l,a0            ; 001D0
-        lea.l   (dat_002_01894).l,a2            ; 001D6
+        lea.l   (SceneryMap1).l,a0              ; 001D0
+        lea.l   (SceneryBits1).l,a2             ; 001D6
         move.w  #$7f,d2                         ; 001DC
 l_008_001E0:
         move.w  (a0),d3                         ; 001E0
         ble.w   l_008_0026E                     ; 001E2
-        lea.l   (dat_066_00100).l,a1            ; 001E6
+        lea.l   (SceneryMap1).l,a1              ; 001E6
         adda.w  d3,a1                           ; 001EC
         move.w  (a1)+,d1                        ; 001EE
         blt.b   l_008_00212                     ; 001F0
@@ -202,13 +207,13 @@ l_008_00212:
         addq.w  #$2,a0                          ; 00212
         adda.w  #$10,a2                         ; 00214
         dbra    d2,l_008_001E0                  ; 00218
-        lea.l   (dat_066_00200).l,a0            ; 0021C
-        lea.l   (dat_002_02094).l,a2            ; 00222
+        lea.l   (SceneryMap2).l,a0              ; 0021C
+        lea.l   (SceneryBits2).l,a2             ; 00222
         move.w  #$7f,d2                         ; 00228
 l_008_0022C:
         move.w  (a0),d3                         ; 0022C
         ble.b   l_008_00274                     ; 0022E
-        lea.l   (dat_066_00200).l,a1            ; 00230
+        lea.l   (SceneryMap2).l,a1              ; 00230
         adda.w  d3,a1                           ; 00236
         move.w  (a1)+,d1                        ; 00238
         blt.b   l_008_0025C                     ; 0023A
@@ -322,14 +327,14 @@ l_008_00360:
 ;-------------------------------------------------------------------------------
 ; UpdateViewCell - Works out which map cell and sub-cell the view (ViewObject, or the player's
 ; position in other modes) is in, and sets RedrawFlags when it changes (also when the height
-; crosses $A000, or dat_071_00224 changes).
+; crosses $A000, or ViewOctant changes).
 ;-------------------------------------------------------------------------------
 UpdateViewCell:
         moveq   #$0,d5                          ; 00376
-        move.b  (dat_071_00224).l,d0            ; 00378
-        cmp.b   (dat_071_00225).l,d0            ; 0037E
+        move.b  (ViewOctant).l,d0               ; 00378
+        cmp.b   (ViewOctantShown).l,d0          ; 0037E
         beq.b   l_008_00398                     ; 00384
-        move.b  d0,(dat_071_00225).l            ; 00386
+        move.b  d0,(ViewOctantShown).l          ; 00386
         tst.b   (dat_071_00156).l               ; 0038C
         bne.b   l_008_00398                     ; 00392
         ori.b   #$b,d5                          ; 00394
@@ -548,14 +553,14 @@ l_008_0062A:
         btst    #$0,d0                          ; 0064A
         beq.b   l_008_00664                     ; 0064E
         bclr    #$0,(RedrawFlags).l             ; 00650
-        bsr.w   sub_008_00E44                   ; 00658
+        bsr.w   BuildSceneryList                ; 00658
         btst    #$7,(RedrawFlags).l             ; 0065C
 l_008_00664:
         btst    #$1,(RedrawFlags).l             ; 00664
         beq.b   l_008_0068A                     ; 0066C
         bclr    #$1,(RedrawFlags).l             ; 0066E
         move.b  #$1,(dat_071_00235).l           ; 00676
-        bsr.w   sub_008_00E44                   ; 0067E
+        bsr.w   BuildSceneryList                ; 0067E
         btst    #$7,(RedrawFlags).l             ; 00682
 l_008_0068A:
         move.b  #$1,(dat_071_00234).l           ; 0068A
@@ -566,7 +571,7 @@ l_008_006A4:
         btst    #$3,(RedrawFlags).l             ; 006A4
         beq.b   l_008_006C2                     ; 006AC
         bclr    #$3,(RedrawFlags).l             ; 006AE
-        bsr.w   sub_008_00E44                   ; 006B6
+        bsr.w   BuildSceneryList                ; 006B6
         move.w  #$4a,(FrameStage).l             ; 006BA
 l_008_006C2:
         move.b  #$1,-$2c(a6)                    ; 006C2
@@ -1137,7 +1142,13 @@ l_008_00DFE:
         move.l  d1,(dat_071_0050C).l            ; 00E34
         move.b  #$1,(dat_071_0028B).l           ; 00E3A
         rts                                     ; 00E42
-sub_008_00E44:
+
+;-------------------------------------------------------------------------------
+; BuildSceneryList - Builds the list of what to draw around the viewer: goes through the cells
+; near the viewer's cell in an order chosen by the viewer's sub-cell and heading (the tables of
+; hunk 65), and for each adds its scenery items and the objects in it (AddCellScenery).
+;-------------------------------------------------------------------------------
+BuildSceneryList:
         link.w  a6,#$ffc4                       ; 00E44
         clr.b   (dat_071_00226).l               ; 00E48
         tst.b   (dat_071_00234).l               ; 00E4E
@@ -1151,8 +1162,8 @@ l_008_00E6A:
 l_008_00E72:
         move.l  #SceneryList,-$14(a6)           ; 00E72
         move.l  #dat_071_00380,-$24(a6)         ; 00E7A
-        move.l  #dat_066_00200,-$4(a6)          ; 00E82
-        move.l  #dat_002_02094,-$8(a6)          ; 00E8A
+        move.l  #SceneryMap2,-$4(a6)            ; 00E82
+        move.l  #SceneryBits2,-$8(a6)           ; 00E8A
         move.l  #dat_008_0155A,-$18(a6)         ; 00E92
         move.l  #dat_008_015AE,-$1c(a6)         ; 00E9A
         move.w  (ViewCellX).l,-$26(a6)          ; 00EA2
@@ -1175,14 +1186,14 @@ l_008_00EEA:
 l_008_00EFA:
         tst.b   (dat_071_00235).l               ; 00EFA
         bne.b   l_008_00F24                     ; 00F00
-        move.l  #dat_066_00000,-$4(a6)          ; 00F02
-        move.l  #dat_002_01094,-$8(a6)          ; 00F0A
+        move.l  #SceneryMap0,-$4(a6)            ; 00F02
+        move.l  #SceneryBits0,-$8(a6)           ; 00F0A
         move.l  #dat_073_00232,-$14(a6)         ; 00F12
         move.l  #dat_071_0037C,-$24(a6)         ; 00F1A
         bra.b   l_008_00F44                     ; 00F22
 l_008_00F24:
-        move.l  #dat_066_00100,-$4(a6)          ; 00F24
-        move.l  #dat_002_01894,-$8(a6)          ; 00F2C
+        move.l  #SceneryMap1,-$4(a6)            ; 00F24
+        move.l  #SceneryBits1,-$8(a6)           ; 00F2C
         move.l  #dat_073_008C2,-$14(a6)         ; 00F34
         move.l  #dat_071_0037E,-$24(a6)         ; 00F3C
 l_008_00F44:
@@ -1227,7 +1238,7 @@ l_008_00FBA:
         tst.b   (dat_071_00156).l               ; 00FDC
         bne.b   l_008_01034                     ; 00FE2
         asl.w   #$4,d0                          ; 00FE4
-        move.b  (dat_071_00224).l,d1            ; 00FE6
+        move.b  (ViewOctant).l,d1               ; 00FE6
         movea.l -$36(a6),a0                     ; 00FEC
         ext.w   d1                              ; 00FF0
         move.b  (a0,d1.w),d1                    ; 00FF2
@@ -1323,7 +1334,7 @@ l_008_010DC:
 	dc.b	$32,$3C,$00,$10,$30,$3C,$00,$00
 l_008_010EA:
         lea.l   (a3),a1                         ; 010EA
-        bsr.w   sub_008_0112C                   ; 010EC
+        bsr.w   AddCellScenery                  ; 010EC
         move.b  (a0)+,d0                        ; 010F0
         ext.w   d0                              ; 010F2
         adda.w  d0,a0                           ; 010F4
@@ -1340,7 +1351,14 @@ l_008_0110E:
 l_008_0111E:
         move.w  #$52,(FrameStage).l             ; 0111E
         jmp     (l_009_00020).l                 ; 01126
-sub_008_0112C:
+
+;-------------------------------------------------------------------------------
+; AddCellScenery - For one map cell (d0 X, d1 Z): if its bit is set in the scenery map's bits,
+; finds its list (FindSceneryColumn) and copies its items - each a byte of sub-cell and place,
+; a byte of shape number (bit 7: the position from the table dat_008_015EE rather than 4 bytes
+; of its own) - into the drawing list with the cell's objects (FindObjectsInCell).
+;-------------------------------------------------------------------------------
+AddCellScenery:
         movem.l d2-d5/a0-a5,-(a7)               ; 0112C
         move.w  d0,d2                           ; 01130
         move.w  d1,d3                           ; 01132
@@ -1364,7 +1382,7 @@ sub_008_0112C:
         lea.l   (a0),a5                         ; 01164
         adda.w  (a0),a5                         ; 01166
         addq.l  #$2,a5                          ; 01168
-        bsr.w   sub_008_0121C                   ; 0116A
+        bsr.w   FindSceneryColumn               ; 0116A
         add.w   d0,d0                           ; 0116E
         add.w   d0,d0                           ; 01170
         movea.l (a5,d0.w),a5                    ; 01172
@@ -1426,7 +1444,11 @@ l_008_01212:
         bsr.w   sub_008_01310                   ; 01212
         movem.l (a7)+,d2-d5/a0-a5               ; 01216
         rts                                     ; 0121A
-sub_008_0121C:
+
+;-------------------------------------------------------------------------------
+; FindSceneryColumn - A binary search of a scenery map row's columns for the cell's X.
+;-------------------------------------------------------------------------------
+FindSceneryColumn:
         moveq   #$0,d6                          ; 0121C
         move.w  (a0)+,d7                        ; 0121E
         asr.w   #$1,d7                          ; 01220

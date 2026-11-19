@@ -451,11 +451,13 @@
 ;         texts, the log disk messages.
 	include	"src/h064_code_texts.s"
 
-; Hunk 65: Data: a table used by hunk 8 (not worked out yet)
-	include	"src/h065_code_table65.s"
+; Hunk 65: Data: the orders in which the cells around the viewer are visited for the scenery
+;         (BuildSceneryList).
+	include	"src/h065_code_scenery_order.s"
 
-; Hunk 66: Data: a table used by hunk 8 (not worked out yet)
-	include	"src/h066_code_table66.s"
+; Hunk 66: Data: the three scenery maps (SceneryMap0-2: per map row, the cells with scenery
+;         and their items).
+	include	"src/h066_code_scenery_maps.s"
 
 ; Hunk 67: Data: the free flight's starting locations (StartPoints) and other tables used by
 ;         hunks 66, 5, 4, 28 and 29 (not worked out yet).
