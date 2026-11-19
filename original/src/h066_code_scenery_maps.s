@@ -11,7 +11,7 @@
 ; (from the map) of that row's list: a byte count, the columns (X) that have scenery in
 ; increasing order (words, searched by FindSceneryColumn), then a pointer to each such cell's
 ; list of scenery items. Maps 0 and 1 are on a coarse grid of blocks of 4 x 4 cells
-; (ViewBlockX / 0031A, the view's cell / 4; their own lists at FarSceneryList0 and
+; (ViewBlockX / ViewBlockZ, the view's cell / 4; their own lists at FarSceneryList0 and
 ; FarSceneryList1): the large features seen from afar. Map 2 is on the cells themselves
 ; (SceneryList): the detail near the viewer.
 SceneryMap0:
