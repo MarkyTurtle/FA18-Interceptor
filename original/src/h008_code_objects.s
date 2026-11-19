@@ -243,7 +243,7 @@ l_008_00278:
         jsr     (Nop).l                         ; 0027E
         rts                                     ; 00284
 sub_008_00286:
-        tst.b   (dat_071_00155).l               ; 00286
+        tst.b   (OutsideView).l                 ; 00286
         bne.w   l_008_00344                     ; 0028C
         lea.l   (ObjectTable).l,a2              ; 00290
         adda.w  (ViewObject).l,a2               ; 00296
@@ -360,7 +360,7 @@ l_008_003E8:
         move.w  d0,(dat_071_0042E).l            ; 003E8
 l_008_003EE:
         jsr     (UpdateAllObjects).l            ; 003EE
-        tst.b   (dat_071_00155).l               ; 003F4
+        tst.b   (OutsideView).l                 ; 003F4
         bne.b   l_008_0044E                     ; 003FA
         lea.l   (ObjectTable).l,a3              ; 003FC
         adda.w  (ViewObject).l,a3               ; 00402
@@ -521,7 +521,7 @@ sub_008_00598:
         move.w  #$27,(dat_071_0036E).l          ; 005DA
         jsr     (Nop).l                         ; 005E2
 l_008_005E8:
-        tst.b   (dat_071_00155).l               ; 005E8
+        tst.b   (OutsideView).l                 ; 005E8
         beq.b   l_008_00612                     ; 005EE
         move.l  (CameraX).l,d1                  ; 005F0
         move.l  (CameraZ).l,d2                  ; 005F6
@@ -1001,7 +1001,7 @@ l_008_00C92:
         move.w  d7,(CurrentObjectOffset).l      ; 00CAE
         cmp.w   (ViewObject).l,d7               ; 00CB4
         bne.b   l_008_00CCE                     ; 00CBA
-        tst.b   (dat_071_00155).l               ; 00CBC
+        tst.b   (OutsideView).l                 ; 00CBC
         bne.b   l_008_00CC8                     ; 00CC2
         move.w  #$7fff,d1                       ; 00CC4
 l_008_00CC8:
@@ -1028,7 +1028,7 @@ l_008_00CF6:
 l_008_00D0E:
         clr.b   (dat_071_00205).l               ; 00D0E
         clr.b   (dat_071_00208).l               ; 00D14
-        tst.b   (dat_071_00155).l               ; 00D1A
+        tst.b   (OutsideView).l                 ; 00D1A
         bne.w   l_008_00DDA                     ; 00D20
         cmpi.b  #$1,(dat_071_00207).l           ; 00D24
         bgt.b   l_008_00D4C                     ; 00D2C

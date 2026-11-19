@@ -753,7 +753,7 @@ l_026_00920:
         rts                                     ; 00920
 sub_026_00922:
         jsr     (sub_032_006EA).l               ; 00922
-        tst.b   (dat_071_00155).l               ; 00928
+        tst.b   (OutsideView).l                 ; 00928
         beq.b   l_026_00920                     ; 0092E
         tst.b   (dat_071_00185).l               ; 00930
         beq.b   l_026_00920                     ; 00936
@@ -796,7 +796,7 @@ l_026_009B8:
         blt.b   l_026_009EE                     ; 009C2
         cmpi.w  #$5460,d1                       ; 009C4
         bgt.b   l_026_009EE                     ; 009C8
-        move.b  (dat_071_00282).l,d0            ; 009CA
+        move.b  (ViewChoice).l,d0               ; 009CA
         beq.b   l_026_009EE                     ; 009D0
         cmpi.b  #$8,d0                          ; 009D2
         bge.b   l_026_009EE                     ; 009D6
@@ -807,7 +807,7 @@ l_026_009B8:
         blt.b   l_026_009E8                     ; 009E4
         subq.b  #$8,d0                          ; 009E6
 l_026_009E8:
-        move.b  d0,(dat_071_00282).l            ; 009E8
+        move.b  d0,(ViewChoice).l               ; 009E8
 l_026_009EE:
         cmpi.b  #$11,$62(a0)                    ; 009EE
         beq.b   l_026_00A04                     ; 009F4
@@ -821,14 +821,14 @@ l_026_00A04:
 l_026_00A0A:
         lea.l   dat_026_008A8(pc),a1            ; 00A0A
 l_026_00A0E:
-        move.b  (dat_071_00282).l,d0            ; 00A0E
+        move.b  (ViewChoice).l,d0               ; 00A0E
         ext.w   d0                              ; 00A14
         add.w   d0,d0                           ; 00A16
         move.w  d0,d1                           ; 00A18
         add.w   d0,d0                           ; 00A1A
         add.w   d1,d0                           ; 00A1C
         movem.w (a1,d0.w),d3-d5                 ; 00A1E
-        move.b  (dat_071_00155).l,d0            ; 00A24
+        move.b  (OutsideView).l,d0              ; 00A24
         blt.b   l_026_00A50                     ; 00A2A
         ext.w   d0                              ; 00A2C
         cmpi.w  #$1,d0                          ; 00A2E
@@ -850,7 +850,7 @@ l_026_00A48:
         asl.w   d0,d5                           ; 00A4E
 l_026_00A50:
         move.l  a0,-(a7)                        ; 00A50
-        move.b  (dat_071_00282).l,d0            ; 00A52
+        move.b  (ViewChoice).l,d0               ; 00A52
         cmpi.b  #$30,d7                         ; 00A58
         beq.b   l_026_00A68                     ; 00A5C
         tst.b   d0                              ; 00A5E

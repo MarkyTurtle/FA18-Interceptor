@@ -85,11 +85,15 @@ l_039_001C8:
         rts                                     ; 001C8
 l_039_001CA:
         rts                                     ; 001CA
-sub_039_001CC:
+
+;-------------------------------------------------------------------------------
+; ShowRadarRange - The radar's range: 10 (RadarScale $80), 20 ($40) or 40.
+;-------------------------------------------------------------------------------
+ShowRadarRange:
         tst.b   (dat_071_0020D).l               ; 001CC
         ble.b   l_039_001CA                     ; 001D2
         subq.b  #$1,(dat_071_0020D).l           ; 001D4
-        move.w  (dat_071_00412).l,d0            ; 001DA
+        move.w  (RadarScale).l,d0               ; 001DA
         cmpi.w  #$80,d0                         ; 001E0
         bne.b   l_039_001EA                     ; 001E4
         moveq   #$a,d0                          ; 001E6
@@ -132,7 +136,12 @@ l_039_0022A:
 	dc.b	$4E,$75
 l_039_00274:
         rts                                     ; 00274
-sub_039_00276:
+
+;-------------------------------------------------------------------------------
+; ShowDebugNumbers - Prints dat_071_004B6 and, while dat_071_00183 is set, the mouse's X and Y:
+; apparently a programmer's readout.
+;-------------------------------------------------------------------------------
+ShowDebugNumbers:
         move.w  #$9,(DrawColour).l              ; 00276
         move.w  (dat_071_004B6).l,d0            ; 0027E
         ext.l   d0                              ; 00284
@@ -176,7 +185,13 @@ l_039_002F4:
         lea.l   $8.w,a5                         ; 00316
         bsr.w   PrintNumber                     ; 0031A
         rts                                     ; 0031E
-sub_039_00320:
+
+;-------------------------------------------------------------------------------
+; ValueChanged - ValueChanged(d0 = value, a1 = the last value shown): whether an instrument's
+; number must be drawn again (it changed, or the panel is being redrawn); returns -1 if not,
+; otherwise the value, remembered with bit 15 set.
+;-------------------------------------------------------------------------------
+ValueChanged:
         tst.b   (dat_071_00207).l               ; 00320
         bgt.b   l_039_00354                     ; 00326
         move.w  (a1),d2                         ; 00328
@@ -204,7 +219,13 @@ l_039_0035A:
         rts                                     ; 0035C
 l_039_0035E:
         rts                                     ; 0035E
-sub_039_00360:
+
+;-------------------------------------------------------------------------------
+; ShowWeapon - The selected weapon and what is left: GUN and the rounds (+$60) for weapon $1x,
+; SW and the Sidewinders (+$5F high nibble) for $2x, AM and the AMRAAMs (+$5F low nibble) for
+; $3x.
+;-------------------------------------------------------------------------------
+ShowWeapon:
         move.w  #$d,(DrawColour).l              ; 00360
         lea.l   (ObjectTable).l,a1              ; 00368
         adda.w  (ViewObject).l,a1               ; 0036E
@@ -281,7 +302,14 @@ l_039_00434:
         moveq   #$1,d4                          ; 0045C
         bsr.w   sub_039_011A6                   ; 0045E
         rts                                     ; 00462
-sub_039_00464:
+
+;-------------------------------------------------------------------------------
+; ShowGLoad - Apparently the G meter: the pitch rotation rate (+$56, plus a little of
+; dat_071_00316) / 8, plus or minus 1 g (10 tenths) as the aircraft is upright or not
+; (dat_071_0029A bit 1), with its sign; the F/A-18 ($11) and F-16 cockpits put it in different
+; places.
+;-------------------------------------------------------------------------------
+ShowGLoad:
         lea.l   (ObjectTable).l,a4              ; 00464
         adda.w  (ViewObject).l,a4               ; 0046A
         move.w  #$d,(DrawColour).l              ; 00470
@@ -384,8 +412,13 @@ l_039_00590:
         rts                                     ; 005B2
 l_039_005B4:
         rts                                     ; 005B4
-sub_039_005B6:
-        tst.b   (dat_071_00155).l               ; 005B6
+
+;-------------------------------------------------------------------------------
+; ShowHeadingText - In an outside view (OutsideView): "HDG" and the heading in degrees (+$68
+; / 80).
+;-------------------------------------------------------------------------------
+ShowHeadingText:
+        tst.b   (OutsideView).l                 ; 005B6
         beq.w   l_039_00648                     ; 005BC
         tst.b   (dat_071_001A9).l               ; 005C0
         beq.b   l_039_005B4                     ; 005C6
@@ -423,7 +456,11 @@ l_039_00648:
         rts                                     ; 00648
 sub_039_0064A:
         rts                                     ; 0064A
-sub_039_0064C:
+
+;-------------------------------------------------------------------------------
+; ShowSpeed - The speed readout: the speed flown (+$6E) / 12; 0 for a destroyed aircraft.
+;-------------------------------------------------------------------------------
+ShowSpeed:
         lea.l   (ObjectTable).l,a1              ; 0064C
         adda.w  (ViewObject).l,a1               ; 00652
         moveq   #$0,d0                          ; 00658
@@ -433,7 +470,7 @@ sub_039_0064C:
         bge.b   l_039_0066A                     ; 00666
         neg.w   d0                              ; 00668
 l_039_0066A:
-        tst.b   (dat_071_00155).l               ; 0066A
+        tst.b   (OutsideView).l                 ; 0066A
         beq.b   l_039_00686                     ; 00670
         tst.b   (dat_071_001A9).l               ; 00672
         beq.b   l_039_00692                     ; 00678
@@ -441,8 +478,8 @@ l_039_0066A:
         beq.b   l_039_00692                     ; 00682
         bra.b   l_039_00694                     ; 00684
 l_039_00686:
-        lea.l   (dat_071_002C8).l,a1            ; 00686
-        bsr.w   sub_039_00320                   ; 0068C
+        lea.l   (SpeedShown).l,a1               ; 00686
+        bsr.w   ValueChanged                    ; 0068C
         bge.b   l_039_00694                     ; 00690
 l_039_00692:
         rts                                     ; 00692
@@ -455,7 +492,7 @@ l_039_00694:
         moveq   #$3,d0                          ; 006A8
         lea.l   (dat_071_001CF).l,a2            ; 006AA
         lea.l   $4(a2),a0                       ; 006B0
-        tst.b   (dat_071_00155).l               ; 006B4
+        tst.b   (OutsideView).l                 ; 006B4
         beq.b   l_039_006CA                     ; 006BA
         lea.l   dat_039_00058(pc),a1            ; 006BC
         lea.l   $1cd2.w,a4                      ; 006C0
@@ -467,7 +504,7 @@ l_039_006CA:
         lea.l   $1e.w,a5                        ; 006D2
 l_039_006D6:
         move.w  #$fca,d6                        ; 006D6
-        tst.b   (dat_071_00155).l               ; 006DA
+        tst.b   (OutsideView).l                 ; 006DA
         bne.b   l_039_006EA                     ; 006E0
         move.w  #$4,d5                          ; 006E2
         bra.w   l_039_00E40                     ; 006E6
@@ -483,7 +520,12 @@ l_039_006EA:
         move.w  #$f3a,d6                        ; 0070E
         move.w  #$c,d5                          ; 00712
         bra.w   sub_039_00E1A                   ; 00716
-sub_039_0071A:
+
+;-------------------------------------------------------------------------------
+; ShowAltitude - The altitude readout from the height (+$18), at most 99,999 (or dat_071_0002C
+; in another mode).
+;-------------------------------------------------------------------------------
+ShowAltitude:
         tst.b   (dat_071_00174).l               ; 0071A
         beq.b   l_039_00738                     ; 00720
         move.l  (dat_071_0002C).l,d0            ; 00722
@@ -502,7 +544,7 @@ l_039_00738:
         add.l   d0,d0                           ; 00750
         add.l   d1,d0                           ; 00752
 l_039_00754:
-        tst.b   (dat_071_00155).l               ; 00754
+        tst.b   (OutsideView).l                 ; 00754
         beq.b   l_039_00770                     ; 0075A
         tst.b   (dat_071_001A9).l               ; 0075C
         beq.b   l_039_00790                     ; 00762
@@ -512,7 +554,7 @@ l_039_00754:
 l_039_00770:
         tst.b   (dat_071_00207).l               ; 00770
         bgt.b   l_039_007A6                     ; 00776
-        move.l  (dat_071_002D0).l,d2            ; 00778
+        move.l  (AltitudeShown).l,d2            ; 00778
         blt.b   l_039_00792                     ; 0077E
         cmp.l   d2,d0                           ; 00780
         beq.b   l_039_00790                     ; 00782
@@ -522,13 +564,13 @@ l_039_00770:
 l_039_00790:
         rts                                     ; 00790
 l_039_00792:
-        andi.l  #$7fffffff,(dat_071_002D0).l    ; 00792
+        andi.l  #$7fffffff,(AltitudeShown).l    ; 00792
         andi.l  #$7fffffff,d2                   ; 0079C
         move.l  d2,d0                           ; 007A2
         bra.b   l_039_007B6                     ; 007A4
 l_039_007A6:
-        move.l  d0,(dat_071_002D0).l            ; 007A6
-        ori.l   #$80000000,(dat_071_002D0).l    ; 007AC
+        move.l  d0,(AltitudeShown).l            ; 007A6
+        ori.l   #$80000000,(AltitudeShown).l    ; 007AC
 l_039_007B6:
         move.l  d0,(BCDIn).l                    ; 007B6
         jsr     (BinToBCD).l                    ; 007BC
@@ -536,7 +578,7 @@ l_039_007B6:
         lea.l   dat_039_00028(pc),a1            ; 007C4
         lea.l   (dat_071_001CE).l,a2            ; 007C8
         lea.l   $6(a2),a0                       ; 007CE
-        tst.b   (dat_071_00155).l               ; 007D2
+        tst.b   (OutsideView).l                 ; 007D2
         beq.b   l_039_007E4                     ; 007D8
         lea.l   $1cda.w,a4                      ; 007DA
         lea.l   $1a.w,a5                        ; 007DE
@@ -546,7 +588,7 @@ l_039_007E4:
         lea.l   $1e.w,a5                        ; 007E8
 l_039_007EC:
         move.w  #$fca,d6                        ; 007EC
-        tst.b   (dat_071_00155).l               ; 007F0
+        tst.b   (OutsideView).l                 ; 007F0
         bne.b   l_039_00800                     ; 007F6
         move.w  #$4,d5                          ; 007F8
         bra.w   l_039_00E40                     ; 007FC
@@ -561,13 +603,17 @@ l_039_00800:
         move.w  #$f3a,d6                        ; 0081E
         move.w  #$c,d5                          ; 00822
         bra.w   sub_039_00E1A                   ; 00826
-sub_039_0082A:
+
+;-------------------------------------------------------------------------------
+; ShowFuel - The fuel readout: the viewed aircraft's fuel (+$72) / 256, five digits.
+;-------------------------------------------------------------------------------
+ShowFuel:
         lea.l   (ObjectTable).l,a1              ; 0082A
         adda.w  (ViewObject).l,a1               ; 00830
         move.l  $72(a1),d0                      ; 00836
         asr.l   #$8,d0                          ; 0083A
-        lea.l   (dat_071_002C6).l,a1            ; 0083C
-        bsr.w   sub_039_00320                   ; 00842
+        lea.l   (FuelShown).l,a1                ; 0083C
+        bsr.w   ValueChanged                    ; 00842
         bge.b   l_039_0084A                     ; 00846
         rts                                     ; 00848
 l_039_0084A:
@@ -581,8 +627,12 @@ l_039_0084A:
         lea.l   $1ca4.w,a4                      ; 00868
         lea.l   $c.w,a5                         ; 0086C
         move.w  #$0,d5                          ; 00870
-        bra.w   sub_039_00E36                   ; 00874
-sub_039_00878:
+        bra.w   DrawPanelDigits                 ; 00874
+
+;-------------------------------------------------------------------------------
+; ShowThrottle - The throttle readout in percent: +$2B (0-120) x 256 / $133.
+;-------------------------------------------------------------------------------
+ShowThrottle:
         lea.l   (ObjectTable).l,a1              ; 00878
         adda.w  (ViewObject).l,a1               ; 0087E
         move.b  $2b(a1),d0                      ; 00884
@@ -593,8 +643,8 @@ sub_039_00878:
 l_039_00890:
         ext.l   d0                              ; 00890
         divu.w  #$133,d0                        ; 00892
-        lea.l   (dat_071_002CC).l,a1            ; 00896
-        bsr.w   sub_039_00320                   ; 0089C
+        lea.l   (ThrottleShown).l,a1            ; 00896
+        bsr.w   ValueChanged                    ; 0089C
         bge.b   l_039_008A4                     ; 008A0
         rts                                     ; 008A2
 l_039_008A4:
@@ -609,7 +659,12 @@ l_039_008A4:
         lea.l   $1e.w,a5                        ; 008C6
         move.w  #$4,d5                          ; 008CA
         bra.w   l_039_00E3C                     ; 008CE
-sub_039_008D2:
+
+;-------------------------------------------------------------------------------
+; ShowGridZ - The position readout's Z: (+$1C - $10000000) / 256 / $7000 + $177, three digits;
+; drawn only when it changes (twice, for both display buffers).
+;-------------------------------------------------------------------------------
+ShowGridZ:
         lea.l   (ObjectTable).l,a1              ; 008D2
         adda.w  (ViewObject).l,a1               ; 008D8
         move.l  $1c(a1),d0                      ; 008DE
@@ -617,14 +672,14 @@ sub_039_008D2:
         asr.l   #$8,d0                          ; 008E8
         divs.w  #$7000,d0                       ; 008EA
         addi.w  #$177,d0                        ; 008EE
-        cmp.w   (dat_071_0032C).l,d0            ; 008F2
+        cmp.w   (GridZShown).l,d0               ; 008F2
         bne.b   l_039_0090A                     ; 008F8
         tst.b   (dat_071_00209).l               ; 008FA
         ble.b   l_039_0095E                     ; 00900
         subq.b  #$1,(dat_071_00209).l           ; 00902
         bra.b   l_039_00918                     ; 00908
 l_039_0090A:
-        move.w  d0,(dat_071_0032C).l            ; 0090A
+        move.w  d0,(GridZShown).l               ; 0090A
         move.b  #$2,(dat_071_00209).l           ; 00910
 l_039_00918:
         tst.b   (dat_071_00174).l               ; 00918
@@ -641,13 +696,17 @@ l_039_0092E:
         lea.l   $24.w,a5                        ; 00942
         move.w  #$4,d5                          ; 00946
         movem.l d0/a0-a2/a4-a5,-(a7)            ; 0094A
-        bsr.w   sub_039_00E36                   ; 0094E
+        bsr.w   DrawPanelDigits                 ; 0094E
         movem.l (a7)+,d0/a0-a2/a4-a5            ; 00952
         move.w  #$c,d5                          ; 00956
-        bra.w   sub_039_00E36                   ; 0095A
+        bra.w   DrawPanelDigits                 ; 0095A
 l_039_0095E:
         rts                                     ; 0095E
-sub_039_00960:
+
+;-------------------------------------------------------------------------------
+; ShowGridX - The position readout's X, worked out as ShowGridZ from +$14.
+;-------------------------------------------------------------------------------
+ShowGridX:
         lea.l   (ObjectTable).l,a1              ; 00960
         adda.w  (ViewObject).l,a1               ; 00966
         move.l  $14(a1),d0                      ; 0096C
@@ -655,14 +714,14 @@ sub_039_00960:
         asr.l   #$8,d0                          ; 00976
         divs.w  #$5999,d0                       ; 00978
         addi.w  #$4c4,d0                        ; 0097C
-        cmp.w   (dat_071_0032E).l,d0            ; 00980
+        cmp.w   (GridXShown).l,d0               ; 00980
         bne.b   l_039_00998                     ; 00986
         tst.b   (dat_071_0020A).l               ; 00988
         ble.b   l_039_009EC                     ; 0098E
         subq.b  #$1,(dat_071_0020A).l           ; 00990
         bra.b   l_039_009A6                     ; 00996
 l_039_00998:
-        move.w  d0,(dat_071_0032E).l            ; 00998
+        move.w  d0,(GridXShown).l               ; 00998
         move.b  #$2,(dat_071_0020A).l           ; 0099E
 l_039_009A6:
         tst.b   (dat_071_00174).l               ; 009A6
@@ -679,10 +738,10 @@ l_039_009BC:
         lea.l   $24.w,a5                        ; 009D0
         move.w  #$4,d5                          ; 009D4
         movem.l d0/a0-a2/a4-a5,-(a7)            ; 009D8
-        bsr.w   sub_039_00E36                   ; 009DC
+        bsr.w   DrawPanelDigits                 ; 009DC
         movem.l (a7)+,d0/a0-a2/a4-a5            ; 009E0
         move.w  #$c,d5                          ; 009E4
-        bra.w   sub_039_00E36                   ; 009E8
+        bra.w   DrawPanelDigits                 ; 009E8
 l_039_009EC:
         rts                                     ; 009EC
 
@@ -946,7 +1005,7 @@ l_039_00D06:
         move.w  #$0,d3                          ; 00D12
 l_039_00D16:
         movem.l (a7)+,d0/d6-d7/a1-a2/a4-a5      ; 00D16
-        tst.b   (dat_071_00155).l               ; 00D1A
+        tst.b   (OutsideView).l                 ; 00D1A
         beq.b   l_039_00D3E                     ; 00D20
         tst.b   (dat_071_00163).l               ; 00D22
         beq.b   l_039_00D78                     ; 00D28
@@ -967,7 +1026,7 @@ l_039_00D3E:
         movem.l (a7)+,d0/d3/d6-d7/a1-a2/a4-a5   ; 00D5C
         move.w  d3,d5                           ; 00D60
 sub_039_00D62:
-        tst.b   (dat_071_00155).l               ; 00D62
+        tst.b   (OutsideView).l                 ; 00D62
         beq.w   sub_039_00E94                   ; 00D68
         tst.b   (dat_071_00163).l               ; 00D6C
         beq.b   l_039_00D78                     ; 00D72
@@ -1057,7 +1116,12 @@ sub_039_00E26:
         moveq   #$1,d4                          ; 00E2E
         bra.b   l_039_00E52                     ; 00E30
 	dc.b	$78,$01,$60,$1C
-sub_039_00E36:
+
+;-------------------------------------------------------------------------------
+; DrawPanelDigits - Draws an instrument's digits (BCDOut) on the panel: a4 the screen offset,
+; a1 the digits' columns, d5 the colour.
+;-------------------------------------------------------------------------------
+DrawPanelDigits:
         move.w  #$f3a,d6                        ; 00E36
         bra.b   l_039_00E40                     ; 00E3A
 l_039_00E3C:
@@ -1921,7 +1985,7 @@ TypeClick:
         moveq   #$1,d0                          ; 0186A
         bra.b   l_039_0189A                     ; 0186C
 sub_039_0186E:
-        tst.b   (dat_071_00155).l               ; 0186E
+        tst.b   (OutsideView).l                 ; 0186E
         bne.b   l_039_018CC                     ; 01874
         movem.l d0-d7/a0-a4,-(a7)               ; 01876
         ext.l   d0                              ; 0187A
@@ -1932,7 +1996,7 @@ l_039_01880:
         moveq   #$2,d1                          ; 01882
         bra.b   l_039_0189A                     ; 01884
 sub_039_01886:
-        tst.b   (dat_071_00155).l               ; 01886
+        tst.b   (OutsideView).l                 ; 01886
         bne.b   l_039_018CC                     ; 0188C
 
 ;-------------------------------------------------------------------------------

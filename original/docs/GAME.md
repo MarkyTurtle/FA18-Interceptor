@@ -238,8 +238,30 @@ instruments are drawn over it each frame (stage `$D0`), several only every few f
   type - MIG-29, MIG-25, AF-1, 707, 767, F-16, CRUISE, or NO SIG while its signature is
   unconfirmed - and in turn its altitude, heading and speed.
 * **The status lights** beside the radar (`DrawStatusLights`, `StatusLights`).
-* The numbers of the other instruments and the head-up display's texts (hunk 39, "GUN RNG
-  SHOOT"...) and hunk 40 are not worked out yet.
+* **The numbers** (hunk 39), each drawn only when its value changes (`ValueChanged`, the last
+  value shown kept in `FuelShown`, `SpeedShown`...) since anything drawn must go into both
+  display buffers:
+
+  | Routine | Shows |
+  |---|---|
+  | `ShowSpeed` | the speed flown (`+$6E`) / 12 |
+  | `ShowAltitude` | the height (`+$18`), up to 99,999 |
+  | `ShowFuel` | the fuel (`+$72`) / 256 |
+  | `ShowThrottle` | the throttle (`+$2B`, 0-120) as a percentage |
+  | `ShowWeapon` | GUN and its rounds (`+$60`), SW and the Sidewinders, or AM and the AMRAAMs (`+$5F`), by the selected weapon (`+$63`: `$1x`, `$2x`, `$3x`) |
+  | `ShowRadarRange` | the radar's range, 10, 20 or 40 (`RadarScale`) |
+  | `ShowGridX`, `ShowGridZ` | the position as two 3-digit grid numbers: (position - `$10000000`) / `$700000` + 375 |
+  | `ShowGLoad` | apparently the G meter, from the pitch rate (`+$56`) |
+  | `ShowHeadingText` | "HDG" and the heading in degrees, written over an outside view |
+
+  The F/A-18 and F-16 cockpits put some of them in different places. `ShowDebugNumbers` prints
+  the mouse's position when a flag is set - apparently left from development.
+* **The head-up display** (hunk 40, `DrawHUD`), drawn only in the cockpit (`OutsideView` 0): the
+  gun cross at the centre (`DrawGunCross`), a target box that slides towards the target on the
+  screen (`DrawTargetBox`), the weapon and G readouts; its other symbols are not worked out yet.
+
+`OutsideView` is set for the outside views (the keypad chooses the view, `ViewChoice`): then the
+view fills more of the screen and the heading, speed and height are written over it instead.
 
 The menus, briefings and typed input use the same screen: **the text printer** (`PrintText`)
 types the queued pages a character at a time with a click, drawing each character into the
@@ -484,5 +506,5 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
 * The 3D pipeline (hunks 13-15) and the model format (hunks 41-58).
 * The ground, sky and scenery; the map and what is in each cell.
 * The head-up display and most instruments (hunks 39-40).
-* The views (`dat_071_00155`, `CameraSequence`) and the training's manoeuvres.
+* The views (`OutsideView`, `ViewChoice`, `CameraSequence`) and the training's manoeuvres.
 * The rest of the flight log's words, and which sound file is which effect.

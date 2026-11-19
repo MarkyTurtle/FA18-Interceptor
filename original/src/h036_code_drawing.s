@@ -1008,7 +1008,7 @@ l_036_00A32:
         bsr.w   sub_036_00FD6                   ; 00A78
 l_036_00A7C:
         move.l  (a7)+,(dat_071_000B2).l         ; 00A7C
-        tst.b   (dat_071_00155).l               ; 00A82
+        tst.b   (OutsideView).l                 ; 00A82
         bne.b   l_036_00AAC                     ; 00A88
         jsr     (sub_033_0002A).l               ; 00A8A
         bne.b   l_036_00AAC                     ; 00A90

@@ -106,7 +106,7 @@ l_022_00110:
         bne.b   l_022_000FC                     ; 00116
         tst.w   (CurrentObject).l               ; 00118
         bne.b   l_022_0012C                     ; 0011E
-        tst.b   (dat_071_00155).l               ; 00120
+        tst.b   (OutsideView).l                 ; 00120
         bne.b   l_022_00144                     ; 00126
         bra.w   l_022_001D6                     ; 00128
 l_022_0012C:
@@ -226,7 +226,7 @@ l_022_002BA:
         move.w  (CurrentObject).l,d0            ; 002BA
         cmp.w   (dat_071_002AC).l,d0            ; 002C0
         bne.b   l_022_002F6                     ; 002C6
-        tst.b   (dat_071_00155).l               ; 002C8
+        tst.b   (OutsideView).l                 ; 002C8
         bne.b   l_022_002F6                     ; 002CE
         btst    #$0,$3(a1)                      ; 002D0
         beq.b   l_022_002F6                     ; 002D6
@@ -595,7 +595,7 @@ l_022_00710:
         move.b  #$1,(dat_071_00195).l           ; 00726
         move.b  #$4,(MissionResult).l           ; 0072E
 l_022_00736:
-        tst.b   (dat_071_00155).l               ; 00736
+        tst.b   (OutsideView).l                 ; 00736
         bne.b   l_022_00742                     ; 0073C
         bra.w   l_022_00816                     ; 0073E
 l_022_00742:

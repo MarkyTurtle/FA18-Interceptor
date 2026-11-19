@@ -16,7 +16,7 @@ sub_029_00002:
         cmpi.l  #$fe800000,(dat_071_00436).l    ; 00016
         bge.b   l_029_00000                     ; 00020
         addq.b  #$1,(dat_071_00253).l           ; 00022
-        tst.b   (dat_071_00155).l               ; 00028
+        tst.b   (OutsideView).l                 ; 00028
         beq.b   l_029_00038                     ; 0002E
         lea.l   (CameraX).l,a4                  ; 00030
         bra.b   l_029_00048                     ; 00036
@@ -148,7 +148,7 @@ l_029_001A2:
 sub_029_001A4:
         tst.b   (dat_071_0017D).l               ; 001A4
         ble.b   l_029_001A2                     ; 001AA
-        tst.b   (dat_071_00155).l               ; 001AC
+        tst.b   (OutsideView).l                 ; 001AC
         beq.b   l_029_001A2                     ; 001B2
         link.w  a6,#$fff6                       ; 001B4
         move.l  #$fffff,(dat_071_000B6).l       ; 001B8

@@ -1,5 +1,6 @@
 ; F/A-18 Interceptor - hunk 40 (code)
-; Display drawing not yet identified (points and lines for objects).
+; The head-up display (DrawHUD: the gun cross, the target box and other symbols; most not
+; worked out yet).
 ; Included by ../f18_main.s.
 
 ;===============================================================================
@@ -24,24 +25,34 @@ l_040_0005C:
         clr.b   (dat_071_00284).l               ; 0005C
 l_040_00062:
         rts                                     ; 00062
-sub_040_00064:
+
+;-------------------------------------------------------------------------------
+; DrawHUD - The head-up display, in the cockpit only (not OutsideView): the gun cross, the
+; pitch ladder and the other symbols (hunk 40), the weapon, and while flying the G meter and
+; more.
+;-------------------------------------------------------------------------------
+DrawHUD:
         move.l  #$fffff,(dat_071_000B6).l       ; 00064
-        tst.b   (dat_071_00155).l               ; 0006E
+        tst.b   (OutsideView).l                 ; 0006E
         bne.b   l_040_0005C                     ; 00074
-        bsr.w   sub_040_000A6                   ; 00076
+        bsr.w   DrawGunCross                    ; 00076
         bsr.w   sub_040_00EEE                   ; 0007A
-        bsr.w   sub_040_01078                   ; 0007E
+        bsr.w   DrawTargetBox                   ; 0007E
         bsr.w   sub_040_00B70                   ; 00082
-        jsr     (sub_039_00360).l               ; 00086
+        jsr     (ShowWeapon).l                  ; 00086
         tst.b   (dat_071_00171).l               ; 0008C
         beq.b   l_040_00062                     ; 00092
-        jsr     (sub_039_00464).l               ; 00094
+        jsr     (ShowGLoad).l                   ; 00094
         bsr.w   sub_040_00118                   ; 0009A
         bsr.w   sub_040_008E0                   ; 0009E
         rts                                     ; 000A2
 l_040_000A4:
         rts                                     ; 000A4
-sub_040_000A6:
+
+;-------------------------------------------------------------------------------
+; DrawGunCross - The small cross at the centre of the head-up display (160, 129).
+;-------------------------------------------------------------------------------
+DrawGunCross:
         move.w  #$a0,d0                         ; 000A6
         add.w   (ViewX).l,d0                    ; 000AA
         cmpi.w  #$1,d0                          ; 000B0
@@ -570,7 +581,7 @@ l_040_008DC:
 l_040_008DE:
         rts                                     ; 008DE
 sub_040_008E0:
-        cmpi.w  #$80,(dat_071_00412).l          ; 008E0
+        cmpi.w  #$80,(RadarScale).l             ; 008E0
         bne.b   l_040_008DE                     ; 008E8
         lea.l   (ObjectTable).l,a1              ; 008EA
         adda.w  (ViewObject).l,a1               ; 008F0
@@ -1118,7 +1129,13 @@ l_040_01064:
         blt.w   l_040_00FF0                     ; 01072
 l_040_01076:
         rts                                     ; 01076
-sub_040_01078:
+
+;-------------------------------------------------------------------------------
+; DrawTargetBox - The head-up display's target box: with a weapon selected and a target on the
+; screen (dat_071_00306) the box (dat_071_00312) moves towards it a few pixels a frame (faster
+; with WarningFlags bit 14), then is drawn with DrawLine; apparently the seeker's lock.
+;-------------------------------------------------------------------------------
+DrawTargetBox:
         clr.w   (dat_071_0037A).l               ; 01078
         move.w  #$a,(DrawColour).l              ; 0107E
 l_040_01086:

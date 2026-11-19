@@ -234,12 +234,12 @@ l_028_00BC6:
         bgt.b   l_028_00C0C                     ; 00BE8
         asr.l   #$4,d0                          ; 00BEA
         move.l  #$8000,d7                       ; 00BEC
-        cmpi.w  #$2,(dat_071_00412).l           ; 00BF2
+        cmpi.w  #$2,(RadarScale).l              ; 00BF2
         bge.b   l_028_00C02                     ; 00BFA
         divu.w  #$2,d7                          ; 00BFC
         bra.b   l_028_00C08                     ; 00C00
 l_028_00C02:
-        divu.w  (dat_071_00412).l,d7            ; 00C02
+        divu.w  (RadarScale).l,d7               ; 00C02
 l_028_00C08:
         mulu.w  d7,d0                           ; 00C08
         asr.l   #$4,d0                          ; 00C0A
@@ -270,7 +270,7 @@ sub_028_00C5A:
         move.w  #$7,-$30(a6)                    ; 00C70
         move.w  #$7,-$2e(a6)                    ; 00C76
 l_028_00C7C:
-        tst.b   (dat_071_00155).l               ; 00C7C
+        tst.b   (OutsideView).l                 ; 00C7C
         beq.b   l_028_00C8C                     ; 00C82
         lea.l   (CameraX).l,a4                  ; 00C84
         bra.b   l_028_00C9C                     ; 00C8A
@@ -539,12 +539,12 @@ l_028_00F88:
         tst.b   (dat_071_001AD).l               ; 00F92
         bne.b   l_028_00FBA                     ; 00F98
         move.l  #$8000,d7                       ; 00F9A
-        cmpi.w  #$2,(dat_071_00412).l           ; 00FA0
+        cmpi.w  #$2,(RadarScale).l              ; 00FA0
         bge.b   l_028_00FB0                     ; 00FA8
         divu.w  #$2,d7                          ; 00FAA
         bra.b   l_028_00FB6                     ; 00FAE
 l_028_00FB0:
-        divu.w  (dat_071_00412).l,d7            ; 00FB0
+        divu.w  (RadarScale).l,d7               ; 00FB0
 l_028_00FB6:
         mulu.w  d7,d6                           ; 00FB6
         asr.l   #$8,d6                          ; 00FB8

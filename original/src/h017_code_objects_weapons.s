@@ -316,7 +316,7 @@ sub_017_00496:
 l_017_004AE:
         cmpi.b  #$9,d0                          ; 004AE
         bne.b   l_017_004C2                     ; 004B2
-        tst.b   (dat_071_00155).l               ; 004B4
+        tst.b   (OutsideView).l                 ; 004B4
         bne.b   l_017_004C2                     ; 004BA
         bsr.w   EjectSound                      ; 004BC
         bra.b   l_017_004E0                     ; 004C0
@@ -653,18 +653,18 @@ l_017_0092A:
         lea.l   (dat_017_009EA).l,a5            ; 0093E
         adda.w  d0,a5                           ; 00944
         move.l  (a5),d0                         ; 00946
-        move.b  d0,(dat_071_00282).l            ; 00948
+        move.b  d0,(ViewChoice).l               ; 00948
 l_017_0094E:
         cmpi.b  #$2,(GameMode).l                ; 0094E
         bne.b   l_017_00970                     ; 00956
-        tst.b   (dat_071_00155).l               ; 00958
+        tst.b   (OutsideView).l                 ; 00958
         beq.b   l_017_00970                     ; 0095E
         lsr.w   #$8,d0                          ; 00960
         andi.b  #$ff,d0                         ; 00962
         bgt.b   l_017_0096A                     ; 00966
         moveq   #-1,d0                          ; 00968
 l_017_0096A:
-        move.b  d0,(dat_071_00155).l            ; 0096A
+        move.b  d0,(OutsideView).l              ; 0096A
 l_017_00970:
         move.b  #$ff,(RedrawFlags).l            ; 00970
         cmpi.b  #$4,d1                          ; 00978
@@ -700,7 +700,7 @@ EjectPilot:
         move.l  a1,d1                           ; 00A2A
         subi.l  #ObjectTable,d1                 ; 00A2C
         move.w  d1,(EjectedPilot).l             ; 00A32
-        tst.b   (dat_071_00155).l               ; 00A38
+        tst.b   (OutsideView).l                 ; 00A38
         bne.b   l_017_00A4C                     ; 00A3E
         move.w  (CurrentObject).l,d1            ; 00A40
         jsr     (ViewFollow).l                  ; 00A46

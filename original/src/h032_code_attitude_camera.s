@@ -25,7 +25,7 @@ UpdateAttitude:
         movem.l $3e(a1),d2-d4                   ; 0001E
         move.l  #$7d0,d5                        ; 00024
         moveq   #$0,d6                          ; 0002A
-        tst.b   (dat_071_00155).l               ; 0002C
+        tst.b   (OutsideView).l                 ; 0002C
         bne.b   l_032_0004E                     ; 00032
         move.w  $6a(a1),d6                      ; 00034
         cmpi.w  #$3840,d6                       ; 00038
@@ -530,10 +530,10 @@ l_032_00592:
 
 ;-------------------------------------------------------------------------------
 ; SetupCamera - The camera, once a frame: from the cockpit (sub_032_00710) or, in the outside
-; views (dat_071_00155), from a point near the viewed object (sub_032_005B2).
+; views (OutsideView), from a point near the viewed object (sub_032_005B2).
 ;-------------------------------------------------------------------------------
 SetupCamera:
-        tst.b   (dat_071_00155).l               ; 00594
+        tst.b   (OutsideView).l                 ; 00594
         beq.b   l_032_005A2                     ; 0059A
         bsr.w   SetOutsideCamera                ; 0059C
         rts                                     ; 005A0
@@ -595,7 +595,7 @@ l_032_00608:
 l_032_0063E:
         moveq   #$0,d5                          ; 0063E
         move.w  (ViewObject).l,d5               ; 00640
-        or.b    (dat_071_00282).l,d5            ; 00646
+        or.b    (ViewChoice).l,d5               ; 00646
         cmp.w   (dat_071_00430).l,d5            ; 0064C
         beq.b   l_032_0065E                     ; 00652
         move.w  d5,(dat_071_00430).l            ; 00654
@@ -653,7 +653,7 @@ sub_032_00710:
         bsr.w   sub_032_00F3E                   ; 00726
         lea.l   (ObjectTable).l,a0              ; 0072A
         adda.w  (ViewObject).l,a0               ; 00730
-        tst.b   (dat_071_00155).l               ; 00736
+        tst.b   (OutsideView).l                 ; 00736
         bne.b   l_032_00752                     ; 0073C
         movem.w $66(a0),d0/d2/d4                ; 0073E
         lea.l   (dat_071_005BA).l,a1            ; 00744

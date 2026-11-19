@@ -133,7 +133,7 @@ l_033_0014E:
 l_033_00152:
         lea.l   (dat_072_03000).l,a1            ; 00152
         move.w  #$4,(a1)+                       ; 00158
-        tst.b   (dat_071_00155).l               ; 0015C
+        tst.b   (OutsideView).l                 ; 0015C
         bne.b   l_033_00170                     ; 00162
         move.w  (dat_071_0029A).l,d6            ; 00164
         andi.w  #$2,d6                          ; 0016A
@@ -259,7 +259,7 @@ sub_033_00318:
         bsr.w   PutCornerTR                     ; 00326
         bsr.w   PutCornerBR                     ; 0032A
         bsr.w   PutCornerBL                     ; 0032E
-        tst.b   (dat_071_00155).l               ; 00332
+        tst.b   (OutsideView).l                 ; 00332
         bne.b   l_033_00342                     ; 00338
         move.w  (dat_071_0045A).l,d0            ; 0033A
         bra.b   l_033_00348                     ; 00340

@@ -17,7 +17,7 @@ l_010_00010:
 sub_010_00014:
         btst    #$6,(dat_071_0022B).l           ; 00014
         bne.b   l_010_00000                     ; 0001C
-        tst.b   (dat_071_00155).l               ; 0001E
+        tst.b   (OutsideView).l                 ; 0001E
         bne.w   l_010_000DC                     ; 00024
         move.w  (CurrentObjectOffset).l,d0      ; 00028
         cmp.w   (ViewObject).l,d0               ; 0002E
@@ -78,7 +78,7 @@ l_010_000E4:
         move.w  d1,-$96(a6)                     ; 000EA
         tst.b   (dat_071_001AD).l               ; 000EE
         bne.b   l_010_00108                     ; 000F4
-        move.w  (dat_071_00412).l,d3            ; 000F6
+        move.w  (RadarScale).l,d3               ; 000F6
         ext.l   d3                              ; 000FC
         asl.l   #$8,d3                          ; 000FE
         divu.w  #$80,d3                         ; 00100
@@ -130,7 +130,7 @@ l_010_00168:
         unlk    a6                              ; 0016A
         rts                                     ; 0016C
 l_010_0016E:
-        cmpi.w  #$80,(dat_071_00412).l          ; 0016E
+        cmpi.w  #$80,(RadarScale).l             ; 0016E
         bge.b   l_010_0019A                     ; 00176
         tst.b   (dat_071_00234).l               ; 00178
         bne.b   l_010_001A2                     ; 0017E

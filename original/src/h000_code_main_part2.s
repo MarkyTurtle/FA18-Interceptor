@@ -20,7 +20,7 @@ sub_000_04392:
         move.w  d0,(dat_071_002AC).l            ; 043B8
         move.w  d0,(ViewObject).l               ; 043BE
         move.b  #$ff,(RedrawFlags).l            ; 043C4
-        move.b  (dat_071_00155).l,d0            ; 043CC
+        move.b  (OutsideView).l,d0              ; 043CC
         tst.b   d0                              ; 043D2
         bne.b   l_000_043F0                     ; 043D4
         clr.b   (dat_071_00177).l               ; 043D6
@@ -32,7 +32,7 @@ l_000_043F0:
         rts                                     ; 043F0
 sub_000_043F2:
         link.w  a6,#$fffa                       ; 043F2
-        tst.b   (dat_071_00155).l               ; 043F6
+        tst.b   (OutsideView).l                 ; 043F6
         beq.b   l_000_04410                     ; 043FC
         move.w  (dat_071_00464).l,d0            ; 043FE
         asr.w   #$3,d0                          ; 04404
@@ -591,7 +591,7 @@ CockpitSounds:
         move.b  (dat_071_00255).l,d0            ; 04AFE
         tst.b   d0                              ; 04B04
         bpl.b   l_000_04B44                     ; 04B06
-        tst.b   (dat_071_00155).l               ; 04B08
+        tst.b   (OutsideView).l                 ; 04B08
         beq.b   l_000_04B26                     ; 04B0E
         tst.b   (dat_071_00185).l               ; 04B10
         beq.b   l_000_04B32                     ; 04B16
@@ -836,7 +836,7 @@ l_000_04DD4:
         move.b  d0,(dat_071_00188).l            ; 04DE4
         tst.b   d0                              ; 04DEA
         bgt.b   l_000_04E40                     ; 04DEC
-        tst.b   (dat_071_00155).l               ; 04DEE
+        tst.b   (OutsideView).l                 ; 04DEE
         beq.b   l_000_04E18                     ; 04DF4
         move.b  (dat_071_0023A).l,d0            ; 04DF6
         ext.w   d0                              ; 04DFC
@@ -931,7 +931,7 @@ l_000_04EFA:
         ble.b   l_000_04F14                     ; 04F0C
         move.w  #$78,-$2(a6)                    ; 04F0E
 l_000_04F14:
-        tst.b   (dat_071_00155).l               ; 04F14
+        tst.b   (OutsideView).l                 ; 04F14
         beq.w   l_000_05088                     ; 04F1A
         move.b  (CameraSequence).l,d0           ; 04F1E
         tst.b   d0                              ; 04F24
@@ -1229,7 +1229,7 @@ l_000_0528A:
         move.b  d0,(dat_071_00167).l            ; 05296
         tst.b   d0                              ; 0529C
         bne.b   l_000_052BE                     ; 0529E
-        move.b  (dat_071_00155).l,d0            ; 052A0
+        move.b  (OutsideView).l,d0              ; 052A0
         tst.b   d0                              ; 052A6
         bne.b   l_000_052BE                     ; 052A8
         movea.l -$10(a6),a0                     ; 052AA
@@ -1292,13 +1292,13 @@ l_000_05344:
         sub.w   d0,d1                           ; 0534E
         move.w  d1,$a(a6)                       ; 05350
 l_000_05354:
-        tst.b   (dat_071_00155).l               ; 05354
+        tst.b   (OutsideView).l                 ; 05354
         beq.w   l_000_054A8                     ; 0535A
         tst.w   $a(a6)                          ; 0535E
         beq.w   l_000_054DC                     ; 05362
         tst.b   (dat_071_00185).l               ; 05366
         beq.w   l_000_0544E                     ; 0536C
-        move.b  (dat_071_00282).l,d0            ; 05370
+        move.b  (ViewChoice).l,d0               ; 05370
         ext.w   d0                              ; 05376
         move.w  d0,-$2(a6)                      ; 05378
         cmpi.w  #$4,d0                          ; 0537C
@@ -1324,7 +1324,7 @@ dat_000_053A6:
 	dc.b	$3D,$40,$00,$0A,$60,$16,$30,$2E,$00,$0A,$E4,$40,$91,$6E,$00,$0A
 	dc.b	$60,$0A,$30,$2E,$00,$0A,$E6,$40,$91,$6E,$00,$0A
 l_000_053EC:
-        move.b  (dat_071_00155).l,d0            ; 053EC
+        move.b  (OutsideView).l,d0              ; 053EC
         ext.w   d0                              ; 053F2
         ext.l   d0                              ; 053F4
         subi.l  #$1,d0                          ; 053F6
@@ -1422,7 +1422,7 @@ l_000_05538:
         ble.b   l_000_05550                     ; 05548
         move.w  #$3f,-$2(a6)                    ; 0554A
 l_000_05550:
-        move.b  (dat_071_00155).l,d0            ; 05550
+        move.b  (OutsideView).l,d0              ; 05550
         tst.b   d0                              ; 05556
         bne.b   l_000_05564                     ; 05558
         move.w  -$2(a6),d0                      ; 0555A
@@ -3973,7 +3973,7 @@ l_000_07476:
         bne.b   l_000_074C6                     ; 0747E
         btst    #$5,(dat_071_0052B).l           ; 07480
         beq.b   l_000_074B6                     ; 07488
-        tst.b   (dat_071_00155).l               ; 0748A
+        tst.b   (OutsideView).l                 ; 0748A
         beq.b   l_000_074A4                     ; 07490
         moveq   #$1e,d0                         ; 07492
         move.l  d0,-(a7)                        ; 07494

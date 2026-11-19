@@ -103,7 +103,7 @@ l_004_000E4:
         move.l  #$800000,(dat_071_000CA).l      ; 0018E
         move.w  #$a8,(dat_071_0040E).l          ; 00198
         move.w  #$fc,(dat_071_00410).l          ; 001A0
-        move.w  #$80,(dat_071_00412).l          ; 001A8
+        move.w  #$80,(RadarScale).l             ; 001A8
         move.b  #$80,(dat_071_001AD).l          ; 001B0
         lea.l   (dat_073_00058).l,a0            ; 001B8
         moveq   #$15,d1                         ; 001BE
@@ -251,7 +251,7 @@ l_004_0033E:
         movem.l (a7)+,a1-a2                     ; 0038C
         rts                                     ; 00390
 sub_004_00392:
-        clr.b   (dat_071_00155).l               ; 00392
+        clr.b   (OutsideView).l                 ; 00392
         clr.b   (dat_071_00176).l               ; 00398
         move.b  #$1,(dat_071_00185).l           ; 0039E
         move.b  #$1,(dat_071_00184).l           ; 003A6

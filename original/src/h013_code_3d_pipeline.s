@@ -428,7 +428,7 @@ l_013_00506:
 l_013_0050C:
         cmpi.l  #$fff00000,d0                   ; 0050C
         blt.b   l_013_004BA                     ; 00512
-        tst.b   (dat_071_00155).l               ; 00514
+        tst.b   (OutsideView).l                 ; 00514
         bne.b   l_013_00574                     ; 0051A
         cmpi.b  #$3,(dat_071_0023B).l           ; 0051C
         bge.b   l_013_00574                     ; 00524
@@ -969,7 +969,7 @@ l_013_00AF0:
         move.w  -$7e(a6),d0                     ; 00B10
         rts                                     ; 00B14
 sub_013_00B16:
-        tst.b   (dat_071_00155).l               ; 00B16
+        tst.b   (OutsideView).l                 ; 00B16
         bne.b   l_013_00B3A                     ; 00B1C
         lea.l   (ObjectTable).l,a3              ; 00B1E
         adda.w  (ViewObject).l,a3               ; 00B24

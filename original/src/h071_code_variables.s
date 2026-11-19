@@ -321,7 +321,10 @@ EscortTimer:
 ; lost climbing and gained diving and the lift (ClimbDivePhysics).
 FlightPhysics:
 	dc.b	$00
-dat_071_00155:
+; OutsideView - 0 in the cockpit (the panel and the head-up display are drawn); otherwise an
+; outside view of ViewObject (the view is taller and the readouts are written over it); keypad
+; 5 steps it.
+OutsideView:
 	dc.b	$00
 dat_071_00156:
 	dc.b	$00
@@ -885,7 +888,8 @@ dat_071_00280:
 	dc.b	$00
 dat_071_00281:
 	dc.b	$00
-dat_071_00282:
+; ViewChoice - The view chosen with the keypad (Key_KP1 ... Key_KPDot: 0-9).
+ViewChoice:
 	dc.b	$00
 dat_071_00283:
 	dc.b	$00
@@ -992,20 +996,24 @@ dat_071_002C0:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_002C6:
+; FuelShown - The fuel readout's last value (ValueChanged).
+FuelShown:
 	dc.b	$00
 	dc.b	$00
-dat_071_002C8:
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-dat_071_002CC:
+; SpeedShown - The speed readout's last value.
+SpeedShown:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_002D0:
+; ThrottleShown - The throttle readout's last value.
+ThrottleShown:
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+; AltitudeShown - The altitude readout's last value.
+AltitudeShown:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1139,10 +1147,12 @@ dat_071_00328:
 dat_071_0032A:
 	dc.b	$00
 	dc.b	$00
-dat_071_0032C:
+; GridZShown - The position readout's last Z.
+GridZShown:
 	dc.b	$00
 	dc.b	$00
-dat_071_0032E:
+; GridXShown - The position readout's last X.
+GridXShown:
 	dc.b	$00
 	dc.b	$00
 dat_071_00330:
@@ -1334,7 +1344,8 @@ dat_071_0040E:
 dat_071_00410:
 	dc.b	$00
 	dc.b	$00
-dat_071_00412:
+; RadarScale - The radar's scale: $80 for the 10 range, $40 for 20, otherwise 40.
+RadarScale:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00

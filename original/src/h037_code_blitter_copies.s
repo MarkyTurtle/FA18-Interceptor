@@ -205,7 +205,7 @@ sub_037_00244:
 l_037_00256:
         rts                                     ; 00256
 sub_037_00258:
-        move.w  (dat_071_002C6).l,d2            ; 00258
+        move.w  (FuelShown).l,d2                ; 00258
         andi.w  #$7fff,d2                       ; 0025E
         lsr.w   #$8,d2                          ; 00262
         lsr.w   #$2,d2                          ; 00264

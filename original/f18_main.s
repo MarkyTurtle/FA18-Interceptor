@@ -372,10 +372,11 @@
 
 ; Hunk 39: The instruments' numbers and texts ("GUN RNG SHOOT"...), the target readout
 ;         (TargetReadout) and the text printer (PrintText: the menus, briefings and typed input).
-	include	"src/h039_code_hud.s"
+	include	"src/h039_code_instruments_text.s"
 
-; Hunk 40: Display drawing not yet identified (points and lines for objects).
-	include	"src/h040_code_display40.s"
+; Hunk 40: The head-up display (DrawHUD: the gun cross, the target box and other symbols; most
+;         not worked out yet).
+	include	"src/h040_code_hud.s"
 
 ; Hunk 41: A 3D model (shape data, used through ObjectDrawTable).
 	include	"src/h041_code_model41.s"

@@ -1515,7 +1515,7 @@ l_000_01274:
         jsr     (sub_000_03D4C).l               ; 0127C
         jsr     (CockpitSounds).l               ; 01282
         move.w  #$d0,(FrameStage).l             ; 01288
-        move.b  (dat_071_00155).l,d0            ; 01290
+        move.b  (OutsideView).l,d0              ; 01290
         tst.b   d0                              ; 01296
         beq.b   l_000_012A4                     ; 01298
         tst.b   (dat_071_00206).l               ; 0129A
@@ -1536,7 +1536,7 @@ l_000_012CC:
         jsr     (DrawPanel).l                   ; 012CC
         jsr     (sub_037_002F6).l               ; 012D2
         jsr     (DrawRadar).l                   ; 012D8
-        jsr     (sub_040_00064).l               ; 012DE
+        jsr     (DrawHUD).l                     ; 012DE
         jsr     (DrawStatusLights).l            ; 012E4
         jsr     (sub_037_008B8).l               ; 012EA
         move.b  (dat_071_00207).l,d0            ; 012F0
@@ -1547,8 +1547,8 @@ l_000_012CC:
         cmpi.w  #$1,d0                          ; 01302
         ble.b   l_000_01314                     ; 01306
 l_000_01308:
-        jsr     (sub_039_005B6).l               ; 01308
-        jsr     (sub_039_0064C).l               ; 0130E
+        jsr     (ShowHeadingText).l             ; 01308
+        jsr     (ShowSpeed).l                   ; 0130E
 l_000_01314:
         move.b  (dat_071_00207).l,d0            ; 01314
         tst.b   d0                              ; 0131A
@@ -1558,7 +1558,7 @@ l_000_01314:
         cmpi.w  #$2,d0                          ; 01326
         bge.b   l_000_01332                     ; 0132A
 l_000_0132C:
-        jsr     (sub_039_00878).l               ; 0132C
+        jsr     (ShowThrottle).l                ; 0132C
 l_000_01332:
         move.b  (dat_071_00207).l,d0            ; 01332
         tst.b   d0                              ; 01338
@@ -1570,7 +1570,7 @@ l_000_01332:
         cmpi.l  #$ffff8000,(dat_071_00436).l    ; 0134A
         ble.b   l_000_0135C                     ; 01354
 l_000_01356:
-        jsr     (sub_039_0071A).l               ; 01356
+        jsr     (ShowAltitude).l                ; 01356
 l_000_0135C:
         move.b  (dat_071_00207).l,d0            ; 0135C
         tst.b   d0                              ; 01362
@@ -1580,7 +1580,7 @@ l_000_0135C:
         cmpi.w  #$2,d0                          ; 0136E
         bge.b   l_000_0137A                     ; 01372
 l_000_01374:
-        jsr     (sub_039_0082A).l               ; 01374
+        jsr     (ShowFuel).l                    ; 01374
 l_000_0137A:
         move.b  (dat_071_00207).l,d0            ; 0137A
         tst.b   d0                              ; 01380
@@ -1596,9 +1596,9 @@ l_000_01398:
         jsr     (sub_036_00BAA).l               ; 013A0
         jsr     (sub_039_00FA8).l               ; 013A6
         jsr     (sub_037_00340).l               ; 013AC
-        jsr     (sub_039_008D2).l               ; 013B2
-        jsr     (sub_039_00960).l               ; 013B8
-        jsr     (sub_039_001CC).l               ; 013BE
+        jsr     (ShowGridZ).l                   ; 013B2
+        jsr     (ShowGridX).l                   ; 013B8
+        jsr     (ShowRadarRange).l              ; 013BE
         jsr     (sub_037_00674).l               ; 013C4
         jsr     (sub_039_00164).l               ; 013CA
         jsr     (TargetReadout).l               ; 013D0
@@ -1612,12 +1612,12 @@ l_000_013EE:
         move.w  #$1d0,(FrameStage).l            ; 013EE
         bra.b   l_000_0142C                     ; 013F6
 l_000_013F8:
-        tst.b   (dat_071_00155).l               ; 013F8
+        tst.b   (OutsideView).l                 ; 013F8
         beq.b   l_000_0142C                     ; 013FE
         move.b  #$1,(dat_071_001A9).l           ; 01400
-        jsr     (sub_039_0064C).l               ; 01408
-        jsr     (sub_039_0071A).l               ; 0140E
-        jsr     (sub_039_005B6).l               ; 01414
+        jsr     (ShowSpeed).l                   ; 01408
+        jsr     (ShowAltitude).l                ; 0140E
+        jsr     (ShowHeadingText).l             ; 01414
         nop                                     ; 0141A
         move.b  (GameMode).l,d0                 ; 0141C
         subq.b  #$2,d0                          ; 01422
@@ -1680,7 +1680,7 @@ l_000_014D0:
         move.w  #$210,(FrameStage).l            ; 014E6
         jsr     (sub_036_0000C).l               ; 014EE
         move.w  #$218,(FrameStage).l            ; 014F4
-        jsr     (sub_039_00276).l               ; 014FC
+        jsr     (ShowDebugNumbers).l            ; 014FC
 l_000_01502:
         move.w  #$220,(FrameStage).l            ; 01502
         jsr     (PrintText).l                   ; 0150A
@@ -2175,7 +2175,7 @@ StateDemoStart:
         bsr.w   DemoSetup                       ; 01B5E
         move.b  #$3,(RecordMode).l              ; 01B62
         moveq   #$0,d0                          ; 01B6A
-        move.b  d0,(dat_071_00155).l            ; 01B6C
+        move.b  d0,(OutsideView).l              ; 01B6C
         move.w  #$2,(StateTimer).l              ; 01B72
         move.b  #$f,(dat_071_00271).l           ; 01B7A
         move.b  d0,(dat_071_00270).l            ; 01B82
@@ -2631,12 +2631,12 @@ l_000_02190:
         moveq   #$0,d0                          ; 021A6
         move.b  d0,(dat_071_0017D).l            ; 021A8
         moveq   #$1,d0                          ; 021AE
-        move.b  d0,(dat_071_00155).l            ; 021B0
+        move.b  d0,(OutsideView).l              ; 021B0
         clr.b   (CameraSequence).l              ; 021B6
         move.b  d0,(dat_071_00185).l            ; 021BC
         move.w  #$4,(dat_071_002AC).l           ; 021C2
         move.w  #$800,(ViewObject).l            ; 021CA
-        move.b  #$3,(dat_071_00282).l           ; 021D2
+        move.b  #$3,(ViewChoice).l              ; 021D2
         move.w  (Object4_02).l,d0               ; 021DA
         ori.w   #$100,d0                        ; 021E0
         move.w  d0,(Object4_02).l               ; 021E4
@@ -2676,7 +2676,7 @@ l_000_02252:
         move.w  d0,(ViewX).l                    ; 0228E
         jsr     (RedrawPanel).l                 ; 02294
         move.b  #$ff,(RedrawFlags).l            ; 0229A
-        clr.b   (dat_071_00155).l               ; 022A2
+        clr.b   (OutsideView).l                 ; 022A2
         lea.l   StateFadeIn(pc),a0              ; 022A8
         move.l  a0,(GameState).l                ; 022AC
 l_000_022B2:
@@ -3171,7 +3171,7 @@ l_000_028A8:
 StateSecurityEntered:
         tst.b   (CodeResult).l                  ; 028AA
         beq.b   l_000_028D8                     ; 028B0
-        tst.b   (dat_071_00155).l               ; 028B2
+        tst.b   (OutsideView).l                 ; 028B2
         beq.b   l_000_028C2                     ; 028B8
         move.b  #$2,(dat_071_0027D).l           ; 028BA
 l_000_028C2:
@@ -3559,7 +3559,7 @@ SkipToCockpit:
 ; StateReady - In the cockpit: StateReadyText (or StatePause when paused).
 ;-------------------------------------------------------------------------------
 StateReady:
-        move.b  (dat_071_00155).l,d0            ; 02D58
+        move.b  (OutsideView).l,d0              ; 02D58
         tst.b   d0                              ; 02D5E
         bne.b   l_000_02D92                     ; 02D60
         move.b  #$1,(dat_071_00184).l           ; 02D62
@@ -3714,7 +3714,7 @@ StateFlying:
         move.w  (ObjectTable).l,d0              ; 02F70
         andi.w  #$fdff,d0                       ; 02F76
         move.w  d0,(ObjectTable).l              ; 02F7A
-        move.b  (dat_071_00155).l,d0            ; 02F80
+        move.b  (OutsideView).l,d0              ; 02F80
         tst.b   d0                              ; 02F86
         bne.b   l_000_02FB6                     ; 02F88
         move.b  #$1,(dat_071_0026A).l           ; 02F8A
@@ -3785,7 +3785,7 @@ l_000_03078:
         move.w  d0,(dat_071_002AC).l            ; 030AE
         move.w  d0,(ViewObject).l               ; 030B4
         move.b  (dat_071_00204).l,d0            ; 030BA
-        move.b  d0,(dat_071_00155).l            ; 030C0
+        move.b  d0,(OutsideView).l              ; 030C0
         tst.b   d0                              ; 030C6
         beq.b   l_000_030DC                     ; 030C8
         move.w  #$32,(dat_071_00356).l          ; 030CA
@@ -3802,7 +3802,7 @@ l_000_030EA:
         jsr     (RedrawInstruments).l           ; 030FE
         move.b  (dat_071_0018E).l,d0            ; 03104
         andi.b  #$7f,d0                         ; 0310A
-        move.b  d0,(dat_071_00282).l            ; 0310E
+        move.b  d0,(ViewChoice).l               ; 0310E
         bra.w   l_000_03198                     ; 03114
 l_000_03118:
         move.b  (QuitRequest).l,d0              ; 03118
@@ -3826,7 +3826,7 @@ l_000_03166:
         move.w  (ViewObject).l,d0               ; 03166
         tst.w   d0                              ; 0316C
         bne.b   l_000_03190                     ; 0316E
-        move.b  (dat_071_00155).l,d0            ; 03170
+        move.b  (OutsideView).l,d0              ; 03170
         tst.b   d0                              ; 03176
         bne.b   l_000_03190                     ; 03178
         move.b  (dat_071_00259).l,d0            ; 0317A
@@ -4433,14 +4433,14 @@ l_000_038D6:
 ; StateNoAircraftLeft.
 ;-------------------------------------------------------------------------------
 StateCrashed:
-        move.b  (dat_071_00155).l,d0            ; 038D8
+        move.b  (OutsideView).l,d0              ; 038D8
         tst.b   d0                              ; 038DE
         bne.b   l_000_038EC                     ; 038E0
         move.b  (dat_071_00269).l,d0            ; 038E2
         tst.b   d0                              ; 038E8
         beq.b   l_000_03902                     ; 038EA
 l_000_038EC:
-        tst.b   (dat_071_00155).l               ; 038EC
+        tst.b   (OutsideView).l                 ; 038EC
         beq.w   l_000_0397E                     ; 038F2
         move.w  (ObjectTable).l,d0              ; 038F6
         btst    #$a,d0                          ; 038FC
@@ -4484,7 +4484,7 @@ StateNewAircraft:
         move.w  (Player_02).l,d0                ; 03988
         ori.w   #$2,d0                          ; 0398E
         move.w  d0,(Player_02).l                ; 03992
-        move.b  (dat_071_00155).l,d0            ; 03998
+        move.b  (OutsideView).l,d0              ; 03998
         tst.b   d0                              ; 0399E
         bne.b   l_000_039A8                     ; 039A0
         jsr     (sub_005_00CEE).l               ; 039A2
@@ -5069,7 +5069,7 @@ l_000_041DE:
         rts                                     ; 041E6
 sub_000_041E8:
         link.w  a6,#$fffe                       ; 041E8
-        move.b  (dat_071_00155).l,d0            ; 041EC
+        move.b  (OutsideView).l,d0              ; 041EC
         tst.b   d0                              ; 041F2
         bne.b   l_000_04206                     ; 041F4
         move.b  (dat_071_00261).l,d0            ; 041F6
@@ -5092,16 +5092,16 @@ l_000_04206:
         andi.w  #$fffd,d1                       ; 04234
         move.w  d1,(GunFlags).l                 ; 04238
         move.b  #$fe,(dat_071_00280).l          ; 0423E
-        tst.b   (dat_071_00155).l               ; 04246
+        tst.b   (OutsideView).l                 ; 04246
         beq.b   l_000_0426C                     ; 0424C
         moveq   #$0,d0                          ; 0424E
-        move.b  d0,(dat_071_00155).l            ; 04250
+        move.b  d0,(OutsideView).l              ; 04250
         clr.w   (dat_071_00356).l               ; 04256
         move.b  d0,(dat_071_00176).l            ; 0425C
         move.b  #$1,(dat_071_00205).l           ; 04262
         bra.b   l_000_0427E                     ; 0426A
 l_000_0426C:
-        move.b  (dat_071_00203).l,(dat_071_00155).l ; 0426C
+        move.b  (dat_071_00203).l,(OutsideView).l ; 0426C
         move.w  #$32,(dat_071_00356).l          ; 04276
 l_000_0427E:
         moveq   #$3,d0                          ; 0427E
@@ -5121,7 +5121,7 @@ l_000_0429A:
         jsr     (sub_005_00E6E).l               ; 042BC
         cmpi.b  #$30,-$1(a6)                    ; 042C2
         beq.b   l_000_042D2                     ; 042C8
-        tst.b   (dat_071_00155).l               ; 042CA
+        tst.b   (OutsideView).l                 ; 042CA
         beq.b   l_000_042EC                     ; 042D0
 l_000_042D2:
         tst.b   (dat_071_0017D).l               ; 042D2
@@ -5144,7 +5144,7 @@ l_000_042EC:
         jsr     (sub_005_00E6E).l               ; 04322
         move.w  #$a7,(ClipY).l                  ; 04328
 l_000_04330:
-        tst.b   (dat_071_00155).l               ; 04330
+        tst.b   (OutsideView).l                 ; 04330
         beq.b   l_000_0438E                     ; 04336
         move.w  (GunFlags).l,d0                 ; 04338
         btst    #$4,d0                          ; 0433E

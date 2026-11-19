@@ -23,7 +23,7 @@ l_012_0001E:
         move.w  d2,-$96(a6)                     ; 00032
         tst.b   (dat_071_001AD).l               ; 00036
         bne.b   l_012_00050                     ; 0003C
-        move.w  (dat_071_00412).l,d3            ; 0003E
+        move.w  (RadarScale).l,d3               ; 0003E
         ext.l   d3                              ; 00044
         asl.l   #$8,d3                          ; 00046
         divu.w  #$80,d3                         ; 00048

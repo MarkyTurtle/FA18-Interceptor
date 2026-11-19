@@ -611,7 +611,7 @@ l_020_00722:
         move.l  (TimeMicros).l,(dat_071_004CE).l ; 0072C
         rts                                     ; 00736
 sub_020_00738:
-        tst.b   (dat_071_00155).l               ; 00738
+        tst.b   (OutsideView).l                 ; 00738
         beq.b   l_020_00748                     ; 0073E
         move.w  (dat_071_00466).l,d0            ; 00740
         bra.b   l_020_0074E                     ; 00746
@@ -1020,7 +1020,7 @@ AddRadarObject:
         move.l  a3,(RadarListEnd).l             ; 00B10
         rts                                     ; 00B16
 sub_020_00B18:
-        tst.b   (dat_071_00155).l               ; 00B18
+        tst.b   (OutsideView).l                 ; 00B18
         beq.w   l_020_00BCE                     ; 00B1E
         tst.b   (dat_071_0017D).l               ; 00B22
         bne.w   l_020_00BCE                     ; 00B28

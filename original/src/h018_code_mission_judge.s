@@ -130,16 +130,16 @@ l_018_00152:
         bgt.w   l_018_00204                     ; 00162
         btst    #$7,(dat_071_0018E).l           ; 00166
         bne.w   l_018_00204                     ; 0016E
-        move.b  (dat_071_00282).l,(dat_071_0018E).l ; 00172
+        move.b  (ViewChoice).l,(dat_071_0018E).l ; 00172
         bset    #$7,(dat_071_0018E).l           ; 0017C
-        move.b  (dat_071_00155).l,(dat_071_00204).l ; 00184
+        move.b  (OutsideView).l,(dat_071_00204).l ; 00184
         btst    #$6,$1(a1)                      ; 0018E
         beq.w   l_018_00204                     ; 00194
-        move.b  #$7,(dat_071_00282).l           ; 00198
+        move.b  #$7,(ViewChoice).l              ; 00198
         move.b  #$1,(dat_071_00185).l           ; 001A0
         move.b  #$1,(dat_071_00184).l           ; 001A8
         clr.b   (dat_071_0017D).l               ; 001B0
-        tst.b   (dat_071_00155).l               ; 001B6
+        tst.b   (OutsideView).l                 ; 001B6
         bne.b   l_018_00204                     ; 001BC
         move.w  $68(a1),(dat_071_002FA).l       ; 001BE
         ori.w   #$2,(GunFlags).l                ; 001C6
@@ -361,16 +361,16 @@ l_018_00452:
         bgt.w   l_018_0051C                     ; 00462
         btst    #$7,(dat_071_0018E).l           ; 00466
         bne.w   l_018_0051C                     ; 0046E
-        move.b  (dat_071_00282).l,(dat_071_0018E).l ; 00472
+        move.b  (ViewChoice).l,(dat_071_0018E).l ; 00472
         bset    #$7,(dat_071_0018E).l           ; 0047C
-        move.b  (dat_071_00155).l,(dat_071_00204).l ; 00484
+        move.b  (OutsideView).l,(dat_071_00204).l ; 00484
         btst    #$6,$1(a1)                      ; 0048E
         beq.w   l_018_0051C                     ; 00494
-        move.b  #$7,(dat_071_00282).l           ; 00498
+        move.b  #$7,(ViewChoice).l              ; 00498
         move.b  #$1,(dat_071_00185).l           ; 004A0
         move.b  #$1,(dat_071_00184).l           ; 004A8
         clr.b   (dat_071_0017D).l               ; 004B0
-        tst.b   (dat_071_00155).l               ; 004B6
+        tst.b   (OutsideView).l                 ; 004B6
         bne.b   l_018_0051C                     ; 004BC
         move.w  $68(a1),(dat_071_002FA).l       ; 004BE
         ori.w   #$2,(GunFlags).l                ; 004C6
