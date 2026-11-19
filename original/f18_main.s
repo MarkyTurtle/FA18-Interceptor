@@ -415,8 +415,8 @@
 ; Hunk 52: The carrier's 3D model (ModelTable $A0, $B4).
 	include	"src/h052_code_model_carrier.s"
 
-; Hunk 53: A 3D model: object 15 of mission F6, probably the shadow submarine (ModelTable $F0).
-	include	"src/h053_code_model_f6_object.s"
+; Hunk 53: A ship's 3D model, like the carrier: object 15 of mission F6 (ModelTable $F0).
+	include	"src/h053_code_model_ship.s"
 
 ; Hunk 54: Scenery shapes: ObjectDrawTable entries 45-47, 73, 74, 91, 92.
 	include	"src/h054_code_scenery_shapes.s"
@@ -431,7 +431,8 @@
 ; Hunk 57: The airliner's 3D model: Air Force One, the 707 and the 767 (ModelTable $64, $118, $12C).
 	include	"src/h057_code_model_airliner.s"
 
-; Hunk 58: Animated 3D models: an object of mission F4 (ModelTable $28, $104) and the ejected pilot's parachute ($DC).
+; Hunk 58: Animated 3D models: a pilot under his parachute (ModelTable $28, $104) and a box, perhaps
+;         the rescue pod ($DC).
 	include	"src/h058_code_models_animated.s"
 
 ; Hunk 59: Text: the head-up display's warning messages (STALL, LOW FUEL - CRITICAL...).

@@ -14,3 +14,6 @@ __pycache__/
 /original/tools/disk/dump
 # the enhanced build
 /enhanced/build/
+/original/tools/models/out/
+/original/tools/models/f18_sym.exe
+__pycache__/

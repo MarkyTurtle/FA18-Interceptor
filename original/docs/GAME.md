@@ -294,6 +294,10 @@ by `HandleKey`, turned into letters by `KeyToAscii`).
 
 ## The 3D view
 
+Pictures of every model and scenery shape, drawn by running the game's own code in an
+emulator, are in [`MODELS.md`](MODELS.md).
+
+
 * The **camera** (`SetupCamera`) is the cockpit, or in the outside views a point near the viewed
   object (`SetOutsideCamera`); `CameraX`, `CameraY`, `CameraZ` and the viewer's cell are what
   everything is drawn relative to.
@@ -309,15 +313,15 @@ by `HandleKey`, turned into letters by `KeyToAscii`).
   | `ModelTable` | Model | Hunk |
   |---|---|---|
   | `$00`, `$14` | Sidewinder, AMRAAM | 51 |
-  | `$28`, `$104` | an animated object (object 11 of F4, the downed pilot) | 58 |
+  | `$28`, `$104` | a pilot under his parachute (animated; the downed pilot of F4) | 58 |
   | `$3C` | F-16 | 51 |
   | `$50` | F/A-18 | 41 |
   | `$64`, `$118`, `$12C` | the airliner: Air Force One, 707, 767 | 57 |
   | `$78`, `$8C` | MiG (one shape for both) | 51 |
   | `$A0`, `$B4` | the carrier (always object 14) | 52 |
   | `$C8` | the cruise missile | 55 |
-  | `$DC` | the ejected pilot's parachute (animated) | 58 |
-  | `$F0` | object 15 of F6, probably the shadow submarine | 53 |
+  | `$DC` | a box (animated; perhaps the rescue pod) | 58 |
+  | `$F0` | a ship like the carrier (object 15 of F6) | 53 |
 
 * **A model** (`DrawModel`, hunk 10) starts with a list choosing the shape by distance - the
   levels of detail: distance words (bits 0-13) compared with the object's distance, with

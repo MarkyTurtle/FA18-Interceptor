@@ -1,5 +1,6 @@
 ; F/A-18 Interceptor - hunk 58 (code)
-; Animated 3D models: an object of mission F4 (ModelTable $28, $104) and the ejected pilot's parachute ($DC).
+; Animated 3D models: a pilot under his parachute (ModelTable $28, $104) and a box, perhaps
+; the rescue pod ($DC).
 ; Included by ../f18_main.s.
 
 ;===============================================================================

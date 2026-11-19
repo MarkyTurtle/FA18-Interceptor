@@ -1,5 +1,5 @@
 ; F/A-18 Interceptor - hunk 53 (code)
-; A 3D model: object 15 of mission F6, probably the shadow submarine (ModelTable $F0).
+; A ship's 3D model, like the carrier: object 15 of mission F6 (ModelTable $F0).
 ; Included by ../f18_main.s.
 
 ;===============================================================================

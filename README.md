@@ -15,4 +15,8 @@ AmigaDOS executable, `F-18 Interceptor` (331,232 bytes, 185 hunks, mostly compil
 which loads its pictures (`pix/`) and data (`text/`, `config`) from `df0:` as it runs.
 
 [`original/docs/GAME.md`](original/docs/GAME.md) describes how the game works, as far as the
-disassembly has got; [`BUILDING.md`](BUILDING.md) says how to build and check it.
+disassembly has got; [`original/docs/MODELS.md`](original/docs/MODELS.md) shows its 3D models and
+scenery, drawn by running the game's own code; [`BUILDING.md`](BUILDING.md) says how to build and
+check it.
+
+![The F/A-18 model, drawn by the game's own code](original/docs/images/fa18.png)
