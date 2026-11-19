@@ -1986,7 +1986,7 @@ dat_071_00B52:
 ;   +$66 w  pitch   +$68 w  heading   +$6A w  roll  (1/80 degree; SetAttitude, UpdateAttitude)
 ;   +$80-$90 w  a 3 x 3 rotation matrix made from them (2.14)
 ;   +$6C w  speed   +$6E w  speed (FlyAircraft flies at it)   +$76 w  added to the vertical velocity
-;   +$78 w, +$7E w   +$71 b   +$72 l  (6,400,000 at the start)
+;   +$78 w, +$7E w   +$71 b   +$72 l  fuel (6,400,000 at the start)
 ;   +$7C b  bit 7
 ;   +$92-$A2 w  the opposite rotation (from the negated angles; rows at +$92, +$98, +$9E)
 ObjectTable:

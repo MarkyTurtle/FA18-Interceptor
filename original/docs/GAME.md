@@ -144,16 +144,25 @@ Each frame `UpdateObject` (hunk 22) does one object's work:
   aircraft's matrices to see where things are in its own axes, and sets its control bits;
 * for the player, `PlayerFrameControls`: the control bits from the stick, or from the recording
   in a replay; and the warnings from the attitude and sink rate;
-* `UpdateAttitude` (hunk 32): for an aircraft the roll eases back towards level, and the pitch
-  and heading follow the direction of flight (`VectorToAngles`); then `SetAttitude` makes the
-  matrices;
+* `UpdateAttitude` (hunk 32): an aircraft (type `$1x`) turns by **rotation rates**: its matrix
+  (`+$80`) is turned each frame by its three rates (`+$56`, `+$58`, `+$5A`; `sub_032_00AD8`). The
+  player's rates come from `FlightControls`: the stick deflection (`+$28`-`+$2A`, which builds
+  up from the control bits) is looked up in a response table (`ControlResponse`, hunk 60) - so
+  the stick sets how fast the aircraft rolls and pitches, not its angles. A computer aircraft
+  has target rates (`+$50`-`+$54`) that its actual rates move about three quarters of the way to
+  each frame, divided by its responsiveness (`+$26`). The roll eases back towards level (up to
+  `$50` a frame) and, when `dat_071_00154` is set, a stall check compares a minimum speed worked
+  out from the pitch (and `+$22`) with the speed. Type `$3x` objects instead keep their pitch and
+  heading along their direction of flight (`VectorToAngles`) while their roll eases level.
+  `SetAttitude` makes the matrices from the angles;
 * `FlyAircraft` (hunk 0): the velocity moves towards the nose's direction at the aircraft's
   speed (`ScaleToLength`, `EaseVelocity`), so the aircraft goes where it points but with
   inertia; `+$76` is added vertically;
 * the position moves by the velocity.
 
-How the control bits turn into changes of the angles, and what sets the speed from the
-throttle, are not worked out yet.
+**Fuel** is the record's `+$72` (`PlayerFuel`: 6,400,000 at the start); `FlightControls` sets
+the low-fuel warnings at 768,000 and 460,800 (`WarningFlags`) and out-of-fuel at 0. What sets
+the speed from the throttle, and how the fuel is used, are not worked out yet.
 
 ### Weapons
 
@@ -237,7 +246,8 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
 
 ## Open questions
 
-* How the control bits change the angles; the speed and throttle; lift, drag, stall, fuel.
+* How the control bits build up the stick deflection; the speed and throttle; lift, drag, the
+  fuel use; what `dat_071_00154` switches (the stall check is one thing).
 * The computer pilots (hunk 30) and the missions (setting them up, success and failure).
 * The 3D pipeline (hunks 13-15) and the model format (hunks 41-58).
 * The ground, sky and scenery; the map and what is in each cell.
