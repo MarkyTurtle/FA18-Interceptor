@@ -132,15 +132,15 @@ l_000_076FE:
         move.w  (a0),d0                         ; 07702
         btst    #$8,d0                          ; 07704
         beq.b   l_000_07734                     ; 07708
-        move.l  (dat_071_00B92).l,d0            ; 0770A
+        move.l  (PlayerVelX).l,d0               ; 0770A
         asr.l   #$2,d0                          ; 07710
         movea.l -$a(a6),a0                      ; 07712
         add.l   d0,(a0)                         ; 07716
-        move.l  (dat_071_00B96).l,d0            ; 07718
+        move.l  (PlayerVelY).l,d0               ; 07718
         asr.l   #$2,d0                          ; 0771E
         movea.l -$e(a6),a0                      ; 07720
         add.l   d0,(a0)                         ; 07724
-        move.l  (dat_071_00B9A).l,d0            ; 07726
+        move.l  (PlayerVelZ).l,d0               ; 07726
         asr.l   #$2,d0                          ; 0772C
         movea.l -$12(a6),a0                     ; 0772E
         add.l   d0,(a0)                         ; 07732
@@ -231,7 +231,7 @@ l_000_07814:
         move.w  #$3c,$28(a0)                    ; 07836
         bra.b   l_000_0787A                     ; 0783C
 l_000_0783E:
-        move.b  (dat_071_00BB6).l,d0            ; 0783E
+        move.b  (PlayerType).l,d0               ; 0783E
         cmpi.b  #$11,d0                         ; 07844
         bne.b   l_000_0785C                     ; 07848
         moveq   #$0,d0                          ; 0784A
@@ -247,54 +247,54 @@ l_000_0786E:
         movea.l (dat_002_0000C).l,a0            ; 0786E
         move.w  #$14,$28(a0)                    ; 07874
 l_000_0787A:
-        move.w  (dat_071_00BE6).l,d0            ; 0787A
+        move.w  (PlayerM11).l,d0                ; 0787A
         move.w  -$2(a6),d1                      ; 07880
         muls.w  d1,d0                           ; 07884
-        move.w  (dat_071_00BE8).l,d2            ; 07886
+        move.w  (PlayerM12).l,d2                ; 07886
         move.w  -$4(a6),d3                      ; 0788C
         muls.w  d3,d2                           ; 07890
         add.l   d2,d0                           ; 07892
-        move.w  (dat_071_00BEA).l,d2            ; 07894
+        move.w  (PlayerM13).l,d2                ; 07894
         move.w  -$6(a6),d4                      ; 0789A
         muls.w  d4,d2                           ; 0789E
         add.l   d2,d0                           ; 078A0
         asr.l   #$6,d0                          ; 078A2
         move.l  d0,(dat_071_00422).l            ; 078A4
-        move.w  (dat_071_00BEC).l,d2            ; 078AA
+        move.w  (PlayerM21).l,d2                ; 078AA
         muls.w  d1,d2                           ; 078B0
-        move.w  (dat_071_00BEE).l,d5            ; 078B2
+        move.w  (PlayerM22).l,d5                ; 078B2
         muls.w  d3,d5                           ; 078B8
         add.l   d5,d2                           ; 078BA
-        move.w  (dat_071_00BF0).l,d5            ; 078BC
+        move.w  (PlayerM23).l,d5                ; 078BC
         muls.w  d4,d5                           ; 078C2
         add.l   d5,d2                           ; 078C4
         asr.l   #$6,d2                          ; 078C6
         move.l  d2,(dat_071_00426).l            ; 078C8
-        move.w  (dat_071_00BF2).l,d0            ; 078CE
+        move.w  (PlayerM31).l,d0                ; 078CE
         muls.w  d0,d1                           ; 078D4
-        move.w  (dat_071_00BF4).l,d0            ; 078D6
+        move.w  (PlayerM32).l,d0                ; 078D6
         muls.w  d0,d3                           ; 078DC
         add.l   d3,d1                           ; 078DE
-        move.w  (dat_071_00BF6).l,d0            ; 078E0
+        move.w  (PlayerM33).l,d0                ; 078E0
         muls.w  d0,d4                           ; 078E6
         add.l   d4,d1                           ; 078E8
         asr.l   #$6,d1                          ; 078EA
         move.l  d1,(dat_071_0042A).l            ; 078EC
         movea.l (dat_002_0000C).l,a0            ; 078F2
-        move.w  (dat_071_00B5A).l,$30(a0)       ; 078F8
+        move.w  (PlayerCellX).l,$30(a0)         ; 078F8
         movea.l (dat_002_0000C).l,a0            ; 07900
-        move.w  (dat_071_00B5C).l,$32(a0)       ; 07906
-        move.l  (dat_071_00B68).l,d0            ; 0790E
+        move.w  (PlayerCellZ).l,$32(a0)         ; 07906
+        move.l  (PlayerX).l,d0                  ; 0790E
         andi.l  #$3fffff,d0                     ; 07914
         move.l  (dat_071_00422).l,d1            ; 0791A
         add.l   d0,d1                           ; 07920
         movea.l (dat_002_0000C).l,a0            ; 07922
         move.l  d1,(a0)                         ; 07928
         move.l  (dat_071_00426).l,d0            ; 0792A
-        add.l   (dat_071_00B6C).l,d0            ; 07930
+        add.l   (PlayerY).l,d0                  ; 07930
         movea.l (dat_002_0000C).l,a0            ; 07936
         move.l  d0,$4(a0)                       ; 0793C
-        move.l  (dat_071_00B70).l,d0            ; 07940
+        move.l  (PlayerZ).l,d0                  ; 07940
         andi.l  #$3fffff,d0                     ; 07946
         move.l  (dat_071_0042A).l,d1            ; 0794C
         add.l   d0,d1                           ; 07952
@@ -328,25 +328,25 @@ l_000_079AC:
 l_000_079B2:
         addq.w  #$5,-$4(a6)                     ; 079B2
 l_000_079B6:
-        move.w  (dat_071_00BE8).l,d0            ; 079B6
+        move.w  (PlayerM12).l,d0                ; 079B6
         move.w  -$4(a6),d1                      ; 079BC
         muls.w  d1,d0                           ; 079C0
-        move.w  (dat_071_00BEA).l,d2            ; 079C2
+        move.w  (PlayerM13).l,d2                ; 079C2
         move.w  -$6(a6),d3                      ; 079C8
         muls.w  d3,d2                           ; 079CC
         add.l   d2,d0                           ; 079CE
         asr.l   #$4,d0                          ; 079D0
         move.l  d0,(dat_071_00422).l            ; 079D2
-        move.w  (dat_071_00BEE).l,d0            ; 079D8
+        move.w  (PlayerM22).l,d0                ; 079D8
         muls.w  d1,d0                           ; 079DE
-        move.w  (dat_071_00BF0).l,d2            ; 079E0
+        move.w  (PlayerM23).l,d2                ; 079E0
         muls.w  d3,d2                           ; 079E6
         add.l   d2,d0                           ; 079E8
         asr.l   #$4,d0                          ; 079EA
         move.l  d0,(dat_071_00426).l            ; 079EC
-        move.w  (dat_071_00BF4).l,d0            ; 079F2
+        move.w  (PlayerM32).l,d0                ; 079F2
         muls.w  d0,d1                           ; 079F8
-        move.w  (dat_071_00BF6).l,d0            ; 079FA
+        move.w  (PlayerM33).l,d0                ; 079FA
         muls.w  d0,d3                           ; 07A00
         add.l   d3,d1                           ; 07A02
         asr.l   #$4,d1                          ; 07A04
@@ -462,16 +462,16 @@ l_000_07B90:
         add.w   -$6(a6),d0                      ; 07B98
         move.w  d0,-$2(a6)                      ; 07B9C
 l_000_07BA0:
-        move.l  (dat_071_00B68).l,d0            ; 07BA0
+        move.l  (PlayerX).l,d0                  ; 07BA0
         andi.l  #$3fffff,d0                     ; 07BA6
         move.l  (dat_071_00422).l,d1            ; 07BAC
         add.l   d0,d1                           ; 07BB2
         movea.l (dat_002_0000C).l,a0            ; 07BB4
         sub.l   (a0),d1                         ; 07BBA
         move.l  (dat_071_00426).l,d0            ; 07BBC
-        add.l   (dat_071_00B6C).l,d0            ; 07BC2
+        add.l   (PlayerY).l,d0                  ; 07BC2
         sub.l   $4(a0),d0                       ; 07BC8
-        move.l  (dat_071_00B70).l,d2            ; 07BCC
+        move.l  (PlayerZ).l,d2                  ; 07BCC
         andi.l  #$3fffff,d2                     ; 07BD2
         move.l  (dat_071_0042A).l,d3            ; 07BD8
         add.l   d2,d3                           ; 07BDE
@@ -549,23 +549,23 @@ sub_000_07C24:
         andi.w  #$3000,d0                       ; 07CD6
         tst.w   d0                              ; 07CDA
         beq.b   l_000_07D3E                     ; 07CDC
-        move.l  (dat_071_00B92).l,d0            ; 07CDE
+        move.l  (PlayerVelX).l,d0               ; 07CDE
         add.l   d0,$c(a0)                       ; 07CE4
-        move.l  (dat_071_00B96).l,d0            ; 07CE8
+        move.l  (PlayerVelY).l,d0               ; 07CE8
         movea.l (dat_002_0000C).l,a0            ; 07CEE
         add.l   d0,$10(a0)                      ; 07CF4
-        move.l  (dat_071_00B9A).l,d0            ; 07CF8
+        move.l  (PlayerVelZ).l,d0               ; 07CF8
         movea.l (dat_002_0000C).l,a0            ; 07CFE
         add.l   d0,$14(a0)                      ; 07D04
-        move.l  (dat_071_00B92).l,d0            ; 07D08
+        move.l  (PlayerVelX).l,d0               ; 07D08
         asr.l   #$3,d0                          ; 07D0E
         movea.l (dat_002_0000C).l,a0            ; 07D10
         add.l   d0,$18(a0)                      ; 07D16
-        move.l  (dat_071_00B96).l,d0            ; 07D1A
+        move.l  (PlayerVelY).l,d0               ; 07D1A
         asr.l   #$3,d0                          ; 07D20
         movea.l (dat_002_0000C).l,a0            ; 07D22
         add.l   d0,$1c(a0)                      ; 07D28
-        move.l  (dat_071_00B9A).l,d0            ; 07D2C
+        move.l  (PlayerVelZ).l,d0               ; 07D2C
         asr.l   #$3,d0                          ; 07D32
         movea.l (dat_002_0000C).l,a0            ; 07D34
         add.l   d0,$20(a0)                      ; 07D3A

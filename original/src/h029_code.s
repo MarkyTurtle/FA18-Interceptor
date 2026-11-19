@@ -17,7 +17,7 @@ sub_029_00002:
         addq.b  #$1,(dat_071_00253).l           ; 00022
         tst.b   (dat_071_00155).l               ; 00028
         beq.b   l_029_00038                     ; 0002E
-        lea.l   (dat_071_0060E).l,a4            ; 00030
+        lea.l   (CameraX).l,a4                  ; 00030
         bra.b   l_029_00048                     ; 00036
 l_029_00038:
         lea.l   (ObjectTable).l,a4              ; 00038
@@ -152,7 +152,7 @@ sub_029_001A4:
         link.w  a6,#$fff6                       ; 001B4
         move.l  #$fffff,(dat_071_000B6).l       ; 001B8
         move.w  #$8,(DrawColour).l              ; 001C2
-        movem.l (dat_071_0060E).l,d0-d2         ; 001CA
+        movem.l (CameraX).l,d0-d2               ; 001CA
         exg.l   d1,d2                           ; 001D2
         swap    d2                              ; 001D4
         neg.w   d2                              ; 001D6

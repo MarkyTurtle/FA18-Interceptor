@@ -45,10 +45,10 @@ l_032_0004E:
         move.w  (dat_071_00490).l,d4            ; 00070
         move.w  (dat_071_00492).l,d5            ; 00076
         move.w  $6a(a1),d6                      ; 0007C
-        bra.w   sub_032_0054C                   ; 00080
+        bra.w   SetAttitude                     ; 00080
 l_032_00084:
         movem.w $66(a1),d4-d6                   ; 00084
-        bra.w   sub_032_0054C                   ; 0008A
+        bra.w   SetAttitude                     ; 0008A
 l_032_0008E:
         moveq   #$0,d0                          ; 0008E
         move.w  d0,d2                           ; 00090
@@ -475,16 +475,27 @@ l_032_00542:
         bne.b   l_032_00500                     ; 00544
 l_032_00546:
         bclr    #$2,$3(a1)                      ; 00546
-sub_032_0054C:
+
+;-------------------------------------------------------------------------------
+; SetAttitude - SetAttitude(a1 = an object, d4-d6 = its three attitude angles): stores the
+; angles (+$66, +$68, +$6A), makes its matrix at +$80 from them (AnglesToMatrix), then the
+; matrix at +$92 from the negated angles ($7080 - each: the opposite rotation; sub_032_00568).
+;-------------------------------------------------------------------------------
+SetAttitude:
         movem.w d4-d6,$66(a1)                   ; 0054C
         movem.l d1/d4-d6/a1,-(a7)               ; 00552
         move.w  d4,d0                           ; 00556
         move.w  d5,d2                           ; 00558
         move.w  d6,d4                           ; 0055A
         lea.l   $80(a1),a1                      ; 0055C
-        bsr.w   sub_032_01072                   ; 00560
+        bsr.w   AnglesToMatrix                  ; 00560
         movem.l (a7)+,d1/d5-d7/a1               ; 00564
-sub_032_00568:
+
+;-------------------------------------------------------------------------------
+; SetInverseMatrix - Makes an object's matrix at +$92 (a1 = the object) from the negated angles
+; d5-d7 ($7080 - each).
+;-------------------------------------------------------------------------------
+SetInverseMatrix:
         adda.w  #$92,a1                         ; 00568
         moveq   #$0,d0                          ; 0056C
         moveq   #$0,d2                          ; 0056E
@@ -505,13 +516,18 @@ l_032_00586:
         move.w  d1,d4                           ; 0058A
         sub.w   d7,d4                           ; 0058C
 l_032_0058E:
-        bsr.w   sub_032_0110C                   ; 0058E
+        bsr.w   AnglesToMatrix2                 ; 0058E
 l_032_00592:
         rts                                     ; 00592
-sub_032_00594:
+
+;-------------------------------------------------------------------------------
+; SetupCamera - The camera, once a frame: from the cockpit (sub_032_00710) or, in the outside
+; views (dat_071_00155), from a point near the viewed object (sub_032_005B2).
+;-------------------------------------------------------------------------------
+SetupCamera:
         tst.b   (dat_071_00155).l               ; 00594
         beq.b   l_032_005A2                     ; 0059A
-        bsr.w   sub_032_005B2                   ; 0059C
+        bsr.w   SetOutsideCamera                ; 0059C
         rts                                     ; 005A0
 l_032_005A2:
         bsr.w   sub_032_00710                   ; 005A2
@@ -519,7 +535,13 @@ l_032_005A2:
 l_032_005A8:
         jsr     (sub_020_00B18).l               ; 005A8
         bra.w   l_032_006A8                     ; 005AE
-sub_032_005B2:
+
+;-------------------------------------------------------------------------------
+; SetOutsideCamera - Places the camera outside, near the viewed object (ViewObject, or the
+; object in dat_071_00392 when it is a '0' type), at an offset turned by its orientation
+; (sub_004_00328).
+;-------------------------------------------------------------------------------
+SetOutsideCamera:
         tst.b   (dat_071_00184).l               ; 005B2
         beq.b   l_032_005A8                     ; 005B8
         lea.l   (ObjectTable).l,a1              ; 005BA
@@ -553,9 +575,9 @@ l_032_00608:
         move.l  d2,d4                           ; 0060E
         move.l  d1,d3                           ; 00610
         move.l  d0,d2                           ; 00612
-        sub.l   (dat_071_0060E).l,d2            ; 00614
-        sub.l   (dat_071_00612).l,d3            ; 0061A
-        sub.l   (dat_071_00616).l,d4            ; 00620
+        sub.l   (CameraX).l,d2                  ; 00614
+        sub.l   (CameraY).l,d3                  ; 0061A
+        sub.l   (CameraZ).l,d4                  ; 00620
         tst.b   (dat_071_00184).l               ; 00626
         blt.b   l_032_0065A                     ; 0062C
         tst.b   (dat_071_0027E).l               ; 0062E
@@ -600,7 +622,7 @@ l_032_006A8:
         move.w  (dat_071_00466).l,d4            ; 006C8
         lea.l   (dat_071_005CC).l,a1            ; 006CE
         bsr.w   sub_032_00F3E                   ; 006D4
-        movem.w (dat_071_00BBA).l,d0-d2         ; 006D8
+        movem.w (Player_66).l,d0-d2             ; 006D8
         movem.l d0-d2,(dat_071_00458).l         ; 006E0
         rts                                     ; 006E8
 sub_032_006EA:
@@ -777,7 +799,7 @@ sub_032_00946:
         cmpi.w  #$384,d4                        ; 0095A
         bge.b   l_032_0096A                     ; 0095E
         bsr.w   sub_032_00A8E                   ; 00960
-        bsr.w   sub_032_012D2                   ; 00964
+        bsr.w   SinCos                          ; 00964
         bra.b   l_032_009AA                     ; 00968
 l_032_0096A:
         cmpi.w  #$708,d4                        ; 0096A
@@ -786,7 +808,7 @@ l_032_0096A:
         move.w  #$708,d3                        ; 00974
         sub.w   d4,d3                           ; 00978
         move.w  d3,d4                           ; 0097A
-        bsr.w   sub_032_012D2                   ; 0097C
+        bsr.w   SinCos                          ; 0097C
         neg.w   d5                              ; 00980
         bra.b   l_032_009AA                     ; 00982
 l_032_00984:
@@ -796,13 +818,13 @@ l_032_00984:
         move.w  #$e10,d3                        ; 0098E
         sub.w   d4,d3                           ; 00992
         move.w  d3,d4                           ; 00994
-        bsr.w   sub_032_012D2                   ; 00996
+        bsr.w   SinCos                          ; 00996
         neg.w   d5                              ; 0099A
         bra.b   l_032_009AA                     ; 0099C
 l_032_0099E:
         bsr.w   sub_032_00A8E                   ; 0099E
         subi.w  #$708,d4                        ; 009A2
-        bsr.w   sub_032_012D2                   ; 009A6
+        bsr.w   SinCos                          ; 009A6
 l_032_009AA:
         move.w  d4,$22(a1)                      ; 009AA
         move.w  d5,$24(a1)                      ; 009AE
@@ -941,7 +963,7 @@ l_032_00AEC:
         addi.w  #$7080,d4                       ; 00AF0
 l_032_00AF4:
         lea.l   (dat_071_00560).l,a1            ; 00AF4
-        bsr.w   sub_032_01072                   ; 00AFA
+        bsr.w   AnglesToMatrix                  ; 00AFA
         lea.l   (a4),a1                         ; 00AFE
         lea.l   (dat_071_00560).l,a2            ; 00B00
         lea.l   (dat_071_00572).l,a3            ; 00B06
@@ -1090,7 +1112,7 @@ l_032_00C96:
         move.w  d2,d3                           ; 00CA8
 l_032_00CAA:
         add.w   d3,d3                           ; 00CAA
-        lea.l   (dat_063_00AE8).l,a0            ; 00CAC
+        lea.l   (SineTable).l,a0                ; 00CAC
         lea.l   (dat_063_00292).l,a1            ; 00CB2
         move.w  (a0,d3.w),d3                    ; 00CB8
         cmpi.w  #$8f,d3                         ; 00CBC
@@ -1420,7 +1442,7 @@ l_032_00F2C:
         rts                                     ; 00F3C
 sub_032_00F3E:
         asr.w   #$3,d4                          ; 00F3E
-        bsr.w   sub_032_012D2                   ; 00F40
+        bsr.w   SinCos                          ; 00F40
         move.w  d5,d6                           ; 00F44
         asr.w   #$6,d6                          ; 00F46
         move.w  d6,(a1)+                        ; 00F48
@@ -1440,7 +1462,7 @@ sub_032_00F3E:
         rts                                     ; 00F66
 sub_032_00F68:
         asr.w   #$3,d4                          ; 00F68
-        bsr.w   sub_032_012D2                   ; 00F6A
+        bsr.w   SinCos                          ; 00F6A
         move.w  d5,(a1)+                        ; 00F6E
         clr.w   (a1)+                           ; 00F70
         move.w  d4,(a1)+                        ; 00F72
@@ -1455,7 +1477,7 @@ sub_032_00F68:
 sub_032_00F86:
         lsr.w   #$3,d0                          ; 00F86
         lsr.w   #$3,d2                          ; 00F88
-        bsr.w   sub_032_011EE                   ; 00F8A
+        bsr.w   SinCos2                         ; 00F8A
         move.w  d3,d6                           ; 00F8E
         asr.w   #$6,d6                          ; 00F90
         move.w  d6,(a1)+                        ; 00F92
@@ -1496,8 +1518,8 @@ sub_032_00FD6:
         lsr.w   #$3,d0                          ; 00FD6
         lsr.w   #$3,d2                          ; 00FD8
         lsr.w   #$3,d4                          ; 00FDA
-        bsr.w   sub_032_011EE                   ; 00FDC
-        bsr.w   sub_032_012D2                   ; 00FE0
+        bsr.w   SinCos2                         ; 00FDC
+        bsr.w   SinCos                          ; 00FE0
         move.w  d2,d6                           ; 00FE4
         muls.w  d0,d6                           ; 00FE6
         moveq   #$e,d7                          ; 00FE8
@@ -1569,12 +1591,17 @@ sub_032_00FD6:
         asr.w   #$4,d6                          ; 0106C
         move.w  d6,(a1)                         ; 0106E
         rts                                     ; 01070
-sub_032_01072:
+
+;-------------------------------------------------------------------------------
+; AnglesToMatrix - Makes a 3 x 3 rotation matrix (9 words, 2.14, written at (a1)+) from three
+; angles d0, d2, d4 (1/80 degree; SinCos2, SinCos).
+;-------------------------------------------------------------------------------
+AnglesToMatrix:
         lsr.w   #$3,d0                          ; 01072
         lsr.w   #$3,d2                          ; 01074
         lsr.w   #$3,d4                          ; 01076
-        bsr.w   sub_032_011EE                   ; 01078
-        bsr.w   sub_032_012D2                   ; 0107C
+        bsr.w   SinCos2                         ; 01078
+        bsr.w   SinCos                          ; 0107C
         move.w  d2,d6                           ; 01080
         muls.w  d0,d6                           ; 01082
         moveq   #$e,d7                          ; 01084
@@ -1645,12 +1672,16 @@ sub_032_01072:
         asr.l   d7,d6                           ; 01106
         move.w  d6,(a1)                         ; 01108
         rts                                     ; 0110A
-sub_032_0110C:
+
+;-------------------------------------------------------------------------------
+; AnglesToMatrix2 - The same for the record's second matrix (+$92).
+;-------------------------------------------------------------------------------
+AnglesToMatrix2:
         lsr.w   #$3,d0                          ; 0110C
         lsr.w   #$3,d2                          ; 0110E
         lsr.w   #$3,d4                          ; 01110
-        bsr.w   sub_032_011EE                   ; 01112
-        bsr.w   sub_032_012D2                   ; 01116
+        bsr.w   SinCos2                         ; 01112
+        bsr.w   SinCos                          ; 01116
         move.w  d4,d6                           ; 0111A
         muls.w  d0,d6                           ; 0111C
         moveq   #$e,d7                          ; 0111E
@@ -1749,10 +1780,16 @@ sub_032_011A4:
         asr.l   #$8,d5                          ; 011E6
         movem.w d3-d5,(a1)                      ; 011E8
         rts                                     ; 011EC
-sub_032_011EE:
+
+;-------------------------------------------------------------------------------
+; SinCos2 - The sines and cosines of two angles (d0, d2: tenths of a degree, 0-3599) from
+; SineTable, by quadrant: d0 = sin, d1 = cos of the first, d2 = sin, d3 = cos of the second
+; (2.14).
+;-------------------------------------------------------------------------------
+SinCos2:
         add.w   d0,d0                           ; 011EE
         add.w   d2,d2                           ; 011F0
-        lea.l   (dat_063_00AE8).l,a0            ; 011F2
+        lea.l   (SineTable).l,a0                ; 011F2
         move.w  d0,d7                           ; 011F8
         cmpi.w  #$708,d0                        ; 011FA
         bge.b   l_032_01210                     ; 011FE
@@ -1834,9 +1871,14 @@ l_032_012BA:
         move.w  (a0,d7.w),d3                    ; 012CC
 l_032_012D0:
         rts                                     ; 012D0
-sub_032_012D2:
+
+;-------------------------------------------------------------------------------
+; SinCos - The sine and cosine of the angle in d4 (tenths of a degree): d4 = sin, d5 = cos
+; (2.14).
+;-------------------------------------------------------------------------------
+SinCos:
         add.w   d4,d4                           ; 012D2
-        lea.l   (dat_063_00AE8).l,a0            ; 012D4
+        lea.l   (SineTable).l,a0                ; 012D4
         move.w  d4,d7                           ; 012DA
         cmpi.w  #$708,d4                        ; 012DC
         bge.b   l_032_012F2                     ; 012E0

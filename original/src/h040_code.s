@@ -1251,9 +1251,9 @@ l_040_011B0:
         move.w  d4,(dat_071_00312).l            ; 011B0
         move.w  d2,(dat_071_00314).l            ; 011B6
 l_040_011BC:
-        tst.w   (dat_071_00BAA).l               ; 011BC
+        tst.w   (Player_56).l                   ; 011BC
         beq.b   l_040_011DC                     ; 011C2
-        move.w  (dat_071_00B6A).l,d2            ; 011C4
+        move.w  (Player_16).l,d2                ; 011C4
         andi.w  #$1c,d2                         ; 011CA
         lea.l   (dat_040_012E8).l,a0            ; 011CE
         add.w   (a0,d2.w),d0                    ; 011D4

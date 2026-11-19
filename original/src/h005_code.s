@@ -131,7 +131,7 @@ l_005_0017A:
         bne.w   l_005_002C8                     ; 001DA
         cmpi.b  #$2,(dat_071_00276).l           ; 001DE
         beq.w   l_005_002C8                     ; 001E6
-        move.b  (dat_071_00BD0).l,d4            ; 001EA
+        move.b  (Player_7C).l,d4                ; 001EA
         andi.b  #$f,d4                          ; 001F0
         bne.w   l_005_002C8                     ; 001F4
         cmpi.b  #$1,d1                          ; 001F8
@@ -379,7 +379,7 @@ l_005_00516:
         lea.l   (dat_071_0017B).l,a0            ; 00528
         bsr.w   sub_005_015FC                   ; 0052E
         bset    #$5,(JoyEvents).l               ; 00532
-        ori.b   #$a,(dat_071_00BD0).l           ; 0053A
+        ori.b   #$a,(Player_7C).l               ; 0053A
         bra.w   l_005_01624                     ; 00542
 sub_005_00546:
         tst.w   (ViewY).l                       ; 00546
@@ -469,7 +469,7 @@ sub_005_00666:
         cmpi.b  #$3,d0                          ; 0067A
         bgt.w   l_005_00728                     ; 0067E
         movea.l (dat_073_01644).l,a0            ; 00682
-        move.b  (a0)+,(dat_071_00BB9).l         ; 00688
+        move.b  (a0)+,(PlayerControls).l        ; 00688
         move.l  a0,(dat_073_01644).l            ; 0068E
         movea.l (dat_073_01640).l,a2            ; 00694
         move.w  (a2)+,(dat_071_00366).l         ; 0069A
@@ -689,10 +689,10 @@ sub_005_008C0:
 sub_005_008C6:
         moveq   #$0,d2                          ; 008C6
 l_005_008C8:
-        move.b  (dat_071_00BB9).l,d1            ; 008C8
+        move.b  (PlayerControls).l,d1           ; 008C8
         andi.b  #$fc,d1                         ; 008CE
         or.b    d2,d1                           ; 008D2
-        move.b  d1,(dat_071_00BB9).l            ; 008D4
+        move.b  d1,(PlayerControls).l           ; 008D4
         rts                                     ; 008DA
 Key_Down:
         bsr.w   StickDown                       ; 008DC
@@ -731,10 +731,10 @@ l_005_008FE:
         tst.b   (dat_071_00184).l               ; 0090C
         beq.b   l_005_00926                     ; 00912
 l_005_00914:
-        move.b  (dat_071_00BB9).l,d1            ; 00914
+        move.b  (PlayerControls).l,d1           ; 00914
         andi.b  #$cf,d1                         ; 0091A
         or.b    d2,d1                           ; 0091E
-        move.b  d1,(dat_071_00BB9).l            ; 00920
+        move.b  d1,(PlayerControls).l           ; 00920
 l_005_00926:
         rts                                     ; 00926
 Key_Left:
@@ -773,10 +773,10 @@ l_005_0094A:
         tst.b   (dat_071_00184).l               ; 00958
         beq.w   l_005_00974                     ; 0095E
 l_005_00962:
-        move.b  (dat_071_00BB9).l,d1            ; 00962
+        move.b  (PlayerControls).l,d1           ; 00962
         andi.b  #$f3,d1                         ; 00968
         or.b    d2,d1                           ; 0096C
-        move.b  d1,(dat_071_00BB9).l            ; 0096E
+        move.b  d1,(PlayerControls).l           ; 0096E
 l_005_00974:
         rts                                     ; 00974
 Key_Comma:
@@ -788,10 +788,10 @@ Key_Period:
 Key_CommaUp_PeriodUp:
         moveq   #$0,d2                          ; 00982
 l_005_00984:
-        move.b  (dat_071_00BB9).l,d1            ; 00984
+        move.b  (PlayerControls).l,d1           ; 00984
         andi.b  #$3f,d1                         ; 0098A
         or.b    d2,d1                           ; 0098E
-        move.b  d1,(dat_071_00BB9).l            ; 00990
+        move.b  d1,(PlayerControls).l           ; 00990
         move.b  d2,(CommaPeriodInput).l         ; 00996
         bra.w   l_005_01624                     ; 0099C
 Key_Equals:
@@ -803,10 +803,10 @@ Key_Minus:
 Key_EqualsUp_MinusUp:
         moveq   #$0,d2                          ; 009A8
 l_005_009AA:
-        move.b  (dat_071_00BB9).l,d1            ; 009AA
+        move.b  (PlayerControls).l,d1           ; 009AA
         andi.b  #$fc,d1                         ; 009B0
         or.b    d2,d1                           ; 009B4
-        move.b  d1,(dat_071_00BB9).l            ; 009B6
+        move.b  d1,(PlayerControls).l           ; 009B6
         bsr.w   sub_005_009EA                   ; 009BC
         bra.w   l_005_01624                     ; 009C0
 Key_Backslash_Backspace:
@@ -823,14 +823,14 @@ sub_005_009EA:
         rts                                     ; 009FC
 Key_A:
         bset    #$1,(JoyEvents).l               ; 009FE
-        cmpi.b  #$11,(dat_071_00BB6).l          ; 00A06
+        cmpi.b  #$11,(PlayerType).l             ; 00A06
         bne.w   l_005_01624                     ; 00A0E
         jsr     (sub_039_01886).l               ; 00A12
-        eori.w  #$8000,(dat_071_00B56).l        ; 00A18
+        eori.w  #$8000,(Player_02).l            ; 00A18
         bchg    #$7,(dat_071_00217).l           ; 00A20
         move.b  #$3,(dat_071_00215).l           ; 00A28
         swap    d0                              ; 00A30
-        btst    #$7,(dat_071_00B56).l           ; 00A32
+        btst    #$7,(Player_02).l               ; 00A32
         beq.b   l_005_00A40                     ; 00A3A
         move.w  #$4023,d0                       ; 00A3C
 l_005_00A40:
@@ -975,13 +975,13 @@ l_005_00BF2:
         bset    #$3,(dat_071_0036C).l           ; 00C06
         tst.b   (dat_071_0017D).l               ; 00C0E
         beq.b   l_005_00C42                     ; 00C14
-        move.l  (dat_071_00612).l,d1            ; 00C16
+        move.l  (CameraY).l,d1                  ; 00C16
         subi.l  #$2000000,d1                    ; 00C1C
         cmpi.l  #$1000000,d1                    ; 00C22
         bge.b   l_005_00C30                     ; 00C28
         move.l  #$1000000,d1                    ; 00C2A
 l_005_00C30:
-        move.l  d1,(dat_071_00612).l            ; 00C30
+        move.l  d1,(CameraY).l                  ; 00C30
         move.b  #$ff,(RedrawFlags).l            ; 00C36
         bra.w   l_005_01624                     ; 00C3E
 l_005_00C42:
@@ -1006,13 +1006,13 @@ l_005_00C78:
         bne.w   l_005_01624                     ; 00C90
         tst.b   (dat_071_0017D).l               ; 00C94
         beq.b   l_005_00CC8                     ; 00C9A
-        move.l  (dat_071_00612).l,d1            ; 00C9C
+        move.l  (CameraY).l,d1                  ; 00C9C
         addi.l  #$2000000,d1                    ; 00CA2
         cmpi.l  #$8000000,d1                    ; 00CA8
         ble.b   l_005_00CB6                     ; 00CAE
         move.l  #$8000000,d1                    ; 00CB0
 l_005_00CB6:
-        move.l  d1,(dat_071_00612).l            ; 00CB6
+        move.l  d1,(CameraY).l                  ; 00CB6
         move.b  #$ff,(RedrawFlags).l            ; 00CBC
         bra.w   l_005_01624                     ; 00CC4
 l_005_00CC8:
@@ -1195,7 +1195,7 @@ Key_Return:
         bge.b   l_005_00F90                     ; 00F7C
 l_005_00F7E:
         jsr     (sub_039_01886).l               ; 00F7E
-        bset    #$3,(dat_071_00B56).l           ; 00F84
+        bset    #$3,(Player_02).l               ; 00F84
         bra.w   l_005_01624                     ; 00F8C
 l_005_00F90:
         swap    d0                              ; 00F90
@@ -1205,27 +1205,27 @@ l_005_00F90:
         bra.w   l_005_01624                     ; 00F9E
 l_005_00FA2:
         jsr     (sub_039_01886).l               ; 00FA2
-        move.b  (dat_071_00BD0).l,d4            ; 00FA8
+        move.b  (Player_7C).l,d4                ; 00FA8
         andi.b  #$f,d4                          ; 00FAE
         bne.w   l_005_01624                     ; 00FB2
         bset    #$4,(JoyEvents).l               ; 00FB6
-        move.b  (dat_071_00BB7).l,d4            ; 00FBE
+        move.b  (PlayerWeapon).l,d4             ; 00FBE
         andi.b  #$f0,d4                         ; 00FC4
         subi.b  #$10,d4                         ; 00FC8
         bge.b   l_005_00FD2                     ; 00FCC
         move.b  #$30,d4                         ; 00FCE
 l_005_00FD2:
-        andi.b  #$f,(dat_071_00BB7).l           ; 00FD2
-        or.b    d4,(dat_071_00BB7).l            ; 00FDA
+        andi.b  #$f,(PlayerWeapon).l            ; 00FD2
+        or.b    d4,(PlayerWeapon).l             ; 00FDA
         move.b  #$3,(dat_071_00213).l           ; 00FE0
         move.b  #$3,(dat_071_00214).l           ; 00FE8
         clr.b   (dat_071_00284).l               ; 00FF0
         bra.w   l_005_01624                     ; 00FF6
 Key_G:
         bset    #$0,(JoyEvents).l               ; 00FFA
-        btst    #$7,(dat_071_00B57).l           ; 01002
+        btst    #$7,(Player_03).l               ; 01002
         bne.b   l_005_0102E                     ; 0100A
-        bchg    #$7,(dat_071_00BD0).l           ; 0100C
+        bchg    #$7,(Player_7C).l               ; 0100C
         move.l  (dat_071_00528).l,d4            ; 01014
         andi.l  #$40,d4                         ; 0101A
         beq.b   l_005_0102E                     ; 01020
@@ -1303,7 +1303,7 @@ l_005_010E2:
         bne.b   l_005_01120                     ; 010F6
         tst.b   (dat_071_00240).l               ; 010F8
         bne.b   l_005_0110A                     ; 010FE
-        cmpi.b  #$c,(dat_071_00B7F).l           ; 01100
+        cmpi.b  #$c,(Player_2B).l               ; 01100
         beq.b   l_005_01114                     ; 01108
 l_005_0110A:
         cmpi.b  #$c,(dat_071_00240).l           ; 0110A
@@ -1493,7 +1493,7 @@ Key_M:
         bset    #$0,(dat_071_0036C).l           ; 0137E
         tst.b   (dat_071_0017D).l               ; 01386
         beq.b   l_005_0139C                     ; 0138C
-        move.l  (dat_071_00612).l,(dat_071_00034).l ; 0138E
+        move.l  (CameraY).l,(dat_071_00034).l   ; 0138E
         bra.w   l_005_00A6C                     ; 01398
 l_005_0139C:
         move.w  d0,-(a7)                        ; 0139C
@@ -1502,9 +1502,9 @@ l_005_0139C:
         move.l  #$10c00000,d4                   ; 013A6
         move.l  (dat_071_00034).l,d1            ; 013AC
         move.l  #$11400000,d2                   ; 013B2
-        move.l  d4,(dat_071_0060E).l            ; 013B8
-        move.l  d1,(dat_071_00612).l            ; 013BE
-        move.l  d2,(dat_071_00616).l            ; 013C4
+        move.l  d4,(CameraX).l                  ; 013B8
+        move.l  d1,(CameraY).l                  ; 013BE
+        move.l  d2,(CameraZ).l                  ; 013C4
         andi.l  #$3fffff,d4                     ; 013CA
         andi.l  #$3fffff,d2                     ; 013D0
         neg.l   d4                              ; 013D6
@@ -1529,7 +1529,7 @@ Key_S:
         cmpi.b  #$7d,(dat_071_00276).l          ; 0143A
         bne.b   l_005_01452                     ; 01442
         jsr     (sub_039_01886).l               ; 01444
-        eori.w  #$1000,(dat_071_01356).l        ; 0144A
+        eori.w  #$1000,(Object4_02).l           ; 0144A
 l_005_01452:
         bra.w   l_005_01624                     ; 01452
 Key_P:
@@ -1586,14 +1586,14 @@ l_005_0150A:
         bne.b   l_005_01556                     ; 01512
         tst.w   (dat_071_00292).l               ; 01514
         bne.b   l_005_01556                     ; 0151A
-        btst    #$6,(dat_071_00D55).l           ; 0151C
+        btst    #$6,(Object1_01).l              ; 0151C
         beq.b   l_005_0153A                     ; 01524
-        btst    #$6,(dat_071_00F55).l           ; 01526
+        btst    #$6,(Object2_01).l              ; 01526
         beq.b   l_005_0153A                     ; 0152E
-        btst    #$6,(dat_071_01155).l           ; 01530
+        btst    #$6,(Object3_01).l              ; 01530
         bne.b   l_005_01556                     ; 01538
 l_005_0153A:
-        ori.b   #$f,(dat_071_00BD0).l           ; 0153A
+        ori.b   #$f,(Player_7C).l               ; 0153A
         move.w  d0,-(a7)                        ; 01542
         moveq   #$30,d0                         ; 01544
         move.l  d0,-(a7)                        ; 01546

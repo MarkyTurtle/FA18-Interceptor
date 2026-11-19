@@ -171,9 +171,9 @@ sub_004_00290:
         move.l  #$5000,d1                       ; 00296
         move.l  #$fccf000,d2                    ; 0029C
 sub_004_002A2:
-        move.l  d0,(dat_071_0060E).l            ; 002A2
-        move.l  d1,(dat_071_00612).l            ; 002A8
-        move.l  d2,(dat_071_00616).l            ; 002AE
+        move.l  d0,(CameraX).l                  ; 002A2
+        move.l  d1,(CameraY).l                  ; 002A8
+        move.l  d2,(CameraZ).l                  ; 002AE
         andi.l  #$3fffff,d0                     ; 002B4
         andi.l  #$3fffff,d2                     ; 002BA
         neg.l   d0                              ; 002C0
@@ -263,7 +263,7 @@ sub_004_003E8:
         bsr.w   sub_004_00708                   ; 003F4
         clr.w   (dat_071_00392).l               ; 003F8
         moveq   #$9,d0                          ; 003FE
-        move.b  d0,(dat_071_00B7F).l            ; 00400
+        move.b  d0,(Player_2B).l                ; 00400
         asl.w   #$3,d0                          ; 00406
         move.w  d0,(MouseY).l                   ; 00408
         move.w  d0,(dat_071_0014C).l            ; 0040E
@@ -277,7 +277,7 @@ sub_004_003E8:
 l_004_00434:
         move.w  #$50,d0                         ; 00434
 l_004_00438:
-        move.b  d1,(dat_071_00BB6).l            ; 00438
+        move.b  d1,(PlayerType).l               ; 00438
         adda.w  d0,a0                           ; 0043E
         movem.l (a0),d0-d4                      ; 00440
         move.l  #sub_010_00014,d0               ; 00444
@@ -295,7 +295,7 @@ l_004_0046C:
         andi.w  #$fff,d2                        ; 0046C
         move.b  $6(a1,d2.w),d4                  ; 00470
         andi.b  #$f,d4                          ; 00474
-        move.b  d4,(dat_071_00BD1).l            ; 00478
+        move.b  d4,(Player_7D).l                ; 00478
         clr.b   (dat_071_00170).l               ; 0047E
         lea.l   (ObjectTable).l,a1              ; 00484
         andi.w  #$f9ff,$0(a1)                   ; 0048A
@@ -475,7 +475,7 @@ l_004_0062C:
         move.b  d3,$b(a1)                       ; 006F6
         movem.w $66(a1),d4-d6                   ; 006FA
 l_004_00700:
-        jsr     (sub_032_0054C).l               ; 00700
+        jsr     (SetAttitude).l                 ; 00700
         rts                                     ; 00706
 sub_004_00708:
         lea.l   (ObjectTable).l,a1              ; 00708

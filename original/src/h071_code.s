@@ -1870,17 +1870,20 @@ dat_071_0060A:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0060E:
+; CameraX - The camera's position X (the eye the 3D view is drawn from).
+CameraX:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00612:
+; CameraY - The camera's position Y (height).
+CameraY:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00616:
+; CameraZ - The camera's position Z.
+CameraZ:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1968,22 +1971,25 @@ dat_071_00B52:
 ;   +$62 b  type (0 Sidewinder, 1 AMRAAM, '0' ...)
 ;   +$63 b  selected weapon (high nibble: $10 gun, $30 AMRAAM, else Sidewinder)
 ;   +$65 b  control bits ($80/$40 the , and . keys, $20/$10 pitch, $08/$04 roll)
+;   +$66 w, +$68 w, +$6A w  attitude: three angles (1/80 degree; SetAttitude)
+;   +$80-$90 w  a 3 x 3 rotation matrix made from them (2.14)
 ;   +$6C w, +$6E w, +$78 w, +$7E w      +$71 b      +$72 l  (6,400,000 at the start)
-;   +$7C b  bit 7                       +$92-$A2 w  orientation: a 3 x 3 matrix (rows at +$92, +$98, +$9E)
+;   +$7C b  bit 7
+;   +$92-$A2 w  the opposite rotation (from the negated angles; rows at +$92, +$98, +$9E)
 ObjectTable:
 	dc.b	$00
 	dc.b	$00
-dat_071_00B56:
+Player_02:
 	dc.b	$00
-dat_071_00B57:
+Player_03:
 	dc.b	$00
-dat_071_00B58:
+Player_04:
 	dc.b	$00
 	dc.b	$00
-dat_071_00B5A:
+PlayerCellX:
 	dc.b	$00
 	dc.b	$00
-dat_071_00B5C:
+PlayerCellZ:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1996,23 +2002,26 @@ dat_071_00B5C:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00B68:
+; PlayerX - The player's position X (ObjectTable+$14).
+PlayerX:
 	dc.b	$00
 	dc.b	$00
-dat_071_00B6A:
+Player_16:
 	dc.b	$00
 	dc.b	$00
-dat_071_00B6C:
+; PlayerY - The player's height (ObjectTable+$18; negative is up).
+PlayerY:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00B70:
+; PlayerZ - The player's position Z (ObjectTable+$1C).
+PlayerZ:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00B74:
+Player_20:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2024,7 +2033,7 @@ dat_071_00B74:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00B7F:
+Player_2B:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2041,21 +2050,24 @@ dat_071_00B7F:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00B8F:
+Player_3B:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00B92:
+; PlayerVelX - The player's velocity X (ObjectTable+$3E).
+PlayerVelX:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00B96:
+; PlayerVelY - The player's velocity Y (ObjectTable+$42).
+PlayerVelY:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00B9A:
+; PlayerVelZ - The player's velocity Z (ObjectTable+$46).
+PlayerVelZ:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2072,7 +2084,7 @@ dat_071_00B9A:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00BAA:
+Player_56:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2082,34 +2094,39 @@ dat_071_00BAA:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00BB3:
+; PlayerMissiles - The player's missiles left (ObjectTable+$5F): low nibble AMRAAMs, high
+; nibble Sidewinders.
+PlayerMissiles:
 	dc.b	$00
-dat_071_00BB4:
+Player_60:
 	dc.b	$00
 	dc.b	$00
-dat_071_00BB6:
+PlayerType:
 	dc.b	$00
-dat_071_00BB7:
+; PlayerWeapon - The player's selected weapon (ObjectTable+$63; high nibble $10 gun, $30
+; AMRAAM, else Sidewinder).
+PlayerWeapon:
 	dc.b	$00
 	dc.b	$00
-dat_071_00BB9:
+; PlayerControls - The player's control bits (ObjectTable+$65).
+PlayerControls:
 	dc.b	$00
-dat_071_00BBA:
+Player_66:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00BC0:
+Player_6C:
 	dc.b	$00
 	dc.b	$00
-dat_071_00BC2:
+Player_6E:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00BC6:
+Player_72:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2120,9 +2137,9 @@ dat_071_00BC6:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00BD0:
+Player_7C:
 	dc.b	$00
-dat_071_00BD1:
+Player_7D:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2144,52 +2161,54 @@ dat_071_00BD1:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00BE6:
+; PlayerM11 - The player's orientation matrix (ObjectTable+$92-$A2: 9 words, rows M11-M13,
+; M21-M23, M31-M33).
+PlayerM11:
 	dc.b	$00
 	dc.b	$00
-dat_071_00BE8:
+PlayerM12:
 	dc.b	$00
 	dc.b	$00
-dat_071_00BEA:
+PlayerM13:
 	dc.b	$00
 	dc.b	$00
-dat_071_00BEC:
+PlayerM21:
 	dc.b	$00
 	dc.b	$00
-dat_071_00BEE:
+PlayerM22:
 	dc.b	$00
 	dc.b	$00
-dat_071_00BF0:
+PlayerM23:
 	dc.b	$00
 	dc.b	$00
-dat_071_00BF2:
+PlayerM31:
 	dc.b	$00
 	dc.b	$00
-dat_071_00BF4:
+PlayerM32:
 	dc.b	$00
 	dc.b	$00
-dat_071_00BF6:
+PlayerM33:
 	dcb.b	350,$00
-dat_071_00D54:
+; Object1 - Object 1 of ObjectTable.
+Object1:
 	dc.b	$00
-dat_071_00D55:
+Object1_01:
 	dcb.b	511,$00
-dat_071_00F54:
+; Object2 - Object 2 of ObjectTable.
+Object2:
 	dc.b	$00
-dat_071_00F55:
+Object2_01:
 	dcb.b	511,$00
-dat_071_01154:
+; Object3 - Object 3 of ObjectTable.
+Object3:
 	dc.b	$00
-dat_071_01155:
+Object3_01:
 	dcb.b	511,$00
-dat_071_01354:
+; Object4 - Object 4 of ObjectTable.
+Object4:
 	dc.b	$00
 	dc.b	$00
-dat_071_01356:
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
+Object4_02:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2204,25 +2223,36 @@ dat_071_01356:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_01368:
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+Object4_14:
 	dcb.b	492,$00
-dat_071_01554:
+; Object5 - Object 5 of ObjectTable.
+Object5:
 	dcb.b	512,$00
-dat_071_01754:
+; Object6 - Object 6 of ObjectTable.
+Object6:
 	dcb.b	512,$00
-dat_071_01954:
+; Object7 - Object 7 of ObjectTable.
+Object7:
 	dcb.b	512,$00
-dat_071_01B54:
+; Object8 - Object 8 of ObjectTable.
+Object8:
 	dc.b	$00
-dat_071_01B55:
+Object8_01:
 	dcb.b	511,$00
-dat_071_01D54:
+; Object9 - Object 9 of ObjectTable.
+Object9:
 	dcb.b	512,$00
-dat_071_01F54:
+; Object10 - Object 10 of ObjectTable.
+Object10:
 	dc.b	$00
-dat_071_01F55:
+Object10_01:
 	dcb.b	511,$00
-dat_071_02154:
+; Object11 - Object 11 of ObjectTable.
+Object11:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2243,15 +2273,19 @@ dat_071_02154:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_02168:
+Object11_14:
 	dcb.b	492,$00
-dat_071_02354:
+; Object12 - Object 12 of ObjectTable.
+Object12:
 	dcb.b	512,$00
-dat_071_02554:
+; Object13 - Object 13 of ObjectTable.
+Object13:
 	dcb.b	512,$00
-dat_071_02754:
+; Object14 - Object 14 of ObjectTable.
+Object14:
 	dcb.b	512,$00
-dat_071_02954:
+; Object15 - Object 15 of ObjectTable.
+Object15:
 	dcb.b	512,$00
 ; SmallObjects - 16 small objects of 32 bytes after the ObjectTable, with the same +$01 flags,
 ; +$06 / +$08 map cell and +$0A sub-cell.
@@ -2260,7 +2294,7 @@ SmallObjects:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_02B58:
+SmallObjects_04:
 	dcb.b	508,$00
 h071_end:
 	ifnd	HUNKEXE

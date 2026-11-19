@@ -57,19 +57,19 @@ StartGunSound:
 ; (dat_071_00276) it does something else (bit 3 of dat_071_01356).
 ;-------------------------------------------------------------------------------
 FirePressed:
-        move.b  (dat_071_00BD0).l,d4            ; 0008E
+        move.b  (Player_7C).l,d4                ; 0008E
         andi.b  #$f,d4                          ; 00094
         bne.b   l_006_000B4                     ; 00098
         cmpi.b  #$7d,(dat_071_00276).l          ; 0009A
         bne.b   l_006_000B6                     ; 000A2
         tst.b   (dat_071_0016A).l               ; 000A4
         bge.b   l_006_000B4                     ; 000AA
-        bset    #$3,(dat_071_01356).l           ; 000AC
+        bset    #$3,(Object4_02).l              ; 000AC
 l_006_000B4:
         rts                                     ; 000B4
 l_006_000B6:
         bset    #$2,(JoyEvents).l               ; 000B6
-        move.b  (dat_071_00BB7).l,d4            ; 000BE
+        move.b  (PlayerWeapon).l,d4             ; 000BE
         andi.b  #$f0,d4                         ; 000C4
         beq.b   l_006_000D8                     ; 000C8
         cmpi.b  #$10,d4                         ; 000CA
@@ -128,9 +128,9 @@ sub_006_00132:
 ; records...
 ;-------------------------------------------------------------------------------
 ResetPlayerAircraft:
-        move.l  #$61a800,(dat_071_00BC6).l      ; 0015E
-        move.b  #$24,(dat_071_00BB3).l          ; 00168
-        move.w  #$1f4,(dat_071_00BB4).l         ; 00170
+        move.l  #$61a800,(Player_72).l          ; 0015E
+        move.b  #$24,(PlayerMissiles).l         ; 00168
+        move.w  #$1f4,(Player_60).l             ; 00170
         move.b  #$3,(dat_071_00213).l           ; 00178
         move.b  #$3,(dat_071_00214).l           ; 00180
         move.b  #$10,(dat_071_0021C).l          ; 00188

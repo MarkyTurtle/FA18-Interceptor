@@ -32,12 +32,19 @@ before each. Some parts run only every 2nd, 4th, 8th, 16th or 32nd frame (`Frame
 | 3 | `_UnPackRow`: ByteRun1 decompression (from the EA IFF code) |
 | 4 | Small helpers and game set-up (flight log setting, reset of the game state) |
 | 5 | `HandleKey`: the keyboard commands (each `Key_` label is named by its key) |
-| 6-34, 38-40 | The game: flight model, aircraft, weapons, missions, 3D, instruments - being worked out |
+| 6 | Instrument redraw counters, the fire button (`FirePressed`), `ResetPlayerAircraft` |
+| 8 | The 3D world's objects: which map cell the view is in (`UpdateViewCell`), `DrawObjects` (the visible objects and the scenery list, scaled by distance) |
+| 17 | Aircraft and weapons: `LaunchMissile` (pylons, the flight log's counts) and more |
+| 30 | Steering from the orientation matrices: probably the computer pilots (they set the control bits, +$65) |
+| 32 | Attitude and camera: `SetAttitude`, `AnglesToMatrix`, `SinCos`, `SetupCamera` |
+| 33 | The 3D view's outline (`PutEdge`, the view's corners: 320 x 180) |
+| 7, 9-16, 18-31, 34, 38-40 | The rest of the game: flight model, missions, terrain, instruments - being worked out |
 | 20 | Number and text output, the flight log page (`ShowFlightLog`, `ShowLogDate`), `ChecksumPlanes` |
-| 35, 36 | Drawing with the blitter and the copper lists (double-buffered display) |
+| 35, 36 | Drawing: `Plot` and its variants, `DrawLine` (blitter line mode), the copper lists (double-buffered display) |
 | 37 | Blitter copies: the title picture and the instrument panel onto the screen |
 | 41-70 | Data tables (some partly mistaken for code by the first trace) |
 | 62 | Data in chip RAM (graphics) |
+| 63 | Tables: `SineTable` (a quarter wave in tenths of a degree, 2.14) and others |
 | 64 | The menu and briefing texts: the six missions (F1 VISUAL CONFIRMATION, F2 EMERGENCY DEFENSE, F3 INTERCEPT STOLEN AIRCRAFT, F4 SEARCH AND RESCUE, F5 INTERCEPT INCOMING CRUISE MISSILE, F6 CARRIER SUB MISSION), the flight log page, the training texts |
 | 71-73 | The game's variables (zeros in the file): `ObjectTable` (512-byte records, from `dat_071_00B54`), `FrameStage`, `FrameCount`, the mouse position... |
 | 74-77 | The sound driver: the four audio channels' descriptors (`AudioChannels`), DMA and interrupt control, audio.device (`InitSound`, `CloseSound`) |
@@ -59,3 +66,16 @@ before each. Some parts run only every 2nd, 4th, 8th, 16th or 32nd frame (`Frame
   description`; `- !description` replaces an existing header), then runs `build.py`.
 * `tools/decode.py LABEL` turns a `dc.b` region that turns out to be code into instructions
   (relocated longs stay labels), then runs `build.py`; the file is put back if the build differs.
+
+## The objects
+
+`ObjectTable` (hunk 71) holds 16 objects of 512 bytes: the player's aircraft is record 0 (its
+fields are named `Player...` where the code uses them directly: `PlayerX`, `PlayerVelX`,
+`PlayerWeapon`, `PlayerM11`...), the rest are other aircraft, missiles and so on (`Object1` ...
+`Object15`). The header above `ObjectTable` in `src/h071_code.s` lists the fields known so far:
+the map cell and position (X/Z in map cells plus 22 bits inside the cell), the velocity, the
+attitude angles and two rotation matrices, the type, the selected weapon and missiles left,
+the control bits.
+
+Units: angles are 1/80 degree (a full turn is `$7080` = 28,800); sines, cosines and matrix
+elements are 2.14 fixed point (16384 = 1).

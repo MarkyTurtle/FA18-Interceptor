@@ -271,7 +271,7 @@ sub_028_00C5A:
 l_028_00C7C:
         tst.b   (dat_071_00155).l               ; 00C7C
         beq.b   l_028_00C8C                     ; 00C82
-        lea.l   (dat_071_0060E).l,a4            ; 00C84
+        lea.l   (CameraX).l,a4                  ; 00C84
         bra.b   l_028_00C9C                     ; 00C8A
 l_028_00C8C:
         lea.l   (ObjectTable).l,a4              ; 00C8C

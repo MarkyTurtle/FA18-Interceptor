@@ -37,7 +37,7 @@ l_022_00046:
         move.l  (RecordControls).l,(dat_073_0163C).l ; 00076
         rts                                     ; 00080
 l_022_00082:
-        move.b  (dat_071_00BB9).l,(a0)+         ; 00082
+        move.b  (PlayerControls).l,(a0)+        ; 00082
         move.l  a0,(RecordPointer).l            ; 00088
         movea.l (dat_073_0163C).l,a1            ; 0008E
         move.w  (dat_071_00366).l,(a1)+         ; 00094
@@ -57,7 +57,7 @@ l_022_000BA:
         beq.b   l_022_000FC                     ; 000C0
         movem.w $66(a1),d5-d7                   ; 000C2
         movem.l a0-a1,-(a7)                     ; 000C8
-        jsr     (sub_032_00568).l               ; 000CC
+        jsr     (SetInverseMatrix).l            ; 000CC
         movem.l (a7)+,a0-a1                     ; 000D2
         move.w  $c(a1),d2                       ; 000D6
         move.w  $e(a1),d4                       ; 000DA
@@ -765,7 +765,7 @@ l_022_009E6:
         lea.l   dat_022_00974(pc),a0            ; 009E6
         add.w   d0,d0                           ; 009EA
         move.w  (a0,d0.w),d1                    ; 009EC
-        lea.l   (dat_063_00AE8).l,a0            ; 009F0
+        lea.l   (SineTable).l,a0                ; 009F0
         move.w  $66(a1),d2                      ; 009F6
         asr.w   #$3,d2                          ; 009FA
         cmpi.w  #$708,d2                        ; 009FC

@@ -1460,7 +1460,7 @@ GameFrame:
         jsr     (UpdateViewCell).l              ; 01166
         move.w  #$20,(FrameStage).l             ; 0116C
         jsr     (sub_022_000B4).l               ; 01174
-        jsr     (sub_032_00594).l               ; 0117A
+        jsr     (SetupCamera).l                 ; 0117A
         jsr     (sub_008_00286).l               ; 01180
         jsr     (sub_020_00738).l               ; 01186
         jsr     (sub_000_043F2).l               ; 0118C
@@ -2534,9 +2534,9 @@ l_000_02190:
         move.w  #$4,(dat_071_002AC).l           ; 021C2
         move.w  #$800,(ViewObject).l            ; 021CA
         move.b  #$3,(dat_071_00282).l           ; 021D2
-        move.w  (dat_071_01356).l,d0            ; 021DA
+        move.w  (Object4_02).l,d0               ; 021DA
         ori.w   #$100,d0                        ; 021E0
-        move.w  d0,(dat_071_01356).l            ; 021E4
+        move.w  d0,(Object4_02).l               ; 021E4
         lea.l   h000+$23C2(pc),a0               ; 021EA
         move.l  a0,(dat_002_00004).l            ; 021EE
         bra.w   l_000_022B2                     ; 021F4
@@ -3321,7 +3321,7 @@ sub_000_02DB8:
 l_000_02E02:
         cmpi.b  #$2,-$5(a6)                     ; 02E02
         beq.b   l_000_02E32                     ; 02E08
-        move.b  (dat_071_00B58).l,d0            ; 02E0A
+        move.b  (Player_04).l,d0                ; 02E0A
         btst    #$3,d0                          ; 02E10
         beq.b   l_000_02E24                     ; 02E14
         movea.l -$4(a6),a0                      ; 02E16
@@ -3387,7 +3387,7 @@ sub_000_02EFE:
         move.w  (ObjectTable).l,d0              ; 02F0A
         btst    #$9,d0                          ; 02F10
         beq.w   l_000_02FE6                     ; 02F14
-        move.b  (dat_071_00BD0).l,d0            ; 02F18
+        move.b  (Player_7C).l,d0                ; 02F18
         andi.b  #$f,d0                          ; 02F1E
         tst.b   d0                              ; 02F22
         bne.w   l_000_02FE6                     ; 02F24
@@ -3413,7 +3413,7 @@ sub_000_02EFE:
         tst.b   d0                              ; 02F86
         bne.b   l_000_02FB6                     ; 02F88
         move.b  #$1,(dat_071_0026A).l           ; 02F8A
-        clr.l   (dat_071_00B96).l               ; 02F92
+        clr.l   (PlayerVelY).l                  ; 02F92
         move.b  #$28,(dat_071_00269).l          ; 02F98
         jsr     (sub_000_015F6).l               ; 02FA0
         moveq   #$78,d0                         ; 02FA6
@@ -3978,9 +3978,9 @@ dat_000_03980:
 	dc.b	$70,$00,$13,$C0
         dc.l    dat_071_0026A                   ; 03984
 	dc.b	$30,$39
-        dc.l    dat_071_00B56                   ; 0398A
+        dc.l    Player_02                       ; 0398A
 	dc.b	$00,$40,$00,$02,$33,$C0
-        dc.l    dat_071_00B56                   ; 03994
+        dc.l    Player_02                       ; 03994
 	dc.b	$10,$39
         dc.l    dat_071_00155                   ; 0399A
 	dc.b	$4A,$00,$66,$06,$4E,$B9
@@ -4604,7 +4604,7 @@ l_000_0435E:
         move.b  (dat_071_0027E).l,d0            ; 0435E
         subq.b  #$6,d0                          ; 04364
         bne.b   l_000_0438E                     ; 04366
-        cmpi.l  #$24000,(dat_071_00612).l       ; 04368
+        cmpi.l  #$24000,(CameraY).l             ; 04368
         bge.b   l_000_0438E                     ; 04372
         move.w  (ClipY).l,d0                    ; 04374
         cmpi.w  #$a7,d0                         ; 0437A

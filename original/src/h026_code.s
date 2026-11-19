@@ -142,7 +142,7 @@ l_026_00168:
         move.w  d2,d5                           ; 00196
         move.w  d4,d6                           ; 00198
         lea.l   (a0),a1                         ; 0019A
-        jsr     (sub_032_0054C).l               ; 0019C
+        jsr     (SetAttitude).l                 ; 0019C
 l_026_001A2:
         movea.l (a7)+,a2                        ; 001A2
         rts                                     ; 001A4
@@ -213,7 +213,7 @@ sub_026_00276:
 l_026_00286:
         tst.w   (a3)                            ; 00286
         blt.b   l_026_00274                     ; 00288
-        movem.w (dat_071_00B5A).l,d5-d6         ; 0028A
+        movem.w (PlayerCellX).l,d5-d6           ; 0028A
         btst    d7,(dat_071_0016D).l            ; 00292
         bne.b   l_026_002BC                     ; 00298
         movea.l (a3),a2                         ; 0029A
@@ -585,7 +585,7 @@ l_026_0067C:
         moveq   #$0,d6                          ; 006D4
         lea.l   (a0),a1                         ; 006D6
         movem.l d0/a0/a2,-(a7)                  ; 006D8
-        jsr     (sub_032_0054C).l               ; 006DC
+        jsr     (SetAttitude).l                 ; 006DC
         movem.l (a7)+,d0/a0/a2                  ; 006E2
         moveq   #$0,d7                          ; 006E6
         bra.b   l_026_006EC                     ; 006E8
@@ -742,7 +742,7 @@ sub_026_00922:
         lea.l   (ObjectTable).l,a0              ; 00950
         adda.w  (ViewObject).l,a0               ; 00956
         move.l  $14(a0),d5                      ; 0095C
-        move.l  (dat_071_00612).l,d6            ; 00960
+        move.l  (CameraY).l,d6                  ; 00960
         move.l  $1c(a0),d7                      ; 00966
         bra.w   l_026_00AA8                     ; 0096A
 l_026_0096E:
@@ -857,11 +857,11 @@ l_026_00A9A:
         bge.b   l_026_00AA8                     ; 00AA4
         move.l  d0,d6                           ; 00AA6
 l_026_00AA8:
-        movem.l d5-d7,(dat_071_0060E).l         ; 00AA8
+        movem.l d5-d7,(CameraX).l               ; 00AA8
         bra.w   l_026_00E96                     ; 00AB0
 l_026_00AB4:
         movem.l (dat_071_00626).l,d5-d7         ; 00AB4
-        movem.l (dat_071_0060E).l,d0-d2         ; 00ABC
+        movem.l (CameraX).l,d0-d2               ; 00ABC
         sub.l   d0,d5                           ; 00AC4
         move.l  d5,d0                           ; 00AC6
         bge.b   l_026_00ACC                     ; 00AC8
@@ -1012,7 +1012,7 @@ l_026_00CBE:
         move.b  #$ff,(dat_071_0027F).l          ; 00CC4
         move.l  $14(a0,d3.w),d0                 ; 00CCC
         move.l  $1c(a0,d3.w),d2                 ; 00CD0
-        move.l  (dat_071_00612).l,d1            ; 00CD4
+        move.l  (CameraY).l,d1                  ; 00CD4
         move.l  d1,d3                           ; 00CDA
         asr.l   #$2,d3                          ; 00CDC
         sub.l   d3,d1                           ; 00CDE
@@ -1023,7 +1023,7 @@ l_026_00CEA:
         movem.l d3-d6,-(a7)                     ; 00CEA
         lea.l   (ObjectTable).l,a2              ; 00CEE
         adda.w  (ViewObject).l,a2               ; 00CF4
-        movem.l (dat_071_0060E).l,d0-d2         ; 00CFA
+        movem.l (CameraX).l,d0-d2               ; 00CFA
         add.l   $14(a2),d0                      ; 00D02
         add.l   $18(a2),d1                      ; 00D06
         add.l   $1c(a2),d2                      ; 00D0A
@@ -1031,8 +1031,8 @@ l_026_00CEA:
         asr.l   #$1,d1                          ; 00D10
         asr.l   #$1,d2                          ; 00D12
         movem.l d0-d2,-(a7)                     ; 00D14
-        add.l   (dat_071_0060E).l,d0            ; 00D18
-        add.l   (dat_071_00616).l,d2            ; 00D1E
+        add.l   (CameraX).l,d0                  ; 00D18
+        add.l   (CameraZ).l,d2                  ; 00D1E
         asr.l   #$1,d0                          ; 00D24
         asr.l   #$1,d1                          ; 00D26
         asr.l   #$1,d2                          ; 00D28
@@ -1064,10 +1064,10 @@ l_026_00D68:
         bsr.w   sub_026_00D7A                   ; 00D68
         bra.w   l_026_00DE6                     ; 00D6C
 sub_026_00D70:
-        movem.l (dat_071_01368).l,d0-d2         ; 00D70
+        movem.l (Object4_14).l,d0-d2            ; 00D70
         bra.b   l_026_00D82                     ; 00D78
 sub_026_00D7A:
-        movem.l (dat_071_00B68).l,d0-d2         ; 00D7A
+        movem.l (PlayerX).l,d0-d2               ; 00D7A
 l_026_00D82:
         movem.l d0-d2,(dat_071_00626).l         ; 00D82
         rts                                     ; 00D8A
@@ -1152,11 +1152,11 @@ l_026_00E3A:
         add.l   d2,d7                           ; 00E76
 l_026_00E78:
         movem.l d5-d7,(dat_071_0061A).l         ; 00E78
-        movem.l (dat_071_0060E).l,d0-d2         ; 00E80
+        movem.l (CameraX).l,d0-d2               ; 00E80
         add.l   d0,d5                           ; 00E88
         add.l   d1,d6                           ; 00E8A
         add.l   d2,d7                           ; 00E8C
-        movem.l d5-d7,(dat_071_0060E).l         ; 00E8E
+        movem.l d5-d7,(CameraX).l               ; 00E8E
 l_026_00E96:
         andi.l  #$3fffff,d5                     ; 00E96
         andi.l  #$3fffff,d7                     ; 00E9C

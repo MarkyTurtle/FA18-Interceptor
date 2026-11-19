@@ -1464,10 +1464,10 @@ l_000_055F2:
         beq.w   l_000_05ADE                     ; 05608
         tst.w   -$2(a6)                         ; 0560C
         bne.w   l_000_056C4                     ; 05610
-        tst.l   (dat_071_00BC6).l               ; 05614
+        tst.l   (Player_72).l                   ; 05614
         bgt.b   l_000_0565A                     ; 0561A
         moveq   #$0,d1                          ; 0561C
-        move.l  d1,(dat_071_00BC6).l            ; 0561E
+        move.l  d1,(Player_72).l                ; 0561E
         btst    #$6,(dat_071_00523).l           ; 05624
         bne.w   l_000_056C4                     ; 0562C
         move.l  (dat_071_00520).l,d0            ; 05630
@@ -1480,7 +1480,7 @@ l_000_055F2:
         move.b  #$2,(dat_071_0020E).l           ; 05650
         bra.b   l_000_056C4                     ; 05658
 l_000_0565A:
-        cmpi.l  #$70800,(dat_071_00BC6).l       ; 0565A
+        cmpi.l  #$70800,(Player_72).l           ; 0565A
         bge.b   l_000_0568A                     ; 05664
         btst    #$1,(dat_071_00523).l           ; 05666
         bne.b   l_000_056C4                     ; 0566E
@@ -1490,7 +1490,7 @@ l_000_0565A:
         move.l  d0,(dat_071_00520).l            ; 05682
         bra.b   l_000_056C4                     ; 05688
 l_000_0568A:
-        cmpi.l  #$bb800,(dat_071_00BC6).l       ; 0568A
+        cmpi.l  #$bb800,(Player_72).l           ; 0568A
         bge.b   l_000_056BA                     ; 05694
         btst    #$0,(dat_071_00523).l           ; 05696
         bne.b   l_000_056C4                     ; 0569E
@@ -1884,9 +1884,9 @@ l_000_05AE8:
         move.w  (dat_071_0029C).l,d0            ; 05AF0
         btst    #$6,d0                          ; 05AF6
         beq.b   l_000_05B60                     ; 05AFA
-        tst.l   (dat_071_00BC6).l               ; 05AFC
+        tst.l   (Player_72).l                   ; 05AFC
         beq.b   l_000_05B60                     ; 05B02
-        move.b  (dat_071_00B74).l,d0            ; 05B04
+        move.b  (Player_20).l,d0                ; 05B04
         btst    #$2,d0                          ; 05B0A
         beq.b   l_000_05B4C                     ; 05B0E
         movea.l -$a(a6),a0                      ; 05B10
@@ -2190,7 +2190,7 @@ l_000_05E80:
         unlk    a6                              ; 05E80
         rts                                     ; 05E82
 sub_000_05E84:
-        tst.l   (dat_071_00BC6).l               ; 05E84
+        tst.l   (Player_72).l                   ; 05E84
         beq.b   l_000_05ED2                     ; 05E8A
         tst.b   (dat_071_001A8).l               ; 05E8C
         beq.b   l_000_05ED2                     ; 05E92
@@ -2198,10 +2198,10 @@ sub_000_05E84:
         andi.w  #$3,d0                          ; 05E9A
         subq.w  #$3,d0                          ; 05E9E
         bne.b   l_000_05ED2                     ; 05EA0
-        move.w  (dat_071_00B56).l,d0            ; 05EA2
+        move.w  (Player_02).l,d0                ; 05EA2
         btst    #$3,d0                          ; 05EA8
         bne.b   l_000_05EC4                     ; 05EAC
-        move.b  (dat_071_00B7F).l,d0            ; 05EAE
+        move.b  (Player_2B).l,d0                ; 05EAE
         cmpi.b  #$78,d0                         ; 05EB4
         blt.b   l_000_05ECC                     ; 05EB8
         move.b  #$79,(dat_071_00240).l          ; 05EBA
@@ -3579,9 +3579,9 @@ l_000_06F30:
         move.b  #$4,(dat_071_00168).l           ; 06FC2
         bra.w   l_000_07178                     ; 06FCA
 l_000_06FCE:
-        tst.w   (dat_071_00BC2).l               ; 06FCE
+        tst.w   (Player_6E).l                   ; 06FCE
         beq.w   l_000_07178                     ; 06FD4
-        move.w  (dat_071_00BC2).l,(dat_071_00BC0).l ; 06FD8
+        move.w  (Player_6E).l,(Player_6C).l     ; 06FD8
         move.b  #$fe,(dat_071_00280).l          ; 06FE2
         movea.l -$30(a6),a0                     ; 06FEA
         move.b  (a0),d0                         ; 06FEE
@@ -3617,7 +3617,7 @@ l_000_07046:
         addq.l  #$4,a7                          ; 07050
         bra.w   l_000_07178                     ; 07052
 l_000_07056:
-        move.w  (dat_071_00BC2).l,d0            ; 07056
+        move.w  (Player_6E).l,d0                ; 07056
         tst.w   d0                              ; 0705C
         bne.b   l_000_070DA                     ; 0705E
         move.w  (dat_071_002A2).l,d0            ; 07060
@@ -3646,7 +3646,7 @@ l_000_070AC:
         ori.w   #$2,d0                          ; 070B2
         move.w  d0,(dat_071_002A2).l            ; 070B6
 l_000_070BC:
-        tst.l   (dat_071_00BC6).l               ; 070BC
+        tst.l   (Player_72).l                   ; 070BC
         bne.w   l_000_07178                     ; 070C2
         move.w  (dat_071_0029E).l,d0            ; 070C6
         ori.w   #$4000,d0                       ; 070CC
@@ -3669,9 +3669,9 @@ l_000_07104:
         move.w  (dat_071_0029E).l,d0            ; 07110
         btst    #$e,d0                          ; 07116
         beq.b   l_000_07178                     ; 0711A
-        move.l  (dat_071_00BC6).l,d0            ; 0711C
+        move.l  (Player_72).l,d0                ; 0711C
         addi.l  #$190,d0                        ; 07122
-        move.l  d0,(dat_071_00BC6).l            ; 07128
+        move.l  d0,(Player_72).l                ; 07128
         cmpi.l  #$61a80000,d0                   ; 0712E
         bge.b   l_000_0714E                     ; 07134
         move.w  (dat_071_002A0).l,d0            ; 07136
@@ -3687,9 +3687,9 @@ l_000_0714E:
         move.w  (dat_071_002A0).l,d0            ; 0715E
         andi.w  #$ffef,d0                       ; 07164
         move.w  d0,(dat_071_002A0).l            ; 07168
-        move.l  #$61a80000,(dat_071_00BC6).l    ; 0716E
+        move.l  #$61a80000,(Player_72).l        ; 0716E
 l_000_07178:
-        clr.l   (dat_071_00B96).l               ; 07178
+        clr.l   (PlayerVelY).l                  ; 07178
         bra.b   l_000_0718C                     ; 0717E
 l_000_07180:
         movea.l -$2c(a6),a0                     ; 07180
@@ -3802,8 +3802,8 @@ sub_000_072DC:
         move.b  d0,-$1(a6)                      ; 072E6
         move.b  d0,-$2(a6)                      ; 072EA
         jsr     (sub_036_00000).l               ; 072EE
-        move.l  #dat_071_00BD1,-$8(a6)          ; 072F4
-        move.l  #dat_071_00B8F,-$c(a6)          ; 072FC
+        move.l  #Player_7D,-$8(a6)              ; 072F4
+        move.l  #Player_3B,-$c(a6)              ; 072FC
         movea.l -$c(a6),a0                      ; 07304
         move.b  (a0),d0                         ; 07308
         subq.b  #$1,d0                          ; 0730A
@@ -3851,7 +3851,7 @@ l_000_0737E:
         andi.b  #$f0,d0                         ; 0739A
         tst.b   d0                              ; 0739E
         beq.w   l_000_074FE                     ; 073A0
-        move.w  (dat_071_00BB4).l,d0            ; 073A4
+        move.w  (Player_60).l,d0                ; 073A4
         cmpi.w  #$1,d0                          ; 073AA
         blt.w   l_000_074FE                     ; 073AE
         addq.b  #$1,-$3(a6)                     ; 073B2
@@ -3943,12 +3943,12 @@ l_000_074B6:
         jsr     (sub_000_0A0DC).l               ; 074BE
         addq.l  #$8,a7                          ; 074C4
 l_000_074C6:
-        move.w  (dat_071_00BB4).l,d0            ; 074C6
+        move.w  (Player_60).l,d0                ; 074C6
         subq.w  #$3,d0                          ; 074CC
-        move.w  d0,(dat_071_00BB4).l            ; 074CE
+        move.w  d0,(Player_60).l                ; 074CE
         tst.w   d0                              ; 074D4
         bpl.b   l_000_074DE                     ; 074D6
-        clr.w   (dat_071_00BB4).l               ; 074D8
+        clr.w   (Player_60).l                   ; 074D8
 l_000_074DE:
         move.b  #$3,(dat_071_00213).l           ; 074DE
         movea.l -$c(a6),a0                      ; 074E6

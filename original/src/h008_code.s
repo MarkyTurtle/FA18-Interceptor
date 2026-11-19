@@ -306,7 +306,7 @@ l_008_002C0:
         bra.b   l_008_00360                     ; 00342
 l_008_00344:
         bsr.w   sub_008_00000                   ; 00344
-        movem.l (dat_071_0060E).l,d0-d2         ; 00348
+        movem.l (CameraX).l,d0-d2               ; 00348
         movem.l d0-d2,(dat_071_0044C).l         ; 00350
         movem.l (dat_071_00432).l,d0-d2         ; 00358
 l_008_00360:
@@ -384,8 +384,8 @@ l_008_0044E:
         move.w  (a7)+,d5                        ; 00456
         lea.l   (ObjectTable).l,a3              ; 00458
         bsr.w   sub_008_0052E                   ; 0045E
-        move.l  (dat_071_0060E).l,d0            ; 00462
-        move.l  (dat_071_00616).l,d1            ; 00468
+        move.l  (CameraX).l,d0                  ; 00462
+        move.l  (CameraZ).l,d1                  ; 00468
         andi.l  #$1fffffff,d0                   ; 0046E
         andi.l  #$1fffffff,d1                   ; 00474
         swap    d0                              ; 0047A
@@ -521,8 +521,8 @@ sub_008_00598:
 l_008_005E8:
         tst.b   (dat_071_00155).l               ; 005E8
         beq.b   l_008_00612                     ; 005EE
-        move.l  (dat_071_0060E).l,d1            ; 005F0
-        move.l  (dat_071_00616).l,d2            ; 005F6
+        move.l  (CameraX).l,d1                  ; 005F0
+        move.l  (CameraZ).l,d2                  ; 005F6
         andi.l  #$1fffffff,d1                   ; 005FC
         andi.l  #$1fffffff,d2                   ; 00602
         swap    d1                              ; 00608
@@ -605,29 +605,29 @@ l_008_0075E:
         clr.b   (dat_071_00229).l               ; 0075E
         rts                                     ; 00764
 sub_008_00766:
-        addq.w  #$1,(dat_071_00B5A).l           ; 00766
-        cmpi.w  #$7f,(dat_071_00B5A).l          ; 0076C
+        addq.w  #$1,(PlayerCellX).l             ; 00766
+        cmpi.w  #$7f,(PlayerCellX).l            ; 0076C
         ble.b   l_008_0077C                     ; 00774
-        clr.w   (dat_071_00B5A).l               ; 00776
+        clr.w   (PlayerCellX).l                 ; 00776
 l_008_0077C:
         rts                                     ; 0077C
 sub_008_0077E:
-        subq.w  #$1,(dat_071_00B5A).l           ; 0077E
+        subq.w  #$1,(PlayerCellX).l             ; 0077E
         bge.b   l_008_0078E                     ; 00784
-        move.w  #$7f,(dat_071_00B5A).l          ; 00786
+        move.w  #$7f,(PlayerCellX).l            ; 00786
 l_008_0078E:
         rts                                     ; 0078E
 sub_008_00790:
-        addq.w  #$1,(dat_071_00B5C).l           ; 00790
-        cmpi.w  #$7f,(dat_071_00B5C).l          ; 00796
+        addq.w  #$1,(PlayerCellZ).l             ; 00790
+        cmpi.w  #$7f,(PlayerCellZ).l            ; 00796
         ble.b   l_008_007A6                     ; 0079E
-        clr.w   (dat_071_00B5C).l               ; 007A0
+        clr.w   (PlayerCellZ).l                 ; 007A0
 l_008_007A6:
         rts                                     ; 007A6
 sub_008_007A8:
-        subq.w  #$1,(dat_071_00B5C).l           ; 007A8
+        subq.w  #$1,(PlayerCellZ).l             ; 007A8
         bge.b   l_008_007B8                     ; 007AE
-        move.w  #$7f,(dat_071_00B5C).l          ; 007B0
+        move.w  #$7f,(PlayerCellZ).l            ; 007B0
 l_008_007B8:
         rts                                     ; 007B8
 sub_008_007BA:

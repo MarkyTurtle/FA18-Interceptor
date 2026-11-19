@@ -185,7 +185,10 @@ dat_063_008E8:
 	dc.b	$03,$77,$03,$78,$03,$78,$03,$79,$03,$79,$03,$7A,$03,$7A,$03,$7B
 	dc.b	$03,$7B,$03,$7C,$03,$7C,$03,$7D,$03,$7E,$03,$7F,$03,$80,$03,$81
 	dc.b	$03,$84,$03,$84,$03,$84,$03,$84,$03,$84,$03,$84,$03,$84,$03,$84
-dat_063_00AE8:
+; SineTable - A quarter sine wave: 901 words, 16384 * sin(n * 0.1 degrees) for n = 0-900 (2.14
+; fixed point). Angles elsewhere are in 1/80 degree (a full turn = $7080 = 28,800); shifted
+; down 3 bits they index this table in tenths of a degree.
+SineTable:
 	dc.b	$00,$00,$00,$1D,$00,$39,$00,$56,$00,$72,$00,$8F,$00,$AC,$00,$C8
 	dc.b	$00,$E5,$01,$01,$01,$1E,$01,$3B,$01,$57,$01,$74,$01,$90,$01,$AD
 	dc.b	$01,$C9,$01,$E6,$02,$03,$02,$1F,$02,$3C,$02,$58,$02,$75,$02,$92

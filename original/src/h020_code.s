@@ -269,10 +269,10 @@ l_020_002CC:
         jsr     (sub_004_00328).l               ; 00302
         move.l  d2,d4                           ; 00308
         move.l  d0,d2                           ; 0030A
-        sub.l   (dat_071_00B68).l,d2            ; 0030C
+        sub.l   (PlayerX).l,d2                  ; 0030C
         asr.l   #$8,d2                          ; 00312
         moveq   #$0,d3                          ; 00314
-        sub.l   (dat_071_00B70).l,d4            ; 00316
+        sub.l   (PlayerZ).l,d4                  ; 00316
         asr.l   #$8,d4                          ; 0031C
         moveq   #-1,d5                          ; 0031E
         moveq   #$0,d0                          ; 00320

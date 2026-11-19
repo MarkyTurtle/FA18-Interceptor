@@ -86,7 +86,7 @@ l_018_000F2:
 sub_018_000F4:
         tst.b   (dat_071_00168).l               ; 000F4
         bne.w   l_018_005F6                     ; 000FA
-        lea.l   (dat_071_01354).l,a1            ; 000FE
+        lea.l   (Object4).l,a1                  ; 000FE
         move.w  #$4,(CurrentObject).l           ; 00104
         move.w  $6(a1),d0                       ; 0010C
         or.w    $c(a1),d0                       ; 00110
@@ -97,9 +97,9 @@ sub_018_000F4:
         beq.b   l_018_000F2                     ; 00124
         cmpi.w  #$320,$6c(a1)                   ; 00126
         bgt.b   l_018_000F2                     ; 0012C
-        btst    #$6,(dat_071_01B55).l           ; 0012E
+        btst    #$6,(Object8_01).l              ; 0012E
         bne.b   l_018_000F2                     ; 00136
-        btst    #$6,(dat_071_01F55).l           ; 00138
+        btst    #$6,(Object10_01).l             ; 00138
         bne.b   l_018_000F2                     ; 00140
 l_018_00142:
         tst.b   (dat_071_0017E).l               ; 00142
@@ -155,8 +155,8 @@ l_018_0022A:
 sub_018_00232:
         tst.b   (dat_071_00168).l               ; 00232
         bne.w   l_018_005F6                     ; 00238
-        lea.l   (dat_071_01354).l,a2            ; 0023C
-        lea.l   (dat_071_01754).l,a3            ; 00242
+        lea.l   (Object4).l,a2                  ; 0023C
+        lea.l   (Object6).l,a3                  ; 00242
         btst    #$6,$1(a2)                      ; 00248
         bne.b   l_018_00268                     ; 0024E
         btst    #$6,$1(a3)                      ; 00250
@@ -172,7 +172,7 @@ l_018_00272:
         cmpi.w  #$70,$6(a2)                     ; 00272
         bge.w   l_018_00344                     ; 00278
         movem.l $14(a2),d0-d2                   ; 0027C
-        movem.l (dat_071_00B68).l,d3-d5         ; 00282
+        movem.l (PlayerX).l,d3-d5               ; 00282
         cmpi.b  #$3,(Difficulty).l              ; 0028A
         bge.b   l_018_002AE                     ; 00292
         cmpi.b  #$2,(Difficulty).l              ; 00294
@@ -268,7 +268,7 @@ sub_018_0038C:
         beq.b   l_018_0038A                     ; 003AC
         tst.w   $4c(a1)                         ; 003AE
         bgt.b   l_018_0038A                     ; 003B2
-        movem.l (dat_071_02168).l,d0-d2         ; 003B4
+        movem.l (Object11_14).l,d0-d2           ; 003B4
         sub.l   $14(a1),d0                      ; 003BC
         bge.b   l_018_003C4                     ; 003C0
         neg.l   d0                              ; 003C2
@@ -299,7 +299,7 @@ l_018_0040E:
 sub_018_00410:
         tst.b   (dat_071_00168).l               ; 00410
         bne.w   l_018_005F6                     ; 00416
-        lea.l   (dat_071_01354).l,a1            ; 0041A
+        lea.l   (Object4).l,a1                  ; 0041A
         move.w  #$4,(CurrentObject).l           ; 00420
         move.w  $6(a1),d0                       ; 00428
         or.w    $c(a1),d0                       ; 0042C
@@ -376,7 +376,7 @@ l_018_00562:
 sub_018_00564:
         tst.b   (dat_071_00168).l               ; 00564
         bne.b   l_018_00562                     ; 0056A
-        lea.l   (dat_071_01354).l,a1            ; 0056C
+        lea.l   (Object4).l,a1                  ; 0056C
         btst    #$6,$1(a1)                      ; 00572
         bne.b   l_018_00562                     ; 00578
         cmpi.b  #$3,(dat_071_001FA).l           ; 0057A

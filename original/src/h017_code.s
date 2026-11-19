@@ -9,7 +9,7 @@ sub_017_00000:
         move.l  d5,-(a7)                        ; 00000
         tst.b   (dat_071_0017E).l               ; 00002
         bne.b   l_017_0004E                     ; 00008
-        lea.l   (dat_071_02B58).l,a0            ; 0000A
+        lea.l   (SmallObjects_04).l,a0          ; 0000A
         subq.w  #$1,(a0)                        ; 00010
         subq.w  #$1,$20(a0)                     ; 00012
         subq.w  #$1,$40(a0)                     ; 00016
@@ -64,7 +64,7 @@ l_017_000CE:
         clr.w   (CurrentObject).l               ; 000D2
         clr.w   (CurrentObjectOffset).l         ; 000D8
         lea.l   (ObjectTable).l,a1              ; 000DE
-        lea.l   (dat_071_01354).l,a2            ; 000E4
+        lea.l   (Object4).l,a2                  ; 000E4
         tst.b   (dat_071_0017E).l               ; 000EA
         bne.b   l_017_000F6                     ; 000F0
         subq.w  #$1,$4c(a1)                     ; 000F2
@@ -76,7 +76,7 @@ l_017_000F6:
         jsr     (sub_022_000FE).l               ; 00108
         move.w  #$1,(CurrentObject).l           ; 0010E
         move.w  #$200,(CurrentObjectOffset).l   ; 00116
-        lea.l   (dat_071_00D54).l,a1            ; 0011E
+        lea.l   (Object1).l,a1                  ; 0011E
         lea.l   (ObjectTable).l,a2              ; 00124
         btst    #$6,$1(a1)                      ; 0012A
         bne.w   l_017_00148                     ; 00130
@@ -94,7 +94,7 @@ l_017_00148:
 l_017_00154:
         move.w  #$2,(CurrentObject).l           ; 00154
         move.w  #$400,(CurrentObjectOffset).l   ; 0015C
-        lea.l   (dat_071_00F54).l,a1            ; 00164
+        lea.l   (Object2).l,a1                  ; 00164
         lea.l   (ObjectTable).l,a2              ; 0016A
         btst    #$6,$1(a1)                      ; 00170
         bne.b   l_017_0018C                     ; 00176
@@ -112,7 +112,7 @@ l_017_0018C:
 l_017_00198:
         move.w  #$3,(CurrentObject).l           ; 00198
         move.w  #$600,(CurrentObjectOffset).l   ; 001A0
-        lea.l   (dat_071_01154).l,a1            ; 001A8
+        lea.l   (Object3).l,a1                  ; 001A8
         lea.l   (ObjectTable).l,a2              ; 001AE
         btst    #$6,$1(a1)                      ; 001B4
         bne.b   l_017_001D0                     ; 001BA
@@ -128,7 +128,7 @@ l_017_001D0:
         beq.b   l_017_001DC                     ; 001D4
         jsr     (sub_022_000FE).l               ; 001D6
 l_017_001DC:
-        lea.l   (dat_071_01354).l,a1            ; 001DC
+        lea.l   (Object4).l,a1                  ; 001DC
         btst    #$6,$1(a1)                      ; 001E2
         beq.b   l_017_0020A                     ; 001E8
         move.w  #$4,(CurrentObject).l           ; 001EA
@@ -140,8 +140,8 @@ l_017_001DC:
 l_017_0020A:
         move.w  #$5,(CurrentObject).l           ; 0020A
         move.w  #$a00,(CurrentObjectOffset).l   ; 00212
-        lea.l   (dat_071_01554).l,a1            ; 0021A
-        lea.l   (dat_071_01354).l,a2            ; 00220
+        lea.l   (Object5).l,a1                  ; 0021A
+        lea.l   (Object4).l,a2                  ; 00220
         btst    #$6,$1(a1)                      ; 00226
         bne.b   l_017_00242                     ; 0022C
         tst.b   (dat_071_0018B).l               ; 0022E
@@ -156,7 +156,7 @@ l_017_00242:
         beq.b   l_017_0024E                     ; 00246
         jsr     (sub_022_000FE).l               ; 00248
 l_017_0024E:
-        lea.l   (dat_071_01754).l,a1            ; 0024E
+        lea.l   (Object6).l,a1                  ; 0024E
         btst    #$6,$1(a1)                      ; 00254
         beq.b   l_017_00278                     ; 0025A
         move.w  #$6,(CurrentObject).l           ; 0025C
@@ -167,10 +167,10 @@ l_017_0024E:
 l_017_00278:
         move.w  #$7,(CurrentObject).l           ; 00278
         move.w  #$e00,(CurrentObjectOffset).l   ; 00280
-        lea.l   (dat_071_01954).l,a1            ; 00288
-        lea.l   (dat_071_01754).l,a2            ; 0028E
+        lea.l   (Object7).l,a1                  ; 00288
+        lea.l   (Object6).l,a2                  ; 0028E
         btst    #$6,$1(a1)                      ; 00294
-        lea.l   (dat_071_01B54).l,a1            ; 0029A
+        lea.l   (Object8).l,a1                  ; 0029A
         btst    #$6,$1(a1)                      ; 002A0
         beq.b   l_017_002C4                     ; 002A6
         move.w  #$8,(CurrentObject).l           ; 002A8
@@ -181,8 +181,8 @@ l_017_00278:
 l_017_002C4:
         move.w  #$9,(CurrentObject).l           ; 002C4
         move.w  #$1200,(CurrentObjectOffset).l  ; 002CC
-        lea.l   (dat_071_01D54).l,a1            ; 002D4
-        lea.l   (dat_071_01B54).l,a2            ; 002DA
+        lea.l   (Object9).l,a1                  ; 002D4
+        lea.l   (Object8).l,a2                  ; 002DA
         btst    #$6,$1(a1)                      ; 002E0
         bne.b   l_017_002F2                     ; 002E6
         bsr.w   sub_017_00522                   ; 002E8
@@ -193,7 +193,7 @@ l_017_002F2:
         beq.b   l_017_002FE                     ; 002F6
         jsr     (sub_022_000FE).l               ; 002F8
 l_017_002FE:
-        lea.l   (dat_071_01F54).l,a1            ; 002FE
+        lea.l   (Object10).l,a1                 ; 002FE
         btst    #$6,$1(a1)                      ; 00304
         beq.b   l_017_00328                     ; 0030A
         move.w  #$a,(CurrentObject).l           ; 0030C
@@ -204,8 +204,8 @@ l_017_002FE:
 l_017_00328:
         move.w  #$b,(CurrentObject).l           ; 00328
         move.w  #$1600,(CurrentObjectOffset).l  ; 00330
-        lea.l   (dat_071_02154).l,a1            ; 00338
-        lea.l   (dat_071_01F54).l,a2            ; 0033E
+        lea.l   (Object11).l,a1                 ; 00338
+        lea.l   (Object10).l,a2                 ; 0033E
         btst    #$6,$1(a1)                      ; 00344
         bne.b   l_017_00356                     ; 0034A
         bsr.w   sub_017_00522                   ; 0034C
@@ -216,7 +216,7 @@ l_017_00356:
         beq.b   l_017_00362                     ; 0035A
         jsr     (sub_022_000FE).l               ; 0035C
 l_017_00362:
-        lea.l   (dat_071_02354).l,a1            ; 00362
+        lea.l   (Object12).l,a1                 ; 00362
         btst    #$6,$1(a1)                      ; 00368
         beq.b   l_017_0038C                     ; 0036E
         move.w  #$c,(CurrentObject).l           ; 00370
@@ -227,8 +227,8 @@ l_017_00362:
 l_017_0038C:
         move.w  #$d,(CurrentObject).l           ; 0038C
         move.w  #$1a00,(CurrentObjectOffset).l  ; 00394
-        lea.l   (dat_071_02554).l,a1            ; 0039C
-        lea.l   (dat_071_02354).l,a2            ; 003A2
+        lea.l   (Object13).l,a1                 ; 0039C
+        lea.l   (Object12).l,a2                 ; 003A2
         btst    #$6,$1(a1)                      ; 003A8
         bne.b   l_017_003BA                     ; 003AE
         bsr.w   sub_017_00522                   ; 003B0
@@ -239,7 +239,7 @@ l_017_003BA:
         beq.b   l_017_003C6                     ; 003BE
         jsr     (sub_022_000FE).l               ; 003C0
 l_017_003C6:
-        lea.l   (dat_071_02754).l,a1            ; 003C6
+        lea.l   (Object14).l,a1                 ; 003C6
         btst    #$6,$1(a1)                      ; 003CC
         beq.b   l_017_003F6                     ; 003D2
         bset    #$2,$1(a1)                      ; 003D4
@@ -249,7 +249,7 @@ l_017_003C6:
         beq.b   l_017_003F6                     ; 003EE
         jsr     (sub_022_000FE).l               ; 003F0
 l_017_003F6:
-        lea.l   (dat_071_02954).l,a1            ; 003F6
+        lea.l   (Object15).l,a1                 ; 003F6
         btst    #$6,$1(a1)                      ; 003FC
         beq.b   l_017_00426                     ; 00402
         bset    #$2,$1(a1)                      ; 00404
@@ -495,7 +495,7 @@ sub_017_0072A:
         btst    #$0,$2(a1)                      ; 00734
         bne.b   l_017_00756                     ; 0073A
         clr.b   $5(a1)                          ; 0073C
-        tst.w   (dat_071_00BC2).l               ; 00740
+        tst.w   (Player_6E).l                   ; 00740
         beq.w   l_017_008CA                     ; 00746
         bset    #$0,$2(a1)                      ; 0074A
         clr.w   (dat_073_0162A).l               ; 00750
@@ -508,7 +508,7 @@ l_017_00756:
         bne.b   l_017_007B8                     ; 00772
         tst.b   (dat_071_00163).l               ; 00774
         beq.w   l_017_008CA                     ; 0077A
-        bclr    #$3,(dat_071_00B56).l           ; 0077E
+        bclr    #$3,(Player_02).l               ; 0077E
         beq.b   l_017_007B8                     ; 00786
         move.l  a1,-(a7)                        ; 00788
         clr.w   $0(a1)                          ; 0078A
@@ -696,7 +696,7 @@ l_017_00A52:
         movem.l a1-a2,-(a7)                     ; 00A74
         jsr     (sub_032_00AD8).l               ; 00A78
         movem.w d4-d6,$66(a1)                   ; 00A7E
-        jsr     (sub_032_0054C).l               ; 00A84
+        jsr     (SetAttitude).l                 ; 00A84
         movem.l (a7)+,a1-a2                     ; 00A8A
         move.w  #$28,d0                         ; 00A8E
         bra.w   l_017_00BDA                     ; 00A92
@@ -1477,7 +1477,7 @@ l_017_013FE:
         cmpi.b  #$8,$5(a1)                      ; 013FE
         beq.b   l_017_01462                     ; 01404
         movem.l $14(a1),d0-d2                   ; 01406
-        movem.l (dat_071_00B68).l,d3-d5         ; 0140C
+        movem.l (PlayerX).l,d3-d5               ; 0140C
         cmpi.b  #$3,(Difficulty).l              ; 01414
         bge.b   l_017_01438                     ; 0141C
         cmpi.b  #$2,(Difficulty).l              ; 0141E
