@@ -9,7 +9,8 @@ NAMES.txt, one label per line ('#' starts a comment line):
   OLD  NEW  - !description        (replaces the label's existing header or comment)
 
 * OLD is renamed NEW everywhere (whole words only). OLD may already be NEW: then only the
-  description is added.
+  description is added. OLD may be hNNN+$OFFSET (an address the source writes that way because
+  it has no label): NEW becomes a label there, and every hNNN+$OFFSET becomes NEW.
 * With a description, a routine (a code label) gets a header box above it, a data label a
   comment line above it; nothing is added if the label already has one. A description may
   run on to the next lines when they start with whitespace (joined, then wrapped).
@@ -48,6 +49,8 @@ def read_names(path):
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith('--')]
     names = read_names(args[0])
+    new_labels = [(o, n) for o, n, d in names if re.match(r'^h\d{3}\+\$[0-9A-Fa-f]+$', o)]
+    names = [(n if re.match(r'^h\d{3}\+\$', o) else o, n, d) for o, n, d in names]
     ren = {o: n for o, n, d in names if o != n}
     if len(set(ren.values())) != len(ren):
         raise SystemExit('two labels renamed to the same name')
@@ -66,6 +69,13 @@ def main():
     missing = [o for o in ren if o not in defined]
     if missing:
         raise SystemExit(f'not defined: {missing[:10]}')
+    clash = [n for o, n in new_labels if n in defined or n in ren.values()]
+    if clash:
+        raise SystemExit(f'already defined: {clash[:10]}')
+    for o, n in new_labels:                 # every check passed: now the new labels go in
+        m = re.match(r'^h(\d{3})\+\$([0-9A-Fa-f]+)$', o)
+        add_label(int(m.group(1)), int(m.group(2), 16), n, o)
+    files = {f: open(f, encoding='utf-8').read().split('\n') for f in source_files()}
     for f, lines in files.items():
         out = []
         for i, l in enumerate(lines):
@@ -106,6 +116,31 @@ def main():
     print(f'{len(ren)} renamed, {len(desc)} described')
     if '--no-check' not in sys.argv:
         sys.exit(subprocess.run([sys.executable, os.path.join(ROOT, 'build.py')]).returncode)
+
+
+def add_label(hunk, off, name, expr):
+    """Put the label name on the line of hunk `hunk` at offset `off` (its '; OOOOO' comment) and
+    write name for every `expr` (hNNN+$OFFSET) in the source."""
+    fs = [f for f in source_files() if re.search(rf'[/\\]h{hunk:03d}_', f)]
+    done = False
+    for f in fs:
+        L = open(f, encoding='utf-8').read().split('\n')
+        for i, l in enumerate(L):
+            if l.startswith(' ') and re.search(rf';\s*{off:05X}\b', l):
+                L.insert(i, f'{name}:')
+                open(f, 'w', encoding='utf-8', newline='\n').write('\n'.join(L))
+                done = True
+                break
+        if done:
+            break
+    if not done:
+        raise SystemExit(f'{expr}: no instruction at that offset in hunk {hunk}')
+    pat = re.compile(re.escape(expr) + r'(?![0-9A-Fa-f])')
+    for f in source_files():
+        t = open(f, encoding='utf-8').read()
+        t2 = pat.sub(name, t)
+        if t2 != t:
+            open(f, 'w', encoding='utf-8', newline='\n').write(t2)
 
 
 def is_code(lines, i):

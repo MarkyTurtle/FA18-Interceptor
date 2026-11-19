@@ -10,7 +10,10 @@
 ; _IntuitionBase - intuition.library (opened only to close the Workbench screen).
 _IntuitionBase:
         ds.b    $4                              ; 00000
-dat_002_00004:
+; GameState - The game's current state: the routine run once a frame (called from
+; MissionClock). The game moves from screen to screen and through a mission by storing the next
+; state's routine here (State_ labels, hunk 0).
+GameState:
         ds.b    $4                              ; 00004
 dat_002_00008:
         ds.b    $4                              ; 00008

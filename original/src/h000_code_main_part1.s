@@ -1809,8 +1809,8 @@ InitInput:
         clr.b   (RecordMode).l                  ; 0169A
         jsr     (sub_004_0002C).l               ; 016A0
         jsr     (GetDifficulty).l               ; 016A6
-        lea.l   sub_000_01962(pc),a0            ; 016AC
-        move.l  a0,(dat_002_00004).l            ; 016B0
+        lea.l   State_01962(pc),a0              ; 016AC
+        move.l  a0,(GameState).l                ; 016B0
         unlk    a6                              ; 016B6
         rts                                     ; 016B8
 sub_000_016BA:
@@ -1928,8 +1928,8 @@ l_000_01820:
         moveq   #$0,d0                          ; 01838
         move.b  d0,(dat_071_001FA).l            ; 0183A
         move.b  d0,(dat_071_001FB).l            ; 01840
-        lea.l   sub_000_01A70(pc),a0            ; 01846
-        move.l  a0,(dat_002_00004).l            ; 0184A
+        lea.l   State_01A70(pc),a0              ; 01846
+        move.l  a0,(GameState).l                ; 0184A
         bra.w   l_000_01922                     ; 01850
 l_000_01854:
         move.b  (dat_071_001FA).l,d0            ; 01854
@@ -1945,8 +1945,8 @@ l_000_01874:
         moveq   #$0,d0                          ; 01884
         move.b  d0,(dat_071_00165).l            ; 01886
         move.b  d0,(dat_071_00271).l            ; 0188C
-        lea.l   sub_000_01A96(pc),a0            ; 01892
-        move.l  a0,(dat_002_00004).l            ; 01896
+        lea.l   State_01A96(pc),a0              ; 01892
+        move.l  a0,(GameState).l                ; 01896
         bra.w   l_000_01922                     ; 0189C
 l_000_018A0:
         move.b  (dat_071_001FA).l,d0            ; 018A0
@@ -1963,8 +1963,8 @@ l_000_018A0:
         move.b  d0,(dat_071_0027D).l            ; 018CC
         move.b  d0,(dat_071_0017E).l            ; 018D2
         move.w  #$6,(dat_071_004A6).l           ; 018D8
-        lea.l   dat_000_0319C(pc),a0            ; 018E0
-        move.l  a0,(dat_002_00004).l            ; 018E4
+        lea.l   State_0319C(pc),a0              ; 018E0
+        move.l  a0,(GameState).l                ; 018E4
         bra.b   l_000_01922                     ; 018EA
 l_000_018EC:
         move.b  (dat_071_001FA).l,d0            ; 018EC
@@ -1977,8 +1977,8 @@ l_000_018EC:
         bpl.b   l_000_01922                     ; 01906
         clr.b   (dat_071_001FA).l               ; 01908
         move.w  (dat_071_00290).l,(dat_071_004A6).l ; 0190E
-        lea.l   dat_000_031C8(pc),a0            ; 01918
-        move.l  a0,(dat_002_00004).l            ; 0191C
+        lea.l   State_031C8(pc),a0              ; 01918
+        move.l  a0,(GameState).l                ; 0191C
 l_000_01922:
         move.b  (dat_071_001FC).l,d0            ; 01922
         tst.b   d0                              ; 01928
@@ -1992,12 +1992,12 @@ l_000_01934:
         move.w  (dat_071_004A6).l,d0            ; 01942
         subq.w  #$1,d0                          ; 01948
         move.w  d0,(dat_071_004A6).l            ; 0194A
-        movea.l (dat_002_00004).l,a0            ; 01950
+        movea.l (GameState).l,a0                ; 01950
         jsr     (a0)                            ; 01956
         clr.b   (dat_071_00173).l               ; 01958
         unlk    a6                              ; 0195E
         rts                                     ; 01960
-sub_000_01962:
+State_01962:
         link.w  a6,#$fff2                       ; 01962
         jsr     (sub_004_0006E).l               ; 01966
         move.l  (dat_071_00030).l,-$4(a6)       ; 0196C
@@ -2021,7 +2021,7 @@ l_000_0199E:
         move.b  d0,(dat_071_0017D).l            ; 019A6
         move.b  d0,(dat_071_00227).l            ; 019AC
         move.w  #$3,(dat_071_004A6).l           ; 019B2
-        move.l  #sub_000_03596,(dat_002_00004).l ; 019BA
+        move.l  #State_03596,(GameState).l      ; 019BA
         lea.l   (dat_064_00340).l,a0            ; 019C4
         move.l  a0,-$e(a6)                      ; 019CA
         adda.w  #$15,a0                         ; 019CE
@@ -2065,7 +2065,7 @@ l_000_01A32:
         move.l  a0,-$e(a6)                      ; 01A48
         bsr.w   h000+$16BA                      ; 01A4C
         lea.l   $c(a7),a7                       ; 01A50
-        move.l  #sub_000_03534,(dat_002_00004).l ; 01A54
+        move.l  #State_03534,(GameState).l      ; 01A54
         bra.b   l_000_01A6C                     ; 01A5E
 l_000_01A60:
         moveq   #$32,d0                         ; 01A60
@@ -2075,16 +2075,16 @@ l_000_01A60:
 l_000_01A6C:
         unlk    a6                              ; 01A6C
         rts                                     ; 01A6E
-sub_000_01A70:
+State_01A70:
         jsr     (sub_004_0006E).l               ; 01A70
         moveq   #$0,d0                          ; 01A76
         move.b  d0,(dat_071_0027C).l            ; 01A78
         move.b  d0,(dat_071_00276).l            ; 01A7E
         move.b  d0,(RecordMode).l               ; 01A84
-        lea.l   sub_000_01D30(pc),a0            ; 01A8A
-        move.l  a0,(dat_002_00004).l            ; 01A8E
+        lea.l   State_01D30(pc),a0              ; 01A8A
+        move.l  a0,(GameState).l                ; 01A8E
         rts                                     ; 01A94
-sub_000_01A96:
+State_01A96:
         move.w  (dat_071_004A6).l,d0            ; 01A96
         tst.w   d0                              ; 01A9C
         bpl.b   l_000_01AC2                     ; 01A9E
@@ -2093,19 +2093,20 @@ sub_000_01A96:
         cmp.b   d1,d0                           ; 01AAC
         bne.b   l_000_01AC2                     ; 01AAE
         move.w  #$2,(dat_071_004A6).l           ; 01AB0
-        lea.l   sub_000_01AC4(pc),a0            ; 01AB8
-        move.l  a0,(dat_002_00004).l            ; 01ABC
+        lea.l   State_01AC4(pc),a0              ; 01AB8
+        move.l  a0,(GameState).l                ; 01ABC
 l_000_01AC2:
         rts                                     ; 01AC2
-sub_000_01AC4:
+State_01AC4:
         move.w  (dat_071_004A6).l,d0            ; 01AC4
         tst.w   d0                              ; 01ACA
         bpl.b   l_000_01AE0                     ; 01ACC
         move.b  #$1,(dat_071_00165).l           ; 01ACE
-        lea.l   h000+$1AE2(pc),a0               ; 01AD6
-        move.l  a0,(dat_002_00004).l            ; 01ADA
+        lea.l   State_01AE2(pc),a0               ; 01AD6
+        move.l  a0,(GameState).l                ; 01ADA
 l_000_01AE0:
         rts                                     ; 01AE0
+State_01AE2:
         jsr     (sub_000_015F6).l               ; 01AE2
         jsr     (sub_004_0006E).l               ; 01AE8
         move.b  (dat_071_00276).l,d0            ; 01AEE
@@ -2120,18 +2121,19 @@ l_000_01B00:
         move.w  #$2,(dat_071_004A6).l           ; 01B12
         clr.b   (dat_071_00271).l               ; 01B1A
         move.b  #$7f,(dat_071_00276).l          ; 01B20
-        lea.l   h000+$1B54(pc),a0               ; 01B28
-        move.l  a0,(dat_002_00004).l            ; 01B2C
+        lea.l   State_01B54(pc),a0               ; 01B28
+        move.l  a0,(GameState).l                ; 01B2C
         bra.b   l_000_01B52                     ; 01B32
 l_000_01B34:
         clr.b   (RecordMode).l                  ; 01B34
         pea.l   (dat_021_00000).l               ; 01B3A
         jsr     (sub_000_03C1C).l               ; 01B40
         addq.l  #$4,a7                          ; 01B46
-        lea.l   h000+$1E04(pc),a0               ; 01B48
-        move.l  a0,(dat_002_00004).l            ; 01B4C
+        lea.l   State_01E04(pc),a0               ; 01B48
+        move.l  a0,(GameState).l                ; 01B4C
 l_000_01B52:
         rts                                     ; 01B52
+State_01B54:
         move.w  (dat_071_004A6).l,d0            ; 01B54
         tst.w   d0                              ; 01B5A
         bpl.b   l_000_01B94                     ; 01B5C
@@ -2142,13 +2144,14 @@ l_000_01B52:
         move.w  #$2,(dat_071_004A6).l           ; 01B72
         move.b  #$f,(dat_071_00271).l           ; 01B7A
         move.b  d0,(dat_071_00270).l            ; 01B82
-        lea.l   h000+$1B9C(pc),a0               ; 01B88
-        move.l  a0,(dat_002_00004).l            ; 01B8C
+        lea.l   State_01B9C(pc),a0               ; 01B88
+        move.l  a0,(GameState).l                ; 01B8C
         bra.b   l_000_01B9A                     ; 01B92
 l_000_01B94:
         jsr     (sub_036_00892).l               ; 01B94
 l_000_01B9A:
         rts                                     ; 01B9A
+State_01B9C:
         move.w  (dat_071_004A6).l,d0            ; 01B9C
         tst.w   d0                              ; 01BA2
         bpl.b   l_000_01BCE                     ; 01BA4
@@ -2158,17 +2161,18 @@ l_000_01B9A:
         cmp.b   d1,d0                           ; 01BB8
         bne.b   l_000_01BCE                     ; 01BBA
         move.w  #$2,(dat_071_004A6).l           ; 01BBC
-        lea.l   h000+$1BD0(pc),a0               ; 01BC4
-        move.l  a0,(dat_002_00004).l            ; 01BC8
+        lea.l   State_01BD0(pc),a0               ; 01BC4
+        move.l  a0,(GameState).l                ; 01BC8
 l_000_01BCE:
         rts                                     ; 01BCE
+State_01BD0:
         move.w  (dat_071_004A6).l,d0            ; 01BD0
         tst.w   d0                              ; 01BD6
         bpl.b   l_000_01BF2                     ; 01BD8
         clr.b   (dat_071_0017E).l               ; 01BDA
         move.b  #$1,(dat_071_00165).l           ; 01BE0
-        lea.l   h000+$2D58(pc),a0               ; 01BE8
-        move.l  a0,(dat_002_00004).l            ; 01BEC
+        lea.l   State_02D58(pc),a0               ; 01BE8
+        move.l  a0,(GameState).l                ; 01BEC
 l_000_01BF2:
         rts                                     ; 01BF2
 l_000_01BF4:
@@ -2209,10 +2213,11 @@ l_000_01BF4:
         move.w  d0,(ViewX).l                    ; 01CA0
         jsr     (RedrawPanel).l                 ; 01CA6
         move.b  #$ff,(RedrawFlags).l            ; 01CAC
-        lea.l   h000+$2D58(pc),a0               ; 01CB4
-        move.l  a0,(dat_002_00004).l            ; 01CB8
+        lea.l   State_02D58(pc),a0               ; 01CB4
+        move.l  a0,(GameState).l                ; 01CB8
 l_000_01CBE:
         rts                                     ; 01CBE
+State_01CC0:
         move.w  (dat_071_004A6).l,d0            ; 01CC0
         tst.w   d0                              ; 01CC6
         bpl.b   l_000_01D04                     ; 01CC8
@@ -2221,16 +2226,17 @@ l_000_01CBE:
         bne.b   l_000_01CEE                     ; 01CD2
         clr.b   (dat_071_00165).l               ; 01CD4
         move.w  #$49,(dat_071_0011A).l          ; 01CDA
-        lea.l   h000+$1D06(pc),a0               ; 01CE2
-        move.l  a0,(dat_002_00004).l            ; 01CE6
+        lea.l   State_01D06(pc),a0               ; 01CE2
+        move.l  a0,(GameState).l                ; 01CE6
         bra.b   l_000_01D04                     ; 01CEC
 l_000_01CEE:
         move.b  #$1,(dat_071_00165).l           ; 01CEE
         bsr.w   h000+$3462                      ; 01CF6
-        lea.l   h000+$2D58(pc),a0               ; 01CFA
-        move.l  a0,(dat_002_00004).l            ; 01CFE
+        lea.l   State_02D58(pc),a0               ; 01CFA
+        move.l  a0,(GameState).l                ; 01CFE
 l_000_01D04:
         rts                                     ; 01D04
+State_01D06:
         move.b  (dat_071_001B0).l,d0            ; 01D06
         tst.b   d0                              ; 01D0C
         bmi.b   l_000_01D18                     ; 01D0E
@@ -2239,11 +2245,11 @@ l_000_01D04:
 l_000_01D18:
         move.b  #$1,(dat_071_00165).l           ; 01D18
         bsr.w   h000+$3462                      ; 01D20
-        lea.l   h000+$2D58(pc),a0               ; 01D24
-        move.l  a0,(dat_002_00004).l            ; 01D28
+        lea.l   State_02D58(pc),a0               ; 01D24
+        move.l  a0,(GameState).l                ; 01D28
 l_000_01D2E:
         rts                                     ; 01D2E
-sub_000_01D30:
+State_01D30:
         link.w  a6,#$fffc                       ; 01D30
         move.l  #dat_071_0011A,-$4(a6)          ; 01D34
         move.l  #$1f0000,(dat_071_00038).l      ; 01D3C
@@ -2293,11 +2299,11 @@ l_000_01D64:
         move.w  #$6d,(a0)                       ; 01DEE
         addq.l  #$2,a0                          ; 01DF2
         clr.w   (a0)                            ; 01DF4
-        lea.l   sub_000_01E04(pc),a1            ; 01DF6
-        move.l  a1,(dat_002_00004).l            ; 01DFA
+        lea.l   State_01E04(pc),a1              ; 01DF6
+        move.l  a1,(GameState).l                ; 01DFA
         unlk    a6                              ; 01E00
         rts                                     ; 01E02
-sub_000_01E04:
+State_01E04:
         link.w  a6,#$fffa                       ; 01E04
         move.l  #dat_071_0011A,-$4(a6)          ; 01E08
         move.b  (dat_071_00276).l,-$5(a6)       ; 01E10
@@ -2308,8 +2314,8 @@ sub_000_01E04:
         subq.w  #$6,d0                          ; 01E2C
         beq.w   l_000_01F82                     ; 01E2E
         bsr.w   h000+$3462                      ; 01E32
-        lea.l   h000+$1D30(pc),a0               ; 01E36
-        move.l  a0,(dat_002_00004).l            ; 01E3A
+        lea.l   State_01D30(pc),a0               ; 01E36
+        move.l  a0,(GameState).l                ; 01E3A
         bra.w   l_000_01F82                     ; 01E40
 l_000_01E44:
         move.b  (dat_071_00276).l,d0            ; 01E44
@@ -2372,8 +2378,8 @@ l_000_01EE8:
 l_000_01F0C:
         move.w  #$96,(dat_071_004A6).l          ; 01F0C
 l_000_01F14:
-        lea.l   h000+$201E(pc),a0               ; 01F14
-        move.l  a0,(dat_002_00004).l            ; 01F18
+        lea.l   State_0201E(pc),a0               ; 01F14
+        move.l  a0,(GameState).l                ; 01F18
         bra.b   l_000_01F82                     ; 01F1E
 l_000_01F20:
         move.b  (dat_071_00276).l,d0            ; 01F20
@@ -2384,8 +2390,8 @@ l_000_01F20:
         move.b  (dat_071_00276).l,d0            ; 01F34
         cmpi.b  #$ff,d0                         ; 01F3A
         bne.b   l_000_01F4C                     ; 01F3E
-        lea.l   h000+$22CE(pc),a0               ; 01F40
-        move.l  a0,(dat_002_00004).l            ; 01F44
+        lea.l   State_022CE(pc),a0               ; 01F40
+        move.l  a0,(GameState).l                ; 01F44
         bra.b   l_000_01F74                     ; 01F4A
 l_000_01F4C:
         jsr     (sub_036_00892).l               ; 01F4C
@@ -2395,8 +2401,8 @@ l_000_01F4C:
         addq.l  #$2,-$4(a6)                     ; 01F60
         movea.l -$4(a6),a0                      ; 01F64
         clr.w   (a0)                            ; 01F68
-        lea.l   h000+$1F86(pc),a0               ; 01F6A
-        move.l  a0,(dat_002_00004).l            ; 01F6E
+        lea.l   State_01F86(pc),a0               ; 01F6A
+        move.l  a0,(GameState).l                ; 01F6E
 l_000_01F74:
         clr.b   (dat_071_00276).l               ; 01F74
         bra.b   l_000_01F82                     ; 01F7A
@@ -2405,6 +2411,7 @@ l_000_01F7C:
 l_000_01F82:
         unlk    a6                              ; 01F82
         rts                                     ; 01F84
+State_01F86:
         tst.b   (dat_071_00162).l               ; 01F86
         beq.b   l_000_02004                     ; 01F8C
         move.b  (dat_071_00162).l,d0            ; 01F8E
@@ -2421,7 +2428,7 @@ l_000_01F82:
         move.w  $4(a0),d0                       ; 01FBE
         cmpi.w  #$1,d0                          ; 01FC2
         bhi.b   l_000_01FFC                     ; 01FC6
-        move.l  #sub_000_03622,(dat_002_00004).l ; 01FC8
+        move.l  #State_03622,(GameState).l      ; 01FC8
         bra.b   l_000_01FFC                     ; 01FD2
 l_000_01FD4:
         move.b  (dat_071_00162).l,d0            ; 01FD4
@@ -2438,11 +2445,12 @@ l_000_01FFC:
 l_000_02004:
         tst.b   (dat_071_001FA).l               ; 02004
         beq.b   l_000_02016                     ; 0200A
-        lea.l   h000+$1D30(pc),a0               ; 0200C
-        move.l  a0,(dat_002_00004).l            ; 02010
+        lea.l   State_01D30(pc),a0               ; 0200C
+        move.l  a0,(GameState).l                ; 02010
 l_000_02016:
         clr.b   (dat_071_00276).l               ; 02016
         rts                                     ; 0201C
+State_0201E:
         link.w  a6,#$fffe                       ; 0201E
         move.b  (dat_071_00276).l,d0            ; 02022
         ext.w   d0                              ; 02028
@@ -2495,8 +2503,8 @@ l_000_020A8:
         move.b  #$3,(dat_071_00206).l           ; 020E0
         move.b  (dat_071_00270).l,(dat_071_00271).l ; 020E8
         jsr     (sub_000_03C5E).l               ; 020F2
-        lea.l   h000+$2534(pc),a0               ; 020F8
-        move.l  a0,(dat_002_00004).l            ; 020FC
+        lea.l   State_02534(pc),a0               ; 020F8
+        move.l  a0,(GameState).l                ; 020FC
         move.b  #$3,(dat_071_00218).l           ; 02102
         move.b  #$11,(dat_071_00219).l          ; 0210A
         moveq   #$0,d0                          ; 02112
@@ -2522,14 +2530,14 @@ l_000_0211A:
         bra.w   l_000_0215E                     ; 0215A
 l_000_0215E:
         move.b  #$1,(dat_071_0017E).l           ; 0215E
-        lea.l   h000+$1B54(pc),a0               ; 02166
-        move.l  a0,(dat_002_00004).l            ; 0216A
+        lea.l   State_01B54(pc),a0               ; 02166
+        move.l  a0,(GameState).l                ; 0216A
         bra.w   l_000_022B2                     ; 02170
 l_000_02174:
         jsr     (sub_004_00268).l               ; 02174
         move.b  #$5,(dat_071_00267).l           ; 0217A
-        lea.l   h000+$234C(pc),a0               ; 02182
-        move.l  a0,(dat_002_00004).l            ; 02186
+        lea.l   State_0234C(pc),a0               ; 02182
+        move.l  a0,(GameState).l                ; 02186
         bra.w   l_000_022B2                     ; 0218C
 l_000_02190:
         move.w  #$a7,(ClipY).l                  ; 02190
@@ -2547,8 +2555,8 @@ l_000_02190:
         move.w  (Object4_02).l,d0               ; 021DA
         ori.w   #$100,d0                        ; 021E0
         move.w  d0,(Object4_02).l               ; 021E4
-        lea.l   h000+$23C2(pc),a0               ; 021EA
-        move.l  a0,(dat_002_00004).l            ; 021EE
+        lea.l   State_023C2(pc),a0               ; 021EA
+        move.l  a0,(GameState).l                ; 021EE
         bra.w   l_000_022B2                     ; 021F4
 l_000_021F8:
         clr.b   (dat_071_00218).l               ; 021F8
@@ -2564,8 +2572,8 @@ l_000_02202:
         jsr     (sub_004_00290).l               ; 02234
         jsr     (sub_026_00002).l               ; 0223A
         clr.b   (dat_071_0017D).l               ; 02240
-        lea.l   h000+$23C2(pc),a0               ; 02246
-        move.l  a0,(dat_002_00004).l            ; 0224A
+        lea.l   State_023C2(pc),a0               ; 02246
+        move.l  a0,(GameState).l                ; 0224A
         bra.b   l_000_022B2                     ; 02250
 l_000_02252:
         move.b  #$3,(dat_071_00218).l           ; 02252
@@ -2584,8 +2592,8 @@ l_000_02252:
         jsr     (RedrawPanel).l                 ; 02294
         move.b  #$ff,(RedrawFlags).l            ; 0229A
         clr.b   (dat_071_00155).l               ; 022A2
-        lea.l   h000+$234C(pc),a0               ; 022A8
-        move.l  a0,(dat_002_00004).l            ; 022AC
+        lea.l   State_0234C(pc),a0               ; 022A8
+        move.l  a0,(GameState).l                ; 022AC
 l_000_022B2:
         move.b  (dat_071_00218).l,d0            ; 022B2
         subq.b  #$3,d0                          ; 022B8
@@ -2596,6 +2604,7 @@ l_000_022C4:
 l_000_022CA:
         unlk    a6                              ; 022CA
         rts                                     ; 022CC
+State_022CE:
         link.w  a6,#$fff6                       ; 022CE
         jsr     (sub_036_00892).l               ; 022D2
         lea.l   (dat_071_0011A).l,a0            ; 022D8
@@ -2629,10 +2638,11 @@ l_000_0232C:
         addq.l  #$2,-$4(a6)                     ; 02334
         movea.l -$4(a6),a0                      ; 02338
         clr.w   (a0)                            ; 0233C
-        lea.l   sub_000_01E04(pc),a0            ; 0233E
-        move.l  a0,(dat_002_00004).l            ; 02342
+        lea.l   State_01E04(pc),a0              ; 0233E
+        move.l  a0,(GameState).l                ; 02342
         unlk    a6                              ; 02348
         rts                                     ; 0234A
+State_0234C:
         move.w  (dat_071_004A6).l,d0            ; 0234C
         tst.w   d0                              ; 02352
         bpl.b   l_000_02376                     ; 02354
@@ -2640,10 +2650,11 @@ l_000_0232C:
         move.b  d0,(dat_071_00165).l            ; 02358
         move.b  #$f,(dat_071_00271).l           ; 0235E
         move.b  d0,(dat_071_00270).l            ; 02366
-        lea.l   h000+$2378(pc),a0               ; 0236C
-        move.l  a0,(dat_002_00004).l            ; 02370
+        lea.l   State_02378(pc),a0               ; 0236C
+        move.l  a0,(GameState).l                ; 02370
 l_000_02376:
         rts                                     ; 02376
+State_02378:
         move.b  (dat_071_00270).l,d0            ; 02378
         move.b  (dat_071_00271).l,d1            ; 0237E
         cmp.b   d1,d0                           ; 02384
@@ -2655,10 +2666,11 @@ l_000_02376:
         move.b  #$4,(dat_071_0027E).l           ; 023A0
         move.b  d0,(dat_071_0027D).l            ; 023A8
         move.w  #$5,(dat_071_004A6).l           ; 023AE
-        lea.l   h000+$27C8(pc),a0               ; 023B6
-        move.l  a0,(dat_002_00004).l            ; 023BA
+        lea.l   State_027C8(pc),a0               ; 023B6
+        move.l  a0,(GameState).l                ; 023BA
 l_000_023C0:
         rts                                     ; 023C0
+State_023C2:
         move.w  (dat_071_004A6).l,d0            ; 023C2
         tst.w   d0                              ; 023C8
         bpl.b   l_000_023EC                     ; 023CA
@@ -2666,10 +2678,11 @@ l_000_023C0:
         move.b  d0,(dat_071_00165).l            ; 023CE
         move.b  #$f,(dat_071_00271).l           ; 023D4
         move.b  d0,(dat_071_00270).l            ; 023DC
-        lea.l   h000+$23EE(pc),a0               ; 023E2
-        move.l  a0,(dat_002_00004).l            ; 023E6
+        lea.l   State_023EE(pc),a0               ; 023E2
+        move.l  a0,(GameState).l                ; 023E6
 l_000_023EC:
         rts                                     ; 023EC
+State_023EE:
         move.b  (dat_071_00270).l,d0            ; 023EE
         move.b  (dat_071_00271).l,d1            ; 023F4
         cmp.b   d1,d0                           ; 023FA
@@ -2679,18 +2692,20 @@ l_000_023EC:
         move.b  #$ff,(RedrawFlags).l            ; 02406
         move.b  d0,(dat_071_0027D).l            ; 0240E
         move.w  #$5,(dat_071_004A6).l           ; 02414
-        lea.l   h000+$27C8(pc),a0               ; 0241C
-        move.l  a0,(dat_002_00004).l            ; 02420
+        lea.l   State_027C8(pc),a0               ; 0241C
+        move.l  a0,(GameState).l                ; 02420
 l_000_02426:
         rts                                     ; 02426
+State_02428:
         moveq   #$1,d0                          ; 02428
         move.b  d0,(dat_071_00165).l            ; 0242A
         move.b  #$ff,(RedrawFlags).l            ; 02430
         move.b  d0,(dat_071_0027D).l            ; 02438
         move.w  #$5,(dat_071_004A6).l           ; 0243E
-        lea.l   h000+$2452(pc),a0               ; 02446
-        move.l  a0,(dat_002_00004).l            ; 0244A
+        lea.l   State_02452(pc),a0               ; 02446
+        move.l  a0,(GameState).l                ; 0244A
         rts                                     ; 02450
+State_02452:
         link.w  a6,#$fffc                       ; 02452
         move.l  #dat_071_0011A,-$4(a6)          ; 02456
         tst.b   (dat_071_00173).l               ; 0245E
@@ -2715,12 +2730,13 @@ l_000_02492:
         addq.l  #$2,-$4(a6)                     ; 0249A
         clr.b   (dat_071_0027D).l               ; 0249E
 l_000_024A4:
-        lea.l   h000+$24B2(pc),a0               ; 024A4
-        move.l  a0,(dat_002_00004).l            ; 024A8
+        lea.l   State_024B2(pc),a0               ; 024A4
+        move.l  a0,(GameState).l                ; 024A8
 l_000_024AE:
         unlk    a6                              ; 024AE
         rts                                     ; 024B0
 l_000_024B2:
+State_024B2:
         move.b  (dat_071_001B0).l,d0            ; 024B2
         tst.b   d0                              ; 024B8
         bmi.b   l_000_024C4                     ; 024BA
@@ -2738,18 +2754,19 @@ l_000_024C4:
         cmpi.b  #$7d,d0                         ; 024F2
         bne.b   l_000_0250C                     ; 024F6
         move.b  #$6,(dat_071_0027E).l           ; 024F8
-        lea.l   h000+$2D58(pc),a0               ; 02500
-        move.l  a0,(dat_002_00004).l            ; 02504
+        lea.l   State_02D58(pc),a0               ; 02500
+        move.l  a0,(GameState).l                ; 02504
         bra.b   l_000_02532                     ; 0250A
 l_000_0250C:
         move.b  #$3,(dat_071_00206).l           ; 0250C
         clr.w   (dat_073_0162A).l               ; 02514
         clr.b   (dat_071_00158).l               ; 0251A
         move.w  #$5,(dat_071_004A6).l           ; 02520
-        lea.l   h000+$2DB8(pc),a0               ; 02528
-        move.l  a0,(dat_002_00004).l            ; 0252C
+        lea.l   State_02DB8(pc),a0               ; 02528
+        move.l  a0,(GameState).l                ; 0252C
 l_000_02532:
         rts                                     ; 02532
+State_02534:
         move.b  #$1,(dat_071_0027D).l           ; 02534
         move.w  (dat_071_004A6).l,d0            ; 0253C
         tst.w   d0                              ; 02542
@@ -2758,10 +2775,11 @@ l_000_02532:
         move.b  d0,(dat_071_00165).l            ; 02548
         move.b  #$f,(dat_071_00271).l           ; 0254E
         move.b  d0,(dat_071_00270).l            ; 02556
-        lea.l   h000+$2568(pc),a0               ; 0255C
-        move.l  a0,(dat_002_00004).l            ; 02560
+        lea.l   State_02568(pc),a0               ; 0255C
+        move.l  a0,(GameState).l                ; 02560
 l_000_02566:
         rts                                     ; 02566
+State_02568:
         move.b  (dat_071_00270).l,d0            ; 02568
         move.b  (dat_071_00271).l,d1            ; 0256E
         cmp.b   d1,d0                           ; 02574
@@ -2772,10 +2790,11 @@ l_000_02566:
         move.b  d0,(dat_071_0017D).l            ; 02588
         move.b  d0,(dat_071_00227).l            ; 0258E
         move.w  #$9,(dat_071_004A6).l           ; 02594
-        lea.l   h000+$25A8(pc),a0               ; 0259C
-        move.l  a0,(dat_002_00004).l            ; 025A0
+        lea.l   State_025A8(pc),a0               ; 0259C
+        move.l  a0,(GameState).l                ; 025A0
 l_000_025A6:
         rts                                     ; 025A6
+State_025A8:
         move.b  (dat_071_00166).l,d0            ; 025A8
         move.b  (dat_071_00173).l,d1            ; 025AE
         or.b    d1,d0                           ; 025B4
@@ -2788,8 +2807,8 @@ l_000_025A6:
         move.b  #$1,(dat_071_00165).l           ; 025CE
         bsr.w   h000+$3462                      ; 025D6
         move.w  #$ffff,(dat_071_004A6).l        ; 025DA
-        lea.l   h000+$2744(pc),a0               ; 025E2
-        move.l  a0,(dat_002_00004).l            ; 025E6
+        lea.l   State_02744(pc),a0               ; 025E2
+        move.l  a0,(GameState).l                ; 025E6
         bra.b   l_000_02610                     ; 025EC
 l_000_025EE:
         move.w  (dat_071_004A6).l,d0            ; 025EE
@@ -2797,10 +2816,11 @@ l_000_025EE:
         bpl.b   l_000_02610                     ; 025F6
         clr.b   (dat_071_00227).l               ; 025F8
         move.w  #$1,(dat_071_004A6).l           ; 025FE
-        lea.l   h000+$2612(pc),a0               ; 02606
-        move.l  a0,(dat_002_00004).l            ; 0260A
+        lea.l   State_02612(pc),a0               ; 02606
+        move.l  a0,(GameState).l                ; 0260A
 l_000_02610:
         rts                                     ; 02610
+State_02612:
         link.w  a6,#$fffe                       ; 02612
         movem.l d2,-(a7)                        ; 02616
         moveq   #$0,d0                          ; 0261A
@@ -2817,8 +2837,8 @@ l_000_02610:
         move.b  #$1,(dat_071_00165).l           ; 02648
         bsr.w   h000+$3462                      ; 02650
         move.w  #$ffff,(dat_071_004A6).l        ; 02654
-        lea.l   h000+$2744(pc),a0               ; 0265C
-        move.l  a0,(dat_002_00004).l            ; 02660
+        lea.l   State_02744(pc),a0               ; 0265C
+        move.l  a0,(GameState).l                ; 02660
         bra.w   l_000_026EE                     ; 02666
 l_000_0266A:
         move.w  (dat_071_004A6).l,d0            ; 0266A
@@ -2860,12 +2880,13 @@ l_000_026CC:
         jsr     (sub_020_001F4).l               ; 026DA
         lea.l   $c(a7),a7                       ; 026E0
 l_000_026E4:
-        lea.l   h000+$26F6(pc),a0               ; 026E4
-        move.l  a0,(dat_002_00004).l            ; 026E8
+        lea.l   State_026F6(pc),a0               ; 026E4
+        move.l  a0,(GameState).l                ; 026E8
 l_000_026EE:
         movem.l (a7)+,d2                        ; 026EE
         unlk    a6                              ; 026F2
         rts                                     ; 026F4
+State_026F6:
         move.b  (dat_071_001B0).l,d0            ; 026F6
         tst.b   d0                              ; 026FC
         bmi.b   l_000_02708                     ; 026FE
@@ -2880,10 +2901,11 @@ l_000_02708:
         bsr.w   h000+$3462                      ; 02724
         move.w  #$ffff,(dat_071_004A6).l        ; 02728
         move.b  #$3,(dat_071_00206).l           ; 02730
-        lea.l   h000+$2744(pc),a0               ; 02738
-        move.l  a0,(dat_002_00004).l            ; 0273C
+        lea.l   State_02744(pc),a0               ; 02738
+        move.l  a0,(GameState).l                ; 0273C
 l_000_02742:
         rts                                     ; 02742
+State_02744:
         move.w  (dat_071_004A6).l,d0            ; 02744
         tst.w   d0                              ; 0274A
         bpl.b   l_000_02774                     ; 0274C
@@ -2892,19 +2914,21 @@ l_000_02742:
         move.b  d0,(dat_071_00227).l            ; 02756
         move.w  #$1,(dat_071_004A6).l           ; 0275C
         jsr     (sub_026_00C48).l               ; 02764
-        lea.l   h000+$2776(pc),a0               ; 0276A
-        move.l  a0,(dat_002_00004).l            ; 0276E
+        lea.l   State_02776(pc),a0               ; 0276A
+        move.l  a0,(GameState).l                ; 0276E
 l_000_02774:
         rts                                     ; 02774
+State_02776:
         move.w  (dat_071_004A6).l,d0            ; 02776
         tst.w   d0                              ; 0277C
         bpl.b   l_000_0279A                     ; 0277E
         move.b  #$2,(dat_071_0027E).l           ; 02780
         move.b  #$1,(dat_071_00185).l           ; 02788
-        lea.l   h000+$279C(pc),a0               ; 02790
-        move.l  a0,(dat_002_00004).l            ; 02794
+        lea.l   State_0279C(pc),a0               ; 02790
+        move.l  a0,(GameState).l                ; 02794
 l_000_0279A:
         rts                                     ; 0279A
+State_0279C:
         move.b  (dat_071_0027E).l,d0            ; 0279C
         subq.b  #$3,d0                          ; 027A2
         bne.b   l_000_027C6                     ; 027A4
@@ -2912,10 +2936,11 @@ l_000_0279A:
         move.b  d0,(dat_071_00185).l            ; 027A8
         move.b  d0,(dat_071_00227).l            ; 027AE
         move.w  #$2,(dat_071_004A6).l           ; 027B4
-        lea.l   h000+$27C8(pc),a0               ; 027BC
-        move.l  a0,(dat_002_00004).l            ; 027C0
+        lea.l   State_027C8(pc),a0               ; 027BC
+        move.l  a0,(GameState).l                ; 027C0
 l_000_027C6:
         rts                                     ; 027C6
+State_027C8:
         link.w  a6,#$fffa                       ; 027C8
         move.w  (dat_071_004A6).l,d0            ; 027CC
         tst.w   d0                              ; 027D2
@@ -2926,8 +2951,8 @@ l_000_027C6:
         move.b  #$1,(dat_071_0027C).l           ; 027E6
         move.b  #$2,(dat_071_0027D).l           ; 027EE
         move.w  #$3,(dat_071_004A6).l           ; 027F6
-        lea.l   h000+$28DA(pc),a0               ; 027FE
-        move.l  a0,(dat_002_00004).l            ; 02802
+        lea.l   State_028DA(pc),a0               ; 027FE
+        move.l  a0,(GameState).l                ; 02802
         bra.b   l_000_0287A                     ; 02808
 l_000_0280A:
         move.b  (dat_071_00276).l,d0            ; 0280A
@@ -2959,21 +2984,23 @@ l_000_02852:
         movea.l -$4(a6),a0                      ; 02864
         clr.w   (a0)                            ; 02868
         jsr     (sub_020_003C6).l               ; 0286A
-        lea.l   h000+$287E(pc),a0               ; 02870
-        move.l  a0,(dat_002_00004).l            ; 02874
+        lea.l   State_0287E(pc),a0               ; 02870
+        move.l  a0,(GameState).l                ; 02874
 l_000_0287A:
         unlk    a6                              ; 0287A
         rts                                     ; 0287C
+State_0287E:
         move.b  (dat_071_001B0).l,d0            ; 0287E
         subq.b  #$1,d0                          ; 02884
         bne.b   l_000_028A8                     ; 02886
         move.w  #$4,(dat_071_0011A).l           ; 02888
         clr.b   (dat_071_00193).l               ; 02890
         move.b  #$3,(dat_071_001B0).l           ; 02896
-        lea.l   h000+$28AA(pc),a0               ; 0289E
-        move.l  a0,(dat_002_00004).l            ; 028A2
+        lea.l   State_028AA(pc),a0               ; 0289E
+        move.l  a0,(GameState).l                ; 028A2
 l_000_028A8:
         rts                                     ; 028A8
+State_028AA:
         tst.b   (dat_071_0027C).l               ; 028AA
         beq.b   l_000_028D8                     ; 028B0
         tst.b   (dat_071_00155).l               ; 028B2
@@ -2982,10 +3009,11 @@ l_000_028A8:
 l_000_028C2:
         bsr.w   h000+$3462                      ; 028C2
         move.w  #$3,(dat_071_004A6).l           ; 028C6
-        lea.l   h000+$28DA(pc),a0               ; 028CE
-        move.l  a0,(dat_002_00004).l            ; 028D2
+        lea.l   State_028DA(pc),a0               ; 028CE
+        move.l  a0,(GameState).l                ; 028D2
 l_000_028D8:
         rts                                     ; 028D8
+State_028DA:
         link.w  a6,#$fffe                       ; 028DA
         move.w  (dat_071_004A6).l,d0            ; 028DE
         tst.w   d0                              ; 028E4
@@ -2996,8 +3024,8 @@ l_000_028D8:
         move.w  d0,-$2(a6)                      ; 028F8
         tst.b   d1                              ; 028FC
         ble.w   l_000_029DA                     ; 028FE
-        lea.l   h000+$2A50(pc),a0               ; 02902
-        move.l  a0,(dat_002_00004).l            ; 02906
+        lea.l   State_02A50(pc),a0               ; 02902
+        move.l  a0,(GameState).l                ; 02906
         cmpi.w  #$3,d0                          ; 0290C
         bcs.b   l_000_0295C                     ; 02910
         cmpi.w  #$8,d0                          ; 02912
@@ -3038,22 +3066,22 @@ l_000_02964:
         ori.b   #$1,d0                          ; 02990
         bra.w   l_000_02998                     ; 02994
 l_000_02998:
-        lea.l   h000+$2AC0(pc),a0               ; 02998
-        move.l  a0,(dat_002_00004).l            ; 0299C
+        lea.l   State_02AC0(pc),a0               ; 02998
+        move.l  a0,(GameState).l                ; 0299C
         bra.w   l_000_02A26                     ; 029A2
 l_000_029A6:
-        lea.l   h000+$2428(pc),a0               ; 029A6
-        move.l  a0,(dat_002_00004).l            ; 029AA
+        lea.l   State_02428(pc),a0               ; 029A6
+        move.l  a0,(GameState).l                ; 029AA
         bra.b   l_000_02A26                     ; 029B0
 l_000_029B2:
-        lea.l   h000+$2428(pc),a0               ; 029B2
-        move.l  a0,(dat_002_00004).l            ; 029B6
+        lea.l   State_02428(pc),a0               ; 029B2
+        move.l  a0,(GameState).l                ; 029B6
         bra.b   l_000_02A26                     ; 029BC
 l_000_029BE:
         move.b  #$1,(dat_071_00165).l           ; 029BE
         move.w  #$3,(dat_071_004A6).l           ; 029C6
-        lea.l   h000+$1CC0(pc),a0               ; 029CE
-        move.l  a0,(dat_002_00004).l            ; 029D2
+        lea.l   State_01CC0(pc),a0               ; 029CE
+        move.l  a0,(GameState).l                ; 029D2
         bra.b   l_000_02A26                     ; 029D8
 l_000_029DA:
         move.b  (dat_071_0027C).l,d0            ; 029DA
@@ -3068,25 +3096,28 @@ l_000_029DA:
         move.b  d0,(dat_071_00268).l            ; 02A06
         tst.b   d0                              ; 02A0C
         bmi.b   l_000_02A1C                     ; 02A0E
-        lea.l   h000+$27C8(pc),a0               ; 02A10
-        move.l  a0,(dat_002_00004).l            ; 02A14
+        lea.l   State_027C8(pc),a0               ; 02A10
+        move.l  a0,(GameState).l                ; 02A14
         bra.b   l_000_02A26                     ; 02A1A
 l_000_02A1C:
-        lea.l   h000+$2A2A(pc),a0               ; 02A1C
-        move.l  a0,(dat_002_00004).l            ; 02A20
+        lea.l   State_02A2A(pc),a0               ; 02A1C
+        move.l  a0,(GameState).l                ; 02A20
 l_000_02A26:
         unlk    a6                              ; 02A26
         rts                                     ; 02A28
+State_02A2A:
         move.w  (dat_071_004A6).l,d0            ; 02A2A
         tst.w   d0                              ; 02A30
         bpl.b   l_000_02A4C                     ; 02A32
         clr.b   (dat_071_00165).l               ; 02A34
         move.w  #$43,(dat_071_0011A).l          ; 02A3A
-        lea.l   h000+$2A4E(pc),a0               ; 02A42
-        move.l  a0,(dat_002_00004).l            ; 02A46
+        lea.l   State_02A4E(pc),a0               ; 02A42
+        move.l  a0,(GameState).l                ; 02A46
 l_000_02A4C:
         rts                                     ; 02A4C
+State_02A4E:
         rts                                     ; 02A4E
+State_02A50:
         move.b  (dat_071_00173).l,d0            ; 02A50
         subq.b  #$2,d0                          ; 02A56
         bne.b   l_000_02A60                     ; 02A58
@@ -3100,10 +3131,11 @@ l_000_02A60:
         bsr.w   h000+$3462                      ; 02A72
         move.b  #$1,(dat_071_00227).l           ; 02A76
         move.w  #$3,(dat_071_004A6).l           ; 02A7E
-        lea.l   h000+$2A92(pc),a0               ; 02A86
-        move.l  a0,(dat_002_00004).l            ; 02A8A
+        lea.l   State_02A92(pc),a0               ; 02A86
+        move.l  a0,(GameState).l                ; 02A8A
 l_000_02A90:
         rts                                     ; 02A90
+State_02A92:
         move.b  (dat_071_00173).l,d0            ; 02A92
         subq.b  #$2,d0                          ; 02A98
         bne.b   l_000_02AA2                     ; 02A9A
@@ -3114,10 +3146,11 @@ l_000_02AA2:
         tst.w   d0                              ; 02AA8
         bpl.b   l_000_02ABE                     ; 02AAA
         move.b  #$1,(dat_071_00185).l           ; 02AAC
-        lea.l   h000+$2AC0(pc),a0               ; 02AB4
-        move.l  a0,(dat_002_00004).l            ; 02AB8
+        lea.l   State_02AC0(pc),a0               ; 02AB4
+        move.l  a0,(GameState).l                ; 02AB8
 l_000_02ABE:
         rts                                     ; 02ABE
+State_02AC0:
         move.b  (dat_071_00173).l,d0            ; 02AC0
         subq.b  #$2,d0                          ; 02AC6
         bne.b   l_000_02AD0                     ; 02AC8
@@ -3131,10 +3164,11 @@ l_000_02AD0:
         move.b  d0,(dat_071_00185).l            ; 02ADC
         move.b  d0,(dat_071_00227).l            ; 02AE2
         move.w  #$2,(dat_071_004A6).l           ; 02AE8
-        lea.l   h000+$2AFC(pc),a0               ; 02AF0
-        move.l  a0,(dat_002_00004).l            ; 02AF4
+        lea.l   State_02AFC(pc),a0               ; 02AF0
+        move.l  a0,(GameState).l                ; 02AF4
 l_000_02AFA:
         rts                                     ; 02AFA
+State_02AFC:
         move.b  (dat_071_00173).l,d0            ; 02AFC
         subq.b  #$2,d0                          ; 02B02
         bne.b   l_000_02B0C                     ; 02B04
@@ -3162,10 +3196,11 @@ l_000_02B5A:
         moveq   #$0,d0                          ; 02B5A
         move.b  d0,(dat_071_0027D).l            ; 02B5C
         move.b  d0,(dat_071_00193).l            ; 02B62
-        lea.l   h000+$2B74(pc),a0               ; 02B68
-        move.l  a0,(dat_002_00004).l            ; 02B6C
+        lea.l   State_02B74(pc),a0               ; 02B68
+        move.l  a0,(GameState).l                ; 02B6C
 l_000_02B72:
         rts                                     ; 02B72
+State_02B74:
         move.b  (dat_071_00173).l,d0            ; 02B74
         subq.b  #$2,d0                          ; 02B7A
         bne.b   l_000_02B84                     ; 02B7C
@@ -3186,15 +3221,15 @@ l_000_02B84:
         move.b  (dat_071_00218).l,d0            ; 02BB6
         subq.b  #$3,d0                          ; 02BBC
         beq.b   l_000_02BE2                     ; 02BBE
-        lea.l   h000+$2C02(pc),a0               ; 02BC0
-        move.l  a0,(dat_002_00004).l            ; 02BC4
+        lea.l   State_02C02(pc),a0               ; 02BC0
+        move.l  a0,(GameState).l                ; 02BC4
         move.b  #$1,(dat_071_00161).l           ; 02BCA
         clr.b   (dat_071_00227).l               ; 02BD2
         move.b  #$6,(dat_071_0027E).l           ; 02BD8
         bra.b   l_000_02C00                     ; 02BE0
 l_000_02BE2:
-        lea.l   h000+$2C6E(pc),a0               ; 02BE2
-        move.l  a0,(dat_002_00004).l            ; 02BE6
+        lea.l   State_02C6E(pc),a0               ; 02BE2
+        move.l  a0,(GameState).l                ; 02BE6
         bra.b   l_000_02C00                     ; 02BEC
 l_000_02BEE:
         move.b  (dat_071_001B0).l,d0            ; 02BEE
@@ -3203,6 +3238,7 @@ l_000_02BEE:
         move.b  #$1,(dat_071_00165).l           ; 02BF8
 l_000_02C00:
         rts                                     ; 02C00
+State_02C02:
         moveq   #$0,d0                          ; 02C02
         move.b  d0,(dat_071_00185).l            ; 02C04
         move.w  (dat_071_004A6).l,d0            ; 02C0A
@@ -3212,10 +3248,11 @@ l_000_02C00:
         move.b  d0,(dat_071_00165).l            ; 02C16
         move.w  #$4b,(dat_071_0011A).l          ; 02C1C
         move.b  d0,(dat_071_00193).l            ; 02C24
-        lea.l   h000+$2C36(pc),a0               ; 02C2A
-        move.l  a0,(dat_002_00004).l            ; 02C2E
+        lea.l   State_02C36(pc),a0               ; 02C2A
+        move.l  a0,(GameState).l                ; 02C2E
 l_000_02C34:
         rts                                     ; 02C34
+State_02C36:
         move.b  (dat_071_00161).l,d0            ; 02C36
         tst.b   d0                              ; 02C3C
         bne.b   l_000_02C6C                     ; 02C3E
@@ -3225,10 +3262,11 @@ l_000_02C34:
         moveq   #$1,d0                          ; 02C54
         move.b  d0,(dat_071_00227).l            ; 02C56
         move.b  d0,(dat_071_0027D).l            ; 02C5C
-        lea.l   h000+$2C6E(pc),a0               ; 02C62
-        move.l  a0,(dat_002_00004).l            ; 02C66
+        lea.l   State_02C6E(pc),a0               ; 02C62
+        move.l  a0,(GameState).l                ; 02C66
 l_000_02C6C:
         rts                                     ; 02C6C
+State_02C6E:
         move.w  (dat_071_004A6).l,d0            ; 02C6E
         tst.w   d0                              ; 02C74
         bpl.b   l_000_02CDE                     ; 02C76
@@ -3257,8 +3295,8 @@ l_000_02CC8:
         jsr     (sub_000_09E46).l               ; 02CCC
         addq.l  #$4,a7                          ; 02CD2
 l_000_02CD4:
-        lea.l   h000+$2D58(pc),a0               ; 02CD4
-        move.l  a0,(dat_002_00004).l            ; 02CD8
+        lea.l   State_02D58(pc),a0               ; 02CD4
+        move.l  a0,(GameState).l                ; 02CD8
 l_000_02CDE:
         rts                                     ; 02CDE
 l_000_02CE0:
@@ -3284,10 +3322,10 @@ l_000_02CFE:
         move.b  d0,(dat_071_0027D).l            ; 02D38
         move.b  d0,(dat_071_00158).l            ; 02D3E
         move.w  #$5,(dat_071_004A6).l           ; 02D44
-        lea.l   h000+$2DB8(pc),a0               ; 02D4C
-        move.l  a0,(dat_002_00004).l            ; 02D50
+        lea.l   State_02DB8(pc),a0               ; 02D4C
+        move.l  a0,(GameState).l                ; 02D50
         rts                                     ; 02D56
-sub_000_02D58:
+State_02D58:
         move.b  (dat_071_00155).l,d0            ; 02D58
         tst.b   d0                              ; 02D5E
         bne.b   l_000_02D92                     ; 02D60
@@ -3297,8 +3335,8 @@ sub_000_02D58:
         move.b  d0,(dat_071_0027D).l            ; 02D72
         move.b  d0,(dat_071_00158).l            ; 02D78
         move.w  #$5,(dat_071_004A6).l           ; 02D7E
-        lea.l   sub_000_02DB8(pc),a0            ; 02D86
-        move.l  a0,(dat_002_00004).l            ; 02D8A
+        lea.l   State_02DB8(pc),a0              ; 02D86
+        move.l  a0,(GameState).l                ; 02D8A
         bra.b   l_000_02DB6                     ; 02D90
 l_000_02D92:
         move.b  (dat_071_0017E).l,d0            ; 02D92
@@ -3306,10 +3344,10 @@ l_000_02D92:
         bpl.b   l_000_02DB6                     ; 02D9A
         move.w  #$2,(dat_071_004A6).l           ; 02D9C
         move.b  #$a,(dat_071_00271).l           ; 02DA4
-        move.l  #sub_000_03B76,(dat_002_00004).l ; 02DAC
+        move.l  #State_03B76,(GameState).l      ; 02DAC
 l_000_02DB6:
         rts                                     ; 02DB6
-sub_000_02DB8:
+State_02DB8:
         link.w  a6,#$fffa                       ; 02DB8
         move.w  (dat_071_004A6).l,d0            ; 02DBC
         tst.w   d0                              ; 02DC2
@@ -3348,11 +3386,12 @@ l_000_02E32:
 l_000_02E3A:
         movea.l -$4(a6),a0                      ; 02E3A
         clr.w   (a0)                            ; 02E3E
-        lea.l   h000+$2E4E(pc),a0               ; 02E40
-        move.l  a0,(dat_002_00004).l            ; 02E44
+        lea.l   State_02E4E(pc),a0               ; 02E40
+        move.l  a0,(GameState).l                ; 02E44
 l_000_02E4A:
         unlk    a6                              ; 02E4A
         rts                                     ; 02E4C
+State_02E4E:
         move.b  (dat_071_001B0).l,d0            ; 02E4E
         tst.b   d0                              ; 02E54
         bpl.w   l_000_02ED8                     ; 02E56
@@ -3378,20 +3417,21 @@ l_000_02EA4:
         move.l  (TimeSeconds).l,(dat_071_002DC).l ; 02EB6
         clr.w   (FrameCount).l                  ; 02EC0
         move.w  #$3,(dat_071_004A6).l           ; 02EC6
-        lea.l   h000+$2EDA(pc),a0               ; 02ECE
-        move.l  a0,(dat_002_00004).l            ; 02ED2
+        lea.l   State_02EDA(pc),a0               ; 02ECE
+        move.l  a0,(GameState).l                ; 02ED2
 l_000_02ED8:
         rts                                     ; 02ED8
+State_02EDA:
         move.w  (dat_071_004A6).l,d0            ; 02EDA
         tst.w   d0                              ; 02EE0
         bpl.b   l_000_02EFC                     ; 02EE2
         move.b  #$1,(dat_071_00171).l           ; 02EE4
         jsr     (l_039_01880).l                 ; 02EEC
-        lea.l   h000+$2EFE(pc),a0               ; 02EF2
-        move.l  a0,(dat_002_00004).l            ; 02EF6
+        lea.l   State_02EFE(pc),a0               ; 02EF2
+        move.l  a0,(GameState).l                ; 02EF6
 l_000_02EFC:
         rts                                     ; 02EFC
-sub_000_02EFE:
+State_02EFE:
         link.w  a6,#$fffe                       ; 02EFE
         move.b  (dat_071_00168).l,-$1(a6)       ; 02F02
         move.w  (ObjectTable).l,d0              ; 02F0A
@@ -3433,7 +3473,7 @@ sub_000_02EFE:
         jsr     (sub_000_0A0DC).l               ; 02FAE
         addq.l  #$8,a7                          ; 02FB4
 l_000_02FB6:
-        move.l  #sub_000_038D8,(dat_002_00004).l ; 02FB6
+        move.l  #State_038D8,(GameState).l      ; 02FB6
         bra.w   l_000_03198                     ; 02FC0
 l_000_02FC4:
         move.w  (ObjectTable).l,d0              ; 02FC4
@@ -3451,7 +3491,7 @@ l_000_02FE6:
         move.b  #$a,(dat_071_00271).l           ; 02FF8
         jsr     (ReadTime).l                    ; 03000
         move.l  (TimeSeconds).l,(dat_071_002D4).l ; 03006
-        move.l  #sub_000_03B76,(dat_002_00004).l ; 03010
+        move.l  #State_03B76,(GameState).l      ; 03010
         bra.w   l_000_03198                     ; 0301A
 l_000_0301E:
         move.b  -$1(a6),d0                      ; 0301E
@@ -3515,17 +3555,17 @@ l_000_03118:
         bne.b   l_000_0313E                     ; 03122
         clr.b   (dat_071_001FA).l               ; 03124
         move.b  #$ff,(dat_071_001B0).l          ; 0312A
-        move.l  #sub_000_03A4C,(dat_002_00004).l ; 03132
+        move.l  #State_03A4C,(GameState).l      ; 03132
         bra.b   l_000_03198                     ; 0313C
 l_000_0313E:
         cmpi.b  #$f0,-$1(a6)                    ; 0313E
         bne.b   l_000_03152                     ; 03144
-        move.l  #sub_000_03A4C,(dat_002_00004).l ; 03146
+        move.l  #State_03A4C,(GameState).l      ; 03146
         bra.b   l_000_03198                     ; 03150
 l_000_03152:
         cmpi.b  #$ef,-$1(a6)                    ; 03152
         bne.b   l_000_03166                     ; 03158
-        move.l  #sub_000_03AA8,(dat_002_00004).l ; 0315A
+        move.l  #State_03AA8,(GameState).l      ; 0315A
         bra.b   l_000_03198                     ; 03164
 l_000_03166:
         move.w  (ViewObject).l,d0               ; 03166
@@ -3544,104 +3584,207 @@ l_000_03190:
 l_000_03198:
         unlk    a6                              ; 03198
         rts                                     ; 0319A
-dat_000_0319C:
-	dc.b	$30,$39
-        dc.l    dat_071_004A6                   ; 0319E
-	dc.b	$4A,$40,$6A,$20,$70,$00,$13,$C0
-        dc.l    dat_071_00165                   ; 031AA
-	dc.b	$33,$FC,$00,$0E
-        dc.l    dat_071_0011A                   ; 031B2
-	dc.b	$13,$C0
-        dc.l    dat_071_001B0                   ; 031B8
-	dc.b	$23,$FC
-        dc.l    sub_000_03A4C                   ; 031BE
-        dc.l    dat_002_00004                   ; 031C2
-	dc.b	$4E,$75
-dat_000_031C8:
-	dc.b	$30,$39
-        dc.l    dat_071_004A6                   ; 031CA
-	dc.b	$4A,$40,$6A,$20,$70,$01,$13,$C0
-        dc.l    dat_071_0017E                   ; 031D6
-	dc.b	$33,$FC,$00,$02
-        dc.l    dat_071_004A6                   ; 031DE
-	dc.b	$41,$FA,$00,$10,$23,$C8
-        dc.l    dat_002_00004                   ; 031E8
-	dc.b	$13,$C0
-        dc.l    dat_071_0027D                   ; 031EE
-	dc.b	$4E,$75,$4E,$56,$FF,$FA,$30,$39
-        dc.l    dat_071_004A6                   ; 031FA
-	dc.b	$4A,$40,$6A,$00,$02,$5C,$10,$39
-        dc.l    dat_071_00276                   ; 03206
-	dc.b	$48,$80,$2D,$7C
-        dc.l    dat_071_0011A                   ; 0320E
-	dc.b	$FF,$FA,$42,$39
-        dc.l    dat_071_00165                   ; 03216
-	dc.b	$41,$FA,$FC,$E2,$23,$C8
-        dc.l    dat_002_00004                   ; 03220
-	dc.b	$3D,$40,$FF,$FE,$61,$00,$02,$38,$10,$39
-        dc.l    dat_071_00168                   ; 0322E
-	dc.b	$0C,$00,$00,$FF,$66,$00,$00,$D2,$30,$2E,$FF,$FE,$0C,$40,$00,$03
-	dc.b	$65,$4C,$0C,$40,$00,$08,$62,$46,$72,$00,$32,$2E,$FF,$FE,$70,$04
-	dc.b	$2F,$00,$42,$A7,$2F,$01,$4E,$B9
-        dc.l    sub_020_001F4                   ; 0325A
-	dc.b	$4F,$EF,$00,$0C,$20,$6E,$FF,$FA,$54,$88,$2D,$48,$FF,$FA,$0C,$6E
-	dc.b	$00,$03,$FF,$FE,$66,$0C,$30,$BC,$80,$55,$54,$AE,$FF,$FA,$60,$00
-	dc.b	$01,$AE,$20,$6E,$FF,$FA,$30,$BC,$80,$56,$54,$AE,$FF,$FA,$60,$00
-	dc.b	$01,$9E,$10,$39
-        dc.l    dat_071_00276                   ; 03292
-	dc.b	$48,$80,$48,$C0,$0C,$80,$00,$00,$00,$09,$67,$20,$0C,$80,$00,$00
-	dc.b	$00,$7D,$66,$50,$20,$6E,$FF,$FA,$30,$BC,$00,$48,$54,$AE,$FF,$FA
-	dc.b	$13,$FC,$00,$F0
-        dc.l    dat_071_00168                   ; 032BA
-	dc.b	$60,$00,$01,$6C,$20,$79
-        dc.l    ConfigBuffer                    ; 032C4
-	dc.b	$30,$BC,$00,$01,$4E,$B9
-        dc.l    SaveConfig                      ; 032CE
-	dc.b	$20,$6E,$FF,$FA,$30,$BC,$00,$4A,$54,$88,$30,$BC,$80,$53,$54,$88
-	dc.b	$13,$FC,$00,$01
-        dc.l    dat_071_001FB                   ; 032E6
-	dc.b	$13,$FC,$00,$EF
-        dc.l    dat_071_00168                   ; 032EE
-	dc.b	$2D,$48,$FF,$FA,$60,$00,$01,$34,$20,$6E,$FF,$FA,$30,$BC,$00,$41
-	dc.b	$54,$AE,$FF,$FA,$60,$00,$01,$24,$10,$39
-        dc.l    dat_071_00168                   ; 0330C
-	dc.b	$0C,$00,$00,$FE,$66,$00,$00,$E4,$10,$39
-        dc.l    dat_071_00276                   ; 0331A
-	dc.b	$48,$80,$48,$C0,$04,$80,$00,$00,$00,$04,$6D,$00,$00,$A0,$0C,$80
-	dc.b	$00,$00,$00,$04,$6C,$00,$00,$96,$E3,$80,$4E,$FB,$08,$02,$60,$06
-	dc.b	'`,`@`L09'
-        dc.l    FrameCount                      ; 03346
-	dc.b	$08,$00,$00,$00,$67,$0E,$20,$6E,$FF,$FA,$30,$BC,$00,$24,$54,$AE
-	dc.b	$FF,$FA,$60,$78,$20,$6E,$FF,$FA,$30,$BC,$00,$25,$54,$AE,$FF,$FA
-	dc.b	$60,$6A,$20,$6E,$FF,$FA,$30,$BC,$00,$2C,$54,$AE,$FF,$FA,$13,$FC
-	dc.b	$00,$F0
-        dc.l    dat_071_00168                   ; 0337C
-	dc.b	$60,$54,$20,$6E,$FF,$FA,$30,$BC,$00,$33,$54,$AE,$FF,$FA,$60,$46
-	dc.b	$20,$6E,$FF,$FA,$30,$BC,$00,$39,$54,$88,$30,$39
-        dc.l    FrameCount                      ; 0339C
-	dc.b	$2D,$48,$FF,$FA,$08,$00,$00,$00,$67,$12,$30,$BC,$80,$3A,$54,$AE
-	dc.b	$FF,$FA,$13,$FC,$00,$F0
-        dc.l    dat_071_00168                   ; 033B6
-	dc.b	$60,$1A,$20,$6E,$FF,$FA,$30,$BC,$80,$5C,$54,$AE,$FF,$FA,$60,$0C
-	dc.b	$20,$6E,$FF,$FA,$30,$BC,$00,$42,$54,$AE,$FF,$FA,$10,$39
-        dc.l    dat_071_00168                   ; 033D8
-	dc.b	$0C,$00,$00,$F0,$67,$4A,$20,$6E,$FF,$FA,$54,$88,$30,$BC,$80,$56
-	dc.b	$54,$88,$30,$BC,$80,$53,$54,$88,$2D,$48,$FF,$FA,$60,$32,$10,$39
-        dc.l    dat_071_00168                   ; 033FC
-	dc.b	$0C,$00,$00,$FD,$66,$26,$10,$39
-        dc.l    dat_071_00276                   ; 03408
-	dc.b	$48,$80,$48,$C0,$0C,$80,$00,$00,$00,$04,$66,$14,$20,$6E,$FF,$FA
-	dc.b	$30,$BC,$00,$4C,$54,$AE,$FF,$FA,$13,$FC,$00,$F0
-        dc.l    dat_071_00168                   ; 03428
-	dc.b	$10,$39
-        dc.l    dat_071_00168                   ; 0342E
-	dc.b	$0C,$00,$00,$FC,$66,$20,$20,$6E,$FF,$FA,$30,$BC,$00,$54,$54,$88
-	dc.b	$30,$BC,$80,$53,$54,$88,$2D,$48,$FF,$FA,$4E,$B9
-        dc.l    sub_000_034A0                   ; 0344E
-	dc.b	$4E,$B9
-        dc.l    SaveConfig                      ; 03454
-	dc.b	$20,$6E,$FF,$FA
-	dc.b	'BPN^Nu'
+State_0319C:
+        move.w  (dat_071_004A6).l,d0            ; 0319C
+        tst.w   d0                              ; 031A2
+        bpl.b   l_000_031C6                     ; 031A4
+        moveq   #$0,d0                          ; 031A6
+        move.b  d0,(dat_071_00165).l            ; 031A8
+        move.w  #$e,(dat_071_0011A).l           ; 031AE
+        move.b  d0,(dat_071_001B0).l            ; 031B6
+        move.l  #State_03A4C,(GameState).l      ; 031BC
+l_000_031C6:
+        rts                                     ; 031C6
+State_031C8:
+        move.w  (dat_071_004A6).l,d0            ; 031C8
+        tst.w   d0                              ; 031CE
+        bpl.b   l_000_031F2                     ; 031D0
+        moveq   #$1,d0                          ; 031D2
+        move.b  d0,(dat_071_0017E).l            ; 031D4
+        move.w  #$2,(dat_071_004A6).l           ; 031DA
+        lea.l   State_031F4(pc),a0               ; 031E2
+        move.l  a0,(GameState).l                ; 031E6
+        move.b  d0,(dat_071_0027D).l            ; 031EC
+l_000_031F2:
+        rts                                     ; 031F2
+State_031F4:
+        link.w  a6,#$fffa                       ; 031F4
+        move.w  (dat_071_004A6).l,d0            ; 031F8
+        tst.w   d0                              ; 031FE
+        bpl.w   l_000_0345E                     ; 03200
+        move.b  (dat_071_00276).l,d0            ; 03204
+        ext.w   d0                              ; 0320A
+        move.l  #dat_071_0011A,-$6(a6)          ; 0320C
+        clr.b   (dat_071_00165).l               ; 03214
+        lea.l   State_02EFE(pc),a0               ; 0321A
+        move.l  a0,(GameState).l                ; 0321E
+        move.w  d0,-$2(a6)                      ; 03224
+        bsr.w   h000+$3462                      ; 03228
+        move.b  (dat_071_00168).l,d0            ; 0322C
+        cmpi.b  #$ff,d0                         ; 03232
+        bne.w   l_000_0330A                     ; 03236
+        move.w  -$2(a6),d0                      ; 0323A
+        cmpi.w  #$3,d0                          ; 0323E
+        bcs.b   l_000_03290                     ; 03242
+        cmpi.w  #$8,d0                          ; 03244
+        bhi.b   l_000_03290                     ; 03248
+        moveq   #$0,d1                          ; 0324A
+        move.w  -$2(a6),d1                      ; 0324C
+        moveq   #$4,d0                          ; 03250
+        move.l  d0,-(a7)                        ; 03252
+        clr.l   -(a7)                           ; 03254
+        move.l  d1,-(a7)                        ; 03256
+        jsr     (sub_020_001F4).l               ; 03258
+        lea.l   $c(a7),a7                       ; 0325E
+        movea.l -$6(a6),a0                      ; 03262
+        addq.l  #$2,a0                          ; 03266
+        move.l  a0,-$6(a6)                      ; 03268
+        cmpi.w  #$3,-$2(a6)                     ; 0326C
+        bne.b   l_000_03280                     ; 03272
+        move.w  #$8055,(a0)                     ; 03274
+        addq.l  #$2,-$6(a6)                     ; 03278
+        bra.w   l_000_0342C                     ; 0327C
+l_000_03280:
+        movea.l -$6(a6),a0                      ; 03280
+        move.w  #$8056,(a0)                     ; 03284
+        addq.l  #$2,-$6(a6)                     ; 03288
+        bra.w   l_000_0342C                     ; 0328C
+l_000_03290:
+        move.b  (dat_071_00276).l,d0            ; 03290
+        ext.w   d0                              ; 03296
+        ext.l   d0                              ; 03298
+        cmpi.l  #$9,d0                          ; 0329A
+        beq.b   l_000_032C2                     ; 032A0
+        cmpi.l  #$7d,d0                         ; 032A2
+        bne.b   l_000_032FA                     ; 032A8
+        movea.l -$6(a6),a0                      ; 032AA
+        move.w  #$48,(a0)                       ; 032AE
+        addq.l  #$2,-$6(a6)                     ; 032B2
+        move.b  #$f0,(dat_071_00168).l          ; 032B6
+        bra.w   l_000_0342C                     ; 032BE
+l_000_032C2:
+        movea.l (ConfigBuffer).l,a0             ; 032C2
+        move.w  #$1,(a0)                        ; 032C8
+        jsr     (SaveConfig).l                  ; 032CC
+        movea.l -$6(a6),a0                      ; 032D2
+        move.w  #$4a,(a0)                       ; 032D6
+        addq.l  #$2,a0                          ; 032DA
+        move.w  #$8053,(a0)                     ; 032DC
+        addq.l  #$2,a0                          ; 032E0
+        move.b  #$1,(dat_071_001FB).l           ; 032E2
+        move.b  #$ef,(dat_071_00168).l          ; 032EA
+        move.l  a0,-$6(a6)                      ; 032F2
+        bra.w   l_000_0342C                     ; 032F6
+l_000_032FA:
+        movea.l -$6(a6),a0                      ; 032FA
+        move.w  #$41,(a0)                       ; 032FE
+        addq.l  #$2,-$6(a6)                     ; 03302
+        bra.w   l_000_0342C                     ; 03306
+l_000_0330A:
+        move.b  (dat_071_00168).l,d0            ; 0330A
+        cmpi.b  #$fe,d0                         ; 03310
+        bne.w   l_000_033FA                     ; 03314
+        move.b  (dat_071_00276).l,d0            ; 03318
+        ext.w   d0                              ; 0331E
+        ext.l   d0                              ; 03320
+        subi.l  #$4,d0                          ; 03322
+        blt.w   l_000_033CA                     ; 03328
+        cmpi.l  #$4,d0                          ; 0332C
+        bge.w   l_000_033CA                     ; 03332
+        asl.l   #$1,d0                          ; 03336
+        jmp     h000+$333C(pc,d0.l)             ; 03338
+        bra.b   l_000_03344                     ; 0333C
+        bra.b   l_000_0336C                     ; 0333E
+        bra.b   l_000_03382                     ; 03340
+        bra.b   l_000_03390                     ; 03342
+l_000_03344:
+        move.w  (FrameCount).l,d0               ; 03344
+        btst    #$0,d0                          ; 0334A
+        beq.b   l_000_0335E                     ; 0334E
+        movea.l -$6(a6),a0                      ; 03350
+        move.w  #$24,(a0)                       ; 03354
+        addq.l  #$2,-$6(a6)                     ; 03358
+        bra.b   l_000_033D6                     ; 0335C
+l_000_0335E:
+        movea.l -$6(a6),a0                      ; 0335E
+        move.w  #$25,(a0)                       ; 03362
+        addq.l  #$2,-$6(a6)                     ; 03366
+        bra.b   l_000_033D6                     ; 0336A
+l_000_0336C:
+        movea.l -$6(a6),a0                      ; 0336C
+        move.w  #$2c,(a0)                       ; 03370
+        addq.l  #$2,-$6(a6)                     ; 03374
+        move.b  #$f0,(dat_071_00168).l          ; 03378
+        bra.b   l_000_033D6                     ; 03380
+l_000_03382:
+        movea.l -$6(a6),a0                      ; 03382
+        move.w  #$33,(a0)                       ; 03386
+        addq.l  #$2,-$6(a6)                     ; 0338A
+        bra.b   l_000_033D6                     ; 0338E
+l_000_03390:
+        movea.l -$6(a6),a0                      ; 03390
+        move.w  #$39,(a0)                       ; 03394
+        addq.l  #$2,a0                          ; 03398
+        move.w  (FrameCount).l,d0               ; 0339A
+        move.l  a0,-$6(a6)                      ; 033A0
+        btst    #$0,d0                          ; 033A4
+        beq.b   l_000_033BC                     ; 033A8
+        move.w  #$803a,(a0)                     ; 033AA
+        addq.l  #$2,-$6(a6)                     ; 033AE
+        move.b  #$f0,(dat_071_00168).l          ; 033B2
+        bra.b   l_000_033D6                     ; 033BA
+l_000_033BC:
+        movea.l -$6(a6),a0                      ; 033BC
+        move.w  #$805c,(a0)                     ; 033C0
+        addq.l  #$2,-$6(a6)                     ; 033C4
+        bra.b   l_000_033D6                     ; 033C8
+l_000_033CA:
+        movea.l -$6(a6),a0                      ; 033CA
+        move.w  #$42,(a0)                       ; 033CE
+        addq.l  #$2,-$6(a6)                     ; 033D2
+l_000_033D6:
+        move.b  (dat_071_00168).l,d0            ; 033D6
+        cmpi.b  #$f0,d0                         ; 033DC
+        beq.b   l_000_0342C                     ; 033E0
+        movea.l -$6(a6),a0                      ; 033E2
+        addq.l  #$2,a0                          ; 033E6
+        move.w  #$8056,(a0)                     ; 033E8
+        addq.l  #$2,a0                          ; 033EC
+        move.w  #$8053,(a0)                     ; 033EE
+        addq.l  #$2,a0                          ; 033F2
+        move.l  a0,-$6(a6)                      ; 033F4
+        bra.b   l_000_0342C                     ; 033F8
+l_000_033FA:
+        move.b  (dat_071_00168).l,d0            ; 033FA
+        cmpi.b  #$fd,d0                         ; 03400
+        bne.b   l_000_0342C                     ; 03404
+        move.b  (dat_071_00276).l,d0            ; 03406
+        ext.w   d0                              ; 0340C
+        ext.l   d0                              ; 0340E
+        cmpi.l  #$4,d0                          ; 03410
+        bne.b   l_000_0342C                     ; 03416
+        movea.l -$6(a6),a0                      ; 03418
+        move.w  #$4c,(a0)                       ; 0341C
+        addq.l  #$2,-$6(a6)                     ; 03420
+        move.b  #$f0,(dat_071_00168).l          ; 03424
+l_000_0342C:
+        move.b  (dat_071_00168).l,d0            ; 0342C
+        cmpi.b  #$fc,d0                         ; 03432
+        bne.b   l_000_03458                     ; 03436
+        movea.l -$6(a6),a0                      ; 03438
+        move.w  #$54,(a0)                       ; 0343C
+        addq.l  #$2,a0                          ; 03440
+        move.w  #$8053,(a0)                     ; 03442
+        addq.l  #$2,a0                          ; 03446
+        move.l  a0,-$6(a6)                      ; 03448
+        jsr     (sub_000_034A0).l               ; 0344C
+        jsr     (SaveConfig).l                  ; 03452
+l_000_03458:
+        movea.l -$6(a6),a0                      ; 03458
+        clr.w   (a0)                            ; 0345C
+l_000_0345E:
+        unlk    a6                              ; 0345E
+        rts                                     ; 03460
 sub_000_03462:
         link.w  a6,#$fffc                       ; 03462
         lea.l   (dat_071_0011A).l,a0            ; 03466
@@ -3697,7 +3840,7 @@ l_000_03526:
         move.b  (Difficulty).l,(DifficultySaved).l ; 03526
         unlk    a6                              ; 03530
         rts                                     ; 03532
-sub_000_03534:
+State_03534:
         move.w  (dat_071_004A6).l,d0            ; 03534
         tst.w   d0                              ; 0353A
         bpl.b   l_000_03566                     ; 0353C
@@ -3706,14 +3849,14 @@ sub_000_03534:
         addq.l  #$4,a7                          ; 03548
         move.w  #$61,(dat_071_0011A).l          ; 0354A
         move.w  #$1f4,(dat_071_004A6).l         ; 03552
-        lea.l   sub_000_0356E(pc),a0            ; 0355A
-        move.l  a0,(dat_002_00004).l            ; 0355E
+        lea.l   State_0356E(pc),a0              ; 0355A
+        move.l  a0,(GameState).l                ; 0355E
         bra.b   l_000_0356C                     ; 03564
 l_000_03566:
         jsr     (sub_036_00892).l               ; 03566
 l_000_0356C:
         rts                                     ; 0356C
-sub_000_0356E:
+State_0356E:
         move.b  (dat_071_001B0).l,d0            ; 0356E
         tst.b   d0                              ; 03574
         bpl.b   l_000_03594                     ; 03576
@@ -3721,11 +3864,11 @@ sub_000_0356E:
         tst.w   d0                              ; 0357E
         bpl.b   l_000_03594                     ; 03580
         move.w  #$3,(dat_071_004A6).l           ; 03582
-        lea.l   sub_000_0356E(pc),a0            ; 0358A
-        move.l  a0,(dat_002_00004).l            ; 0358E
+        lea.l   State_0356E(pc),a0              ; 0358A
+        move.l  a0,(GameState).l                ; 0358E
 l_000_03594:
         rts                                     ; 03594
-sub_000_03596:
+State_03596:
         move.w  (dat_071_004A6).l,d0            ; 03596
         tst.w   d0                              ; 0359C
         bpl.b   l_000_035C0                     ; 0359E
@@ -3733,14 +3876,14 @@ sub_000_03596:
         bsr.w   sub_000_03C1C                   ; 035A6
         addq.l  #$4,a7                          ; 035AA
         move.w  #$f,(dat_071_0011A).l           ; 035AC
-        lea.l   sub_000_035C8(pc),a0            ; 035B4
-        move.l  a0,(dat_002_00004).l            ; 035B8
+        lea.l   State_035C8(pc),a0              ; 035B4
+        move.l  a0,(GameState).l                ; 035B8
         bra.b   l_000_035C6                     ; 035BE
 l_000_035C0:
         jsr     (sub_036_00892).l               ; 035C0
 l_000_035C6:
         rts                                     ; 035C6
-sub_000_035C8:
+State_035C8:
         tst.b   (dat_071_00173).l               ; 035C8
         beq.b   l_000_03620                     ; 035CE
         move.l  #$1f0000,(dat_071_00038).l      ; 035D0
@@ -3754,11 +3897,11 @@ sub_000_035C8:
         move.w  #$5,(dat_071_004A6).l           ; 03602
         clr.b   (dat_071_00276).l               ; 0360A
         jsr     (LoadConfig).l                  ; 03610
-        lea.l   h000+$3622(pc),a0               ; 03616
-        move.l  a0,(dat_002_00004).l            ; 0361A
+        lea.l   State_03622(pc),a0               ; 03616
+        move.l  a0,(GameState).l                ; 0361A
 l_000_03620:
         rts                                     ; 03620
-sub_000_03622:
+State_03622:
         link.w  a6,#$fffc                       ; 03622
         jsr     (sub_036_00892).l               ; 03626
         move.w  #$5,(dat_071_004A6).l           ; 0362C
@@ -3767,16 +3910,16 @@ sub_000_03622:
         bne.b   l_000_0365A                     ; 0363C
         jsr     (LoadConfig).l                  ; 0363E
         move.b  #$ff,(dat_071_001A5).l          ; 03644
-        lea.l   sub_000_0370A(pc),a0            ; 0364C
-        move.l  a0,(dat_002_00004).l            ; 03650
+        lea.l   State_0370A(pc),a0              ; 0364C
+        move.l  a0,(GameState).l                ; 03650
         bra.w   l_000_036EA                     ; 03656
 l_000_0365A:
         move.w  (dat_071_002F8).l,d0            ; 0365A
         tst.w   d0                              ; 03660
         bne.b   l_000_03676                     ; 03662
         clr.b   (dat_071_001A3).l               ; 03664
-        lea.l   sub_000_0370A(pc),a0            ; 0366A
-        move.l  a0,(dat_002_00004).l            ; 0366E
+        lea.l   State_0370A(pc),a0              ; 0366A
+        move.l  a0,(GameState).l                ; 0366E
         bra.b   l_000_036EA                     ; 03674
 l_000_03676:
         pea.l   (dat_021_00000).l               ; 03676
@@ -3811,20 +3954,21 @@ l_000_036CE:
         addq.l  #$2,-$4(a6)                     ; 036D6
         movea.l -$4(a6),a0                      ; 036DA
         clr.w   (a0)                            ; 036DE
-        lea.l   dat_000_036EE(pc),a0            ; 036E0
-        move.l  a0,(dat_002_00004).l            ; 036E4
+        lea.l   State_036EE(pc),a0              ; 036E0
+        move.l  a0,(GameState).l                ; 036E4
 l_000_036EA:
         unlk    a6                              ; 036EA
         rts                                     ; 036EC
-dat_000_036EE:
-	dc.b	$10,$39
-        dc.l    dat_071_001A3                   ; 036F0
-	dc.b	$4A,$00,$66,$10,$4E,$B9
-        dc.l    sub_036_00892                   ; 036FA
-	dc.b	$41,$FA,$FF,$22,$23,$C8
-        dc.l    dat_002_00004                   ; 03704
-	dc.b	$4E,$75
-sub_000_0370A:
+State_036EE:
+        move.b  (dat_071_001A3).l,d0            ; 036EE
+        tst.b   d0                              ; 036F4
+        bne.b   l_000_03708                     ; 036F6
+        jsr     (sub_036_00892).l               ; 036F8
+        lea.l   State_03622(pc),a0               ; 036FE
+        move.l  a0,(GameState).l                ; 03702
+l_000_03708:
+        rts                                     ; 03708
+State_0370A:
         link.w  a6,#$fff6                       ; 0370A
         move.w  (dat_071_002F8).l,d0            ; 0370E
         tst.w   d0                              ; 03714
@@ -3844,8 +3988,8 @@ sub_000_0370A:
         cmpi.w  #$0,d0                          ; 03752
         bhi.b   l_000_0376C                     ; 03756
         move.w  #$1,(dat_071_0011A).l           ; 03758
-        lea.l   h000+$37EA(pc),a0               ; 03760
-        move.l  a0,(dat_002_00004).l            ; 03764
+        lea.l   State_037EA(pc),a0               ; 03760
+        move.l  a0,(GameState).l                ; 03764
         bra.b   l_000_037E6                     ; 0376A
 l_000_0376C:
         move.w  #$2,(dat_071_0011A).l           ; 0376C
@@ -3872,35 +4016,38 @@ l_000_03798:
         addq.w  #$1,-$2(a6)                     ; 037BC
         bra.b   l_000_03798                     ; 037C0
 l_000_037C2:
-        lea.l   h000+$3800(pc),a0               ; 037C2
-        move.l  a0,(dat_002_00004).l            ; 037C6
+        lea.l   State_03800(pc),a0               ; 037C2
+        move.l  a0,(GameState).l                ; 037C6
         bra.b   l_000_037E6                     ; 037CC
 l_000_037CE:
         jsr     (sub_036_00892).l               ; 037CE
         bra.b   l_000_037E6                     ; 037D4
 l_000_037D6:
         jsr     (sub_000_03462).l               ; 037D6
-        move.l  #sub_000_01D30,(dat_002_00004).l ; 037DC
+        move.l  #State_01D30,(GameState).l      ; 037DC
 l_000_037E6:
         unlk    a6                              ; 037E6
         rts                                     ; 037E8
+State_037EA:
         move.b  (dat_071_001B0).l,d0            ; 037EA
         tst.b   d0                              ; 037F0
         bpl.b   l_000_037FE                     ; 037F2
-        lea.l   h000+$381E(pc),a0               ; 037F4
-        move.l  a0,(dat_002_00004).l            ; 037F8
+        lea.l   State_0381E(pc),a0               ; 037F4
+        move.l  a0,(GameState).l                ; 037F8
 l_000_037FE:
         rts                                     ; 037FE
+State_03800:
         move.b  (dat_071_001B0).l,d0            ; 03800
         tst.b   d0                              ; 03806
         bmi.b   l_000_03812                     ; 03808
         tst.b   (dat_071_00173).l               ; 0380A
         beq.b   l_000_0381C                     ; 03810
 l_000_03812:
-        lea.l   h000+$381E(pc),a0               ; 03812
-        move.l  a0,(dat_002_00004).l            ; 03816
+        lea.l   State_0381E(pc),a0               ; 03812
+        move.l  a0,(GameState).l                ; 03816
 l_000_0381C:
         rts                                     ; 0381C
+State_0381E:
         jsr     (sub_000_03462).l               ; 0381E
         move.w  #$5,(dat_071_004A6).l           ; 03824
         movea.l (ConfigBuffer).l,a0             ; 0382C
@@ -3911,11 +4058,11 @@ l_000_0381C:
         clr.b   (dat_071_00193).l               ; 03844
         move.b  #$2,(dat_071_001B0).l           ; 0384A
         move.b  #$14,(dat_071_001C5).l          ; 03852
-        lea.l   h000+$3888(pc),a0               ; 0385A
-        move.l  a0,(dat_002_00004).l            ; 0385E
+        lea.l   State_03888(pc),a0               ; 0385A
+        move.l  a0,(GameState).l                ; 0385E
         bra.b   l_000_03870                     ; 03864
 l_000_03866:
-        move.l  #sub_000_01D30,(dat_002_00004).l ; 03866
+        move.l  #State_01D30,(GameState).l      ; 03866
 l_000_03870:
         movea.l (ConfigBuffer).l,a0             ; 03870
         move.w  $4(a0),d0                       ; 03876
@@ -3923,26 +4070,27 @@ l_000_03870:
         movea.l (ConfigBuffer).l,a0             ; 0387C
         move.w  d0,$4(a0)                       ; 03882
         rts                                     ; 03886
+State_03888:
         move.b  (dat_071_001B0).l,d0            ; 03888
         tst.b   d0                              ; 0388E
         bpl.b   l_000_038AA                     ; 03890
         jsr     (sub_000_03462).l               ; 03892
         move.w  #$5,(dat_071_004A6).l           ; 03898
-        move.l  #sub_000_01D30,(dat_002_00004).l ; 038A0
+        move.l  #State_01D30,(GameState).l      ; 038A0
 l_000_038AA:
         rts                                     ; 038AA
         move.w  (dat_071_004A6).l,d0            ; 038AC
         tst.w   d0                              ; 038B2
         bpl.b   l_000_038C8                     ; 038B4
         clr.w   (FrameCount).l                  ; 038B6
-        move.l  #sub_000_02EFE,(dat_002_00004).l ; 038BC
+        move.l  #State_02EFE,(GameState).l      ; 038BC
         bra.b   l_000_038D6                     ; 038C6
 l_000_038C8:
         move.b  #$1,(dat_071_00165).l           ; 038C8
         jsr     (sub_000_03462).l               ; 038D0
 l_000_038D6:
         rts                                     ; 038D6
-sub_000_038D8:
+State_038D8:
         move.b  (dat_071_00155).l,d0            ; 038D8
         tst.b   d0                              ; 038DE
         bne.b   l_000_038EC                     ; 038E0
@@ -3976,65 +4124,69 @@ l_000_03902:
         jsr     (sub_036_00892).l               ; 03954
         move.w  #$5,(dat_071_004A6).l           ; 0395A
         clr.b   (dat_071_00165).l               ; 03962
-        lea.l   dat_000_039F0(pc),a0            ; 03968
-        move.l  a0,(dat_002_00004).l            ; 0396C
+        lea.l   State_039F0(pc),a0              ; 03968
+        move.l  a0,(GameState).l                ; 0396C
         bra.b   l_000_0397E                     ; 03972
 l_000_03974:
-        lea.l   dat_000_03980(pc),a0            ; 03974
-        move.l  a0,(dat_002_00004).l            ; 03978
+        lea.l   State_03980(pc),a0              ; 03974
+        move.l  a0,(GameState).l                ; 03978
 l_000_0397E:
         rts                                     ; 0397E
-dat_000_03980:
-	dc.b	$70,$00,$13,$C0
-        dc.l    dat_071_0026A                   ; 03984
-	dc.b	$30,$39
-        dc.l    Player_02                       ; 0398A
-	dc.b	$00,$40,$00,$02,$33,$C0
-        dc.l    Player_02                       ; 03994
-	dc.b	$10,$39
-        dc.l    dat_071_00155                   ; 0399A
-	dc.b	$4A,$00,$66,$06,$4E,$B9
-        dc.l    sub_005_00CEE                   ; 039A4
-	dc.b	$4E,$B9
-        dc.l    sub_004_003E8                   ; 039AA
-	dc.b	$33,$FC,$00,$05
-        dc.l    dat_071_004A6                   ; 039B2
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 039BC
-	dc.b	$4E,$75,$30,$39
-        dc.l    dat_071_004A6                   ; 039C4
-	dc.b	'J@j"09'
-        dc.l    dat_071_0029C                   ; 039CE
-	dc.b	$00,$40,$00,$40,$33,$C0
-        dc.l    dat_071_0029C                   ; 039D8
-	dc.b	$13,$FC,$00,$FE
-        dc.l    dat_071_00280                   ; 039E0
-	dc.b	$23,$FC
-        dc.l    sub_000_02EFE                   ; 039E6
-        dc.l    dat_002_00004                   ; 039EA
-	dc.b	$4E,$75
-dat_000_039F0:
-	dc.b	$30,$39
-        dc.l    dat_071_004A6                   ; 039F2
-	dc.b	'J@j:Hy'
-        dc.l    dat_021_00000                   ; 039FC
-	dc.b	$61,$00,$02,$1A,$58,$8F,$10,$39
-        dc.l    dat_071_00219                   ; 03A08
-	dc.b	$0C,$00,$00,$10,$66,$0A,$33,$FC,$00,$62
-        dc.l    dat_071_0011A                   ; 03A16
-	dc.b	$60,$08,$33,$FC,$00,$63
-        dc.l    dat_071_0011A                   ; 03A20
-	dc.b	$42,$39
-        dc.l    dat_071_001FB                   ; 03A26
-	dc.b	$41,$FA,$00,$0A,$23,$C8
-        dc.l    dat_002_00004                   ; 03A30
-	dc.b	$4E,$75,$10,$39
-        dc.l    dat_071_001B0                   ; 03A38
-	dc.b	$4A,$00,$6A,$0A,$23,$FC
-        dc.l    sub_000_01A70                   ; 03A42
-        dc.l    dat_002_00004                   ; 03A46
-	dc.b	$4E,$75
-sub_000_03A4C:
+State_03980:
+        moveq   #$0,d0                          ; 03980
+        move.b  d0,(dat_071_0026A).l            ; 03982
+        move.w  (Player_02).l,d0                ; 03988
+        ori.w   #$2,d0                          ; 0398E
+        move.w  d0,(Player_02).l                ; 03992
+        move.b  (dat_071_00155).l,d0            ; 03998
+        tst.b   d0                              ; 0399E
+        bne.b   l_000_039A8                     ; 039A0
+        jsr     (sub_005_00CEE).l               ; 039A2
+l_000_039A8:
+        jsr     (sub_004_003E8).l               ; 039A8
+        move.w  #$5,(dat_071_004A6).l           ; 039AE
+        lea.l   State_039C2(pc),a0               ; 039B6
+        move.l  a0,(GameState).l                ; 039BA
+        rts                                     ; 039C0
+State_039C2:
+        move.w  (dat_071_004A6).l,d0            ; 039C2
+        tst.w   d0                              ; 039C8
+        bpl.b   l_000_039EE                     ; 039CA
+        move.w  (dat_071_0029C).l,d0            ; 039CC
+        ori.w   #$40,d0                         ; 039D2
+        move.w  d0,(dat_071_0029C).l            ; 039D6
+        move.b  #$fe,(dat_071_00280).l          ; 039DC
+        move.l  #State_02EFE,(GameState).l      ; 039E4
+l_000_039EE:
+        rts                                     ; 039EE
+State_039F0:
+        move.w  (dat_071_004A6).l,d0            ; 039F0
+        tst.w   d0                              ; 039F6
+        bpl.b   l_000_03A34                     ; 039F8
+        pea.l   (dat_021_00000).l               ; 039FA
+        bsr.w   h000+$3C1C                      ; 03A00
+        addq.l  #$4,a7                          ; 03A04
+        move.b  (dat_071_00219).l,d0            ; 03A06
+        cmpi.b  #$10,d0                         ; 03A0C
+        bne.b   l_000_03A1C                     ; 03A10
+        move.w  #$62,(dat_071_0011A).l          ; 03A12
+        bra.b   l_000_03A24                     ; 03A1A
+l_000_03A1C:
+        move.w  #$63,(dat_071_0011A).l          ; 03A1C
+l_000_03A24:
+        clr.b   (dat_071_001FB).l               ; 03A24
+        lea.l   State_03A36(pc),a0               ; 03A2A
+        move.l  a0,(GameState).l                ; 03A2E
+l_000_03A34:
+        rts                                     ; 03A34
+State_03A36:
+        move.b  (dat_071_001B0).l,d0            ; 03A36
+        tst.b   d0                              ; 03A3C
+        bpl.b   l_000_03A4A                     ; 03A3E
+        move.l  #State_01A70,(GameState).l      ; 03A40
+l_000_03A4A:
+        rts                                     ; 03A4A
+State_03A4C:
         move.b  (dat_071_001B0).l,d0            ; 03A4C
         tst.b   d0                              ; 03A52
         bpl.b   l_000_03A82                     ; 03A54
@@ -4044,21 +4196,21 @@ sub_000_03A4C:
         andi.w  #$9fff,d0                       ; 03A66
         move.w  d0,(dat_071_0029C).l            ; 03A6A
         move.w  #$64,(dat_071_004A6).l          ; 03A70
-        lea.l   sub_000_03A84(pc),a0            ; 03A78
-        move.l  a0,(dat_002_00004).l            ; 03A7C
+        lea.l   State_03A84(pc),a0              ; 03A78
+        move.l  a0,(GameState).l                ; 03A7C
 l_000_03A82:
         rts                                     ; 03A82
-sub_000_03A84:
+State_03A84:
         move.w  (dat_071_004A6).l,d0            ; 03A84
         tst.w   d0                              ; 03A8A
         bpl.b   l_000_03AA6                     ; 03A8C
         moveq   #$0,d0                          ; 03A8E
         move.b  d0,(dat_071_001FA).l            ; 03A90
         move.b  d0,(dat_071_00168).l            ; 03A96
-        move.l  #sub_000_01A70,(dat_002_00004).l ; 03A9C
+        move.l  #State_01A70,(GameState).l      ; 03A9C
 l_000_03AA6:
         rts                                     ; 03AA6
-sub_000_03AA8:
+State_03AA8:
         move.b  (dat_071_001B0).l,d0            ; 03AA8
         tst.b   d0                              ; 03AAE
         bpl.b   l_000_03AE0                     ; 03AB0
@@ -4068,8 +4220,8 @@ sub_000_03AA8:
         andi.w  #$9fff,d0                       ; 03AC2
         move.w  d0,(dat_071_0029C).l            ; 03AC6
         move.w  #$64,(dat_071_004A6).l          ; 03ACC
-        lea.l   sub_000_03B24(pc),a0            ; 03AD4
-        move.l  a0,(dat_002_00004).l            ; 03AD8
+        lea.l   State_03B24(pc),a0              ; 03AD4
+        move.l  a0,(GameState).l                ; 03AD8
         bra.b   l_000_03B22                     ; 03ADE
 l_000_03AE0:
         move.b  (dat_071_001FA).l,d0            ; 03AE0
@@ -4078,18 +4230,18 @@ l_000_03AE0:
         moveq   #$0,d0                          ; 03AEC
         move.b  d0,(dat_071_001FA).l            ; 03AEE
         move.b  d0,(dat_071_001FB).l            ; 03AF4
-        move.l  #sub_000_01A70,(dat_002_00004).l ; 03AFA
+        move.l  #State_01A70,(GameState).l      ; 03AFA
         bra.b   l_000_03B22                     ; 03B04
 l_000_03B06:
         move.b  (dat_071_001FA).l,d0            ; 03B06
         subq.b  #$1,d0                          ; 03B0C
         bne.b   l_000_03B22                     ; 03B0E
         move.w  #$ffff,(dat_071_004A6).l        ; 03B10
-        lea.l   sub_000_03B24(pc),a0            ; 03B18
-        move.l  a0,(dat_002_00004).l            ; 03B1C
+        lea.l   State_03B24(pc),a0              ; 03B18
+        move.l  a0,(GameState).l                ; 03B1C
 l_000_03B22:
         rts                                     ; 03B22
-sub_000_03B24:
+State_03B24:
         move.w  (dat_071_004A6).l,d0            ; 03B24
         tst.w   d0                              ; 03B2A
         bpl.b   l_000_03B74                     ; 03B2C
@@ -4105,21 +4257,21 @@ l_000_03B4C:
         moveq   #$0,d0                          ; 03B5C
         move.b  d0,(dat_071_00165).l            ; 03B5E
         move.b  d0,(dat_071_00271).l            ; 03B64
-        move.l  #sub_000_01A96,(dat_002_00004).l ; 03B6A
+        move.l  #State_01A96,(GameState).l      ; 03B6A
 l_000_03B74:
         rts                                     ; 03B74
-sub_000_03B76:
+State_03B76:
         clr.b   (dat_071_00165).l               ; 03B76
         move.b  (dat_071_00270).l,d0            ; 03B7C
         move.b  (dat_071_00271).l,d1            ; 03B82
         cmp.b   d1,d0                           ; 03B88
         bne.b   l_000_03B9E                     ; 03B8A
         move.w  #$26,(dat_071_0011A).l          ; 03B8C
-        lea.l   sub_000_03BA0(pc),a0            ; 03B94
-        move.l  a0,(dat_002_00004).l            ; 03B98
+        lea.l   State_03BA0(pc),a0              ; 03B94
+        move.l  a0,(GameState).l                ; 03B98
 l_000_03B9E:
         rts                                     ; 03B9E
-sub_000_03BA0:
+State_03BA0:
         move.b  (dat_071_0017E).l,d0            ; 03BA0
         tst.b   d0                              ; 03BA6
         bmi.b   l_000_03C1A                     ; 03BA8
@@ -4129,7 +4281,7 @@ sub_000_03BA0:
         move.b  (dat_071_0027E).l,d0            ; 03BC0
         subq.b  #$6,d0                          ; 03BC6
         bne.b   l_000_03BD6                     ; 03BC8
-        move.l  #sub_000_02D58,(dat_002_00004).l ; 03BCA
+        move.l  #State_02D58,(GameState).l      ; 03BCA
         bra.b   l_000_03C1A                     ; 03BD4
 l_000_03BD6:
         jsr     (ReadTime).l                    ; 03BD6
@@ -4144,7 +4296,7 @@ l_000_03BD6:
         add.l   d0,(dat_071_002DC).l            ; 03C04
 l_000_03C0A:
         clr.l   (dat_071_002D4).l               ; 03C0A
-        move.l  #sub_000_02EFE,(dat_002_00004).l ; 03C10
+        move.l  #State_02EFE,(GameState).l      ; 03C10
 l_000_03C1A:
         rts                                     ; 03C1A
 sub_000_03C1C:

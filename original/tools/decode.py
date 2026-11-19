@@ -26,6 +26,31 @@ def files():
         os.path.join(ROOT, 'src', f) for f in os.listdir(os.path.join(ROOT, 'src')) if f.endswith('.s'))
 
 
+def dcb_bytes(text):
+    """The bytes of a dc.b operand list: numbers and quoted strings ('' is a quote)."""
+    out, i, text = bytearray(), 0, text.strip()
+    while i < len(text):
+        if text[i] in ' \t,':
+            i += 1
+        elif text[i] in '\'"':
+            q, i = text[i], i + 1
+            while i < len(text):
+                if text[i] == q and i + 1 < len(text) and text[i + 1] == q:
+                    out.append(ord(q)); i += 2
+                elif text[i] == q:
+                    i += 1
+                    break
+                else:
+                    out += text[i].encode('latin-1'); i += 1
+        else:
+            j = i
+            while j < len(text) and text[j] not in ',':
+                j += 1
+            out.append(num(text[i:j]))
+            i = j
+    return bytes(out)
+
+
 def num(tok):
     tok = tok.strip()
     return int(tok[1:], 16) if tok.startswith('$') else int(tok)
@@ -66,9 +91,7 @@ def main():
             rel[len(data)] = s.split(None, 1)[1].strip()
             data += (PLACEHOLDER + len(rel)).to_bytes(4, 'big')   # a value to find in the operands
         elif s.startswith('dc.b'):
-            for t in re.findall(r"'[^']*'|[^,]+", s[4:]):
-                t = t.strip()
-                data += t[1:-1].encode('latin-1') if t.startswith("'") else bytes([num(t)])
+            data += dcb_bytes(code.split('dc.b', 1)[1])
         elif s.startswith('dc.w'):
             for t in s[4:].split(','):
                 data += num(t).to_bytes(2, 'big')
