@@ -1,12 +1,14 @@
 ; F/A-18 Interceptor - hunk 27 (code)
-; Data: a table used by hunks 17, 18, 26 and 30 (not worked out yet)
+; Routes: the computer aircraft's routes (waypoints).
 ; Included by ../f18_main.s.
 
 ;===============================================================================
 ; Hunk 27: CODE, $918 bytes
 ;===============================================================================
 	CODE_HUNK	h027
-dat_027_00000:
+; Routes - The computer aircraft's routes: a word offset for each route, then its waypoints
+; (map cell X, Z, position in the cell X, Z: words; a height), ending with a negative word.
+Routes:
 	dc.b	$00,$00,$04,$40,$04,$60,$04,$76,$04,$8C,$07,$42,$07,$62,$07,$78
 	dc.b	$07,$8E,$01,$DC,$08,$C8,$08,$DC,$08,$F0,$09,$04,$09,$0E,$08,$FA
 	dc.b	$08,$D2,$08,$E6,$05,$84,$05,$A4,$04,$40,$05,$7A,$05,$9A,$02,$88

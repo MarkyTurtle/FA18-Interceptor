@@ -1973,7 +1973,7 @@ dat_071_00B52:
 ; records of 512 bytes, $00B54-$02B53 (an object's offset = its number << 9). What is known:
 ;   +$00 w  flags ($2000 throttle at full, $0008 probably the afterburner, $0400 spent...)
 ;                                       +$01 b  bit 6 the object exists, bit 4 in a cell being drawn
-;   +$03 b  bit 7   +$05 b  state (0, 1, 6, 8, $A...)   +$06 w  map cell X   +$08 w  map cell Z
+;   +$03 b  bit 7   +$05 b  state (the computer pilot's: 1 pull up, 8 route...)   +$06 w  map cell X   +$08 w  map cell Z
 ;   +$0A b  sub-cell                    +$10 l
 ;   +$14 l  position X (low 22 bits: inside the cell)   +$18 l  Y (height; negative is up)
 ;   +$1C l  position Z (low 22 bits: inside the cell)   +$26 w  (a missile: $14 at launch)
@@ -1992,7 +1992,7 @@ dat_071_00B52:
 ;   +$80-$90 w  a 3 x 3 rotation matrix made from them (2.14)
 ;   +$6C w  speed   +$6E w  the speed flown (+$6C + +$78)   +$76 w  lift / sink (vertical velocity)
 ;   +$78 w  speed lost climbing / gained diving (ClimbDivePhysics)
-;   +$78 w, +$7E w   +$71 b   +$72 l  fuel (6,400,000 at the start)
+;   +$7E w  ($1400 for a computer aircraft)   +$71 b   +$72 l  fuel (6,400,000 at the start)
 ;   +$7C b  bit 7
 ;   +$92-$A2 w  the opposite rotation (from the negated angles; rows at +$92, +$98, +$9E)
 ObjectTable:

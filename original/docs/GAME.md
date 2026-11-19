@@ -141,8 +141,12 @@ the objects in a cell. Distances to objects are taken relative to the viewer's c
 Each frame `UpdateObject` (hunk 22) does one object's work:
 
 * its destroyed / crashed states (flags in `+$00`, the timer `+$4C`);
-* the **computer pilot** for an aircraft other than the player (`sub_030_0089A`): it reads the
-  aircraft's matrices to see where things are in its own axes, and sets its control bits;
+* the **computer pilot** for an aircraft other than the player (`ComputerPilot`, hunk 30): a
+  state machine - the aircraft's state (`+$05`) picks a handler (`PilotStates`) - that steers
+  towards a destination (a map cell, a position in it and a height: `+$2C`-`+$34`), reading the
+  aircraft's matrices to see where it lies in the aircraft's own axes, and flies by setting the
+  aircraft's control bits like a player would. In some missions an aircraft follows a route of
+  waypoints (`Routes`, hunk 27); one sinking too near the ground for its speed pulls up first;
 * for the player, `PlayerFrameControls`: the control bits from the stick, or from the recording
   in a replay; and the warnings from the attitude and sink rate;
 * `UpdateAttitude` (hunk 32): an aircraft (type `$1x`) turns by **rotation rates**: its matrix
@@ -269,7 +273,8 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
 * What speed the throttle gives (the target of `+$6C`), the afterburner, the fuel use, and what
   sets `FlightPhysics` (a game option, probably).
 * The countermeasures (flares, chaff), damage, ejecting, landing on the carrier.
-* The computer pilots (hunk 30) and the missions (setting them up, success and failure).
+* The computer pilots' states one by one (hunk 30), their attacks and firing; the missions
+  (setting them up, success and failure).
 * The 3D pipeline (hunks 13-15) and the model format (hunks 41-58).
 * The ground, sky and scenery; the map and what is in each cell.
 * The head-up display and instruments (hunks 38-40).

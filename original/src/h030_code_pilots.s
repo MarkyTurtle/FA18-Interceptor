@@ -1,13 +1,15 @@
 ; F/A-18 Interceptor - hunk 30 (code)
-; Steering from the orientation matrices, setting the control bits (+$65): probably the
-; computer pilots.
+; ComputerPilot: the computer aircraft's pilots (a state machine steering towards a destination
+; or along a route, setting the control bits).
 ; Included by ../f18_main.s.
 
 ;===============================================================================
 ; Hunk 30: CODE, $11A0 bytes
 ;===============================================================================
 	CODE_HUNK	h030
-dat_030_00000:
+; PilotStates - The computer pilot's state handlers: one routine for each state (+$05) of an
+; aircraft.
+PilotStates:
         dc.l    l_030_00992                     ; 00000
         dc.l    l_030_00696                     ; 00004
         dc.l    sub_030_0070C                   ; 00008
@@ -611,7 +613,16 @@ l_030_00892:
 l_030_00896:
         unlk    a6                              ; 00896
         rts                                     ; 00898
-sub_030_0089A:
+
+;-------------------------------------------------------------------------------
+; ComputerPilot - Flies a computer aircraft (a1) for the frame, by setting its control bits:
+; its state (+$05) chooses what it does, through PilotStates (state - 1). It steers towards its
+; destination: map cell +$2C / +$2E, position in the cell +$30 / +$32, height +$34. In mode 5
+; (dat_071_00276) an aircraft follows a route (Routes, number +$3A): each waypoint is loaded
+; into the destination in turn (state 8). An aircraft sinking too near the ground for its speed
+; (height under speed x 64) goes into state 1 for 30 frames (pulls up).
+;-------------------------------------------------------------------------------
+ComputerPilot:
         link.w  a6,#$ffd4                       ; 0089A
         move.b  $62(a1),d0                      ; 0089E
         andi.b  #$f0,d0                         ; 008A2
@@ -661,7 +672,7 @@ l_030_00916:
         moveq   #$0,d0                          ; 0093C
         move.b  $3a(a1),d0                      ; 0093E
         add.w   d0,d0                           ; 00942
-        lea.l   (dat_027_00000).l,a4            ; 00944
+        lea.l   (Routes).l,a4                   ; 00944
         adda.w  (a4,d0.w),a4                    ; 0094A
         tst.w   (a4)                            ; 0094E
         blt.b   l_030_00966                     ; 00950
@@ -675,7 +686,7 @@ l_030_00966:
         ext.w   d0                              ; 00968
         add.w   d0,d0                           ; 0096A
         add.w   d0,d0                           ; 0096C
-        lea.l   dat_030_00000(pc),a0            ; 0096E
+        lea.l   PilotStates(pc),a0              ; 0096E
         movea.l (a0,d0.w),a0                    ; 00972
         jmp     (a0)                            ; 00976
 l_030_00978:

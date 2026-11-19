@@ -247,7 +247,7 @@ sub_018_0035E:
         moveq   #$0,d0                          ; 0035E
         move.b  $3a(a1),d0                      ; 00360
         add.w   d0,d0                           ; 00364
-        lea.l   (dat_027_00000).l,a4            ; 00366
+        lea.l   (Routes).l,a4                   ; 00366
         adda.w  (a4,d0.w),a4                    ; 0036C
         movem.w (a4)+,d2-d6                     ; 00370
         move.w  d2,$2c(a1)                      ; 00374

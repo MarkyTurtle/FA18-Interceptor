@@ -170,7 +170,7 @@ l_022_001EC:
         beq.w   l_022_0031E                     ; 001F6
         tst.w   (CurrentObject).l               ; 001FA
         beq.b   l_022_00208                     ; 00200
-        jsr     (sub_030_0089A).l               ; 00202
+        jsr     (ComputerPilot).l               ; 00202
 l_022_00208:
         jsr     (PlayerFrameControls).l         ; 00208
         tst.w   (CurrentObject).l               ; 0020E

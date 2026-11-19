@@ -1160,7 +1160,7 @@ UpdateMissile:
         moveq   #$0,d0                          ; 0104A
         move.b  $3a(a1),d0                      ; 0104C
         add.w   d0,d0                           ; 01050
-        lea.l   (dat_027_00000).l,a4            ; 01052
+        lea.l   (Routes).l,a4                   ; 01052
         adda.w  (a4,d0.w),a4                    ; 01058
 l_017_0105C:
         move.l  (a4),d0                         ; 0105C
@@ -1719,7 +1719,7 @@ l_017_016A2:
         bra.b   l_017_01654                     ; 016B0
 l_017_016B2:
         move.w  $6(a3),d2                       ; 016B2
-        lea.l   (dat_027_00000).l,a4            ; 016B6
+        lea.l   (Routes).l,a4                   ; 016B6
         adda.w  (a4,d2.w),a4                    ; 016BC
         movem.w (a4)+,d2-d6                     ; 016C0
         move.w  d2,$2c(a1)                      ; 016C4

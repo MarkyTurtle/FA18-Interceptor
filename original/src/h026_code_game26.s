@@ -90,7 +90,7 @@ sub_026_000E0:
         andi.w  #$7f00,d1                       ; 000E8
         beq.w   l_026_001A2                     ; 000EC
         asr.w   #$7,d1                          ; 000F0
-        lea.l   (dat_027_00000).l,a4            ; 000F2
+        lea.l   (Routes).l,a4                   ; 000F2
         adda.w  (a4,d1.w),a4                    ; 000F8
         movem.w (a4)+,d2-d6                     ; 000FC
         bsr.w   sub_026_007F6                   ; 00100
@@ -259,7 +259,7 @@ l_026_002EE:
         move.w  (a2)+,d1                        ; 002F6
         move.w  (a2)+,d2                        ; 002F8
         addq.w  #$2,a2                          ; 002FA
-        lea.l   (dat_027_00000).l,a4            ; 002FC
+        lea.l   (Routes).l,a4                   ; 002FC
         adda.w  (a4,d2.w),a4                    ; 00302
         movem.w (a4)+,d2-d5                     ; 00306
         move.w  d1,d6                           ; 0030A
@@ -295,7 +295,7 @@ l_026_0035A:
         andi.w  #$7f00,d6                       ; 0035E
         beq.b   l_026_003D6                     ; 00362
         asr.w   #$7,d6                          ; 00364
-        lea.l   (dat_027_00000).l,a4            ; 00366
+        lea.l   (Routes).l,a4                   ; 00366
         adda.w  (a4,d6.w),a4                    ; 0036C
         movem.w (a4)+,d2-d6                     ; 00370
         bsr.w   sub_026_007F6                   ; 00374
@@ -435,7 +435,7 @@ l_026_004D4:
         lsr.w   #$8,d2                          ; 004FA
         move.b  d2,$3a(a0)                      ; 004FC
         move.w  (a2)+,d2                        ; 00500
-        lea.l   (dat_027_00000).l,a4            ; 00502
+        lea.l   (Routes).l,a4                   ; 00502
         adda.w  (a4,d2.w),a4                    ; 00508
         move.w  (a2)+,d2                        ; 0050C
         move.w  d2,d3                           ; 0050E
@@ -526,7 +526,7 @@ l_026_00600:
         andi.w  #$7f00,d1                       ; 00604
         beq.b   l_026_0062E                     ; 00608
         asr.w   #$7,d1                          ; 0060A
-        lea.l   (dat_027_00000).l,a4            ; 0060C
+        lea.l   (Routes).l,a4                   ; 0060C
         adda.w  (a4,d1.w),a4                    ; 00612
         move.w  (a4)+,$2c(a0)                   ; 00616
         move.w  (a4)+,$2e(a0)                   ; 0061A
@@ -648,7 +648,7 @@ l_026_00776:
         move.w  (a3)+,d1                        ; 00778
         move.w  (a3)+,d2                        ; 0077A
         addq.w  #$2,a3                          ; 0077C
-        lea.l   (dat_027_00000).l,a4            ; 0077E
+        lea.l   (Routes).l,a4                   ; 0077E
         adda.w  (a4,d2.w),a4                    ; 00784
         movem.w (a4)+,d2-d6                     ; 00788
         andi.w  #$7f,d1                         ; 0078C
@@ -668,7 +668,7 @@ l_026_007A6:
         move.w  (a3)+,d1                        ; 007A8
         move.w  (a3)+,d2                        ; 007AA
         addq.w  #$2,a3                          ; 007AC
-        lea.l   (dat_027_00000).l,a4            ; 007AE
+        lea.l   (Routes).l,a4                   ; 007AE
         adda.w  (a4,d2.w),a4                    ; 007B4
         movem.w (a4)+,d2-d6                     ; 007B8
         andi.w  #$7f,d1                         ; 007BC

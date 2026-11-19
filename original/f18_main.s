@@ -327,8 +327,8 @@
 ;         and 17).
 	include	"src/h026_code_game26.s"
 
-; Hunk 27: Data: a table used by hunks 17, 18, 26 and 30 (not worked out yet)
-	include	"src/h027_code_table27.s"
+; Hunk 27: Routes: the computer aircraft's routes (waypoints).
+	include	"src/h027_code_routes.s"
 
 ; Hunk 28: Game logic not yet identified (uses the gun sound's variables; called by GameFrame).
 	include	"src/h028_code_game28.s"
@@ -336,8 +336,8 @@
 ; Hunk 29: Game logic not yet identified (objects, the camera, the game modes).
 	include	"src/h029_code_game29.s"
 
-; Hunk 30: Steering from the orientation matrices, setting the control bits (+$65): probably
-;         the computer pilots.
+; Hunk 30: ComputerPilot: the computer aircraft's pilots (a state machine steering towards a
+;         destination or along a route, setting the control bits).
 	include	"src/h030_code_pilots.s"
 
 ; Hunk 31: Lines drawn relative to the camera (DrawLine) (not worked out yet)
