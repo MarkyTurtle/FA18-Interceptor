@@ -1,5 +1,5 @@
 ; F/A-18 Interceptor - hunk 54 (code)
-; A 3D model (shape data, used through ObjectDrawTable).
+; Scenery shapes: ObjectDrawTable entries 45-47, 73, 74, 91, 92.
 ; Included by ../f18_main.s.
 
 ;===============================================================================

@@ -166,6 +166,11 @@ of the map: the coarse maps use blocks 0-16 (cells 0-67), the detailed map mostl
 pattern of cells around X 41-70, Z 44-70, and the free flight's starting locations are at cells
 15-17.
 
+The items' shape numbers index `ObjectDrawTable` beyond the 16 objects: entries 17-117 are the
+scenery shapes, in hunks 42-50, 54-56, 69 and 70, drawn by `DrawScenery` (the same `DrawModel`)
+or, for most of hunks 69 and 70, by hunk 12's own renderer (`DrawGroundShape`; not worked out
+yet). Some are drawn only within a height of the camera.
+
 Each time the view enters a new cell or turns into a new eighth of the compass (`ViewOctant`),
 `BuildSceneryList` goes through the cells around it in an order from hunk 65 chosen by the
 sub-cell and the octant (presumably the furthest first, as nothing is sorted) and adds each cell's scenery and objects
@@ -559,7 +564,7 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
 * The computer pilots' states one by one (hunk 30), their attacks and firing; the object
   records' unknown fields in `ModeTable`.
 * The 3D pipeline's special shape operations (hunks 12-15) and the clipping (hunk 19).
-* The scenery items' shapes; the ground and sky.
+* What each scenery shape is; hunk 12's renderer; the ground and sky.
 * The head-up display and most instruments (hunks 39-40).
 * The views (`OutsideView`, `ViewChoice`, `CameraSequence`) and the training's manoeuvres.
 * The rest of the flight log's words, and which sound file is which effect.

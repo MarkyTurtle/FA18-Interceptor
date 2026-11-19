@@ -1,5 +1,6 @@
 ; F/A-18 Interceptor - hunk 55 (code)
-; The cruise missile's 3D model (ModelTable $C8).
+; The cruise missile's 3D model (ModelTable $C8) and scenery shapes (ObjectDrawTable entries
+; 17-19, 42, 70, 88).
 ; Included by ../f18_main.s.
 
 ;===============================================================================

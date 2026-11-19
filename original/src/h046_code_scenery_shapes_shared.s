@@ -1,5 +1,6 @@
 ; F/A-18 Interceptor - hunk 46 (code)
-; Shape data shared by the models of hunks 47-50.
+; Scenery shapes (ObjectDrawTable entries 28, 44, 52, 53) and shape data shared by hunks
+; 47-50.
 ; Included by ../f18_main.s.
 
 ;===============================================================================

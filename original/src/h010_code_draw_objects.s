@@ -9,11 +9,21 @@
 l_010_00000:
         moveq   #$0,d0                          ; 00000
         rts                                     ; 00002
-sub_010_00004:
+
+;-------------------------------------------------------------------------------
+; DrawSceneryNear - DrawScenery only while dat_071_00436 (the object's height against the
+; camera) is under $FFD80000.
+;-------------------------------------------------------------------------------
+DrawSceneryNear:
         cmpi.l  #$ffd80000,(dat_071_00436).l    ; 00004
         bge.b   l_010_00000                     ; 0000E
-l_010_00010:
-        bra.w   l_010_000DC                     ; 00010
+
+;-------------------------------------------------------------------------------
+; DrawScenery - The draw routine of most scenery shapes: DrawModel without the checks for the
+; player's own aircraft.
+;-------------------------------------------------------------------------------
+DrawScenery:
+        bra.w   DrawSceneryPlain                ; 00010
 
 ;-------------------------------------------------------------------------------
 ; DrawModel - Draws an object's model: picks the shape by distance from the model's list (a
@@ -29,10 +39,10 @@ DrawModel:
         btst    #$6,(dat_071_0022B).l           ; 00014
         bne.b   l_010_00000                     ; 0001C
         tst.b   (OutsideView).l                 ; 0001E
-        bne.w   l_010_000DC                     ; 00024
+        bne.w   DrawSceneryPlain                ; 00024
         move.w  (CurrentObjectOffset).l,d0      ; 00028
         cmp.w   (ViewObject).l,d0               ; 0002E
-        bne.w   l_010_000DC                     ; 00034
+        bne.w   DrawSceneryPlain                ; 00034
         move.b  (dat_071_00177).l,d0            ; 00038
         cmpi.b  #$3,d0                          ; 0003E
         blt.b   l_010_0004C                     ; 00042
@@ -41,19 +51,19 @@ DrawModel:
 l_010_0004C:
         move.l  (ShapeNext).l,d0                ; 0004C
         cmp.l   (ShapeNow).l,d0                 ; 00052
-        beq.w   l_010_000DC                     ; 00058
+        beq.w   DrawSceneryPlain                ; 00058
         move.l  d0,(ShapeNow).l                 ; 0005C
         tst.b   (dat_071_00205).l               ; 00062
-        bne.w   l_010_000DC                     ; 00068
+        bne.w   DrawSceneryPlain                ; 00068
         move.b  (dat_071_0023B).l,d1            ; 0006C
         beq.b   l_010_00094                     ; 00072
         cmpi.b  #$3,d1                          ; 00074
-        bge.w   l_010_000DC                     ; 00078
+        bge.w   DrawSceneryPlain                ; 00078
         move.l  (dat_071_00448).l,d3            ; 0007C
         move.w  (dat_071_00488).l,d5            ; 00082
         asr.l   d5,d3                           ; 00088
         cmpi.l  #$ffffffe0,d3                   ; 0008A
-        bge.w   l_010_000DC                     ; 00090
+        bge.w   DrawSceneryPlain                ; 00090
 l_010_00094:
         movea.l (ShapeNow).l,a2                 ; 00094
         move.w  (a2)+,d0                        ; 0009A
@@ -61,7 +71,7 @@ l_010_00094:
         andi.w  #$4000,d0                       ; 0009E
         beq.b   l_010_000BE                     ; 000A2
         addq.l  #$6,(ShapeNow).l                ; 000A4
-        bra.b   l_010_000DC                     ; 000AA
+        bra.b   DrawSceneryPlain                ; 000AA
 l_010_000AC:
         moveq   #$0,d0                          ; 000AC
         rts                                     ; 000AE
@@ -69,19 +79,23 @@ l_010_000B0:
         cmpi.w  #$ffff,d0                       ; 000B0
         beq.b   l_010_000AC                     ; 000B4
         addq.l  #$4,(ShapeNow).l                ; 000B6
-        bra.b   l_010_000DC                     ; 000BC
+        bra.b   DrawSceneryPlain                ; 000BC
 l_010_000BE:
         move.w  (a2),d0                         ; 000BE
         blt.b   l_010_000AC                     ; 000C0
         ext.l   d0                              ; 000C2
         add.l   d0,(ShapeNow).l                 ; 000C4
-        bra.b   l_010_000DC                     ; 000CA
+        bra.b   DrawSceneryPlain                ; 000CA
 l_010_000CC:
         link.w  a6,#$ff68                       ; 000CC
         clr.w   -$80(a6)                        ; 000D0
         ori.w   #$1,-$80(a6)                    ; 000D4
         bra.b   l_010_000E4                     ; 000DA
-l_010_000DC:
+
+;-------------------------------------------------------------------------------
+; DrawSceneryPlain - DrawModel's main part (also the entry of some scenery shapes).
+;-------------------------------------------------------------------------------
+DrawSceneryPlain:
         link.w  a6,#$ff68                       ; 000DC
         clr.w   -$80(a6)                        ; 000E0
 l_010_000E4:

@@ -717,7 +717,7 @@ l_008_008C2:
         movea.l (a0)+,a1                        ; 008E6
         tst.w   (a1)                            ; 008E8
         blt.w   l_008_009E6                     ; 008EA
-        cmpi.l  #l_010_00010,(a1)               ; 008EE
+        cmpi.l  #DrawScenery,(a1)               ; 008EE
         bne.b   l_008_00904                     ; 008F4
         cmpi.l  #$ffc80000,(dat_071_00436).l    ; 008F6
         blt.w   l_008_009E6                     ; 00900
@@ -728,7 +728,7 @@ l_008_00904:
         asl.l   #$8,d3                          ; 00912
         asl.l   #$8,d4                          ; 00914
         movem.l d2-d4,(dat_071_00500).l         ; 00916
-        cmpi.l  #sub_010_00004,(a1)             ; 0091E
+        cmpi.l  #DrawSceneryNear,(a1)           ; 0091E
         beq.b   l_008_00988                     ; 00924
         move.w  $4(a0),d1                       ; 00926
         ext.l   d1                              ; 0092A
@@ -929,7 +929,7 @@ l_008_00B7A:
         movea.l (a0)+,a1                        ; 00BA4
         tst.w   (a1)                            ; 00BA6
         blt.w   l_008_00CF6                     ; 00BA8
-        cmpi.l  #l_010_00010,(a1)               ; 00BAC
+        cmpi.l  #DrawScenery,(a1)               ; 00BAC
         bne.b   l_008_00BC2                     ; 00BB2
         cmpi.l  #$ffc00000,(dat_071_00436).l    ; 00BB4
         blt.w   l_008_00CF6                     ; 00BBE

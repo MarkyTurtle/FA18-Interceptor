@@ -381,32 +381,33 @@
 ; Hunk 41: The F/A-18's 3D model (ModelTable $50).
 	include	"src/h041_code_model_fa18.s"
 
-; Hunk 42: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h042_code_model42.s"
+; Hunk 42: Scenery shapes: ObjectDrawTable entries 32, 33, 39-41, 49, 71.
+	include	"src/h042_code_scenery_shapes.s"
 
-; Hunk 43: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h043_code_model43.s"
+; Hunk 43: Scenery shapes: ObjectDrawTable entries 34, 37, 38, 51, 72.
+	include	"src/h043_code_scenery_shapes.s"
 
-; Hunk 44: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h044_code_model44.s"
+; Hunk 44: Scenery shapes: ObjectDrawTable entries 35, 36.
+	include	"src/h044_code_scenery_shapes.s"
 
-; Hunk 45: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h045_code_model45.s"
+; Hunk 45: Scenery shapes: ObjectDrawTable entries 27, 30, 31, 50, 66-69, 80.
+	include	"src/h045_code_scenery_shapes.s"
 
-; Hunk 46: Shape data shared by the models of hunks 47-50.
-	include	"src/h046_code_model_shared.s"
+; Hunk 46: Scenery shapes (ObjectDrawTable entries 28, 44, 52, 53) and shape data shared by
+;         hunks 47-50.
+	include	"src/h046_code_scenery_shapes_shared.s"
 
-; Hunk 47: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h047_code_model47.s"
+; Hunk 47: Scenery shapes: ObjectDrawTable entries 43, 55, 81.
+	include	"src/h047_code_scenery_shapes.s"
 
-; Hunk 48: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h048_code_model48.s"
+; Hunk 48: Scenery shapes: ObjectDrawTable entries 77-79.
+	include	"src/h048_code_scenery_shapes.s"
 
-; Hunk 49: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h049_code_model49.s"
+; Hunk 49: Scenery shapes: ObjectDrawTable entries 56, 57, 60-65.
+	include	"src/h049_code_scenery_shapes.s"
 
-; Hunk 50: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h050_code_model50.s"
+; Hunk 50: Scenery shapes: ObjectDrawTable entries 29, 54, 58, 59.
+	include	"src/h050_code_scenery_shapes.s"
 
 ; Hunk 51: 3D models: the Sidewinder ($00), the AMRAAM ($14), the F-16 ($3C) and the MiGs ($78, $8C).
 	include	"src/h051_code_models_missiles_f16_mig.s"
@@ -417,14 +418,15 @@
 ; Hunk 53: A 3D model: object 15 of mission F6, probably the shadow submarine (ModelTable $F0).
 	include	"src/h053_code_model_f6_object.s"
 
-; Hunk 54: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h054_code_model54.s"
+; Hunk 54: Scenery shapes: ObjectDrawTable entries 45-47, 73, 74, 91, 92.
+	include	"src/h054_code_scenery_shapes.s"
 
-; Hunk 55: The cruise missile's 3D model (ModelTable $C8).
+; Hunk 55: The cruise missile's 3D model (ModelTable $C8) and scenery shapes (ObjectDrawTable
+;         entries 17-19, 42, 70, 88).
 	include	"src/h055_code_model_cruise_missile.s"
 
-; Hunk 56: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h056_code_model56.s"
+; Hunk 56: Scenery shapes: ObjectDrawTable entries 48, 86, 87, 117.
+	include	"src/h056_code_scenery_shapes.s"
 
 ; Hunk 57: The airliner's 3D model: Air Force One, the 707 and the 767 (ModelTable $64, $118, $12C).
 	include	"src/h057_code_model_airliner.s"
@@ -466,11 +468,11 @@
 ; Hunk 68: Data: a table used by hunk 28 (not worked out yet)
 	include	"src/h068_code_table68.s"
 
-; Hunk 69: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h069_code_model69.s"
+; Hunk 69: Scenery shapes: ObjectDrawTable entries 20-26, 75, 76, 82-85.
+	include	"src/h069_code_scenery_shapes.s"
 
-; Hunk 70: A 3D model (shape data, used through ObjectDrawTable).
-	include	"src/h070_code_model70.s"
+; Hunk 70: Scenery shapes: ObjectDrawTable entries 89, 90, 93-116.
+	include	"src/h070_code_scenery_shapes.s"
 
 ; Hunk 71: The game's variables (zeros in the file): ObjectTable (16 records of 512 bytes),
 ;         FrameStage, FrameCount, the controls, the drawing state...

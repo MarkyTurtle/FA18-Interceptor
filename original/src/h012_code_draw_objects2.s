@@ -9,11 +9,21 @@
 l_012_00000:
         moveq   #$0,d0                          ; 00000
         rts                                     ; 00002
-sub_012_00004:
+
+;-------------------------------------------------------------------------------
+; DrawGroundShape - The draw routine of most shapes of hunks 69 and 70, with hunk 12's own
+; renderer (not worked out yet; presumably shapes on the ground): only while dat_071_00436 is
+; at least $FFC80000; picks a level of detail by distance and draws.
+;-------------------------------------------------------------------------------
+DrawGroundShape:
         cmpi.l  #$ffc80000,(dat_071_00436).l    ; 00004
         blt.b   l_012_00000                     ; 0000E
         bra.b   l_012_0001E                     ; 00010
-sub_012_00012:
+
+;-------------------------------------------------------------------------------
+; DrawGroundShapeFar - As DrawGroundShape, to $FF800000.
+;-------------------------------------------------------------------------------
+DrawGroundShapeFar:
         cmpi.l  #$ff800000,(dat_071_00436).l    ; 00012
         blt.b   l_012_00000                     ; 0001C
 l_012_0001E:
