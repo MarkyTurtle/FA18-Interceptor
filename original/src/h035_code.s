@@ -7,7 +7,7 @@
 	CODE_HUNK	h035
 l_035_00000:
         move.w  #$1b,(dat_071_0036E).l          ; 00000
-        jsr     (sub_007_00012).l               ; 00008
+        jsr     (Nop).l                         ; 00008
         moveq   #$0,d0                          ; 0000E
         rts                                     ; 00010
 l_035_00012:
@@ -63,7 +63,7 @@ l_035_0007A:
         subi.w  #$b3,d1                         ; 00080
         neg.w   d1                              ; 00084
         addq.w  #$1,d1                          ; 00086
-        cmp.w   (dat_071_00354).l,d1            ; 00088
+        cmp.w   (ClipY).l,d1                    ; 00088
         bgt.b   l_035_00012                     ; 0008E
         movem.w d0-d1,(dat_071_00328).l         ; 00090
         tst.w   d7                              ; 00098
@@ -77,13 +77,13 @@ l_035_0007A:
         cmp.w   -$28(a6),d2                     ; 000AE
         bge.b   l_035_000BC                     ; 000B2
 l_035_000B4:
-        jsr     (sub_036_00164).l               ; 000B4
+        jsr     (Plot).l                        ; 000B4
         bra.b   l_035_000D0                     ; 000BA
 l_035_000BC:
-        jsr     (sub_036_0017A).l               ; 000BC
+        jsr     (Plot2).l                       ; 000BC
         bra.b   l_035_000D0                     ; 000C2
 l_035_000C4:
-        jsr     (sub_036_001DE).l               ; 000C4
+        jsr     (PlotBigAbove).l                ; 000C4
         bra.b   l_035_000D0                     ; 000CA
 l_035_000CC:
         bsr.w   sub_035_00550                   ; 000CC
@@ -202,7 +202,7 @@ l_035_001BA:
         neg.w   d2                              ; 001BE
         subi.w  #$b3,d3                         ; 001C0
         neg.w   d3                              ; 001C4
-        jsr     (sub_036_005EE).l               ; 001C6
+        jsr     (DrawLine).l                    ; 001C6
         moveq   #$1,d0                          ; 001CC
         rts                                     ; 001CE
 l_035_001D0:
@@ -421,7 +421,7 @@ l_035_003FA:
         subq.w  #$1,-$2(a6)                     ; 0040A
         beq.b   l_035_00430                     ; 0040E
         movem.w (dat_072_03000).l,d0-d3         ; 00410
-        jsr     (sub_036_005EE).l               ; 00418
+        jsr     (DrawLine).l                    ; 00418
         unlk    a6                              ; 0041E
         moveq   #$1,d0                          ; 00420
         rts                                     ; 00422
@@ -558,7 +558,7 @@ l_035_00540:
         movem.l (a7)+,d0-d6                     ; 00542
         rts                                     ; 00546
 l_035_00548:
-        jsr     (sub_036_0017A).l               ; 00548
+        jsr     (Plot2).l                       ; 00548
         rts                                     ; 0054E
 sub_035_00550:
         move.w  d6,d5                           ; 00550
@@ -648,10 +648,10 @@ l_035_00604:
         bra.b   l_035_0062C                     ; 0060C
 l_035_0060E:
         move.w  d1,d5                           ; 0060E
-        sub.w   (dat_071_00354).l,d5            ; 00610
+        sub.w   (ClipY).l,d5                    ; 00610
         sub.w   d6,d1                           ; 00616
         sub.w   d4,d1                           ; 00618
-        cmp.w   (dat_071_00354).l,d1            ; 0061A
+        cmp.w   (ClipY).l,d1                    ; 0061A
         bgt.w   l_035_0080E                     ; 00620
         sub.w   d5,d6                           ; 00624
         bge.b   l_035_0063C                     ; 00626
@@ -660,7 +660,7 @@ l_035_0060E:
 l_035_0062C:
         add.w   d4,d1                           ; 0062C
         add.w   d6,d1                           ; 0062E
-        cmp.w   (dat_071_00354).l,d1            ; 00630
+        cmp.w   (ClipY).l,d1                    ; 00630
         bge.b   l_035_0060E                     ; 00636
         sub.w   d6,d1                           ; 00638
         sub.w   d4,d1                           ; 0063A
@@ -671,7 +671,7 @@ l_035_0063C:
         add.w   d1,d1                           ; 00642
         add.w   d1,d1                           ; 00644
         add.w   d5,d1                           ; 00646
-        movea.l (dat_071_00086).l,a1            ; 00648
+        movea.l (DrawPlanes).l,a1               ; 00648
         movea.l $c(a1),a1                       ; 0064E
         adda.w  d1,a1                           ; 00652
         lea.l   (CUSTOM).l,a2                    ; 00654
@@ -684,7 +684,7 @@ l_035_0065A:
 l_035_00668:
         move.w  #$0,BLTCON1(a2)                 ; 00668
         move.w  #$ffff,BLTADAT(a2)              ; 0066E
-        move.w  (dat_071_00324).l,-$2(a6)       ; 00674
+        move.w  (DrawColour).l,-$2(a6)          ; 00674
 l_035_0067C:
         move.w  -$2(a6),-$4(a6)                 ; 0067C
         move.w  (a4),d0                         ; 00682

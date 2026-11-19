@@ -179,9 +179,9 @@ ShowFlightLog:
 ; value into the text in decimal.
 ;-------------------------------------------------------------------------------
 PutNumber:
-        move.l  d0,(dat_071_004EE).l            ; 001C6
-        bsr.w   sub_020_00C58                   ; 001CC
-        move.l  (dat_071_004F2).l,d1            ; 001D0
+        move.l  d0,(BCDIn).l                    ; 001C6
+        bsr.w   BinToBCD                        ; 001CC
+        move.l  (BCDOut).l,d1                   ; 001D0
         adda.w  d3,a0                           ; 001D6
         move.l  a0,d0                           ; 001D8
         movem.l d0-d2,-(a7)                     ; 001DA
@@ -284,11 +284,11 @@ l_020_002CC:
         ext.l   d0                              ; 00338
         divu.w  #$50,d0                         ; 0033A
         ext.l   d0                              ; 0033E
-        move.l  d0,(dat_071_004EE).l            ; 00340
-        bsr.w   sub_020_00C58                   ; 00346
+        move.l  d0,(BCDIn).l                    ; 00340
+        bsr.w   BinToBCD                        ; 00346
         lea.l   (dat_064_0216E).l,a1            ; 0034A
         adda.w  #$11,a1                         ; 00350
-        move.l  (dat_071_004F2).l,d0            ; 00354
+        move.l  (BCDOut).l,d0                   ; 00354
         move.b  d0,d1                           ; 0035A
         lea.l   (dat_071_004F4).l,a3            ; 0035C
         andi.b  #$f0,$1(a3)                     ; 00362
@@ -301,7 +301,7 @@ l_020_002CC:
         addi.b  #$0,d1                          ; 00382
         abcd.b  -(a2),-(a3)                     ; 00386
         abcd.b  -(a2),-(a3)                     ; 00388
-        cmpi.l  #$360,(dat_071_004F2).l         ; 0038A
+        cmpi.l  #$360,(BCDOut).l                ; 0038A
         blt.b   l_020_0039C                     ; 00394
         clr.w   (dat_071_004F4).l               ; 00396
 l_020_0039C:
@@ -689,8 +689,8 @@ l_020_00834:
         ext.w   d0                              ; 0084C
         move.w  d0,d1                           ; 0084E
         addi.w  #$90,d1                         ; 00850
-        move.w  d1,(dat_071_00354).l            ; 00854
-        move.w  d0,(dat_071_002A8).l            ; 0085A
+        move.w  d1,(ClipY).l                    ; 00854
+        move.w  d0,(ViewY).l                    ; 0085A
         asl.w   #$3,d0                          ; 00860
         move.w  d0,d1                           ; 00862
         add.w   d0,d0                           ; 00864
@@ -704,9 +704,9 @@ l_020_00874:
         clr.b   (dat_071_0025F).l               ; 0087A
         andi.w  #$fbff,(dat_071_0029C).l        ; 00880
         clr.l   (dat_071_002E8).l               ; 00888
-        move.w  #$90,(dat_071_00354).l          ; 0088E
+        move.w  #$90,(ClipY).l                  ; 0088E
 l_020_00896:
-        jsr     (sub_006_00008).l               ; 00896
+        jsr     (RedrawInstruments).l           ; 00896
         rts                                     ; 0089C
 sub_020_0089E:
         movem.l d0-d3,-(a7)                     ; 0089E
@@ -876,7 +876,7 @@ l_020_00A24:
         bra.b   l_020_00A12                     ; 00A2A
 l_020_00A2C:
         move.w  #$15,(dat_071_0036E).l          ; 00A2C
-        jsr     (sub_007_00012).l               ; 00A34
+        jsr     (Nop).l                         ; 00A34
         bra.b   l_020_00A2C                     ; 00A3A
 sub_020_00A3C:
         link.w  a6,#$0                          ; 00A3C
@@ -987,7 +987,7 @@ sub_020_00B18:
         bne.w   l_020_00BCE                     ; 00B3C
         move.w  (dat_071_00464).l,d4            ; 00B40
         move.w  (dat_071_00466).l,d1            ; 00B46
-        move.b  (dat_071_001FE).l,d2            ; 00B4C
+        move.b  (PitchInput).l,d2               ; 00B4C
         beq.b   l_020_00BA0                     ; 00B52
         andi.b  #$20,d2                         ; 00B54
         bne.b   l_020_00B7C                     ; 00B58
@@ -1018,7 +1018,7 @@ l_020_00B98:
         move.w  d4,(dat_071_00464).l            ; 00B98
         bra.b   l_020_00BCE                     ; 00B9E
 l_020_00BA0:
-        move.b  (dat_071_00200).l,d2            ; 00BA0
+        move.b  (RollInput).l,d2                ; 00BA0
         beq.b   l_020_00BCE                     ; 00BA6
         andi.b  #$8,d2                          ; 00BA8
         bne.b   l_020_00BBE                     ; 00BAC
@@ -1068,8 +1068,8 @@ l_020_00C06:
         rts                                     ; 00C10
 sub_020_00C12:
         movem.l d5-d7/a5-a6,-(a7)               ; 00C12
-        movea.l #dat_071_004F2,a6               ; 00C16
-        lea.l   (dat_020_00C8E).l,a5            ; 00C1C
+        movea.l #BCDOut,a6                      ; 00C16
+        lea.l   (PowersOfTen).l,a5              ; 00C1C
         moveq   #$0,d7                          ; 00C22
         moveq   #$3,d5                          ; 00C24
         clr.w   d6                              ; 00C26
@@ -1082,7 +1082,7 @@ l_020_00C28:
         andi.w  #$f,d6                          ; 00C36
         bsr.w   sub_020_00C50                   ; 00C3A
         dbra    d5,l_020_00C28                  ; 00C3E
-        move.l  d7,(dat_071_004EE).l            ; 00C42
+        move.l  d7,(BCDIn).l                    ; 00C42
         movem.l (a7)+,d5-d7/a5-a6               ; 00C48
         rts                                     ; 00C4C
 l_020_00C4E:
@@ -1091,11 +1091,16 @@ sub_020_00C50:
         dbra    d6,l_020_00C4E                  ; 00C50
         addq.l  #$4,a5                          ; 00C54
         rts                                     ; 00C56
-sub_020_00C58:
+
+;-------------------------------------------------------------------------------
+; BinToBCD - Converts BCDIn (a long, up to 99,999,999) to BCD in BCDOut by subtracting powers
+; of ten (dat_020_00C8E).
+;-------------------------------------------------------------------------------
+BinToBCD:
         movem.l d5-d7/a6,-(a7)                  ; 00C58
-        lea.l   (dat_071_004EE).l,a6            ; 00C5C
+        lea.l   (BCDIn).l,a6                    ; 00C5C
         move.l  (a6),d5                         ; 00C62
-        lea.l   (dat_020_00C8E).l,a6            ; 00C64
+        lea.l   (PowersOfTen).l,a6              ; 00C64
         moveq   #$0,d7                          ; 00C6A
         move.l  #$10000000,d6                   ; 00C6C
 l_020_00C72:
@@ -1108,10 +1113,11 @@ l_020_00C7C:
         addq.l  #$4,a6                          ; 00C7C
         lsr.l   #$4,d6                          ; 00C7E
         bne.b   l_020_00C72                     ; 00C80
-        move.l  d7,(dat_071_004F2).l            ; 00C82
+        move.l  d7,(BCDOut).l                   ; 00C82
         movem.l (a7)+,d5-d7/a6                  ; 00C88
         rts                                     ; 00C8C
-dat_020_00C8E:
+; PowersOfTen - 10,000,000 down to 1 (longs), for BinToBCD.
+PowersOfTen:
 	dc.b	$00,$98,$96,$80,$00,$0F,$42,$40,$00,$01,$86,$A0,$00,$00,$27,$10
 	dc.b	$00,$00,$03,$E8,$00,$00,$00,$64,$00,$00,$00,$0A,$00,$00,$00,$01
 	dc.b	$00,$00

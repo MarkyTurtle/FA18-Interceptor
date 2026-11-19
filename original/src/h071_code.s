@@ -82,7 +82,8 @@ dat_071_0003E:
 	dcb.b	32,$00
 dat_071_0005E:
 	dcb.b	40,$00
-dat_071_00086:
+; DrawPlanes - Points at the four plane pointers that drawing goes to (the buffer being drawn).
+DrawPlanes:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -144,15 +145,18 @@ dat_071_000B2:
 	dc.b	$00
 dat_071_000B6:
 	dc.b	$00
-dat_071_000B7:
+; DrawMask - Which planes drawing changes (bit n = plane n).
+DrawMask:
 	dc.b	$00
-dat_071_000B8:
+; DrawXor - >= 0: XOR the planes in DrawXorMask.
+DrawXor:
 	dc.b	$00
 dat_071_000B9:
 	dc.b	$00
 dat_071_000BA:
 	dc.b	$00
-dat_071_000BB:
+; DrawXorMask - The planes XORed when DrawXor >= 0.
+DrawXorMask:
 	dc.b	$00
 dat_071_000BC:
 	dc.b	$00
@@ -397,7 +401,8 @@ dat_071_00188:
 	dc.b	$00
 dat_071_00189:
 	dc.b	$00
-dat_071_0018A:
+; LaunchRequest - 1: launch the selected missile.
+LaunchRequest:
 	dc.b	$00
 dat_071_0018B:
 	dc.b	$00
@@ -558,11 +563,14 @@ dat_071_001FC:
 	dc.b	$00
 dat_071_001FD:
 	dc.b	$00
-dat_071_001FE:
+; PitchInput - The stick / cursor keys, pitch: $10 up, $20 down, 0 centre.
+PitchInput:
 	dc.b	$00
-dat_071_001FF:
+; CommaPeriodInput - The , and . keys: $80 ',', $40 '.', 0 neither.
+CommaPeriodInput:
 	dc.b	$00
-dat_071_00200:
+; RollInput - The stick / cursor keys, roll: $08 left, $04 right, 0 centre.
+RollInput:
 	dc.b	$00
 dat_071_00201:
 	dc.b	$00
@@ -627,7 +635,8 @@ dat_071_0021F:
 	dc.b	$00
 dat_071_00220:
 	dc.b	$00
-dat_071_00221:
+; ViewSubCell - The viewing object's sub-cell (its +$0A).
+ViewSubCell:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -639,7 +648,8 @@ dat_071_00226:
 	dc.b	$00
 dat_071_00227:
 	dc.b	$00
-dat_071_00228:
+; RedrawFlags - What must be drawn again (set when the view moves into another map cell...).
+RedrawFlags:
 	dc.b	$00
 dat_071_00229:
 	dc.b	$00
@@ -779,9 +789,11 @@ dat_071_00275:
 	dc.b	$00
 dat_071_00276:
 	dc.b	$00
-dat_071_00277:
+; Difficulty - The difficulty (the flight log's +$02): how often computer aircraft may fire.
+Difficulty:
 	dc.b	$00
-dat_071_00278:
+; DifficultySaved - The difficulty as loaded from the flight log.
+DifficultySaved:
 	dc.b	$00
 dat_071_00279:
 	dc.b	$00
@@ -832,7 +844,8 @@ dat_071_00292:
 dat_071_00294:
 	dc.b	$00
 	dc.b	$00
-dat_071_00296:
+; GunFlags - Bit 3: the gun is firing.
+GunFlags:
 	dc.b	$00
 	dc.b	$00
 dat_071_00298:
@@ -860,7 +873,8 @@ dat_071_002A4:
 dat_071_002A6:
 	dc.b	$00
 	dc.b	$00
-dat_071_002A8:
+; ViewY - The y offset of what is drawn with PlotInView.
+ViewY:
 	dc.b	$00
 	dc.b	$00
 ; FrameCount - Counts frames (GameFrame runs some parts every 2nd, 4th, 8th, 16th or 32nd
@@ -872,7 +886,9 @@ dat_071_002AB:
 dat_071_002AC:
 	dc.b	$00
 	dc.b	$00
-dat_071_002AE:
+; ViewObject - The offset (number << 9) of the object the view is from (normally the player,
+; 0).
+ViewObject:
 	dc.b	$00
 	dc.b	$00
 dat_071_002B0:
@@ -1014,10 +1030,12 @@ dat_071_00318:
 dat_071_0031A:
 	dc.b	$00
 	dc.b	$00
-dat_071_0031C:
+; ViewCellX - The viewing object's map cell X (its +$06).
+ViewCellX:
 	dc.b	$00
 	dc.b	$00
-dat_071_0031E:
+; ViewCellZ - The viewing object's map cell Z (its +$08).
+ViewCellZ:
 	dc.b	$00
 	dc.b	$00
 dat_071_00320:
@@ -1026,7 +1044,8 @@ dat_071_00320:
 dat_071_00322:
 	dc.b	$00
 	dc.b	$00
-dat_071_00324:
+; DrawColour - The colour Plot and DrawLine draw in (0-15).
+DrawColour:
 	dc.b	$00
 dat_071_00325:
 	dc.b	$00
@@ -1090,13 +1109,15 @@ dat_071_00350:
 dat_071_00352:
 	dc.b	$00
 	dc.b	$00
-dat_071_00354:
+; ClipY - The row PlotBigAbove switches at ($90 = 144: the top of the panel).
+ClipY:
 	dc.b	$00
 	dc.b	$00
 dat_071_00356:
 	dc.b	$00
 	dc.b	$00
-dat_071_00358:
+; ViewX - The x offset of what is drawn with PlotInView (the view window's left edge).
+ViewX:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1118,7 +1139,8 @@ dat_071_00366:
 dat_071_00368:
 	dc.b	$00
 	dc.b	$00
-dat_071_0036A:
+; JoyEvents - Joystick button events waiting for ReadControls (bit 2 fire down, bit 3 fire up).
+JoyEvents:
 	dc.b	$00
 dat_071_0036B:
 	dc.b	$00
@@ -1159,11 +1181,13 @@ dat_071_00380:
 dat_071_00382:
 	dc.b	$00
 	dc.b	$00
-dat_071_00384:
+; CurrentObject - The number of the object being worked on.
+CurrentObject:
 	dc.b	$00
 dat_071_00385:
 	dc.b	$00
-dat_071_00386:
+; CurrentObjectOffset - Its offset in ObjectTable (number << 9).
+CurrentObjectOffset:
 	dc.b	$00
 	dc.b	$00
 dat_071_00388:
@@ -1510,12 +1534,14 @@ dat_071_004EA:
 dat_071_004EC:
 	dc.b	$00
 	dc.b	$00
-dat_071_004EE:
+; BCDIn - BinToBCD's number.
+BCDIn:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_004F2:
+; BCDOut - BinToBCD's result: eight BCD digits.
+BCDOut:
 	dc.b	$00
 	dc.b	$00
 dat_071_004F4:
@@ -1928,7 +1954,22 @@ dat_071_00B50:
 dat_071_00B52:
 	dc.b	$00
 	dc.b	$00
-; ObjectTable - The aircraft and other objects: records of 512 bytes (index << 9).
+; ObjectTable - The 16 objects (aircraft, missiles, ships...; the player's aircraft is record 0):
+; records of 512 bytes, $00B54-$02B53 (an object's offset = its number << 9). What is known:
+;   +$00 w  flags                       +$01 b  bit 6 the object exists, bit 4 in a cell being drawn
+;   +$03 b  bit 7                       +$06 w  map cell X        +$08 w  map cell Z
+;   +$0A b  sub-cell                    +$10 l
+;   +$14 l  position X (low 22 bits: inside the cell)   +$18 l  Y (height; negative is up)
+;   +$1C l  position Z (low 22 bits: inside the cell)   +$26 w  (a missile: $14 at launch)
+;   +$2B b                              +$38 b  (copied from the launcher to its missile)
+;   +$3E l  velocity X   +$42 l  velocity Y   +$46 l  velocity Z
+;   +$4C w  (a missile: $96 / $C8)      +$50 l, +$54 w, +$56 l, +$5A w
+;   +$5F b  missiles left: low nibble AMRAAMs, high nibble Sidewinders ($24 at the start)
+;   +$62 b  type (0 Sidewinder, 1 AMRAAM, '0' ...)
+;   +$63 b  selected weapon (high nibble: $10 gun, $30 AMRAAM, else Sidewinder)
+;   +$65 b  control bits ($80/$40 the , and . keys, $20/$10 pitch, $08/$04 roll)
+;   +$6C w, +$6E w, +$78 w, +$7E w      +$71 b      +$72 l  (6,400,000 at the start)
+;   +$7C b  bit 7                       +$92-$A2 w  orientation: a 3 x 3 matrix (rows at +$92, +$98, +$9E)
 ObjectTable:
 	dc.b	$00
 	dc.b	$00
@@ -2212,7 +2253,9 @@ dat_071_02754:
 	dcb.b	512,$00
 dat_071_02954:
 	dcb.b	512,$00
-dat_071_02B54:
+; SmallObjects - 16 small objects of 32 bytes after the ObjectTable, with the same +$01 flags,
+; +$06 / +$08 map cell and +$0A sub-cell.
+SmallObjects:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00

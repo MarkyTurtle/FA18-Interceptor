@@ -42,37 +42,37 @@ l_040_000A4:
         rts                                     ; 000A4
 sub_040_000A6:
         move.w  #$a0,d0                         ; 000A6
-        add.w   (dat_071_00358).l,d0            ; 000AA
+        add.w   (ViewX).l,d0                    ; 000AA
         cmpi.w  #$1,d0                          ; 000B0
         ble.b   l_040_000A4                     ; 000B4
         cmpi.w  #$13d,d0                        ; 000B6
         bge.b   l_040_000A4                     ; 000BA
         move.w  #$81,d1                         ; 000BC
-        add.w   (dat_071_002A8).l,d1            ; 000C0
-        move.w  #$8,(dat_071_00324).l           ; 000C6
+        add.w   (ViewY).l,d1                    ; 000C0
+        move.w  #$8,(DrawColour).l              ; 000C6
         movem.w d0-d1,-(a7)                     ; 000CE
-        jsr     (sub_036_0017A).l               ; 000D2
+        jsr     (Plot2).l                       ; 000D2
         movem.w (a7)+,d0-d1                     ; 000D8
         addq.w  #$1,d1                          ; 000DC
         movem.w d0-d1,-(a7)                     ; 000DE
-        jsr     (sub_036_0017A).l               ; 000E2
+        jsr     (Plot2).l                       ; 000E2
         movem.w (a7)+,d0-d1                     ; 000E8
         addq.w  #$1,d1                          ; 000EC
         movem.w d0-d1,-(a7)                     ; 000EE
-        jsr     (sub_036_0017A).l               ; 000F2
+        jsr     (Plot2).l                       ; 000F2
         movem.w (a7)+,d0-d1                     ; 000F8
         subq.w  #$1,d0                          ; 000FC
         addq.w  #$1,d1                          ; 000FE
         movem.w d0-d1,-(a7)                     ; 00100
-        jsr     (sub_036_0017A).l               ; 00104
+        jsr     (Plot2).l                       ; 00104
         movem.w (a7)+,d0-d1                     ; 0010A
         addq.w  #$2,d0                          ; 0010E
-        jsr     (sub_036_0017A).l               ; 00110
+        jsr     (Plot2).l                       ; 00110
         rts                                     ; 00116
 sub_040_00118:
-        move.w  #$d,(dat_071_00324).l           ; 00118
+        move.w  #$d,(DrawColour).l              ; 00118
         lea.l   (ObjectTable).l,a0              ; 00120
-        adda.w  (dat_071_002AE).l,a0            ; 00126
+        adda.w  (ViewObject).l,a0               ; 00126
         tst.b   (dat_071_00174).l               ; 0012C
         beq.b   l_040_0014A                     ; 00132
         move.l  (dat_071_00028).l,d0            ; 00134
@@ -95,8 +95,8 @@ l_040_0015A:
         lea.l   $6(a2),a0                       ; 0016A
         moveq   #$5,d6                          ; 0016E
         moveq   #$5,d7                          ; 00170
-        move.l  d0,(dat_071_004EE).l            ; 00172
-        jsr     (sub_020_00C58).l               ; 00178
+        move.l  d0,(BCDIn).l                    ; 00172
+        jsr     (BinToBCD).l                    ; 00178
         lea.l   dat_040_00018(pc),a1            ; 0017E
         move.w  d7,d2                           ; 00182
         lea.l   $d38.w,a4                       ; 00184
@@ -120,9 +120,9 @@ l_040_001C2:
         divu.w  #$a,d0                          ; 001C2
         ext.l   d0                              ; 001C6
         moveq   #$0,d2                          ; 001C8
-        move.l  d0,(dat_071_004EE).l            ; 001CA
-        jsr     (sub_020_00C58).l               ; 001D0
-        move.l  (dat_071_004F2).l,d0            ; 001D6
+        move.l  d0,(BCDIn).l                    ; 001CA
+        jsr     (BinToBCD).l                    ; 001D0
+        move.l  (BCDOut).l,d0                   ; 001D6
         move.l  d0,d1                           ; 001DC
         andi.w  #$ff0f,d0                       ; 001DE
         andi.w  #$ff,d1                         ; 001E2
@@ -135,32 +135,32 @@ l_040_001C2:
         bra.b   l_040_0021E                     ; 001FC
 l_040_001FE:
         move.l  #$ffffff9c,d2                   ; 001FE
-        addi.l  #$64,(dat_071_004EE).l          ; 00204
-        jsr     (sub_020_00C58).l               ; 0020E
-        move.l  (dat_071_004F2).l,d0            ; 00214
+        addi.l  #$64,(BCDIn).l                  ; 00204
+        jsr     (BinToBCD).l                    ; 0020E
+        move.l  (BCDOut).l,d0                   ; 00214
         andi.w  #$ff00,d0                       ; 0021A
 l_040_0021E:
         lsr.l   #$4,d0                          ; 0021E
-        move.l  d0,(dat_071_004F2).l            ; 00220
-        move.l  (dat_071_004F2).l,-(a7)         ; 00226
-        move.l  d1,(dat_071_004F2).l            ; 0022C
+        move.l  d0,(BCDOut).l                   ; 00220
+        move.l  (BCDOut).l,-(a7)                ; 00226
+        move.l  d1,(BCDOut).l                   ; 0022C
         jsr     (sub_020_00C12).l               ; 00232
-        move.l  (a7)+,(dat_071_004F2).l         ; 00238
-        move.l  (dat_071_004EE).l,d1            ; 0023E
+        move.l  (a7)+,(BCDOut).l                ; 00238
+        move.l  (BCDIn).l,d1                    ; 0023E
         add.l   d2,d1                           ; 00244
         divs.w  #$3,d1                          ; 00246
         move.w  #$df,d0                         ; 0024A
-        add.w   (dat_071_00358).l,d0            ; 0024E
+        add.w   (ViewX).l,d0                    ; 0024E
         move.w  d1,-(a7)                        ; 00254
         addi.w  #$5b,d1                         ; 00256
-        add.w   (dat_071_002A8).l,d1            ; 0025A
+        add.w   (ViewY).l,d1                    ; 0025A
         move.w  d1,(dat_071_0035C).l            ; 00260
         addq.w  #$2,d1                          ; 00266
         tst.w   d0                              ; 00268
         ble.b   l_040_00278                     ; 0026A
         cmpi.w  #$13f,d0                        ; 0026C
         bge.b   l_040_00278                     ; 00270
-        jsr     (sub_036_00144).l               ; 00272
+        jsr     (PlotKeep).l                    ; 00272
 l_040_00278:
         move.w  (a7)+,d5                        ; 00278
         asl.w   #$3,d5                          ; 0027A
@@ -176,7 +176,7 @@ l_040_00278:
         move.l  #$5,(dat_071_004F6).l           ; 00294
         move.w  (a7)+,d1                        ; 0029E
         move.l  (a7)+,d5                        ; 002A0
-        move.l  (dat_071_004F2).l,-(a7)         ; 002A2
+        move.l  (BCDOut).l,-(a7)                ; 002A2
         move.l  d5,-(a7)                        ; 002A8
         move.w  d1,-(a7)                        ; 002AA
 l_040_002AC:
@@ -187,7 +187,7 @@ l_040_002AC:
         move.w  d1,-(a7)                        ; 002BE
         move.l  d5,-(a7)                        ; 002C0
         move.w  #$df,d0                         ; 002C2
-        jsr     (sub_036_00130).l               ; 002C6
+        jsr     (PlotInView).l                  ; 002C6
         move.l  (a7)+,d5                        ; 002CC
         move.l  d5,-(a7)                        ; 002CE
         lea.l   (dat_071_004F6).l,a1            ; 002D0
@@ -203,9 +203,9 @@ l_040_002AC:
 l_040_002F0:
         move.w  (a7)+,d1                        ; 002F0
         move.l  (a7)+,d5                        ; 002F2
-        move.l  (a7)+,(dat_071_004F2).l         ; 002F4
+        move.l  (a7)+,(BCDOut).l                ; 002F4
 l_040_002FA:
-        tst.l   (dat_071_004F2).l               ; 002FA
+        tst.l   (BCDOut).l                      ; 002FA
         beq.w   l_040_0034A                     ; 00300
         addi.l  #$258,d5                        ; 00304
         cmpi.l  #$1130,d5                       ; 0030A
@@ -214,7 +214,7 @@ l_040_002FA:
         move.w  d1,-(a7)                        ; 00318
         move.l  d5,-(a7)                        ; 0031A
         move.w  #$df,d0                         ; 0031C
-        jsr     (sub_036_00130).l               ; 00320
+        jsr     (PlotInView).l                  ; 00320
         move.l  (a7)+,d5                        ; 00326
         move.l  d5,-(a7)                        ; 00328
         lea.l   (dat_071_004F6).l,a1            ; 0032A
@@ -233,7 +233,7 @@ l_040_0034A:
         bsr.w   sub_040_0087E                   ; 0035A
 l_040_0035E:
         lea.l   (ObjectTable).l,a0              ; 0035E
-        adda.w  (dat_071_002AE).l,a0            ; 00364
+        adda.w  (ViewObject).l,a0               ; 00364
         moveq   #$0,d0                          ; 0036A
         btst    #$7,$0(a0)                      ; 0036C
         bne.b   l_040_0037C                     ; 00372
@@ -250,8 +250,8 @@ l_040_0037C:
         ext.l   d0                              ; 00394
         divu.w  #$c,d0                          ; 00396
         ext.l   d0                              ; 0039A
-        move.l  d0,(dat_071_004EE).l            ; 0039C
-        jsr     (sub_020_00C58).l               ; 003A2
+        move.l  d0,(BCDIn).l                    ; 0039C
+        jsr     (BinToBCD).l                    ; 003A2
         lea.l   dat_040_0003C(pc),a1            ; 003A8
         move.w  d7,d2                           ; 003AC
         lea.l   $d2a.w,a4                       ; 003AE
@@ -276,9 +276,9 @@ l_040_003EC:
         divu.w  #$c,d0                          ; 003EE
         ext.l   d0                              ; 003F2
         moveq   #$0,d2                          ; 003F4
-        move.l  d0,(dat_071_004EE).l            ; 003F6
-        jsr     (sub_020_00C58).l               ; 003FC
-        move.l  (dat_071_004F2).l,d0            ; 00402
+        move.l  d0,(BCDIn).l                    ; 003F6
+        jsr     (BinToBCD).l                    ; 003FC
+        move.l  (BCDOut).l,d0                   ; 00402
         move.l  d0,d1                           ; 00408
         andi.w  #$ff0f,d0                       ; 0040A
         andi.w  #$ff,d1                         ; 0040E
@@ -291,23 +291,23 @@ l_040_003EC:
         bra.b   l_040_0044A                     ; 00428
 l_040_0042A:
         move.l  #$ffffff9c,d2                   ; 0042A
-        addi.l  #$64,(dat_071_004EE).l          ; 00430
-        jsr     (sub_020_00C58).l               ; 0043A
-        move.l  (dat_071_004F2).l,d0            ; 00440
+        addi.l  #$64,(BCDIn).l                  ; 00430
+        jsr     (BinToBCD).l                    ; 0043A
+        move.l  (BCDOut).l,d0                   ; 00440
         andi.w  #$ff00,d0                       ; 00446
 l_040_0044A:
         lsr.l   #$4,d0                          ; 0044A
-        move.l  d0,(dat_071_004F2).l            ; 0044C
-        move.l  (dat_071_004F2).l,-(a7)         ; 00452
-        move.l  d1,(dat_071_004F2).l            ; 00458
+        move.l  d0,(BCDOut).l                   ; 0044C
+        move.l  (BCDOut).l,-(a7)                ; 00452
+        move.l  d1,(BCDOut).l                   ; 00458
         jsr     (sub_020_00C12).l               ; 0045E
-        move.l  (a7)+,(dat_071_004F2).l         ; 00464
-        move.l  (dat_071_004EE).l,d1            ; 0046A
+        move.l  (a7)+,(BCDOut).l                ; 00464
+        move.l  (BCDIn).l,d1                    ; 0046A
         add.l   d2,d1                           ; 00470
         divs.w  #$3,d1                          ; 00472
         move.w  d1,d5                           ; 00476
         addi.w  #$5b,d1                         ; 00478
-        add.w   (dat_071_002A8).l,d1            ; 0047C
+        add.w   (ViewY).l,d1                    ; 0047C
         move.w  d1,(dat_071_0035C).l            ; 00482
         asl.w   #$3,d5                          ; 00488
         move.w  d5,d3                           ; 0048A
@@ -320,7 +320,7 @@ l_040_0044A:
         bsr.w   sub_040_00D18                   ; 0049C
         move.l  (a7)+,d5                        ; 004A0
         move.l  #$5,(dat_071_004F6).l           ; 004A2
-        move.l  (dat_071_004F2).l,-(a7)         ; 004AC
+        move.l  (BCDOut).l,-(a7)                ; 004AC
         move.l  d5,-(a7)                        ; 004B2
 l_040_004B4:
         subi.l  #$258,d5                        ; 004B4
@@ -338,9 +338,9 @@ l_040_004B4:
         bra.b   l_040_004B4                     ; 004E0
 l_040_004E2:
         move.l  (a7)+,d5                        ; 004E2
-        move.l  (a7)+,(dat_071_004F2).l         ; 004E4
+        move.l  (a7)+,(BCDOut).l                ; 004E4
 l_040_004EA:
-        tst.l   (dat_071_004F2).l               ; 004EA
+        tst.l   (BCDOut).l                      ; 004EA
         beq.w   l_040_00522                     ; 004F0
         addi.l  #$258,d5                        ; 004F4
         cmpi.l  #$1130,d5                       ; 004FA
@@ -360,51 +360,51 @@ l_040_00522:
         move.w  #$6b,d0                         ; 0052E
         bsr.w   sub_040_008AE                   ; 00532
         move.w  #$6e,d0                         ; 00536
-        add.w   (dat_071_00358).l,d0            ; 0053A
+        add.w   (ViewX).l,d0                    ; 0053A
         cmpi.w  #$5,d0                          ; 00540
         ble.b   l_040_00584                     ; 00544
         cmpi.w  #$13b,d0                        ; 00546
         bge.b   l_040_00584                     ; 0054A
         move.w  #$56,d1                         ; 0054C
-        add.w   (dat_071_002A8).l,d1            ; 00550
-        jsr     (sub_036_0017A).l               ; 00556
+        add.w   (ViewY).l,d1                    ; 00550
+        jsr     (Plot2).l                       ; 00556
         move.w  #$6c,d0                         ; 0055C
         move.w  #$57,d1                         ; 00560
-        jsr     (sub_036_00130).l               ; 00564
+        jsr     (PlotInView).l                  ; 00564
         addq.w  #$1,d1                          ; 0056A
-        jsr     (sub_036_00144).l               ; 0056C
+        jsr     (PlotKeep).l                    ; 0056C
         move.w  #$6e,d0                         ; 00572
-        add.w   (dat_071_00358).l,d0            ; 00576
+        add.w   (ViewX).l,d0                    ; 00576
         addq.w  #$1,d1                          ; 0057C
-        jsr     (sub_036_0017A).l               ; 0057E
+        jsr     (Plot2).l                       ; 0057E
 l_040_00584:
         move.w  #$9f,d0                         ; 00584
         move.w  #$3f,d1                         ; 00588
-        jsr     (sub_036_00130).l               ; 0058C
+        jsr     (PlotInView).l                  ; 0058C
         blt.b   l_040_005A4                     ; 00592
         addq.w  #$1,d1                          ; 00594
-        jsr     (sub_036_00144).l               ; 00596
+        jsr     (PlotKeep).l                    ; 00596
         addq.w  #$1,d1                          ; 0059C
-        jsr     (sub_036_00164).l               ; 0059E
+        jsr     (Plot).l                        ; 0059E
 l_040_005A4:
         lea.l   (ObjectTable).l,a0              ; 005A4
-        adda.w  (dat_071_002AE).l,a0            ; 005AA
+        adda.w  (ViewObject).l,a0               ; 005AA
         move.w  $68(a0),d0                      ; 005B0
         asr.w   #$3,d0                          ; 005B4
         ext.l   d0                              ; 005B6
         moveq   #$0,d2                          ; 005B8
-        move.l  d0,(dat_071_004EE).l            ; 005BA
-        jsr     (sub_020_00C58).l               ; 005C0
-        move.l  (dat_071_004F2).l,d0            ; 005C6
+        move.l  d0,(BCDIn).l                    ; 005BA
+        jsr     (BinToBCD).l                    ; 005C0
+        move.l  (BCDOut).l,d0                   ; 005C6
         move.l  d0,d1                           ; 005CC
         andi.w  #$ff0f,d0                       ; 005CE
         andi.w  #$ff,d1                         ; 005D2
         cmpi.w  #$40,d1                         ; 005D6
         ble.b   l_040_005FC                     ; 005DA
         move.l  #$ffffff9c,d2                   ; 005DC
-        addi.l  #$64,(dat_071_004EE).l          ; 005E2
-        jsr     (sub_020_00C58).l               ; 005EC
-        move.l  (dat_071_004F2).l,d0            ; 005F2
+        addi.l  #$64,(BCDIn).l                  ; 005E2
+        jsr     (BinToBCD).l                    ; 005EC
+        move.l  (BCDOut).l,d0                   ; 005F2
         andi.w  #$ff00,d0                       ; 005F8
 l_040_005FC:
         lsr.l   #$4,d0                          ; 005FC
@@ -412,12 +412,12 @@ l_040_005FC:
         blt.b   l_040_00608                     ; 00604
         moveq   #$0,d0                          ; 00606
 l_040_00608:
-        move.l  d0,(dat_071_004F2).l            ; 00608
-        move.l  (dat_071_004F2).l,-(a7)         ; 0060E
-        move.l  d1,(dat_071_004F2).l            ; 00614
+        move.l  d0,(BCDOut).l                   ; 00608
+        move.l  (BCDOut).l,-(a7)                ; 0060E
+        move.l  d1,(BCDOut).l                   ; 00614
         jsr     (sub_020_00C12).l               ; 0061A
-        move.l  (a7)+,(dat_071_004F2).l         ; 00620
-        move.l  (dat_071_004EE).l,d1            ; 00626
+        move.l  (a7)+,(BCDOut).l                ; 00620
+        move.l  (BCDIn).l,d1                    ; 00626
         add.l   d2,d1                           ; 0062C
         divs.w  #$5,d1                          ; 0062E
         neg.w   d1                              ; 00632
@@ -431,7 +431,7 @@ l_040_00608:
         bsr.w   sub_040_00CFC                   ; 0064C
         move.w  (a7)+,d1                        ; 00650
         move.l  #$a,(dat_071_004F6).l           ; 00652
-        move.l  (dat_071_004F2).l,-(a7)         ; 0065C
+        move.l  (BCDOut).l,-(a7)                ; 0065C
         move.w  d1,-(a7)                        ; 00662
 l_040_00664:
         addi.w  #$a0,d1                         ; 00664
@@ -443,9 +443,9 @@ l_040_00664:
         abcd.b  -(a2),-(a1)                     ; 0067E
         abcd.b  -(a2),-(a1)                     ; 00680
         abcd.b  -(a2),-(a1)                     ; 00682
-        cmpi.l  #$360,(dat_071_004F2).l         ; 00684
+        cmpi.l  #$360,(BCDOut).l                ; 00684
         blt.b   l_040_00696                     ; 0068E
-        clr.l   (dat_071_004F2).l               ; 00690
+        clr.l   (BCDOut).l                      ; 00690
 l_040_00696:
         lea.l   (sub_040_007BE).l,a1            ; 00696
         adda.w  d1,a1                           ; 0069C
@@ -455,10 +455,10 @@ l_040_00696:
         bra.b   l_040_00664                     ; 006A6
 l_040_006A8:
         move.w  (a7)+,d1                        ; 006A8
-        move.l  (a7)+,(dat_071_004F2).l         ; 006AA
-        tst.l   (dat_071_004F2).l               ; 006B0
+        move.l  (a7)+,(BCDOut).l                ; 006AA
+        tst.l   (BCDOut).l                      ; 006B0
         bgt.b   l_040_006C2                     ; 006B6
-        move.l  #$360,(dat_071_004F2).l         ; 006B8
+        move.l  #$360,(BCDOut).l                ; 006B8
 l_040_006C2:
         subi.w  #$a0,d1                         ; 006C2
         cmpi.w  #$ff50,d1                       ; 006C6
@@ -472,7 +472,7 @@ l_040_006C2:
 	dc.b	$D2,$C1,$3F,$01,$61,$00,$06,$0E,$32,$1F,$60,$BC
 l_040_006F4:
         move.l  #$3d,d1                         ; 006F4
-        add.w   (dat_071_002A8).l,d1            ; 006FA
+        add.w   (ViewY).l,d1                    ; 006FA
         bsr.w   sub_040_00E0E                   ; 00700
         rts                                     ; 00704
 	dc.b	$00,$00,$50,$00,$00,$00,$90,$00,$00,$00,$60,$00,$00,$00,$A0,$00
@@ -537,7 +537,7 @@ sub_040_007BE:
 	dc.b	$00,$06,$30,$00  ori.b #$0,d6
 	dc.b	$00,$06,$70,$00  ori.b #$0,d6
 sub_040_0087E:
-        add.w   (dat_071_00358).l,d0            ; 0087E
+        add.w   (ViewX).l,d0                    ; 0087E
         cmpi.w  #$13b,d0                        ; 00884
         bge.b   l_040_008AC                     ; 00888
         move.w  #$5a,d1                         ; 0088A
@@ -546,13 +546,13 @@ sub_040_0087E:
         cmpi.w  #$4,d2                          ; 00892
         ble.b   l_040_008AC                     ; 00896
         move.w  d1,d3                           ; 00898
-        add.w   (dat_071_002A8).l,d1            ; 0089A
-        add.w   (dat_071_002A8).l,d3            ; 008A0
-        jsr     (sub_036_005EE).l               ; 008A6
+        add.w   (ViewY).l,d1                    ; 0089A
+        add.w   (ViewY).l,d3                    ; 008A0
+        jsr     (DrawLine).l                    ; 008A6
 l_040_008AC:
         rts                                     ; 008AC
 sub_040_008AE:
-        add.w   (dat_071_00358).l,d0            ; 008AE
+        add.w   (ViewX).l,d0                    ; 008AE
         cmpi.w  #$13b,d0                        ; 008B4
         bge.b   l_040_008DC                     ; 008B8
         move.w  #$5a,d1                         ; 008BA
@@ -561,9 +561,9 @@ sub_040_008AE:
         cmpi.w  #$4,d2                          ; 008C2
         ble.b   l_040_008DC                     ; 008C6
         move.w  d1,d3                           ; 008C8
-        add.w   (dat_071_002A8).l,d1            ; 008CA
-        add.w   (dat_071_002A8).l,d3            ; 008D0
-        jsr     (sub_036_005EE).l               ; 008D6
+        add.w   (ViewY).l,d1                    ; 008CA
+        add.w   (ViewY).l,d3                    ; 008D0
+        jsr     (DrawLine).l                    ; 008D6
 l_040_008DC:
         rts                                     ; 008DC
 l_040_008DE:
@@ -572,7 +572,7 @@ sub_040_008E0:
         cmpi.w  #$80,(dat_071_00412).l          ; 008E0
         bne.b   l_040_008DE                     ; 008E8
         lea.l   (ObjectTable).l,a1              ; 008EA
-        adda.w  (dat_071_002AE).l,a1            ; 008F0
+        adda.w  (ViewObject).l,a1               ; 008F0
         move.b  $63(a1),d5                      ; 008F6
         andi.b  #$f0,d5                         ; 008FA
         cmpi.b  #$10,d5                         ; 008FE
@@ -624,28 +624,28 @@ l_040_009AC:
         movem.w (dat_071_0030E).l,d0-d1         ; 009AC
         tst.w   d0                              ; 009B4
         ble.w   l_040_00A6C                     ; 009B6
-        jsr     (sub_036_00130).l               ; 009BA
+        jsr     (PlotInView).l                  ; 009BA
 l_040_009C0:
         movem.w (dat_071_0030E).l,d0-d1         ; 009C0
         tst.w   d0                              ; 009C8
         ble.w   l_040_00A6C                     ; 009CA
-        add.w   (dat_071_002A8).l,d1            ; 009CE
+        add.w   (ViewY).l,d1                    ; 009CE
         move.w  #$50,d2                         ; 009D4
         lea.l   (dat_040_016F4).l,a0            ; 009D8
-        move.w  #$a,(dat_071_00324).l           ; 009DE
+        move.w  #$a,(DrawColour).l              ; 009DE
         bsr.w   sub_040_01348                   ; 009E6
         tst.w   (dat_071_00390).l               ; 009EA
         blt.w   l_040_00A6C                     ; 009F0
         movem.w (dat_071_0030E).l,d0-d1         ; 009F4
-        add.w   (dat_071_002A8).l,d1            ; 009FC
+        add.w   (ViewY).l,d1                    ; 009FC
         lea.l   (ObjectTable).l,a0              ; 00A02
-        adda.w  (dat_071_002AE).l,a0            ; 00A08
+        adda.w  (ViewObject).l,a0               ; 00A08
         move.w  $4a(a0),d2                      ; 00A0E
         move.l  a0,-(a7)                        ; 00A12
         mulu.w  #$4c,d2                         ; 00A14
         divu.w  #$8ca0,d2                       ; 00A18
         lea.l   (dat_040_0171E).l,a0            ; 00A1C
-        move.w  #$d,(dat_071_00324).l           ; 00A22
+        move.w  #$d,(DrawColour).l              ; 00A22
         bsr.w   sub_040_0159A                   ; 00A2A
         movea.l (a7)+,a0                        ; 00A2E
         move.w  $4a(a0),d0                      ; 00A30
@@ -673,7 +673,7 @@ l_040_00A78:
         rts                                     ; 00A78
 sub_040_00A7A:
         lea.l   (ObjectTable).l,a1              ; 00A7A
-        adda.w  (dat_071_002AE).l,a1            ; 00A80
+        adda.w  (ViewObject).l,a1               ; 00A80
         movem.l (dat_071_000F2).l,d2-d4         ; 00A86
         sub.l   $14(a1),d2                      ; 00A8E
         sub.l   $18(a1),d3                      ; 00A92
@@ -751,7 +751,7 @@ sub_040_00B70:
         tst.w   (dat_071_00390).l               ; 00B70
         blt.b   sub_040_00B4C                   ; 00B76
         lea.l   (ObjectTable).l,a1              ; 00B78
-        adda.w  (dat_071_002AE).l,a1            ; 00B7E
+        adda.w  (ViewObject).l,a1               ; 00B7E
         move.b  $63(a1),d5                      ; 00B84
         andi.b  #$f0,d5                         ; 00B88
         cmpi.b  #$10,d5                         ; 00B8C
@@ -841,7 +841,7 @@ l_040_00CC2:
         ori.l   #$200,(dat_071_00520).l         ; 00CCC
         ori.l   #$100,(dat_071_00524).l         ; 00CD6
 l_040_00CE0:
-        move.w  #$a,(dat_071_00324).l           ; 00CE0
+        move.w  #$a,(DrawColour).l              ; 00CE0
         bsr.w   sub_040_0165A                   ; 00CE8
         tst.b   (dat_071_00284).l               ; 00CEC
         beq.b   l_040_00CFA                     ; 00CF2
@@ -884,7 +884,7 @@ l_040_00D4A:
 l_040_00D5A:
         rts                                     ; 00D5A
 sub_040_00D5C:
-        add.w   (dat_071_00358).l,d0            ; 00D5C
+        add.w   (ViewX).l,d0                    ; 00D5C
         ble.b   l_040_00D5A                     ; 00D62
         cmpi.w  #$13f,d0                        ; 00D64
         bge.b   l_040_00D5A                     ; 00D68
@@ -894,7 +894,7 @@ sub_040_00D5C:
         add.w   d1,d0                           ; 00D76
         move.w  (dat_071_0035C).l,d1            ; 00D78
         move.w  d1,-(a7)                        ; 00D7E
-        jsr     (sub_036_0017A).l               ; 00D80
+        jsr     (Plot2).l                       ; 00D80
         move.w  (a7)+,d1                        ; 00D86
         move.w  #$0,-$2(a6)                     ; 00D88
 l_040_00D8E:
@@ -907,11 +907,11 @@ l_040_00D8E:
         beq.b   l_040_00DB4                     ; 00DA2
         cmpi.w  #$9,-$2(a6)                     ; 00DA4
         beq.b   l_040_00DB4                     ; 00DAA
-        jsr     (sub_036_00164).l               ; 00DAC
+        jsr     (Plot).l                        ; 00DAC
         bra.b   l_040_00DBE                     ; 00DB2
 l_040_00DB4:
         add.w   -$6(a6),d0                      ; 00DB4
-        jsr     (sub_036_0017A).l               ; 00DB8
+        jsr     (Plot2).l                       ; 00DB8
 l_040_00DBE:
         move.w  (a7)+,d1                        ; 00DBE
         addq.w  #$1,-$2(a6)                     ; 00DC0
@@ -929,11 +929,11 @@ l_040_00DD2:
         beq.b   l_040_00DF8                     ; 00DE6
         cmpi.w  #$9,-$2(a6)                     ; 00DE8
         beq.b   l_040_00DF8                     ; 00DEE
-        jsr     (sub_036_00164).l               ; 00DF0
+        jsr     (Plot).l                        ; 00DF0
         bra.b   l_040_00E02                     ; 00DF6
 l_040_00DF8:
         add.w   -$6(a6),d0                      ; 00DF8
-        jsr     (sub_036_0017A).l               ; 00DFC
+        jsr     (Plot2).l                       ; 00DFC
 l_040_00E02:
         move.w  (a7)+,d1                        ; 00E02
         addq.w  #$1,-$2(a6)                     ; 00E04
@@ -945,10 +945,10 @@ sub_040_00E0E:
         link.w  a6,#$fff8                       ; 00E0E
         move.w  d1,-$4(a6)                      ; 00E12
         move.w  (dat_071_0035C).l,d0            ; 00E16
-        jsr     (sub_036_00130).l               ; 00E1C
+        jsr     (PlotInView).l                  ; 00E1C
         blt.b   l_040_00E2C                     ; 00E22
         subq.w  #$1,d1                          ; 00E24
-        jsr     (sub_036_00144).l               ; 00E26
+        jsr     (PlotKeep).l                    ; 00E26
 l_040_00E2C:
         move.w  #$0,-$2(a6)                     ; 00E2C
 l_040_00E32:
@@ -958,7 +958,7 @@ l_040_00E32:
         cmpi.w  #$13f,d0                        ; 00E3C
         bgt.b   l_040_00E84                     ; 00E40
         move.w  #$b9,d2                         ; 00E42
-        add.w   (dat_071_00358).l,d2            ; 00E46
+        add.w   (ViewX).l,d2                    ; 00E46
         cmp.w   d2,d0                           ; 00E4C
         bge.b   l_040_00E84                     ; 00E4E
         move.w  d0,-(a7)                        ; 00E50
@@ -966,20 +966,20 @@ l_040_00E32:
         beq.b   l_040_00E6A                     ; 00E58
         cmpi.w  #$3,-$2(a6)                     ; 00E5A
         beq.b   l_040_00E6A                     ; 00E60
-        jsr     (sub_036_00164).l               ; 00E62
+        jsr     (Plot).l                        ; 00E62
         bra.b   l_040_00E7C                     ; 00E68
 l_040_00E6A:
-        jsr     (sub_036_00144).l               ; 00E6A
+        jsr     (PlotKeep).l                    ; 00E6A
         move.w  -$4(a6),d1                      ; 00E70
         subq.w  #$1,d1                          ; 00E74
-        jsr     (sub_036_00164).l               ; 00E76
+        jsr     (Plot).l                        ; 00E76
 l_040_00E7C:
         move.w  (a7)+,d0                        ; 00E7C
         addq.w  #$1,-$2(a6)                     ; 00E7E
         bra.b   l_040_00E32                     ; 00E82
 l_040_00E84:
         move.w  (dat_071_0035C).l,d0            ; 00E84
-        add.w   (dat_071_00358).l,d0            ; 00E8A
+        add.w   (ViewX).l,d0                    ; 00E8A
         move.w  #$0,-$2(a6)                     ; 00E90
 l_040_00E96:
         move.w  -$4(a6),d1                      ; 00E96
@@ -988,7 +988,7 @@ l_040_00E96:
         cmpi.w  #$13f,d0                        ; 00EA0
         bgt.b   l_040_00EE8                     ; 00EA4
         move.w  #$85,d2                         ; 00EA6
-        add.w   (dat_071_00358).l,d2            ; 00EAA
+        add.w   (ViewX).l,d2                    ; 00EAA
         cmp.w   d2,d0                           ; 00EB0
         ble.b   l_040_00EE8                     ; 00EB2
         move.w  d0,-(a7)                        ; 00EB4
@@ -996,13 +996,13 @@ l_040_00E96:
         beq.b   l_040_00ECE                     ; 00EBC
         cmpi.w  #$3,-$2(a6)                     ; 00EBE
         beq.b   l_040_00ECE                     ; 00EC4
-        jsr     (sub_036_00164).l               ; 00EC6
+        jsr     (Plot).l                        ; 00EC6
         bra.b   l_040_00EE0                     ; 00ECC
 l_040_00ECE:
-        jsr     (sub_036_00144).l               ; 00ECE
+        jsr     (PlotKeep).l                    ; 00ECE
         move.w  -$4(a6),d1                      ; 00ED4
         subq.w  #$1,d1                          ; 00ED8
-        jsr     (sub_036_00164).l               ; 00EDA
+        jsr     (Plot).l                        ; 00EDA
 l_040_00EE0:
         move.w  (a7)+,d0                        ; 00EE0
         addq.w  #$1,-$2(a6)                     ; 00EE2
@@ -1013,19 +1013,19 @@ l_040_00EE8:
 	dc.b	$4E,$75
 sub_040_00EEE:
         move.l  #$fffff,(dat_071_000B6).l       ; 00EEE
-        move.w  #$a,(dat_071_00324).l           ; 00EF8
+        move.w  #$a,(DrawColour).l              ; 00EF8
         move.w  #$9f,d0                         ; 00F00
         move.w  #$47,d1                         ; 00F04
-        jsr     (sub_036_00130).l               ; 00F08
+        jsr     (PlotInView).l                  ; 00F08
         blt.b   l_040_00F5A                     ; 00F0E
         addq.w  #$1,d1                          ; 00F10
-        jsr     (sub_036_00144).l               ; 00F12
+        jsr     (PlotKeep).l                    ; 00F12
         addq.w  #$2,d1                          ; 00F18
-        jsr     (sub_036_00144).l               ; 00F1A
+        jsr     (PlotKeep).l                    ; 00F1A
         addq.w  #$1,d1                          ; 00F20
-        jsr     (sub_036_00164).l               ; 00F22
+        jsr     (Plot).l                        ; 00F22
         move.w  #$9d,d0                         ; 00F28
-        add.w   (dat_071_00358).l,d0            ; 00F2C
+        add.w   (ViewX).l,d0                    ; 00F2C
         cmpi.w  #$4,d0                          ; 00F32
         blt.b   l_040_00F5A                     ; 00F36
         move.w  #$48,d1                         ; 00F38
@@ -1034,13 +1034,13 @@ sub_040_00EEE:
         cmpi.w  #$13b,d2                        ; 00F40
         bgt.b   l_040_00F5A                     ; 00F44
         move.w  d1,d3                           ; 00F46
-        add.w   (dat_071_002A8).l,d1            ; 00F48
-        add.w   (dat_071_002A8).l,d3            ; 00F4E
-        jsr     (sub_036_005EE).l               ; 00F54
+        add.w   (ViewY).l,d1                    ; 00F48
+        add.w   (ViewY).l,d3                    ; 00F4E
+        jsr     (DrawLine).l                    ; 00F54
 l_040_00F5A:
-        move.w  #$a,(dat_071_00324).l           ; 00F5A
+        move.w  #$a,(DrawColour).l              ; 00F5A
         move.w  #$8d,d0                         ; 00F62
-        add.w   (dat_071_00358).l,d0            ; 00F66
+        add.w   (ViewX).l,d0                    ; 00F66
         cmpi.w  #$5,d0                          ; 00F6C
         blt.b   l_040_00F94                     ; 00F70
         move.w  #$5a,d1                         ; 00F72
@@ -1049,12 +1049,12 @@ l_040_00F5A:
         cmpi.w  #$13b,d2                        ; 00F7A
         bgt.b   l_040_00F94                     ; 00F7E
         move.w  d1,d3                           ; 00F80
-        add.w   (dat_071_002A8).l,d1            ; 00F82
-        add.w   (dat_071_002A8).l,d3            ; 00F88
-        jsr     (sub_036_005EE).l               ; 00F8E
+        add.w   (ViewY).l,d1                    ; 00F82
+        add.w   (ViewY).l,d3                    ; 00F88
+        jsr     (DrawLine).l                    ; 00F8E
 l_040_00F94:
         move.w  #$ad,d0                         ; 00F94
-        add.w   (dat_071_00358).l,d0            ; 00F98
+        add.w   (ViewX).l,d0                    ; 00F98
         cmpi.w  #$5,d0                          ; 00F9E
         blt.b   l_040_00FC6                     ; 00FA2
         move.w  #$5a,d1                         ; 00FA4
@@ -1063,12 +1063,12 @@ l_040_00F94:
         cmpi.w  #$13b,d2                        ; 00FAC
         bgt.b   l_040_00FC6                     ; 00FB0
         move.w  d1,d3                           ; 00FB2
-        add.w   (dat_071_002A8).l,d1            ; 00FB4
-        add.w   (dat_071_002A8).l,d3            ; 00FBA
-        jsr     (sub_036_005EE).l               ; 00FC0
+        add.w   (ViewY).l,d1                    ; 00FB4
+        add.w   (ViewY).l,d3                    ; 00FBA
+        jsr     (DrawLine).l                    ; 00FC0
 l_040_00FC6:
         lea.l   (ObjectTable).l,a0              ; 00FC6
-        adda.w  (dat_071_002AE).l,a0            ; 00FCC
+        adda.w  (ViewObject).l,a0               ; 00FCC
         move.b  $62(a0),d0                      ; 00FD2
         cmpi.b  #$10,d0                         ; 00FD6
         beq.b   l_040_00FEA                     ; 00FDA
@@ -1084,23 +1084,23 @@ l_040_00FF0:
         movem.w (a0),d0-d3                      ; 00FFC
         lea.l   (dat_040_01320).l,a0            ; 01000
         adda.w  (dat_071_0037A).l,a0            ; 01006
-        move.w  (a0),(dat_071_00324).l          ; 0100C
-        add.w   (dat_071_00358).l,d0            ; 01012
+        move.w  (a0),(DrawColour).l             ; 0100C
+        add.w   (ViewX).l,d0                    ; 01012
         bge.b   l_040_01026                     ; 01018
         clr.w   d0                              ; 0101A
-        add.w   (dat_071_00358).l,d2            ; 0101C
+        add.w   (ViewX).l,d2                    ; 0101C
         blt.b   l_040_01064                     ; 01022
         bra.b   l_040_01048                     ; 01024
 l_040_01026:
         cmpi.w  #$13f,d0                        ; 01026
         ble.b   l_040_0103E                     ; 0102A
         move.w  #$13f,d0                        ; 0102C
-        add.w   (dat_071_00358).l,d2            ; 01030
+        add.w   (ViewX).l,d2                    ; 01030
         cmpi.w  #$13f,d2                        ; 01036
         ble.b   l_040_01052                     ; 0103A
         bra.b   l_040_01064                     ; 0103C
 l_040_0103E:
-        add.w   (dat_071_00358).l,d2            ; 0103E
+        add.w   (ViewX).l,d2                    ; 0103E
         bge.b   l_040_01048                     ; 01044
         clr.w   d2                              ; 01046
 l_040_01048:
@@ -1108,9 +1108,9 @@ l_040_01048:
         ble.b   l_040_01052                     ; 0104C
         move.w  #$13f,d2                        ; 0104E
 l_040_01052:
-        add.w   (dat_071_002A8).l,d1            ; 01052
-        add.w   (dat_071_002A8).l,d3            ; 01058
-        jsr     (sub_036_005EE).l               ; 0105E
+        add.w   (ViewY).l,d1                    ; 01052
+        add.w   (ViewY).l,d3                    ; 01058
+        jsr     (DrawLine).l                    ; 0105E
 l_040_01064:
         addq.w  #$4,(dat_071_0037A).l           ; 01064
         cmpi.w  #$14,(dat_071_0037A).l          ; 0106A
@@ -1119,7 +1119,7 @@ l_040_01076:
         rts                                     ; 01076
 sub_040_01078:
         clr.w   (dat_071_0037A).l               ; 01078
-        move.w  #$a,(dat_071_00324).l           ; 0107E
+        move.w  #$a,(DrawColour).l              ; 0107E
 l_040_01086:
         movem.w (dat_071_00306).l,d0-d1         ; 01086
         tst.b   (dat_071_0017E).l               ; 0108E
@@ -1127,7 +1127,7 @@ l_040_01086:
         movem.w (dat_071_00312).l,d2-d3         ; 01098
         moveq   #$0,d5                          ; 010A0
         lea.l   (ObjectTable).l,a1              ; 010A2
-        adda.w  (dat_071_002AE).l,a1            ; 010A8
+        adda.w  (ViewObject).l,a1               ; 010A8
         move.b  $63(a1),d4                      ; 010AE
         andi.b  #$f0,d4                         ; 010B2
         beq.b   l_040_010BC                     ; 010B6
@@ -1259,8 +1259,8 @@ l_040_011BC:
         add.w   (a0,d2.w),d0                    ; 011D4
         add.w   $2(a0,d2.w),d1                  ; 011D8
 l_040_011DC:
-        add.w   (dat_071_00358).l,d0            ; 011DC
-        add.w   (dat_071_002A8).l,d1            ; 011E2
+        add.w   (ViewX).l,d0                    ; 011DC
+        add.w   (ViewY).l,d1                    ; 011E2
         move.w  d0,d2                           ; 011E8
         ble.w   l_040_012E6                     ; 011EA
         move.w  d1,d3                           ; 011EE
@@ -1285,11 +1285,11 @@ l_040_01218:
 l_040_01222:
         add.w   $2(a0),d1                       ; 01222
         add.w   $6(a0),d3                       ; 01226
-        add.w   (dat_071_002A8).l,d1            ; 0122A
-        add.w   (dat_071_002A8).l,d3            ; 01230
+        add.w   (ViewY).l,d1                    ; 0122A
+        add.w   (ViewY).l,d3                    ; 01230
         move.w  (dat_040_01308).l,d4            ; 01236
         addq.w  #$1,d4                          ; 0123C
-        add.w   (dat_071_00358).l,d4            ; 0123E
+        add.w   (ViewX).l,d4                    ; 0123E
         cmpi.w  #$13f,d4                        ; 01244
         bgt.b   l_040_012C2                     ; 01248
         cmp.w   d4,d0                           ; 0124A
@@ -1307,7 +1307,7 @@ l_040_01258:
 l_040_0125E:
         move.w  (dat_040_01318).l,d4            ; 0125E
         subq.w  #$1,d4                          ; 01264
-        add.w   (dat_071_00358).l,d4            ; 01266
+        add.w   (ViewX).l,d4                    ; 01266
         blt.b   l_040_012C2                     ; 0126C
         cmp.w   d4,d0                           ; 0126E
         ble.b   l_040_0127C                     ; 01270
@@ -1323,7 +1323,7 @@ l_040_0127C:
         move.w  d4,d2                           ; 01280
 l_040_01282:
         move.w  (dat_040_0130E).l,d4            ; 01282
-        add.w   (dat_071_002A8).l,d4            ; 01288
+        add.w   (ViewY).l,d4                    ; 01288
         cmp.w   d4,d1                           ; 0128E
         bge.b   l_040_0129E                     ; 01290
         cmp.w   d1,d3                           ; 01292
@@ -1338,7 +1338,7 @@ l_040_0129E:
         move.w  d4,d3                           ; 012A2
 l_040_012A4:
         move.w  (dat_040_0130A).l,d4            ; 012A4
-        add.w   (dat_071_002A8).l,d4            ; 012AA
+        add.w   (ViewY).l,d4                    ; 012AA
         cmp.w   d4,d1                           ; 012B0
         ble.b   l_040_012B6                     ; 012B2
         move.w  d4,d1                           ; 012B4
@@ -1347,7 +1347,7 @@ l_040_012B6:
         ble.b   l_040_012BC                     ; 012B8
         move.w  d4,d3                           ; 012BA
 l_040_012BC:
-        jsr     (sub_036_005EE).l               ; 012BC
+        jsr     (DrawLine).l                    ; 012BC
 l_040_012C2:
         addq.w  #$4,(dat_071_0037A).l           ; 012C2
         cmpi.w  #$10,(dat_071_0037A).l          ; 012C8
@@ -1383,11 +1383,11 @@ sub_040_01348:
         cmpi.w  #$132,d0                        ; 01360
         bge.w   l_040_0143E                     ; 01364
         move.w  #$63,d2                         ; 01368
-        add.w   (dat_071_00358).l,d2            ; 0136C
+        add.w   (ViewX).l,d2                    ; 0136C
         cmp.w   d2,d0                           ; 01372
         ble.w   l_040_0143E                     ; 01374
         move.w  #$db,d2                         ; 01378
-        add.w   (dat_071_00358).l,d2            ; 0137C
+        add.w   (ViewX).l,d2                    ; 0137C
         cmp.w   d2,d0                           ; 01382
         bge.w   l_040_0143E                     ; 01384
         cmpi.w  #$39,d1                         ; 01388
@@ -1404,7 +1404,7 @@ l_040_01398:
         add.w   -$2(a6),d0                      ; 013A4
         add.w   -$4(a6),d1                      ; 013A8
         move.l  a0,-(a7)                        ; 013AC
-        jsr     (sub_036_00164).l               ; 013AE
+        jsr     (Plot).l                        ; 013AE
         movea.l (a7)+,a0                        ; 013B4
         subq.w  #$1,-$e(a6)                     ; 013B6
         blt.w   l_040_0143A                     ; 013BA
@@ -1421,7 +1421,7 @@ l_040_013C2:
         add.w   -$2(a6),d0                      ; 013CE
         add.w   -$4(a6),d1                      ; 013D2
         move.l  a0,-(a7)                        ; 013D6
-        jsr     (sub_036_00164).l               ; 013D8
+        jsr     (Plot).l                        ; 013D8
         movea.l (a7)+,a0                        ; 013DE
         subq.w  #$1,-$e(a6)                     ; 013E0
         blt.b   l_040_0143A                     ; 013E4
@@ -1439,7 +1439,7 @@ l_040_013EA:
         add.w   -$2(a6),d0                      ; 013F8
         add.w   -$4(a6),d1                      ; 013FC
         move.l  a0,-(a7)                        ; 01400
-        jsr     (sub_036_00164).l               ; 01402
+        jsr     (Plot).l                        ; 01402
         movea.l (a7)+,a0                        ; 01408
         subq.w  #$1,-$e(a6)                     ; 0140A
         blt.b   l_040_0143A                     ; 0140E
@@ -1457,7 +1457,7 @@ l_040_01414:
         add.w   -$2(a6),d0                      ; 01422
         add.w   -$4(a6),d1                      ; 01426
         move.l  a0,-(a7)                        ; 0142A
-        jsr     (sub_036_00164).l               ; 0142C
+        jsr     (Plot).l                        ; 0142C
         movea.l (a7)+,a0                        ; 01432
         subq.w  #$1,-$e(a6)                     ; 01434
         bge.b   l_040_01414                     ; 01438
@@ -1466,10 +1466,10 @@ l_040_0143A:
         rts                                     ; 0143C
 l_040_0143E:
         move.w  #$55,d0                         ; 0143E
-        add.w   (dat_071_00358).l,d0            ; 01442
+        add.w   (ViewX).l,d0                    ; 01442
         move.w  d0,-$6(a6)                      ; 01448
         move.w  #$e9,d0                         ; 0144C
-        add.w   (dat_071_00358).l,d0            ; 01450
+        add.w   (ViewX).l,d0                    ; 01450
         move.w  d0,-$8(a6)                      ; 01456
         move.w  #$2d,-$a(a6)                    ; 0145A
         move.w  #$90,-$c(a6)                    ; 01460
@@ -1495,7 +1495,7 @@ l_040_01466:
         cmp.w   -$c(a6),d1                      ; 01498
         bge.b   l_040_014A8                     ; 0149C
         move.l  a0,-(a7)                        ; 0149E
-        jsr     (sub_036_00164).l               ; 014A0
+        jsr     (Plot).l                        ; 014A0
         movea.l (a7)+,a0                        ; 014A6
 l_040_014A8:
         subq.w  #$1,-$e(a6)                     ; 014A8
@@ -1524,7 +1524,7 @@ l_040_014B4:
         cmp.w   -$c(a6),d1                      ; 014E4
         bge.b   l_040_014F4                     ; 014E8
         move.l  a0,-(a7)                        ; 014EA
-        jsr     (sub_036_00164).l               ; 014EC
+        jsr     (Plot).l                        ; 014EC
         movea.l (a7)+,a0                        ; 014F2
 l_040_014F4:
         subq.w  #$1,-$e(a6)                     ; 014F4
@@ -1554,7 +1554,7 @@ l_040_01500:
         cmp.w   -$c(a6),d1                      ; 01532
         bge.b   l_040_01542                     ; 01536
         move.l  a0,-(a7)                        ; 01538
-        jsr     (sub_036_00164).l               ; 0153A
+        jsr     (Plot).l                        ; 0153A
         movea.l (a7)+,a0                        ; 01540
 l_040_01542:
         subq.w  #$1,-$e(a6)                     ; 01542
@@ -1585,7 +1585,7 @@ l_040_0154C:
         cmp.w   -$c(a6),d1                      ; 01580
         bge.b   l_040_01590                     ; 01584
         move.l  a0,-(a7)                        ; 01586
-        jsr     (sub_036_00164).l               ; 01588
+        jsr     (Plot).l                        ; 01588
         movea.l (a7)+,a0                        ; 0158E
 l_040_01590:
         subq.w  #$1,-$e(a6)                     ; 01590
@@ -1599,10 +1599,10 @@ sub_040_0159A:
         move.w  d1,-$4(a6)                      ; 015A2
         move.w  d2,-$e(a6)                      ; 015A6
         move.w  #$55,d0                         ; 015AA
-        add.w   (dat_071_00358).l,d0            ; 015AE
+        add.w   (ViewX).l,d0                    ; 015AE
         move.w  d0,-$6(a6)                      ; 015B4
         move.w  #$e9,d0                         ; 015B8
-        add.w   (dat_071_00358).l,d0            ; 015BC
+        add.w   (ViewX).l,d0                    ; 015BC
         move.w  d0,-$8(a6)                      ; 015C2
         move.w  #$2d,-$a(a6)                    ; 015C6
         move.w  #$90,-$c(a6)                    ; 015CC
@@ -1662,7 +1662,7 @@ l_040_0161E:
         ble.b   l_040_01654                     ; 01646
         cmp.w   -$c(a6),d1                      ; 01648
         bge.b   l_040_01654                     ; 0164C
-        jsr     (sub_036_001DE).l               ; 0164E
+        jsr     (PlotBigAbove).l                ; 0164E
 l_040_01654:
         unlk    a6                              ; 01654
         rts                                     ; 01656
@@ -1695,12 +1695,12 @@ l_040_0167E:
         bge.b   l_040_016F0                     ; 016A0
         lea.l   (dat_040_01792).l,a0            ; 016A2
 l_040_016A8:
-        add.w   (dat_071_00358).l,d0            ; 016A8
+        add.w   (ViewX).l,d0                    ; 016A8
         cmpi.w  #$a,d0                          ; 016AE
         blt.b   l_040_016F0                     ; 016B2
         cmpi.w  #$136,d0                        ; 016B4
         bgt.b   l_040_016F0                     ; 016B8
-        add.w   (dat_071_002A8).l,d1            ; 016BA
+        add.w   (ViewY).l,d1                    ; 016BA
         link.w  a6,#$fff0                       ; 016C0
         move.w  d0,-$2(a6)                      ; 016C4
         move.w  d1,-$4(a6)                      ; 016C8
@@ -1715,7 +1715,7 @@ l_040_016CC:
         add.w   -$2(a6),d0                      ; 016DA
         add.w   -$4(a6),d1                      ; 016DE
         move.l  a0,-(a7)                        ; 016E2
-        jsr     (sub_036_00164).l               ; 016E4
+        jsr     (Plot).l                        ; 016E4
         movea.l (a7)+,a0                        ; 016EA
         bra.b   l_040_016CC                     ; 016EC
 l_040_016EE:

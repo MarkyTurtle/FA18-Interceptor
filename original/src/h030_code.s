@@ -538,14 +538,14 @@ l_030_007B2:
         bge.b   l_030_0080C                     ; 007B6
         cmpi.b  #$ff,$38(a1)                    ; 007B8
         beq.b   l_030_0080C                     ; 007BE
-        cmpi.b  #$2,(dat_071_00277).l           ; 007C0
+        cmpi.b  #$2,(Difficulty).l              ; 007C0
         ble.b   l_030_007D8                     ; 007C8
         move.b  $64(a1),d0                      ; 007CA
         andi.b  #$60,d0                         ; 007CE
         cmpi.b  #$60,d0                         ; 007D2
         bne.b   l_030_0080C                     ; 007D6
 l_030_007D8:
-        move.b  (dat_071_00277).l,d0            ; 007D8
+        move.b  (Difficulty).l,d0               ; 007D8
         ble.b   l_030_007FA                     ; 007DE
         subq.b  #$1,d0                          ; 007E0
         beq.b   l_030_007F4                     ; 007E2
@@ -586,7 +586,7 @@ l_030_00818:
         cmp.l   $18(a1),d4                      ; 00840
         blt.w   l_030_0112E                     ; 00844
         move.w  #$3c,(dat_071_0036E).l          ; 00848
-        jsr     (sub_007_00012).l               ; 00850
+        jsr     (Nop).l                         ; 00850
         bra.w   l_030_00986                     ; 00856
 l_030_0085A:
         neg.l   d4                              ; 0085A

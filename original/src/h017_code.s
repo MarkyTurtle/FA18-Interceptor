@@ -61,8 +61,8 @@ l_017_000C0:
         subq.b  #$1,(dat_071_0021E).l           ; 000C8
 l_017_000CE:
         bsr.w   sub_017_00430                   ; 000CE
-        clr.w   (dat_071_00384).l               ; 000D2
-        clr.w   (dat_071_00386).l               ; 000D8
+        clr.w   (CurrentObject).l               ; 000D2
+        clr.w   (CurrentObjectOffset).l         ; 000D8
         lea.l   (ObjectTable).l,a1              ; 000DE
         lea.l   (dat_071_01354).l,a2            ; 000E4
         tst.b   (dat_071_0017E).l               ; 000EA
@@ -74,13 +74,13 @@ l_017_000F6:
         bsr.w   sub_017_01026                   ; 00100
         bsr.w   sub_017_01862                   ; 00104
         jsr     (sub_022_000FE).l               ; 00108
-        move.w  #$1,(dat_071_00384).l           ; 0010E
-        move.w  #$200,(dat_071_00386).l         ; 00116
+        move.w  #$1,(CurrentObject).l           ; 0010E
+        move.w  #$200,(CurrentObjectOffset).l   ; 00116
         lea.l   (dat_071_00D54).l,a1            ; 0011E
         lea.l   (ObjectTable).l,a2              ; 00124
         btst    #$6,$1(a1)                      ; 0012A
         bne.w   l_017_00148                     ; 00130
-        tst.b   (dat_071_0018A).l               ; 00134
+        tst.b   (LaunchRequest).l               ; 00134
         bne.b   l_017_00144                     ; 0013A
         bsr.w   sub_017_00468                   ; 0013C
         bne.b   l_017_00148                     ; 00140
@@ -92,13 +92,13 @@ l_017_00148:
         beq.b   l_017_00154                     ; 0014C
         jsr     (sub_022_000FE).l               ; 0014E
 l_017_00154:
-        move.w  #$2,(dat_071_00384).l           ; 00154
-        move.w  #$400,(dat_071_00386).l         ; 0015C
+        move.w  #$2,(CurrentObject).l           ; 00154
+        move.w  #$400,(CurrentObjectOffset).l   ; 0015C
         lea.l   (dat_071_00F54).l,a1            ; 00164
         lea.l   (ObjectTable).l,a2              ; 0016A
         btst    #$6,$1(a1)                      ; 00170
         bne.b   l_017_0018C                     ; 00176
-        tst.b   (dat_071_0018A).l               ; 00178
+        tst.b   (LaunchRequest).l               ; 00178
         bne.b   l_017_00188                     ; 0017E
         bsr.w   sub_017_00468                   ; 00180
         bne.b   l_017_0018C                     ; 00184
@@ -110,13 +110,13 @@ l_017_0018C:
         beq.b   l_017_00198                     ; 00190
         jsr     (sub_022_000FE).l               ; 00192
 l_017_00198:
-        move.w  #$3,(dat_071_00384).l           ; 00198
-        move.w  #$600,(dat_071_00386).l         ; 001A0
+        move.w  #$3,(CurrentObject).l           ; 00198
+        move.w  #$600,(CurrentObjectOffset).l   ; 001A0
         lea.l   (dat_071_01154).l,a1            ; 001A8
         lea.l   (ObjectTable).l,a2              ; 001AE
         btst    #$6,$1(a1)                      ; 001B4
         bne.b   l_017_001D0                     ; 001BA
-        tst.b   (dat_071_0018A).l               ; 001BC
+        tst.b   (LaunchRequest).l               ; 001BC
         bne.b   l_017_001CC                     ; 001C2
         bsr.w   sub_017_00468                   ; 001C4
         bne.b   l_017_001D0                     ; 001C8
@@ -131,15 +131,15 @@ l_017_001DC:
         lea.l   (dat_071_01354).l,a1            ; 001DC
         btst    #$6,$1(a1)                      ; 001E2
         beq.b   l_017_0020A                     ; 001E8
-        move.w  #$4,(dat_071_00384).l           ; 001EA
-        move.w  #$800,(dat_071_00386).l         ; 001F2
+        move.w  #$4,(CurrentObject).l           ; 001EA
+        move.w  #$800,(CurrentObjectOffset).l   ; 001F2
         bsr.w   sub_017_0072A                   ; 001FA
         bsr.w   sub_017_00DFE                   ; 001FE
         beq.b   l_017_0020A                     ; 00202
         jsr     (sub_022_000FE).l               ; 00204
 l_017_0020A:
-        move.w  #$5,(dat_071_00384).l           ; 0020A
-        move.w  #$a00,(dat_071_00386).l         ; 00212
+        move.w  #$5,(CurrentObject).l           ; 0020A
+        move.w  #$a00,(CurrentObjectOffset).l   ; 00212
         lea.l   (dat_071_01554).l,a1            ; 0021A
         lea.l   (dat_071_01354).l,a2            ; 00220
         btst    #$6,$1(a1)                      ; 00226
@@ -150,7 +150,7 @@ l_017_0020A:
         bne.b   l_017_00242                     ; 0023A
         bra.b   l_017_0024E                     ; 0023C
 l_017_0023E:
-        bsr.w   sub_017_00AFE                   ; 0023E
+        bsr.w   LaunchMissile                   ; 0023E
 l_017_00242:
         bsr.w   sub_017_00DFE                   ; 00242
         beq.b   l_017_0024E                     ; 00246
@@ -159,35 +159,35 @@ l_017_0024E:
         lea.l   (dat_071_01754).l,a1            ; 0024E
         btst    #$6,$1(a1)                      ; 00254
         beq.b   l_017_00278                     ; 0025A
-        move.w  #$6,(dat_071_00384).l           ; 0025C
-        move.w  #$c00,(dat_071_00386).l         ; 00264
+        move.w  #$6,(CurrentObject).l           ; 0025C
+        move.w  #$c00,(CurrentObjectOffset).l   ; 00264
         bsr.w   sub_017_00DFE                   ; 0026C
         beq.b   l_017_00278                     ; 00270
         jsr     (sub_022_000FE).l               ; 00272
 l_017_00278:
-        move.w  #$7,(dat_071_00384).l           ; 00278
-        move.w  #$e00,(dat_071_00386).l         ; 00280
+        move.w  #$7,(CurrentObject).l           ; 00278
+        move.w  #$e00,(CurrentObjectOffset).l   ; 00280
         lea.l   (dat_071_01954).l,a1            ; 00288
         lea.l   (dat_071_01754).l,a2            ; 0028E
         btst    #$6,$1(a1)                      ; 00294
         lea.l   (dat_071_01B54).l,a1            ; 0029A
         btst    #$6,$1(a1)                      ; 002A0
         beq.b   l_017_002C4                     ; 002A6
-        move.w  #$8,(dat_071_00384).l           ; 002A8
-        move.w  #$1000,(dat_071_00386).l        ; 002B0
+        move.w  #$8,(CurrentObject).l           ; 002A8
+        move.w  #$1000,(CurrentObjectOffset).l  ; 002B0
         bsr.w   sub_017_00DFE                   ; 002B8
         beq.b   l_017_002C4                     ; 002BC
         jsr     (sub_022_000FE).l               ; 002BE
 l_017_002C4:
-        move.w  #$9,(dat_071_00384).l           ; 002C4
-        move.w  #$1200,(dat_071_00386).l        ; 002CC
+        move.w  #$9,(CurrentObject).l           ; 002C4
+        move.w  #$1200,(CurrentObjectOffset).l  ; 002CC
         lea.l   (dat_071_01D54).l,a1            ; 002D4
         lea.l   (dat_071_01B54).l,a2            ; 002DA
         btst    #$6,$1(a1)                      ; 002E0
         bne.b   l_017_002F2                     ; 002E6
         bsr.w   sub_017_00522                   ; 002E8
         beq.b   l_017_002FE                     ; 002EC
-        bsr.w   sub_017_00AFE                   ; 002EE
+        bsr.w   LaunchMissile                   ; 002EE
 l_017_002F2:
         bsr.w   sub_017_00DFE                   ; 002F2
         beq.b   l_017_002FE                     ; 002F6
@@ -196,21 +196,21 @@ l_017_002FE:
         lea.l   (dat_071_01F54).l,a1            ; 002FE
         btst    #$6,$1(a1)                      ; 00304
         beq.b   l_017_00328                     ; 0030A
-        move.w  #$a,(dat_071_00384).l           ; 0030C
-        move.w  #$1400,(dat_071_00386).l        ; 00314
+        move.w  #$a,(CurrentObject).l           ; 0030C
+        move.w  #$1400,(CurrentObjectOffset).l  ; 00314
         bsr.w   sub_017_00DFE                   ; 0031C
         beq.b   l_017_00328                     ; 00320
         jsr     (sub_022_000FE).l               ; 00322
 l_017_00328:
-        move.w  #$b,(dat_071_00384).l           ; 00328
-        move.w  #$1600,(dat_071_00386).l        ; 00330
+        move.w  #$b,(CurrentObject).l           ; 00328
+        move.w  #$1600,(CurrentObjectOffset).l  ; 00330
         lea.l   (dat_071_02154).l,a1            ; 00338
         lea.l   (dat_071_01F54).l,a2            ; 0033E
         btst    #$6,$1(a1)                      ; 00344
         bne.b   l_017_00356                     ; 0034A
         bsr.w   sub_017_00522                   ; 0034C
         beq.b   l_017_00362                     ; 00350
-        bsr.w   sub_017_00AFE                   ; 00352
+        bsr.w   LaunchMissile                   ; 00352
 l_017_00356:
         bsr.w   sub_017_00DFE                   ; 00356
         beq.b   l_017_00362                     ; 0035A
@@ -219,21 +219,21 @@ l_017_00362:
         lea.l   (dat_071_02354).l,a1            ; 00362
         btst    #$6,$1(a1)                      ; 00368
         beq.b   l_017_0038C                     ; 0036E
-        move.w  #$c,(dat_071_00384).l           ; 00370
-        move.w  #$1800,(dat_071_00386).l        ; 00378
+        move.w  #$c,(CurrentObject).l           ; 00370
+        move.w  #$1800,(CurrentObjectOffset).l  ; 00378
         bsr.w   sub_017_00DFE                   ; 00380
         beq.b   l_017_0038C                     ; 00384
         jsr     (sub_022_000FE).l               ; 00386
 l_017_0038C:
-        move.w  #$d,(dat_071_00384).l           ; 0038C
-        move.w  #$1a00,(dat_071_00386).l        ; 00394
+        move.w  #$d,(CurrentObject).l           ; 0038C
+        move.w  #$1a00,(CurrentObjectOffset).l  ; 00394
         lea.l   (dat_071_02554).l,a1            ; 0039C
         lea.l   (dat_071_02354).l,a2            ; 003A2
         btst    #$6,$1(a1)                      ; 003A8
         bne.b   l_017_003BA                     ; 003AE
         bsr.w   sub_017_00522                   ; 003B0
         beq.b   l_017_003C6                     ; 003B4
-        bsr.w   sub_017_00AFE                   ; 003B6
+        bsr.w   LaunchMissile                   ; 003B6
 l_017_003BA:
         bsr.w   sub_017_00DFE                   ; 003BA
         beq.b   l_017_003C6                     ; 003BE
@@ -243,8 +243,8 @@ l_017_003C6:
         btst    #$6,$1(a1)                      ; 003CC
         beq.b   l_017_003F6                     ; 003D2
         bset    #$2,$1(a1)                      ; 003D4
-        move.w  #$e,(dat_071_00384).l           ; 003DA
-        move.w  #$1c00,(dat_071_00386).l        ; 003E2
+        move.w  #$e,(CurrentObject).l           ; 003DA
+        move.w  #$1c00,(CurrentObjectOffset).l  ; 003E2
         bsr.w   sub_017_00DFE                   ; 003EA
         beq.b   l_017_003F6                     ; 003EE
         jsr     (sub_022_000FE).l               ; 003F0
@@ -253,8 +253,8 @@ l_017_003F6:
         btst    #$6,$1(a1)                      ; 003FC
         beq.b   l_017_00426                     ; 00402
         bset    #$2,$1(a1)                      ; 00404
-        move.w  #$f,(dat_071_00384).l           ; 0040A
-        move.w  #$1e00,(dat_071_00386).l        ; 00412
+        move.w  #$f,(CurrentObject).l           ; 0040A
+        move.w  #$1e00,(CurrentObjectOffset).l  ; 00412
         bsr.w   sub_017_00DFE                   ; 0041A
         beq.b   l_017_00426                     ; 0041E
         jsr     (sub_022_000FE).l               ; 00420
@@ -458,7 +458,7 @@ l_017_0064E:
         movem.w d3-d4,$c(a1)                    ; 006AC
         asr.l   #$8,d1                          ; 006B2
         move.l  d1,$10(a1)                      ; 006B4
-        move.b  #$ff,(dat_071_00228).l          ; 006B8
+        move.b  #$ff,(RedrawFlags).l            ; 006B8
 l_017_006C0:
         tst.b   (dat_071_0016C).l               ; 006C0
         blt.b   l_017_00728                     ; 006C6
@@ -627,7 +627,7 @@ l_017_0090A:
 l_017_0092A:
         ext.w   d0                              ; 0092A
         move.w  d0,d1                           ; 0092C
-        move.w  (dat_071_00384).l,d0            ; 0092E
+        move.w  (CurrentObject).l,d0            ; 0092E
         cmp.w   (dat_071_002AC).l,d0            ; 00934
         bne.b   l_017_0094E                     ; 0093A
         asl.w   #$3,d0                          ; 0093C
@@ -647,7 +647,7 @@ l_017_0094E:
 l_017_0096A:
         move.b  d0,(dat_071_00155).l            ; 0096A
 l_017_00970:
-        move.b  #$ff,(dat_071_00228).l          ; 00970
+        move.b  #$ff,(RedrawFlags).l            ; 00970
         cmpi.b  #$4,d1                          ; 00978
         bne.b   l_017_0098E                     ; 0097C
         cmpi.l  #$100000,$18(a1)                ; 0097E
@@ -678,7 +678,7 @@ sub_017_00A2A:
         move.w  d1,(dat_071_00392).l            ; 00A32
         tst.b   (dat_071_00155).l               ; 00A38
         bne.b   l_017_00A4C                     ; 00A3E
-        move.w  (dat_071_00384).l,d1            ; 00A40
+        move.w  (CurrentObject).l,d1            ; 00A40
         jsr     (sub_005_012D0).l               ; 00A46
 l_017_00A4C:
         lea.l   (a2),a4                         ; 00A4C
@@ -718,7 +718,7 @@ l_017_00AC4:
         bclr    #$6,$1(a1)                      ; 00AC4
         rts                                     ; 00ACA
 sub_017_00ACC:
-        clr.b   (dat_071_0018A).l               ; 00ACC
+        clr.b   (LaunchRequest).l               ; 00ACC
         move.b  #$1,(dat_071_00187).l           ; 00AD2
         move.l  (dat_071_00520).l,d6            ; 00ADA
         andi.l  #$4000,d6                       ; 00AE0
@@ -726,12 +726,23 @@ sub_017_00ACC:
         andi.l  #$ffffbfff,(dat_071_00520).l    ; 00AE8
         ori.l   #$8,(dat_071_00524).l           ; 00AF2
         bra.b   l_017_00B38                     ; 00AFC
-sub_017_00AFE:
+
+;-------------------------------------------------------------------------------
+; LaunchMissile - LaunchMissile(a2 = the launcher, a1 = the new object): fires the launcher's
+; selected missile, if it has one left (+$5F: low nibble AMRAAMs, high nibble Sidewinders; a
+; computer aircraft only every 8, 6 or 4 frames by Difficulty, while dat_071_00159 allows it).
+; The missile starts as a copy of the launcher's record (its first $A4 bytes); its type (+$62)
+; is 1 for an AIM-120 AMRAAM (weapon $30), 0 for an AIM-9L Sidewinder; the player's launches
+; are counted in the flight log (+$3E AMRAAMs, +$42 Sidewinders fired). It is placed at its
+; pylon (dat_017_00DA6, turned by the launcher's orientation +$92) and given the launcher's
+; velocity plus a push along its nose.
+;-------------------------------------------------------------------------------
+LaunchMissile:
         tst.b   (dat_071_00159).l               ; 00AFE
         beq.b   l_017_00AC4                     ; 00B04
-        cmpi.b  #$3,(dat_071_00277).l           ; 00B06
+        cmpi.b  #$3,(Difficulty).l              ; 00B06
         bge.b   l_017_00B22                     ; 00B0E
-        cmpi.b  #$2,(dat_071_00277).l           ; 00B10
+        cmpi.b  #$2,(Difficulty).l              ; 00B10
         bge.b   l_017_00B1E                     ; 00B18
         moveq   #$7,d1                          ; 00B1A
         bra.b   l_017_00B24                     ; 00B1C
@@ -762,7 +773,7 @@ l_017_00B54:
         beq.w   l_017_00AC4                     ; 00B54
         move.l  a2,d0                           ; 00B58
         subi.l  #ObjectTable,d0                 ; 00B5A
-        cmp.w   (dat_071_002AE).l,d0            ; 00B60
+        cmp.w   (ViewObject).l,d0               ; 00B60
         bne.b   l_017_00B78                     ; 00B66
         move.b  #$8,(dat_071_00167).l           ; 00B68
         move.b  #$fb,(dat_071_00280).l          ; 00B70
@@ -794,10 +805,10 @@ l_017_00BBC:
         addq.w  #$1,$42(a0)                     ; 00BCE
         move.b  #$1,(dat_071_00195).l           ; 00BD2
 l_017_00BDA:
-        lea.l   (dat_016_00000).l,a4            ; 00BDA
+        lea.l   (MissileModels).l,a4            ; 00BDA
         adda.w  d0,a4                           ; 00BE0
-        lea.l   (dat_016_00140).l,a5            ; 00BE2
-        move.w  (dat_071_00384).l,d3            ; 00BE8
+        lea.l   (ObjectDrawTable).l,a5          ; 00BE2
+        move.w  (CurrentObject).l,d3            ; 00BE8
         add.w   d3,d3                           ; 00BEE
         add.w   d3,d3                           ; 00BF0
         move.w  d3,d4                           ; 00BF2
@@ -847,7 +858,7 @@ l_017_00C82:
         lea.l   (dat_017_00DB2).l,a4            ; 00C82
         bra.b   l_017_00C9C                     ; 00C88
 l_017_00C8A:
-        lea.l   (dat_017_00DA6).l,a4            ; 00C8A
+        lea.l   (PylonOffsets).l,a4             ; 00C8A
         moveq   #$0,d0                          ; 00C90
         cmpi.b  #$30,$62(a1)                    ; 00C92
         beq.b   l_017_00C9C                     ; 00C98
@@ -905,7 +916,7 @@ l_017_00D0C:
 l_017_00D3A:
         andi.w  #$ff7f,$2(a1)                   ; 00D3A
         move.w  #$ffff,$2c(a1)                  ; 00D40
-        move.b  #$8c,(dat_071_00228).l          ; 00D46
+        move.b  #$8c,(RedrawFlags).l            ; 00D46
         move.b  $38(a2),$38(a1)                 ; 00D4E
         move.b  $62(a1),d0                      ; 00D54
         andi.b  #$f0,d0                         ; 00D58
@@ -933,7 +944,9 @@ l_017_00D82:
         move.w  #$ffec,$4c(a1)                  ; 00D9E
 l_017_00DA4:
         rts                                     ; 00DA4
-dat_017_00DA6:
+; PylonOffsets - Where a missile leaves the aircraft (x, y, z words, by missile type), in the
+; aircraft's own axes.
+PylonOffsets:
 	dc.b	$00,$00,$00,$03,$00,$14,$00,$00,$FF,$FD,$00,$00
 dat_017_00DB2:
 	dc.b	$FF,$ED,$FF,$FF,$00,$00,$00,$13,$FF,$FF,$00,$00,$FF,$F9,$FF,$FE
@@ -1153,7 +1166,7 @@ l_017_0106E:
         tst.w   (a4)                            ; 01072
         bge.b   l_017_0105C                     ; 01074
         move.w  #$35,(dat_071_0036E).l          ; 01076
-        jsr     (sub_007_00012).l               ; 0107E
+        jsr     (Nop).l                         ; 0107E
         bra.b   l_017_010BC                     ; 01084
 l_017_01086:
         tst.w   $a(a4)                          ; 01086
@@ -1272,7 +1285,7 @@ l_017_011EE:
         movem.l d0-d2,-(a7)                     ; 011EE
         tst.b   (dat_071_00185).l               ; 011F2
         beq.b   l_017_0121A                     ; 011F8
-        move.w  (dat_071_00384).l,d1            ; 011FA
+        move.w  (CurrentObject).l,d1            ; 011FA
         cmp.w   (dat_071_002AC).l,d1            ; 01200
         beq.b   l_017_0121A                     ; 01206
         jsr     (sub_005_012D0).l               ; 01208
@@ -1359,7 +1372,7 @@ l_017_012B2:
         ori.w   #$20,$2(a2)                     ; 012B2
 l_017_012B8:
         clr.w   $0(a1)                          ; 012B8
-        move.b  #$c,(dat_071_00228).l           ; 012BC
+        move.b  #$c,(RedrawFlags).l             ; 012BC
         moveq   #$0,d0                          ; 012C4
         rts                                     ; 012C6
 l_017_012C8:
@@ -1432,7 +1445,7 @@ l_017_01386:
         move.w  (dat_071_00390).l,d0            ; 01386
         cmpi.w  #$ffff,d0                       ; 0138C
         beq.w   l_017_0130E                     ; 01390
-        cmp.w   (dat_071_00386).l,d0            ; 01394
+        cmp.w   (CurrentObjectOffset).l,d0      ; 01394
         beq.w   l_017_0130E                     ; 0139A
         lea.l   (ObjectTable).l,a2              ; 0139E
         adda.w  d0,a2                           ; 013A4
@@ -1465,9 +1478,9 @@ l_017_013FE:
         beq.b   l_017_01462                     ; 01404
         movem.l $14(a1),d0-d2                   ; 01406
         movem.l (dat_071_00B68).l,d3-d5         ; 0140C
-        cmpi.b  #$3,(dat_071_00277).l           ; 01414
+        cmpi.b  #$3,(Difficulty).l              ; 01414
         bge.b   l_017_01438                     ; 0141C
-        cmpi.b  #$2,(dat_071_00277).l           ; 0141E
+        cmpi.b  #$2,(Difficulty).l              ; 0141E
         bge.b   l_017_01430                     ; 01426
         move.l  #$180000,d6                     ; 01428
         bra.b   l_017_0143E                     ; 0142E
@@ -1593,7 +1606,7 @@ l_017_01564:
         btst    #$5,$4(a1)                      ; 01564
         beq.w   l_017_01654                     ; 0156A
         lea.l   (dat_030_000A0).l,a4            ; 0156E
-        move.w  (dat_071_00296).l,d0            ; 01574
+        move.w  (GunFlags).l,d0                 ; 01574
         moveq   #$0,d2                          ; 0157A
         cmpi.w  #$300,$4a(a3)                   ; 0157C
         bgt.b   l_017_015B0                     ; 01582
@@ -1638,14 +1651,14 @@ l_017_015DC:
 l_017_015EE:
         move.w  (dat_071_00390).l,d0            ; 015EE
         blt.b   l_017_01610                     ; 015F4
-        cmp.w   (dat_071_00386).l,d0            ; 015F6
+        cmp.w   (CurrentObjectOffset).l,d0      ; 015F6
         bne.b   l_017_01610                     ; 015FC
         tst.b   (dat_071_00187).l               ; 015FE
         beq.b   l_017_01610                     ; 01604
         clr.b   (dat_071_00187).l               ; 01606
         adda.w  #$10,a4                         ; 0160C
 l_017_01610:
-        move.b  (dat_071_00277).l,d1            ; 01610
+        move.b  (Difficulty).l,d1               ; 01610
         ext.w   d1                              ; 01616
         cmpi.w  #$3,d1                          ; 01618
         ble.b   l_017_01620                     ; 0161C
@@ -1678,7 +1691,7 @@ l_017_0166C:
         blt.b   l_017_01686                     ; 0166E
         move.w  $4(a3),d0                       ; 01670
         andi.w  #$ff,d0                         ; 01674
-        cmp.w   (dat_071_00384).l,d0            ; 01678
+        cmp.w   (CurrentObject).l,d0            ; 01678
         beq.b   l_017_016B2                     ; 0167E
         adda.w  #$a,a3                          ; 01680
         bra.b   l_017_0166C                     ; 01684
@@ -1694,7 +1707,7 @@ l_017_01686:
         bra.b   l_017_0166C                     ; 016A0
 l_017_016A2:
         move.w  #$34,(dat_071_0036E).l          ; 016A2
-        jsr     (sub_007_00012).l               ; 016AA
+        jsr     (Nop).l                         ; 016AA
         bra.b   l_017_01654                     ; 016B0
 l_017_016B2:
         move.w  $6(a3),d2                       ; 016B2
@@ -1944,7 +1957,7 @@ l_017_0199C:
         bne.b   l_017_019AA                     ; 019A2
         move.b  #$3,$7a(a1)                     ; 019A4
 l_017_019AA:
-        tst.w   (dat_071_00386).l               ; 019AA
+        tst.w   (CurrentObjectOffset).l         ; 019AA
         beq.b   l_017_019E0                     ; 019B0
         cmpi.w  #$1800,d1                       ; 019B2
         bgt.b   l_017_019CC                     ; 019B6
@@ -1956,7 +1969,7 @@ l_017_019AA:
 l_017_019CC:
         move.w  #$7fff,$4a(a1)                  ; 019CC
 l_017_019D2:
-        tst.w   (dat_071_00386).l               ; 019D2
+        tst.w   (CurrentObjectOffset).l         ; 019D2
         beq.b   l_017_019E0                     ; 019D8
         ori.b   #$f0,$63(a1)                    ; 019DA
 l_017_019E0:

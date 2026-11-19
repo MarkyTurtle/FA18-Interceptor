@@ -7,11 +7,11 @@
 	CODE_HUNK	h009
 l_009_00000:
         move.w  #$11,(dat_071_0036E).l          ; 00000
-        jsr     (sub_007_00012).l               ; 00008
+        jsr     (Nop).l                         ; 00008
         bra.b   l_009_00000                     ; 0000E
 l_009_00010:
         move.w  #$12,(dat_071_0036E).l          ; 00010
-        jsr     (sub_007_00012).l               ; 00018
+        jsr     (Nop).l                         ; 00018
         bra.b   l_009_00010                     ; 0001E
 l_009_00020:
         clr.b   -$2e(a6)                        ; 00020
@@ -44,11 +44,11 @@ l_009_0005C:
         move.b  $1(a1,d1.w),d3                  ; 00082
         ext.w   d2                              ; 00086
         ext.w   d3                              ; 00088
-        add.w   (dat_071_0031C).l,d2            ; 0008A
+        add.w   (ViewCellX).l,d2                ; 0008A
         bge.b   l_009_00096                     ; 00090
         addi.w  #$80,d2                         ; 00092
 l_009_00096:
-        add.w   (dat_071_0031E).l,d3            ; 00096
+        add.w   (ViewCellZ).l,d3                ; 00096
         bge.b   l_009_000A2                     ; 0009C
         addi.w  #$80,d3                         ; 0009E
 l_009_000A2:
@@ -108,7 +108,7 @@ l_009_0013A:
         move.w  (a3)+,d6                        ; 0014E
         move.w  d6,d7                           ; 00150
         andi.w  #$ff,d6                         ; 00152
-        move.w  d6,(dat_071_00384).l            ; 00156
+        move.w  d6,(CurrentObject).l            ; 00156
         lsr.w   #$8,d7                          ; 0015C
         move.b  d7,(dat_071_0022A).l            ; 0015E
         lsl.w   #$8,d6                          ; 00164
@@ -117,7 +117,7 @@ l_009_0013A:
         move.w  d6,(a2)+                        ; 0016C
         btst    #$6,d7                          ; 0016E
         beq.b   l_009_00186                     ; 00172
-        lea.l   (dat_071_02B54).l,a1            ; 00174
+        lea.l   (SmallObjects).l,a1             ; 00174
         andi.w  #$ff00,d6                       ; 0017A
         lsr.w   #$3,d6                          ; 0017E
         move.w  $2(a1,d6.w),d6                  ; 00180
@@ -133,7 +133,7 @@ l_009_00188:
         add.w   d6,d6                           ; 00192
         add.w   d7,d6                           ; 00194
         swap    d7                              ; 00196
-        lea.l   (dat_016_00140).l,a1            ; 00198
+        lea.l   (ObjectDrawTable).l,a1          ; 00198
         adda.w  d6,a1                           ; 0019E
         move.l  a1,(a2)+                        ; 001A0
         moveq   #$0,d6                          ; 001A2
@@ -173,7 +173,7 @@ l_009_00200:
         bra.b   l_009_00224                     ; 00206
 l_009_00208:
         move.w  #$26,(dat_071_0036E).l          ; 00208
-        jsr     (sub_007_00012).l               ; 00210
+        jsr     (Nop).l                         ; 00210
         bra.b   l_009_00208                     ; 00216
 l_009_00218:
         movea.l $4(a1),a1                       ; 00218
@@ -203,14 +203,14 @@ l_009_00230:
         beq.b   l_009_002AC                     ; 00262
         btst    #$6,(dat_071_0022A).l           ; 00264
         beq.b   l_009_00280                     ; 0026C
-        lea.l   (dat_071_02B54).l,a1            ; 0026E
-        move.w  (dat_071_00384).l,d0            ; 00274
+        lea.l   (SmallObjects).l,a1             ; 0026E
+        move.w  (CurrentObject).l,d0            ; 00274
         asl.w   #$5,d0                          ; 0027A
         adda.w  d0,a1                           ; 0027C
         bra.b   l_009_002A0                     ; 0027E
 l_009_00280:
         lea.l   (ObjectTable).l,a1              ; 00280
-        move.w  (dat_071_00384).l,d0            ; 00286
+        move.w  (CurrentObject).l,d0            ; 00286
         asl.w   #$8,d0                          ; 0028C
         add.w   d0,d0                           ; 0028E
         adda.w  d0,a1                           ; 00290
@@ -279,15 +279,17 @@ l_009_00330:
         cmpi.w  #$ef,d7                         ; 00332
         ble.b   l_009_0034A                     ; 00336
         move.w  #$f,(dat_071_0036E).l           ; 00338
-        jsr     (sub_007_00012).l               ; 00340
+        jsr     (Nop).l                         ; 00340
         move.w  #$ef,d7                         ; 00346
 l_009_0034A:
-        lea.l   (dat_009_0035E).l,a1            ; 0034A
+        lea.l   (DistanceScale).l,a1            ; 0034A
         move.b  (a1,d7.w),d6                    ; 00350
         or.b    d6,-$5(a2)                      ; 00354
         ext.w   d6                              ; 00358
         bra.w   l_009_0045A                     ; 0035A
-dat_009_0035E:
+; DistanceScale - The scale shift for each distance (0-$EF): how far an object's coordinates
+; are shifted down before it is drawn.
+DistanceScale:
 	dc.b	$00,$01,$01,$02,$02,$02,$03,$03,$03,$03,$03,$03,$04,$04,$04,$04
 	dc.b	$04,$04,$04,$04,$04,$05,$05,$05,$05,$05,$05,$05,$05,$05,$06,$06
 	dc.b	$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$07,$07,$07,$07
@@ -406,10 +408,10 @@ l_009_00584:
         bra.b   l_009_005B6                     ; 005A4
 l_009_005A6:
         move.w  #$10,(dat_071_0036E).l          ; 005A6
-        jsr     (sub_007_00012).l               ; 005AE
+        jsr     (Nop).l                         ; 005AE
         bra.b   l_009_005A6                     ; 005B4
 l_009_005B6:
-        move.l  #dat_073_00F52,d7               ; 005B6
+        move.l  #SceneryList,d7                 ; 005B6
         cmp.l   a2,d7                           ; 005BC
         bgt.b   l_009_005A6                     ; 005BE
         beq.w   l_009_006F8                     ; 005C0
@@ -539,7 +541,7 @@ l_009_006F8:
         beq.b   l_009_0073C                     ; 006FE
         tst.b   (dat_071_00236).l               ; 00700
         bne.b   l_009_0073C                     ; 00706
-        lea.l   (dat_073_00212).l,a0            ; 00708
+        lea.l   (VisibleObjects).l,a0           ; 00708
         move.w  #$ffff,(a0)                     ; 0070E
         lea.l   (ObjectTable).l,a2              ; 00712
         clr.w   d0                              ; 00718
@@ -607,7 +609,7 @@ l_009_007B2:
         bra.w   l_009_0084E                     ; 007C0
 l_009_007C4:
         move.w  #$37,(dat_071_0036E).l          ; 007C4
-        jsr     (sub_007_00012).l               ; 007CC
+        jsr     (Nop).l                         ; 007CC
         bra.b   l_009_007C4                     ; 007D2
 l_009_007D4:
         addq.w  #$4,a1                          ; 007D4
@@ -621,7 +623,7 @@ l_009_007D4:
         add.w   d1,d1                           ; 007F2
         bra.b   l_009_00804                     ; 007F4
 sub_009_007F6:
-        lea.l   (dat_071_02B54).l,a0            ; 007F6
+        lea.l   (SmallObjects).l,a0             ; 007F6
         move.w  d1,d6                           ; 007FC
         andi.w  #$ff00,d1                       ; 007FE
         asr.w   #$3,d1                          ; 00802
@@ -739,14 +741,14 @@ l_009_00938:
         rts                                     ; 00942
 l_009_00944:
         move.w  #$14,(dat_071_0036E).l          ; 00944
-        jsr     (sub_007_00012).l               ; 0094C
+        jsr     (Nop).l                         ; 0094C
         bra.b   l_009_00944                     ; 00952
 l_009_00954:
         unlk    a6                              ; 00954
         rts                                     ; 00956
 sub_009_00958:
         link.w  a6,#$ffde                       ; 00958
-        lea.l   (dat_073_00F52).l,a1            ; 0095C
+        lea.l   (SceneryList).l,a1              ; 0095C
         moveq   #-1,d5                          ; 00962
 l_009_00964:
         tst.w   (a1)                            ; 00964
@@ -924,7 +926,7 @@ l_009_00AEE:
         move.w  d4,-$8(a6)                      ; 00B0E
         bra.w   l_009_00BFE                     ; 00B12
 l_009_00B16:
-        lea.l   (dat_071_02B54).l,a3            ; 00B16
+        lea.l   (SmallObjects).l,a3             ; 00B16
         andi.w  #$ff00,d1                       ; 00B1C
         asr.w   #$3,d1                          ; 00B20
         move.w  $c(a3,d1.w),d2                  ; 00B22
@@ -974,7 +976,7 @@ l_009_00B7E:
         move.l  d0,-$16(a6)                     ; 00BBE
         blt.b   l_009_00BD6                     ; 00BC2
         move.w  #$22,(dat_071_0036E).l          ; 00BC4
-        jsr     (sub_007_00012).l               ; 00BCC
+        jsr     (Nop).l                         ; 00BCC
         bra.w   l_009_00EF0                     ; 00BD2
 l_009_00BD6:
         bclr    #$1f,d0                         ; 00BD6
@@ -1264,7 +1266,7 @@ l_009_00F04:
         move.w  (dat_073_015E6).l,d7            ; 00F04
         ble.b   l_009_00F00                     ; 00F0A
         move.w  d7,d6                           ; 00F0C
-        lea.l   (dat_073_00F52).l,a0            ; 00F0E
+        lea.l   (SceneryList).l,a0              ; 00F0E
         lea.l   (dat_072_00000).l,a1            ; 00F14
         move.w  (dat_073_015E4).l,d0            ; 00F1A
         blt.b   l_009_00F00                     ; 00F20
@@ -1326,7 +1328,7 @@ l_009_00FBC:
 sub_009_00FC8:
         andi.w  #$ff00,d1                       ; 00FC8
         lsr.w   #$3,d1                          ; 00FCC
-        lea.l   (dat_071_02B54).l,a2            ; 00FCE
+        lea.l   (SmallObjects).l,a2             ; 00FCE
         adda.w  d1,a2                           ; 00FD4
         bra.b   l_009_00FE6                     ; 00FD6
 sub_009_00FD8:
@@ -1356,9 +1358,9 @@ sub_009_00FF8:
         move.w  d3,d5                           ; 01018
         lsr.w   #$8,d3                          ; 0101A
         andi.w  #$ff,d5                         ; 0101C
-        move.w  (dat_071_0031C).l,d6            ; 01020
+        move.w  (ViewCellX).l,d6                ; 01020
         andi.w  #$ff,d6                         ; 01026
-        move.w  (dat_071_0031E).l,d7            ; 0102A
+        move.w  (ViewCellZ).l,d7                ; 0102A
         andi.w  #$ff,d7                         ; 01030
         sub.w   d6,d3                           ; 01034
         sub.w   d7,d5                           ; 01036
@@ -1402,7 +1404,7 @@ sub_009_0109C:
         move.w  (a1),d1                         ; 0109E
         andi.w  #$ff00,d1                       ; 010A0
         lsr.w   #$3,d1                          ; 010A4
-        lea.l   (dat_071_02B54).l,a2            ; 010A6
+        lea.l   (SmallObjects).l,a2             ; 010A6
         bra.b   l_009_010BE                     ; 010AC
 sub_009_010AE:
         move.l  a2,-(a7)                        ; 010AE
@@ -1446,14 +1448,14 @@ sub_009_010EC:
         rts                                     ; 01112
 sub_009_01114:
         moveq   #$0,d1                          ; 01114
-        move.w  (dat_071_0031C).l,d1            ; 01116
+        move.w  (ViewCellX).l,d1                ; 01116
         andi.w  #$ff,d1                         ; 0111C
         sub.w   -$1c(a6),d1                     ; 01120
         swap    d1                              ; 01124
         asr.l   #$2,d1                          ; 01126
         add.l   d1,d2                           ; 01128
         moveq   #$0,d1                          ; 0112A
-        move.w  (dat_071_0031E).l,d1            ; 0112C
+        move.w  (ViewCellZ).l,d1                ; 0112C
         andi.w  #$ff,d1                         ; 01132
         sub.w   -$1e(a6),d1                     ; 01136
         swap    d1                              ; 0113A

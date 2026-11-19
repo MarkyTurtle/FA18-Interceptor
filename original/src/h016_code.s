@@ -5,7 +5,9 @@
 ; Hunk 16: CODE, $C2C bytes
 ;===============================================================================
 	CODE_HUNK	h016
-dat_016_00000:
+; MissileModels - The missiles' entries for ObjectDrawTable (20 bytes each: Sidewinder at +0,
+; AMRAAM at +$14).
+MissileModels:
         dc.l    sub_010_00014                   ; 00000
         dc.l    dat_051_00A6C                   ; 00004
         dc.l    dat_051_00A6C                   ; 00008
@@ -89,7 +91,9 @@ dat_016_00000:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_016_00140:
+; ObjectDrawTable - For each object number, 20 bytes: its draw routine, its model, two longs
+; (into dat_071_00406 / 0040A).
+ObjectDrawTable:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -603,7 +607,7 @@ dat_016_00144:
 	dc.b	$00,$00,$00,$00
 sub_016_00A78:
         lea.l   (ObjectTable).l,a1              ; 00A78
-        adda.w  (dat_071_00386).l,a1            ; 00A7E
+        adda.w  (CurrentObjectOffset).l,a1      ; 00A7E
         move.w  $0(a1),d1                       ; 00A84
         move.w  d1,d2                           ; 00A88
         andi.w  #$40,d1                         ; 00A8A
@@ -629,7 +633,7 @@ l_016_00AD0:
         rts                                     ; 00AD0
 sub_016_00AD2:
         lea.l   (ObjectTable).l,a1              ; 00AD2
-        adda.w  (dat_071_00386).l,a1            ; 00AD8
+        adda.w  (CurrentObjectOffset).l,a1      ; 00AD8
         lea.l   (dat_058_00000).l,a0            ; 00ADE
         move.w  $4c(a1),d0                      ; 00AE4
         ble.b   l_016_00B28                     ; 00AE8
@@ -661,7 +665,7 @@ l_016_00B5A:
         bra.w   l_016_00AB6                     ; 00B6E
 sub_016_00B72:
         lea.l   (ObjectTable).l,a1              ; 00B72
-        adda.w  (dat_071_00386).l,a1            ; 00B78
+        adda.w  (CurrentObjectOffset).l,a1      ; 00B78
         lea.l   (dat_058_002A6).l,a0            ; 00B7E
         move.w  $4c(a1),d0                      ; 00B84
         ble.b   l_016_00BD4                     ; 00B88

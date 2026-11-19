@@ -71,13 +71,17 @@ dat_073_001A2:
 dat_073_00210:
 	dc.b	$00
 	dc.b	$00
-dat_073_00212:
+; VisibleObjects - The objects to draw this frame: words (object numbers), ending with one <=
+; 0.
+VisibleObjects:
 	dcb.b	32,$00
 dat_073_00232:
 	dcb.b	1680,$00
 dat_073_008C2:
 	dcb.b	1680,$00
-dat_073_00F52:
+; SceneryList - The scenery to draw: entries of 24 bytes (flags and number word, the model, x /
+; y / z words, a long...), ending with $FFFF.
+SceneryList:
 	dcb.b	1680,$00
 dat_073_015E2:
 	dc.b	$00

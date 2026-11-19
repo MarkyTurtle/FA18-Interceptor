@@ -1457,7 +1457,7 @@ GameFrame:
         jsr     (sub_000_041E8).l               ; 01152
         move.w  #$10,(FrameStage).l             ; 01158
         jsr     (sub_022_000B6).l               ; 01160
-        jsr     (sub_008_00376).l               ; 01166
+        jsr     (UpdateViewCell).l              ; 01166
         move.w  #$20,(FrameStage).l             ; 0116C
         jsr     (sub_022_000B4).l               ; 01174
         jsr     (sub_032_00594).l               ; 0117A
@@ -1500,11 +1500,11 @@ l_000_01230:
         move.w  #$a4,(FrameStage).l             ; 0123A
         jsr     (sub_000_072DC).l               ; 01242
         move.w  #$a8,(FrameStage).l             ; 01248
-        jsr     (sub_008_009F4).l               ; 01250
+        jsr     (DrawObjects).l                 ; 01250
         bra.b   l_000_01274                     ; 01256
 l_000_01258:
         move.w  #$ac,(FrameStage).l             ; 01258
-        jsr     (sub_008_009F4).l               ; 01260
+        jsr     (DrawObjects).l                 ; 01260
         move.w  #$b0,(FrameStage).l             ; 01266
         jsr     (sub_000_072DC).l               ; 0126E
 l_000_01274:
@@ -1654,7 +1654,7 @@ l_000_01488:
         andi.w  #$1f,d0                         ; 01496
         cmpi.w  #$10,d0                         ; 0149A
         bne.b   l_000_014A6                     ; 0149E
-        jsr     (sub_006_00008).l               ; 014A0
+        jsr     (RedrawInstruments).l           ; 014A0
 l_000_014A6:
         move.b  (dat_071_0017E).l,d0            ; 014A6
         tst.b   d0                              ; 014AC
@@ -1737,10 +1737,10 @@ l_000_0158A:
 l_000_015B0:
         tst.b   -$2(a6)                         ; 015B0
         bne.b   l_000_015DA                     ; 015B4
-        move.w  (dat_071_0036A).l,(dat_071_00366).l ; 015B6
+        move.w  (JoyEvents).l,(dat_071_00366).l ; 015B6
         move.w  (dat_071_0036C).l,(dat_071_00368).l ; 015C0
         moveq   #$0,d0                          ; 015CA
-        move.w  d0,(dat_071_0036A).l            ; 015CC
+        move.w  d0,(JoyEvents).l                ; 015CC
         move.w  d0,(dat_071_0036C).l            ; 015D2
         bra.b   l_000_015F2                     ; 015D8
 l_000_015DA:
@@ -1805,7 +1805,7 @@ InitInput:
         addq.l  #$8,a7                          ; 01698
         clr.b   (dat_071_0021B).l               ; 0169A
         jsr     (sub_004_0002C).l               ; 016A0
-        jsr     (GetLogSetting).l               ; 016A6
+        jsr     (GetDifficulty).l               ; 016A6
         lea.l   sub_000_01962(pc),a0            ; 016AC
         move.l  a0,(dat_002_00004).l            ; 016B0
         unlk    a6                              ; 016B6
@@ -1905,7 +1905,7 @@ l_000_017E4:
         bra.b   l_000_0181A                     ; 0180A
 l_000_0180C:
         move.w  #$3f,(dat_071_0036E).l          ; 0180C
-        jsr     (sub_007_00012).l               ; 01814
+        jsr     (Nop).l                         ; 01814
 l_000_0181A:
         clr.l   (dat_071_002E4).l               ; 0181A
 l_000_01820:
@@ -2162,9 +2162,9 @@ l_000_01BCE:
 l_000_01BF2:
         rts                                     ; 01BF2
 l_000_01BF4:
-        move.b  (dat_071_00277).l,(dat_071_00278).l ; 01BF4
+        move.b  (Difficulty).l,(DifficultySaved).l ; 01BF4
         moveq   #$0,d0                          ; 01BFE
-        move.b  d0,(dat_071_00277).l            ; 01C00
+        move.b  d0,(Difficulty).l               ; 01C00
         moveq   #$4,d0                          ; 01C06
         move.b  d0,(dat_071_00218).l            ; 01C08
         subq.b  #$1,d0                          ; 01C0E
@@ -2181,9 +2181,9 @@ l_000_01BF4:
         move.b  #$1,(dat_071_00165).l           ; 01C4A
         moveq   #$0,d0                          ; 01C52
         move.w  d0,(dat_071_00356).l            ; 01C54
-        move.w  d0,(dat_071_00358).l            ; 01C5A
-        jsr     (sub_006_00000).l               ; 01C60
-        move.b  #$ff,(dat_071_00228).l          ; 01C66
+        move.w  d0,(ViewX).l                    ; 01C5A
+        jsr     (RedrawPanel).l                 ; 01C60
+        move.b  #$ff,(RedrawFlags).l            ; 01C66
         move.w  #$1,(dat_071_004A6).l           ; 01C6E
         rts                                     ; 01C76
         move.b  (dat_071_0017E).l,d0            ; 01C78
@@ -2196,9 +2196,9 @@ l_000_01BF4:
         bsr.w   h000+$3462                      ; 01C94
         moveq   #$0,d0                          ; 01C98
         move.w  d0,(dat_071_00356).l            ; 01C9A
-        move.w  d0,(dat_071_00358).l            ; 01CA0
-        jsr     (sub_006_00000).l               ; 01CA6
-        move.b  #$ff,(dat_071_00228).l          ; 01CAC
+        move.w  d0,(ViewX).l                    ; 01CA0
+        jsr     (RedrawPanel).l                 ; 01CA6
+        move.b  #$ff,(RedrawFlags).l            ; 01CAC
         lea.l   h000+$2D58(pc),a0               ; 01CB4
         move.l  a0,(dat_002_00004).l            ; 01CB8
 l_000_01CBE:
@@ -2474,7 +2474,7 @@ l_000_02096:
         jsr     (sub_000_09E46).l               ; 020A0
         addq.l  #$8,a7                          ; 020A6
 l_000_020A8:
-        move.w  #$b3,(dat_071_00354).l          ; 020A8
+        move.w  #$b3,(ClipY).l                  ; 020A8
         bsr.w   h000+$3462                      ; 020B0
         move.w  #$4,(dat_071_004A6).l           ; 020B4
         move.b  #$3,(dat_071_00267).l           ; 020BC
@@ -2522,7 +2522,7 @@ l_000_02174:
         move.l  a0,(dat_002_00004).l            ; 02186
         bra.w   l_000_022B2                     ; 0218C
 l_000_02190:
-        move.w  #$a7,(dat_071_00354).l          ; 02190
+        move.w  #$a7,(ClipY).l                  ; 02190
         move.b  #$ff,(dat_071_00184).l          ; 02198
         jsr     (sub_026_00D70).l               ; 021A0
         moveq   #$0,d0                          ; 021A6
@@ -2532,7 +2532,7 @@ l_000_02190:
         clr.b   (dat_071_0027E).l               ; 021B6
         move.b  d0,(dat_071_00185).l            ; 021BC
         move.w  #$4,(dat_071_002AC).l           ; 021C2
-        move.w  #$800,(dat_071_002AE).l         ; 021CA
+        move.w  #$800,(ViewObject).l            ; 021CA
         move.b  #$3,(dat_071_00282).l           ; 021D2
         move.w  (dat_071_01356).l,d0            ; 021DA
         ori.w   #$100,d0                        ; 021E0
@@ -2545,7 +2545,7 @@ l_000_021F8:
         bra.w   l_000_022B2                     ; 021FE
 l_000_02202:
         move.b  #$1,(dat_071_00267).l           ; 02202
-        move.w  #$a7,(dat_071_00354).l          ; 0220A
+        move.w  #$a7,(ClipY).l                  ; 0220A
         move.b  #$ff,(dat_071_00184).l          ; 02212
         move.b  #$3,(dat_071_00186).l           ; 0221A
         move.b  #$2,(dat_071_00218).l           ; 02222
@@ -2570,9 +2570,9 @@ l_000_02252:
         move.b  d0,(dat_071_00165).l            ; 02280
         moveq   #$0,d0                          ; 02286
         move.w  d0,(dat_071_00356).l            ; 02288
-        move.w  d0,(dat_071_00358).l            ; 0228E
-        jsr     (sub_006_00000).l               ; 02294
-        move.b  #$ff,(dat_071_00228).l          ; 0229A
+        move.w  d0,(ViewX).l                    ; 0228E
+        jsr     (RedrawPanel).l                 ; 02294
+        move.b  #$ff,(RedrawFlags).l            ; 0229A
         clr.b   (dat_071_00155).l               ; 022A2
         lea.l   h000+$234C(pc),a0               ; 022A8
         move.l  a0,(dat_002_00004).l            ; 022AC
@@ -2641,7 +2641,7 @@ l_000_02376:
         move.w  #$2,(dat_071_004A6).l           ; 02388
         moveq   #$1,d0                          ; 02390
         move.b  d0,(dat_071_00165).l            ; 02392
-        move.b  #$ff,(dat_071_00228).l          ; 02398
+        move.b  #$ff,(RedrawFlags).l            ; 02398
         move.b  #$4,(dat_071_0027E).l           ; 023A0
         move.b  d0,(dat_071_0027D).l            ; 023A8
         move.w  #$5,(dat_071_004A6).l           ; 023AE
@@ -2666,7 +2666,7 @@ l_000_023EC:
         bne.b   l_000_02426                     ; 023FC
         moveq   #$1,d0                          ; 023FE
         move.b  d0,(dat_071_00165).l            ; 02400
-        move.b  #$ff,(dat_071_00228).l          ; 02406
+        move.b  #$ff,(RedrawFlags).l            ; 02406
         move.b  d0,(dat_071_0027D).l            ; 0240E
         move.w  #$5,(dat_071_004A6).l           ; 02414
         lea.l   h000+$27C8(pc),a0               ; 0241C
@@ -2675,7 +2675,7 @@ l_000_02426:
         rts                                     ; 02426
         moveq   #$1,d0                          ; 02428
         move.b  d0,(dat_071_00165).l            ; 0242A
-        move.b  #$ff,(dat_071_00228).l          ; 02430
+        move.b  #$ff,(RedrawFlags).l            ; 02430
         move.b  d0,(dat_071_0027D).l            ; 02438
         move.w  #$5,(dat_071_004A6).l           ; 0243E
         lea.l   h000+$2452(pc),a0               ; 02446
@@ -2718,7 +2718,7 @@ l_000_024B2:
         beq.b   l_000_02532                     ; 024C2
 l_000_024C4:
         move.b  #$1,(dat_071_00165).l           ; 024C4
-        move.b  #$ff,(dat_071_00228).l          ; 024CC
+        move.b  #$ff,(RedrawFlags).l            ; 024CC
         bsr.w   h000+$3462                      ; 024D4
         moveq   #$1,d0                          ; 024D8
         move.b  d0,(dat_071_00184).l            ; 024DA
@@ -2758,7 +2758,7 @@ l_000_02566:
         bne.b   l_000_025A6                     ; 02576
         moveq   #$1,d0                          ; 02578
         move.b  d0,(dat_071_00165).l            ; 0257A
-        move.b  #$ff,(dat_071_00228).l          ; 02580
+        move.b  #$ff,(RedrawFlags).l            ; 02580
         move.b  d0,(dat_071_0017D).l            ; 02588
         move.b  d0,(dat_071_00227).l            ; 0258E
         move.w  #$9,(dat_071_004A6).l           ; 02594
@@ -3261,7 +3261,7 @@ l_000_02CE0:
 l_000_02CFE:
         move.b  #$1,(dat_071_00165).l           ; 02CFE
         bsr.b   l_000_02CE0                     ; 02D06
-        move.b  #$ff,(dat_071_00228).l          ; 02D08
+        move.b  #$ff,(RedrawFlags).l            ; 02D08
         clr.b   (dat_071_0027E).l               ; 02D10
         bsr.w   h000+$3462                      ; 02D16
         moveq   #$0,d0                          ; 02D1A
@@ -3472,29 +3472,29 @@ l_000_03078:
         moveq   #$0,d0                          ; 03084
         move.b  d0,(dat_071_0027D).l            ; 03086
         move.b  #$fe,(dat_071_00280).l          ; 0308C
-        move.b  #$ff,(dat_071_00228).l          ; 03094
+        move.b  #$ff,(RedrawFlags).l            ; 03094
         move.b  d0,(dat_071_0017E).l            ; 0309C
         tst.w   (dat_071_002AC).l               ; 030A2
         beq.w   l_000_03198                     ; 030A8
         moveq   #$0,d0                          ; 030AC
         move.w  d0,(dat_071_002AC).l            ; 030AE
-        move.w  d0,(dat_071_002AE).l            ; 030B4
+        move.w  d0,(ViewObject).l               ; 030B4
         move.b  (dat_071_00204).l,d0            ; 030BA
         move.b  d0,(dat_071_00155).l            ; 030C0
         tst.b   d0                              ; 030C6
         beq.b   l_000_030DC                     ; 030C8
         move.w  #$32,(dat_071_00356).l          ; 030CA
-        move.w  #$a7,(dat_071_00354).l          ; 030D2
+        move.w  #$a7,(ClipY).l                  ; 030D2
         bra.b   l_000_030EA                     ; 030DA
 l_000_030DC:
         clr.w   (dat_071_00356).l               ; 030DC
-        move.w  #$90,(dat_071_00354).l          ; 030E2
+        move.w  #$90,(ClipY).l                  ; 030E2
 l_000_030EA:
         clr.b   (dat_071_00177).l               ; 030EA
         move.w  (dat_071_00356).l,d0            ; 030F0
         asl.w   #$4,d0                          ; 030F6
-        move.w  d0,(dat_071_00358).l            ; 030F8
-        jsr     (sub_006_00008).l               ; 030FE
+        move.w  d0,(ViewX).l                    ; 030F8
+        jsr     (RedrawInstruments).l           ; 030FE
         move.b  (dat_071_0018E).l,d0            ; 03104
         andi.b  #$7f,d0                         ; 0310A
         move.b  d0,(dat_071_00282).l            ; 0310E
@@ -3518,7 +3518,7 @@ l_000_03152:
         move.l  #sub_000_03AA8,(dat_002_00004).l ; 0315A
         bra.b   l_000_03198                     ; 03164
 l_000_03166:
-        move.w  (dat_071_002AE).l,d0            ; 03166
+        move.w  (ViewObject).l,d0               ; 03166
         tst.w   d0                              ; 0316C
         bne.b   l_000_03190                     ; 0316E
         move.b  (dat_071_00155).l,d0            ; 03170
@@ -3658,7 +3658,7 @@ sub_000_034A0:
         adda.w  #$12,a0                         ; 034B4
         adda.l  d0,a0                           ; 034B8
         move.l  a0,-$4(a6)                      ; 034BA
-        jsr     (PutLogSetting).l               ; 034BE
+        jsr     (PutDifficulty).l               ; 034BE
         movea.l (ConfigBuffer).l,a0             ; 034C4
         move.b  (dat_071_00276).l,$6(a0)        ; 034CA
         movea.l -$4(a6),a0                      ; 034D2
@@ -3669,12 +3669,12 @@ sub_000_034A0:
         addq.w  #$1,d0                          ; 034EA
         movea.l (ConfigBuffer).l,a0             ; 034EC
         move.w  d0,$38(a0)                      ; 034F2
-        move.b  (dat_071_00277).l,d0            ; 034F6
+        move.b  (Difficulty).l,d0               ; 034F6
         addq.b  #$1,d0                          ; 034FC
-        move.b  d0,(dat_071_00277).l            ; 034FE
+        move.b  d0,(Difficulty).l               ; 034FE
         cmpi.b  #$3,d0                          ; 03504
         ble.b   l_000_03512                     ; 03508
-        move.b  #$3,(dat_071_00277).l           ; 0350A
+        move.b  #$3,(Difficulty).l              ; 0350A
 l_000_03512:
         movea.l -$4(a6),a0                      ; 03512
         move.b  (a0),d0                         ; 03516
@@ -3684,7 +3684,7 @@ l_000_03512:
         bls.b   l_000_03526                     ; 03520
         move.b  #$3,(a0)                        ; 03522
 l_000_03526:
-        move.b  (dat_071_00277).l,(dat_071_00278).l ; 03526
+        move.b  (Difficulty).l,(DifficultySaved).l ; 03526
         unlk    a6                              ; 03530
         rts                                     ; 03532
 sub_000_03534:
@@ -4531,12 +4531,12 @@ l_000_04206:
         adda.l  #ObjectTable,a0                 ; 04214
         move.b  $62(a0),d0                      ; 0421A
         andi.b  #$f0,d0                         ; 0421E
-        move.w  (dat_071_00296).l,d1            ; 04222
+        move.w  (GunFlags).l,d1                 ; 04222
         move.b  d0,-$1(a6)                      ; 04228
         btst    #$1,d1                          ; 0422C
         beq.w   l_000_042EC                     ; 04230
         andi.w  #$fffd,d1                       ; 04234
-        move.w  d1,(dat_071_00296).l            ; 04238
+        move.w  d1,(GunFlags).l                 ; 04238
         move.b  #$fe,(dat_071_00280).l          ; 0423E
         tst.b   (dat_071_00155).l               ; 04246
         beq.b   l_000_0426C                     ; 0424C
@@ -4560,10 +4560,10 @@ l_000_0427E:
 l_000_0429A:
         move.w  (dat_071_00356).l,d0            ; 0429A
         asl.w   #$4,d0                          ; 042A0
-        move.w  d0,(dat_071_00358).l            ; 042A2
-        jsr     (sub_006_00074).l               ; 042A8
+        move.w  d0,(ViewX).l                    ; 042A2
+        jsr     (StartGunSound).l               ; 042A8
         clr.b   (dat_071_00177).l               ; 042AE
-        move.b  #$ff,(dat_071_00228).l          ; 042B4
+        move.b  #$ff,(RedrawFlags).l            ; 042B4
         jsr     (sub_005_00E6E).l               ; 042BC
         cmpi.b  #$30,-$1(a6)                    ; 042C2
         beq.b   l_000_042D2                     ; 042C8
@@ -4572,10 +4572,10 @@ l_000_0429A:
 l_000_042D2:
         tst.b   (dat_071_0017D).l               ; 042D2
         beq.b   l_000_042E4                     ; 042D8
-        move.w  #$b3,(dat_071_00354).l          ; 042DA
+        move.w  #$b3,(ClipY).l                  ; 042DA
         bra.b   l_000_042EC                     ; 042E2
 l_000_042E4:
-        move.w  #$a7,(dat_071_00354).l          ; 042E4
+        move.w  #$a7,(ClipY).l                  ; 042E4
 l_000_042EC:
         cmpi.b  #$30,-$1(a6)                    ; 042EC
         bne.b   l_000_04330                     ; 042F2
@@ -4583,20 +4583,20 @@ l_000_042EC:
         tst.w   d0                              ; 042FA
         bne.b   l_000_04330                     ; 042FC
         move.w  #$32,(dat_071_00356).l          ; 042FE
-        move.w  #$320,(dat_071_00358).l         ; 04306
-        jsr     (sub_006_00074).l               ; 0430E
+        move.w  #$320,(ViewX).l                 ; 04306
+        jsr     (StartGunSound).l               ; 0430E
         clr.b   (dat_071_00177).l               ; 04314
-        move.b  #$ff,(dat_071_00228).l          ; 0431A
+        move.b  #$ff,(RedrawFlags).l            ; 0431A
         jsr     (sub_005_00E6E).l               ; 04322
-        move.w  #$a7,(dat_071_00354).l          ; 04328
+        move.w  #$a7,(ClipY).l                  ; 04328
 l_000_04330:
         tst.b   (dat_071_00155).l               ; 04330
         beq.b   l_000_0438E                     ; 04336
-        move.w  (dat_071_00296).l,d0            ; 04338
+        move.w  (GunFlags).l,d0                 ; 04338
         btst    #$4,d0                          ; 0433E
         beq.b   l_000_0435E                     ; 04342
         andi.w  #$ffef,d0                       ; 04344
-        move.w  d0,(dat_071_00296).l            ; 04348
+        move.w  d0,(GunFlags).l                 ; 04348
         move.b  (dat_071_0017C).l,d0            ; 0434E
         eori.b  #$1,d0                          ; 04354
         move.b  d0,(dat_071_0017C).l            ; 04358
@@ -4606,11 +4606,11 @@ l_000_0435E:
         bne.b   l_000_0438E                     ; 04366
         cmpi.l  #$24000,(dat_071_00612).l       ; 04368
         bge.b   l_000_0438E                     ; 04372
-        move.w  (dat_071_00354).l,d0            ; 04374
+        move.w  (ClipY).l,d0                    ; 04374
         cmpi.w  #$a7,d0                         ; 0437A
         beq.b   l_000_0438E                     ; 0437E
-        move.w  #$a7,(dat_071_00354).l          ; 04380
-        jsr     (sub_006_00008).l               ; 04388
+        move.w  #$a7,(ClipY).l                  ; 04380
+        jsr     (RedrawInstruments).l           ; 04388
 l_000_0438E:
         unlk    a6                              ; 0438E
         rts                                     ; 04390

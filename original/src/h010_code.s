@@ -18,8 +18,8 @@ sub_010_00014:
         bne.b   l_010_00000                     ; 0001C
         tst.b   (dat_071_00155).l               ; 0001E
         bne.w   l_010_000DC                     ; 00024
-        move.w  (dat_071_00386).l,d0            ; 00028
-        cmp.w   (dat_071_002AE).l,d0            ; 0002E
+        move.w  (CurrentObjectOffset).l,d0      ; 00028
+        cmp.w   (ViewObject).l,d0               ; 0002E
         bne.w   l_010_000DC                     ; 00034
         move.b  (dat_071_00177).l,d0            ; 00038
         cmpi.b  #$3,d0                          ; 0003E
@@ -133,12 +133,12 @@ l_010_0016E:
         bge.b   l_010_0019A                     ; 00176
         tst.b   (dat_071_00234).l               ; 00178
         bne.b   l_010_001A2                     ; 0017E
-        lea.l   (dat_073_00F52).l,a3            ; 00180
+        lea.l   (SceneryList).l,a3              ; 00180
 l_010_00186:
         move.w  (a3),d1                         ; 00186
         blt.b   l_010_001A2                     ; 00188
         lsr.w   #$8,d1                          ; 0018A
-        cmp.w   (dat_071_00384).l,d1            ; 0018C
+        cmp.w   (CurrentObject).l,d1            ; 0018C
         beq.b   l_010_00162                     ; 00192
         adda.w  #$18,a3                         ; 00194
         bra.b   l_010_00186                     ; 00198
@@ -236,7 +236,7 @@ l_010_002AE:
         btst    #$0,d6                          ; 002C0
         beq.w   l_010_0072C                     ; 002C4
         lea.l   (ObjectTable).l,a0              ; 002C8
-        adda.w  (dat_071_00386).l,a0            ; 002CE
+        adda.w  (CurrentObjectOffset).l,a0      ; 002CE
         move.w  $0(a0),d1                       ; 002D4
         btst    #$6,d1                          ; 002D8
         beq.w   l_010_00168                     ; 002DC
@@ -285,7 +285,7 @@ l_010_00340:
         asr.l   d7,d2                           ; 00368
         movem.w d0-d2,-$14(a6)                  ; 0036A
         lea.l   (ObjectTable).l,a0              ; 00370
-        adda.w  (dat_071_00386).l,a0            ; 00376
+        adda.w  (CurrentObjectOffset).l,a0      ; 00376
         adda.w  #$92,a0                         ; 0037C
         lea.l   (dat_071_00596).l,a2            ; 00380
         movem.w (a0)+,d0-d7                     ; 00386
@@ -302,7 +302,7 @@ l_010_00340:
         asr.w   #$6,d0                          ; 003A0
         move.w  d0,$10(a2)                      ; 003A2
         lea.l   (ObjectTable).l,a0              ; 003A6
-        adda.w  (dat_071_00386).l,a0            ; 003AC
+        adda.w  (CurrentObjectOffset).l,a0      ; 003AC
         adda.w  #$a4,a0                         ; 003B2
         move.b  (a1)+,d0                        ; 003B6
         ext.w   d0                              ; 003B8
@@ -390,13 +390,13 @@ l_010_00428:
         move.w  d4,(a3)+                        ; 0047C
         move.w  (dat_071_00390).l,d2            ; 0047E
         blt.b   l_010_004B6                     ; 00484
-        cmp.w   (dat_071_00386).l,d2            ; 00486
+        cmp.w   (CurrentObjectOffset).l,d2      ; 00486
         bne.b   l_010_004B6                     ; 0048C
         movem.w d0-d1/d4/d7,-(a7)               ; 0048E
         movem.w -$6(a3),d0-d2                   ; 00492
         jsr     (sub_035_00020).l               ; 00498
-        sub.w   (dat_071_00358).l,d0            ; 0049E
-        sub.w   (dat_071_002A8).l,d1            ; 004A4
+        sub.w   (ViewX).l,d0                    ; 0049E
+        sub.w   (ViewY).l,d1                    ; 004A4
         movem.w d0-d1,(dat_071_00306).l         ; 004AA
         movem.w (a7)+,d0-d1/d4/d7               ; 004B2
 l_010_004B6:
@@ -505,7 +505,7 @@ l_010_00598:
         bra.w   l_010_004E4                     ; 00598
 l_010_0059C:
         move.w  #$17,(dat_071_0036E).l          ; 0059C
-        jsr     (sub_007_00012).l               ; 005A4
+        jsr     (Nop).l                         ; 005A4
         bra.b   l_010_0059C                     ; 005AA
 l_010_005AC:
         subq.w  #$1,d0                          ; 005AC
@@ -1073,7 +1073,7 @@ l_010_00B0C:
         btst    #$4,(dat_071_0022B).l           ; 00B16
         beq.b   l_010_00B04                     ; 00B1E
         lea.l   (ObjectTable).l,a0              ; 00B20
-        adda.w  (dat_071_00386).l,a0            ; 00B26
+        adda.w  (CurrentObjectOffset).l,a0      ; 00B26
         move.w  $0(a0),d0                       ; 00B2C
         andi.w  #$400,d0                        ; 00B30
         beq.b   l_010_00BA0                     ; 00B34
@@ -1091,14 +1091,14 @@ l_010_00B42:
         move.w  $e(a0),d2                       ; 00B54
         ext.l   d0                              ; 00B58
         move.w  $6(a0),d4                       ; 00B5A
-        sub.w   (dat_071_0031C).l,d4            ; 00B5E
+        sub.w   (ViewCellX).l,d4                ; 00B5E
         ext.l   d4                              ; 00B64
         moveq   #$e,d5                          ; 00B66
         asl.l   d5,d4                           ; 00B68
         add.l   d4,d0                           ; 00B6A
         ext.l   d2                              ; 00B6C
         move.w  $8(a0),d4                       ; 00B6E
-        sub.w   (dat_071_0031E).l,d4            ; 00B72
+        sub.w   (ViewCellZ).l,d4                ; 00B72
         ext.l   d4                              ; 00B78
         asl.l   d5,d4                           ; 00B7A
         add.l   d4,d2                           ; 00B7C
@@ -1141,7 +1141,7 @@ l_010_00BD2:
         cmpi.w  #$ffff,d0                       ; 00BDC
         bne.b   l_010_00BF0                     ; 00BE0
         move.w  d0,(dat_071_0036E).l            ; 00BE2
-        jsr     (sub_007_00012).l               ; 00BE8
+        jsr     (Nop).l                         ; 00BE8
         bra.b   l_010_00BB4                     ; 00BEE
 l_010_00BF0:
         move.w  d0,d1                           ; 00BF0

@@ -12,7 +12,7 @@ sub_025_00000:
         clr.w   d2                              ; 0000C
         move.w  #$ffff,d3                       ; 0000E
         movem.w d0-d3,(dat_071_000B6).l         ; 00012
-        move.w  #$3,(dat_071_00324).l           ; 0001A
+        move.w  #$3,(DrawColour).l              ; 0001A
         move.b  (dat_071_0023B).l,d3            ; 00022
         beq.b   l_025_0003C                     ; 00028
         move.l  #$fffff280,d2                   ; 0002A
@@ -284,17 +284,17 @@ l_025_00308:
         neg.w   d6                              ; 0030C
         subi.w  #$b3,d2                         ; 0030E
         neg.w   d2                              ; 00312
-        cmp.w   (dat_071_00354).l,d2            ; 00314
+        cmp.w   (ClipY).l,d2                    ; 00314
         bgt.w   l_025_0026C                     ; 0031A
         move.w  d6,d0                           ; 0031E
         move.w  d2,d1                           ; 00320
         move.l  a3,-(a7)                        ; 00322
         cmpi.w  #$2,-$18(a6)                    ; 00324
         beq.b   l_025_00334                     ; 0032A
-        jsr     (sub_036_00164).l               ; 0032C
+        jsr     (Plot).l                        ; 0032C
         bra.b   l_025_0033A                     ; 00332
 l_025_00334:
-        jsr     (sub_036_0017A).l               ; 00334
+        jsr     (Plot2).l                       ; 00334
 l_025_0033A:
         movea.l (a7)+,a3                        ; 0033A
         bra.w   l_025_0026C                     ; 0033C

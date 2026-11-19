@@ -5,12 +5,21 @@
 ; Hunk 7: CODE, $14 bytes
 ;===============================================================================
 	CODE_HUNK	h007
-l_007_00000:
+
+;-------------------------------------------------------------------------------
+; WithoutMouseInterrupt - RemoveMouseInterrupt, Nop, AddMouseInterrupt.
+;-------------------------------------------------------------------------------
+WithoutMouseInterrupt:
         jsr     (RemoveMouseInterrupt).l        ; 00000
-        bsr.w   sub_007_00012                   ; 00006
+        bsr.w   Nop                             ; 00006
         jsr     (AddMouseInterrupt).l           ; 0000A
         rts                                     ; 00010
-sub_007_00012:
+
+;-------------------------------------------------------------------------------
+; Nop - Does nothing (an empty function: the calls to it were probably debugging or stack
+; checks once).
+;-------------------------------------------------------------------------------
+Nop:
         rts                                     ; 00012
 h007_end:
 	ifnd	HUNKEXE				; the hunk's tables, as in the original file

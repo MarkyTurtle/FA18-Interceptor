@@ -10,7 +10,7 @@ sub_036_00000:
         rts                                     ; 0000A
 sub_036_0000C:
         move.l  #$fffff,(dat_071_000B6).l       ; 0000C
-        move.w  #$d,(dat_071_00324).l           ; 00016
+        move.w  #$d,(DrawColour).l              ; 00016
         tst.w   (dat_071_0003C).l               ; 0001E
         beq.b   l_036_0004C                     ; 00024
         move.w  #$0,d0                          ; 00026
@@ -24,7 +24,7 @@ sub_036_00038:
         move.w  #$0,d2                          ; 00040
         move.w  #$9,d3                          ; 00044
 l_036_00048:
-        bsr.w   sub_036_005EE                   ; 00048
+        bsr.w   DrawLine                        ; 00048
 l_036_0004C:
         rts                                     ; 0004C
 sub_036_0004E:
@@ -57,7 +57,7 @@ sub_036_000C8:
         adda.w  #$10,a0                         ; 000DC
         adda.w  #$14,a1                         ; 000E0
 l_036_000E4:
-        move.l  a0,(dat_071_00086).l            ; 000E4
+        move.l  a0,(DrawPlanes).l               ; 000E4
         move.l  a1,(dat_071_0008A).l            ; 000EA
         rts                                     ; 000F0
 sub_036_000F2:
@@ -82,71 +82,107 @@ sub_036_00106:
         movem.l d0-d7/a4-a5,(a2)                ; 00126
         movem.l d0-d7/a4-a5,(a3)                ; 0012A
         rts                                     ; 0012E
-sub_036_00130:
-        add.w   (dat_071_00358).l,d0            ; 00130
+
+;-------------------------------------------------------------------------------
+; PlotInView - Plot at (x + ViewX, y + ViewY), nothing (d2 = -1) if x is off the 320-pixel
+; screen.
+;-------------------------------------------------------------------------------
+PlotInView:
+        add.w   (ViewX).l,d0                    ; 00130
         blt.b   l_036_00192                     ; 00136
         cmpi.w  #$140,d0                        ; 00138
         bge.b   l_036_00192                     ; 0013C
-        add.w   (dat_071_002A8).l,d1            ; 0013E
-sub_036_00144:
-        movea.l (dat_071_00086).l,a1            ; 00144
-        lea.l   (dat_036_002D6).l,a3            ; 0014A
-        lea.l   (dat_036_002F6).l,a4            ; 00150
+        add.w   (ViewY).l,d1                    ; 0013E
+
+;-------------------------------------------------------------------------------
+; PlotKeep - Plot, keeping d0/d1.
+;-------------------------------------------------------------------------------
+PlotKeep:
+        movea.l (DrawPlanes).l,a1               ; 00144
+        lea.l   (PixelMasks).l,a3               ; 0014A
+        lea.l   (PlotColourWriters).l,a4        ; 00150
         move.w  d0,-(a7)                        ; 00156
         move.w  d1,-(a7)                        ; 00158
-        bsr.w   sub_036_001F8                   ; 0015A
+        bsr.w   PlotCore                        ; 0015A
         move.w  (a7)+,d1                        ; 0015E
         move.w  (a7)+,d0                        ; 00160
         rts                                     ; 00162
-sub_036_00164:
-        movea.l (dat_071_00086).l,a1            ; 00164
-        lea.l   (dat_036_002D6).l,a3            ; 0016A
-        lea.l   (dat_036_002F6).l,a4            ; 00170
-        bra.w   sub_036_001F8                   ; 00176
-sub_036_0017A:
+
+;-------------------------------------------------------------------------------
+; Plot - Plot(d0 = x, d1 = y): one pixel in the current colour.
+;-------------------------------------------------------------------------------
+Plot:
+        movea.l (DrawPlanes).l,a1               ; 00164
+        lea.l   (PixelMasks).l,a3               ; 0016A
+        lea.l   (PlotColourWriters).l,a4        ; 00170
+        bra.w   PlotCore                        ; 00176
+
+;-------------------------------------------------------------------------------
+; Plot2 - A 2-pixel-wide point at (x, y) (two Plots when it straddles a 16-pixel word).
+;-------------------------------------------------------------------------------
+Plot2:
         move.w  d0,d2                           ; 0017A
         andi.w  #$f,d2                          ; 0017C
         bne.b   l_036_00196                     ; 00180
         movem.w d0-d1,-(a7)                     ; 00182
-        bsr.b   sub_036_00164                   ; 00186
+        bsr.b   Plot                            ; 00186
         movem.w (a7)+,d0-d1                     ; 00188
         subq.w  #$1,d0                          ; 0018C
-        bsr.b   sub_036_00164                   ; 0018E
+        bsr.b   Plot                            ; 0018E
         rts                                     ; 00190
 l_036_00192:
         moveq   #-1,d2                          ; 00192
         rts                                     ; 00194
 l_036_00196:
-        movea.l (dat_071_00086).l,a1            ; 00196
-        lea.l   (sub_036_00336).l,a3            ; 0019C
-        lea.l   (dat_036_002F6).l,a4            ; 001A2
-        bra.b   sub_036_001F8                   ; 001A8
-sub_036_001AA:
-        add.w   (dat_071_00358).l,d0            ; 001AA
+        movea.l (DrawPlanes).l,a1               ; 00196
+        lea.l   (PixelPairMasks).l,a3           ; 0019C
+        lea.l   (PlotColourWriters).l,a4        ; 001A2
+        bra.b   PlotCore                        ; 001A8
+
+;-------------------------------------------------------------------------------
+; Plot2InView - Plot2 at (x + ViewX, y + ViewY), clipped to x 0-318.
+;-------------------------------------------------------------------------------
+Plot2InView:
+        add.w   (ViewX).l,d0                    ; 001AA
         blt.b   l_036_00192                     ; 001B0
         cmpi.w  #$13f,d0                        ; 001B2
         bge.b   l_036_00192                     ; 001B6
-        add.w   (dat_071_002A8).l,d1            ; 001B8
-sub_036_001BE:
+        add.w   (ViewY).l,d1                    ; 001B8
+
+;-------------------------------------------------------------------------------
+; PlotBig - A big point (2 pixels wide, the colour writers of dat_036_00356), keeping d0/d1.
+;-------------------------------------------------------------------------------
+PlotBig:
         move.w  d0,-(a7)                        ; 001BE
         move.w  d1,-(a7)                        ; 001C0
-        movea.l (dat_071_00086).l,a1            ; 001C2
-        lea.l   (sub_036_00336).l,a3            ; 001C8
-        lea.l   (dat_036_00356).l,a4            ; 001CE
-        bsr.w   sub_036_001F8                   ; 001D4
+        movea.l (DrawPlanes).l,a1               ; 001C2
+        lea.l   (PixelPairMasks).l,a3           ; 001C8
+        lea.l   (BigColourWriters).l,a4         ; 001CE
+        bsr.w   PlotCore                        ; 001D4
         move.w  (a7)+,d1                        ; 001D8
         move.w  (a7)+,d0                        ; 001DA
         rts                                     ; 001DC
-sub_036_001DE:
-        cmp.w   (dat_071_00354).l,d1            ; 001DE
-        bge.b   sub_036_0017A                   ; 001E4
-        movea.l (dat_071_00086).l,a1            ; 001E6
-        lea.l   (sub_036_00336).l,a3            ; 001EC
-        lea.l   (dat_036_00356).l,a4            ; 001F2
-sub_036_001F8:
+
+;-------------------------------------------------------------------------------
+; PlotBigAbove - A big point above row ClipY (PlotBig), a 2-pixel point below it (Plot2).
+;-------------------------------------------------------------------------------
+PlotBigAbove:
+        cmp.w   (ClipY).l,d1                    ; 001DE
+        bge.b   Plot2                           ; 001E4
+        movea.l (DrawPlanes).l,a1               ; 001E6
+        lea.l   (PixelPairMasks).l,a3           ; 001EC
+        lea.l   (BigColourWriters).l,a4         ; 001F2
+
+;-------------------------------------------------------------------------------
+; PlotCore - Plots one pixel of the current colour into the four planes the drawing goes to
+; (DrawPlanes; 40 bytes a row): d0 = x, d1 = y (nothing for y <= 0), a3 = the pixel mask table,
+; a4 = the table of colour writers (one per colour, DrawColour & 15). The planes that DrawMask
+; bit n clears are left alone; with DrawXor >= 0 the planes in DrawXorMask are XORed instead.
+;-------------------------------------------------------------------------------
+PlotCore:
         tst.w   d1                              ; 001F8
         ble.b   l_036_00192                     ; 001FA
-        move.w  (dat_071_00324).l,d2            ; 001FC
+        move.w  (DrawColour).l,d2               ; 001FC
         andi.w  #$f,d2                          ; 00202
         add.w   d2,d2                           ; 00206
         add.w   d2,d2                           ; 00208
@@ -176,45 +212,45 @@ sub_036_001F8:
         move.w  d7,d4                           ; 00242
         move.w  d7,d5                           ; 00244
         move.w  d7,d6                           ; 00246
-        btst    #$0,(dat_071_000B7).l           ; 00248
+        btst    #$0,(DrawMask).l                ; 00248
         bne.b   l_036_00258                     ; 00250
         move.w  #$ffff,d0                       ; 00252
         clr.w   d4                              ; 00256
 l_036_00258:
-        btst    #$1,(dat_071_000B7).l           ; 00258
+        btst    #$1,(DrawMask).l                ; 00258
         bne.b   l_036_00268                     ; 00260
         move.w  #$ffff,d1                       ; 00262
         clr.w   d5                              ; 00266
 l_036_00268:
-        btst    #$2,(dat_071_000B7).l           ; 00268
+        btst    #$2,(DrawMask).l                ; 00268
         bne.b   l_036_00278                     ; 00270
         move.w  #$ffff,d2                       ; 00272
         clr.w   d6                              ; 00276
 l_036_00278:
-        btst    #$3,(dat_071_000B7).l           ; 00278
+        btst    #$3,(DrawMask).l                ; 00278
         bne.b   l_036_00288                     ; 00280
         move.w  #$ffff,d3                       ; 00282
         clr.w   d7                              ; 00286
 l_036_00288:
-        tst.w   (dat_071_000B8).l               ; 00288
+        tst.w   (DrawXor).l                     ; 00288
         blt.b   l_036_002D4                     ; 0028E
         andi.l  #$ffff,d0                       ; 00290
-        btst    #$0,(dat_071_000BB).l           ; 00296
+        btst    #$0,(DrawXorMask).l             ; 00296
         beq.b   l_036_002A4                     ; 0029E
         eor.w   d4,(a3)                         ; 002A0
         moveq   #-1,d0                          ; 002A2
 l_036_002A4:
-        btst    #$1,(dat_071_000BB).l           ; 002A4
+        btst    #$1,(DrawXorMask).l             ; 002A4
         beq.b   l_036_002B2                     ; 002AC
         eor.w   d5,(a2)                         ; 002AE
         moveq   #-1,d0                          ; 002B0
 l_036_002B2:
-        btst    #$2,(dat_071_000BB).l           ; 002B2
+        btst    #$2,(DrawXorMask).l             ; 002B2
         beq.b   l_036_002C0                     ; 002BA
         eor.w   d6,(a1)                         ; 002BC
         moveq   #-1,d0                          ; 002BE
 l_036_002C0:
-        btst    #$3,(dat_071_000BB).l           ; 002C0
+        btst    #$3,(DrawXorMask).l             ; 002C0
         beq.b   l_036_002CE                     ; 002C8
         eor.w   d7,(a0)                         ; 002CA
         moveq   #-1,d0                          ; 002CC
@@ -224,10 +260,13 @@ l_036_002CE:
         rts                                     ; 002D2
 l_036_002D4:
         jmp     (a4)                            ; 002D4
-dat_036_002D6:
+; PixelMasks - The 16 one-pixel masks ($8000 ... $0001).
+PixelMasks:
 	dc.b	$80,$00,$40,$00,$20,$00,$10,$00,$08,$00,$04,$00,$02,$00,$01,$00
 	dc.b	$00,$80,$00,$40,$00,$20,$00,$10,$00,$08,$00,$04,$00,$02,$00,$01
-dat_036_002F6:
+; PlotColourWriters - The 16 colour writers for one pixel: each sets or clears the pixel in
+; planes 0-3 for its colour.
+PlotColourWriters:
         dc.l    sub_036_00396                   ; 002F6
         dc.l    sub_036_003AA                   ; 002FA
         dc.l    sub_036_003B4                   ; 002FE
@@ -244,13 +283,19 @@ dat_036_002F6:
         dc.l    sub_036_00422                   ; 0032A
         dc.l    sub_036_0042C                   ; 0032E
         dc.l    sub_036_00436                   ; 00332
-sub_036_00336:
+
+;-------------------------------------------------------------------------------
+; PixelPairMasks - The 2-pixel masks ($C000, $6000 ... $0003) - data, though the first trace
+; took its first words for instructions (they assemble to the same bytes).
+;-------------------------------------------------------------------------------
+PixelPairMasks:
         and.b   d0,d0                           ; 00336
         and.b   d0,d0                           ; 00338
         bra.w   h036+$333C                      ; 0033A
 	dc.b	$18,$00,$0C,$00,$06,$00,$03,$00,$01,$80,$00,$C0,$00,$60,$00,$30
 	dc.b	$00,$18,$00,$0C,$00,$06,$00,$03
-dat_036_00356:
+; BigColourWriters - The 16 colour writers for a big point.
+BigColourWriters:
         dc.l    sub_036_00440                   ; 00356
         dc.l    sub_036_0045A                   ; 0035A
         dc.l    sub_036_00474                   ; 0035E
@@ -534,13 +579,22 @@ l_036_005E0:
         addq.w  #$1,d3                          ; 005E2
         clr.w   d5                              ; 005E4
         bra.b   l_036_0060C                     ; 005E6
-sub_036_005E8:
+
+;-------------------------------------------------------------------------------
+; DrawLine199 - DrawLine with the bottom limit at row 199.
+;-------------------------------------------------------------------------------
+DrawLine199:
         movea.w #$c7,a2                         ; 005E8
         bra.b   l_036_005F4                     ; 005EC
-sub_036_005EE:
-        movea.w (dat_071_00354).l,a2            ; 005EE
+
+;-------------------------------------------------------------------------------
+; DrawLine - Draws a line with the blitter in line mode, plane by plane in the current colour
+; (BLTADAT $8000, a pattern in BLTBDAT, the octant in BLTCON1; 40-byte rows).
+;-------------------------------------------------------------------------------
+DrawLine:
+        movea.w (ClipY).l,a2                    ; 005EE
 l_036_005F4:
-        move.w  (dat_071_00324).l,(dat_071_00326).l ; 005F4
+        move.w  (DrawColour).l,(dat_071_00326).l ; 005F4
         cmp.w   d1,d3                           ; 005FE
         beq.b   l_036_005E0                     ; 00600
         bls.b   l_036_0062A                     ; 00602
@@ -656,12 +710,12 @@ l_036_006D2:
         move.w  #$28,BLTCMOD(a0)                ; 006DC
         move.l  d0,BLTAFWM(a0)                  ; 006E2
         move.w  d0,BLTBDAT(a0)                  ; 006E6
-        movea.l (dat_071_00086).l,a2            ; 006EA
+        movea.l (DrawPlanes).l,a2               ; 006EA
         movea.l d7,a1                           ; 006F0
-        btst    #$0,(dat_071_000B7).l           ; 006F2
+        btst    #$0,(DrawMask).l                ; 006F2
         beq.b   l_036_0075A                     ; 006FA
         move.w  d6,d5                           ; 006FC
-        tst.w   (dat_071_000B8).l               ; 006FE
+        tst.w   (DrawXor).l                     ; 006FE
         blt.b   l_036_00710                     ; 00704
         btst    #$0,(dat_071_000B9).l           ; 00706
         bra.b   l_036_00718                     ; 0070E
@@ -692,10 +746,10 @@ l_036_00738:
         move.w  d3,BLTBMOD(a0)                  ; 00752
         move.w  d4,BLTSIZE(a0)                  ; 00756
 l_036_0075A:
-        btst    #$1,(dat_071_000B7).l           ; 0075A
+        btst    #$1,(DrawMask).l                ; 0075A
         beq.b   l_036_007C2                     ; 00762
         move.w  d6,d5                           ; 00764
-        tst.w   (dat_071_000B8).l               ; 00766
+        tst.w   (DrawXor).l                     ; 00766
         blt.b   l_036_00778                     ; 0076C
         btst    #$1,(dat_071_000B9).l           ; 0076E
         bra.b   l_036_00780                     ; 00776
@@ -726,10 +780,10 @@ l_036_007A0:
         move.w  d3,BLTBMOD(a0)                  ; 007BA
         move.w  d4,BLTSIZE(a0)                  ; 007BE
 l_036_007C2:
-        btst    #$2,(dat_071_000B7).l           ; 007C2
+        btst    #$2,(DrawMask).l                ; 007C2
         beq.b   l_036_0082A                     ; 007CA
         move.w  d6,d5                           ; 007CC
-        tst.w   (dat_071_000B8).l               ; 007CE
+        tst.w   (DrawXor).l                     ; 007CE
         blt.b   l_036_007E0                     ; 007D4
         btst    #$2,(dat_071_000B9).l           ; 007D6
         bra.b   l_036_007E8                     ; 007DE
@@ -760,10 +814,10 @@ l_036_00808:
         move.w  d3,BLTBMOD(a0)                  ; 00822
         move.w  d4,BLTSIZE(a0)                  ; 00826
 l_036_0082A:
-        btst    #$3,(dat_071_000B7).l           ; 0082A
+        btst    #$3,(DrawMask).l                ; 0082A
         beq.b   l_036_00890                     ; 00832
         move.w  d6,d5                           ; 00834
-        tst.w   (dat_071_000B8).l               ; 00836
+        tst.w   (DrawXor).l                     ; 00836
         blt.b   l_036_00848                     ; 0083C
         btst    #$3,(dat_071_000B9).l           ; 0083E
         bra.b   l_036_00850                     ; 00846
@@ -827,9 +881,9 @@ l_036_008EC:
         dbra    d0,l_036_008EC                  ; 008F6
         rts                                     ; 008FA
 sub_036_008FC:
-        movea.l (dat_071_00086).l,a2            ; 008FC
+        movea.l (DrawPlanes).l,a2               ; 008FC
         lea.l   (CUSTOM).l,a0                    ; 00902
-        move.w  (dat_071_00354).l,d6            ; 00908
+        move.w  (ClipY).l,d6                    ; 00908
         asl.w   #$6,d6                          ; 0090E
         addi.w  #$14,d6                         ; 00910
         move.l  (a2),d4                         ; 00914
@@ -966,18 +1020,18 @@ sub_036_00AB8:
         move.w  #$8400,(CUSTOM+DMACON).l        ; 00ABA
         bsr.w   sub_036_00D66                   ; 00AC2
         bne.b   l_036_00AB6                     ; 00AC6
-        tst.w   (dat_071_000B8).l               ; 00AC8
+        tst.w   (DrawXor).l                     ; 00AC8
         blt.b   l_036_00AE0                     ; 00ACE
         move.w  (dat_071_000BC).l,d5            ; 00AD0
         beq.b   l_036_00AE0                     ; 00AD6
         bsr.w   sub_036_00F7C                   ; 00AD8
         bra.w   l_036_00B9A                     ; 00ADC
 l_036_00AE0:
-        btst    #$0,(dat_071_000B7).l           ; 00AE0
+        btst    #$0,(DrawMask).l                ; 00AE0
         beq.b   l_036_00B06                     ; 00AE8
         moveq   #$c,d0                          ; 00AEA
         move.w  (dat_071_000BA).l,d4            ; 00AEC
-        move.w  (dat_071_000B8).l,d3            ; 00AF2
+        move.w  (DrawXor).l,d3                  ; 00AF2
         bge.b   l_036_00B00                     ; 00AF8
         move.w  (dat_071_00326).l,d3            ; 00AFA
 l_036_00B00:
@@ -986,10 +1040,10 @@ l_036_00B00:
 l_036_00B06:
         lsr.w   (dat_071_00326).l               ; 00B06
 l_036_00B0C:
-        btst    #$1,(dat_071_000B7).l           ; 00B0C
+        btst    #$1,(DrawMask).l                ; 00B0C
         beq.b   l_036_00B38                     ; 00B14
         moveq   #$8,d0                          ; 00B16
-        move.w  (dat_071_000B8).l,d3            ; 00B18
+        move.w  (DrawXor).l,d3                  ; 00B18
         blt.b   l_036_00B2C                     ; 00B1E
         move.w  (dat_071_000BA).l,d4            ; 00B20
         asr.w   #$1,d3                          ; 00B26
@@ -1003,10 +1057,10 @@ l_036_00B32:
 l_036_00B38:
         lsr.w   (dat_071_00326).l               ; 00B38
 l_036_00B3E:
-        btst    #$2,(dat_071_000B7).l           ; 00B3E
+        btst    #$2,(DrawMask).l                ; 00B3E
         beq.b   l_036_00B6A                     ; 00B46
         moveq   #$4,d0                          ; 00B48
-        move.w  (dat_071_000B8).l,d3            ; 00B4A
+        move.w  (DrawXor).l,d3                  ; 00B4A
         blt.b   l_036_00B5E                     ; 00B50
         move.w  (dat_071_000BA).l,d4            ; 00B52
         asr.w   #$2,d3                          ; 00B58
@@ -1020,10 +1074,10 @@ l_036_00B64:
 l_036_00B6A:
         lsr.w   (dat_071_00326).l               ; 00B6A
 l_036_00B70:
-        btst    #$3,(dat_071_000B7).l           ; 00B70
+        btst    #$3,(DrawMask).l                ; 00B70
         beq.b   l_036_00B9A                     ; 00B78
         moveq   #$0,d0                          ; 00B7A
-        move.w  (dat_071_000B8).l,d3            ; 00B7C
+        move.w  (DrawXor).l,d3                  ; 00B7C
         blt.b   l_036_00B90                     ; 00B82
         move.w  (dat_071_000BA).l,d4            ; 00B84
         asr.w   #$3,d3                          ; 00B8A
@@ -1073,7 +1127,7 @@ l_036_00C08:
 l_036_00C0C:
         add.w   d7,d5                           ; 00C0C
         move.l  #dat_062_00100,d7               ; 00C0E
-        movea.l (dat_071_00086).l,a2            ; 00C14
+        movea.l (DrawPlanes).l,a2               ; 00C14
         move.l  $4(a2),d4                       ; 00C1A
         add.l   d1,d4                           ; 00C1E
         sub.w   d5,d6                           ; 00C20
@@ -1103,42 +1157,42 @@ l_036_00C3E:
         bsr.w   sub_036_00D0C                   ; 00C74
         move.l  #$7ffff,(dat_071_000B6).l       ; 00C78
         move.w  #$cc,d0                         ; 00C82
-        add.w   (dat_071_00358).l,d0            ; 00C86
+        add.w   (ViewX).l,d0                    ; 00C86
         move.w  #$ac,d1                         ; 00C8C
-        add.w   (dat_071_002A8).l,d1            ; 00C90
+        add.w   (ViewY).l,d1                    ; 00C90
         move.w  d0,d2                           ; 00C96
         addi.w  #$a,d2                          ; 00C98
         move.w  d1,d3                           ; 00C9C
-        move.w  #$2,(dat_071_00324).l           ; 00C9E
-        bsr.w   sub_036_005E8                   ; 00CA6
+        move.w  #$2,(DrawColour).l              ; 00C9E
+        bsr.w   DrawLine199                     ; 00CA6
         move.w  #$d1,d0                         ; 00CAA
         move.w  #$ab,d1                         ; 00CAE
-        bsr.w   sub_036_00130                   ; 00CB2
+        bsr.w   PlotInView                      ; 00CB2
         move.w  #$ac,d1                         ; 00CB6
-        bsr.w   sub_036_00164                   ; 00CBA
-        move.w  #$d,(dat_071_00324).l           ; 00CBE
+        bsr.w   Plot                            ; 00CBA
+        move.w  #$d,(DrawColour).l              ; 00CBE
         move.w  #$ce,d0                         ; 00CC6
         move.w  #$a5,d1                         ; 00CCA
-        bsr.w   sub_036_00130                   ; 00CCE
+        bsr.w   PlotInView                      ; 00CCE
         subq.w  #$2,d0                          ; 00CD2
         addq.w  #$1,d1                          ; 00CD4
-        bsr.w   sub_036_00144                   ; 00CD6
+        bsr.w   PlotKeep                        ; 00CD6
         subq.w  #$1,d0                          ; 00CDA
         addq.w  #$1,d1                          ; 00CDC
-        bsr.w   sub_036_00144                   ; 00CDE
+        bsr.w   PlotKeep                        ; 00CDE
         subq.w  #$2,d0                          ; 00CE2
         addq.w  #$3,d1                          ; 00CE4
-        bsr.w   sub_036_00144                   ; 00CE6
+        bsr.w   PlotKeep                        ; 00CE6
         addi.w  #$11,d0                         ; 00CEA
         addq.w  #$1,d1                          ; 00CEE
-        bsr.w   sub_036_00144                   ; 00CF0
+        bsr.w   PlotKeep                        ; 00CF0
         addq.w  #$1,d1                          ; 00CF4
-        bsr.w   sub_036_00144                   ; 00CF6
+        bsr.w   PlotKeep                        ; 00CF6
         addq.w  #$1,d1                          ; 00CFA
-        bsr.w   sub_036_00144                   ; 00CFC
+        bsr.w   PlotKeep                        ; 00CFC
         subq.w  #$1,d0                          ; 00D00
         addq.w  #$2,d1                          ; 00D02
-        bsr.w   sub_036_00144                   ; 00D04
+        bsr.w   PlotKeep                        ; 00D04
         rts                                     ; 00D08
 l_036_00D0A:
         rts                                     ; 00D0A
@@ -1154,13 +1208,13 @@ l_036_00D20:
         mulu.w  #$18,d0                         ; 00D22
         asr.l   #$8,d0                          ; 00D26
         addi.w  #$c1,d0                         ; 00D28
-        add.w   (dat_071_00358).l,d0            ; 00D2C
+        add.w   (ViewX).l,d0                    ; 00D2C
         move.w  d0,(a4)+                        ; 00D32
         move.w  (a0)+,d0                        ; 00D34
         mulu.w  #$1f,d0                         ; 00D36
         asr.l   #$8,d0                          ; 00D3A
         addi.w  #$a2,d0                         ; 00D3C
-        add.w   (dat_071_002A8).l,d0            ; 00D40
+        add.w   (ViewY).l,d0                    ; 00D40
         move.w  d0,(a4)+                        ; 00D46
         dbra    d7,l_036_00D20                  ; 00D48
         bsr.w   sub_036_00D60                   ; 00D4C
@@ -1174,7 +1228,7 @@ sub_036_00D60:
         movea.w #$c7,a4                         ; 00D60
         bra.b   l_036_00D6C                     ; 00D64
 sub_036_00D66:
-        movea.w (dat_071_00354).l,a4            ; 00D66
+        movea.w (ClipY).l,a4                    ; 00D66
 l_036_00D6C:
         lea.l   (dat_072_03000).l,a0            ; 00D6C
         move.w  (a0)+,d6                        ; 00D72
@@ -1254,7 +1308,7 @@ l_036_00DEC:
         cmp.w   a4,d1                           ; 00DF4
         bgt.b   l_036_00E4A                     ; 00DF6
         move.w  d2,d0                           ; 00DF8
-        bsr.w   sub_036_001DE                   ; 00DFA
+        bsr.w   PlotBigAbove                    ; 00DFA
         bra.b   l_036_00E4A                     ; 00DFE
 l_036_00E00:
         move.w  d2,d6                           ; 00E00
@@ -1270,7 +1324,7 @@ l_036_00E0E:
         bne.b   l_036_00E26                     ; 00E1A
         move.l  #$fffff,(dat_071_000B6).l       ; 00E1C
 l_036_00E26:
-        bsr.w   sub_036_005EE                   ; 00E26
+        bsr.w   DrawLine                        ; 00E26
         move.l  (a7)+,(dat_071_000B6).l         ; 00E2A
         moveq   #$1,d0                          ; 00E30
         rts                                     ; 00E32
@@ -1280,11 +1334,11 @@ l_036_00E34:
         bgt.b   l_036_00E4A                     ; 00E38
         subq.w  #$1,d6                          ; 00E3A
         bge.b   l_036_00E44                     ; 00E3C
-        bsr.w   sub_036_00164                   ; 00E3E
+        bsr.w   Plot                            ; 00E3E
         bra.b   l_036_00E4A                     ; 00E42
 l_036_00E44:
         move.w  d2,d0                           ; 00E44
-        bsr.w   sub_036_0017A                   ; 00E46
+        bsr.w   Plot2                           ; 00E46
 l_036_00E4A:
         moveq   #$1,d0                          ; 00E4A
         rts                                     ; 00E4C
@@ -1303,7 +1357,7 @@ l_036_00E5C:
 l_036_00E62:
         exg.l   d1,d2                           ; 00E62
         movem.w d0-d3,(dat_071_0034C).l         ; 00E64
-        move.w  (dat_071_00324).l,(dat_071_00326).l ; 00E6C
+        move.w  (DrawColour).l,(dat_071_00326).l ; 00E6C
         lea.l   (dat_072_03000).l,a2            ; 00E76
         lea.l   (dat_071_00340).l,a3            ; 00E7C
         move.w  (a2)+,(a3)                      ; 00E82
@@ -1396,7 +1450,7 @@ l_036_00F50:
         moveq   #$0,d0                          ; 00F78
         rts                                     ; 00F7A
 sub_036_00F7C:
-        movea.l (dat_071_00086).l,a2            ; 00F7C
+        movea.l (DrawPlanes).l,a2               ; 00F7C
         move.l  $4(a2),d2                       ; 00F82
         move.l  (a2),d3                         ; 00F86
         move.w  (dat_071_0033E).l,d0            ; 00F88
@@ -1423,7 +1477,7 @@ l_036_00FB6:
         rts                                     ; 00FD4
 sub_036_00FD6:
         lsr.w   (dat_071_00326).l               ; 00FD6
-        movea.l (dat_071_00086).l,a2            ; 00FDC
+        movea.l (DrawPlanes).l,a2               ; 00FDC
         move.l  (a2,d0.w),d2                    ; 00FE2
         move.w  (dat_071_0033E).l,d0            ; 00FE6
         move.l  (dat_071_00338).l,d1            ; 00FEC
@@ -1467,14 +1521,14 @@ l_036_01052:
         move.w  d0,BLTSIZE(a0)                  ; 01064
         rts                                     ; 01068
 sub_036_0106A:
-        movea.l (dat_071_00086).l,a2            ; 0106A
+        movea.l (DrawPlanes).l,a2               ; 0106A
         move.l  (a2,d0.w),d2                    ; 01070
         move.w  (dat_071_0033E).l,d0            ; 01074
         move.l  (dat_071_00338).l,d1            ; 0107A
         add.l   d2,d1                           ; 01080
         move.l  (dat_071_00334).l,d2            ; 01082
         move.w  (dat_071_00352).l,d6            ; 01088
-        sub.w   (dat_071_002A8).l,d6            ; 0108E
+        sub.w   (ViewY).l,d6                    ; 0108E
         subi.w  #$b7,d6                         ; 01094
         add.w   d6,d6                           ; 01098
         add.w   d6,d6                           ; 0109A

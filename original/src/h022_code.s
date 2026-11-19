@@ -79,14 +79,14 @@ l_022_000FC:
         rts                                     ; 000FC
 sub_022_000FE:
         moveq   #$0,d0                          ; 000FE
-        tst.w   (dat_071_00384).l               ; 00100
+        tst.w   (CurrentObject).l               ; 00100
         beq.b   l_022_00110                     ; 00106
         or.b    (dat_071_00158).l,d0            ; 00108
         bne.b   l_022_000BA                     ; 0010E
 l_022_00110:
         or.b    (dat_071_0017E).l,d0            ; 00110
         bne.b   l_022_000FC                     ; 00116
-        tst.w   (dat_071_00384).l               ; 00118
+        tst.w   (CurrentObject).l               ; 00118
         bne.b   l_022_0012C                     ; 0011E
         tst.b   (dat_071_00155).l               ; 00120
         bne.b   l_022_00144                     ; 00126
@@ -94,7 +94,7 @@ l_022_00110:
 l_022_0012C:
         move.w  (FrameCount).l,d0               ; 0012C
         andi.w  #$1f,d0                         ; 00132
-        cmp.w   (dat_071_00384).l,d0            ; 00136
+        cmp.w   (CurrentObject).l,d0            ; 00136
         bne.b   l_022_00144                     ; 0013C
         jsr     (sub_026_00708).l               ; 0013E
 l_022_00144:
@@ -119,7 +119,7 @@ l_022_00144:
         bne.b   l_022_0018C                     ; 00184
         addq.b  #$1,(dat_071_0027B).l           ; 00186
 l_022_0018C:
-        tst.w   (dat_071_00384).l               ; 0018C
+        tst.w   (CurrentObject).l               ; 0018C
         beq.b   l_022_001A4                     ; 00192
         btst    #$7,$3(a1)                      ; 00194
         bne.b   l_022_001A4                     ; 0019A
@@ -150,12 +150,12 @@ l_022_001EC:
         move.w  (dat_071_0029C).l,d0            ; 001EC
         andi.w  #$40,d0                         ; 001F2
         beq.w   l_022_0031E                     ; 001F6
-        tst.w   (dat_071_00384).l               ; 001FA
+        tst.w   (CurrentObject).l               ; 001FA
         beq.b   l_022_00208                     ; 00200
         jsr     (sub_030_0089A).l               ; 00202
 l_022_00208:
         jsr     (sub_005_00666).l               ; 00208
-        tst.w   (dat_071_00384).l               ; 0020E
+        tst.w   (CurrentObject).l               ; 0020E
         bne.w   l_022_002BA                     ; 00214
         move.l  $42(a1),d0                      ; 00218
         bge.b   l_022_00262                     ; 0021C
@@ -205,7 +205,7 @@ l_022_002B2:
         jsr     (sub_020_00954).l               ; 002B2
         bra.b   l_022_0031E                     ; 002B8
 l_022_002BA:
-        move.w  (dat_071_00384).l,d0            ; 002BA
+        move.w  (CurrentObject).l,d0            ; 002BA
         cmp.w   (dat_071_002AC).l,d0            ; 002C0
         bne.b   l_022_002F6                     ; 002C6
         tst.b   (dat_071_00155).l               ; 002C8
@@ -241,7 +241,7 @@ l_022_00334:
         jsr     (sub_032_00000).l               ; 00336
         movea.l (a7)+,a1                        ; 0033C
 l_022_0033E:
-        tst.w   (dat_071_00384).l               ; 0033E
+        tst.w   (CurrentObject).l               ; 0033E
         beq.b   l_022_003A8                     ; 00344
         move.w  $96(a1),d5                      ; 00346
         move.w  $9c(a1),d6                      ; 0034A
@@ -345,7 +345,7 @@ l_022_00450:
 l_022_00460:
         tst.b   d6                              ; 00460
         beq.b   l_022_0046A                     ; 00462
-        move.b  d6,(dat_071_00228).l            ; 00464
+        move.b  d6,(RedrawFlags).l              ; 00464
 l_022_0046A:
         asr.l   #$8,d2                          ; 0046A
         asr.l   #$8,d3                          ; 0046C
@@ -370,20 +370,20 @@ l_022_0046A:
         beq.b   l_022_004E6                     ; 0049A
         move.b  d4,$a(a1)                       ; 0049C
         move.w  $6(a1),d0                       ; 004A0
-        sub.w   (dat_071_0031C).l,d0            ; 004A4
+        sub.w   (ViewCellX).l,d0                ; 004A4
         bge.b   l_022_004AE                     ; 004AA
         neg.w   d0                              ; 004AC
 l_022_004AE:
         cmpi.w  #$2,d0                          ; 004AE
         bgt.b   l_022_004E6                     ; 004B2
         move.w  $8(a1),d0                       ; 004B4
-        sub.w   (dat_071_0031E).l,d0            ; 004B8
+        sub.w   (ViewCellZ).l,d0                ; 004B8
         bge.b   l_022_004C2                     ; 004BE
         neg.w   d0                              ; 004C0
 l_022_004C2:
         cmpi.w  #$2,d0                          ; 004C2
         bgt.b   l_022_004E6                     ; 004C6
-        move.b  #$ff,(dat_071_00228).l          ; 004C8
+        move.b  #$ff,(RedrawFlags).l            ; 004C8
         lsr.w   #$2,d5                          ; 004D0
         lsr.w   #$2,d7                          ; 004D2
         subq.w  #$3,d5                          ; 004D4
@@ -439,7 +439,7 @@ l_022_0054C:
         move.b  d1,$7c(a1)                      ; 0054E
         move.b  #$3,(dat_071_00215).l           ; 00552
 l_022_0055A:
-        tst.w   (dat_071_00386).l               ; 0055A
+        tst.w   (CurrentObjectOffset).l         ; 0055A
         bne.b   l_022_00586                     ; 00560
         move.b  (dat_071_00217).l,d1            ; 00562
         blt.b   l_022_00570                     ; 00568
@@ -468,7 +468,7 @@ l_022_00596:
         jsr     (sub_024_00006).l               ; 005A6
         movem.l (a7)+,d5-d7/a1                  ; 005AC
         beq.w   l_022_0082C                     ; 005B0
-        move.w  (dat_071_00384).l,d1            ; 005B4
+        move.w  (CurrentObject).l,d1            ; 005B4
         btst    #$5,d0                          ; 005BA
         beq.b   l_022_005C8                     ; 005BE
         clr.l   $56(a1)                         ; 005C0
@@ -590,7 +590,7 @@ l_022_0074E:
         cmpi.w  #$f,$4c(a1)                     ; 00756
         ble.w   l_022_00816                     ; 0075C
         move.w  #$3a,(dat_071_0036E).l          ; 00760
-        jsr     (sub_007_00012).l               ; 00768
+        jsr     (Nop).l                         ; 00768
         bra.w   l_022_00816                     ; 0076E
 l_022_00772:
         move.b  $62(a1),d2                      ; 00772
@@ -611,7 +611,7 @@ l_022_0079C:
         beq.b   l_022_007F6                     ; 007A8
         cmpi.w  #$40,d0                         ; 007AA
         blt.b   l_022_007F6                     ; 007AE
-        move.w  (dat_071_00386).l,(dat_073_0165A).l ; 007B0
+        move.w  (CurrentObjectOffset).l,(dat_073_0165A).l ; 007B0
         bset    #$4,$2(a1)                      ; 007BA
         bset    #$1,$20(a1)                     ; 007C0
         move.b  #$1,$5(a1)                      ; 007C6
@@ -635,7 +635,7 @@ l_022_007F6:
         ori.w   #$400,$0(a1)                    ; 007F6
         move.w  #$f,$4c(a1)                     ; 007FC
         bset    #$1,$0(a1)                      ; 00802
-        tst.w   (dat_071_00384).l               ; 00808
+        tst.w   (CurrentObject).l               ; 00808
         beq.b   l_022_00816                     ; 0080E
         bclr    #$1,$0(a1)                      ; 00810
 l_022_00816:
@@ -643,7 +643,7 @@ l_022_00816:
         rts                                     ; 0081A
 l_022_0081C:
         bclr    #$6,$1(a1)                      ; 0081C
-        move.b  #$c,(dat_071_00228).l           ; 00822
+        move.b  #$c,(RedrawFlags).l             ; 00822
         rts                                     ; 0082A
 l_022_0082C:
         btst    #$1,$20(a1)                     ; 0082C
@@ -709,7 +709,7 @@ sub_022_008BA:
 l_022_008E8:
         rts                                     ; 008E8
 sub_022_008EA:
-        lea.l   (dat_071_02B54).l,a4            ; 008EA
+        lea.l   (SmallObjects).l,a4             ; 008EA
         moveq   #$f,d0                          ; 008F0
 l_022_008F2:
         btst    #$6,$1(a4)                      ; 008F2
@@ -730,7 +730,7 @@ l_022_00904:
         moveq   #$13,d1                         ; 00924
 l_022_00926:
         move.w  d1,$2(a4)                       ; 00926
-        move.b  #$ff,(dat_071_00228).l          ; 0092A
+        move.b  #$ff,(RedrawFlags).l            ; 0092A
 l_022_00932:
         rts                                     ; 00932
 dat_022_00934:
@@ -750,7 +750,7 @@ l_022_009B6:
         rts                                     ; 009BE
 sub_022_009C0:
         lea.l   (ObjectTable).l,a1              ; 009C0
-        adda.w  (dat_071_00386).l,a1            ; 009C6
+        adda.w  (CurrentObjectOffset).l,a1      ; 009C6
         tst.b   (dat_071_00154).l               ; 009CC
         beq.b   l_022_009B6                     ; 009D2
         move.w  $6c(a1),d0                      ; 009D4
@@ -851,7 +851,7 @@ l_022_00A98:
 l_022_00AB4:
         rts                                     ; 00AB4
 sub_022_00AB6:
-        move.w  (dat_071_00386).l,d0            ; 00AB6
+        move.w  (CurrentObjectOffset).l,d0      ; 00AB6
         cmp.w   (dat_073_0165A).l,d0            ; 00ABC
         bne.b   l_022_00AB4                     ; 00AC2
         lea.l   (ObjectTable).l,a1              ; 00AC4

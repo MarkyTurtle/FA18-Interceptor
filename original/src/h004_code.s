@@ -7,21 +7,22 @@
 	CODE_HUNK	h004
 
 ;-------------------------------------------------------------------------------
-; GetLogSetting - Copies the flight log's word +$02 into dat_071_00277 and dat_071_00278.
+; GetDifficulty - Copies the difficulty from the flight log (+$02) into Difficulty and
+; DifficultySaved.
 ;-------------------------------------------------------------------------------
-GetLogSetting:
+GetDifficulty:
         movea.l (ConfigBuffer).l,a0             ; 00000
         move.w  $2(a0),d0                       ; 00006
-        move.b  d0,(dat_071_00277).l            ; 0000A
-        move.b  d0,(dat_071_00278).l            ; 00010
+        move.b  d0,(Difficulty).l               ; 0000A
+        move.b  d0,(DifficultySaved).l          ; 00010
         rts                                     ; 00016
 
 ;-------------------------------------------------------------------------------
-; PutLogSetting - Stores dat_071_00277 back into the flight log's word +$02.
+; PutDifficulty - Stores Difficulty into the flight log (+$02).
 ;-------------------------------------------------------------------------------
-PutLogSetting:
+PutDifficulty:
         movea.l (ConfigBuffer).l,a0             ; 00018
-        move.b  (dat_071_00277).l,d0            ; 0001E
+        move.b  (Difficulty).l,d0               ; 0001E
         ext.w   d0                              ; 00024
         move.w  d0,$2(a0)                       ; 00026
         rts                                     ; 0002A
@@ -39,12 +40,12 @@ sub_004_0002C:
 sub_004_0006E:
         bsr.w   sub_004_0020A                   ; 0006E
         bsr.w   sub_004_0023A                   ; 00072
-        move.b  (dat_071_00278).l,(dat_071_00277).l ; 00076
+        move.b  (DifficultySaved).l,(Difficulty).l ; 00076
         clr.w   (dat_073_0162A).l               ; 00080
         clr.w   (dat_073_01628).l               ; 00086
         clr.l   (dat_071_0011A).l               ; 0008C
         moveq   #-1,d0                          ; 00092
-        move.b  d0,(dat_071_00228).l            ; 00094
+        move.b  d0,(RedrawFlags).l              ; 00094
         move.b  d0,(dat_071_001B0).l            ; 0009A
         move.b  d0,(dat_071_0027E).l            ; 000A0
         move.w  #$5,(dat_071_004A6).l           ; 000A6
@@ -60,7 +61,7 @@ l_004_000CA:
         dbra    d4,l_004_000CA                  ; 000CC
         adda.w  #$200,a0                        ; 000D0
         dbra    d0,l_004_000C6                  ; 000D4
-        lea.l   (dat_071_02B54).l,a0            ; 000D8
+        lea.l   (SmallObjects).l,a0             ; 000D8
         moveq   #$f,d0                          ; 000DE
 l_004_000E0:
         moveq   #$7,d4                          ; 000E0
@@ -84,9 +85,9 @@ l_004_000E4:
         clr.l   (dat_071_00622).l               ; 0013C
         move.w  #$1c20,(dat_071_00464).l        ; 00142
         move.w  #$0,(dat_071_00466).l           ; 0014A
-        move.w  #$a7,(dat_071_00354).l          ; 00152
+        move.w  #$a7,(ClipY).l                  ; 00152
         move.w  #$32,(dat_071_00356).l          ; 0015A
-        move.w  #$320,(dat_071_00358).l         ; 00162
+        move.w  #$320,(ViewX).l                 ; 00162
         moveq   #-1,d0                          ; 0016A
         move.l  d0,(dat_071_004CA).l            ; 0016C
         move.l  d0,(dat_071_004D2).l            ; 00172
@@ -121,7 +122,7 @@ l_004_001EC:
         dbra    d0,l_004_001EC                  ; 001EE
         bsr.w   sub_004_003AE                   ; 001F2
         jsr     (sub_008_00144).l               ; 001F6
-        jsr     (sub_008_00376).l               ; 001FC
+        jsr     (UpdateViewCell).l              ; 001FC
         jsr     (sub_008_00598).l               ; 00202
         rts                                     ; 00208
 sub_004_0020A:
@@ -195,13 +196,13 @@ sub_004_002F0:
         jsr     (sub_032_006EA).l               ; 002F8
         movem.w (a7)+,d3-d5                     ; 002FE
         lea.l   (ObjectTable).l,a1              ; 00302
-        adda.w  (dat_071_002AE).l,a1            ; 00308
+        adda.w  (ViewObject).l,a1               ; 00308
         lea.l   (dat_071_005DE).l,a2            ; 0030E
         bra.b   l_004_0033E                     ; 00314
 sub_004_00316:
         movem.l a1-a2,-(a7)                     ; 00316
         lea.l   (ObjectTable).l,a1              ; 0031A
-        adda.w  (dat_071_002AE).l,a1            ; 00320
+        adda.w  (ViewObject).l,a1               ; 00320
         bra.b   l_004_00338                     ; 00326
 sub_004_00328:
         movem.l a1-a2,-(a7)                     ; 00328
@@ -257,7 +258,7 @@ sub_004_003AE:
         clr.w   (dat_071_002FC).l               ; 003DC
         clr.w   (dat_071_00300).l               ; 003E2
 sub_004_003E8:
-        move.b  #$ff,(dat_071_00228).l          ; 003E8
+        move.b  #$ff,(RedrawFlags).l            ; 003E8
         bsr.w   sub_004_00768                   ; 003F0
         bsr.w   sub_004_00708                   ; 003F4
         clr.w   (dat_071_00392).l               ; 003F8
@@ -267,7 +268,7 @@ sub_004_003E8:
         move.w  d0,(MouseY).l                   ; 00408
         move.w  d0,(dat_071_0014C).l            ; 0040E
         move.b  #$fe,(dat_071_00280).l          ; 00414
-        lea.l   (dat_016_00000).l,a0            ; 0041C
+        lea.l   (MissileModels).l,a0            ; 0041C
         move.b  (dat_071_00219).l,d1            ; 00422
         cmpi.b  #$10,d1                         ; 00428
         bne.b   l_004_00434                     ; 0042C
@@ -280,7 +281,7 @@ l_004_00438:
         adda.w  d0,a0                           ; 0043E
         movem.l (a0),d0-d4                      ; 00440
         move.l  #sub_010_00014,d0               ; 00444
-        movem.l d0-d4,(dat_016_00140).l         ; 0044A
+        movem.l d0-d4,(ObjectDrawTable).l       ; 0044A
         movea.l (dat_016_00144).l,a1            ; 00452
         move.w  (a1),d2                         ; 00458
         blt.b   l_004_0046C                     ; 0045A
@@ -334,13 +335,13 @@ l_004_004EA:
         ext.w   d7                              ; 0052C
         add.w   d7,d5                           ; 0052E
         move.w  d5,$6(a1)                       ; 00530
-        move.w  d5,(dat_071_0031C).l            ; 00534
+        move.w  d5,(ViewCellX).l                ; 00534
         move.w  (dat_071_0031A).l,d5            ; 0053A
         asl.w   #$2,d5                          ; 00540
         move.b  $1(a2,d6.w),d7                  ; 00542
         ext.w   d7                              ; 00546
         add.w   d7,d5                           ; 00548
-        move.w  d5,(dat_071_0031E).l            ; 0054A
+        move.w  d5,(ViewCellZ).l                ; 0054A
         move.w  d5,$8(a1)                       ; 00550
         swap    d0                              ; 00554
         asl.l   #$8,d0                          ; 00556
@@ -399,7 +400,7 @@ l_004_005E0:
         bra.w   l_004_004EA                     ; 005FA
 l_004_005FE:
         lea.l   (ObjectTable).l,a2              ; 005FE
-        lea.l   (dat_016_00140).l,a4            ; 00604
+        lea.l   (ObjectDrawTable).l,a4          ; 00604
         asl.w   #$2,d1                          ; 0060A
         move.w  d1,d0                           ; 0060C
         asl.w   #$2,d1                          ; 0060E
@@ -408,7 +409,7 @@ l_004_005FE:
         move.l  $2(a4),d0                       ; 00616
         blt.b   l_004_0062C                     ; 0061A
         move.w  #$28,(dat_071_0036E).l          ; 0061C
-        jsr     (sub_007_00012).l               ; 00624
+        jsr     (Nop).l                         ; 00624
         clr.l   d0                              ; 0062A
 l_004_0062C:
         bclr    #$1f,d0                         ; 0062C
@@ -501,7 +502,7 @@ sub_004_00768:
         lea.l   (ObjectTable).l,a0              ; 00768
         bclr    #$0,$21(a0)                     ; 0076E
         move.b  #$d,$63(a0)                     ; 00774
-        jsr     (sub_006_0015E).l               ; 0077A
+        jsr     (ResetPlayerAircraft).l         ; 0077A
         move.w  #$148,$0(a0)                    ; 00780
         ori.w   #$1080,$0(a0)                   ; 00786
         move.w  #$1400,$7e(a0)                  ; 0078C

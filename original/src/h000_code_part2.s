@@ -15,15 +15,15 @@ sub_000_04392:
         bne.b   l_000_043F0                     ; 043B4
         moveq   #$0,d0                          ; 043B6
         move.w  d0,(dat_071_002AC).l            ; 043B8
-        move.w  d0,(dat_071_002AE).l            ; 043BE
-        move.b  #$ff,(dat_071_00228).l          ; 043C4
+        move.w  d0,(ViewObject).l               ; 043BE
+        move.b  #$ff,(RedrawFlags).l            ; 043C4
         move.b  (dat_071_00155).l,d0            ; 043CC
         tst.b   d0                              ; 043D2
         bne.b   l_000_043F0                     ; 043D4
         clr.b   (dat_071_00177).l               ; 043D6
         moveq   #$0,d0                          ; 043DC
         move.w  d0,(dat_071_00356).l            ; 043DE
-        move.w  d0,(dat_071_00358).l            ; 043E4
+        move.w  d0,(ViewX).l                    ; 043E4
         jsr     (sub_005_00E6E).l               ; 043EA
 l_000_043F0:
         rts                                     ; 043F0
@@ -54,18 +54,18 @@ l_000_04428:
         bne.w   l_000_044DE                     ; 04440
         addq.b  #$1,d0                          ; 04444
         move.b  d0,(dat_071_00156).l            ; 04446
-        move.b  (dat_071_00228).l,d0            ; 0444C
+        move.b  (RedrawFlags).l,d0              ; 0444C
         ori.b   #$b,d0                          ; 04452
-        move.b  d0,(dat_071_00228).l            ; 04456
+        move.b  d0,(RedrawFlags).l              ; 04456
         move.b  #$3,(dat_071_0023B).l           ; 0445C
         bra.b   l_000_044DE                     ; 04464
 l_000_04466:
         tst.b   (dat_071_00156).l               ; 04466
         beq.b   l_000_04484                     ; 0446C
         clr.b   (dat_071_00156).l               ; 0446E
-        move.b  (dat_071_00228).l,d0            ; 04474
+        move.b  (RedrawFlags).l,d0              ; 04474
         ori.b   #$b,d0                          ; 0447A
-        move.b  d0,(dat_071_00228).l            ; 0447E
+        move.b  d0,(RedrawFlags).l              ; 0447E
 l_000_04484:
         move.w  -$2(a6),d0                      ; 04484
         cmpi.w  #$1c2,d0                        ; 04488
@@ -1425,7 +1425,7 @@ l_000_05570:
 sub_000_0557C:
         link.w  a6,#$ffe0                       ; 0557C
         movem.l d2-d3/a2-a3,-(a7)               ; 05580
-        move.w  (dat_071_00384).l,d0            ; 05584
+        move.w  (CurrentObject).l,d0            ; 05584
         moveq   #$9,d1                          ; 0558A
         move.w  d0,-$2(a6)                      ; 0558C
         ext.l   d0                              ; 05590
@@ -2215,7 +2215,7 @@ l_000_05ED2:
 sub_000_05ED4:
         link.w  a6,#$ffce                       ; 05ED4
         movem.l d2/a2-a5,-(a7)                  ; 05ED8
-        move.w  (dat_071_00384).l,d0            ; 05EDC
+        move.w  (CurrentObject).l,d0            ; 05EDC
         moveq   #$9,d1                          ; 05EE2
         move.w  d0,-$32(a6)                     ; 05EE4
         ext.l   d0                              ; 05EE8
@@ -3237,7 +3237,7 @@ l_000_06AF6:
 sub_000_06B0E:
         link.w  a6,#$ffca                       ; 06B0E
         movem.l d2-d4/a2-a3,-(a7)               ; 06B12
-        move.w  (dat_071_00384).l,d0            ; 06B16
+        move.w  (CurrentObject).l,d0            ; 06B16
         moveq   #$9,d1                          ; 06B1C
         move.w  d0,-$24(a6)                     ; 06B1E
         ext.l   d0                              ; 06B22
@@ -3601,7 +3601,7 @@ l_000_07008:
         move.w  (a0),d0                         ; 0701C
         ori.w   #$1000,d0                       ; 0701E
         move.w  d0,(a0)                         ; 07022
-        move.w  (dat_071_00386).l,(dat_073_0165A).l ; 07024
+        move.w  (CurrentObjectOffset).l,(dat_073_0165A).l ; 07024
 l_000_0702E:
         cmpi.w  #$180,-$4(a6)                   ; 0702E
         ble.b   l_000_07046                     ; 07034
@@ -3833,7 +3833,7 @@ l_000_07350:
         move.l  a0,-$14(a6)                     ; 07360
         tst.b   d0                              ; 07364
         bne.b   l_000_07374                     ; 07366
-        move.w  (dat_071_00296).l,d0            ; 07368
+        move.w  (GunFlags).l,d0                 ; 07368
         btst    #$3,d0                          ; 0736E
         bne.b   l_000_0737E                     ; 07372
 l_000_07374:

@@ -5,9 +5,19 @@
 ; Hunk 6: CODE, $1D8 bytes
 ;===============================================================================
 	CODE_HUNK	h006
-sub_006_00000:
-        move.w  #$90,(dat_071_00354).l          ; 00000
-sub_006_00008:
+
+;-------------------------------------------------------------------------------
+; RedrawPanel - ClipY = 144 (the panel's top), then RedrawInstruments.
+;-------------------------------------------------------------------------------
+RedrawPanel:
+        move.w  #$90,(ClipY).l                  ; 00000
+
+;-------------------------------------------------------------------------------
+; RedrawInstruments - Sets every instrument's redraw counter to 3 (dat_071_00206 the panel,
+; dat_071_00207 ... dat_071_00215), so each is drawn into both display buffers; and ViewY = 0
+; unless dat_071_00190 is set.
+;-------------------------------------------------------------------------------
+RedrawInstruments:
         moveq   #$3,d4                          ; 00008
         move.b  d4,(dat_071_00207).l            ; 0000A
         move.b  d4,(dat_071_00206).l            ; 00010
@@ -25,16 +35,28 @@ sub_006_00008:
         move.b  d4,(dat_071_0020C).l            ; 00058
         tst.b   (dat_071_00190).l               ; 0005E
         bne.b   l_006_00072                     ; 00064
-        clr.w   (dat_071_002A8).l               ; 00066
+        clr.w   (ViewY).l                       ; 00066
         clr.l   (dat_071_002E8).l               ; 0006C
 l_006_00072:
         rts                                     ; 00072
-sub_006_00074:
+
+;-------------------------------------------------------------------------------
+; StartGunSound - Sets bit 7 of dat_071_001AD, dat_071_00412 = $80, and the instrument counter
+; dat_071_0020D.
+;-------------------------------------------------------------------------------
+StartGunSound:
         bset    #$7,(dat_071_001AD).l           ; 00074
         move.w  #$80,(dat_071_00412).l          ; 0007C
         move.b  #$3,(dat_071_0020D).l           ; 00084
         rts                                     ; 0008C
-sub_006_0008E:
+
+;-------------------------------------------------------------------------------
+; FirePressed - The fire button went down: queues the fire event (bit 2 of JoyEvents); with the
+; gun selected (the player's weapon byte, ObjectTable+$63, high nibble $10) turns the gun on
+; (bit 3 of GunFlags), with another weapon asks for a launch (LaunchRequest). In mode $7D
+; (dat_071_00276) it does something else (bit 3 of dat_071_01356).
+;-------------------------------------------------------------------------------
+FirePressed:
         move.b  (dat_071_00BD0).l,d4            ; 0008E
         andi.b  #$f,d4                          ; 00094
         bne.b   l_006_000B4                     ; 00098
@@ -46,21 +68,26 @@ sub_006_0008E:
 l_006_000B4:
         rts                                     ; 000B4
 l_006_000B6:
-        bset    #$2,(dat_071_0036A).l           ; 000B6
+        bset    #$2,(JoyEvents).l               ; 000B6
         move.b  (dat_071_00BB7).l,d4            ; 000BE
         andi.b  #$f0,d4                         ; 000C4
         beq.b   l_006_000D8                     ; 000C8
         cmpi.b  #$10,d4                         ; 000CA
         beq.b   l_006_000DA                     ; 000CE
-        move.b  #$1,(dat_071_0018A).l           ; 000D0
+        move.b  #$1,(LaunchRequest).l           ; 000D0
 l_006_000D8:
         rts                                     ; 000D8
 l_006_000DA:
-        ori.w   #$8,(dat_071_00296).l           ; 000DA
+        ori.w   #$8,(GunFlags).l                ; 000DA
         rts                                     ; 000E2
-sub_006_000E4:
-        bset    #$3,(dat_071_0036A).l           ; 000E4
-        andi.w  #$fff7,(dat_071_00296).l        ; 000EC
+
+;-------------------------------------------------------------------------------
+; FireReleased - The fire button went up: queues the event (bit 3 of JoyEvents) and turns the
+; gun off.
+;-------------------------------------------------------------------------------
+FireReleased:
+        bset    #$3,(JoyEvents).l               ; 000E4
+        andi.w  #$fff7,(GunFlags).l             ; 000EC
         rts                                     ; 000F4
 sub_006_000F6:
         movem.l d4/d7/a1,-(a7)                  ; 000F6
@@ -69,7 +96,7 @@ sub_006_000F6:
 	dc.b	$48,$E7,$09,$40,$42,$07
 l_006_00106:
         lea.l   (ObjectTable).l,a1              ; 00106
-        adda.w  (dat_071_00386).l,a1            ; 0010C
+        adda.w  (CurrentObjectOffset).l,a1      ; 0010C
         btst    #$7,$3(a1)                      ; 00112
         bne.b   l_006_0012C                     ; 00118
         tst.b   d7                              ; 0011A
@@ -87,14 +114,20 @@ sub_006_00132:
         jsr     (sub_020_00954).l               ; 00138
         swap    d0                              ; 0013E
         cmpi.b  #$6,(dat_071_00276).l           ; 00140
-        bne.b   sub_006_0015E                   ; 00148
+        bne.b   ResetPlayerAircraft             ; 00148
         move.b  (dat_071_00168).l,d3            ; 0014A
         subq.b  #$1,d3                          ; 00150
-        beq.b   sub_006_0015E                   ; 00152
+        beq.b   ResetPlayerAircraft             ; 00152
         addq.b  #$2,d3                          ; 00154
-        beq.b   sub_006_0015E                   ; 00156
+        beq.b   ResetPlayerAircraft             ; 00156
         clr.b   (dat_071_00168).l               ; 00158
-sub_006_0015E:
+
+;-------------------------------------------------------------------------------
+; ResetPlayerAircraft - Sets the player's aircraft (ObjectTable record 0) back to its starting
+; state: +$72 = 6,400,000, +$5F = $24, +$60 = 500; the instrument counters; then the other
+; records...
+;-------------------------------------------------------------------------------
+ResetPlayerAircraft:
         move.l  #$61a800,(dat_071_00BC6).l      ; 0015E
         move.b  #$24,(dat_071_00BB3).l          ; 00168
         move.w  #$1f4,(dat_071_00BB4).l         ; 00170

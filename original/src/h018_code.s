@@ -10,7 +10,7 @@ sub_018_00000:
         move.w  (dat_071_00390).l,d0            ; 00002
         cmpi.w  #$ffff,d0                       ; 00008
         beq.b   l_018_00032                     ; 0000C
-        cmp.w   (dat_071_00386).l,d0            ; 0000E
+        cmp.w   (CurrentObjectOffset).l,d0      ; 0000E
         bne.b   l_018_00032                     ; 00014
         move.w  #$4016,d0                       ; 00016
         jsr     (sub_020_00954).l               ; 0001A
@@ -20,7 +20,7 @@ l_018_00032:
         move.l  (a7)+,d0                        ; 00032
         rts                                     ; 00034
 sub_018_00036:
-        clr.b   (dat_071_0018A).l               ; 00036
+        clr.b   (LaunchRequest).l               ; 00036
         clr.b   (dat_071_0018B).l               ; 0003C
         clr.b   (dat_071_0018C).l               ; 00042
         jsr     (sub_017_00430).l               ; 00048
@@ -87,7 +87,7 @@ sub_018_000F4:
         tst.b   (dat_071_00168).l               ; 000F4
         bne.w   l_018_005F6                     ; 000FA
         lea.l   (dat_071_01354).l,a1            ; 000FE
-        move.w  #$4,(dat_071_00384).l           ; 00104
+        move.w  #$4,(CurrentObject).l           ; 00104
         move.w  $6(a1),d0                       ; 0010C
         or.w    $c(a1),d0                       ; 00110
         beq.b   l_018_000F2                     ; 00114
@@ -124,13 +124,13 @@ l_018_00152:
         tst.b   (dat_071_00155).l               ; 001B6
         bne.b   l_018_00204                     ; 001BC
         move.w  $68(a1),(dat_071_002FA).l       ; 001BE
-        ori.w   #$2,(dat_071_00296).l           ; 001C6
+        ori.w   #$2,(GunFlags).l                ; 001C6
         move.b  #$ff,(dat_071_00203).l          ; 001CE
         bra.b   l_018_00204                     ; 001D6
 l_018_001D8:
         btst    #$6,$1(a1)                      ; 001D8
         beq.b   l_018_00206                     ; 001DE
-        move.w  (dat_071_00384).l,d1            ; 001E0
+        move.w  (CurrentObject).l,d1            ; 001E0
         jsr     (sub_005_012D0).l               ; 001E6
         cmpi.b  #$3,(dat_071_001FA).l           ; 001EC
         beq.b   l_018_00204                     ; 001F4
@@ -173,9 +173,9 @@ l_018_00272:
         bge.w   l_018_00344                     ; 00278
         movem.l $14(a2),d0-d2                   ; 0027C
         movem.l (dat_071_00B68).l,d3-d5         ; 00282
-        cmpi.b  #$3,(dat_071_00277).l           ; 0028A
+        cmpi.b  #$3,(Difficulty).l              ; 0028A
         bge.b   l_018_002AE                     ; 00292
-        cmpi.b  #$2,(dat_071_00277).l           ; 00294
+        cmpi.b  #$2,(Difficulty).l              ; 00294
         bge.b   l_018_002A6                     ; 0029C
         move.l  #$30000,d6                      ; 0029E
         bra.b   l_018_002B4                     ; 002A4
@@ -300,7 +300,7 @@ sub_018_00410:
         tst.b   (dat_071_00168).l               ; 00410
         bne.w   l_018_005F6                     ; 00416
         lea.l   (dat_071_01354).l,a1            ; 0041A
-        move.w  #$4,(dat_071_00384).l           ; 00420
+        move.w  #$4,(CurrentObject).l           ; 00420
         move.w  $6(a1),d0                       ; 00428
         or.w    $c(a1),d0                       ; 0042C
         beq.b   l_018_0040E                     ; 00430
@@ -331,13 +331,13 @@ l_018_00452:
         tst.b   (dat_071_00155).l               ; 004B6
         bne.b   l_018_0051C                     ; 004BC
         move.w  $68(a1),(dat_071_002FA).l       ; 004BE
-        ori.w   #$2,(dat_071_00296).l           ; 004C6
+        ori.w   #$2,(GunFlags).l                ; 004C6
         move.b  #$3,(dat_071_00203).l           ; 004CE
         bra.b   l_018_0051C                     ; 004D6
 l_018_004D8:
         btst    #$1,$20(a1)                     ; 004D8
         bne.b   l_018_00504                     ; 004DE
-        move.w  (dat_071_00384).l,d1            ; 004E0
+        move.w  (CurrentObject).l,d1            ; 004E0
         jsr     (sub_005_012D0).l               ; 004E6
         cmpi.b  #$3,(dat_071_001FA).l           ; 004EC
         beq.b   l_018_0051C                     ; 004F4

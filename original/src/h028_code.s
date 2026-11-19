@@ -246,10 +246,10 @@ l_028_00C0C:
         move.l  d0,-$28(a6)                     ; 00C0C
         cmpi.l  #$3f8,d0                        ; 00C10
         ble.b   l_028_00C24                     ; 00C16
-        move.w  #$6,(dat_071_00324).l           ; 00C18
+        move.w  #$6,(DrawColour).l              ; 00C18
         bsr.w   sub_028_00C5A                   ; 00C20
 l_028_00C24:
-        move.w  #$6,(dat_071_00324).l           ; 00C24
+        move.w  #$6,(DrawColour).l              ; 00C24
         bsr.w   sub_028_00C34                   ; 00C2C
         unlk    a6                              ; 00C30
         rts                                     ; 00C32
@@ -275,7 +275,7 @@ l_028_00C7C:
         bra.b   l_028_00C9C                     ; 00C8A
 l_028_00C8C:
         lea.l   (ObjectTable).l,a4              ; 00C8C
-        adda.w  (dat_071_002AE).l,a4            ; 00C92
+        adda.w  (ViewObject).l,a4               ; 00C92
         lea.l   $14(a4),a4                      ; 00C98
 l_028_00C9C:
         move.l  $4(a4),d2                       ; 00C9C
@@ -484,7 +484,7 @@ l_028_00ECA:
         bra.w   l_028_00E00                     ; 00EE2
 l_028_00EE6:
         move.w  #$40,(dat_071_0036E).l          ; 00EE6
-        jsr     (sub_007_00012).l               ; 00EEE
+        jsr     (Nop).l                         ; 00EEE
         bra.w   l_028_00E00                     ; 00EF4
 dat_028_00EF8:
 	dc.b	$00,$84,$00,$88,$00,$90,$00,$98,$00,$9C,$00,$A0,$00,$A2,$00,$A4
@@ -625,7 +625,7 @@ l_028_01066:
         cmpi.w  #$12,d1                         ; 01066
         ble.b   l_028_0107E                     ; 0106A
         move.w  #$20,(dat_071_0036E).l          ; 0106C
-        jsr     (sub_007_00012).l               ; 01074
+        jsr     (Nop).l                         ; 01074
         bra.w   l_028_010F0                     ; 0107A
 l_028_0107E:
         lea.l   (dat_072_03C02).l,a5            ; 0107E
@@ -715,13 +715,13 @@ sub_028_010FA:
         rts                                     ; 01140
 l_028_01142:
         move.w  #$41,(dat_071_0036E).l          ; 01142
-        jsr     (sub_007_00012).l               ; 0114A
+        jsr     (Nop).l                         ; 0114A
 l_028_01150:
         bclr    #$1,$4(a1)                      ; 01150
         bra.w   l_028_0134A                     ; 01156
 sub_028_0115A:
         lea.l   (ObjectTable).l,a1              ; 0115A
-        adda.w  (dat_071_00386).l,a1            ; 01160
+        adda.w  (CurrentObjectOffset).l,a1      ; 01160
         move.l  $14(a1),d6                      ; 01166
         move.l  $1c(a1),d7                      ; 0116A
         move.l  d7,d1                           ; 0116E
@@ -951,7 +951,7 @@ l_028_01334:
         bset    #$1,$4(a1)                      ; 01344
 l_028_0134A:
         lea.l   (dat_067_000C6).l,a0            ; 0134A
-        lea.l   (dat_016_00140).l,a3            ; 01350
+        lea.l   (ObjectDrawTable).l,a3          ; 01350
         moveq   #$0,d0                          ; 01356
         bra.b   l_028_0135E                     ; 01358
 l_028_0135A:

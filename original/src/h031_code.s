@@ -11,15 +11,15 @@ sub_031_00000:
         asl.w   #$6,d0                          ; 00008
         lea.l   (dat_071_00642).l,a3            ; 0000A
         adda.w  d0,a3                           ; 00010
-        move.w  #$9,(dat_071_00324).l           ; 00012
+        move.w  #$9,(DrawColour).l              ; 00012
 l_031_0001A:
         move.w  $30(a3),d3                      ; 0001A
-        sub.w   (dat_071_0031C).l,d3            ; 0001E
+        sub.w   (ViewCellX).l,d3                ; 0001E
         asl.w   #$8,d3                          ; 00024
         asl.w   #$6,d3                          ; 00026
         ext.l   d3                              ; 00028
         move.w  $32(a3),d5                      ; 0002A
-        sub.w   (dat_071_0031E).l,d5            ; 0002E
+        sub.w   (ViewCellZ).l,d5                ; 0002E
         asl.w   #$8,d5                          ; 00034
         asl.w   #$6,d5                          ; 00036
         ext.l   d5                              ; 00038
@@ -54,16 +54,16 @@ sub_031_00088:
         asl.w   #$6,d0                          ; 00090
         lea.l   (dat_071_00642).l,a3            ; 00092
         adda.w  d0,a3                           ; 00098
-        move.w  #$d,(dat_071_00324).l           ; 0009A
+        move.w  #$d,(DrawColour).l              ; 0009A
         cmpi.w  #$3a,$28(a3)                    ; 000A2
         bgt.w   l_031_0001A                     ; 000A8
         move.w  $30(a3),d3                      ; 000AC
-        sub.w   (dat_071_0031C).l,d3            ; 000B0
+        sub.w   (ViewCellX).l,d3                ; 000B0
         asl.w   #$8,d3                          ; 000B6
         asl.w   #$6,d3                          ; 000B8
         ext.l   d3                              ; 000BA
         move.w  $32(a3),d5                      ; 000BC
-        sub.w   (dat_071_0031E).l,d5            ; 000C0
+        sub.w   (ViewCellZ).l,d5                ; 000C0
         asl.w   #$8,d5                          ; 000C6
         asl.w   #$6,d5                          ; 000C8
         ext.l   d5                              ; 000CA
@@ -90,12 +90,12 @@ sub_031_000F4:
         lea.l   (dat_071_00642).l,a3            ; 000FE
         adda.w  d0,a3                           ; 00104
         move.w  $30(a3),d3                      ; 00106
-        sub.w   (dat_071_0031C).l,d3            ; 0010A
+        sub.w   (ViewCellX).l,d3                ; 0010A
         asl.w   #$8,d3                          ; 00110
         asl.w   #$6,d3                          ; 00112
         ext.l   d3                              ; 00114
         move.w  $32(a3),d5                      ; 00116
-        sub.w   (dat_071_0031E).l,d5            ; 0011A
+        sub.w   (ViewCellZ).l,d5                ; 0011A
         asl.w   #$8,d5                          ; 00120
         asl.w   #$6,d5                          ; 00122
         ext.l   d5                              ; 00124
@@ -113,9 +113,9 @@ sub_031_000F4:
         movem.w d3-d5,-$8(a6)                   ; 0014E
         move.w  #$3,-$a(a6)                     ; 00154
         move.w  #$f,(dat_071_000B6).l           ; 0015A
-        move.w  #$ffff,(dat_071_000B8).l        ; 00162
+        move.w  #$ffff,(DrawXor).l              ; 00162
         clr.l   (dat_071_000BA).l               ; 0016A
-        move.w  #$9,(dat_071_00324).l           ; 00170
+        move.w  #$9,(DrawColour).l              ; 00170
         lea.l   (dat_031_001BE).l,a2            ; 00178
         movea.w -$8(a6),a4                      ; 0017E
         movea.w -$6(a6),a5                      ; 00182
@@ -236,7 +236,7 @@ l_031_003E0:
         rts                                     ; 003E0
 sub_031_003E2:
         move.w  #$f,(dat_071_000B6).l           ; 003E2
-        move.w  #$ffff,(dat_071_000B8).l        ; 003EA
+        move.w  #$ffff,(DrawXor).l              ; 003EA
         clr.l   (dat_071_000BA).l               ; 003F2
         move.l  d1,d5                           ; 003F8
         add.l   (dat_071_00448).l,d5            ; 003FA
@@ -391,7 +391,7 @@ l_031_00566:
         bne.b   l_031_005D2                     ; 005CE
         moveq   #$d,d3                          ; 005D0
 l_031_005D2:
-        move.w  d3,(dat_071_00324).l            ; 005D2
+        move.w  d3,(DrawColour).l               ; 005D2
         lea.l   dat_031_0021E(pc),a2            ; 005D8
         movea.l (a2,d4.w),a2                    ; 005DC
         lea.l   (dat_072_03002).l,a1            ; 005E0
@@ -507,7 +507,7 @@ l_031_006EC:
         bra.b   l_031_006A4                     ; 006F2
 l_031_006F4:
         movem.w (dat_072_03002).l,d0-d3         ; 006F4
-        jsr     (sub_036_005EE).l               ; 006FC
+        jsr     (DrawLine).l                    ; 006FC
         bra.b   l_031_006A4                     ; 00702
 sub_031_00704:
         movem.w (dat_071_00442).l,d3-d5         ; 00704

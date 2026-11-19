@@ -2009,12 +2009,12 @@ l_000_09020:
         beq.b   l_000_0904E                     ; 09030
         cmpi.w  #$68,d0                         ; 09032
         bne.b   l_000_09040                     ; 09036
-        jsr     (sub_006_0008E).l               ; 09038
+        jsr     (FirePressed).l                 ; 09038
         bra.b   l_000_0904E                     ; 0903E
 l_000_09040:
         cmpi.w  #$e8,-$2(a6)                    ; 09040
         bne.b   l_000_0904E                     ; 09046
-        jsr     (sub_006_000E4).l               ; 09048
+        jsr     (FireReleased).l                ; 09048
 l_000_0904E:
         movea.l (dat_002_029C2).l,a0            ; 0904E
         clr.w   $6(a0)                          ; 09054
@@ -2046,7 +2046,7 @@ ReadStick:
         eor.l   d1,d0                           ; 090A0
         tst.l   d0                              ; 090A2
         beq.b   l_000_090B6                     ; 090A4
-        jsr     (sub_005_008F8).l               ; 090A6
+        jsr     (StickUp).l                     ; 090A6
         move.b  #$1,(dat_071_00201).l           ; 090AC
         bra.b   l_000_090FC                     ; 090B4
 l_000_090B6:
@@ -2060,30 +2060,30 @@ l_000_090B6:
         eor.l   d1,d0                           ; 090D2
         tst.l   d0                              ; 090D4
         beq.b   l_000_090E8                     ; 090D6
-        jsr     (sub_005_008F4).l               ; 090D8
+        jsr     (StickDown).l                   ; 090D8
         move.b  #$1,(dat_071_00201).l           ; 090DE
         bra.b   l_000_090FC                     ; 090E6
 l_000_090E8:
         tst.b   (dat_071_00201).l               ; 090E8
         beq.b   l_000_090FC                     ; 090EE
-        jsr     (sub_005_008FC).l               ; 090F0
+        jsr     (StickPitchCentre).l            ; 090F0
         clr.b   (dat_071_00201).l               ; 090F6
 l_000_090FC:
         btst    #$1,-$6(a6)                     ; 090FC
         beq.b   l_000_09114                     ; 09102
-        jsr     (sub_005_00940).l               ; 09104
+        jsr     (StickLeft).l                   ; 09104
         move.b  #$1,(dat_071_00202).l           ; 0910A
         bra.b   l_000_09140                     ; 09112
 l_000_09114:
         btst    #$1,-$5(a6)                     ; 09114
         beq.b   l_000_0912C                     ; 0911A
-        jsr     (sub_005_00944).l               ; 0911C
+        jsr     (StickRight).l                  ; 0911C
         move.b  #$1,(dat_071_00202).l           ; 09122
         bra.b   l_000_09140                     ; 0912A
 l_000_0912C:
         tst.b   (dat_071_00202).l               ; 0912C
         beq.b   l_000_09140                     ; 09132
-        jsr     (sub_005_00948).l               ; 09134
+        jsr     (StickRollCentre).l             ; 09134
         clr.b   (dat_071_00202).l               ; 0913A
 l_000_09140:
         unlk    a6                              ; 09140
@@ -3362,8 +3362,8 @@ sub_000_0A18C:
         link.w  a6,#$0                          ; 0A18C
         btst    #$2,(dat_071_0052B).l           ; 0A190
         beq.b   l_000_0A1E2                     ; 0A198
-        move.w  (dat_071_00386).l,d0            ; 0A19A
-        move.w  (dat_071_002AE).l,d1            ; 0A1A0
+        move.w  (CurrentObjectOffset).l,d0      ; 0A19A
+        move.w  (ViewObject).l,d1               ; 0A1A0
         cmp.w   d1,d0                           ; 0A1A6
         bne.b   l_000_0A1E2                     ; 0A1A8
         tst.l   (dat_081_00014).l               ; 0A1AA
@@ -3387,8 +3387,8 @@ sub_000_0A1E6:
         link.w  a6,#$0                          ; 0A1E6
         btst    #$6,(dat_071_0052B).l           ; 0A1EA
         beq.b   l_000_0A248                     ; 0A1F2
-        move.w  (dat_071_00386).l,d0            ; 0A1F4
-        move.w  (dat_071_002AE).l,d1            ; 0A1FA
+        move.w  (CurrentObjectOffset).l,d0      ; 0A1F4
+        move.w  (ViewObject).l,d1               ; 0A1FA
         cmp.w   d1,d0                           ; 0A200
         bne.b   l_000_0A248                     ; 0A202
         tst.l   (dat_081_0002C).l               ; 0A204

@@ -8,7 +8,7 @@
 sub_015_00000:
         lea.l   (dat_072_00000).l,a3            ; 00000
         adda.w  (a2)+,a3                        ; 00006
-        move.w  (a2)+,(dat_071_00324).l         ; 00008
+        move.w  (a2)+,(DrawColour).l            ; 00008
         move.w  (a2)+,d6                        ; 0000E
         movem.l a1-a2/a5,-(a7)                  ; 00010
         bsr.w   sub_015_00062                   ; 00014
@@ -23,7 +23,7 @@ l_015_0002A:
         bne.b   l_015_00058                     ; 0002E
         lea.l   (dat_072_00000).l,a3            ; 00030
         adda.w  (a2)+,a3                        ; 00036
-        move.w  (a2)+,(dat_071_00324).l         ; 00038
+        move.w  (a2)+,(DrawColour).l            ; 00038
         move.w  (a2)+,d6                        ; 0003E
         bge.b   l_015_0004A                     ; 00040
         addq.w  #$1,-$6e(a6)                    ; 00042
@@ -77,7 +77,7 @@ l_015_000B0:
         moveq   #$0,d0                          ; 000B0
         rts                                     ; 000B2
 sub_015_000B4:
-        move.w  (dat_071_00386).l,d0            ; 000B4
+        move.w  (CurrentObjectOffset).l,d0      ; 000B4
         cmp.w   (dat_073_0165A).l,d0            ; 000BA
         bne.b   l_015_000B0                     ; 000C0
         link.w  a6,#$ffd2                       ; 000C2
@@ -134,7 +134,7 @@ l_015_00172:
         move.w  #$ffff,-$22(a6)                 ; 00172
 l_015_00178:
         lea.l   (ObjectTable).l,a1              ; 00178
-        adda.w  (dat_071_00386).l,a1            ; 0017E
+        adda.w  (CurrentObjectOffset).l,a1      ; 0017E
         move.b  -$20(a6),d0                     ; 00184
         ext.w   d0                              ; 00188
         add.w   d0,d0                           ; 0018A
@@ -190,18 +190,18 @@ l_015_001FA:
         beq.b   l_015_0021E                     ; 00200
         btst    #$1,$20(a1)                     ; 00202
         bne.b   l_015_00214                     ; 00208
-        move.w  #$8,(dat_071_00324).l           ; 0020A
+        move.w  #$8,(DrawColour).l              ; 0020A
         bra.b   l_015_00238                     ; 00212
 l_015_00214:
-        move.w  #$3,(dat_071_00324).l           ; 00214
+        move.w  #$3,(DrawColour).l              ; 00214
         bra.b   l_015_00238                     ; 0021C
 l_015_0021E:
         btst    #$1,$20(a1)                     ; 0021E
         bne.b   l_015_00230                     ; 00224
-        move.w  #$a,(dat_071_00324).l           ; 00226
+        move.w  #$a,(DrawColour).l              ; 00226
         bra.b   l_015_00238                     ; 0022E
 l_015_00230:
-        move.w  #$c,(dat_071_00324).l           ; 00230
+        move.w  #$c,(DrawColour).l              ; 00230
 l_015_00238:
         move.w  #$9c0,d6                        ; 00238
         movem.w d3-d6,-(a7)                     ; 0023C
@@ -338,7 +338,7 @@ l_015_00394:
         rts                                     ; 0039A
 sub_015_0039C:
         lea.l   (ObjectTable).l,a3              ; 0039C
-        move.w  (dat_071_00386).l,d0            ; 003A2
+        move.w  (CurrentObjectOffset).l,d0      ; 003A2
         addi.w  #$a4,d0                         ; 003A8
         adda.w  d0,a3                           ; 003AC
         bsr.w   sub_015_003EC                   ; 003AE
@@ -509,7 +509,7 @@ sub_015_003EC:
         rts                                     ; 0058A
 sub_015_0058C:
         lea.l   (ObjectTable).l,a3              ; 0058C
-        move.w  (dat_071_00386).l,d0            ; 00592
+        move.w  (CurrentObjectOffset).l,d0      ; 00592
         addi.w  #$a4,d0                         ; 00598
         adda.w  d0,a3                           ; 0059C
         bsr.w   sub_015_005A8                   ; 0059E
@@ -599,7 +599,7 @@ sub_015_005A8:
         rts                                     ; 00682
 sub_015_00684:
         lea.l   (ObjectTable).l,a3              ; 00684
-        move.w  (dat_071_00386).l,d0            ; 0068A
+        move.w  (CurrentObjectOffset).l,d0      ; 0068A
         addi.w  #$a4,d0                         ; 00690
         adda.w  d0,a3                           ; 00694
         bsr.w   sub_015_006A0                   ; 00696
@@ -657,7 +657,7 @@ sub_015_006A0:
         rts                                     ; 0072A
 sub_015_0072C:
         lea.l   (ObjectTable).l,a3              ; 0072C
-        move.w  (dat_071_00386).l,d0            ; 00732
+        move.w  (CurrentObjectOffset).l,d0      ; 00732
         addi.w  #$a4,d0                         ; 00738
         adda.w  d0,a3                           ; 0073C
         bsr.w   sub_015_00748                   ; 0073E

@@ -138,17 +138,17 @@ l_033_00152:
         andi.w  #$2,d6                          ; 0016A
         bne.b   l_033_0018E                     ; 0016E
 l_033_00170:
-        bsr.w   sub_033_00380                   ; 00170
-        bsr.w   sub_033_003BC                   ; 00174
-        bsr.w   sub_033_003C6                   ; 00178
+        bsr.w   PutEdge                         ; 00170
+        bsr.w   PutCornerBR                     ; 00174
+        bsr.w   PutCornerBL                     ; 00178
         lea.l   (dat_072_0300A).l,a1            ; 0017C
-        bsr.w   sub_033_003B4                   ; 00182
-        bsr.w   sub_033_003B0                   ; 00186
+        bsr.w   PutCornerTR                     ; 00182
+        bsr.w   PutCornerTL                     ; 00186
         bra.w   l_033_00350                     ; 0018A
 l_033_0018E:
-        bsr.w   sub_033_00380                   ; 0018E
-        bsr.w   sub_033_003BC                   ; 00192
-        bsr.w   sub_033_003C6                   ; 00196
+        bsr.w   PutEdge                         ; 0018E
+        bsr.w   PutCornerBR                     ; 00192
+        bsr.w   PutCornerBL                     ; 00196
         bra.w   l_033_00350                     ; 0019A
 l_033_0019E:
         lea.l   (dat_072_03000).l,a1            ; 0019E
@@ -156,20 +156,20 @@ l_033_0019E:
         move.w  (dat_071_0029A).l,d6            ; 001A8
         andi.w  #$2,d6                          ; 001AE
         bne.b   l_033_001D8                     ; 001B2
-        bsr.w   sub_033_00380                   ; 001B4
-        bsr.w   sub_033_003B4                   ; 001B8
-        bsr.w   sub_033_003BC                   ; 001BC
-        bsr.w   sub_033_003C6                   ; 001C0
+        bsr.w   PutEdge                         ; 001B4
+        bsr.w   PutCornerTR                     ; 001B8
+        bsr.w   PutCornerBR                     ; 001BC
+        bsr.w   PutCornerBL                     ; 001C0
         lea.l   (dat_072_03000).l,a1            ; 001C4
         move.w  #$3,(a1)+                       ; 001CA
         addq.w  #$8,a1                          ; 001CE
-        bsr.w   sub_033_003B0                   ; 001D0
+        bsr.w   PutCornerTL                     ; 001D0
         bra.w   l_033_00350                     ; 001D4
 l_033_001D8:
-        bsr.w   sub_033_00380                   ; 001D8
-        bsr.w   sub_033_003B4                   ; 001DC
-        bsr.w   sub_033_003BC                   ; 001E0
-        bsr.w   sub_033_003C6                   ; 001E4
+        bsr.w   PutEdge                         ; 001D8
+        bsr.w   PutCornerTR                     ; 001DC
+        bsr.w   PutCornerBR                     ; 001E0
+        bsr.w   PutCornerBL                     ; 001E4
         bra.w   l_033_00350                     ; 001E8
 l_033_001EC:
         lea.l   (dat_072_03000).l,a1            ; 001EC
@@ -177,20 +177,20 @@ l_033_001EC:
         move.w  (dat_071_0029A).l,d6            ; 001F6
         andi.w  #$2,d6                          ; 001FC
         bne.b   l_033_00216                     ; 00200
-        bsr.w   sub_033_00380                   ; 00202
-        bsr.w   sub_033_003BC                   ; 00206
-        bsr.w   sub_033_003B4                   ; 0020A
-        bsr.w   sub_033_003B0                   ; 0020E
+        bsr.w   PutEdge                         ; 00202
+        bsr.w   PutCornerBR                     ; 00206
+        bsr.w   PutCornerTR                     ; 0020A
+        bsr.w   PutCornerTL                     ; 0020E
         bra.w   l_033_00350                     ; 00212
 l_033_00216:
-        bsr.w   sub_033_00380                   ; 00216
-        bsr.w   sub_033_003BC                   ; 0021A
-        bsr.w   sub_033_003B4                   ; 0021E
-        bsr.w   sub_033_003B0                   ; 00222
+        bsr.w   PutEdge                         ; 00216
+        bsr.w   PutCornerBR                     ; 0021A
+        bsr.w   PutCornerTR                     ; 0021E
+        bsr.w   PutCornerTL                     ; 00222
         lea.l   (dat_072_03000).l,a1            ; 00226
         move.w  #$3,(a1)+                       ; 0022C
         addq.w  #$8,a1                          ; 00230
-        bsr.w   sub_033_003C6                   ; 00232
+        bsr.w   PutCornerBL                     ; 00232
         bra.w   l_033_00350                     ; 00236
 l_033_0023A:
         lea.l   (dat_072_03000).l,a1            ; 0023A
@@ -198,37 +198,37 @@ l_033_0023A:
         move.w  (dat_071_0029A).l,d6            ; 00244
         andi.w  #$2,d6                          ; 0024A
         bne.b   l_033_00274                     ; 0024E
-        bsr.w   sub_033_00380                   ; 00250
-        bsr.w   sub_033_003BC                   ; 00254
-        bsr.w   sub_033_003C6                   ; 00258
-        bsr.w   sub_033_003B0                   ; 0025C
+        bsr.w   PutEdge                         ; 00250
+        bsr.w   PutCornerBR                     ; 00254
+        bsr.w   PutCornerBL                     ; 00258
+        bsr.w   PutCornerTL                     ; 0025C
         lea.l   (dat_072_03000).l,a1            ; 00260
         move.w  #$3,(a1)+                       ; 00266
         addq.w  #$8,a1                          ; 0026A
-        bsr.w   sub_033_003B4                   ; 0026C
+        bsr.w   PutCornerTR                     ; 0026C
         bra.w   l_033_00350                     ; 00270
 l_033_00274:
-        bsr.w   sub_033_00380                   ; 00274
-        bsr.w   sub_033_003BC                   ; 00278
-        bsr.w   sub_033_003C6                   ; 0027C
-        bsr.w   sub_033_003B0                   ; 00280
+        bsr.w   PutEdge                         ; 00274
+        bsr.w   PutCornerBR                     ; 00278
+        bsr.w   PutCornerBL                     ; 0027C
+        bsr.w   PutCornerTL                     ; 00280
         bra.w   l_033_00350                     ; 00284
 l_033_00288:
         lea.l   (dat_072_03000).l,a1            ; 00288
         move.w  #$4,(a1)+                       ; 0028E
         cmpi.w  #$3840,(dat_071_00462).l        ; 00292
         bge.b   l_033_002BA                     ; 0029A
-        bsr.w   sub_033_00380                   ; 0029C
-        bsr.w   sub_033_003C6                   ; 002A0
-        bsr.w   sub_033_003B0                   ; 002A4
+        bsr.w   PutEdge                         ; 0029C
+        bsr.w   PutCornerBL                     ; 002A0
+        bsr.w   PutCornerTL                     ; 002A4
         lea.l   (dat_072_0300A).l,a1            ; 002A8
-        bsr.w   sub_033_003BC                   ; 002AE
-        bsr.w   sub_033_003B4                   ; 002B2
+        bsr.w   PutCornerBR                     ; 002AE
+        bsr.w   PutCornerTR                     ; 002B2
         bra.w   l_033_00350                     ; 002B6
 l_033_002BA:
-        bsr.w   sub_033_00380                   ; 002BA
-        bsr.w   sub_033_003C6                   ; 002BE
-        bsr.w   sub_033_003B0                   ; 002C2
+        bsr.w   PutEdge                         ; 002BA
+        bsr.w   PutCornerBL                     ; 002BE
+        bsr.w   PutCornerTL                     ; 002C2
         bra.w   l_033_00350                     ; 002C6
 l_033_002CA:
         lea.l   (dat_072_03000).l,a1            ; 002CA
@@ -236,28 +236,28 @@ l_033_002CA:
         move.w  (dat_071_0029A).l,d6            ; 002D4
         andi.w  #$2,d6                          ; 002DA
         bne.b   l_033_002F4                     ; 002DE
-        bsr.w   sub_033_00380                   ; 002E0
-        bsr.w   sub_033_003B4                   ; 002E4
-        bsr.w   sub_033_003B0                   ; 002E8
-        bsr.w   sub_033_003C6                   ; 002EC
+        bsr.w   PutEdge                         ; 002E0
+        bsr.w   PutCornerTR                     ; 002E4
+        bsr.w   PutCornerTL                     ; 002E8
+        bsr.w   PutCornerBL                     ; 002EC
         bra.w   l_033_00350                     ; 002F0
 l_033_002F4:
-        bsr.w   sub_033_00380                   ; 002F4
-        bsr.w   sub_033_003B4                   ; 002F8
-        bsr.w   sub_033_003B0                   ; 002FC
-        bsr.w   sub_033_003C6                   ; 00300
+        bsr.w   PutEdge                         ; 002F4
+        bsr.w   PutCornerTR                     ; 002F8
+        bsr.w   PutCornerTL                     ; 002FC
+        bsr.w   PutCornerBL                     ; 00300
         lea.l   (dat_072_03000).l,a1            ; 00304
         move.w  #$3,(a1)+                       ; 0030A
         addq.w  #$8,a1                          ; 0030E
-        bsr.w   sub_033_003BC                   ; 00310
+        bsr.w   PutCornerBR                     ; 00310
         bra.w   l_033_00350                     ; 00314
 sub_033_00318:
         lea.l   (dat_072_03000).l,a1            ; 00318
         move.w  #$4,(a1)+                       ; 0031E
-        bsr.w   sub_033_003B0                   ; 00322
-        bsr.w   sub_033_003B4                   ; 00326
-        bsr.w   sub_033_003BC                   ; 0032A
-        bsr.w   sub_033_003C6                   ; 0032E
+        bsr.w   PutCornerTL                     ; 00322
+        bsr.w   PutCornerTR                     ; 00326
+        bsr.w   PutCornerBR                     ; 0032A
+        bsr.w   PutCornerBL                     ; 0032E
         tst.b   (dat_071_00155).l               ; 00332
         bne.b   l_033_00342                     ; 00338
         move.w  (dat_071_0045A).l,d0            ; 0033A
@@ -270,7 +270,7 @@ l_033_00348:
         bra.b   l_033_00374                     ; 0034E
 l_033_00350:
         move.w  #$1,(dat_071_000B6).l           ; 00350
-        move.w  #$1,(dat_071_000B8).l           ; 00358
+        move.w  #$1,(DrawXor).l                 ; 00358
         clr.l   (dat_071_000BA).l               ; 00360
         move.b  #$1,(dat_071_0026E).l           ; 00366
         moveq   #$0,d0                          ; 0036E
@@ -281,7 +281,12 @@ l_033_00374:
         moveq   #$1,d0                          ; 0037A
         unlk    a6                              ; 0037C
         rts                                     ; 0037E
-sub_033_00380:
+
+;-------------------------------------------------------------------------------
+; PutEdge - PutEdge(d0, d1 = two projected points of dat_072_03600, 8 bytes each): writes their
+; screen positions at (a1)+, as (319 - x, 179 - y).
+;-------------------------------------------------------------------------------
+PutEdge:
         asl.w   #$3,d0                          ; 00380
         asl.w   #$3,d1                          ; 00382
         lea.l   (dat_072_03600).l,a0            ; 00384
@@ -298,18 +303,34 @@ sub_033_00380:
         move.w  d4,(a1)+                        ; 003AA
         move.w  d5,(a1)+                        ; 003AC
         rts                                     ; 003AE
-sub_033_003B0:
+
+;-------------------------------------------------------------------------------
+; PutCornerTL - Writes the view's corner (0, 0) at (a1)+.
+;-------------------------------------------------------------------------------
+PutCornerTL:
         clr.l   (a1)+                           ; 003B0
         rts                                     ; 003B2
-sub_033_003B4:
+
+;-------------------------------------------------------------------------------
+; PutCornerTR - Writes the view's corner (319, 0) at (a1)+.
+;-------------------------------------------------------------------------------
+PutCornerTR:
         move.w  #$13f,(a1)+                     ; 003B4
         clr.w   (a1)+                           ; 003B8
         rts                                     ; 003BA
-sub_033_003BC:
+
+;-------------------------------------------------------------------------------
+; PutCornerBR - Writes the view's corner (319, 179) at (a1)+.
+;-------------------------------------------------------------------------------
+PutCornerBR:
         move.w  #$13f,(a1)+                     ; 003BC
         move.w  #$b3,(a1)+                      ; 003C0
         rts                                     ; 003C4
-sub_033_003C6:
+
+;-------------------------------------------------------------------------------
+; PutCornerBL - Writes the view's corner (0, 179) at (a1)+.
+;-------------------------------------------------------------------------------
+PutCornerBL:
         clr.w   (a1)+                           ; 003C6
         move.w  #$b3,(a1)+                      ; 003C8
         rts                                     ; 003CC
@@ -343,7 +364,7 @@ sub_033_003CE:
         add.l   d4,d2                           ; 0040C
         asr.l   #$8,d2                          ; 0040E
         moveq   #$8,d6                          ; 00410
-        move.w  #$9,(dat_071_00324).l           ; 00412
+        move.w  #$9,(DrawColour).l              ; 00412
         jsr     (sub_035_0002C).l               ; 0041A
         rts                                     ; 00420
 	dc.b	$00,$00
