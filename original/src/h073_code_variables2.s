@@ -122,17 +122,20 @@ RecordControls:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_073_0163C:
+; RecordControlsPointer - Where RecordFrame writes the next event words in RecordControls.
+RecordControlsPointer:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_073_01640:
+; ReplayControlsPointer - Where the replay reads the next event words in RecordControls.
+ReplayControlsPointer:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_073_01644:
+; ReplayPointer - Where the replay reads the next control byte in RecordBuffer.
+ReplayPointer:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00

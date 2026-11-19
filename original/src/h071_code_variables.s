@@ -625,7 +625,9 @@ dat_071_00218:
 dat_071_00219:
 	dc.b	$00
 	dc.b	$00
-dat_071_0021B:
+; RecordMode - The flight recording's mode: 0 recording, 1-3 replaying (1: the events' second
+; word is not replayed), 4 finished.
+RecordMode:
 	dc.b	$00
 dat_071_0021C:
 	dc.b	$00
@@ -1135,10 +1137,12 @@ dat_071_0035C:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00366:
+; FrameEvents1 - The first word of the frame's key / button events (recorded and replayed).
+FrameEvents1:
 	dc.b	$00
 	dc.b	$00
-dat_071_00368:
+; FrameEvents2 - The second word of the frame's events.
+FrameEvents2:
 	dc.b	$00
 	dc.b	$00
 ; JoyEvents - Joystick button events waiting for ReadControls (bit 2 fire down, bit 3 fire up).
@@ -1962,18 +1966,18 @@ dat_071_00B52:
 ; ObjectTable - The 16 objects (aircraft, missiles, ships...; the player's aircraft is record 0):
 ; records of 512 bytes, $00B54-$02B53 (an object's offset = its number << 9). What is known:
 ;   +$00 w  flags                       +$01 b  bit 6 the object exists, bit 4 in a cell being drawn
-;   +$03 b  bit 7                       +$06 w  map cell X        +$08 w  map cell Z
+;   +$03 b  bit 7   +$05 b  state (0, 1, 6, 8, $A...)   +$06 w  map cell X   +$08 w  map cell Z
 ;   +$0A b  sub-cell                    +$10 l
 ;   +$14 l  position X (low 22 bits: inside the cell)   +$18 l  Y (height; negative is up)
 ;   +$1C l  position Z (low 22 bits: inside the cell)   +$26 w  (a missile: $14 at launch)
-;   +$2B b                              +$38 b  (copied from the launcher to its missile)
+;   +$2B b  the throttle, probably (moved towards dat_071_00240)   +$38 b  (copied to its missiles)
 ;   +$3E l  velocity X   +$42 l  velocity Y   +$46 l  velocity Z
-;   +$4C w  (a missile: $96 / $C8)      +$50 l, +$54 w, +$56 l, +$5A w
+;   +$4C w  a timer (a missile: $96 / $C8 at launch)      +$50 l, +$54 w, +$56 l, +$5A w
 ;   +$5F b  missiles left: low nibble AMRAAMs, high nibble Sidewinders ($24 at the start)
-;   +$62 b  type (0 Sidewinder, 1 AMRAAM, '0' ...)
+;   +$62 b  type (0 Sidewinder, 1 AMRAAM, '0'-'9' aircraft ...)   +$64 b  more control bits
 ;   +$63 b  selected weapon (high nibble: $10 gun, $30 AMRAAM, else Sidewinder)
 ;   +$65 b  control bits ($80/$40 the , and . keys, $20/$10 pitch, $08/$04 roll)
-;   +$66 w, +$68 w, +$6A w  attitude: three angles (1/80 degree; SetAttitude)
+;   +$66 w  pitch   +$68 w  heading   +$6A w  roll  (1/80 degree; SetAttitude, UpdateAttitude)
 ;   +$80-$90 w  a 3 x 3 rotation matrix made from them (2.14)
 ;   +$6C w, +$6E w, +$78 w, +$7E w      +$71 b      +$72 l  (6,400,000 at the start)
 ;   +$7C b  bit 7

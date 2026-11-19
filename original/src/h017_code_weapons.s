@@ -75,7 +75,7 @@ l_017_000F6:
         bsr.w   sub_017_005A8                   ; 000FC
         bsr.w   sub_017_01026                   ; 00100
         bsr.w   sub_017_01862                   ; 00104
-        jsr     (sub_022_000FE).l               ; 00108
+        jsr     (UpdateObject).l                ; 00108
         move.w  #$1,(CurrentObject).l           ; 0010E
         move.w  #$200,(CurrentObjectOffset).l   ; 00116
         lea.l   (Object1).l,a1                  ; 0011E
@@ -92,7 +92,7 @@ l_017_00144:
 l_017_00148:
         bsr.w   sub_017_00DFE                   ; 00148
         beq.b   l_017_00154                     ; 0014C
-        jsr     (sub_022_000FE).l               ; 0014E
+        jsr     (UpdateObject).l                ; 0014E
 l_017_00154:
         move.w  #$2,(CurrentObject).l           ; 00154
         move.w  #$400,(CurrentObjectOffset).l   ; 0015C
@@ -110,7 +110,7 @@ l_017_00188:
 l_017_0018C:
         bsr.w   sub_017_00DFE                   ; 0018C
         beq.b   l_017_00198                     ; 00190
-        jsr     (sub_022_000FE).l               ; 00192
+        jsr     (UpdateObject).l                ; 00192
 l_017_00198:
         move.w  #$3,(CurrentObject).l           ; 00198
         move.w  #$600,(CurrentObjectOffset).l   ; 001A0
@@ -128,7 +128,7 @@ l_017_001CC:
 l_017_001D0:
         bsr.w   sub_017_00DFE                   ; 001D0
         beq.b   l_017_001DC                     ; 001D4
-        jsr     (sub_022_000FE).l               ; 001D6
+        jsr     (UpdateObject).l                ; 001D6
 l_017_001DC:
         lea.l   (Object4).l,a1                  ; 001DC
         btst    #$6,$1(a1)                      ; 001E2
@@ -138,7 +138,7 @@ l_017_001DC:
         bsr.w   sub_017_0072A                   ; 001FA
         bsr.w   sub_017_00DFE                   ; 001FE
         beq.b   l_017_0020A                     ; 00202
-        jsr     (sub_022_000FE).l               ; 00204
+        jsr     (UpdateObject).l                ; 00204
 l_017_0020A:
         move.w  #$5,(CurrentObject).l           ; 0020A
         move.w  #$a00,(CurrentObjectOffset).l   ; 00212
@@ -156,7 +156,7 @@ l_017_0023E:
 l_017_00242:
         bsr.w   sub_017_00DFE                   ; 00242
         beq.b   l_017_0024E                     ; 00246
-        jsr     (sub_022_000FE).l               ; 00248
+        jsr     (UpdateObject).l                ; 00248
 l_017_0024E:
         lea.l   (Object6).l,a1                  ; 0024E
         btst    #$6,$1(a1)                      ; 00254
@@ -165,7 +165,7 @@ l_017_0024E:
         move.w  #$c00,(CurrentObjectOffset).l   ; 00264
         bsr.w   sub_017_00DFE                   ; 0026C
         beq.b   l_017_00278                     ; 00270
-        jsr     (sub_022_000FE).l               ; 00272
+        jsr     (UpdateObject).l                ; 00272
 l_017_00278:
         move.w  #$7,(CurrentObject).l           ; 00278
         move.w  #$e00,(CurrentObjectOffset).l   ; 00280
@@ -179,7 +179,7 @@ l_017_00278:
         move.w  #$1000,(CurrentObjectOffset).l  ; 002B0
         bsr.w   sub_017_00DFE                   ; 002B8
         beq.b   l_017_002C4                     ; 002BC
-        jsr     (sub_022_000FE).l               ; 002BE
+        jsr     (UpdateObject).l                ; 002BE
 l_017_002C4:
         move.w  #$9,(CurrentObject).l           ; 002C4
         move.w  #$1200,(CurrentObjectOffset).l  ; 002CC
@@ -193,7 +193,7 @@ l_017_002C4:
 l_017_002F2:
         bsr.w   sub_017_00DFE                   ; 002F2
         beq.b   l_017_002FE                     ; 002F6
-        jsr     (sub_022_000FE).l               ; 002F8
+        jsr     (UpdateObject).l                ; 002F8
 l_017_002FE:
         lea.l   (Object10).l,a1                 ; 002FE
         btst    #$6,$1(a1)                      ; 00304
@@ -202,7 +202,7 @@ l_017_002FE:
         move.w  #$1400,(CurrentObjectOffset).l  ; 00314
         bsr.w   sub_017_00DFE                   ; 0031C
         beq.b   l_017_00328                     ; 00320
-        jsr     (sub_022_000FE).l               ; 00322
+        jsr     (UpdateObject).l                ; 00322
 l_017_00328:
         move.w  #$b,(CurrentObject).l           ; 00328
         move.w  #$1600,(CurrentObjectOffset).l  ; 00330
@@ -216,7 +216,7 @@ l_017_00328:
 l_017_00356:
         bsr.w   sub_017_00DFE                   ; 00356
         beq.b   l_017_00362                     ; 0035A
-        jsr     (sub_022_000FE).l               ; 0035C
+        jsr     (UpdateObject).l                ; 0035C
 l_017_00362:
         lea.l   (Object12).l,a1                 ; 00362
         btst    #$6,$1(a1)                      ; 00368
@@ -225,7 +225,7 @@ l_017_00362:
         move.w  #$1800,(CurrentObjectOffset).l  ; 00378
         bsr.w   sub_017_00DFE                   ; 00380
         beq.b   l_017_0038C                     ; 00384
-        jsr     (sub_022_000FE).l               ; 00386
+        jsr     (UpdateObject).l                ; 00386
 l_017_0038C:
         move.w  #$d,(CurrentObject).l           ; 0038C
         move.w  #$1a00,(CurrentObjectOffset).l  ; 00394
@@ -239,7 +239,7 @@ l_017_0038C:
 l_017_003BA:
         bsr.w   sub_017_00DFE                   ; 003BA
         beq.b   l_017_003C6                     ; 003BE
-        jsr     (sub_022_000FE).l               ; 003C0
+        jsr     (UpdateObject).l                ; 003C0
 l_017_003C6:
         lea.l   (Object14).l,a1                 ; 003C6
         btst    #$6,$1(a1)                      ; 003CC
@@ -249,7 +249,7 @@ l_017_003C6:
         move.w  #$1c00,(CurrentObjectOffset).l  ; 003E2
         bsr.w   sub_017_00DFE                   ; 003EA
         beq.b   l_017_003F6                     ; 003EE
-        jsr     (sub_022_000FE).l               ; 003F0
+        jsr     (UpdateObject).l                ; 003F0
 l_017_003F6:
         lea.l   (Object15).l,a1                 ; 003F6
         btst    #$6,$1(a1)                      ; 003FC
@@ -259,7 +259,7 @@ l_017_003F6:
         move.w  #$1e00,(CurrentObjectOffset).l  ; 00412
         bsr.w   sub_017_00DFE                   ; 0041A
         beq.b   l_017_00426                     ; 0041E
-        jsr     (sub_022_000FE).l               ; 00420
+        jsr     (UpdateObject).l                ; 00420
 l_017_00426:
         jsr     (sub_018_00036).l               ; 00426
         move.l  (a7)+,d5                        ; 0042C

@@ -92,4 +92,7 @@ free memory at startup (`AllocRecordBuffers`: `RecordLength` = half the free pub
 at most 125,000, / 16; the controls take 4 bytes per position byte), and replays it. The disk
 holds a recording (3,676 and 14,704 bytes: the second 4 times the first), loaded at startup by
 `LoadDemoRecording`, which makes empty files if there are none; `SaveRecording` writes a new one.
-The records' layout is not worked out yet.
+Its layout (`RecordFrame` writes it, `PlayerFrameControls` replays it): `textply` has one
+byte per frame, the player's control bits (as the object record's `+$65`: `$80`/`$40` the `,` and
+`.` keys, `$20`/`$10` pitch, `$08`/`$04` roll); `textctl` has two words per frame, the key and button
+events of that frame. A replay ends at three `$FF` bytes in `textply`, or at the end.

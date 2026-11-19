@@ -6,7 +6,14 @@
 ; Hunk 32: CODE, $1348 bytes
 ;===============================================================================
 	CODE_HUNK	h032
-sub_032_00000:
+
+;-------------------------------------------------------------------------------
+; UpdateAttitude - Updates an object's attitude (a1) and calls SetAttitude: for an aircraft
+; (type '0'-'9') the roll (+$6A) eases back towards level by $7D0 (25 degrees) a step, and the
+; pitch and heading come from sub_000_0454A (into dat_071_00490 / 00492); for the others from
+; the control bits (+$64, +$65) and the state (+$05).
+;-------------------------------------------------------------------------------
+UpdateAttitude:
         move.b  $62(a1),d0                      ; 00000
         andi.b  #$f0,d0                         ; 00004
         cmpi.b  #$30,d0                         ; 00008

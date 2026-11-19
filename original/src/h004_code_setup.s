@@ -252,10 +252,10 @@ sub_004_00392:
         move.b  #$1,(dat_071_00184).l           ; 003A6
 sub_004_003AE:
         move.l  (RecordBuffer).l,(RecordPointer).l ; 003AE
-        move.l  (RecordControls).l,(dat_073_0163C).l ; 003B8
-        move.l  (RecordBuffer).l,(dat_073_01644).l ; 003C2
-        move.l  (RecordControls).l,(dat_073_01640).l ; 003CC
-        addq.l  #$4,(dat_073_01640).l           ; 003D6
+        move.l  (RecordControls).l,(RecordControlsPointer).l ; 003B8
+        move.l  (RecordBuffer).l,(ReplayPointer).l ; 003C2
+        move.l  (RecordControls).l,(ReplayControlsPointer).l ; 003CC
+        addq.l  #$4,(ReplayControlsPointer).l   ; 003D6
         clr.w   (dat_071_002FC).l               ; 003DC
         clr.w   (dat_071_00300).l               ; 003E2
 sub_004_003E8:

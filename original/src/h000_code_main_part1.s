@@ -1704,14 +1704,14 @@ ReadControls:
         move.w  d0,(dat_071_00150).l            ; 01538
         jsr     (sub_000_05E84).l               ; 0153E
 l_000_01544:
-        move.b  (dat_071_0021B).l,d0            ; 01544
+        move.b  (RecordMode).l,d0               ; 01544
         move.b  d0,-$2(a6)                      ; 0154A
         cmpi.b  #$1,d0                          ; 0154E
         beq.b   l_000_01558                     ; 01552
         subq.b  #$2,d0                          ; 01554
         bne.b   l_000_01568                     ; 01556
 l_000_01558:
-        tst.w   (dat_071_00366).l               ; 01558
+        tst.w   (FrameEvents1).l                ; 01558
         beq.b   l_000_0158A                     ; 0155E
         jsr     (sub_005_00010).l               ; 01560
         bra.b   l_000_01558                     ; 01566
@@ -1719,8 +1719,8 @@ l_000_01568:
         cmpi.b  #$3,-$2(a6)                     ; 01568
         bne.b   l_000_0158A                     ; 0156E
 l_000_01570:
-        move.w  (dat_071_00366).l,d0            ; 01570
-        move.w  (dat_071_00368).l,d1            ; 01576
+        move.w  (FrameEvents1).l,d0             ; 01570
+        move.w  (FrameEvents2).l,d1             ; 01576
         or.w    d1,d0                           ; 0157C
         tst.w   d0                              ; 0157E
         beq.b   l_000_0158A                     ; 01580
@@ -1740,8 +1740,8 @@ l_000_0158A:
 l_000_015B0:
         tst.b   -$2(a6)                         ; 015B0
         bne.b   l_000_015DA                     ; 015B4
-        move.w  (JoyEvents).l,(dat_071_00366).l ; 015B6
-        move.w  (dat_071_0036C).l,(dat_071_00368).l ; 015C0
+        move.w  (JoyEvents).l,(FrameEvents1).l  ; 015B6
+        move.w  (dat_071_0036C).l,(FrameEvents2).l ; 015C0
         moveq   #$0,d0                          ; 015CA
         move.w  d0,(JoyEvents).l                ; 015CC
         move.w  d0,(dat_071_0036C).l            ; 015D2
@@ -1749,7 +1749,7 @@ l_000_015B0:
 l_000_015DA:
         cmpi.b  #$1,-$2(a6)                     ; 015DA
         bne.b   l_000_015F2                     ; 015E0
-        move.w  (dat_071_0036C).l,(dat_071_00368).l ; 015E2
+        move.w  (dat_071_0036C).l,(FrameEvents2).l ; 015E2
         clr.w   (dat_071_0036C).l               ; 015EC
 l_000_015F2:
         unlk    a6                              ; 015F2
@@ -1806,7 +1806,7 @@ InitInput:
         move.l  #$a0,-(a7)                      ; 0168C
         jsr     (InitMouse).l                   ; 01692
         addq.l  #$8,a7                          ; 01698
-        clr.b   (dat_071_0021B).l               ; 0169A
+        clr.b   (RecordMode).l                  ; 0169A
         jsr     (sub_004_0002C).l               ; 016A0
         jsr     (GetDifficulty).l               ; 016A6
         lea.l   sub_000_01962(pc),a0            ; 016AC
@@ -2073,7 +2073,7 @@ sub_000_01A70:
         moveq   #$0,d0                          ; 01A76
         move.b  d0,(dat_071_0027C).l            ; 01A78
         move.b  d0,(dat_071_00276).l            ; 01A7E
-        move.b  d0,(dat_071_0021B).l            ; 01A84
+        move.b  d0,(RecordMode).l               ; 01A84
         lea.l   sub_000_01D30(pc),a0            ; 01A8A
         move.l  a0,(dat_002_00004).l            ; 01A8E
         rts                                     ; 01A94
@@ -2106,7 +2106,7 @@ l_000_01AE0:
         bne.b   l_000_01B00                     ; 01AF6
         move.b  #$7d,(dat_071_00276).l          ; 01AF8
 l_000_01B00:
-        move.b  (dat_071_0021B).l,d0            ; 01B00
+        move.b  (RecordMode).l,d0               ; 01B00
         subq.b  #$3,d0                          ; 01B06
         bne.b   l_000_01B34                     ; 01B08
         move.b  #$1,(dat_071_0017E).l           ; 01B0A
@@ -2117,7 +2117,7 @@ l_000_01B00:
         move.l  a0,(dat_002_00004).l            ; 01B2C
         bra.b   l_000_01B52                     ; 01B32
 l_000_01B34:
-        clr.b   (dat_071_0021B).l               ; 01B34
+        clr.b   (RecordMode).l                  ; 01B34
         pea.l   (dat_021_00000).l               ; 01B3A
         jsr     (sub_000_03C1C).l               ; 01B40
         addq.l  #$4,a7                          ; 01B46
@@ -2129,7 +2129,7 @@ l_000_01B52:
         tst.w   d0                              ; 01B5A
         bpl.b   l_000_01B94                     ; 01B5C
         bsr.w   l_000_01BF4                     ; 01B5E
-        move.b  #$3,(dat_071_0021B).l           ; 01B62
+        move.b  #$3,(RecordMode).l              ; 01B62
         moveq   #$0,d0                          ; 01B6A
         move.b  d0,(dat_071_00155).l            ; 01B6C
         move.w  #$2,(dat_071_004A6).l           ; 01B72

@@ -310,9 +310,9 @@
 ; Hunk 21: Data: colour tables (the palette ShowDisplay flashes) (not worked out yet)
 	include	"src/h021_code_colours.s"
 
-; Hunk 22: Game logic not yet identified (used by hunks 0 and 17; reads the player's control
-;         bits): perhaps the flight model.
-	include	"src/h022_code_game22.s"
+; Hunk 22: UpdateObject (each object's frame: states, computer pilots, warnings) and RecordFrame
+;         (the flight recording).
+	include	"src/h022_code_update_objects.s"
 
 ; Hunk 23: Game logic not yet identified (objects; called by GameFrame).
 	include	"src/h023_code_game23.s"

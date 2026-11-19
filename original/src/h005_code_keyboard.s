@@ -12,13 +12,13 @@ l_005_00000:
         jsr     (Nop).l                         ; 00008
         rts                                     ; 0000E
 sub_005_00010:
-        move.w  (dat_071_00366).l,d0            ; 00010
+        move.w  (FrameEvents1).l,d0             ; 00010
         andi.w  #$f0,d0                         ; 00016
         bne.b   l_005_00000                     ; 0001A
         moveq   #$0,d0                          ; 0001C
         move.b  (dat_071_00155).l,d5            ; 0001E
         moveq   #$0,d6                          ; 00024
-        lea.l   (dat_071_00366).l,a0            ; 00026
+        lea.l   (FrameEvents1).l,a0             ; 00026
         tst.w   (a0)                            ; 0002C
         beq.b   l_005_00098                     ; 0002E
         bclr    #$0,(a0)                        ; 00030
@@ -46,11 +46,11 @@ sub_005_00010:
         bclr    #$3,$1(a0)                      ; 0008E
         bne.w   Key_J                           ; 00094
 l_005_00098:
-        cmpi.b  #$2,(dat_071_0021B).l           ; 00098
+        cmpi.b  #$2,(RecordMode).l              ; 00098
         beq.w   l_005_00158                     ; 000A0
-        cmpi.b  #$1,(dat_071_0021B).l           ; 000A4
+        cmpi.b  #$1,(RecordMode).l              ; 000A4
         beq.w   l_005_00158                     ; 000AC
-        lea.l   (dat_071_00368).l,a0            ; 000B0
+        lea.l   (FrameEvents2).l,a0             ; 000B0
         tst.w   (a0)                            ; 000B6
         beq.w   l_005_0014C                     ; 000B8
         bclr    #$0,(a0)                        ; 000BC
@@ -125,7 +125,7 @@ l_005_0017A:
         beq.w   l_005_0038A                     ; 001B8
         tst.b   (dat_071_00276).l               ; 001BC
         beq.w   l_005_0038A                     ; 001C2
-        move.b  (dat_071_0021B).l,d1            ; 001C6
+        move.b  (RecordMode).l,d1               ; 001C6
         blt.w   l_005_0038A                     ; 001CC
         cmpi.b  #$3,d1                          ; 001D0
         beq.w   l_005_00418                     ; 001D4
@@ -463,22 +463,30 @@ Key_H:
 l_005_0065C:
         move.b  d4,(dat_071_00171).l            ; 0065C
         bra.w   l_005_01624                     ; 00662
-sub_005_00666:
+
+;-------------------------------------------------------------------------------
+; PlayerFrameControls - The player's controls for the frame: in the replay modes (RecordMode
+; 1-3) the control byte and the event words come from the recording (ReplayPointer,
+; ReplayControlsPointer; it ends at three $FF bytes or at the end of the buffer, and starts
+; again); then the throttle (+$2B) is moved towards dat_071_00240 (sub_005_008B8 / 008BC /
+; 008C6)...
+;-------------------------------------------------------------------------------
+PlayerFrameControls:
         tst.w   (CurrentObjectOffset).l         ; 00666
         bne.w   l_005_007D2                     ; 0066C
-        move.b  (dat_071_0021B).l,d0            ; 00670
+        move.b  (RecordMode).l,d0               ; 00670
         ble.w   l_005_00728                     ; 00676
         cmpi.b  #$3,d0                          ; 0067A
         bgt.w   l_005_00728                     ; 0067E
-        movea.l (dat_073_01644).l,a0            ; 00682
+        movea.l (ReplayPointer).l,a0            ; 00682
         move.b  (a0)+,(PlayerControls).l        ; 00688
-        move.l  a0,(dat_073_01644).l            ; 0068E
-        movea.l (dat_073_01640).l,a2            ; 00694
-        move.w  (a2)+,(dat_071_00366).l         ; 0069A
+        move.l  a0,(ReplayPointer).l            ; 0068E
+        movea.l (ReplayControlsPointer).l,a2    ; 00694
+        move.w  (a2)+,(FrameEvents1).l          ; 0069A
         move.w  (a2)+,d0                        ; 006A0
-        cmpi.b  #$1,(dat_071_0021B).l           ; 006A2
+        cmpi.b  #$1,(RecordMode).l              ; 006A2
         beq.b   l_005_006B2                     ; 006AA
-        move.w  d0,(dat_071_00368).l            ; 006AC
+        move.w  d0,(FrameEvents2).l             ; 006AC
 l_005_006B2:
         move.l  (RecordLength).l,d0             ; 006B2
         add.l   d0,d0                           ; 006B8
@@ -488,9 +496,9 @@ l_005_006B2:
         bgt.b   l_005_006CC                     ; 006C4
         movea.l (RecordControls).l,a2           ; 006C6
 l_005_006CC:
-        move.l  a2,(dat_073_01640).l            ; 006CC
+        move.l  a2,(ReplayControlsPointer).l    ; 006CC
 l_005_006D2:
-        movea.l (dat_073_01644).l,a3            ; 006D2
+        movea.l (ReplayPointer).l,a3            ; 006D2
         cmpi.b  #$ff,(a3)+                      ; 006D8
         bne.b   l_005_006EA                     ; 006DC
         cmpi.b  #$ff,(a3)+                      ; 006DE
@@ -504,10 +512,10 @@ l_005_006EA:
         add.l   (RecordLength).l,d0             ; 006F8
         cmp.l   a0,d0                           ; 006FE
         bgt.b   l_005_00728                     ; 00700
-        move.l  (RecordBuffer).l,(dat_073_01644).l ; 00702
-        move.l  (RecordControls).l,(dat_073_01640).l ; 0070C
-        addq.l  #$4,(dat_073_01640).l           ; 00716
-        movea.l (dat_073_01644).l,a0            ; 0071C
+        move.l  (RecordBuffer).l,(ReplayPointer).l ; 00702
+        move.l  (RecordControls).l,(ReplayControlsPointer).l ; 0070C
+        addq.l  #$4,(ReplayControlsPointer).l   ; 00716
+        movea.l (ReplayPointer).l,a0            ; 0071C
         bra.b   l_005_006D2                     ; 00722
 l_005_00724:
         bra.w   l_005_0159C                     ; 00724
@@ -522,7 +530,7 @@ l_005_00728:
         bgt.b   l_005_00748                     ; 00744
         clr.b   d0                              ; 00746
 l_005_00748:
-        move.b  (dat_071_0021B).l,d1            ; 00748
+        move.b  (RecordMode).l,d1               ; 00748
         cmpi.b  #$3,d1                          ; 0074E
         beq.b   l_005_007B4                     ; 00752
         subq.b  #$1,d1                          ; 00754
@@ -563,13 +571,13 @@ l_005_007B0:
 l_005_007B4:
         tst.w   (CurrentObjectOffset).l         ; 007B4
         bne.b   l_005_007D2                     ; 007BA
-        move.b  (dat_071_0021B).l,d4            ; 007BC
+        move.b  (RecordMode).l,d4               ; 007BC
         beq.b   l_005_007C8                     ; 007C2
         subq.b  #$1,d4                          ; 007C4
         bne.b   l_005_007D2                     ; 007C6
 l_005_007C8:
         move.l  a1,-(a7)                        ; 007C8
-        jsr     (sub_022_00002).l               ; 007CA
+        jsr     (RecordFrame).l                 ; 007CA
         movea.l (a7)+,a1                        ; 007D0
 l_005_007D2:
         clr.b   d4                              ; 007D2
@@ -1279,7 +1287,7 @@ l_005_01090:
         move.b  d4,(dat_071_00157).l            ; 010AC
         bra.w   l_005_01624                     ; 010B2
 l_005_010B6:
-        move.b  (dat_071_0021B).l,d2            ; 010B6
+        move.b  (RecordMode).l,d2               ; 010B6
         bgt.b   l_005_010C4                     ; 010BC
         tst.b   d6                              ; 010BE
         beq.b   l_005_010C8                     ; 010C0
@@ -1411,7 +1419,7 @@ l_005_0122E:
         bra.b   l_005_011D4                     ; 01230
 l_005_01232:
         move.b  #$1,(dat_071_00162).l           ; 01232
-        tst.l   (dat_073_01644).l               ; 0123A
+        tst.l   (ReplayPointer).l               ; 0123A
         beq.w   l_005_01624                     ; 01240
         moveq   #$7f,d4                         ; 01244
         bra.b   l_005_011D4                     ; 01246
@@ -1447,7 +1455,7 @@ sub_005_0129A:
         bne.w   l_005_00A6C                     ; 012A8
         bra.w   l_005_01624                     ; 012AC
 l_005_012B0:
-        move.b  (dat_071_0021B).l,d2            ; 012B0
+        move.b  (RecordMode).l,d2               ; 012B0
         beq.w   l_005_012C6                     ; 012B6
         cmpi.b  #$2,d2                          ; 012BA
         beq.w   l_005_012C6                     ; 012BE
@@ -1546,7 +1554,7 @@ l_005_0147A:
         move.w  d0,-(a7)                        ; 0147A
         jsr     (sub_000_015F6).l               ; 0147C
         move.w  (a7)+,d0                        ; 01482
-        tst.b   (dat_071_0021B).l               ; 01484
+        tst.b   (RecordMode).l                  ; 01484
         bne.b   l_005_014A8                     ; 0148A
         move.l  (RecordPointer).l,d3            ; 0148C
         ble.b   l_005_014A8                     ; 01492
@@ -1624,13 +1632,13 @@ l_005_0158C:
         bra.w   l_005_01624                     ; 01594
 	dc.b	$60,$00,$00,$8A
 l_005_0159C:
-        tst.l   (dat_073_01644).l               ; 0159C
+        tst.l   (ReplayPointer).l               ; 0159C
         beq.w   l_005_01624                     ; 015A2
-        move.l  (RecordBuffer).l,(dat_073_01644).l ; 015A6
-        move.l  (RecordControls).l,(dat_073_01640).l ; 015B0
-        addq.l  #$1,(dat_073_01644).l           ; 015BA
-        addq.l  #$8,(dat_073_01640).l           ; 015C0
-        move.b  #$3,(dat_071_0021B).l           ; 015C6
+        move.l  (RecordBuffer).l,(ReplayPointer).l ; 015A6
+        move.l  (RecordControls).l,(ReplayControlsPointer).l ; 015B0
+        addq.l  #$1,(ReplayPointer).l           ; 015BA
+        addq.l  #$8,(ReplayControlsPointer).l   ; 015C0
+        move.b  #$3,(RecordMode).l              ; 015C6
         move.b  #$1,(dat_071_001FA).l           ; 015CE
         bra.w   l_005_01624                     ; 015D6
 Key_J:

@@ -37,8 +37,9 @@ before each. Some parts run only every 2nd, 4th, 8th, 16th or 32nd frame (`Frame
 | 6 | Instrument redraw counters, the fire button (`FirePressed`), `ResetPlayerAircraft` |
 | 8 | The 3D world's objects: which map cell the view is in (`UpdateViewCell`), `DrawObjects` (the visible objects and the scenery list, scaled by distance) |
 | 17 | Aircraft and weapons: `LaunchMissile` (pylons, the flight log's counts) and more |
+| 22 | `UpdateObject` (each object's frame), `RecordFrame` (the flight recording) |
 | 30 | Steering from the orientation matrices: probably the computer pilots (they set the control bits, +$65) |
-| 32 | Attitude and camera: `SetAttitude`, `AnglesToMatrix`, `SinCos`, `SetupCamera` |
+| 32 | Attitude and camera: `UpdateAttitude`, `SetAttitude`, `AnglesToMatrix`, `SinCos`, `SetupCamera` |
 | 33 | The 3D view's outline (`PutEdge`, the view's corners: 320 x 180) |
 | 7, 9-16, 18-31, 34, 38-40 | The rest of the game: flight model, missions, terrain, instruments - being worked out |
 | 20 | Number and text output, the flight log page (`ShowFlightLog`, `ShowLogDate`), `ChecksumPlanes` |

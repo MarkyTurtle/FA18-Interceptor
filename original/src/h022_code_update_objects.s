@@ -1,6 +1,6 @@
 ; F/A-18 Interceptor - hunk 22 (code)
-; Game logic not yet identified (used by hunks 0 and 17; reads the player's control bits):
-; perhaps the flight model.
+; UpdateObject (each object's frame: states, computer pilots, warnings) and RecordFrame (the
+; flight recording).
 ; Included by ../f18_main.s.
 
 ;===============================================================================
@@ -9,23 +9,31 @@
 	CODE_HUNK	h022
 l_022_00000:
         rts                                     ; 00000
-sub_022_00002:
+
+;-------------------------------------------------------------------------------
+; RecordFrame - Records one frame of the flight while recording is on (dat_071_00160, and bit 6
+; of dat_071_0029C): the player's control byte (PlayerControls) into RecordBuffer, and the two
+; words of key / button events waiting (dat_071_00366, dat_071_00368) into RecordControls. When
+; RecordBuffer is full the recording stops (RecordMode = 4, dat_071_0017E = 1) and both
+; pointers go back to the start.
+;-------------------------------------------------------------------------------
+RecordFrame:
         tst.b   (dat_071_00160).l               ; 00002
         beq.b   l_022_00000                     ; 00008
         move.w  (dat_071_0029C).l,d0            ; 0000A
         andi.w  #$40,d0                         ; 00010
         beq.b   l_022_00000                     ; 00014
-        move.b  (dat_071_0021B).l,d1            ; 00016
+        move.b  (RecordMode).l,d1               ; 00016
         beq.b   l_022_00024                     ; 0001C
         cmpi.b  #$1,d1                          ; 0001E
         bne.b   l_022_00000                     ; 00022
 l_022_00024:
         tst.b   (dat_071_0017E).l               ; 00024
         bne.b   l_022_00000                     ; 0002A
-        cmpi.b  #$1,(dat_071_0021B).l           ; 0002C
+        cmpi.b  #$1,(RecordMode).l              ; 0002C
         bne.b   l_022_00046                     ; 00034
-        movea.l (dat_073_01640).l,a0            ; 00036
-        move.w  (dat_071_00368).l,$2(a0)        ; 0003C
+        movea.l (ReplayControlsPointer).l,a0    ; 00036
+        move.w  (FrameEvents2).l,$2(a0)         ; 0003C
         bra.b   l_022_000B2                     ; 00044
 l_022_00046:
         move.l  (RecordBuffer).l,d0             ; 00046
@@ -33,20 +41,20 @@ l_022_00046:
         movea.l (RecordPointer).l,a0            ; 00052
         cmp.l   a0,d0                           ; 00058
         bgt.b   l_022_00082                     ; 0005A
-        move.b  #$4,(dat_071_0021B).l           ; 0005C
+        move.b  #$4,(RecordMode).l              ; 0005C
         move.b  #$1,(dat_071_0017E).l           ; 00064
         move.l  (RecordBuffer).l,(RecordPointer).l ; 0006C
-        move.l  (RecordControls).l,(dat_073_0163C).l ; 00076
+        move.l  (RecordControls).l,(RecordControlsPointer).l ; 00076
         rts                                     ; 00080
 l_022_00082:
         move.b  (PlayerControls).l,(a0)+        ; 00082
         move.l  a0,(RecordPointer).l            ; 00088
-        movea.l (dat_073_0163C).l,a1            ; 0008E
-        move.w  (dat_071_00366).l,(a1)+         ; 00094
-        move.w  (dat_071_00368).l,(a1)+         ; 0009A
-        move.l  a1,(dat_073_0163C).l            ; 000A0
-        clr.w   (dat_071_00366).l               ; 000A6
-        clr.w   (dat_071_00368).l               ; 000AC
+        movea.l (RecordControlsPointer).l,a1    ; 0008E
+        move.w  (FrameEvents1).l,(a1)+          ; 00094
+        move.w  (FrameEvents2).l,(a1)+          ; 0009A
+        move.l  a1,(RecordControlsPointer).l    ; 000A0
+        clr.w   (FrameEvents1).l                ; 000A6
+        clr.w   (FrameEvents2).l                ; 000AC
 l_022_000B2:
         rts                                     ; 000B2
 sub_022_000B4:
@@ -79,7 +87,15 @@ l_022_000BA:
         move.b  d4,$a(a1)                       ; 000F8
 l_022_000FC:
         rts                                     ; 000FC
-sub_022_000FE:
+
+;-------------------------------------------------------------------------------
+; UpdateObject - Updates one object (a1) for the frame: its destroyed / crashed states (flags
+; in +$00, the timer +$4C), the computer pilot for objects other than the player
+; (sub_030_0089A, while bit 6 of dat_071_0029C is set), the player's controls or replay
+; (PlayerFrameControls), and for the player the warnings from its attitude and sink rate
+; (dat_071_00524, the message dat_071_004B0)...
+;-------------------------------------------------------------------------------
+UpdateObject:
         moveq   #$0,d0                          ; 000FE
         tst.w   (CurrentObject).l               ; 00100
         beq.b   l_022_00110                     ; 00106
@@ -156,7 +172,7 @@ l_022_001EC:
         beq.b   l_022_00208                     ; 00200
         jsr     (sub_030_0089A).l               ; 00202
 l_022_00208:
-        jsr     (sub_005_00666).l               ; 00208
+        jsr     (PlayerFrameControls).l         ; 00208
         tst.w   (CurrentObject).l               ; 0020E
         bne.w   l_022_002BA                     ; 00214
         move.l  $42(a1),d0                      ; 00218
@@ -240,7 +256,7 @@ l_022_0031E:
         bne.b   l_022_0033E                     ; 00332
 l_022_00334:
         move.l  a1,-(a7)                        ; 00334
-        jsr     (sub_032_00000).l               ; 00336
+        jsr     (UpdateAttitude).l              ; 00336
         movea.l (a7)+,a1                        ; 0033C
 l_022_0033E:
         tst.w   (CurrentObject).l               ; 0033E
