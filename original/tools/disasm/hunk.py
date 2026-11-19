@@ -350,8 +350,9 @@ PART_LIMIT = 200_000            # bytes: a file stays well under what GitHub sho
 
 def write_tree(lines, outdir, main='f18_main.s'):
     """Write the source as f18_main.s (prologue, hunk header, and an include per hunk) and one
-    file per non-empty hunk in src/ (hNNN_type.s); a hunk bigger than PART_LIMIT is split at
-    routine boundaries (hNNN_type_partK.s). Empty hunks stay in f18_main.s."""
+    file per non-empty hunk in src/ (hNNN_type.s; the hand-edited source has since renamed them
+    hNNN_type_contents.s); a hunk bigger than PART_LIMIT is split at routine boundaries
+    (hNNN_type_partK.s). Empty hunks stay in f18_main.s."""
     blocks, cur, head = [], None, []
     i = 0
     while i < len(lines):                       # a hunk's block starts at its ';====' heading

@@ -7,7 +7,7 @@
 | File | What it is |
 |---|---|
 | `f18_main.s` | The game's executable, `F-18 Interceptor`: the hunk header, then an include per hunk (the empty hunks are written here). First traced and labelled automatically (`tools/disasm/`), now edited by hand |
-| `src/hNNN_type.s` | One file per hunk (`h000_code_part1.s`-`part3.s`: hunk 0 is split at routine boundaries, so every file stays small enough to read on GitHub) |
+| `src/hNNN_type_contents.s` | One file per hunk, named by its number, its type and what it holds (`h036_code_drawing.s`, `h071_code_variables.s`...; `h000_code_main_part1.s`-`part3.s`: hunk 0 is split at routine boundaries, so every file stays small enough to read on GitHub). `f18_main.s` has a note on each before its include |
 | `f18_hunks.i` | The hunk structure: the macros that let `f18_main.s` assemble either to the exact file (`-Fbin`) or as an ordinary executable (`-Fhunkexe -DHUNKEXE`) |
 | `build.py`, `build.sh` | Assemble `f18_main.s` both ways and check it against the original (`../BUILDING.md`) |
 | `disk/files/` | Every file from the disk, in its folders, as on the disk (`F-18 Interceptor/` is the volume) |

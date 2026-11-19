@@ -48,7 +48,7 @@ def main():
             hunk = int(m.group(2))
             break
     if hunk is None:                                    # a later part of a split hunk
-        m = re.search(r'h(\d{3})_\w+?(_part\d+)?\.s$', f)
+        m = re.search(r"h(\d{3})_\w+\.s$", os.path.basename(f))
         hunk = int(m.group(1))
     # the region's lines and bytes
     data, rel, i = bytearray(), {}, start + 1

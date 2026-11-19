@@ -2,7 +2,8 @@
 ; ("F-18 Interceptor" on the disk: an AmigaDOS hunk executable of 185 hunks, mostly Lattice C)
 ;
 ; Made by original/tools/disasm/make.py from its config; edited by hand since November 2026.
-; The hunks are in src/ (one file per hunk, hunk 0 in three parts); empty hunks are here.
+; The hunks are in src/, one file per hunk named hNNN_type_contents.s (hunk 0 in three parts);
+; the empty hunks are written here. Before each include, a note says what the hunk is.
 ; Assemble (f18_hunks.i explains the two ways):
 ;   vasmm68k_mot -Fbin -m68000 -no-opt -o f18_main.exe f18_main.s      -> the file, byte-identical
 ;   vasmm68k_mot -Fhunkexe -kick1hunks -nosym -DHUNKEXE -m68000 -no-opt -o f18_check.exe f18_main.s
@@ -13,6 +14,26 @@
 	include	"f18_hunks.i"
 	include	"f18_os.i"
 	include	"f18_hw.i"
+
+;===============================================================================
+; The hunks
+;===============================================================================
+; Each hunk is one section of one object module of the original link (Lattice C, and some
+; assembly), in link order:
+;
+;   0          the game's main module: startup, main, the frame loop, files, input, sound
+;   1, 2       its data and variables (the library bases, the display, the pictures...)
+;   3          _UnPackRow (EA IFF)
+;   4 - 40     the game's modules: keyboard, controls, the 3D world and its drawing, weapons,
+;              the camera, the drawing primitives, the head-up display and instruments...
+;   41 - 70    data: the 3D models, the texts, the trig tables, other tables (in CODE hunks)
+;   71 - 73    the game's variables (CODE hunks of zeros): ObjectTable, the lists, buffers
+;   74 - 86    the sound: the driver, audio.device, loading the samples
+;   88 - 169   the Lattice C library (stdio, files, memory, 32-bit and floating point)
+;   171 - 184  amiga.lib: the system library call stubs and the port / IO request helpers
+;
+; 48 hunks are empty (size 0): a module's code, data or BSS section with nothing in it.
+; docs/CODE.md has more about each part.
 
 ;===============================================================================
 ; The hunk header (the -Fbin build only: with -Fhunkexe vasm writes its own)
@@ -209,175 +230,278 @@
         dc.l    h184_end/4                      ; hunk 184: code, 16 bytes
 	endc
 
-	include	"src/h000_code_part1.s"
-	include	"src/h000_code_part2.s"
-	include	"src/h000_code_part3.s"
+; Hunk 0: The C startup (c.o), main, RunGame and GameFrame (the frame loop); the EA IFF
+;         picture reader; memory and disk checks; the flight log (df0:config) and flight
+;         recording (textply/textctl) files; the keyboard, joystick, timer and mouse; loading
+;         and playing the sounds.
+	include	"src/h000_code_main_part1.s"
+	include	"src/h000_code_main_part2.s"
+	include	"src/h000_code_main_part3.s"
 
-	include	"src/h001_data.s"
+; Hunk 1: Initialised data: the C library's variables (_SysBase, _DOSBase...), the library and
+;         file names, the code-check tables.
+	include	"src/h001_data_globals.s"
 
-	include	"src/h002_bss.s"
+; Hunk 2: Variables: the graphics library bases, the View, ViewPort, BitMaps and RastPorts,
+;         the pictures' BitMaps and BMHDs, the flight log buffer, the device requests.
+	include	"src/h002_bss_display_vars.s"
 
-	include	"src/h003_code.s"
+; Hunk 3: _UnPackRow: ByteRun1 decompression of a picture row (from the EA IFF code).
+	include	"src/h003_code_unpackrow.s"
 
-	include	"src/h004_code.s"
+; Hunk 4: Game set-up and small helpers: the difficulty from the flight log, resetting
+;         objects.
+	include	"src/h004_code_setup.s"
 
-	include	"src/h005_code.s"
+; Hunk 5: HandleKey: the keyboard commands (each Key_ label is named by its key) and the stick
+;         directions.
+	include	"src/h005_code_keyboard.s"
 
-	include	"src/h006_code.s"
+; Hunk 6: The fire button, the instruments' redraw counters, ResetPlayerAircraft.
+	include	"src/h006_code_controls.s"
 
-	include	"src/h007_code.s"
+; Hunk 7: Nop (an empty function) and a wrapper round the mouse interrupt.
+	include	"src/h007_code_nop.s"
 
-	include	"src/h008_code.s"
+; Hunk 8: The 3D world's objects: which map cell the view is in (UpdateViewCell), DrawObjects
+;         (the visible objects and the scenery, scaled by distance).
+	include	"src/h008_code_objects.s"
 
-	include	"src/h009_code.s"
+; Hunk 9: Support for hunk 8: object lists and distances (DistanceScale) (not worked out yet)
+	include	"src/h009_code_object_lists.s"
 
-	include	"src/h010_code.s"
+; Hunk 10: Object drawing routines, called through ObjectDrawTable (hunk 16).
+	include	"src/h010_code_draw_objects.s"
 
-	include	"src/h011_code.s"
+; Hunk 11: A routine used by hunk 10's object drawing (not worked out yet)
+	include	"src/h011_code_draw_helper.s"
 
-	include	"src/h012_code.s"
+; Hunk 12: More object drawing routines, called through ObjectDrawTable.
+	include	"src/h012_code_draw_objects2.s"
 
-	include	"src/h013_code.s"
+; Hunk 13: The 3D pipeline used by the object drawing (hunks 10, 12): transforming, projecting
+;         and clipping points and faces (not worked out yet)
+	include	"src/h013_code_3d_pipeline.s"
 
-	include	"src/h014_code.s"
+; Hunk 14: More of the 3D pipeline, used by hunk 13 (not worked out yet)
+	include	"src/h014_code_3d_pipeline2.s"
 
-	include	"src/h015_code.s"
+; Hunk 15: More of the 3D pipeline, used by hunks 13 and 10 (not worked out yet)
+	include	"src/h015_code_3d_pipeline3.s"
 
-	include	"src/h016_code.s"
+; Hunk 16: ObjectDrawTable: each object's draw routine and model (the models are in hunks
+;         41-58, 69, 70); MissileModels.
+	include	"src/h016_code_model_table.s"
 
-	include	"src/h017_code.s"
+; Hunk 17: Aircraft and weapons: LaunchMissile (pylons, the flight log's counts) and the
+;         missiles' and aircraft's updates (not worked out yet)
+	include	"src/h017_code_weapons.s"
 
-	include	"src/h018_code.s"
+; Hunk 18: Game logic not yet identified (used by hunks 16 and 17).
+	include	"src/h018_code_game18.s"
 
-	include	"src/h019_code.s"
+; Hunk 19: Arithmetic for the 3D pipeline (used by hunks 12-14) (not worked out yet)
+	include	"src/h019_code_3d_maths.s"
 
-	include	"src/h020_code.s"
+; Hunk 20: Numbers into text (BinToBCD, PutNumber), the flight log page (ShowFlightLog,
+;         ShowLogDate), ChecksumPlanes.
+	include	"src/h020_code_text_log.s"
 
-	include	"src/h021_code.s"
+; Hunk 21: Data: colour tables (the palette ShowDisplay flashes) (not worked out yet)
+	include	"src/h021_code_colours.s"
 
-	include	"src/h022_code.s"
+; Hunk 22: Game logic not yet identified (used by hunks 0 and 17; reads the player's control
+;         bits): perhaps the flight model.
+	include	"src/h022_code_game22.s"
 
-	include	"src/h023_code.s"
+; Hunk 23: Game logic not yet identified (objects; called by GameFrame).
+	include	"src/h023_code_game23.s"
 
-	include	"src/h024_code.s"
+; Hunk 24: Game logic not yet identified (objects and the flight log; used by hunks 22, 23).
+	include	"src/h024_code_game24.s"
 
-	include	"src/h025_code.s"
+; Hunk 25: Game logic not yet identified (called by GameFrame; plots points).
+	include	"src/h025_code_game25.s"
 
-	include	"src/h026_code.s"
+; Hunk 26: Game logic not yet identified (objects, the camera, the game modes; used by hunks 0
+;         and 17).
+	include	"src/h026_code_game26.s"
 
-	include	"src/h027_code.s"
+; Hunk 27: Data: a table used by hunks 17, 18, 26 and 30 (not worked out yet)
+	include	"src/h027_code_table27.s"
 
-	include	"src/h028_code.s"
+; Hunk 28: Game logic not yet identified (uses the gun sound's variables; called by GameFrame).
+	include	"src/h028_code_game28.s"
 
-	include	"src/h029_code.s"
+; Hunk 29: Game logic not yet identified (objects, the camera, the game modes).
+	include	"src/h029_code_game29.s"
 
-	include	"src/h030_code.s"
+; Hunk 30: Steering from the orientation matrices, setting the control bits (+$65): probably
+;         the computer pilots.
+	include	"src/h030_code_pilots.s"
 
-	include	"src/h031_code.s"
+; Hunk 31: Lines drawn relative to the camera (DrawLine) (not worked out yet)
+	include	"src/h031_code_lines3d.s"
 
-	include	"src/h032_code.s"
+; Hunk 32: Attitude and camera: SetAttitude, AnglesToMatrix, SinCos, SetupCamera.
+	include	"src/h032_code_attitude_camera.s"
 
-	include	"src/h033_code.s"
+; Hunk 33: The 3D view's outline: PutEdge and the view's corners (320 x 180).
+	include	"src/h033_code_3d_outline.s"
 
-	include	"src/h034_code.s"
+; Hunk 34: Used by hunk 33's outline (not worked out yet)
+	include	"src/h034_code_3d_outline2.s"
 
-	include	"src/h035_code.s"
+; Hunk 35: Drawing with the blitter for the 3D pipeline (used by hunks 13-15, 29, 31) (not
+;         worked out yet)
+	include	"src/h035_code_blitter_draw.s"
 
-	include	"src/h036_code.s"
+; Hunk 36: Drawing: Plot and its variants, DrawLine (the blitter's line mode), the copper lists
+;         (the double-buffered display).
+	include	"src/h036_code_drawing.s"
 
-	include	"src/h037_code.s"
+; Hunk 37: Blitter copies: the title picture and the instrument panel onto the screen.
+	include	"src/h037_code_blitter_copies.s"
 
-	include	"src/h038_code.s"
+; Hunk 38: Display drawing not yet identified (plots points for objects).
+	include	"src/h038_code_display38.s"
 
-	include	"src/h039_code.s"
+; Hunk 39: The head-up display and instruments ("GUN RNG SHOOT"...) (not worked out yet)
+	include	"src/h039_code_hud.s"
 
-	include	"src/h040_code.s"
+; Hunk 40: Display drawing not yet identified (points and lines for objects).
+	include	"src/h040_code_display40.s"
 
-	include	"src/h041_code.s"
+; Hunk 41: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h041_code_model41.s"
 
-	include	"src/h042_code.s"
+; Hunk 42: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h042_code_model42.s"
 
-	include	"src/h043_code.s"
+; Hunk 43: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h043_code_model43.s"
 
-	include	"src/h044_code.s"
+; Hunk 44: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h044_code_model44.s"
 
-	include	"src/h045_code.s"
+; Hunk 45: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h045_code_model45.s"
 
-	include	"src/h046_code.s"
+; Hunk 46: Shape data shared by the models of hunks 47-50.
+	include	"src/h046_code_model_shared.s"
 
-	include	"src/h047_code.s"
+; Hunk 47: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h047_code_model47.s"
 
-	include	"src/h048_code.s"
+; Hunk 48: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h048_code_model48.s"
 
-	include	"src/h049_code.s"
+; Hunk 49: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h049_code_model49.s"
 
-	include	"src/h050_code.s"
+; Hunk 50: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h050_code_model50.s"
 
-	include	"src/h051_code.s"
+; Hunk 51: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h051_code_model51.s"
 
-	include	"src/h052_code.s"
+; Hunk 52: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h052_code_model52.s"
 
-	include	"src/h053_code.s"
+; Hunk 53: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h053_code_model53.s"
 
-	include	"src/h054_code.s"
+; Hunk 54: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h054_code_model54.s"
 
-	include	"src/h055_code.s"
+; Hunk 55: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h055_code_model55.s"
 
-	include	"src/h056_code.s"
+; Hunk 56: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h056_code_model56.s"
 
-	include	"src/h057_code.s"
+; Hunk 57: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h057_code_model57.s"
 
-	include	"src/h058_code.s"
+; Hunk 58: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h058_code_model58.s"
 
-	include	"src/h059_code.s"
+; Hunk 59: Text: the head-up display's warning messages (STALL, LOW FUEL - CRITICAL...).
+	include	"src/h059_code_messages.s"
 
-	include	"src/h060_code.s"
+; Hunk 60: Data: a small table used by hunks 0 and 32 (not worked out yet)
+	include	"src/h060_code_table60.s"
 
-	include	"src/h061_code.s"
+; Hunk 61: Data for the head-up display (hunk 39) (not worked out yet)
+	include	"src/h061_code_hud_data.s"
 
-	include	"src/h062_code.s"
+; Hunk 62: Data in chip RAM: graphics for the blitter (hunks 36, 37).
+	include	"src/h062_code_chip_graphics.s"
 
-	include	"src/h063_code.s"
+; Hunk 63: Tables: SineTable (a quarter wave in tenths of a degree, 2.14) and others.
+	include	"src/h063_code_trig_tables.s"
 
-	include	"src/h064_code.s"
+; Hunk 64: Text: the menus, the briefings (the six missions), the flight log page, the training
+;         texts, the log disk messages.
+	include	"src/h064_code_texts.s"
 
-	include	"src/h065_code.s"
+; Hunk 65: Data: a table used by hunk 8 (not worked out yet)
+	include	"src/h065_code_table65.s"
 
-	include	"src/h066_code.s"
+; Hunk 66: Data: a table used by hunk 8 (not worked out yet)
+	include	"src/h066_code_table66.s"
 
-	include	"src/h067_code.s"
+; Hunk 67: Data: a table used by hunks 66, 5, 4, 28 and 29 (not worked out yet)
+	include	"src/h067_code_table67.s"
 
-	include	"src/h068_code.s"
+; Hunk 68: Data: a table used by hunk 28 (not worked out yet)
+	include	"src/h068_code_table68.s"
 
-	include	"src/h069_code.s"
+; Hunk 69: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h069_code_model69.s"
 
-	include	"src/h070_code.s"
+; Hunk 70: A 3D model (shape data, used through ObjectDrawTable).
+	include	"src/h070_code_model70.s"
 
-	include	"src/h071_code.s"
+; Hunk 71: The game's variables (zeros in the file): ObjectTable (16 records of 512 bytes),
+;         FrameStage, FrameCount, the controls, the drawing state...
+	include	"src/h071_code_variables.s"
 
-	include	"src/h072_code.s"
+; Hunk 72: Variables: the 3D pipeline's workspace (the projected points...).
+	include	"src/h072_code_3d_workspace.s"
 
-	include	"src/h073_code.s"
+; Hunk 73: More variables: the visible object and scenery lists, the flight recording's
+;         buffers...
+	include	"src/h073_code_variables2.s"
 
-	include	"src/h074_code.s"
+; Hunk 74: The sound driver's data: the four audio channels' descriptors.
+	include	"src/h074_code_audio_channels.s"
 
-	include	"src/h075_code.s"
+; Hunk 75: The sound driver: audio DMA and interrupt control, installing the audio interrupts.
+	include	"src/h075_code_audio_driver.s"
 
-	include	"src/h076_code.s"
+; Hunk 76: The sound driver's interrupt routines (not worked out yet)
+	include	"src/h076_code_audio_interrupts.s"
 
-	include	"src/h077_code.s"
+; Hunk 77: InitSound / CloseSound: audio.device and the game's audio interrupts.
+	include	"src/h077_code_audio_device.s"
 
-	include	"src/h078_data.s"
+; Hunk 78: Data: "audio.device", the channel allocation.
+	include	"src/h078_data_audio_strings.s"
 
-	include	"src/h079_bss.s"
+; Hunk 79: A sound variable.
+	include	"src/h079_bss_audio_vars.s"
 
-	include	"src/h080_code.s"
+; Hunk 80: Sound loading: LoadSound, CopySound, FreeSound.
+	include	"src/h080_code_load_sounds.s"
 
-	include	"src/h081_data.s"
+; Hunk 81: SoundTable: the 37 sound slots.
+	include	"src/h081_data_sound_table.s"
 
 ;===============================================================================
 ; Hunk 82: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h082
 h082_end:
 	ifnd	HUNKEXE
@@ -386,13 +510,17 @@ h082_end:
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h083_code.s"
+; Hunk 83: Floating-point arithmetic for the sound (single and double precision, through the C
+;         library).
+	include	"src/h083_code_float_maths.s"
 
-	include	"src/h084_data.s"
+; Hunk 84: A variable of hunk 83.
+	include	"src/h084_data_float_vars.s"
 
 ;===============================================================================
 ; Hunk 85: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h085
 h085_end:
 	ifnd	HUNKEXE
@@ -401,22 +529,26 @@ h085_end:
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h086_code.s"
+; Hunk 86: Data used by the sound code in hunk 0 (not worked out yet)
+	include	"src/h086_code_sound_tables.s"
 
 ;===============================================================================
 ; Hunk 87: CODE, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	CODE_HUNK	h087
 h087_end:
 	ifnd	HUNKEXE
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h088_data.s"
+; Hunk 88: C library: a variable (the stdio buffer size).
+	include	"src/h088_data_lib_bufsiz.s"
 
 ;===============================================================================
 ; Hunk 89: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h089
 h089_end:
 	ifnd	HUNKEXE
@@ -428,17 +560,20 @@ h089_end:
 ;===============================================================================
 ; Hunk 90: CODE, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	CODE_HUNK	h090
 h090_end:
 	ifnd	HUNKEXE
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h091_data.s"
+; Hunk 91: C library: _ctype, the character class table.
+	include	"src/h091_data_lib_ctype.s"
 
 ;===============================================================================
 ; Hunk 92: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h092
 h092_end:
 	ifnd	HUNKEXE
@@ -450,17 +585,20 @@ h092_end:
 ;===============================================================================
 ; Hunk 93: CODE, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	CODE_HUNK	h093
 h093_end:
 	ifnd	HUNKEXE
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h094_data.s"
+; Hunk 94: C library: errno.
+	include	"src/h094_data_lib_errno.s"
 
 ;===============================================================================
 ; Hunk 95: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h095
 h095_end:
 	ifnd	HUNKEXE
@@ -469,11 +607,13 @@ h095_end:
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h096_code.s"
+; Hunk 96: C library: exit.
+	include	"src/h096_code_lib_exit.s"
 
 ;===============================================================================
 ; Hunk 97: DATA, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	DATA_HUNK	h097
 h097_end:
 	ifnd	HUNKEXE
@@ -483,6 +623,7 @@ h097_end:
 ;===============================================================================
 ; Hunk 98: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h098
 h098_end:
 	ifnd	HUNKEXE
@@ -491,13 +632,16 @@ h098_end:
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h099_code.s"
+; Hunk 99: C library: Chk_Abort (CTRL-C / CTRL-D).
+	include	"src/h099_code_lib_chk_abort.s"
 
-	include	"src/h100_data.s"
+; Hunk 100: C library: Enable_Abort.
+	include	"src/h100_data_lib_enable_abort.s"
 
 ;===============================================================================
 ; Hunk 101: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h101
 h101_end:
 	ifnd	HUNKEXE
@@ -509,17 +653,20 @@ h101_end:
 ;===============================================================================
 ; Hunk 102: CODE, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	CODE_HUNK	h102
 h102_end:
 	ifnd	HUNKEXE
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h103_data.s"
+; Hunk 103: C library: a variable (the default file mode).
+	include	"src/h103_data_lib_fmode.s"
 
 ;===============================================================================
 ; Hunk 104: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h104
 h104_end:
 	ifnd	HUNKEXE
@@ -528,11 +675,13 @@ h104_end:
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h105_code.s"
+; Hunk 105: C library: fopen, freopen, fclose.
+	include	"src/h105_code_lib_fopen.s"
 
 ;===============================================================================
 ; Hunk 106: DATA, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	DATA_HUNK	h106
 h106_end:
 	ifnd	HUNKEXE
@@ -542,6 +691,7 @@ h106_end:
 ;===============================================================================
 ; Hunk 107: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h107
 h107_end:
 	ifnd	HUNKEXE
@@ -550,11 +700,13 @@ h107_end:
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h108_code.s"
+; Hunk 108: C library: fprintf.
+	include	"src/h108_code_lib_fprintf.s"
 
 ;===============================================================================
 ; Hunk 109: DATA, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	DATA_HUNK	h109
 h109_end:
 	ifnd	HUNKEXE
@@ -564,6 +716,7 @@ h109_end:
 ;===============================================================================
 ; Hunk 110: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h110
 h110_end:
 	ifnd	HUNKEXE
@@ -572,11 +725,13 @@ h110_end:
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h111_code.s"
+; Hunk 111: C library: fread.
+	include	"src/h111_code_lib_fread.s"
 
 ;===============================================================================
 ; Hunk 112: DATA, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	DATA_HUNK	h112
 h112_end:
 	ifnd	HUNKEXE
@@ -586,6 +741,7 @@ h112_end:
 ;===============================================================================
 ; Hunk 113: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h113
 h113_end:
 	ifnd	HUNKEXE
@@ -597,17 +753,20 @@ h113_end:
 ;===============================================================================
 ; Hunk 114: CODE, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	CODE_HUNK	h114
 h114_end:
 	ifnd	HUNKEXE
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h115_data.s"
+; Hunk 115: C library: a variable (the I/O mode).
+	include	"src/h115_data_lib_iomode.s"
 
 ;===============================================================================
 ; Hunk 116: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h116
 h116_end:
 	ifnd	HUNKEXE
@@ -616,13 +775,16 @@ h116_end:
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h117_code.s"
+; Hunk 117: C library: low-level I/O (open, read, write, lseek, close...) and the console.
+	include	"src/h117_code_lib_unixio.s"
 
-	include	"src/h118_data.s"
+; Hunk 118: C library: variables of the console.
+	include	"src/h118_data_lib_unixio_vars.s"
 
 ;===============================================================================
 ; Hunk 119: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h119
 h119_end:
 	ifnd	HUNKEXE
@@ -631,11 +793,13 @@ h119_end:
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h120_code.s"
+; Hunk 120: C library: _filbuf, _flsbuf, _getbuf.
+	include	"src/h120_code_lib_stdio_buf.s"
 
 ;===============================================================================
 ; Hunk 121: DATA, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	DATA_HUNK	h121
 h121_end:
 	ifnd	HUNKEXE
@@ -645,6 +809,7 @@ h121_end:
 ;===============================================================================
 ; Hunk 122: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h122
 h122_end:
 	ifnd	HUNKEXE
@@ -653,24 +818,29 @@ h122_end:
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h123_code.s"
+; Hunk 123: C library: AllocMemTracked (getmem), sbrk, the memory list.
+	include	"src/h123_code_lib_memory.s"
 
 ;===============================================================================
 ; Hunk 124: DATA, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	DATA_HUNK	h124
 h124_end:
 	ifnd	HUNKEXE
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h125_bss.s"
+; Hunk 125: C library: _MemList.
+	include	"src/h125_bss_lib_memlist.s"
 
-	include	"src/h126_code.s"
+; Hunk 126: C library: malloc, free.
+	include	"src/h126_code_lib_malloc.s"
 
 ;===============================================================================
 ; Hunk 127: DATA, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	DATA_HUNK	h127
 h127_end:
 	ifnd	HUNKEXE
@@ -680,6 +850,7 @@ h127_end:
 ;===============================================================================
 ; Hunk 128: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h128
 h128_end:
 	ifnd	HUNKEXE
@@ -688,11 +859,13 @@ h128_end:
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h129_code.s"
+; Hunk 129: C library: strcat, strncat.
+	include	"src/h129_code_lib_strcat.s"
 
 ;===============================================================================
 ; Hunk 130: DATA, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	DATA_HUNK	h130
 h130_end:
 	ifnd	HUNKEXE
@@ -702,6 +875,7 @@ h130_end:
 ;===============================================================================
 ; Hunk 131: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h131
 h131_end:
 	ifnd	HUNKEXE
@@ -710,11 +884,13 @@ h131_end:
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h132_code.s"
+; Hunk 132: C library: strlen.
+	include	"src/h132_code_lib_strlen.s"
 
 ;===============================================================================
 ; Hunk 133: DATA, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	DATA_HUNK	h133
 h133_end:
 	ifnd	HUNKEXE
@@ -724,6 +900,7 @@ h133_end:
 ;===============================================================================
 ; Hunk 134: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h134
 h134_end:
 	ifnd	HUNKEXE
@@ -735,21 +912,26 @@ h134_end:
 ;===============================================================================
 ; Hunk 135: CODE, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	CODE_HUNK	h135
 h135_end:
 	ifnd	HUNKEXE
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h136_data.s"
+; Hunk 136: C library: _nufbs.
+	include	"src/h136_data_lib_nufbs.s"
 
-	include	"src/h137_bss.s"
+; Hunk 137: C library: _ufbs, the low-level files.
+	include	"src/h137_bss_lib_ufbs.s"
 
-	include	"src/h138_code.s"
+; Hunk 138: C library: _exit.
+	include	"src/h138_code_lib__exit.s"
 
 ;===============================================================================
 ; Hunk 139: DATA, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	DATA_HUNK	h139
 h139_end:
 	ifnd	HUNKEXE
@@ -759,6 +941,7 @@ h139_end:
 ;===============================================================================
 ; Hunk 140: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h140
 h140_end:
 	ifnd	HUNKEXE
@@ -770,6 +953,7 @@ h140_end:
 ;===============================================================================
 ; Hunk 141: CODE, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	CODE_HUNK	h141
 h141_end:
 	ifnd	HUNKEXE
@@ -779,21 +963,26 @@ h141_end:
 ;===============================================================================
 ; Hunk 142: DATA, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	DATA_HUNK	h142
 h142_end:
 	ifnd	HUNKEXE
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h143_bss.s"
+; Hunk 143: C library: _iob, the stdio FILEs.
+	include	"src/h143_bss_lib_iob.s"
 
-	include	"src/h144_code.s"
+; Hunk 144: C library: _pfmt, the printf formatter.
+	include	"src/h144_code_lib_pfmt.s"
 
-	include	"src/h145_data.s"
+; Hunk 145: C library: the hex digits.
+	include	"src/h145_data_lib_hexdigits.s"
 
 ;===============================================================================
 ; Hunk 146: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h146
 h146_end:
 	ifnd	HUNKEXE
@@ -805,17 +994,20 @@ h146_end:
 ;===============================================================================
 ; Hunk 147: CODE, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	CODE_HUNK	h147
 h147_end:
 	ifnd	HUNKEXE
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h148_data.s"
+; Hunk 148: C library: malloc's variables.
+	include	"src/h148_data_lib_malloc_vars.s"
 
 ;===============================================================================
 ; Hunk 149: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h149
 h149_end:
 	ifnd	HUNKEXE
@@ -824,21 +1016,28 @@ h149_end:
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h150_code.s"
+; Hunk 150: C library: movmem.
+	include	"src/h150_code_lib_movmem.s"
 
-	include	"src/h151_code.s"
+; Hunk 151: C library: double add / subtract.
+	include	"src/h151_code_lib_dadd.s"
 
-	include	"src/h152_code.s"
+; Hunk 152: C library: CXD33, 32-bit divide.
+	include	"src/h152_code_lib_ldiv.s"
 
-	include	"src/h153_code.s"
+; Hunk 153: C library: double divide.
+	include	"src/h153_code_lib_ddiv.s"
 
-	include	"src/h154_code.s"
+; Hunk 154: C library: CXM33, 32-bit multiply.
+	include	"src/h154_code_lib_lmul.s"
 
-	include	"src/h155_code.s"
+; Hunk 155: C library: SetFPErr.
+	include	"src/h155_code_lib_fperr.s"
 
 ;===============================================================================
 ; Hunk 156: DATA, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	DATA_HUNK	h156
 h156_end:
 	ifnd	HUNKEXE
@@ -848,6 +1047,7 @@ h156_end:
 ;===============================================================================
 ; Hunk 157: BSS, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	BSS_HUNK	h157
 h157_end:
 	ifnd	HUNKEXE
@@ -856,92 +1056,117 @@ h157_end:
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h158_code.s"
+; Hunk 158: C library: IEEE single pack / unpack.
+	include	"src/h158_code_lib_float_pack.s"
 
-	include	"src/h159_code.s"
+; Hunk 159: C library: IEEE double pack / unpack.
+	include	"src/h159_code_lib_double_pack.s"
 
-	include	"src/h160_code.s"
+; Hunk 160: C library: long to single.
+	include	"src/h160_code_lib_ltof.s"
 
-	include	"src/h161_code.s"
+; Hunk 161: C library: long to double.
+	include	"src/h161_code_lib_ltod.s"
 
-	include	"src/h162_code.s"
+; Hunk 162: C library: single to long.
+	include	"src/h162_code_lib_ftol.s"
 
-	include	"src/h163_code.s"
+; Hunk 163: C library: double to long.
+	include	"src/h163_code_lib_dtol.s"
 
-	include	"src/h164_code.s"
+; Hunk 164: C library: single to double.
+	include	"src/h164_code_lib_ftod.s"
 
-	include	"src/h165_code.s"
+; Hunk 165: C library: double to single.
+	include	"src/h165_code_lib_dtof.s"
 
-	include	"src/h166_code.s"
+; Hunk 166: C library: double to decimal digits (for printf).
+	include	"src/h166_code_lib_dtoa.s"
 
-	include	"src/h167_code.s"
+; Hunk 167: C library: __main (the command line, stdio, calls main).
+	include	"src/h167_code_lib__main.s"
 
-	include	"src/h168_data.s"
+; Hunk 168: C library: the console window's name and an error message.
+	include	"src/h168_data_lib_strings.s"
 
-	include	"src/h169_bss.s"
+; Hunk 169: C library: __main's variables (argv...).
+	include	"src/h169_bss_lib_main_vars.s"
 
 ;===============================================================================
 ; Hunk 170: CODE, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	CODE_HUNK	h170
 h170_end:
 	ifnd	HUNKEXE
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h171_code.s"
+; Hunk 171: The dos.library call stubs (_Open, _Close, _Read...).
+	include	"src/h171_code_stubs_dos.s"
 
-	include	"src/h172_code.s"
+; Hunk 172: The exec.library call stubs (_AllocMem, _FindTask...).
+	include	"src/h172_code_stubs_exec.s"
 
 ;===============================================================================
 ; Hunk 173: CODE, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	CODE_HUNK	h173
 h173_end:
 	ifnd	HUNKEXE
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h174_code.s"
+; Hunk 174: amiga.lib: _NewList.
+	include	"src/h174_code_stubs_newlist.s"
 
-	include	"src/h175_code.s"
+; Hunk 175: amiga.lib: _CreatePort, _DeletePort.
+	include	"src/h175_code_stubs_ports.s"
 
 ;===============================================================================
 ; Hunk 176: DATA, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	DATA_HUNK	h176
 h176_end:
 	ifnd	HUNKEXE
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h177_code.s"
+; Hunk 177: amiga.lib: _CreateStdIO, _DeleteStdIO.
+	include	"src/h177_code_stubs_stdio.s"
 
 ;===============================================================================
 ; Hunk 178: DATA, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	DATA_HUNK	h178
 h178_end:
 	ifnd	HUNKEXE
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h179_code.s"
+; Hunk 179: amiga.lib: _CreateExtIO, _DeleteExtIO.
+	include	"src/h179_code_stubs_extio.s"
 
 ;===============================================================================
 ; Hunk 180: DATA, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	DATA_HUNK	h180
 h180_end:
 	ifnd	HUNKEXE
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h181_code.s"
+; Hunk 181: The graphics.library call stubs (_LoadRGB4, _MakeVPort, _WaitBlit...).
+	include	"src/h181_code_stubs_graphics.s"
 
 ;===============================================================================
 ; Hunk 182: DATA, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	DATA_HUNK	h182
 h182_end:
 	ifnd	HUNKEXE
@@ -951,10 +1176,12 @@ h182_end:
 ;===============================================================================
 ; Hunk 183: DATA, $0 bytes
 ;===============================================================================
+; (empty: a section of a module with nothing in it)
 	DATA_HUNK	h183
 h183_end:
 	ifnd	HUNKEXE
 	dc.l	HUNK_END
 	endc
 
-	include	"src/h184_code.s"
+; Hunk 184: The intuition.library call stub (_CloseWorkBench).
+	include	"src/h184_code_stubs_intuition.s"

@@ -1,0 +1,14 @@
+; F/A-18 Interceptor - hunk 88 (data)
+; C library: a variable (the stdio buffer size).
+; Included by ../f18_main.s.
+
+;===============================================================================
+; Hunk 88: DATA, $4 bytes
+;===============================================================================
+	DATA_HUNK	h088
+dat_088_00000:
+	dc.b	$00,$00,$02,$00
+h088_end:
+	ifnd	HUNKEXE
+	dc.l	HUNK_END
+	endc

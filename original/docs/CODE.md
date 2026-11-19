@@ -1,6 +1,8 @@
 # The code
 
-What is known about `f18_main.s` and `src/*.s`, module by module. Each hunk is one object module
+What is known about `f18_main.s` and `src/*.s`, module by module. Each file in `src/` is named
+`hNNN_type_contents.s` (its hunk's number and type, and what it holds); `f18_main.s` has a note
+on every hunk before its include, and an overview of the groups at the top. Each hunk is one object module
 of the original link: compiled Lattice C (functions start with `link a6` / end with `unlk a6`,
 arguments on the stack, results in `d0`), some assembly. Routine headers in the source say what
 each named routine does; routines still called `sub_HHH_OOOOO` are not worked out yet.
@@ -72,7 +74,7 @@ before each. Some parts run only every 2nd, 4th, 8th, 16th or 32nd frame (`Frame
 `ObjectTable` (hunk 71) holds 16 objects of 512 bytes: the player's aircraft is record 0 (its
 fields are named `Player...` where the code uses them directly: `PlayerX`, `PlayerVelX`,
 `PlayerWeapon`, `PlayerM11`...), the rest are other aircraft, missiles and so on (`Object1` ...
-`Object15`). The header above `ObjectTable` in `src/h071_code.s` lists the fields known so far:
+`Object15`). The header above `ObjectTable` in `src/h071_code_variables.s` lists the fields known so far:
 the map cell and position (X/Z in map cells plus 22 bits inside the cell), the velocity, the
 attitude angles and two rotation matrices, the type, the selected weapon and missiles left,
 the control bits.
