@@ -1,5 +1,8 @@
 # The code
 
+(How the game works - start-up, the frame, the objects, flight, the 3D view... - is in
+[`GAME.md`](GAME.md).)
+
 What is known about `f18_main.s` and `src/*.s`, module by module. Each file in `src/` is named
 `hNNN_type_contents.s` (its hunk's number and type, and what it holds); `f18_main.s` has a note
 on every hunk before its include, and an overview of the groups at the top. Each hunk is one object module

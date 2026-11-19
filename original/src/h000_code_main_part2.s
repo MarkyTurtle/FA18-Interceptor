@@ -131,7 +131,13 @@ l_000_04530:
 l_000_04546:
         unlk    a6                              ; 04546
         rts                                     ; 04548
-sub_000_0454A:
+
+;-------------------------------------------------------------------------------
+; VectorToAngles - VectorToAngles(pitch, heading, dx, dy, dz): the heading and pitch of a
+; direction (an arctangent: the ratio of two parts (Divide) looked up in ArcTanTable, by
+; octant), into dat_071_00490 (pitch) and dat_071_00492 (heading).
+;-------------------------------------------------------------------------------
+VectorToAngles:
         link.w  a6,#$ffe4                       ; 0454A
         movem.l d2,-(a7)                        ; 0454E
         move.w  #$2,-$1c(a6)                    ; 04552
@@ -226,14 +232,14 @@ l_000_0464A:
         move.w  d2,(dat_071_004A0).l            ; 0467A
         tst.w   d2                              ; 04680
         beq.b   l_000_046B0                     ; 04682
-        jsr     (sub_020_00BD0).l               ; 04684
+        jsr     (Divide).l                      ; 04684
         move.w  (dat_071_004A2).l,d0            ; 0468A
         asr.w   #$6,d0                          ; 04690
         move.w  d0,(dat_071_004A2).l            ; 04692
         ext.l   d0                              ; 04698
         asl.l   #$1,d0                          ; 0469A
         movea.l d0,a0                           ; 0469C
-        adda.l  #dat_063_00000,a0               ; 0469E
+        adda.l  #ArcTanTable,a0                 ; 0469E
         move.w  (a0),d0                         ; 046A4
         ext.l   d0                              ; 046A6
         asl.l   #$3,d0                          ; 046A8
@@ -249,14 +255,14 @@ l_000_046BA:
         asl.l   d0,d1                           ; 046C4
         move.l  d1,(dat_071_0049C).l            ; 046C6
         move.w  -$4(a6),(dat_071_004A0).l       ; 046CC
-        jsr     (sub_020_00BD0).l               ; 046D4
+        jsr     (Divide).l                      ; 046D4
         move.w  (dat_071_004A2).l,d0            ; 046DA
         asr.w   #$6,d0                          ; 046E0
         move.w  d0,(dat_071_004A2).l            ; 046E2
         ext.l   d0                              ; 046E8
         asl.l   #$1,d0                          ; 046EA
         movea.l d0,a0                           ; 046EC
-        adda.l  #dat_063_00000,a0               ; 046EE
+        adda.l  #ArcTanTable,a0                 ; 046EE
         move.w  (a0),d0                         ; 046F4
         ext.l   d0                              ; 046F6
         move.l  #$384,d1                        ; 046F8
@@ -315,12 +321,12 @@ l_000_0474C:
         move.w  d0,(dat_071_004A0).l            ; 047A8
         tst.w   d0                              ; 047AE
         beq.b   l_000_047D6                     ; 047B0
-        jsr     (sub_020_00BD0).l               ; 047B2
+        jsr     (Divide).l                      ; 047B2
         move.w  (dat_071_004A2).l,d0            ; 047B8
         ext.l   d0                              ; 047BE
         asl.l   #$1,d0                          ; 047C0
         movea.l d0,a0                           ; 047C2
-        adda.l  #dat_063_00000,a0               ; 047C4
+        adda.l  #ArcTanTable,a0                 ; 047C4
         move.w  (a0),d0                         ; 047CA
         ext.l   d0                              ; 047CC
         asl.l   #$3,d0                          ; 047CE
@@ -335,12 +341,12 @@ l_000_047E0:
         asl.l   #$8,d0                          ; 047E8
         move.l  d0,(dat_071_0049C).l            ; 047EA
         move.w  -$2(a6),(dat_071_004A0).l       ; 047F0
-        jsr     (sub_020_00BD0).l               ; 047F8
+        jsr     (Divide).l                      ; 047F8
         move.w  (dat_071_004A2).l,d0            ; 047FE
         ext.l   d0                              ; 04804
         asl.l   #$1,d0                          ; 04806
         movea.l d0,a0                           ; 04808
-        adda.l  #dat_063_00000,a0               ; 0480A
+        adda.l  #ArcTanTable,a0                 ; 0480A
         move.w  (a0),d0                         ; 04810
         ext.l   d0                              ; 04812
         move.l  #$384,d1                        ; 04814
@@ -3237,7 +3243,18 @@ l_000_06AF6:
         movem.l (a7)+,d2                        ; 06B06
         unlk    a6                              ; 06B0A
         rts                                     ; 06B0C
-sub_000_06B0E:
+
+;-------------------------------------------------------------------------------
+; FlyAircraft - The flight model for one aircraft (CurrentObject; dat_002_00008 = its record):
+; the nose's direction is the third column of its +$92 matrix (M13, M23, M33, into
+; dat_071_00470-00474); ScaleToLength makes it a velocity of the aircraft's speed (+$6E) along
+; the nose (dat_071_0041C-00420); each part of the velocity then moves part of the way there
+; from the present velocity (EaseVelocity), +$76 is added to the vertical part (unless bit 0 of
+; dat_071_0016F), and the result is the new velocity (+$3E, +$42, +$46). Then the undercarriage
+; / landing and the rest (dat_071_0016F modes 1 and 3 add or take away $6000 vertically; type
+; $14 uses +$4E)...
+;-------------------------------------------------------------------------------
+FlyAircraft:
         link.w  a6,#$ffca                       ; 06B0E
         movem.l d2-d4/a2-a3,-(a7)               ; 06B12
         move.w  (CurrentObject).l,d0            ; 06B16
@@ -3281,7 +3298,7 @@ sub_000_06B0E:
         move.l  a0,-$2c(a6)                     ; 06B98
         move.l  a1,-$30(a6)                     ; 06B9C
         move.l  a2,-$34(a6)                     ; 06BA0
-        jsr     (sub_020_009A4).l               ; 06BA4
+        jsr     (ScaleToLength).l               ; 06BA4
         lea.l   $10(a7),a7                      ; 06BAA
         move.w  (dat_071_0041C).l,-$2(a6)       ; 06BAE
         move.w  (dat_071_0041E).l,-$4(a6)       ; 06BB6
@@ -3314,7 +3331,7 @@ l_000_06C0E:
         ext.l   d1                              ; 06C18
         move.l  d1,-(a7)                        ; 06C1A
         move.l  d0,-(a7)                        ; 06C1C
-        bsr.w   sub_000_07288                   ; 06C1E
+        bsr.w   EaseVelocity                    ; 06C1E
         addq.l  #$8,a7                          ; 06C22
         move.w  -$6(a6),d1                      ; 06C24
         ext.l   d1                              ; 06C28
@@ -3323,7 +3340,7 @@ l_000_06C0E:
         move.l  d2,-(a7)                        ; 06C30
         move.l  d1,-(a7)                        ; 06C32
         move.w  d0,-$2(a6)                      ; 06C34
-        bsr.w   sub_000_07288                   ; 06C38
+        bsr.w   EaseVelocity                    ; 06C38
         addq.l  #$8,a7                          ; 06C3C
         move.w  d0,-$6(a6)                      ; 06C3E
 l_000_06C42:
@@ -3344,7 +3361,7 @@ l_000_06C66:
         ext.l   d1                              ; 06C70
         move.l  d1,-(a7)                        ; 06C72
         move.l  d0,-(a7)                        ; 06C74
-        bsr.w   sub_000_07288                   ; 06C76
+        bsr.w   EaseVelocity                    ; 06C76
         addq.l  #$8,a7                          ; 06C7A
         move.b  (dat_071_0016F).l,d1            ; 06C7C
         move.w  d0,-$4(a6)                      ; 06C82
@@ -3769,7 +3786,12 @@ l_000_07280:
         movem.l (a7)+,d2-d4/a2-a3               ; 07280
         unlk    a6                              ; 07284
         rts                                     ; 07286
-sub_000_07288:
+
+;-------------------------------------------------------------------------------
+; EaseVelocity - EaseVelocity(target, current): d = target + current, divided by 4 if |d| > 4,
+; by 2 if |d| > 2; returns d - current (how far the velocity moves this frame).
+;-------------------------------------------------------------------------------
+EaseVelocity:
         link.w  a6,#$fffc                       ; 07288
         move.w  $a(a6),d0                       ; 0728C
         add.w   $e(a6),d0                       ; 07290

@@ -47,7 +47,7 @@ l_032_0004E:
         ext.l   d1                              ; 0005C
         move.l  a1,-(a7)                        ; 0005E
         movem.l d0-d5,-(a7)                     ; 00060
-        jsr     (sub_000_0454A).l               ; 00064
+        jsr     (VectorToAngles).l              ; 00064
         adda.w  #$18,a7                         ; 0006A
         movea.l (a7)+,a1                        ; 0006E
         move.w  (dat_071_00490).l,d4            ; 00070
@@ -616,7 +616,7 @@ l_032_00664:
         moveq   #-1,d5                          ; 00684
 l_032_00686:
         movem.l d0-d5,-(a7)                     ; 00686
-        jsr     (sub_000_0454A).l               ; 0068A
+        jsr     (VectorToAngles).l              ; 0068A
         adda.w  #$18,a7                         ; 00690
         move.w  (dat_071_00490).l,(dat_071_00464).l ; 00694
         move.w  (dat_071_00492).l,(dat_071_00466).l ; 0069E

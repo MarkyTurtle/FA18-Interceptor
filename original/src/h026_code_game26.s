@@ -133,7 +133,7 @@ l_026_00168:
         moveq   #$0,d1                          ; 00176
         move.l  a0,-(a7)                        ; 00178
         movem.l d0-d5,-(a7)                     ; 0017A
-        jsr     (sub_000_0454A).l               ; 0017E
+        jsr     (VectorToAngles).l              ; 0017E
         adda.w  #$18,a7                         ; 00184
         movea.l (a7)+,a0                        ; 00188
         moveq   #$0,d0                          ; 0018A

@@ -6,7 +6,9 @@
 ; Hunk 63: CODE, $11F4 bytes
 ;===============================================================================
 	CODE_HUNK	h063
-dat_063_00000:
+; ArcTanTable - Arctangents for VectorToAngles: words in tenths of a degree (x 8 = 1/80
+; degree), by the ratio of two parts of a vector.
+ArcTanTable:
 	dc.b	$00,$00,$00,$00,$00,$05,$00,$05,$00,$0A,$00,$0A,$00,$0F,$00,$0F
 	dc.b	$00,$14,$00,$14,$00,$14,$00,$19,$00,$19,$00,$1E,$00,$1E,$00,$23
 	dc.b	$00,$23,$00,$28,$00,$28,$00,$28,$00,$2D,$00,$2D,$00,$32,$00,$32

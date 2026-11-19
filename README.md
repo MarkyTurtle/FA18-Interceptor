@@ -14,4 +14,5 @@ boots it (`s/startup-sequence` runs `LoadWb`) and the game starts from its icon.
 AmigaDOS executable, `F-18 Interceptor` (331,232 bytes, 185 hunks, mostly compiled Lattice C),
 which loads its pictures (`pix/`) and data (`text/`, `config`) from `df0:` as it runs.
 
-[`BUILDING.md`](BUILDING.md) says how to build and check it.
+[`original/docs/GAME.md`](original/docs/GAME.md) describes how the game works, as far as the
+disassembly has got; [`BUILDING.md`](BUILDING.md) says how to build and check it.

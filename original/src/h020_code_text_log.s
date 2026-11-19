@@ -280,7 +280,7 @@ l_020_002CC:
         moveq   #$0,d0                          ; 00320
         moveq   #$0,d1                          ; 00322
         movem.l d0-d5,-(a7)                     ; 00324
-        jsr     (sub_000_0454A).l               ; 00328
+        jsr     (VectorToAngles).l              ; 00328
         adda.w  #$18,a7                         ; 0032E
         move.w  (dat_071_00492).l,d0            ; 00332
         ext.l   d0                              ; 00338
@@ -808,7 +808,12 @@ sub_020_0099A:
         link.w  a6,#$fffc                       ; 0099A
         move.w  d0,-$2(a6)                      ; 0099E
         bra.b   l_020_009B4                     ; 009A2
-sub_020_009A4:
+
+;-------------------------------------------------------------------------------
+; ScaleToLength - ScaleToLength(length, x, y, z): the vector (x, y, z) made length long (its
+; size from sub_008_016AC), into dat_071_0041C, 0041E, 00420.
+;-------------------------------------------------------------------------------
+ScaleToLength:
         link.w  a6,#$fffc                       ; 009A4
         movem.l $8(a6),d0/d5-d7                 ; 009A8
         move.w  $8(a6),-$2(a6)                  ; 009AE
@@ -1037,7 +1042,11 @@ l_020_00BC8:
         move.w  d1,(dat_071_00466).l            ; 00BC8
 l_020_00BCE:
         rts                                     ; 00BCE
-sub_020_00BD0:
+
+;-------------------------------------------------------------------------------
+; Divide - dat_071_004A2 = dat_071_0049C (long) / dat_071_004A0 (word), rounded.
+;-------------------------------------------------------------------------------
+Divide:
         movem.l d0-d2,-(a7)                     ; 00BD0
         move.l  (dat_071_0049C).l,d0            ; 00BD4
         move.w  (dat_071_004A0).l,d1            ; 00BDA

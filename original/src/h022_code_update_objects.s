@@ -302,7 +302,7 @@ l_022_003A8:
         bra.b   l_022_003CC                     ; 003BA
 l_022_003BC:
         move.l  a1,-(a7)                        ; 003BC
-        jsr     (sub_000_06B0E).l               ; 003BE
+        jsr     (FlyAircraft).l                 ; 003BE
         movea.l (a7)+,a1                        ; 003C4
         movem.l $3e(a1),d5-d7                   ; 003C6
 l_022_003CC:

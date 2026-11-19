@@ -73,7 +73,7 @@ l_017_000CE:
 l_017_000F6:
         andi.w  #$fffd,$0(a1)                   ; 000F6
         bsr.w   sub_017_005A8                   ; 000FC
-        bsr.w   sub_017_01026                   ; 00100
+        bsr.w   UpdateMissile                   ; 00100
         bsr.w   sub_017_01862                   ; 00104
         jsr     (UpdateObject).l                ; 00108
         move.w  #$1,(CurrentObject).l           ; 0010E
@@ -1005,9 +1005,9 @@ l_017_00E84:
         rts                                     ; 00E94
 l_017_00E96:
         btst    #$0,$2(a1)                      ; 00E96
-        bne.w   sub_017_01026                   ; 00E9C
+        bne.w   UpdateMissile                   ; 00E9C
         tst.w   $2c(a1)                         ; 00EA0
-        blt.w   sub_017_01026                   ; 00EA4
+        blt.w   UpdateMissile                   ; 00EA4
         bsr.w   sub_017_018E8                   ; 00EA8
         move.w  $6c(a1),d2                      ; 00EAC
         cmpi.b  #$ff,$38(a1)                    ; 00EB0
@@ -1142,7 +1142,13 @@ l_017_01018:
         andi.b  #$fc,d0                         ; 0101C
         or.b    d2,d0                           ; 01020
         move.b  d0,$65(a1)                      ; 01022
-sub_017_01026:
+
+;-------------------------------------------------------------------------------
+; UpdateMissile - Updates a missile (a1): its timer (+$4C) counts down; while the motor burns
+; (timer >= 50) its speed (+$6C, +$6E) rises by $1E0 a frame to at most $4200, then it eases
+; towards $3000 ($240 a frame); at 12 it is spent (flag $400 in +$00)...
+;-------------------------------------------------------------------------------
+UpdateMissile:
         tst.b   (dat_071_0017E).l               ; 01026
         bne.w   l_017_010FA                     ; 0102C
         cmpi.b  #$8,$5(a1)                      ; 01030

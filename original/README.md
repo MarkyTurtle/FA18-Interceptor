@@ -12,7 +12,8 @@
 | `build.py`, `build.sh` | Assemble `f18_main.s` both ways and check it against the original (`../BUILDING.md`) |
 | `disk/files/` | Every file from the disk, in its folders, as on the disk (`F-18 Interceptor/` is the volume) |
 | `disk/FILES.md` | What each file is, and **the formats**: the pictures, the sound samples, the flight log, the flight recording |
-| `docs/CODE.md` | **The code**: how it runs, what each hunk is, the includes |
+| `docs/GAME.md` | **How the game works**: its organisation, start-up, the frame, input, the objects and the world, flight, weapons, the 3D view, the flight log, the recording, sound, memory - and the open questions |
+| `docs/CODE.md` | **The code**: what each hunk is, the includes, the tools |
 | `f18_os.i`, `f18_hw.i` | The system library calls and structures; the custom chip registers |
 | `disk/SHA1SUMS` | SHA-1 of the IPF, the decoded ADF and every file |
 | `tools/` | below |
