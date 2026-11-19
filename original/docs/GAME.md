@@ -303,8 +303,8 @@ by `HandleKey`, turned into letters by `KeyToAscii`).
   (hunks 41-58, 69, 70). Then the scenery (`SceneryList`, 24-byte entries), then the small
   objects.
 * Each object's `ObjectDrawTable` entry is a copy of a `ModelTable` entry (20 bytes: the draw
-  routine, the shape being drawn twice - for animations - and the model), made when the object
-  is placed (`PlaceObject` takes the entry's offset from the mission's list). The models:
+  routine, the model's base address, the shape list now and next - for animations - and a
+  second model), made when the object is placed (`PlaceObject` takes the entry's offset from the mission's list). The models:
 
   | `ModelTable` | Model | Hunk |
   |---|---|---|
@@ -319,9 +319,10 @@ by `HandleKey`, turned into letters by `KeyToAscii`).
   | `$DC` | the ejected pilot's parachute (animated) | 58 |
   | `$F0` | object 15 of F6, probably the shadow submarine | 53 |
 
-* **A model** (`DrawModel`, hunk 10) starts with a list of shapes by distance: each word is the
-  furthest distance it is used at (bits 0-13), or with the top bit set the shape's offset - the
-  levels of detail. A shape begins with a header: a number, two distance limits, two scale
+* **A model** (`DrawModel`, hunk 10) starts with a list choosing the shape by distance - the
+  levels of detail: distance words (bits 0-13) compared with the object's distance, with
+  offsets to follow, and a word with the top bit set giving the chosen shape's offset (the
+  exact layout of the list is not fully worked out). A shape begins with a header: a number, two distance limits, two scale
   shifts (a byte's nibbles), flags and the vertex counts; then the vertices (three words each),
   which are turned by the object's matrix and moved to the camera (`VertexBuffer`). Then comes
   the shape's **drawing list**: entries that test which side of a plane (three of the

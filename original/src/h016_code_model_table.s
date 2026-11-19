@@ -8,11 +8,12 @@
 ;===============================================================================
 	CODE_HUNK	h016
 ; ModelTable - The models, 20 bytes each, copied into an object's ObjectDrawTable entry when it
-; is placed: +$00 the draw routine, +$04 and +$08 the shape now drawn (changed for animation),
-; +$0C the model (its distance list), +$10 a second model or 0. $00 Sidewinder, $14 AMRAAM, $28
-; and $104 an animated object of hunk 58 (the downed pilot in F4), $3C F-16, $50 F/A-18, $64
-; Air Force One, $78 and $8C the MiGs, $A0 and $B4 the carrier, $C8 the cruise missile, $DC the
-; ejected pilot's parachute, $F0 object 15 of F6 (probably the shadow submarine), $118 and $12C the airliners.
+; is placed: +$00 the draw routine, +$04 the model (the base its offsets count from, passed in
+; a0), +$08 the shape list to draw (ShapeNow), +$0C ShapeNext (changed for animations), +$10 a
+; second model or 0. $00 Sidewinder, $14 AMRAAM, $28 and $104 an animated object of hunk 58
+; (the downed pilot in F4), $3C F-16, $50 F/A-18, $64 Air Force One, $78 and $8C the MiGs, $A0
+; and $B4 the carrier, $C8 the cruise missile, $DC the ejected pilot's parachute, $F0 object 15
+; of F6 (probably the shadow submarine), $118 and $12C the airliners.
 ModelTable:
         dc.l    DrawModel                       ; 00000
         dc.l    dat_051_00A6C                   ; 00004
@@ -97,10 +98,11 @@ ModelTable:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-; ObjectDrawTable - 118 entries of 20 bytes, as in ModelTable (the draw routine, the shape now
-; and next, the model, a second model): entries 0-15 are the 16 objects' (copied from
+; ObjectDrawTable - 118 entries of 20 bytes, as in ModelTable (the draw routine, the model,
+; ShapeNow, ShapeNext, a second model): entries 0-15 are the 16 objects' (copied from
 ; ModelTable when placed), entries 17-117 the scenery shapes, numbered by the scenery items of
-; SceneryMap0-2 (hunks 42-50, 54-56, 69 and 70).
+; SceneryMap0-2 (hunks 42-50, 54-56, 69 and 70). DrawObjects loads an entry's fields and calls
+; its routine.
 ObjectDrawTable:
 	dc.b	$00
 	dc.b	$00
