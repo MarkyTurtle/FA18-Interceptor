@@ -1,12 +1,13 @@
 ; F/A-18 Interceptor - hunk 60 (code)
-; Data: a small table used by hunks 0 and 32 (not worked out yet)
+; ControlResponse: the rotation rate for each stick deflection (two tables).
 ; Included by ../f18_main.s.
 
 ;===============================================================================
 ; Hunk 60: CODE, $F8 bytes
 ;===============================================================================
 	CODE_HUNK	h060
-dat_060_00000:
+; ControlResponse - The rotation rate for each stick deflection (words), the normal table.
+ControlResponse:
 	dc.b	$00,$12,$00,$1B,$00,$2D,$00,$3F,$00,$5A,$00,$75
 dat_060_0000C:
 	dc.b	$00,$90,$00,$AB,$00,$BD,$00,$CF,$00,$E1,$00,$F3,$01,$05,$01,$20
@@ -16,7 +17,9 @@ dat_060_0000C:
 	dc.b	$04,$14,$04,$26,$04,$38,$04,$53,$04,$6E,$04,$89,$04,$A4,$04,$BF
 	dc.b	$04,$DA,$04,$F5,$05,$07,$05,$22,$05,$3D,$05,$58,$05,$73,$05,$8E
 	dc.b	$05,$A9,$05,$C4,$05,$DF,$05,$FA,$06,$15,$06,$30,$06,$4B,$06,$66
-dat_060_0007C:
+; ControlResponse2 - The rotation rate for each stick deflection, with flag $100 set (the other
+; table).
+ControlResponse2:
 	dc.b	$00,$5A,$00,$75,$00,$90,$00,$AB,$00,$C6,$00,$E1,$00,$FC,$01,$17
 	dc.b	$01,$32,$01,$4D,$01,$68,$01,$83,$01,$9E,$01,$B9,$01,$D4,$01,$EF
 	dc.b	$02,$0A,$02,$25,$02,$40,$02,$5B,$02,$76,$02,$91,$02,$AC,$02,$C7

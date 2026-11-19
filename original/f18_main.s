@@ -429,8 +429,8 @@
 ; Hunk 59: Text: the head-up display's warning messages (STALL, LOW FUEL - CRITICAL...).
 	include	"src/h059_code_messages.s"
 
-; Hunk 60: Data: a small table used by hunks 0 and 32 (not worked out yet)
-	include	"src/h060_code_table60.s"
+; Hunk 60: ControlResponse: the rotation rate for each stick deflection (two tables).
+	include	"src/h060_code_control_response.s"
 
 ; Hunk 61: Data for the head-up display (hunk 39) (not worked out yet)
 	include	"src/h061_code_hud_data.s"

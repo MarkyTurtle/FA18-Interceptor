@@ -722,10 +722,10 @@ l_017_00AC4:
 sub_017_00ACC:
         clr.b   (LaunchRequest).l               ; 00ACC
         move.b  #$1,(dat_071_00187).l           ; 00AD2
-        move.l  (dat_071_00520).l,d6            ; 00ADA
+        move.l  (WarningFlags).l,d6             ; 00ADA
         andi.l  #$4000,d6                       ; 00AE0
         beq.b   l_017_00B38                     ; 00AE6
-        andi.l  #$ffffbfff,(dat_071_00520).l    ; 00AE8
+        andi.l  #$ffffbfff,(WarningFlags).l     ; 00AE8
         ori.l   #$8,(dat_071_00524).l           ; 00AF2
         bra.b   l_017_00B38                     ; 00AFC
 

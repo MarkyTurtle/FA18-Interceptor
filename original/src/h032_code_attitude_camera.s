@@ -186,7 +186,7 @@ l_032_001F4:
         andi.w  #$40,d0                         ; 00208
         beq.b   l_032_00218                     ; 0020C
         move.l  a1,-(a7)                        ; 0020E
-        jsr     (sub_000_0557C).l               ; 00210
+        jsr     (FlightControls).l              ; 00210
         movea.l (a7)+,a1                        ; 00216
 l_032_00218:
         move.w  $56(a1),d0                      ; 00218

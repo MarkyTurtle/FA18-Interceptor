@@ -16,7 +16,7 @@ sub_018_00000:
         move.w  #$4016,d0                       ; 00016
         jsr     (sub_020_00954).l               ; 0001A
         move.w  #$ffff,(dat_071_00390).l        ; 00020
-        andi.l  #$ffffbdff,(dat_071_00520).l    ; 00028
+        andi.l  #$ffffbdff,(WarningFlags).l     ; 00028
 l_018_00032:
         move.l  (a7)+,d0                        ; 00032
         rts                                     ; 00034

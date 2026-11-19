@@ -493,7 +493,7 @@ sub_004_00708:
         clr.b   $65(a1)                         ; 00736
         move.b  #$9,$2b(a1)                     ; 0073A
         andi.w  #$7fff,$0(a1)                   ; 00740
-        clr.l   (dat_071_00520).l               ; 00746
+        clr.l   (WarningFlags).l                ; 00746
         clr.l   (dat_071_00524).l               ; 0074C
         clr.w   (dat_071_004B0).l               ; 00752
         clr.w   (dat_071_004AE).l               ; 00758

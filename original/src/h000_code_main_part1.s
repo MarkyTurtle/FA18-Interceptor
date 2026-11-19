@@ -4234,7 +4234,7 @@ sub_000_03D4C:
         move.w  (dat_071_004B0).l,d0            ; 03D54
         move.w  d0,-$4(a6)                      ; 03D5A
         andi.w  #$ff,d0                         ; 03D5E
-        move.l  (dat_071_00520).l,-$c(a6)       ; 03D62
+        move.l  (WarningFlags).l,-$c(a6)        ; 03D62
         move.w  (dat_071_0029C).l,d1            ; 03D6A
         move.w  d0,-$6(a6)                      ; 03D70
         btst    #$0,d1                          ; 03D74

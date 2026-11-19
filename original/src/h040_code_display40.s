@@ -741,10 +741,10 @@ sub_040_00A7A:
         movem.l d0-d2,(dat_071_000E6).l         ; 00B42
         rts                                     ; 00B4A
 sub_040_00B4C:
-        move.l  (dat_071_00520).l,d5            ; 00B4C
+        move.l  (WarningFlags).l,d5             ; 00B4C
         andi.l  #$4200,d5                       ; 00B52
         beq.b   l_040_00B6E                     ; 00B58
-        andi.l  #$ffffbdff,(dat_071_00520).l    ; 00B5A
+        andi.l  #$ffffbdff,(WarningFlags).l     ; 00B5A
         ori.l   #$8,(dat_071_00524).l           ; 00B64
 l_040_00B6E:
         rts                                     ; 00B6E
@@ -782,8 +782,8 @@ l_040_00BDA:
         cmpi.w  #$5,d3                          ; 00BDA
         bgt.w   l_040_00C8E                     ; 00BDE
         moveq   #$1,d4                          ; 00BE2
-        ori.l   #$4000,(dat_071_00520).l        ; 00BE4
-        andi.l  #$fffffdff,(dat_071_00520).l    ; 00BEE
+        ori.l   #$4000,(WarningFlags).l         ; 00BE4
+        andi.l  #$fffffdff,(WarningFlags).l     ; 00BEE
         move.w  #$2700,d7                       ; 00BF8
         cmpi.b  #$30,d5                         ; 00BFC
         beq.b   l_040_00C0E                     ; 00C00
@@ -825,7 +825,7 @@ l_040_00C80:
 l_040_00C8E:
         clr.b   (dat_071_00284).l               ; 00C8E
         moveq   #$0,d4                          ; 00C94
-        move.l  (dat_071_00520).l,d6            ; 00C96
+        move.l  (WarningFlags).l,d6             ; 00C96
         move.l  d6,d5                           ; 00C9C
         andi.l  #$4000,d6                       ; 00C9E
         bne.b   l_040_00CC2                     ; 00CA4
@@ -838,8 +838,8 @@ l_040_00CAE:
         beq.b   l_040_00CC2                     ; 00CBC
         bra.w   l_040_00CE0                     ; 00CBE
 l_040_00CC2:
-        andi.l  #$ffffbfff,(dat_071_00520).l    ; 00CC2
-        ori.l   #$200,(dat_071_00520).l         ; 00CCC
+        andi.l  #$ffffbfff,(WarningFlags).l     ; 00CC2
+        ori.l   #$200,(WarningFlags).l          ; 00CCC
         ori.l   #$100,(dat_071_00524).l         ; 00CD6
 l_040_00CE0:
         move.w  #$a,(DrawColour).l              ; 00CE0
@@ -1144,7 +1144,7 @@ l_040_010C4:
         move.w  #$5b,d2                         ; 010CC
         bra.w   l_040_011B0                     ; 010D0
 l_040_010D4:
-        move.l  (dat_071_00520).l,d6            ; 010D4
+        move.l  (WarningFlags).l,d6             ; 010D4
         andi.l  #$4000,d6                       ; 010DA
         bne.b   l_040_010E8                     ; 010E0
         moveq   #$4,d6                          ; 010E2

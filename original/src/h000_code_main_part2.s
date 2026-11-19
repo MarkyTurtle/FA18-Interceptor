@@ -1431,7 +1431,16 @@ l_000_05570:
         unlk    a6                              ; 05576
         rts                                     ; 05578
 	dc.b	$00,$00
-sub_000_0557C:
+
+;-------------------------------------------------------------------------------
+; FlightControls - The flight controls of an aircraft (CurrentObject): its stick deflection
+; (+$28 pitch, +$29 and +$2A the other two axes, signed bytes; the last two zero on the ground,
+; +$04 bit 3) is looked up in a response table (ControlResponse, or ControlResponse2 with flag
+; $100) to give its rotation rates (+$56, +$58, +$5A; sub_000_05CF0...), the pitch limited at
+; low speed (+$6C <= $300). For the player it also checks the fuel (PlayerFuel): the warning
+; bits of WarningFlags below 768,000 and 460,800, and out of fuel at 0.
+;-------------------------------------------------------------------------------
+FlightControls:
         link.w  a6,#$ffe0                       ; 0557C
         movem.l d2-d3/a2-a3,-(a7)               ; 05580
         move.w  (CurrentObject).l,d0            ; 05584
@@ -1459,10 +1468,10 @@ sub_000_0557C:
         btst    #$8,d0                          ; 055DA
         beq.b   l_000_055EA                     ; 055DE
 l_000_055E0:
-        move.l  #dat_060_00000,-$6(a6)          ; 055E0
+        move.l  #ControlResponse,-$6(a6)        ; 055E0
         bra.b   l_000_055F2                     ; 055E8
 l_000_055EA:
-        move.l  #dat_060_0007C,-$6(a6)          ; 055EA
+        move.l  #ControlResponse2,-$6(a6)       ; 055EA
 l_000_055F2:
         movea.l -$a(a6),a0                      ; 055F2
         move.w  (a0),d0                         ; 055F6
@@ -1473,43 +1482,43 @@ l_000_055F2:
         beq.w   l_000_05ADE                     ; 05608
         tst.w   -$2(a6)                         ; 0560C
         bne.w   l_000_056C4                     ; 05610
-        tst.l   (Player_72).l                   ; 05614
+        tst.l   (PlayerFuel).l                  ; 05614
         bgt.b   l_000_0565A                     ; 0561A
         moveq   #$0,d1                          ; 0561C
-        move.l  d1,(Player_72).l                ; 0561E
+        move.l  d1,(PlayerFuel).l               ; 0561E
         btst    #$6,(dat_071_00523).l           ; 05624
         bne.w   l_000_056C4                     ; 0562C
-        move.l  (dat_071_00520).l,d0            ; 05630
+        move.l  (WarningFlags).l,d0             ; 05630
         andi.l  #$fffffffc,d0                   ; 05636
         ori.l   #$40,d0                         ; 0563C
-        move.l  d0,(dat_071_00520).l            ; 05642
+        move.l  d0,(WarningFlags).l             ; 05642
         move.w  (a0),d0                         ; 05648
         andi.w  #$fff7,d0                       ; 0564A
         move.w  d0,(a0)                         ; 0564E
         move.b  #$2,(dat_071_0020E).l           ; 05650
         bra.b   l_000_056C4                     ; 05658
 l_000_0565A:
-        cmpi.l  #$70800,(Player_72).l           ; 0565A
+        cmpi.l  #$70800,(PlayerFuel).l          ; 0565A
         bge.b   l_000_0568A                     ; 05664
         btst    #$1,(dat_071_00523).l           ; 05666
         bne.b   l_000_056C4                     ; 0566E
-        move.l  (dat_071_00520).l,d0            ; 05670
+        move.l  (WarningFlags).l,d0             ; 05670
         andi.l  #$ffffffbe,d0                   ; 05676
         ori.l   #$2,d0                          ; 0567C
-        move.l  d0,(dat_071_00520).l            ; 05682
+        move.l  d0,(WarningFlags).l             ; 05682
         bra.b   l_000_056C4                     ; 05688
 l_000_0568A:
-        cmpi.l  #$bb800,(Player_72).l           ; 0568A
+        cmpi.l  #$bb800,(PlayerFuel).l          ; 0568A
         bge.b   l_000_056BA                     ; 05694
         btst    #$0,(dat_071_00523).l           ; 05696
         bne.b   l_000_056C4                     ; 0569E
-        move.l  (dat_071_00520).l,d0            ; 056A0
+        move.l  (WarningFlags).l,d0             ; 056A0
         andi.l  #$ffffffbd,d0                   ; 056A6
         ori.l   #$1,d0                          ; 056AC
-        move.l  d0,(dat_071_00520).l            ; 056B2
+        move.l  d0,(WarningFlags).l             ; 056B2
         bra.b   l_000_056C4                     ; 056B8
 l_000_056BA:
-        andi.l  #$ffffffbc,(dat_071_00520).l    ; 056BA
+        andi.l  #$ffffffbc,(WarningFlags).l     ; 056BA
 l_000_056C4:
         movea.l (dat_002_00008).l,a0            ; 056C4
         move.b  $28(a0),d0                      ; 056CA
@@ -1886,14 +1895,14 @@ l_000_05AC8:
         addq.l  #$8,a7                          ; 05ADA
         bra.b   l_000_05AE8                     ; 05ADC
 l_000_05ADE:
-        andi.l  #$ffffffbc,(dat_071_00520).l    ; 05ADE
+        andi.l  #$ffffffbc,(WarningFlags).l     ; 05ADE
 l_000_05AE8:
         tst.w   -$2(a6)                         ; 05AE8
         bne.w   l_000_05B72                     ; 05AEC
         move.w  (dat_071_0029C).l,d0            ; 05AF0
         btst    #$6,d0                          ; 05AF6
         beq.b   l_000_05B60                     ; 05AFA
-        tst.l   (Player_72).l                   ; 05AFC
+        tst.l   (PlayerFuel).l                  ; 05AFC
         beq.b   l_000_05B60                     ; 05B02
         move.b  (Player_20).l,d0                ; 05B04
         btst    #$2,d0                          ; 05B0A
@@ -2199,7 +2208,7 @@ l_000_05E80:
         unlk    a6                              ; 05E80
         rts                                     ; 05E82
 sub_000_05E84:
-        tst.l   (Player_72).l                   ; 05E84
+        tst.l   (PlayerFuel).l                  ; 05E84
         beq.b   l_000_05ED2                     ; 05E8A
         tst.b   (dat_071_001A8).l               ; 05E8C
         beq.b   l_000_05ED2                     ; 05E92
@@ -3666,7 +3675,7 @@ l_000_070AC:
         ori.w   #$2,d0                          ; 070B2
         move.w  d0,(dat_071_002A2).l            ; 070B6
 l_000_070BC:
-        tst.l   (Player_72).l                   ; 070BC
+        tst.l   (PlayerFuel).l                  ; 070BC
         bne.w   l_000_07178                     ; 070C2
         move.w  (dat_071_0029E).l,d0            ; 070C6
         ori.w   #$4000,d0                       ; 070CC
@@ -3689,9 +3698,9 @@ l_000_07104:
         move.w  (dat_071_0029E).l,d0            ; 07110
         btst    #$e,d0                          ; 07116
         beq.b   l_000_07178                     ; 0711A
-        move.l  (Player_72).l,d0                ; 0711C
+        move.l  (PlayerFuel).l,d0               ; 0711C
         addi.l  #$190,d0                        ; 07122
-        move.l  d0,(Player_72).l                ; 07128
+        move.l  d0,(PlayerFuel).l               ; 07128
         cmpi.l  #$61a80000,d0                   ; 0712E
         bge.b   l_000_0714E                     ; 07134
         move.w  (dat_071_002A0).l,d0            ; 07136
@@ -3707,7 +3716,7 @@ l_000_0714E:
         move.w  (dat_071_002A0).l,d0            ; 0715E
         andi.w  #$ffef,d0                       ; 07164
         move.w  d0,(dat_071_002A0).l            ; 07168
-        move.l  #$61a80000,(Player_72).l        ; 0716E
+        move.l  #$61a80000,(PlayerFuel).l       ; 0716E
 l_000_07178:
         clr.l   (PlayerVelY).l                  ; 07178
         bra.b   l_000_0718C                     ; 0717E

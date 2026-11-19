@@ -129,7 +129,7 @@ sub_006_00132:
 ; records...
 ;-------------------------------------------------------------------------------
 ResetPlayerAircraft:
-        move.l  #$61a800,(Player_72).l          ; 0015E
+        move.l  #$61a800,(PlayerFuel).l         ; 0015E
         move.b  #$24,(PlayerMissiles).l         ; 00168
         move.w  #$1f4,(Player_60).l             ; 00170
         move.b  #$3,(dat_071_00213).l           ; 00178

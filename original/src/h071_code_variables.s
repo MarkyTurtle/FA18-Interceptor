@@ -1606,7 +1606,9 @@ dat_071_00516:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00520:
+; WarningFlags - Warning bits (bit 0 / bit 1: the fuel's two low levels, bit 6: out of
+; fuel...).
+WarningFlags:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1970,11 +1972,15 @@ dat_071_00B52:
 ;   +$0A b  sub-cell                    +$10 l
 ;   +$14 l  position X (low 22 bits: inside the cell)   +$18 l  Y (height; negative is up)
 ;   +$1C l  position Z (low 22 bits: inside the cell)   +$26 w  (a missile: $14 at launch)
+;   +$22 w  (a weight-like term in the stall check)   +$26 w  responsiveness (at most 15)
+;   +$28 b, +$29 b, +$2A b  stick deflection (signed: pitch and the other two axes)
 ;   +$2B b  the throttle, probably (moved towards dat_071_00240)   +$38 b  (copied to its missiles)
 ;   +$3E l  velocity X   +$42 l  velocity Y   +$46 l  velocity Z
-;   +$4C w  a timer (a missile: $96 / $C8 at launch)      +$50 l, +$54 w, +$56 l, +$5A w
+;   +$4C w  a timer (a missile: $96 / $C8 at launch)
+;   +$50 w, +$52 w, +$54 w  target rotation rates (computer aircraft)
+;   +$56 w, +$58 w, +$5A w  rotation rates: the +$80 matrix turns by them each frame
 ;   +$5F b  missiles left: low nibble AMRAAMs, high nibble Sidewinders ($24 at the start)
-;   +$62 b  type (0 Sidewinder, 1 AMRAAM, '0'-'9' aircraft ...)   +$64 b  more control bits
+;   +$62 b  type (0 Sidewinder, 1 AMRAAM; $1x aircraft flown by rotation rates; $3x ...)   +$64 b  more control bits
 ;   +$63 b  selected weapon (high nibble: $10 gun, $30 AMRAAM, else Sidewinder)
 ;   +$65 b  control bits ($80/$40 the , and . keys, $20/$10 pitch, $08/$04 roll)
 ;   +$66 w  pitch   +$68 w  heading   +$6A w  roll  (1/80 degree; SetAttitude, UpdateAttitude)
@@ -2133,7 +2139,9 @@ Player_6E:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-Player_72:
+; PlayerFuel - The player's fuel (ObjectTable+$72): 6,400,000 at the start; the warnings at
+; 768,000 and 460,800, out of fuel at 0.
+PlayerFuel:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
