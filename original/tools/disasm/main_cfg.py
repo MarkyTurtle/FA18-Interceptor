@@ -1,4 +1,7 @@
-"""f18_main.s: the game's executable, "F-18 Interceptor" on the disk (331,232 bytes, 185 hunks).
+"""The config original/f18_main.s was first made from (kept for the record: the source is edited
+by hand since November 2026, and make.py writes what this gives to tools/disasm/regen/).
+
+f18_main.s: the game's executable, "F-18 Interceptor" on the disk (331,232 bytes, 185 hunks).
 
 Keys are (hunk, offset). The executable's own symbols (HUNK_SYMBOL: mostly the amiga.lib-style
 library call stubs) name their places automatically; NAMES adds to or overrides them.

@@ -29,11 +29,11 @@ original/build.sh                          # the same (Linux, macOS, WSL)
   relocations. That proves every address in the source is a label rather than a number, so the
   source can be changed (and grow) and still make a working program.
 
-To make the source again from its config (`original/tools/disasm/main_cfg.py`):
-
-```
-python3 original/tools/disasm/make.py      # writes original/f18_main.s, then runs the checks
-```
+The source is edited by hand: names and comments go straight into `original/f18_main.s` and
+`original/src/*.s`, and `build.py` checks after every edit (comments too) that it still
+assembles to the original bytes and the same image. `python3 original/tools/disasm/make.py`
+shows how it was first made from its config (into `original/tools/disasm/regen/`, for the record:
+it never writes over the source).
 
 To read the original disk again, from the IPF to the files in `original/disk/files/`:
 

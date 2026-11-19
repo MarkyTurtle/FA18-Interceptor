@@ -343,3 +343,50 @@ class HunkProgram(core.Program):
                 out.append('\tdc.l\t0')
             out += ['\tdc.l\tHUNK_END', '\tendc']
         return out
+
+
+PART_LIMIT = 200_000            # bytes: a file stays well under what GitHub shows in the browser
+
+
+def write_tree(lines, outdir, main='f18_main.s'):
+    """Write the source as f18_main.s (prologue, hunk header, and an include per hunk) and one
+    file per non-empty hunk in src/ (hNNN_type.s); a hunk bigger than PART_LIMIT is split at
+    routine boundaries (hNNN_type_partK.s). Empty hunks stay in f18_main.s."""
+    blocks, cur, head = [], None, []
+    i = 0
+    while i < len(lines):                       # a hunk's block starts at its ';====' heading
+        m = re.match(r'^; Hunk (\d+): (\w+)', lines[i + 1]) if i + 1 < len(lines) and lines[i].startswith(';===') else None
+        if m:
+            if cur is None and head and head[-1] == '':
+                head.pop()
+            cur = [int(m.group(1)), m.group(2).lower(), []]
+            blocks.append(cur)
+            if cur and cur[2] == [] and blocks[-2:-1] and blocks[-2][2] and blocks[-2][2][-1] == '':
+                blocks[-2][2].pop()
+        (cur[2] if cur else head).append(lines[i])
+        i += 1
+    os.makedirs(os.path.join(outdir, 'src'), exist_ok=True)
+    out = head + ['']
+    for n, typ, bl in blocks:
+        body = [l for l in bl]
+        has = any(re.match(r'^\S+:', l) and not re.match(rf'^h{n:03d}(_end)?:', l) for l in body) or \
+            any(l.startswith('\t') and not l.startswith(('\tifnd', '\tendc', '\tdc.l\tHUNK_END', '\tsection', '\torg')) and 'HUNK' not in l for l in body)
+        if not has:
+            out += body + ['']
+            continue
+        parts, p, size = [[]], 0, 0
+        for l in body:
+            # a routine header box (';---' then '; name - ...') or a label starts a new part when full
+            if size > PART_LIMIT and (l.startswith(';---') or (re.match(r'^sub_\S+:', l) and not parts[-1][-1].startswith(';'))):
+                parts.append([])
+                size = 0
+            parts[-1].append(l)
+            size += len(l) + 1
+        names = [f'h{n:03d}_{typ}.s'] if len(parts) == 1 else [f'h{n:03d}_{typ}_part{k + 1}.s' for k in range(len(parts))]
+        for k, (nm, pl) in enumerate(zip(names, parts)):
+            hdr = [f'; F/A-18 Interceptor - hunk {n} ({typ})' + (f', part {k + 1} of {len(parts)}' if len(parts) > 1 else ''),
+                   f'; Included by ../{main}.', '']
+            open(os.path.join(outdir, 'src', nm), 'w').write('\n'.join(hdr + pl) + '\n')
+            out.append(f'\tinclude\t"src/{nm}"')
+        out.append('')
+    open(os.path.join(outdir, main), 'w').write('\n'.join(out).rstrip('\n') + '\n')

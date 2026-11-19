@@ -1,0 +1,24 @@
+; F/A-18 Interceptor - hunk 162 (code)
+; Included by ../f18_main.s.
+
+;===============================================================================
+; Hunk 162: CODE, $14 bytes
+;===============================================================================
+	CODE_HUNK	h162
+sub_162_00000:
+        move.l  d1,-(a7)                        ; 00000
+        jsr     (sub_164_00000).l               ; 00002
+        jsr     (sub_163_00000).l               ; 00008
+        move.l  (a7)+,d1                        ; 0000E
+        rts                                     ; 00010
+	dc.b	$00,$00
+h162_end:
+	ifnd	HUNKEXE				; the hunk's tables, as in the original file
+	dc.l	HUNK_RELOC32
+        dc.l    1,164                           ; 1 longs pointing into hunk 164
+	dc.l	$4
+        dc.l    1,163                           ; 1 longs pointing into hunk 163
+	dc.l	$A
+	dc.l	0
+	dc.l	HUNK_END
+	endc

@@ -6,7 +6,8 @@
 
 | File | What it is |
 |---|---|
-| `f18_main.s` | The game's executable, `F-18 Interceptor`: all 185 hunks, traced and labelled automatically (`tools/disasm/`) |
+| `f18_main.s` | The game's executable, `F-18 Interceptor`: the hunk header, then an include per hunk (the empty hunks are written here). First traced and labelled automatically (`tools/disasm/`), now edited by hand |
+| `src/hNNN_type.s` | One file per hunk (`h000_code_part1.s`-`part3.s`: hunk 0 is split at routine boundaries, so every file stays small enough to read on GitHub) |
 | `f18_hunks.i` | The hunk structure: the macros that let `f18_main.s` assemble either to the exact file (`-Fbin`) or as an ordinary executable (`-Fhunkexe -DHUNKEXE`) |
 | `build.py`, `build.sh` | Assemble `f18_main.s` both ways and check it against the original (`../BUILDING.md`) |
 | `disk/files/` | Every file from the disk, in its folders, as on the disk (`F-18 Interceptor/` is the volume) |
@@ -38,14 +39,17 @@ named by hunk and offset: `sub_HHH_OOOOO` (called), `l_HHH_OOOOO` (jumped to), `
 (data), `hHHH` and `hHHH_end` (a hunk's start and end). Each hunk's relocation and symbol tables
 follow it, as in the file, in the `-Fbin` build only.
 
-**The source is still generated** from its config by `tools/disasm/make.py`, which writes over
-`f18_main.s`: names, headers and comments go into `tools/disasm/main_cfg.py` for now.
+**The source is edited by hand** (since November 2026): it was made by `tools/disasm/make.py`
+from its config, and is now the source itself - names and comments go straight into
+`f18_main.s` and `src/*.s`, and `build.py` checks after every edit that it still assembles to the
+original bytes and the same image. `make.py` is kept for the record (it writes to
+`tools/disasm/regen/`, never over the source).
 
 ## Tools
 
 | | |
 |---|---|
-| `tools/disasm/make.py` | Generates `f18_main.s` from `main_cfg.py` (names, headers, comments, extra entry points) and runs `build.py`'s checks |
+| `tools/disasm/make.py` | How the source was first made (kept for the record): generates it from `main_cfg.py` with the engine into `tools/disasm/regen/` and runs `build.py`'s checks there. The source in this folder is edited by hand and no longer made from it |
 | `tools/disasm/hunk.py` | The hunk layer over the engine: each hunk gets its own virtual base (`$40000000 + n*$100000`) and every relocated long is patched to the virtual address it points at, so the engine traces across hunks and only relocated longs become labels; it writes the source with the hunk structure |
 | `tools/disasm/core.py`, `hw.py` | The disassembly engine (from the New Zealand Story disassembly): traces the code from the entry points (capstone), sweeps for code nothing reaches, checks with vasm that every instruction reassembles to its own bytes (any that does not is written as `dc.w`) |
 | `tools/disasm/hunkfile.py` | Reads a hunk executable block by block (everything needed to write it back byte for byte), and its loaded image for `build.py`'s second check |

@@ -4,9 +4,9 @@ name: original
 
 on:
   push:
-    paths: ['original/*.s', 'original/*.i', 'original/build.*', 'original/tools/disasm/hunkfile.py', '.gitattributes', '.github/workflows/original.yml', '.github/actions/**']
+    paths: ['original/*.s', 'original/src/*.s', 'original/*.i', 'original/build.*', 'original/tools/disasm/hunkfile.py', '.gitattributes', '.github/workflows/original.yml', '.github/actions/**']
   pull_request:
-    paths: ['original/*.s', 'original/*.i', 'original/build.*', 'original/tools/disasm/hunkfile.py', '.gitattributes', '.github/workflows/original.yml', '.github/actions/**']
+    paths: ['original/*.s', 'original/src/*.s', 'original/*.i', 'original/build.*', 'original/tools/disasm/hunkfile.py', '.gitattributes', '.github/workflows/original.yml', '.github/actions/**']
   workflow_dispatch:
 
 env:
