@@ -1978,6 +1978,8 @@ dat_071_00B52:
 ;   +$14 l  position X (low 22 bits: inside the cell)   +$18 l  Y (height; negative is up)
 ;   +$1C l  position Z (low 22 bits: inside the cell)   +$26 w  (a missile: $14 at launch)
 ;   +$22 w  (a weight-like term in the stall check)   +$26 w  responsiveness (at most 15)
+;   +$2C w, +$2E w  the computer pilot's destination: map cell X, Z   +$30 w, +$32 w  in the cell
+;   +$34 l  the destination's height   +$3A b  the route (Routes)
 ;   +$28 b  pitch stick (-20..20)   +$29 b  rudder (-20..20)   +$2A b  roll stick (-60..60)
 ;   +$2B b  the throttle (0-120)   +$39 b  low nibble: the throttle's step   +$38 b  (copied to its missiles)
 ;   +$3E l  velocity X   +$42 l  velocity Y   +$46 l  velocity Z
