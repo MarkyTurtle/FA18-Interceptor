@@ -279,8 +279,8 @@
 ; Hunk 12: More object drawing routines, called through ObjectDrawTable.
 	include	"src/h012_code_draw_objects2.s"
 
-; Hunk 13: The 3D pipeline used by the object drawing (hunks 10, 12): transforming, projecting
-;         and clipping points and faces (not worked out yet)
+; Hunk 13: The shapes' drawing operations: ShapeOps (point, line, filled polygon and special
+;         operations), with hunks 12, 14 and 15.
 	include	"src/h013_code_3d_pipeline.s"
 
 ; Hunk 14: More of the 3D pipeline, used by hunk 13 (not worked out yet)
@@ -302,8 +302,8 @@
 ;         which sets MissionResult.
 	include	"src/h018_code_mission_judge.s"
 
-; Hunk 19: Arithmetic for the 3D pipeline (used by hunks 12-14) (not worked out yet)
-	include	"src/h019_code_3d_maths.s"
+; Hunk 19: Clipping a polygon to the view and filling it (ClipFillPolygon).
+	include	"src/h019_code_polygon_clip.s"
 
 ; Hunk 20: Numbers into text (BinToBCD, PutNumber), the flight log page (ShowFlightLog,
 ;         ShowLogDate), ChecksumPlanes, text pages (SetTextPage), the security check's code
@@ -355,9 +355,9 @@
 ; Hunk 34: Used by hunk 33's outline (not worked out yet)
 	include	"src/h034_code_3d_outline2.s"
 
-; Hunk 35: Drawing with the blitter for the 3D pipeline (used by hunks 13-15, 29, 31) (not
-;         worked out yet)
-	include	"src/h035_code_blitter_draw.s"
+; Hunk 35: Projecting points onto the screen (ProjectPoint: a 90-degree view) and plotting
+;         them, for the 3D drawing.
+	include	"src/h035_code_projection.s"
 
 ; Hunk 36: Drawing: Plot and its variants, DrawLine (the blitter's line mode), the copper lists
 ;         (the double-buffered display).

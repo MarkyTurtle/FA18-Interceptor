@@ -306,7 +306,18 @@ by `HandleKey`, turned into letters by `KeyToAscii`).
   the shape's **drawing list**: entries that test which side of a plane (three of the
   vertices) the camera is on and jump to one branch or the other, and lists of faces and lines.
   This orders the drawing without sorting - the far side of the model is drawn first and the near
-  side over it, like a BSP tree. The details of the list's entries are not worked out yet.
+  side over it, like a BSP tree. The tests (`FacesCamera`) take the normal of three vertices,
+  or a stored point and normal, or one of the model's coordinates.
+* A **face list** is a run of operations from `ShapeOps` (hunk 13), each a word with the top
+  bit set (bit 14 marks the last), followed by its operands: a point (vertex, colour), a line
+  (two vertices, colour), a **filled polygon** (`ShapePolygon`: the vertices, the last marked
+  with bit 15, then the colour - drawn from both sides if the colour has bit 15, from the back
+  only with a second colour), and some 25 special operations not worked out yet. Vertices are
+  byte offsets into `VertexBuffer`. A list can first transform more vertices
+  (`TransformMoreVertices`), so the parts of a model not drawn are not transformed either.
+* **Projection** (`ProjectPoint`, hunk 35): x' = 160 + 160 x / z, y' = 90 + 90 y / z - a view
+  90 degrees wide on the 320 x 180 window; polygons are clipped to it and filled
+  (`ClipFillPolygon`, hunk 19).
 * Animated objects (`DrawAnimated`, `DrawParachute`) change the shape drawn each frame by their
   timer; an aircraft that is hit starts its explosion (`DrawAircraft`).
 * The 3D pipeline (hunks 13-15, 19, 34, 35; its workspace in hunk 72) transforms, projects and
@@ -531,7 +542,7 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
 * The countermeasures (flares, chaff), damage, landing on the carrier (the flags the judges test).
 * The computer pilots' states one by one (hunk 30), their attacks and firing; the object
   records' unknown fields in `ModeTable`.
-* The 3D pipeline (hunks 13-15) and the details of a shape's drawing list (hunk 10).
+* The 3D pipeline's special shape operations (hunks 12-15) and the clipping (hunk 19).
 * The ground, sky and scenery; the map and what is in each cell.
 * The head-up display and most instruments (hunks 39-40).
 * The views (`OutsideView`, `ViewChoice`, `CameraSequence`) and the training's manoeuvres.

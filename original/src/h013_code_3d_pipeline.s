@@ -1,17 +1,21 @@
 ; F/A-18 Interceptor - hunk 13 (code)
-; The 3D pipeline used by the object drawing (hunks 10, 12): transforming, projecting and
-; clipping points and faces (not worked out yet)
+; The shapes' drawing operations: ShapeOps (point, line, filled polygon and special
+; operations), with hunks 12, 14 and 15.
 ; Included by ../f18_main.s.
 
 ;===============================================================================
 ; Hunk 13: CODE, $136C bytes
 ;===============================================================================
 	CODE_HUNK	h013
-dat_013_00000:
-        dc.l    sub_013_00138                   ; 00000
-        dc.l    sub_013_0013C                   ; 00004
+; ShapeOps - The drawing operations of a shape's face lists (DrawModel): a word with the top
+; bit set picks one by its low 14 bits (an offset into this table; bit 14 marks the list's
+; last). 0 nothing, 4 a point (ShapePoint: vertex, colour), 8 a line (vertex, vertex, colour),
+; $C a filled polygon (ShapePolygon), the rest special shapes not worked out yet.
+ShapeOps:
+        dc.l    ShapeNop                        ; 00000
+        dc.l    ShapePoint                      ; 00004
         dc.l    l_013_002CC                     ; 00008
-        dc.l    sub_013_00374                   ; 0000C
+        dc.l    ShapePolygon                    ; 0000C
         dc.l    sub_013_004BE                   ; 00010
         dc.l    sub_013_0096E                   ; 00014
         dc.l    sub_013_009FC                   ; 00018
@@ -86,16 +90,25 @@ dat_013_00000:
         dc.l    sub_014_0023C                   ; 0012C
         dc.l    sub_014_00900                   ; 00130
         dc.l    sub_014_00906                   ; 00134
-sub_013_00138:
+
+;-------------------------------------------------------------------------------
+; ShapeNop - Draws nothing.
+;-------------------------------------------------------------------------------
+ShapeNop:
         moveq   #$0,d0                          ; 00138
         rts                                     ; 0013A
-sub_013_0013C:
+
+;-------------------------------------------------------------------------------
+; ShapePoint - A point: the vertex (an offset into VertexBuffer) and its colour; projected and
+; plotted (PlotPoint3D).
+;-------------------------------------------------------------------------------
+ShapePoint:
         lea.l   (VertexBuffer).l,a3             ; 0013C
         adda.w  (a2)+,a3                        ; 00142
         movem.w (a3),d0-d2                      ; 00144
         move.w  (a2)+,(DrawColour).l            ; 00148
         movem.l a1-a2,-(a7)                     ; 0014E
-        jsr     (sub_035_00024).l               ; 00152
+        jsr     (PlotPoint3D).l                 ; 00152
         movem.l (a7)+,a1-a2                     ; 00158
         rts                                     ; 0015C
 sub_013_0015E:
@@ -184,7 +197,7 @@ sub_013_00222:
         move.w  $4(a3,d2.w),(a0)+               ; 00246
         movea.w (a2)+,a3                        ; 0024A
         move.w  a3,d7                           ; 0024C
-        jsr     (sub_010_00E4A).l               ; 0024E
+        jsr     (FacesCamera).l                 ; 0024E
         bne.b   l_013_00258                     ; 00254
         rts                                     ; 00256
 l_013_00258:
@@ -202,12 +215,12 @@ sub_013_0025E:
         move.w  $4(a3,d2.w),(a0)+               ; 00282
         movea.w (a2)+,a3                        ; 00286
         move.w  a3,d7                           ; 00288
-        jsr     (sub_010_00E4A).l               ; 0028A
+        jsr     (FacesCamera).l                 ; 0028A
         bne.b   l_013_002B0                     ; 00290
         movem.w (dat_072_03C04).l,d0-d2         ; 00292
         move.w  a3,(DrawColour).l               ; 0029A
         movem.l a1-a2,-(a7)                     ; 002A0
-        jsr     (sub_035_00024).l               ; 002A4
+        jsr     (PlotPoint3D).l                 ; 002A4
         movem.l (a7)+,a1-a2                     ; 002AA
         rts                                     ; 002AE
 l_013_002B0:
@@ -247,7 +260,7 @@ l_013_00316:
         rts                                     ; 00318
 sub_013_0031A:
         lea.l   (VertexBuffer).l,a3             ; 0031A
-        lea.l   (dat_072_03C00).l,a0            ; 00320
+        lea.l   (PolygonBuffer).l,a0            ; 00320
         move.l  #$4,(a0)+                       ; 00326
         movem.w (a2)+,d1-d3                     ; 0032C
         move.l  (a3,d1.w),(a0)+                 ; 00330
@@ -274,8 +287,17 @@ sub_013_0031A:
 l_013_0036E:
         movem.w d2-d4,(a0)                      ; 0036E
         bra.b   l_013_003C6                     ; 00372
-sub_013_00374:
-        lea.l   (dat_072_03C00).l,a0            ; 00374
+
+;-------------------------------------------------------------------------------
+; ShapePolygon - A filled polygon: vertex offsets, the last with bit 15 set, then the colour
+; word. With bit 15 set the face is drawn from either side; otherwise it is tested
+; (sub_010_00E4A) and drawn only from the front, unless bit 14 is set and a second colour word
+; follows for its back. A face not drawn, or with every vertex behind the camera, returns -1,
+; which ends the rest of its face list in DrawModel; otherwise it is clipped and filled
+; (ClipFillPolygon).
+;-------------------------------------------------------------------------------
+ShapePolygon:
+        lea.l   (PolygonBuffer).l,a0            ; 00374
         clr.w   (a0)+                           ; 0037A
         addq.w  #$2,a0                          ; 0037C
         lea.l   (VertexBuffer).l,a3             ; 0037E
@@ -312,7 +334,7 @@ l_013_003C6:
         move.w  a3,d7                           ; 003C8
         blt.b   l_013_003F4                     ; 003CA
         addq.w  #$1,-$32(a6)                    ; 003CC
-        jsr     (sub_010_00E4A).l               ; 003D0
+        jsr     (FacesCamera).l                 ; 003D0
         beq.b   l_013_003E4                     ; 003D6
         move.w  a3,d1                           ; 003D8
         andi.w  #$4000,d1                       ; 003DA
@@ -329,7 +351,7 @@ l_013_003E4:
 l_013_003F4:
         move.w  d7,(DrawColour).l               ; 003F4
         movem.l a1-a2/a5,-(a7)                  ; 003FA
-        jsr     (sub_019_00016).l               ; 003FE
+        jsr     (ClipFillPolygon).l             ; 003FE
         movem.l (a7)+,a1-a2/a5                  ; 00404
         rts                                     ; 00408
 l_013_0040A:
@@ -342,7 +364,7 @@ l_013_0040E:
 sub_013_00418:
         movem.l a1/a5,-(a7)                     ; 00418
         clr.w   -$7e(a6)                        ; 0041C
-        clr.w   (dat_072_03C00).l               ; 00420
+        clr.w   (PolygonBuffer).l               ; 00420
         movea.l (a2)+,a4                        ; 00426
 l_013_00428:
         move.w  (a2)+,d1                        ; 00428
@@ -378,7 +400,7 @@ l_013_0046C:
         movea.w (a4)+,a3                        ; 00484
         move.w  a3,d7                           ; 00486
         blt.b   l_013_004A0                     ; 00488
-        jsr     (sub_010_00E4A).l               ; 0048A
+        jsr     (FacesCamera).l                 ; 0048A
         beq.b   l_013_0049E                     ; 00490
         move.w  a3,d1                           ; 00492
         andi.w  #$4000,d1                       ; 00494
@@ -390,7 +412,7 @@ l_013_0049E:
 l_013_004A0:
         move.w  d7,(DrawColour).l               ; 004A0
         move.l  a2,-(a7)                        ; 004A6
-        jsr     (sub_019_00016).l               ; 004A8
+        jsr     (ClipFillPolygon).l             ; 004A8
         or.w    d0,-$7e(a6)                     ; 004AE
         movea.l (a7)+,a2                        ; 004B2
 l_013_004B4:
@@ -499,7 +521,7 @@ l_013_005CE:
         asr.l   d7,d3                           ; 005F2
         movem.w d1-d3,-$14(a6)                  ; 005F4
         move.w  #$0,(DrawColour).l              ; 005FA
-        clr.w   (dat_072_03C00).l               ; 00602
+        clr.w   (PolygonBuffer).l               ; 00602
         bra.b   l_013_00622                     ; 00608
 l_013_0060A:
         movem.l (a7)+,a1/a5                     ; 0060A
@@ -584,7 +606,7 @@ l_013_00672:
         subq.w  #$1,-$e(a6)                     ; 006CC
         bgt.b   l_013_00672                     ; 006D0
         movem.l a2/a4,-(a7)                     ; 006D2
-        jsr     (sub_019_00016).l               ; 006D6
+        jsr     (ClipFillPolygon).l             ; 006D6
         movem.l (a7)+,a2/a4                     ; 006DC
         bra.w   l_013_00612                     ; 006E0
 l_013_006E4:
@@ -607,7 +629,7 @@ sub_013_006E8:
         cmp.w   d3,d2                           ; 0070E
         bgt.b   l_013_006E4                     ; 00710
         movem.l a1-a2/a5,-(a7)                  ; 00712
-        lea.l   (dat_072_03C00).l,a0            ; 00716
+        lea.l   (PolygonBuffer).l,a0            ; 00716
         move.l  #$4,(a0)+                       ; 0071C
         move.w  (dat_071_00442).l,d6            ; 00722
         move.w  (dat_071_00446).l,d7            ; 00728
@@ -661,7 +683,7 @@ l_013_00774:
         add.w   d1,d4                           ; 007A0
         add.w   d2,d5                           ; 007A2
         movem.w d3-d5,$12(a0)                   ; 007A4
-        jsr     (sub_019_00016).l               ; 007AA
+        jsr     (ClipFillPolygon).l             ; 007AA
         or.w    d0,-$7e(a6)                     ; 007B0
         move.w  -$5e(a6),(DrawColour).l         ; 007B4
         tst.b   (dat_071_00156).l               ; 007BC
@@ -704,7 +726,7 @@ l_013_00816:
         add.w   d1,d7                           ; 00836
         adda.w  d2,a4                           ; 00838
         movem.w d3-d7/a4,$c(a0)                 ; 0083A
-        jsr     (sub_019_00016).l               ; 00840
+        jsr     (ClipFillPolygon).l             ; 00840
         or.w    d0,-$7e(a6)                     ; 00846
         move.w  -$5e(a6),(DrawColour).l         ; 0084A
         tst.b   (dat_071_00156).l               ; 00852
@@ -724,7 +746,7 @@ l_013_00816:
         adda.w  d5,a4                           ; 0088A
         movem.w d6-d7/a4,$c(a0)                 ; 0088C
 l_013_00892:
-        jsr     (sub_019_00016).l               ; 00892
+        jsr     (ClipFillPolygon).l             ; 00892
         or.w    d0,-$7e(a6)                     ; 00898
 l_013_0089C:
         movem.l (a7)+,a1-a2/a5                  ; 0089C
@@ -747,7 +769,7 @@ sub_013_008AA:
         neg.w   d2                              ; 008C6
         cmp.w   d3,d2                           ; 008C8
         bgt.b   l_013_008A6                     ; 008CA
-        lea.l   (dat_072_03C00).l,a0            ; 008CC
+        lea.l   (PolygonBuffer).l,a0            ; 008CC
         move.l  #$3,(a0)+                       ; 008D2
         move.w  (dat_071_00442).l,d6            ; 008D8
         move.w  (dat_071_00446).l,d7            ; 008DE
@@ -801,7 +823,7 @@ l_013_00940:
 l_013_00958:
         move.w  d7,(DrawColour).l               ; 00958
         movem.l a1-a2/a5,-(a7)                  ; 0095E
-        jsr     (sub_019_00016).l               ; 00962
+        jsr     (ClipFillPolygon).l             ; 00962
         movem.l (a7)+,a1-a2/a5                  ; 00968
         rts                                     ; 0096C
 sub_013_0096E:
@@ -823,7 +845,7 @@ sub_013_0096E:
         addq.w  #$1,-$32(a6)                    ; 0099C
         movea.l (a2)+,a3                        ; 009A0
         move.w  a3,d7                           ; 009A2
-        jsr     (sub_010_00E4A).l               ; 009A4
+        jsr     (FacesCamera).l                 ; 009A4
         bne.b   l_013_009B0                     ; 009AA
         addq.w  #$1,-$34(a6)                    ; 009AC
 l_013_009B0:
@@ -1187,7 +1209,7 @@ l_013_00D88:
         add.w   -$42(a6),d3                     ; 00DF2
         movem.w d1-d3,-$52(a6)                  ; 00DF6
         clr.w   -$7e(a6)                        ; 00DFC
-        lea.l   (dat_072_03C00).l,a0            ; 00E00
+        lea.l   (PolygonBuffer).l,a0            ; 00E00
         move.l  #$4,(a0)+                       ; 00E06
         clr.w   d4                              ; 00E0C
         clr.w   d5                              ; 00E0E
@@ -1316,7 +1338,7 @@ l_013_00F72:
         sub.w   $4(a3),d3                       ; 00FAA
         movem.w d1-d3,-$52(a6)                  ; 00FAE
         clr.w   -$7e(a6)                        ; 00FB4
-        lea.l   (dat_072_03C00).l,a0            ; 00FB8
+        lea.l   (PolygonBuffer).l,a0            ; 00FB8
         move.l  #$4,(a0)+                       ; 00FBE
         bra.b   l_013_00FC8                     ; 00FC4
 l_013_00FC6:
@@ -1459,7 +1481,7 @@ l_013_01170:
         lea.l   (VertexBuffer).l,a3             ; 01180
         adda.w  (a2)+,a3                        ; 01186
         movem.l a1-a2/a5,-(a7)                  ; 01188
-        lea.l   (dat_072_03C00).l,a0            ; 0118C
+        lea.l   (PolygonBuffer).l,a0            ; 0118C
         move.l  #$4,(a0)+                       ; 01192
         movem.w (a3)+,d2-d7                     ; 01198
         movem.w d2-d7,(a0)                      ; 0119C

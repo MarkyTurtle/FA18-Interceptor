@@ -1,6 +1,6 @@
 ; F/A-18 Interceptor - hunk 35 (code)
-; Drawing with the blitter for the 3D pipeline (used by hunks 13-15, 29, 31) (not worked out
-; yet)
+; Projecting points onto the screen (ProjectPoint: a 90-degree view) and plotting them, for
+; the 3D drawing.
 ; Included by ../f18_main.s.
 
 ;===============================================================================
@@ -16,10 +16,22 @@ l_035_00012:
         moveq   #$0,d0                          ; 00012
         move.l  #$ffffffff,(dat_071_00328).l    ; 00014
         rts                                     ; 0001E
-sub_035_00020:
+
+;-------------------------------------------------------------------------------
+; ProjectPoint - Projects a point (d0 x, d1 y, d2 z, in front of the camera) onto the screen:
+; x' = x * 160 / z + 160, y' = y * 90 / z + 90 - a view 90 degrees wide; points outside it (|x|
+; or |y| not under z) are rejected. The other entries (PlotPoint3D...) do the same at other
+; scales.
+;-------------------------------------------------------------------------------
+ProjectPoint:
         moveq   #-5,d7                          ; 00020
         bra.b   l_035_0003A                     ; 00022
-sub_035_00024:
+
+;-------------------------------------------------------------------------------
+; PlotPoint3D - Projects a point as ProjectPoint, at the drawing's scale (dat_071_00488), and
+; plots it.
+;-------------------------------------------------------------------------------
+PlotPoint3D:
         move.w  (dat_071_00488).l,d7            ; 00024
         bra.b   l_035_0003A                     ; 0002A
 sub_035_0002C:

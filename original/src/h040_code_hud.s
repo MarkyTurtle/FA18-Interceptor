@@ -721,7 +721,7 @@ sub_040_00A7A:
         asr.l   #$8,d4                          ; 00AD6
         move.w  d7,d1                           ; 00AD8
         move.w  d4,d2                           ; 00ADA
-        jsr     (sub_035_00020).l               ; 00ADC
+        jsr     (ProjectPoint).l                ; 00ADC
         movem.w d0-d1,(dat_071_0030E).l         ; 00AE2
         move.w  #$600,d4                        ; 00AEA
         move.w  #$4000,d5                       ; 00AEE

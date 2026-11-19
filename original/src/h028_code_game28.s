@@ -213,7 +213,7 @@ dat_028_00B5C:
 sub_028_00B9C:
         link.w  a6,#$ffba                       ; 00B9C
         clr.b   (dat_071_0026D).l               ; 00BA0
-        clr.w   (dat_072_03C00).l               ; 00BA6
+        clr.w   (PolygonBuffer).l               ; 00BA6
         tst.b   (dat_071_00180).l               ; 00BAC
         bne.b   l_028_00BBE                     ; 00BB2
         move.w  #$2,d0                          ; 00BB4

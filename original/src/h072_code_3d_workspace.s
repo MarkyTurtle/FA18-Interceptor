@@ -35,7 +35,9 @@ dat_072_030A2:
 	dcb.b	1374,$00
 dat_072_03600:
 	dcb.b	1536,$00
-dat_072_03C00:
+; PolygonBuffer - The polygon being drawn: a shift, the vertex count, then the vertices (x, y,
+; z words).
+PolygonBuffer:
 	dc.b	$00
 	dc.b	$00
 dat_072_03C02:

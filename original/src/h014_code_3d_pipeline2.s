@@ -15,7 +15,7 @@ sub_014_00000:
         clr.w   d3                              ; 00016
         movem.w d0-d3,(dat_071_000B6).l         ; 00018
         clr.w   -$7e(a6)                        ; 00020
-        move.l  #$4,(dat_072_03C00).l           ; 00024
+        move.l  #$4,(PolygonBuffer).l           ; 00024
 l_014_0002E:
         move.w  (a2)+,d1                        ; 0002E
         blt.b   l_014_0007C                     ; 00030
@@ -87,7 +87,7 @@ sub_014_00086:
         sub.w   $4(a3),d3                       ; 000F6
         movem.w d1-d3,-$52(a6)                  ; 000FA
         clr.w   -$7e(a6)                        ; 00100
-        lea.l   (dat_072_03C00).l,a0            ; 00104
+        lea.l   (PolygonBuffer).l,a0            ; 00104
         move.l  #$4,(a0)+                       ; 0010A
         bra.b   l_014_00114                     ; 00110
 l_014_00112:
@@ -274,7 +274,7 @@ sub_014_0033E:
         move.w  (a2)+,(DrawColour).l            ; 0033E
         movem.w (a2)+,d0-d2/d7                  ; 00344
         lea.l   (VertexBuffer).l,a3             ; 00348
-        lea.l   (dat_072_03C00).l,a0            ; 0034E
+        lea.l   (PolygonBuffer).l,a0            ; 0034E
         clr.w   (a0)+                           ; 00354
         move.w  #$4,(a0)+                       ; 00356
         move.l  (a3,d1.w),(a0)+                 ; 0035A
@@ -298,7 +298,7 @@ sub_014_0033E:
         and.w   d2,d6                           ; 0039A
         blt.b   l_014_003AE                     ; 0039C
         movem.l a1-a2/a5,-(a7)                  ; 0039E
-        jsr     (sub_019_00016).l               ; 003A2
+        jsr     (ClipFillPolygon).l             ; 003A2
         movem.l (a7)+,a1-a2/a5                  ; 003A8
         rts                                     ; 003AC
 l_014_003AE:
@@ -308,7 +308,7 @@ sub_014_003B2:
         move.w  (a2)+,(DrawColour).l            ; 003B2
         move.w  (a2)+,d7                        ; 003B8
         lea.l   (VertexBuffer).l,a3             ; 003BA
-        lea.l   (dat_072_03C00).l,a0            ; 003C0
+        lea.l   (PolygonBuffer).l,a0            ; 003C0
         clr.w   (a0)+                           ; 003C6
         move.w  #$4,(a0)+                       ; 003C8
         move.l  (a3,d7.w),(a0)+                 ; 003CC
@@ -341,7 +341,7 @@ sub_014_003B2:
         and.w   (a0),d6                         ; 00418
         blt.b   l_014_0042C                     ; 0041A
         movem.l a1-a2/a5,-(a7)                  ; 0041C
-        jsr     (sub_019_00016).l               ; 00420
+        jsr     (ClipFillPolygon).l             ; 00420
         movem.l (a7)+,a1-a2/a5                  ; 00426
         rts                                     ; 0042A
 l_014_0042C:
@@ -353,7 +353,7 @@ sub_014_00430:
         adda.w  (a2)+,a3                        ; 0043C
         cmpi.l  #$ffffff80,(dat_071_00448).l    ; 0043E
         blt.b   l_014_0049C                     ; 00448
-        lea.l   (dat_072_03C00).l,a0            ; 0044A
+        lea.l   (PolygonBuffer).l,a0            ; 0044A
         clr.w   (a0)+                           ; 00450
         move.w  #$4,(a0)+                       ; 00452
         movem.w (a3)+,d2-d7                     ; 00456
@@ -376,7 +376,7 @@ sub_014_00430:
         and.w   $16(a0),d7                      ; 00486
         blt.b   l_014_0049C                     ; 0048A
         movem.l a1-a2/a5,-(a7)                  ; 0048C
-        jsr     (sub_019_00016).l               ; 00490
+        jsr     (ClipFillPolygon).l             ; 00490
         movem.l (a7)+,a1-a2/a5                  ; 00496
         rts                                     ; 0049A
 l_014_0049C:
@@ -389,7 +389,7 @@ sub_014_004A0:
         cmpi.l  #$ffffff80,(dat_071_00448).l    ; 004AE
         blt.b   l_014_0049C                     ; 004B8
         movem.l a1-a2/a5,-(a7)                  ; 004BA
-        lea.l   (dat_072_03C00).l,a0            ; 004BE
+        lea.l   (PolygonBuffer).l,a0            ; 004BE
         clr.w   (a0)+                           ; 004C4
         move.w  #$4,(a0)+                       ; 004C6
         movem.w (a3),d2-d7                      ; 004CA
@@ -430,7 +430,7 @@ sub_014_004A0:
         and.w   -$2(a0),d7                      ; 00520
         and.w   $4(a0),d7                       ; 00524
         blt.b   l_014_00536                     ; 00528
-        jsr     (sub_019_00016).l               ; 0052A
+        jsr     (ClipFillPolygon).l             ; 0052A
         movem.l (a7)+,a1-a2/a5                  ; 00530
         rts                                     ; 00534
 l_014_00536:
@@ -488,7 +488,7 @@ l_014_005C8:
         and.w   -$6(a0),d7                      ; 005DA
         and.w   (a0),d7                         ; 005DE
         blt.b   l_014_00622                     ; 005E0
-        jsr     (sub_019_00016).l               ; 005E2
+        jsr     (ClipFillPolygon).l             ; 005E2
         movem.l (a7)+,a1-a2/a5                  ; 005E8
         rts                                     ; 005EC
 l_014_005EE:
@@ -507,7 +507,7 @@ l_014_005EE:
         and.w   -$8(a0),d4                      ; 0060C
         and.w   -$2(a0),d4                      ; 00610
         blt.b   l_014_00622                     ; 00614
-        jsr     (sub_019_00016).l               ; 00616
+        jsr     (ClipFillPolygon).l             ; 00616
         movem.l (a7)+,a1-a2/a5                  ; 0061C
         rts                                     ; 00620
 l_014_00622:
@@ -600,7 +600,7 @@ l_014_006DE:
         and.w   -$8(a0),d2                      ; 00714
         and.w   -$2(a0),d2                      ; 00718
         blt.b   l_014_006D2                     ; 0071C
-        jsr     (sub_019_00016).l               ; 0071E
+        jsr     (ClipFillPolygon).l             ; 0071E
         movem.l (a7)+,a1-a2/a5                  ; 00724
         rts                                     ; 00728
 l_014_0072A:
@@ -634,7 +634,7 @@ l_014_0072A:
         and.w   -$8(a0),d2                      ; 0076C
         and.w   -$2(a0),d2                      ; 00770
         blt.b   l_014_00782                     ; 00774
-        jsr     (sub_019_00016).l               ; 00776
+        jsr     (ClipFillPolygon).l             ; 00776
         movem.l (a7)+,a1-a2/a5                  ; 0077C
         rts                                     ; 00780
 l_014_00782:

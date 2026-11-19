@@ -67,7 +67,7 @@ l_012_0007A:
         asr.w   d7,d2                           ; 000B8
 l_012_000BA:
         movem.w d0-d2,-$86(a6)                  ; 000BA
-        clr.w   (dat_072_03C00).l               ; 000C0
+        clr.w   (PolygonBuffer).l               ; 000C0
         lea.l   (VertexBuffer).l,a3             ; 000C6
         lea.l   (dat_071_005A8).l,a2            ; 000CC
         lea.l   (a2),a4                         ; 000D2
@@ -140,7 +140,7 @@ l_012_00168:
         addq.w  #$1,-$6a(a6)                    ; 00180
 l_012_00184:
         andi.w  #$3fff,d0                       ; 00184
-        lea.l   (dat_013_00000).l,a0            ; 00188
+        lea.l   (ShapeOps).l,a0                 ; 00188
         movea.l (a0,d0.w),a0                    ; 0018E
         jsr     (a0)                            ; 00192
         tst.w   d0                              ; 00194
@@ -186,7 +186,7 @@ l_012_001E4:
         addq.w  #$1,-$6a(a6)                    ; 001EE
 l_012_001F2:
         andi.w  #$3fff,d0                       ; 001F2
-        lea.l   (dat_013_00000).l,a0            ; 001F6
+        lea.l   (ShapeOps).l,a0                 ; 001F6
         movea.l (a0,d0.w),a0                    ; 001FC
         jsr     (a0)                            ; 00200
         tst.w   d0                              ; 00202
@@ -248,7 +248,7 @@ l_012_0024C:
         rts                                     ; 00298
 sub_012_0029A:
         move.w  (a2)+,d7                        ; 0029A
-        lea.l   (dat_072_03C00).l,a0            ; 0029C
+        lea.l   (PolygonBuffer).l,a0            ; 0029C
         move.w  #$0,(a0)+                       ; 002A2
         lea.l   (VertexBuffer).l,a3             ; 002A6
         move.w  d7,(a0)+                        ; 002AC
@@ -275,7 +275,7 @@ l_012_002C8:
         tst.w   d6                              ; 002DE
         blt.b   l_012_002EE                     ; 002E0
         move.l  a2,-(a7)                        ; 002E2
-        jsr     (sub_019_00016).l               ; 002E4
+        jsr     (ClipFillPolygon).l             ; 002E4
         movea.l (a7)+,a2                        ; 002EA
         rts                                     ; 002EC
 l_012_002EE:
@@ -283,7 +283,7 @@ l_012_002EE:
         rts                                     ; 002F0
 sub_012_002F2:
         move.w  (a2)+,d7                        ; 002F2
-        lea.l   (dat_072_03C00).l,a0            ; 002F4
+        lea.l   (PolygonBuffer).l,a0            ; 002F4
         move.w  #$0,(a0)+                       ; 002FA
         lea.l   (VertexBuffer).l,a3             ; 002FE
         move.w  d7,(a0)+                        ; 00304
@@ -306,7 +306,7 @@ l_012_0031A:
         tst.w   d6                              ; 0032A
         blt.b   l_012_0033A                     ; 0032C
         move.l  a2,-(a7)                        ; 0032E
-        jsr     (sub_019_00016).l               ; 00330
+        jsr     (ClipFillPolygon).l             ; 00330
         movea.l (a7)+,a2                        ; 00336
         rts                                     ; 00338
 l_012_0033A:
@@ -314,7 +314,7 @@ l_012_0033A:
         rts                                     ; 0033C
 sub_012_0033E:
         move.w  (a2)+,d7                        ; 0033E
-        lea.l   (dat_072_03C00).l,a0            ; 00340
+        lea.l   (PolygonBuffer).l,a0            ; 00340
         clr.w   (a0)+                           ; 00346
         lea.l   (VertexBuffer).l,a3             ; 00348
         adda.w  (a2)+,a3                        ; 0034E
@@ -349,7 +349,7 @@ l_012_00388:
 l_012_00398:
         movem.w d1-d2,(dat_071_000B6).l         ; 00398
         move.l  a2,-(a7)                        ; 003A0
-        jsr     (sub_019_00016).l               ; 003A2
+        jsr     (ClipFillPolygon).l             ; 003A2
         movea.l (a7)+,a2                        ; 003A8
         move.w  #$f,d1                          ; 003AA
         move.w  #$ffff,d2                       ; 003AE

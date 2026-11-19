@@ -1,5 +1,5 @@
 ; F/A-18 Interceptor - hunk 19 (code)
-; Arithmetic for the 3D pipeline (used by hunks 12-14) (not worked out yet)
+; Clipping a polygon to the view and filling it (ClipFillPolygon).
 ; Included by ../f18_main.s.
 
 ;===============================================================================
@@ -12,12 +12,17 @@ l_019_00004:
         move.w  #$1f,(dat_071_0036E).l          ; 00004
         jsr     (Nop).l                         ; 0000C
         bra.w   l_019_00718                     ; 00012
-sub_019_00016:
+
+;-------------------------------------------------------------------------------
+; ClipFillPolygon - Clips the polygon in PolygonBuffer to the view (320 x 180) and fills it in
+; DrawColour.
+;-------------------------------------------------------------------------------
+ClipFillPolygon:
         nop                                     ; 00016
 sub_019_00018:
         link.w  a6,#$fffa                       ; 00018
         clr.w   d7                              ; 0001C
-        lea.l   (dat_072_03C00).l,a0            ; 0001E
+        lea.l   (PolygonBuffer).l,a0            ; 0001E
         move.w  (a0)+,-$2(a6)                   ; 00024
         move.w  (a0)+,d0                        ; 00028
         cmpi.w  #$3,d0                          ; 0002A

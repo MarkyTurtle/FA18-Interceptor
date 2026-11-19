@@ -358,7 +358,7 @@ sub_029_00568:
         tst.b   (dat_071_00227).l               ; 00568
         blt.b   l_029_00590                     ; 0056E
         movem.w (dat_072_04202).l,d0-d2         ; 00570
-        jsr     (sub_035_00020).l               ; 00578
+        jsr     (ProjectPoint).l                ; 00578
         blt.b   l_029_00590                     ; 0057E
         move.w  #$3,(DrawColour).l              ; 00580
         lea.l   dat_029_0055E(pc),a1            ; 00588
@@ -374,7 +374,7 @@ sub_029_00592:
         swap    d4                              ; 005A8
         jsr     (sub_028_010FA).l               ; 005AA
         movem.w (dat_072_04202).l,d0-d2         ; 005B0
-        jsr     (sub_035_00020).l               ; 005B8
+        jsr     (ProjectPoint).l                ; 005B8
         bge.b   l_029_005C8                     ; 005BE
         clr.b   (dat_071_0027F).l               ; 005C0
         bra.b   l_029_00590                     ; 005C6

@@ -242,7 +242,7 @@ l_010_002A0:
         jsr     (sub_013_00B62).l               ; 002A4
         blt.w   l_010_00168                     ; 002AA
 l_010_002AE:
-        move.w  #$0,(dat_072_03C00).l           ; 002AE
+        move.w  #$0,(PolygonBuffer).l           ; 002AE
         lea.l   (VertexBuffer).l,a3             ; 002B6
         move.b  -$64(a6),d6                     ; 002BC
         btst    #$0,d6                          ; 002C0
@@ -406,7 +406,7 @@ l_010_00428:
         bne.b   l_010_004B6                     ; 0048C
         movem.w d0-d1/d4/d7,-(a7)               ; 0048E
         movem.w -$6(a3),d0-d2                   ; 00492
-        jsr     (sub_035_00020).l               ; 00498
+        jsr     (ProjectPoint).l                ; 00498
         sub.w   (ViewX).l,d0                    ; 0049E
         sub.w   (ViewY).l,d1                    ; 004A4
         movem.w d0-d1,(TargetScreenPos).l       ; 004AA
@@ -996,10 +996,10 @@ l_010_009DE:
         bra.b   l_010_00A48                     ; 00A36
 l_010_00A38:
         movem.w (a5)+,d0-d5                     ; 00A38
-        jsr     (sub_010_00E64).l               ; 00A3C
+        jsr     (PlaneFacesCamera).l            ; 00A3C
         bra.b   l_010_00A48                     ; 00A42
 l_010_00A44:
-        bsr.w   sub_010_00F0A                   ; 00A44
+        bsr.w   AxisPlaneTest                   ; 00A44
 l_010_00A48:
         beq.b   l_010_00A56                     ; 00A48
         movea.l -$2c(a6),a3                     ; 00A4A
@@ -1162,7 +1162,7 @@ l_010_00BF0:
         addq.w  #$1,-$6a(a6)                    ; 00BF8
 l_010_00BFC:
         andi.w  #$3fff,d0                       ; 00BFC
-        lea.l   (dat_013_00000).l,a0            ; 00C00
+        lea.l   (ShapeOps).l,a0                 ; 00C00
         movea.l (a0,d0.w),a0                    ; 00C06
         jsr     (a0)                            ; 00C0A
         blt.w   l_010_00AC2                     ; 00C0C
@@ -1181,7 +1181,7 @@ l_010_00C2E:
         move.w  (a2)+,d0                        ; 00C2E
         ble.b   l_010_00C38                     ; 00C30
         move.w  (a2)+,d7                        ; 00C32
-        bsr.w   sub_010_00C62                   ; 00C34
+        bsr.w   TransformMoreVertices           ; 00C34
 l_010_00C38:
         move.w  (a2)+,d0                        ; 00C38
         move.w  d0,d1                           ; 00C3A
@@ -1190,13 +1190,19 @@ l_010_00C38:
         addq.w  #$1,-$6a(a6)                    ; 00C42
 l_010_00C46:
         andi.w  #$3fff,d0                       ; 00C46
-        lea.l   (dat_013_00000).l,a0            ; 00C4A
+        lea.l   (ShapeOps).l,a0                 ; 00C4A
         movea.l (a0,d0.w),a0                    ; 00C50
         jsr     (a0)                            ; 00C54
         blt.w   l_010_00AC2                     ; 00C56
         or.w    d0,-$7c(a6)                     ; 00C5A
         bra.w   l_010_00BD2                     ; 00C5E
-sub_010_00C62:
+
+;-------------------------------------------------------------------------------
+; TransformMoreVertices - Transforms a further group of a shape's vertices into VertexBuffer
+; when a face list needs them (a count and an offset before the list), so parts not drawn cost
+; nothing.
+;-------------------------------------------------------------------------------
+TransformMoreVertices:
         lea.l   (VertexBuffer).l,a3             ; 00C62
         move.l  a1,-(a7)                        ; 00C68
         move.w  d0,-$a(a6)                      ; 00C6A
@@ -1399,7 +1405,14 @@ l_010_00DFA:
         bgt.b   l_010_00DFA                     ; 00E44
         movea.l (a7)+,a1                        ; 00E46
         rts                                     ; 00E48
-sub_010_00E4A:
+
+;-------------------------------------------------------------------------------
+; FacesCamera - The side test of DrawModel's drawing list and of ShapePolygon: returns d7 = 1
+; when the camera is on the front of the plane - from three transformed vertices (their cross
+; product dotted with the first; flags $3000 clear), from a stored point and normal
+; (PlaneFacesCamera), or against one of the model's coordinates (flags $C00, AxisPlaneTest).
+;-------------------------------------------------------------------------------
+FacesCamera:
         move.w  d7,d1                           ; 00E4A
         andi.w  #$c00,d1                        ; 00E4C
         bne.w   l_010_00F02                     ; 00E50
@@ -1409,7 +1422,12 @@ sub_010_00E54:
         movea.l -$2c(a6),a0                     ; 00E5A
         adda.w  (a2)+,a0                        ; 00E5E
         movem.w (a0),d0-d5                      ; 00E60
-sub_010_00E64:
+
+;-------------------------------------------------------------------------------
+; PlaneFacesCamera - The side test for a plane given as a point and a normal (6 words): the
+; normal dotted with the camera's offset from the point.
+;-------------------------------------------------------------------------------
+PlaneFacesCamera:
         move.w  (dat_071_00488).l,d7            ; 00E64
         asr.w   d7,d0                           ; 00E6A
         asr.w   d7,d1                           ; 00E6C
@@ -1480,7 +1498,12 @@ l_010_00EFE:
 l_010_00F02:
         move.w  -$4(a2),d0                      ; 00F02
         andi.w  #$3fff,d0                       ; 00F06
-sub_010_00F0A:
+
+;-------------------------------------------------------------------------------
+; AxisPlaneTest - The side test against one coordinate of the model (the flags' bits 10-11 pick
+; which).
+;-------------------------------------------------------------------------------
+AxisPlaneTest:
         movea.l (dat_071_00402).l,a0            ; 00F0A
         move.w  d7,d1                           ; 00F10
         andi.w  #$c00,d7                        ; 00F12

@@ -46,9 +46,12 @@ before each. Some parts run only every 2nd, 4th, 8th, 16th or 32nd frame (`Frame
 | 33 | The 3D view's outline (`PutEdge`, the view's corners: 320 x 180) |
 | 18 | Judging the missions (`JudgeMission`, `JudgeF1`..., `CheckMissionTargets`): sets `MissionResult` |
 | 26 | Setting up a mode (`SetupMode`), the camera's opening moves (`FlyBySetup`) |
-| 7, 9-16, 19, 21, 23-25, 27-29, 31, 34, 38-40 | The rest of the game: flight model, missions, terrain, instruments - being worked out |
+| 10 | `DrawModel`: drawing a 3D model (levels of detail, vertices, the plane-test drawing list) |
+| 13, 19, 35 | The shapes' operations (`ShapeOps`: point, line, `ShapePolygon`...), `ClipFillPolygon`, `ProjectPoint` |
+| 38-40 | The radar, the instruments' readouts, the target readout, the text printer, the head-up display |
+| 7, 9, 11, 12, 14, 15, 21, 23-25, 28, 29, 31, 34 | The rest of the game: terrain, scenery, the special shapes - being worked out |
 | 20 | Number and text output, the flight log page (`ShowFlightLog`, `ShowLogDate`), `ChecksumPlanes`; the text pages (`SetTextPage`); the security check (`MakeSecurityCode`, `CheckSecurityAnswer`) |
-| 35, 36 | Drawing: `Plot` and its variants, `DrawLine` (blitter line mode), the copper lists (double-buffered display) |
+| 35, 36 | Drawing: the projection, `Plot` and its variants, `DrawLine` (blitter line mode), the copper lists (double-buffered display) |
 | 37 | Blitter copies: the title picture and the instrument panel onto the screen |
 | 41-58 | The 3D models (see GAME.md: 41 the F/A-18, 51 missiles, F-16 and MiG, 52 the carrier, 55 the cruise missile, 57 the airliner, 58 animated objects...), drawn by `DrawModel` (hunk 10) through `ModelTable` (hunk 16) |
 | 59-70 | Data tables (some partly mistaken for code by the first trace) |
