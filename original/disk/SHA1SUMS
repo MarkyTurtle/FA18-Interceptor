@@ -1,0 +1,55 @@
+# SHA-1 of the original disk, its image and every file on it (paths under disk/)
+a4285482aee97cf5243bcfc5ac0e3cde6a1d4e69  F18Interceptor.ipf
+802f43c7f0822942f3ee68c9a8308eaa4711b859  F18Interceptor.adf (decoded by tools/disk/ipf_to_adf.py)
+711fc7d769c52d9fa6e5ff046fb1447ae885c223  files/F-18 Interceptor/.info
+c3b515b6f58b4b91f4f2d142b7a58b8c4106dd69  files/F-18 Interceptor/Disk.info
+0f64b302d22f4d1df1872d2f817a507d193c3ee8  files/F-18 Interceptor/F-18 Interceptor
+ea954070ddb053560932dfc7227fff08f8b494e5  files/F-18 Interceptor/F-18 Interceptor.info
+6737ea03160b9ffd153fc2a1f4212c4af05ca260  files/F-18 Interceptor/c/EndCLI
+6ba719e8d720f1230fb0771f872003b8d46aee11  files/F-18 Interceptor/c/LoadWb
+52bd1dfad9cdd1dbb914e9cd7f416ec89852ccd9  files/F-18 Interceptor/c/Prompt
+8f8416950f482c19518a3a0b36fa3cba43b68639  files/F-18 Interceptor/c/binddrivers
+0dee18c74c0e1e1ce1082d4bc23061cdbf2763ba  files/F-18 Interceptor/c/cleanup
+ad00c8bfa615c362e2d1f9ffde7a3215edfebd40  files/F-18 Interceptor/c/newcli
+b57262bfda21b157d711d67a40b38e5e558d6427  files/F-18 Interceptor/c/rename
+eb12697b2ef3c28fa7960d732a17d7cfa06a78a8  files/F-18 Interceptor/config
+f33aa6f715adddeec97c44e09223fbd8d33f9ea1  files/F-18 Interceptor/devs/Mountlist
+fc2a2e046992fc75d56fa847b9073d41e3ea45dd  files/F-18 Interceptor/devs/keymaps/cdn
+dcb7f9df49981c202219ae0ae4f6f7923c18f17c  files/F-18 Interceptor/devs/keymaps/d
+a430570ca8aad189b6143ed76e6ac0d7fadda716  files/F-18 Interceptor/devs/keymaps/dk
+64871596ff722a96071dc816b72d90ffec6773a6  files/F-18 Interceptor/devs/keymaps/e
+5658a8958085ae22adb9087658a424f1223ddeba  files/F-18 Interceptor/devs/keymaps/f
+f62e3766df63895894f5a6872444013c157bc3f7  files/F-18 Interceptor/devs/keymaps/gb
+09761cb9bcd4b8e14d3e0e2a4ac414a0ed8eb000  files/F-18 Interceptor/devs/keymaps/i
+3df0b888fed8ae169baba06d7bd536d163e0b7ad  files/F-18 Interceptor/devs/keymaps/is
+a33713b4c39bdc07821a2019efe1540c5cb1da67  files/F-18 Interceptor/devs/keymaps/n
+29d17260da2c681a93db0dd070d224fdc7e36908  files/F-18 Interceptor/devs/keymaps/s
+9da3a427a6342a894a83ec7dddf62ce2a1420ee9  files/F-18 Interceptor/devs/keymaps/usa0
+78c279535442396db12af995252b4c514e854053  files/F-18 Interceptor/devs/keymaps/usa2
+ee41778a9d8cdfc2016a93590158877c02937b37  files/F-18 Interceptor/devs/system-configuration
+30ede410472723c95338ed2c870916ad275e9706  files/F-18 Interceptor/l/Disk-Validator
+d7e4ddab8cbd94f751a6ffd4bc93cfe07cb4cae2  files/F-18 Interceptor/l/Port-Handler
+5563f37a1749f0c1d1ba7ad33ecdf5e3aa7fd0b8  files/F-18 Interceptor/l/Ram-Handler
+130af7c1e7b140e83a5490be7c6641cc33b07f0e  files/F-18 Interceptor/libs/icon.library
+a03730878f1bc215f40b6d22d94b54c10a6e7109  files/F-18 Interceptor/libs/info.library
+f85e2bd9b72b5bc24847541425ac23813f8f50e2  files/F-18 Interceptor/libs/version.library
+b86fb5000e2bd4d50c3ca879b3f299f919dae667  files/F-18 Interceptor/pix/frnt5
+b203f2d268ec8261e33b5e5a95af13a05fc3e31f  files/F-18 Interceptor/pix/inst5
+9d9b79a6d7bc5bc6ce843860f966bcd8b4369252  files/F-18 Interceptor/pix/splsh
+64ada691312428fee13cb600ba1f2acc61c6c866  files/F-18 Interceptor/s/startup-sequence
+65e109a23ae731d3b8973909ad3935aa4e7a0d4f  files/F-18 Interceptor/text/text201
+b91f4d6297b0f4277fc95ac0c9f5630ae6f03dc9  files/F-18 Interceptor/text/textcpt
+500c4d42c442270ec152afa4d89aff7dfea6e61a  files/F-18 Interceptor/text/textctl
+41427a9b9dec0d499a6f5952bd5a8350fb309710  files/F-18 Interceptor/text/textegn
+be1015aa832230401b66481738a53a7bbf0150da  files/F-18 Interceptor/text/textegn2
+f7b359164d929bba96ab98183b54ca639fbec302  files/F-18 Interceptor/text/textger
+9bd9eb53d0bbc85275462d0a331465f68b399ece  files/F-18 Interceptor/text/texti0a
+5d35bf080e2b91920b8002bd381dc882e1747ae8  files/F-18 Interceptor/text/texti0b
+f704b59908f0de044c4e67e5e7b652da0fb3d62d  files/F-18 Interceptor/text/texti1
+2c2b7d6117cb394ca91e7f45b79b247a1dd0d6e8  files/F-18 Interceptor/text/texti2
+7d17372939dde0e7193e3ed8a3a59b6258930cb4  files/F-18 Interceptor/text/texti3
+0c5141e7251d538173d8f95ee7f586661bf08b7f  files/F-18 Interceptor/text/texti4
+d824dc544cfcca4e6909b38d8c2c79ae11c20e95  files/F-18 Interceptor/text/texti5
+07e98c9c8d109c09ebc92ab73cfd25215f03953e  files/F-18 Interceptor/text/textply
+825c88ad48d340ba3bd871befb3c77fb6245d1cf  files/F-18 Interceptor/text/texttre
+883b7d13300b5ab0c80f8f27341718f26a1b6d5c  files/F-18 Interceptor/text/textwnd

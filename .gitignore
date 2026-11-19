@@ -1,0 +1,15 @@
+__pycache__/
+*.adf
+*.ipf
+.venv/
+# original/build.py outputs
+/original/f18_main.exe
+/original/f18_check.exe
+# tools/disasm/make.py trace state
+/original/tools/disasm/*_trace.json
+# built tools (sources fetched by their build scripts)
+/original/tools/disk/capsimg/
+/original/tools/disk/capsimg_build.log
+/original/tools/disk/dump
+# the enhanced build
+/enhanced/build/

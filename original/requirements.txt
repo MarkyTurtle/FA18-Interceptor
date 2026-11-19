@@ -1,0 +1,3 @@
+# The original game's Python packages. build.py (and build.sh) need none of them: only vasm.
+# They are for the tools: the disassembly tools (capstone). Tested with the versions noted.
+capstone>=5.0     # (tested 5.0.9)
