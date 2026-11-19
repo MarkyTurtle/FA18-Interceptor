@@ -76,9 +76,11 @@ dat_073_00210:
 ; 0.
 VisibleObjects:
 	dcb.b	32,$00
-dat_073_00232:
+; FarSceneryList0 - The list built from SceneryMap0 on the coarse grid.
+FarSceneryList0:
 	dcb.b	1680,$00
-dat_073_008C2:
+; FarSceneryList1 - The list built from SceneryMap1 on the coarse grid.
+FarSceneryList1:
 	dcb.b	1680,$00
 ; SceneryList - The scenery to draw: entries of 24 bytes (flags and number word, the model, x /
 ; y / z words, a long...), ending with $FFFF.

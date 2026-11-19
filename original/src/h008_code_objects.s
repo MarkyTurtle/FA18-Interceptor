@@ -545,11 +545,11 @@ l_008_00612:
         asr.w   #$2,d1                          ; 00626
         asr.w   #$2,d2                          ; 00628
 l_008_0062A:
-        move.w  d1,(dat_071_00318).l            ; 0062A
-        move.w  d2,(dat_071_0031A).l            ; 00630
+        move.w  d1,(ViewBlockX).l               ; 0062A
+        move.w  d2,(ViewBlockZ).l               ; 00630
         move.b  #$1,(dat_071_00229).l           ; 00636
-        clr.b   (dat_071_00234).l               ; 0063E
-        clr.b   (dat_071_00235).l               ; 00644
+        clr.b   (SceneryDetailed).l             ; 0063E
+        clr.b   (SceneryMapOne).l               ; 00644
         btst    #$0,d0                          ; 0064A
         beq.b   l_008_00664                     ; 0064E
         bclr    #$0,(RedrawFlags).l             ; 00650
@@ -559,11 +559,11 @@ l_008_00664:
         btst    #$1,(RedrawFlags).l             ; 00664
         beq.b   l_008_0068A                     ; 0066C
         bclr    #$1,(RedrawFlags).l             ; 0066E
-        move.b  #$1,(dat_071_00235).l           ; 00676
+        move.b  #$1,(SceneryMapOne).l           ; 00676
         bsr.w   BuildSceneryList                ; 0067E
         btst    #$7,(RedrawFlags).l             ; 00682
 l_008_0068A:
-        move.b  #$1,(dat_071_00234).l           ; 0068A
+        move.b  #$1,(SceneryDetailed).l         ; 0068A
         btst    #$2,(RedrawFlags).l             ; 00692
         beq.b   l_008_006A4                     ; 0069A
         bclr    #$2,(RedrawFlags).l             ; 0069C
@@ -675,14 +675,14 @@ sub_008_007BA:
         or.b    d7,$1e1(a0)                     ; 00846
         rts                                     ; 0084A
 sub_008_0084C:
-        clr.b   (dat_071_00235).l               ; 0084C
+        clr.b   (SceneryMapOne).l               ; 0084C
         move.w  (dat_071_0037C).l,(dat_071_0037A).l ; 00852
         bra.b   l_008_00870                     ; 0085C
 sub_008_0085E:
-        move.b  #$1,(dat_071_00235).l           ; 0085E
+        move.b  #$1,(SceneryMapOne).l           ; 0085E
         move.w  (dat_071_0037E).l,(dat_071_0037A).l ; 00866
 l_008_00870:
-        clr.b   (dat_071_00234).l               ; 00870
+        clr.b   (SceneryDetailed).l             ; 00870
         clr.b   (dat_071_0028B).l               ; 00876
         move.l  (dat_071_00448).l,d0            ; 0087C
         neg.l   d0                              ; 00882
@@ -698,12 +698,12 @@ l_008_00896:
         asl.w   #$8,d0                          ; 008A4
         move.w  d0,(dat_071_00382).l            ; 008A6
 l_008_008AC:
-        tst.b   (dat_071_00235).l               ; 008AC
+        tst.b   (SceneryMapOne).l               ; 008AC
         bne.b   l_008_008BC                     ; 008B2
-        lea.l   (dat_073_00232).l,a0            ; 008B4
+        lea.l   (FarSceneryList0).l,a0          ; 008B4
         bra.b   l_008_008C2                     ; 008BA
 l_008_008BC:
-        lea.l   (dat_073_008C2).l,a0            ; 008BC
+        lea.l   (FarSceneryList1).l,a0          ; 008BC
 l_008_008C2:
         move.w  (dat_071_0037A).l,d0            ; 008C2
         adda.w  d0,a0                           ; 008C8
@@ -772,12 +772,12 @@ l_008_00988:
         ext.w   d7                              ; 009B6
         move.w  d7,(CurrentObject).l            ; 009B8
         jsr     (a2)                            ; 009BE
-        tst.b   (dat_071_00235).l               ; 009C0
+        tst.b   (SceneryMapOne).l               ; 009C0
         bne.b   l_008_009D0                     ; 009C6
-        lea.l   (dat_073_00232).l,a0            ; 009C8
+        lea.l   (FarSceneryList0).l,a0          ; 009C8
         bra.b   l_008_009D6                     ; 009CE
 l_008_009D0:
-        lea.l   (dat_073_008C2).l,a0            ; 009D0
+        lea.l   (FarSceneryList1).l,a0          ; 009D0
 l_008_009D6:
         move.w  (dat_071_0037A).l,d1            ; 009D6
         tst.w   d0                              ; 009DC
@@ -799,7 +799,7 @@ l_008_009F2:
 ; near the view.
 ;-------------------------------------------------------------------------------
 DrawObjects:
-        move.b  #$1,(dat_071_00234).l           ; 009F4
+        move.b  #$1,(SceneryDetailed).l         ; 009F4
         move.b  #$4,(dat_071_0022B).l           ; 009FC
         clr.b   (dat_071_0028D).l               ; 00A04
         clr.w   (dat_071_0048A).l               ; 00A0A
@@ -1151,7 +1151,7 @@ l_008_00DFE:
 BuildSceneryList:
         link.w  a6,#$ffc4                       ; 00E44
         clr.b   (dat_071_00226).l               ; 00E48
-        tst.b   (dat_071_00234).l               ; 00E4E
+        tst.b   (SceneryDetailed).l             ; 00E4E
         beq.w   l_008_00EBE                     ; 00E54
         tst.b   (dat_071_00156).l               ; 00E58
         beq.b   l_008_00E6A                     ; 00E5E
@@ -1172,7 +1172,7 @@ l_008_00E72:
         bra.w   l_008_00F6C                     ; 00EBA
 l_008_00EBE:
         move.l  #dat_065_00380,-$c(a6)          ; 00EBE
-        tst.b   (dat_071_00235).l               ; 00EC6
+        tst.b   (SceneryMapOne).l               ; 00EC6
         bne.b   l_008_00EEA                     ; 00ECC
         cmpi.l  #$ffff6000,(dat_071_00436).l    ; 00ECE
         ble.b   l_008_00EEA                     ; 00ED8
@@ -1184,23 +1184,23 @@ l_008_00EEA:
         beq.b   l_008_00EFA                     ; 00EF0
         move.l  #dat_065_0011E,-$c(a6)          ; 00EF2
 l_008_00EFA:
-        tst.b   (dat_071_00235).l               ; 00EFA
+        tst.b   (SceneryMapOne).l               ; 00EFA
         bne.b   l_008_00F24                     ; 00F00
         move.l  #SceneryMap0,-$4(a6)            ; 00F02
         move.l  #SceneryBits0,-$8(a6)           ; 00F0A
-        move.l  #dat_073_00232,-$14(a6)         ; 00F12
+        move.l  #FarSceneryList0,-$14(a6)       ; 00F12
         move.l  #dat_071_0037C,-$24(a6)         ; 00F1A
         bra.b   l_008_00F44                     ; 00F22
 l_008_00F24:
         move.l  #SceneryMap1,-$4(a6)            ; 00F24
         move.l  #SceneryBits1,-$8(a6)           ; 00F2C
-        move.l  #dat_073_008C2,-$14(a6)         ; 00F34
+        move.l  #FarSceneryList1,-$14(a6)       ; 00F34
         move.l  #dat_071_0037E,-$24(a6)         ; 00F3C
 l_008_00F44:
         move.l  #dat_008_014C6,-$18(a6)         ; 00F44
         move.l  #dat_008_0151A,-$1c(a6)         ; 00F4C
-        move.w  (dat_071_00318).l,-$26(a6)      ; 00F54
-        move.w  (dat_071_0031A).l,-$28(a6)      ; 00F5C
+        move.w  (ViewBlockX).l,-$26(a6)         ; 00F54
+        move.w  (ViewBlockZ).l,-$28(a6)         ; 00F5C
         move.b  (dat_071_00220).l,-$2a(a6)      ; 00F64
 l_008_00F6C:
         lea.l   (dat_065_00040).l,a1            ; 00F6C
@@ -1296,7 +1296,7 @@ l_008_01070:
         ext.w   d0                              ; 0108C
         add.w   d0,d0                           ; 0108E
         lea.l   (dat_008_0149C).l,a2            ; 01090
-        tst.b   (dat_071_00234).l               ; 01096
+        tst.b   (SceneryDetailed).l             ; 01096
         bne.b   l_008_010A4                     ; 0109C
         move.w  #$1e,d3                         ; 0109E
         bra.b   l_008_010A8                     ; 010A2
@@ -1488,7 +1488,7 @@ l_008_01256:
 FindObjectsInCell:
         tst.b   d1                              ; 01258
         blt.b   l_008_01256                     ; 0125A
-        tst.b   (dat_071_00234).l               ; 0125C
+        tst.b   (SceneryDetailed).l             ; 0125C
         beq.b   l_008_01256                     ; 01262
         move.w  #$50,(FrameStage).l             ; 01264
         move.l  d6,-(a7)                        ; 0126C
@@ -1545,7 +1545,7 @@ l_008_012FE:
 l_008_0130E:
         rts                                     ; 0130E
 sub_008_01310:
-        tst.b   (dat_071_00234).l               ; 01310
+        tst.b   (SceneryDetailed).l             ; 01310
         beq.b   l_008_0130E                     ; 01316
         move.w  #$51,(FrameStage).l             ; 01318
         move.b  #$ff,d1                         ; 01320

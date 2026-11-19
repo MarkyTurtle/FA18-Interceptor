@@ -159,10 +159,12 @@ The map is 128 x 128 cells. The **scenery** (the ground's features: runways, bui
 like, drawn as shapes) is kept in three maps in hunk 66 (`SceneryMap0`-`2`): for each map row,
 the columns that have something and, for each such cell, a list of items (its place in the
 cell and a shape). At start-up `BuildSceneryBits` turns each into a bit per cell
-(`SceneryBits0`-`2`) for a quick test. Map 2 covers the whole world - mostly a regular pattern of
-cells around X 41-70, Z 44-70; maps 0 and 1 the cells 0-30 near the start, used in another mode
-(`dat_071_00234`), picked by `dat_071_00235`. The free flight's starting locations are in that
-corner too (cells 15-17).
+(`SceneryBits0`-`2`) for a quick test. Maps 0 and 1 work on a coarse grid of blocks of 4 x 4
+cells - the large features, seen from afar, each built into a list of its own - and map 2 on
+the cells themselves, the detail near the viewer (`SceneryList`). Everything lies in one corner
+of the map: the coarse maps use blocks 0-16 (cells 0-67), the detailed map mostly a regular
+pattern of cells around X 41-70, Z 44-70, and the free flight's starting locations are at cells
+15-17.
 
 Each time the view enters a new cell or turns into a new eighth of the compass (`ViewOctant`),
 `BuildSceneryList` goes through the cells around it in an order from hunk 65 chosen by the
@@ -557,7 +559,7 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
 * The computer pilots' states one by one (hunk 30), their attacks and firing; the object
   records' unknown fields in `ModeTable`.
 * The 3D pipeline's special shape operations (hunks 12-15) and the clipping (hunk 19).
-* The scenery items' shapes and what `dat_071_00234` / `00235` are; the ground and sky.
+* The scenery items' shapes; the ground and sky.
 * The head-up display and most instruments (hunks 39-40).
 * The views (`OutsideView`, `ViewChoice`, `CameraSequence`) and the training's manoeuvres.
 * The rest of the flight log's words, and which sound file is which effect.

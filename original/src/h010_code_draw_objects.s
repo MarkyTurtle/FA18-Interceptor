@@ -130,7 +130,7 @@ l_010_0014C:
         move.w  d0,d1                           ; 00152
         andi.w  #$2000,d1                       ; 00154
         beq.b   l_010_0016E                     ; 00158
-        tst.b   (dat_071_00234).l               ; 0015A
+        tst.b   (SceneryDetailed).l             ; 0015A
         beq.b   l_010_001A2                     ; 00160
 l_010_00162:
         moveq   #$1,d0                          ; 00162
@@ -143,7 +143,7 @@ l_010_00168:
 l_010_0016E:
         cmpi.w  #$80,(RadarScale).l             ; 0016E
         bge.b   l_010_0019A                     ; 00176
-        tst.b   (dat_071_00234).l               ; 00178
+        tst.b   (SceneryDetailed).l             ; 00178
         bne.b   l_010_001A2                     ; 0017E
         lea.l   (SceneryList).l,a3              ; 00180
 l_010_00186:
@@ -155,7 +155,7 @@ l_010_00186:
         adda.w  #$18,a3                         ; 00194
         bra.b   l_010_00186                     ; 00198
 l_010_0019A:
-        tst.b   (dat_071_00234).l               ; 0019A
+        tst.b   (SceneryDetailed).l             ; 0019A
         beq.b   l_010_00162                     ; 001A0
 l_010_001A2:
         move.w  d0,d1                           ; 001A2

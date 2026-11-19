@@ -60,7 +60,7 @@ l_009_000A2:
         asl.w   #$2,d0                          ; 000B2
         movea.l -$18(a6),a1                     ; 000B4
         movem.w (a1,d0.w),d2-d3                 ; 000B8
-        tst.b   (dat_071_00234).l               ; 000BE
+        tst.b   (SceneryDetailed).l             ; 000BE
         beq.b   l_009_000E2                     ; 000C4
         lea.l   (dat_008_0151A).l,a1            ; 000C6
         move.b  (dat_071_00220).l,d6            ; 000CC
@@ -144,7 +144,7 @@ l_009_00188:
         bne.b   l_009_001B2                     ; 001AE
         move.w  (a3)+,d6                        ; 001B0
 l_009_001B2:
-        tst.b   (dat_071_00234).l               ; 001B2
+        tst.b   (SceneryDetailed).l             ; 001B2
         bne.b   l_009_001BE                     ; 001B8
         add.w   d6,d6                           ; 001BA
         add.w   d6,d6                           ; 001BC
@@ -181,7 +181,7 @@ l_009_00218:
         clr.w   (dat_071_000C2).l               ; 0021C
         move.w  (a3)+,d6                        ; 00222
 l_009_00224:
-        tst.b   (dat_071_00234).l               ; 00224
+        tst.b   (SceneryDetailed).l             ; 00224
         bne.b   l_009_00230                     ; 0022A
         add.w   d6,d6                           ; 0022C
         add.w   d6,d6                           ; 0022E
@@ -382,7 +382,7 @@ l_009_00532:
 dat_009_00536:
 	dc.b	$00,$1E,$00,$28,$00,$1E,$00,$32,$00,$20,$00,$3C,$00,$28,$00,$46
 l_009_00546:
-        tst.b   (dat_071_00234).l               ; 00546
+        tst.b   (SceneryDetailed).l             ; 00546
         beq.b   l_009_00576                     ; 0054C
         tst.b   (dat_071_00236).l               ; 0054E
         bne.b   l_009_00576                     ; 00554
@@ -404,7 +404,7 @@ l_009_00584:
         move.w  #$ffff,(a2)                     ; 00584
         move.b  #$1,(dat_071_00175).l           ; 00588
         move.b  (dat_071_0022C).l,(dat_071_0022D).l ; 00590
-        tst.b   (dat_071_00234).l               ; 0059A
+        tst.b   (SceneryDetailed).l             ; 0059A
         beq.w   l_009_006F8                     ; 005A0
         bra.b   l_009_005B6                     ; 005A4
 l_009_005A6:
@@ -538,7 +538,7 @@ l_009_006DC:
         suba.w  #$28,a2                         ; 006F0
         bra.w   l_009_005D6                     ; 006F4
 l_009_006F8:
-        tst.b   (dat_071_00234).l               ; 006F8
+        tst.b   (SceneryDetailed).l             ; 006F8
         beq.b   l_009_0073C                     ; 006FE
         tst.b   (dat_071_00236).l               ; 00700
         bne.b   l_009_0073C                     ; 00706

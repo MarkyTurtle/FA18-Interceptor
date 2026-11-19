@@ -739,9 +739,12 @@ dat_071_00232:
 	dc.b	$00
 dat_071_00233:
 	dc.b	$00
-dat_071_00234:
+; SceneryDetailed - Set while the detailed scenery (SceneryMap2, the cells themselves) is built
+; and drawn; clear for the coarse maps.
+SceneryDetailed:
 	dc.b	$00
-dat_071_00235:
+; SceneryMapOne - With SceneryDetailed clear: SceneryMap1 rather than SceneryMap0.
+SceneryMapOne:
 	dc.b	$00
 dat_071_00236:
 	dc.b	$00
@@ -1119,10 +1122,12 @@ dat_071_00314:
 dat_071_00316:
 	dc.b	$00
 	dc.b	$00
-dat_071_00318:
+; ViewBlockX - The view's cell X / 4: its block on the coarse scenery grid (SceneryMap0 and 1).
+ViewBlockX:
 	dc.b	$00
 	dc.b	$00
-dat_071_0031A:
+; ViewBlockZ - The view's cell Z / 4 (see ViewBlockX).
+ViewBlockZ:
 	dc.b	$00
 	dc.b	$00
 ; ViewCellX - The viewing object's map cell X (its +$06).

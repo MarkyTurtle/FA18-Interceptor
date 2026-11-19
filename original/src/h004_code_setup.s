@@ -329,20 +329,20 @@ l_004_004EA:
         movem.w (a0)+,d0-d4                     ; 004FC
         tst.w   d0                              ; 00500
         blt.w   l_004_005E0                     ; 00502
-        move.w  d0,(dat_071_00318).l            ; 00506
-        move.w  d1,(dat_071_0031A).l            ; 0050C
+        move.w  d0,(ViewBlockX).l               ; 00506
+        move.w  d1,(ViewBlockZ).l               ; 0050C
         move.b  d2,$b(a1)                       ; 00512
         lea.l   (dat_008_0160E).l,a2            ; 00516
         move.w  d2,d6                           ; 0051C
         add.w   d6,d6                           ; 0051E
-        move.w  (dat_071_00318).l,d5            ; 00520
+        move.w  (ViewBlockX).l,d5               ; 00520
         asl.w   #$2,d5                          ; 00526
         move.b  (a2,d6.w),d7                    ; 00528
         ext.w   d7                              ; 0052C
         add.w   d7,d5                           ; 0052E
         move.w  d5,$6(a1)                       ; 00530
         move.w  d5,(ViewCellX).l                ; 00534
-        move.w  (dat_071_0031A).l,d5            ; 0053A
+        move.w  (ViewBlockZ).l,d5               ; 0053A
         asl.w   #$2,d5                          ; 00540
         move.b  $1(a2,d6.w),d7                  ; 00542
         ext.w   d7                              ; 00546

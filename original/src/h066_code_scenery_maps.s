@@ -10,8 +10,10 @@
 ; SceneryMap0 - A scenery map (one of three): 128 words, one per map row (Z), each the offset
 ; (from the map) of that row's list: a byte count, the columns (X) that have scenery in
 ; increasing order (words, searched by FindSceneryColumn), then a pointer to each such cell's
-; list of scenery items. Map 0 and map 1 cover cells 0-30 (used while dat_071_00234 is clear,
-; picked by dat_071_00235); map 2 the whole 128 x 128 (dat_071_00234 set).
+; list of scenery items. Maps 0 and 1 are on a coarse grid of blocks of 4 x 4 cells
+; (ViewBlockX / 0031A, the view's cell / 4; their own lists at FarSceneryList0 and
+; FarSceneryList1): the large features seen from afar. Map 2 is on the cells themselves
+; (SceneryList): the detail near the viewer.
 SceneryMap0:
 	dc.b	$03,$00,$03,$14,$03,$14,$03,$14,$03,$14,$03,$14,$03,$14,$03,$14
 	dc.b	$03,$14,$03,$14,$03,$14,$03,$16,$03,$16,$03,$16,$03,$3A,$03,$64
@@ -47,8 +49,8 @@ SceneryMap1:
 	dc.b	$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74
 	dc.b	$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74
 	dc.b	$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74,$03,$74
-; SceneryMap2 - The third scenery map, over the whole 128 x 128 cells (see SceneryMap0): a
-; regular pattern of cells around X 41-70, Z 44-70 among others.
+; SceneryMap2 - The third scenery map, the detailed one on the cells themselves (see
+; SceneryMap0): a regular pattern of cells around X 41-70, Z 44-70 among others.
 SceneryMap2:
 	dc.b	$03,$64,$03,$64,$03,$64,$03,$64,$03,$64,$03,$64,$03,$64,$03,$64
 	dc.b	$03,$64,$03,$64,$03,$64,$03,$64,$03,$64,$03,$64,$03,$64,$03,$64

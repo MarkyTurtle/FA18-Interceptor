@@ -377,8 +377,8 @@ l_012_003F6:
         move.b  #$0,(dat_071_0026C).l           ; 003F6
         rts                                     ; 003FE
 sub_012_00400:
-        move.w  (dat_071_00318).l,d0            ; 00400
-        move.w  (dat_071_0031A).l,d1            ; 00406
+        move.w  (ViewBlockX).l,d0               ; 00400
+        move.w  (ViewBlockZ).l,d1               ; 00406
         lea.l   (a0),a1                         ; 0040C
         moveq   #-2,d3                          ; 0040E
 l_012_00410:
