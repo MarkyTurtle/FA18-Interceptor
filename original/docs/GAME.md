@@ -346,8 +346,51 @@ Confirmation, Emergency Defense Operation (Air Force One), Intercept Stolen Airc
 Rescue Operation, Intercept Incoming Cruise Missile, Carrier Sub Mission. They open one at a time:
 the log counts how often each was completed (`+$12`+mode), and F*n* needs F*n*-1. A mission
 needs the qualification (a carrier landing) first. The game flow above shows how one is
-briefed, started and judged; how each sets up its objects and decides success is in hunks 18
-and 26-27, not worked out in detail yet.
+briefed, started and debriefed.
+
+### Setting up a mission
+
+`SetupMode` (hunk 26) builds the world for `GameMode` from `ModeTable` (hunk 27):
+
+* Each mode has **three variants**, one picked at random (`ModeVariant`, kept if the selection
+  is restarted), each with its number of targets (`MissionTargets`).
+* Each variant has an object list **per number of times the mission has been completed** (the
+  log's `+$12`+mode, `TimesCompleted`): flying a mission again brings a harder one.
+* The list's 10-byte records place the objects (`PlaceObject`): the model, the object number
+  (which of the 16 records it takes), the lowest **difficulty** it appears at, and optionally
+  the one mode it is for. `AimObject` points each at its route's first waypoint or at another
+  object it is to follow.
+
+So what you meet depends on the mission, the variant, how often you have completed it and the
+difficulty (which itself goes up by one with each mission completed).
+
+### Judging a mission
+
+`JudgeMission` (hunk 18) runs every frame, after the objects have moved, and calls the mode's
+judge, which sets `MissionResult` and asks for the debriefing (`QuitRequest` 3):
+
+| Mission | Success (`$FF`) | Failure (`$FE`) |
+|---|---|---|
+| F1 Visual confirmation | the unknown aircraft held close in view for 30 frames (`VisualConfirmTimer`, counted in hunk 38) | |
+| F2 Emergency defense | Air Force One (object 4) down and slow, its attackers (objects 8, 10) gone | Air Force One destroyed (`$FD` if the player shot it) |
+| F3 Intercept stolen aircraft | the targets done; flying close to a stolen aircraft (within a distance that shrinks with the difficulty) for 200 frames (`EscortTimer`) turns both back along their routes | they reach map cell X `$70`: beyond recovery range |
+| F4 Search and rescue | the rescue pod (dropped with Shift+F, `DropRescuePod`) comes down within `$10000` of the downed pilot (object 11) | the pod lands further away |
+| F5 Intercept cruise missile | the missile (object 4) shot down | it exploded (the view goes to it) |
+| F6 Carrier sub mission | the targets done (`CheckMissionTargets`) | |
+| Qualification | the aircraft down on the carrier and stopped | |
+| Practice maneuvers | | the instructor's aircraft lost |
+
+After a success the mission is completed (`$FC`) only once the player is back down at home and
+stopped (`PlayerParked`): on the carrier if the flight started there, otherwise on the
+airfield.
+
+### Ejecting
+
+Shift+E ejects: the player's record `+$7C` (low nibble) counts the sequence down
+(`EjectAndDrop`): the ejection's sound, then the pilot becomes an object of his own (type `$30`,
+`EjectPilot`, `EjectedPilot`) which the view follows (`ViewFollow`). When the parachute is down
+(hunk 17) `QuitRequest` 2 brings "YOU HAVE SURVIVED YOUR BAILOUT". The same counter, started at
+`$F` by Shift+F in mission F4, drops the rescue pod.
 
 ## The flight recording and the demo
 
@@ -391,12 +434,11 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
 
 * What speed the throttle gives (the target of `+$6C`), the afterburner, the fuel use, and what
   sets `FlightPhysics` (a game option, probably).
-* The countermeasures (flares, chaff), damage, ejecting, landing on the carrier.
-* The computer pilots' states one by one (hunk 30), their attacks and firing; the missions
-  (setting them up, success and failure).
+* The countermeasures (flares, chaff), damage, landing on the carrier (the flags the judges test).
+* The computer pilots' states one by one (hunk 30), their attacks and firing; the object
+  records' unknown fields in `ModeTable`.
 * The 3D pipeline (hunks 13-15) and the model format (hunks 41-58).
 * The ground, sky and scenery; the map and what is in each cell.
 * The head-up display and instruments (hunks 38-40).
-* The views (`dat_071_00155`, `CameraSequence`) and the training's manoeuvres; how each
-  mission sets up its objects and judges success (hunks 18, 26-27).
+* The views (`dat_071_00155`, `CameraSequence`) and the training's manoeuvres.
 * The rest of the flight log's words, and which sound file is which effect.

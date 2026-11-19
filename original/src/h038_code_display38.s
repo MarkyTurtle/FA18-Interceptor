@@ -281,15 +281,15 @@ l_038_0039E:
         bne.b   l_038_003F0                     ; 003CA
         tst.w   (ViewObject).l                  ; 003CC
         bne.b   l_038_003F0                     ; 003D2
-        tst.b   (dat_071_0023F).l               ; 003D4
+        tst.b   (VisualConfirmTimer).l          ; 003D4
         beq.b   l_038_003E8                     ; 003DA
         blt.b   l_038_003F0                     ; 003DC
 l_038_003DE:
-        subq.b  #$1,(dat_071_0023F).l           ; 003DE
+        subq.b  #$1,(VisualConfirmTimer).l      ; 003DE
         beq.b   l_038_003DE                     ; 003E4
         bra.b   l_038_003F0                     ; 003E6
 l_038_003E8:
-        move.b  #$1e,(dat_071_0023F).l          ; 003E8
+        move.b  #$1e,(VisualConfirmTimer).l     ; 003E8
 l_038_003F0:
         btst    #$1,$20(a1)                     ; 003F0
         bne.w   l_038_00488                     ; 003F6

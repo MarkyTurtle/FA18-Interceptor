@@ -139,7 +139,7 @@ ResetPlayerAircraft:
         clr.b   (dat_071_0025B).l               ; 00198
         clr.b   (dat_071_0025D).l               ; 0019E
         clr.b   (dat_071_0025C).l               ; 001A4
-        clr.w   (dat_071_00292).l               ; 001AA
+        clr.w   (RescuePod).l                   ; 001AA
         movem.l d0/d4/a0-a1,-(a7)               ; 001B0
         lea.l   (ObjectTable).l,a0              ; 001B4
         adda.w  #$200,a0                        ; 001BA

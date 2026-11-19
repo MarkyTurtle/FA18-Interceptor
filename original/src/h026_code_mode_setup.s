@@ -18,7 +18,7 @@ SetupMode:
         jsr     (ShowLogDate).l                 ; 00002
         clr.b   (dat_071_00279).l               ; 00008
         clr.b   (MissionTargetsDone).l          ; 0000E
-        clr.w   (dat_071_00152).l               ; 00014
+        clr.w   (EscortTimer).l                 ; 00014
         move.b  (GameMode).l,d0                 ; 0001A
         ext.w   d0                              ; 00020
         cmpi.b  #$7d,d0                         ; 00022
@@ -34,7 +34,7 @@ l_026_0003A:
         cmpi.w  #$9,d0                          ; 0003A
         bgt.b   l_026_00000                     ; 0003E
 l_026_00040:
-        lea.l   (dat_027_001F2).l,a0            ; 00040
+        lea.l   (ModeTable).l,a0                ; 00040
         subq.w  #$1,d0                          ; 00046
         add.w   d0,d0                           ; 00048
         move.w  d0,d1                           ; 0004A
@@ -43,14 +43,14 @@ l_026_00040:
         add.w   d0,d0                           ; 00050
         tst.b   (RestartMission).l              ; 00052
         beq.b   l_026_00062                     ; 00058
-        move.w  (dat_071_004EC).l,d1            ; 0005A
+        move.w  (ModeVariant).l,d1              ; 0005A
         bra.b   l_026_00076                     ; 00060
 l_026_00062:
         move.w  (dat_071_004C8).l,d1            ; 00062
         andi.w  #$3,d1                          ; 00068
         beq.b   l_026_00076                     ; 0006C
         subq.w  #$1,d1                          ; 0006E
-        move.w  d1,(dat_071_004EC).l            ; 00070
+        move.w  d1,(ModeVariant).l              ; 00070
 l_026_00076:
         add.w   d1,d1                           ; 00076
         add.w   d1,d1                           ; 00078
@@ -59,11 +59,11 @@ l_026_00076:
         adda.w  (a0,d0.w),a2                    ; 0007E
         move.w  $2(a0,d0.w),d0                  ; 00082
         move.b  d0,(MissionTargets).l           ; 00086
-        bsr.w   sub_026_000BA                   ; 0008C
+        bsr.w   TimesCompleted                  ; 0008C
         adda.w  (a2,d0.w),a2                    ; 00090
-        move.l  a2,(dat_071_0010A).l            ; 00094
+        move.l  a2,(ModeObjects).l              ; 00094
 l_026_0009A:
-        bsr.w   sub_026_003DE                   ; 0009A
+        bsr.w   PlaceObject                     ; 0009A
 l_026_0009E:
         adda.w  #$a,a2                          ; 0009E
         tst.w   (a2)                            ; 000A2
@@ -75,7 +75,13 @@ l_026_0009E:
         bra.b   l_026_0009E                     ; 000B6
 l_026_000B8:
         rts                                     ; 000B8
-sub_026_000BA:
+
+;-------------------------------------------------------------------------------
+; TimesCompleted - Returns twice the times the current mission was completed
+; (ConfigBuffer+$12+GameMode; 0 for the demo): later flights of a mission get a harder object
+; list.
+;-------------------------------------------------------------------------------
+TimesCompleted:
         moveq   #$0,d0                          ; 000BA
         move.b  (GameMode).l,d1                 ; 000BC
         cmpi.b  #$7e,d1                         ; 000C2
@@ -89,7 +95,13 @@ sub_026_000BA:
         add.w   d0,d0                           ; 000DC
 l_026_000DE:
         rts                                     ; 000DE
-sub_026_000E0:
+
+;-------------------------------------------------------------------------------
+; AimObject - Points a placed object: at the first waypoint of a route, or at another object
+; (its destination copied, +$38 = $80 + that object), turning it to face it (VectorToAngles,
+; SetAttitude).
+;-------------------------------------------------------------------------------
+AimObject:
         move.l  a2,-(a7)                        ; 000E0
         move.w  $4(a2),d1                       ; 000E2
         bge.b   l_026_0011E                     ; 000E6
@@ -333,7 +345,12 @@ l_026_003D4:
 l_026_003D6:
         dbra    d0,l_026_002EE                  ; 003D6
         bra.w   l_026_002D6                     ; 003DA
-sub_026_003DE:
+
+;-------------------------------------------------------------------------------
+; PlaceObject - PlaceObject(a2 = a 10-byte record): puts the object into ObjectTable with its
+; model, unless it is already there or the mode does not want it, and aims it (AimObject).
+;-------------------------------------------------------------------------------
+PlaceObject:
         moveq   #$0,d0                          ; 003DE
         moveq   #-2,d7                          ; 003E0
         move.l  a2,-(a7)                        ; 003E2
@@ -341,7 +358,7 @@ sub_026_003DE:
         movea.l (a7)+,a2                        ; 003E8
         tst.w   d7                              ; 003EA
         blt.b   l_026_003F2                     ; 003EC
-        bsr.w   sub_026_000E0                   ; 003EE
+        bsr.w   AimObject                       ; 003EE
 l_026_003F2:
         rts                                     ; 003F2
 l_026_003F4:
@@ -994,7 +1011,7 @@ FlyBySetup:
         clr.w   (dat_071_0038A).l               ; 00C50
         move.b  #$7,(dat_071_00186).l           ; 00C56
         lea.l   (ObjectTable).l,a0              ; 00C5E
-        movea.l (dat_071_0010A).l,a2            ; 00C64
+        movea.l (ModeObjects).l,a2              ; 00C64
 l_026_00C6A:
         tst.w   (a2)                            ; 00C6A
         blt.b   l_026_00CA0                     ; 00C6C

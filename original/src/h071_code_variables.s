@@ -255,7 +255,9 @@ dat_071_000F2:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0010A:
+; ModeObjects - The object list SetupMode placed (also read by hunk 20 for the "vector for
+; bogey" text).
+ModeObjects:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -308,7 +310,9 @@ dat_071_0014E:
 dat_071_00150:
 	dc.b	$00
 	dc.b	$00
-dat_071_00152:
+; EscortTimer - Mission F3: frames left flying close to the stolen aircraft before they turn
+; back (200).
+EscortTimer:
 	dc.b	$00
 	dc.b	$00
 ; FlightPhysics - Set: the fuller flight model - the stall check (UpdateAttitude), the speed
@@ -735,7 +739,9 @@ dat_071_0023D:
 	dc.b	$00
 dat_071_0023E:
 	dc.b	$00
-dat_071_0023F:
+; VisualConfirmTimer - Mission F1: counts 30 frames down while an aircraft is held close in the
+; view; negative when the confirmation is done.
+VisualConfirmTimer:
 	dc.b	$00
 dat_071_00240:
 	dc.b	$00
@@ -886,10 +892,14 @@ dat_071_0028D:
 dat_071_0028E:
 	dc.b	$00
 	dc.b	$00
-dat_071_00290:
+; DebriefDelay - Frames before the debriefing (StateTimer for StateDebriefWait), set with the
+; result.
+DebriefDelay:
 	dc.b	$00
 	dc.b	$00
-dat_071_00292:
+; RescuePod - Mission F4: the rescue pod's object (offset into ObjectTable), 0 until it is
+; dropped (Shift+F).
+RescuePod:
 	dc.b	$00
 	dc.b	$00
 dat_071_00294:
@@ -1260,7 +1270,9 @@ dat_071_0038C:
 dat_071_00390:
 	dc.b	$00
 	dc.b	$00
-dat_071_00392:
+; EjectedPilot - The ejected pilot's object (offset into ObjectTable; type $30, under the
+; parachute).
+EjectedPilot:
 	dc.b	$00
 	dc.b	$00
 dat_071_00394:
@@ -1589,7 +1601,9 @@ dat_071_004E8:
 dat_071_004EA:
 	dc.b	$00
 	dc.b	$00
-dat_071_004EC:
+; ModeVariant - Which of the mode's three variants (ModeTable) was picked, at random; kept when
+; the selection is restarted.
+ModeVariant:
 	dc.b	$00
 	dc.b	$00
 ; BCDIn - BinToBCD's number.

@@ -1467,7 +1467,11 @@ l_005_012C6:
 	dc.b	$42,$44
 l_005_012CC:
         bra.w   l_005_01624                     ; 012CC
-sub_005_012D0:
+
+;-------------------------------------------------------------------------------
+; ViewFollow - ViewFollow(d1 = object): the outside view follows that object (ViewObject).
+;-------------------------------------------------------------------------------
+ViewFollow:
         move.b  #$ff,(RedrawFlags).l            ; 012D0
         move.w  #$ffff,(dat_071_0030A).l        ; 012D8
         move.b  #$fe,(dat_071_00280).l          ; 012E0
@@ -1594,7 +1598,7 @@ l_005_014FE:
 l_005_0150A:
         cmpi.b  #$6,(GameMode).l                ; 0150A
         bne.b   l_005_01556                     ; 01512
-        tst.w   (dat_071_00292).l               ; 01514
+        tst.w   (RescuePod).l                   ; 01514
         bne.b   l_005_01556                     ; 0151A
         btst    #$6,(Object1_01).l              ; 0151C
         beq.b   l_005_0153A                     ; 01524

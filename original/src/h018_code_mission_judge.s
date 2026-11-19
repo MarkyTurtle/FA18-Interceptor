@@ -80,12 +80,13 @@ l_018_000C6:
         rts                                     ; 000C6
 
 ;-------------------------------------------------------------------------------
-; JudgeF1 - Visual confirmation: success ($FF) once dat_071_0023F goes negative.
+; JudgeF1 - Visual confirmation: success ($FF) once VisualConfirmTimer has run out - the
+; unknown aircraft held close in front of the player for 30 frames (hunk 38 counts it).
 ;-------------------------------------------------------------------------------
 JudgeF1:
         tst.b   (MissionResult).l               ; 000C8
         bne.w   l_018_005F6                     ; 000CE
-        tst.b   (dat_071_0023F).l               ; 000D2
+        tst.b   (VisualConfirmTimer).l          ; 000D2
         bge.b   l_018_000C6                     ; 000D8
         cmpi.b  #$3,(QuitRequest).l             ; 000DA
         beq.b   l_018_000C6                     ; 000E2
@@ -148,7 +149,7 @@ l_018_001D8:
         btst    #$6,$1(a1)                      ; 001D8
         beq.b   l_018_00206                     ; 001DE
         move.w  (CurrentObject).l,d1            ; 001E0
-        jsr     (sub_005_012D0).l               ; 001E6
+        jsr     (ViewFollow).l                  ; 001E6
         cmpi.b  #$3,(QuitRequest).l             ; 001EC
         beq.b   l_018_00204                     ; 001F4
         move.b  #$ff,(MissionResult).l          ; 001F6
@@ -171,7 +172,11 @@ l_018_0022A:
 	dc.b	$4E,$75
 
 ;-------------------------------------------------------------------------------
-; JudgeF3 - Intercept stolen aircraft (objects 4 and 6...).
+; JudgeF3 - Intercept stolen aircraft (objects 4 and 6): flying within a distance of the one
+; still flying ($30000, $24000 at difficulty 2, $18000 at 3, in X, Y and Z) for 200 frames
+; (EscortTimer) sends both back to the start of their routes (SendToRouteStart); if they reach
+; map cell X $70 the mission fails ($FE, beyond recovery range); success ($FF) when the
+; mission's targets are done (MissionTargets).
 ;-------------------------------------------------------------------------------
 JudgeF3:
         tst.b   (MissionResult).l               ; 00232
@@ -224,21 +229,21 @@ l_018_002C4:
 l_018_002CE:
         cmp.l   d6,d5                           ; 002CE
         bgt.b   l_018_002EE                     ; 002D0
-        move.w  (dat_071_00152).l,d0            ; 002D2
+        move.w  (EscortTimer).l,d0              ; 002D2
         blt.b   l_018_002E2                     ; 002D8
-        subq.w  #$1,(dat_071_00152).l           ; 002DA
+        subq.w  #$1,(EscortTimer).l             ; 002DA
         bra.b   l_018_002FE                     ; 002E0
 l_018_002E2:
         lea.l   (a2),a1                         ; 002E2
-        bsr.w   sub_018_0035E                   ; 002E4
+        bsr.w   SendToRouteStart                ; 002E4
         lea.l   (a3),a1                         ; 002E8
-        bsr.w   sub_018_0035E                   ; 002EA
+        bsr.w   SendToRouteStart                ; 002EA
 l_018_002EE:
-        tst.w   (dat_071_00152).l               ; 002EE
+        tst.w   (EscortTimer).l                 ; 002EE
         blt.b   l_018_002FE                     ; 002F4
-        move.w  #$c8,(dat_071_00152).l          ; 002F6
+        move.w  #$c8,(EscortTimer).l            ; 002F6
 l_018_002FE:
-        tst.w   (dat_071_00152).l               ; 002FE
+        tst.w   (EscortTimer).l                 ; 002FE
         bge.b   l_018_0035C                     ; 00304
 l_018_00306:
         move.b  (MissionTargets).l,d0           ; 00306
@@ -263,7 +268,12 @@ l_018_00344:
         bra.w   l_018_005D6                     ; 00358
 l_018_0035C:
         rts                                     ; 0035C
-sub_018_0035E:
+
+;-------------------------------------------------------------------------------
+; SendToRouteStart - SendToRouteStart(a1 = object): sets the computer pilot's destination
+; (+$2C-+$34) to the first waypoint of its route (+$3A, Routes).
+;-------------------------------------------------------------------------------
+SendToRouteStart:
         moveq   #$0,d0                          ; 0035E
         move.b  $3a(a1),d0                      ; 00360
         add.w   d0,d0                           ; 00364
@@ -280,12 +290,14 @@ l_018_0038A:
         rts                                     ; 0038A
 
 ;-------------------------------------------------------------------------------
-; JudgeF4 - Search and rescue.
+; JudgeF4 - Search and rescue: when the dropped rescue pod (RescuePod) has come down, success
+; ($FF) if it is within $10000 in X and Z of the downed pilot (object 11), otherwise failure
+; ($FE, deployed too far).
 ;-------------------------------------------------------------------------------
 JudgeF4:
         tst.b   (MissionResult).l               ; 0038C
         bne.w   l_018_005F6                     ; 00392
-        move.w  (dat_071_00292).l,d0            ; 00396
+        move.w  (RescuePod).l,d0                ; 00396
         beq.b   l_018_0038A                     ; 0039C
         lea.l   (ObjectTable).l,a1              ; 0039E
         adda.w  d0,a1                           ; 003A4
@@ -323,7 +335,8 @@ l_018_0040E:
         rts                                     ; 0040E
 
 ;-------------------------------------------------------------------------------
-; JudgeF5 - Intercept the incoming cruise missile.
+; JudgeF5 - Intercept the cruise missile (object 4): when it is gone, success ($FF) if it was
+; shot down (its +$20 bit 1), otherwise it exploded: the view goes to it, failure ($FE).
 ;-------------------------------------------------------------------------------
 JudgeF5:
         tst.b   (MissionResult).l               ; 00410
@@ -367,7 +380,7 @@ l_018_004D8:
         btst    #$1,$20(a1)                     ; 004D8
         bne.b   l_018_00504                     ; 004DE
         move.w  (CurrentObject).l,d1            ; 004E0
-        jsr     (sub_005_012D0).l               ; 004E6
+        jsr     (ViewFollow).l                  ; 004E6
         cmpi.b  #$3,(QuitRequest).l             ; 004EC
         beq.b   l_018_0051C                     ; 004F4
         move.b  #$fe,(MissionResult).l          ; 004F6
@@ -385,7 +398,8 @@ l_018_0051E:
         rts                                     ; 0051E
 
 ;-------------------------------------------------------------------------------
-; JudgeQualification - The qualification's carrier landing.
+; JudgeQualification - The carrier landing: success ($FF) when the player's aircraft is down on
+; the carrier (flags +$02 bits $C080 all set) and stopped (+$6E = 0).
 ;-------------------------------------------------------------------------------
 JudgeQualification:
         tst.b   (MissionResult).l               ; 00520
@@ -408,7 +422,8 @@ l_018_00562:
         rts                                     ; 00562
 
 ;-------------------------------------------------------------------------------
-; JudgePractice - Practice maneuvers.
+; JudgePractice - Practice maneuvers: failure ($FE) if the instructor's aircraft (object 4) is
+; lost.
 ;-------------------------------------------------------------------------------
 JudgePractice:
         tst.b   (MissionResult).l               ; 00564
@@ -444,7 +459,7 @@ l_018_005BC:
         beq.b   l_018_005F4                     ; 005CC
         move.b  #$ff,(MissionResult).l          ; 005CE
 l_018_005D6:
-        move.w  d0,(dat_071_00290).l            ; 005D6
+        move.w  d0,(DebriefDelay).l             ; 005D6
         move.b  #$3,(QuitRequest).l             ; 005DC
         move.b  #$4,(QuitDelay).l               ; 005E4
         move.b  #$1,(dat_071_0027D).l           ; 005EC
@@ -457,14 +472,21 @@ l_018_005F6:
         subq.b  #$1,d0                          ; 00602
         bne.b   l_018_00618                     ; 00604
 l_018_00606:
-        bsr.w   sub_018_0061A                   ; 00606
+        bsr.w   PlayerParked                    ; 00606
         bne.b   l_018_00618                     ; 0060A
         move.b  #$fc,(MissionResult).l          ; 0060C
         moveq   #$0,d0                          ; 00614
         bra.b   l_018_005D6                     ; 00616
 l_018_00618:
         rts                                     ; 00618
-sub_018_0061A:
+
+;-------------------------------------------------------------------------------
+; PlayerParked - Returns 0 when the player's aircraft is down at home and stopped: on the
+; ground (+$21 bit 0, +$03 bit 7), on the carrier (+$04 bits 6-7) or the airfield (+$04 bit 2)
+; by StartPoint, speed flown 0. After a success ($FF) this turns the result into $FC, the
+; mission completed.
+;-------------------------------------------------------------------------------
+PlayerParked:
         lea.l   (ObjectTable).l,a0              ; 0061A
         btst    #$0,$21(a0)                     ; 00620
         beq.b   l_018_00658                     ; 00626

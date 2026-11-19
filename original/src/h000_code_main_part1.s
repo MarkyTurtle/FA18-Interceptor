@@ -1982,7 +1982,7 @@ l_000_018EC:
         tst.b   d0                              ; 01904
         bpl.b   l_000_01922                     ; 01906
         clr.b   (QuitRequest).l                 ; 01908
-        move.w  (dat_071_00290).l,(StateTimer).l ; 0190E
+        move.w  (DebriefDelay).l,(StateTimer).l ; 0190E
         lea.l   StateDebriefWait(pc),a0         ; 01918
         move.l  a0,(GameState).l                ; 0191C
 l_000_01922:
@@ -3582,8 +3582,8 @@ l_000_02DB6:
         rts                                     ; 02DB6
 
 ;-------------------------------------------------------------------------------
-; StateReadyText - A mission shows "your vector xxx for bogey" (page $58) if there is a target;
-; then "ready for takeoff" ($59) or, on the carrier, "ready to launch" ($5A); then
+; StateReadyText - A mission shows "your vector xxx for bogey" (page $58, BogeyVector) if there
+; is a target; then "ready for takeoff" ($59) or, on the carrier, "ready to launch" ($5A); then
 ; StateReadyWait.
 ;-------------------------------------------------------------------------------
 StateReadyText:
@@ -3599,7 +3599,7 @@ StateReadyText:
         blt.b   l_000_02E02                     ; 02DE4
         cmpi.b  #$8,d0                          ; 02DE6
         bgt.b   l_000_02E02                     ; 02DEA
-        jsr     (sub_020_002C0).l               ; 02DEC
+        jsr     (BogeyVector).l                 ; 02DEC
         tst.l   d0                              ; 02DF2
         bmi.b   l_000_02E02                     ; 02DF4
         movea.l -$4(a6),a0                      ; 02DF6

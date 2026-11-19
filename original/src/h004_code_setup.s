@@ -139,7 +139,7 @@ sub_004_0020A:
 l_004_0021A:
         clr.b   (a0)+                           ; 0021A
         dbra    d0,l_004_0021A                  ; 0021C
-        lea.l   (dat_071_00290).l,a0            ; 00220
+        lea.l   (DebriefDelay).l,a0             ; 00220
         move.l  #LogDiskStatus,d0               ; 00226
         sub.l   a0,d0                           ; 0022C
         lsr.w   #$1,d0                          ; 0022E
@@ -267,7 +267,7 @@ sub_004_003E8:
         move.b  #$ff,(RedrawFlags).l            ; 003E8
         bsr.w   sub_004_00768                   ; 003F0
         bsr.w   sub_004_00708                   ; 003F4
-        clr.w   (dat_071_00392).l               ; 003F8
+        clr.w   (EjectedPilot).l                ; 003F8
         moveq   #$9,d0                          ; 003FE
         move.b  d0,(Player_2B).l                ; 00400
         asl.w   #$3,d0                          ; 00406
@@ -517,7 +517,7 @@ sub_004_00768:
         clr.b   (dat_071_00283).l               ; 0079E
         clr.b   (dat_071_00281).l               ; 007A4
         clr.b   (dat_071_00259).l               ; 007AA
-        clr.b   (dat_071_0023F).l               ; 007B0
+        clr.b   (VisualConfirmTimer).l          ; 007B0
         clr.b   (dat_071_00285).l               ; 007B6
         move.w  #$7fff,(dat_071_00512).l        ; 007BC
         move.b  #$1,(dat_071_001A8).l           ; 007C4

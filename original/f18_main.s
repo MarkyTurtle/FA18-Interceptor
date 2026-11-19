@@ -294,7 +294,7 @@
 	include	"src/h016_code_model_table.s"
 
 ; Hunk 17: UpdateAllObjects (every object's update, each frame), LaunchMissile, UpdateMissile,
-;         falling objects.
+;         falling objects, ejecting (EjectAndDrop, EjectPilot) and the rescue pod.
 	include	"src/h017_code_objects_weapons.s"
 
 ; Hunk 18: Judging the missions: JudgeMission (each frame, from UpdateAllObjects) calls the

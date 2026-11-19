@@ -555,7 +555,7 @@ SetOutsideCamera:
         lea.l   (ObjectTable).l,a1              ; 005BA
         move.w  (ViewObject).l,d2               ; 005C0
         bne.b   l_032_005DE                     ; 005C6
-        move.w  (dat_071_00392).l,d2            ; 005C8
+        move.w  (EjectedPilot).l,d2             ; 005C8
         btst    #$6,$1(a1,d2.w)                 ; 005CE
         beq.b   l_032_005E0                     ; 005D4
         cmpi.b  #$30,$62(a1,d2.w)               ; 005D6

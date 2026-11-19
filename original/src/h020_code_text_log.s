@@ -251,9 +251,15 @@ dat_020_0027E:
 l_020_002BC:
         moveq   #-1,d0                          ; 002BC
         rts                                     ; 002BE
-sub_020_002C0:
+
+;-------------------------------------------------------------------------------
+; BogeyVector - For "YOUR VECTOR XXX FOR BOGEY": finds the first enemy aircraft placed
+; (ModeObjects: type $1x, not $15, existing), works out the heading to it from the player in
+; degrees and writes it into the text; returns -1 if there is none.
+;-------------------------------------------------------------------------------
+BogeyVector:
         lea.l   (ObjectTable).l,a1              ; 002C0
-        movea.l (dat_071_0010A).l,a2            ; 002C6
+        movea.l (ModeObjects).l,a2              ; 002C6
 l_020_002CC:
         tst.w   (a2)                            ; 002CC
         blt.b   l_020_002BC                     ; 002CE

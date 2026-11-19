@@ -51,7 +51,13 @@ dat_027_001BC:
 	dc.b	$00,$3A,$68,$00,$FF,$FF,$00,$4C,$00,$4C,$20,$00,$20,$00,$00,$B0
 	dc.b	$00,$3E,$00,$47,$28,$00,$10,$00,$00,$B0,$00,$3C,$00,$3F,$09,$00
 	dc.b	$2A,$00,$00,$B0,$FF,$FF
-dat_027_001F2:
+; ModeTable - What each GameMode starts with (SetupMode): 12 bytes a mode (1-9; 10 for the
+; demo), three variants of (word offset from here to a list chosen by how often the mission was
+; completed, word MissionTargets). The lists give offsets to object lists of 10-byte records
+; (ended by a negative word): +$00 the model (in MissileModels), +$04 the object number (low 7
+; bits), +$08 the lowest Difficulty it appears at (low 7 bits) and in bits 8-11 a GameMode it
+; is only for; +$02 and +$06 not worked out.
+ModeTable:
 	dc.b	$06,$62,$00,$02,$06,$62,$00,$02,$06,$62,$00,$02,$00,$78,$00,$02
 	dc.b	$00,$78,$00,$02,$00,$78,$00,$02,$00,$C8,$00,$02,$00,$D0,$00,$02
 	dc.b	$00,$D8,$00,$02,$01,$94,$00,$02,$01,$94,$00,$02,$01,$94,$00,$02

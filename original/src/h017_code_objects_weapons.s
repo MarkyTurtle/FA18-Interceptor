@@ -1,6 +1,6 @@
 ; F/A-18 Interceptor - hunk 17 (code)
 ; UpdateAllObjects (every object's update, each frame), LaunchMissile, UpdateMissile,
-; falling objects.
+; falling objects, ejecting (EjectAndDrop, EjectPilot) and the rescue pod.
 ; Included by ../f18_main.s.
 
 ;===============================================================================
@@ -91,7 +91,7 @@ l_017_000F6:
         bne.w   l_017_00148                     ; 00130
         tst.b   (LaunchRequest).l               ; 00134
         bne.b   l_017_00144                     ; 0013A
-        bsr.w   sub_017_00468                   ; 0013C
+        bsr.w   EjectAndDrop                    ; 0013C
         bne.b   l_017_00148                     ; 00140
         bra.b   l_017_00154                     ; 00142
 l_017_00144:
@@ -109,7 +109,7 @@ l_017_00154:
         bne.b   l_017_0018C                     ; 00176
         tst.b   (LaunchRequest).l               ; 00178
         bne.b   l_017_00188                     ; 0017E
-        bsr.w   sub_017_00468                   ; 00180
+        bsr.w   EjectAndDrop                    ; 00180
         bne.b   l_017_0018C                     ; 00184
         bra.b   l_017_00198                     ; 00186
 l_017_00188:
@@ -127,7 +127,7 @@ l_017_00198:
         bne.b   l_017_001D0                     ; 001BA
         tst.b   (LaunchRequest).l               ; 001BC
         bne.b   l_017_001CC                     ; 001C2
-        bsr.w   sub_017_00468                   ; 001C4
+        bsr.w   EjectAndDrop                    ; 001C4
         bne.b   l_017_001D0                     ; 001C8
         bra.b   l_017_001DC                     ; 001CA
 l_017_001CC:
@@ -286,9 +286,15 @@ l_017_00450:
         move.w  #$ffff,(dat_071_0030A).l        ; 0045E
 l_017_00466:
         rts                                     ; 00466
-sub_017_00468:
+
+;-------------------------------------------------------------------------------
+; EjectAndDrop - Steps the player's ejection or drop (+$7C low nibble, set by Shift+E to $A, by
+; Shift+F in mission F4 to $F): $E-$F drops the rescue pod (DropRescuePod); 9 the ejection
+; sound; 3 the pilot leaves the aircraft (EjectPilot).
+;-------------------------------------------------------------------------------
+EjectAndDrop:
         move.l  a2,-(a7)                        ; 00468
-        tst.w   (dat_071_00392).l               ; 0046A
+        tst.w   (EjectedPilot).l                ; 0046A
         bne.b   l_017_004E0                     ; 00470
         lea.l   (ObjectTable).l,a2              ; 00472
         move.b  $7c(a2),d0                      ; 00478
@@ -298,11 +304,11 @@ sub_017_00468:
         blt.b   l_017_004AE                     ; 00486
         andi.b  #$f0,d1                         ; 00488
         move.b  d1,$7c(a2)                      ; 0048C
-        bsr.w   sub_017_00A96                   ; 00490
+        bsr.w   DropRescuePod                   ; 00490
         bra.b   l_017_004EE                     ; 00494
 sub_017_00496:
         move.l  a2,-(a7)                        ; 00496
-        tst.w   (dat_071_00392).l               ; 00498
+        tst.w   (EjectedPilot).l                ; 00498
         bne.b   l_017_004E0                     ; 0049E
         lea.l   (ObjectTable).l,a2              ; 004A0
         move.b  $7c(a2),d0                      ; 004A6
@@ -312,7 +318,7 @@ l_017_004AE:
         bne.b   l_017_004C2                     ; 004B2
         tst.b   (dat_071_00155).l               ; 004B4
         bne.b   l_017_004C2                     ; 004BA
-        bsr.w   sub_017_00506                   ; 004BC
+        bsr.w   EjectSound                      ; 004BC
         bra.b   l_017_004E0                     ; 004C0
 l_017_004C2:
         cmpi.b  #$1,d0                          ; 004C2
@@ -326,7 +332,7 @@ l_017_004E0:
 l_017_004E4:
         cmpi.b  #$3,d0                          ; 004E4
         bne.b   l_017_004E0                     ; 004E8
-        bsr.w   sub_017_00A2A                   ; 004EA
+        bsr.w   EjectPilot                      ; 004EA
 l_017_004EE:
         moveq   #$1,d0                          ; 004EE
 l_017_004F0:
@@ -335,7 +341,11 @@ l_017_004F0:
 dat_017_004F4:
 	dc.b	$00,$C8,$00,$0E,$00,$08,$00,$C8,$00,$00,$00,$02,$00,$01,$00,$05
 	dc.b	$00,$01
-sub_017_00506:
+
+;-------------------------------------------------------------------------------
+; EjectSound - Plays the ejection's sound.
+;-------------------------------------------------------------------------------
+EjectSound:
         move.l  a1,-(a7)                        ; 00506
         lea.l   dat_017_004F4(pc),a1            ; 00508
         movem.w (a1),d0-d7/a0                   ; 0050C
@@ -681,14 +691,19 @@ dat_017_009EA:
 	dc.b	$00,$00,$01,$03,$80,$00,$00,$27,$00,$00,$01,$03,$80,$00,$00,$0E
 	dc.b	$00,$00,$01,$03,$80,$00,$00,$11,$00,$00,$01,$03,$80,$00,$00,$14
 	dc.b	$00,$00,$01,$03,$80,$00,$00,$17,$00,$00,$01,$01,$80,$00,$00,$1A
-sub_017_00A2A:
+
+;-------------------------------------------------------------------------------
+; EjectPilot - Makes the ejected pilot an object (type $30, a copy of the aircraft's record;
+; EjectedPilot) and turns the view to it.
+;-------------------------------------------------------------------------------
+EjectPilot:
         move.l  a1,d1                           ; 00A2A
         subi.l  #ObjectTable,d1                 ; 00A2C
-        move.w  d1,(dat_071_00392).l            ; 00A32
+        move.w  d1,(EjectedPilot).l             ; 00A32
         tst.b   (dat_071_00155).l               ; 00A38
         bne.b   l_017_00A4C                     ; 00A3E
         move.w  (CurrentObject).l,d1            ; 00A40
-        jsr     (sub_005_012D0).l               ; 00A46
+        jsr     (ViewFollow).l                  ; 00A46
 l_017_00A4C:
         lea.l   (a2),a4                         ; 00A4C
         lea.l   (a1),a5                         ; 00A4E
@@ -709,10 +724,14 @@ l_017_00A52:
         movem.l (a7)+,a1-a2                     ; 00A8A
         move.w  #$28,d0                         ; 00A8E
         bra.w   l_017_00BDA                     ; 00A92
-sub_017_00A96:
+
+;-------------------------------------------------------------------------------
+; DropRescuePod - Makes the rescue pod an object (RescuePod), a copy of the aircraft's record.
+;-------------------------------------------------------------------------------
+DropRescuePod:
         move.l  a1,d1                           ; 00A96
         subi.l  #ObjectTable,d1                 ; 00A98
-        move.w  d1,(dat_071_00292).l            ; 00A9E
+        move.w  d1,(RescuePod).l                ; 00A9E
         lea.l   (a2),a4                         ; 00AA4
         lea.l   (a1),a5                         ; 00AA6
         moveq   #$28,d0                         ; 00AA8
@@ -1303,7 +1322,7 @@ l_017_011EE:
         move.w  (CurrentObject).l,d1            ; 011FA
         cmp.w   (dat_071_002AC).l,d1            ; 01200
         beq.b   l_017_0121A                     ; 01206
-        jsr     (sub_005_012D0).l               ; 01208
+        jsr     (ViewFollow).l                  ; 01208
         clr.b   (dat_071_001A9).l               ; 0120E
         jsr     (sub_005_00B8E).l               ; 01214
 l_017_0121A:
@@ -1700,7 +1719,7 @@ l_017_0165A:
 l_017_0165E:
         btst    #$4,$0(a1)                      ; 0165E
         beq.b   l_017_0165A                     ; 01664
-        movea.l (dat_071_0010A).l,a3            ; 01666
+        movea.l (ModeObjects).l,a3              ; 01666
 l_017_0166C:
         tst.w   (a3)                            ; 0166C
         blt.b   l_017_01686                     ; 0166E
