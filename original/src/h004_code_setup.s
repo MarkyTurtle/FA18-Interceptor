@@ -120,7 +120,7 @@ l_004_001C2:
 l_004_001DC:
         move.b  d1,(a0)+                        ; 001DC
         dbra    d0,l_004_001DC                  ; 001DE
-        lea.l   (dat_071_001DA).l,a0            ; 001E2
+        lea.l   (TargetText).l,a0               ; 001E2
         moveq   #$20,d1                         ; 001E8
         moveq   #$1b,d0                         ; 001EA
 l_004_001EC:
@@ -522,7 +522,7 @@ sub_004_00768:
         move.w  #$7fff,(dat_071_00512).l        ; 007BC
         move.b  #$1,(dat_071_001A8).l           ; 007C4
         move.b  #$ff,$71(a0)                    ; 007CC
-        move.w  #$ffff,(dat_071_00390).l        ; 007D2
+        move.w  #$ffff,(LockedTarget).l         ; 007D2
         clr.b   (dat_071_00238).l               ; 007DA
         tst.b   (MissionResult).l               ; 007E0
         beq.b   l_004_007F0                     ; 007E6

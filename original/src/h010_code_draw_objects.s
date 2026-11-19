@@ -389,7 +389,7 @@ l_010_00428:
         add.l   d2,d4                           ; 00478
         asr.l   #$8,d4                          ; 0047A
         move.w  d4,(a3)+                        ; 0047C
-        move.w  (dat_071_00390).l,d2            ; 0047E
+        move.w  (LockedTarget).l,d2             ; 0047E
         blt.b   l_010_004B6                     ; 00484
         cmp.w   (CurrentObjectOffset).l,d2      ; 00486
         bne.b   l_010_004B6                     ; 0048C

@@ -190,7 +190,8 @@ dat_071_000CA:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_000CE:
+; PrintPosition - The printer's place: the column, the text and the screen offset (a1, a2, a4).
+PrintPosition:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -204,7 +205,8 @@ dat_071_000D6:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_000DA:
+; PrintLineStart - The printer's place at the start of the current line.
+PrintLineStart:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -448,7 +450,8 @@ dat_071_00193:
 	dc.b	$00
 dat_071_00195:
 	dc.b	$00
-dat_071_00196:
+; TextPageIndex - Which page of TextPages is being shown (times 2).
+TextPageIndex:
 	dc.b	$00
 ; SecurityCode - The security check's four digits (0-15), shown to the player.
 SecurityCode:
@@ -482,9 +485,13 @@ dat_071_001A8:
 dat_071_001A9:
 	dc.b	$00
 	dc.b	$00
-dat_071_001AB:
+; TypeDelay - Frames between characters as a page is typed (the low nibble of the page's colour
+; byte).
+TypeDelay:
 	dc.b	$00
-dat_071_001AC:
+; PageFlags - The current page's flags (from its header): bit 0 typed out a character at a
+; time.
+PageFlags:
 	dc.b	$00
 dat_071_001AD:
 	dc.b	$00
@@ -496,7 +503,8 @@ dat_071_001AF:
 ; queue has been shown (states wait for it).
 TextStatus:
 	dc.b	$00
-dat_071_001B1:
+; KeyBuffer - The last 10 raw key codes, a ring filled by HandleKey for the text input.
+KeyBuffer:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -523,13 +531,18 @@ SecurityInput:
 ; countercode's length).
 InputLength:
 	dc.b	$00
-dat_071_001C6:
+; InputPos - The next character's place in the text being typed (the callsign or the
+; countercode).
+InputPos:
 	dc.b	$00
-dat_071_001C7:
+; KeyBufferIn - Where HandleKey puts the next key in KeyBuffer.
+KeyBufferIn:
 	dc.b	$00
-dat_071_001C8:
+; KeyBufferOut - Where PrintText takes the next key from KeyBuffer.
+KeyBufferOut:
 	dc.b	$00
-dat_071_001C9:
+; KeyBufferCount - Keys waiting in KeyBuffer.
+KeyBufferCount:
 	dc.b	$00
 dat_071_001CA:
 	dc.b	$00
@@ -551,7 +564,8 @@ dat_071_001CF:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_001DA:
+; TargetText - The target readout's text line (TargetReadout).
+TargetText:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -737,7 +751,8 @@ dat_071_0023C:
 	dc.b	$00
 dat_071_0023D:
 	dc.b	$00
-dat_071_0023E:
+; StatusLights - Bits for the panel's status lights (DrawStatusLights): bits 1, 2, 4 and 5.
+StatusLights:
 	dc.b	$00
 ; VisualConfirmTimer - Mission F1: counts 30 frames down while an aircraft is held close in the
 ; view; negative when the confirmation is done.
@@ -1105,7 +1120,8 @@ ViewCellZ:
 dat_071_00320:
 	dc.b	$00
 	dc.b	$00
-dat_071_00322:
+; TextColour - The colour the page is drawn in (the high nibble of the page's colour byte).
+TextColour:
 	dc.b	$00
 	dc.b	$00
 ; DrawColour - The colour Plot and DrawLine draw in (0-15).
@@ -1267,7 +1283,8 @@ dat_071_0038C:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00390:
+; LockedTarget - The object the radar has locked (offset into ObjectTable), -1 for none.
+LockedTarget:
 	dc.b	$00
 	dc.b	$00
 ; EjectedPilot - The ejected pilot's object (offset into ObjectTable; type $30, under the
@@ -1283,7 +1300,8 @@ dat_071_00396:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0039A:
+; RadarListEnd - Where AddRadarObject puts the next entry of RadarList.
+RadarListEnd:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00

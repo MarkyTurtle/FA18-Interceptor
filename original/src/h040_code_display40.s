@@ -578,13 +578,13 @@ sub_040_008E0:
         andi.b  #$f0,d5                         ; 008FA
         cmpi.b  #$10,d5                         ; 008FE
         beq.b   l_040_00934                     ; 00902
-        tst.w   (dat_071_00390).l               ; 00904
+        tst.w   (LockedTarget).l                ; 00904
         blt.w   l_040_00A6C                     ; 0090A
         move.w  #$9f,d0                         ; 0090E
         move.w  #$5b,d1                         ; 00912
         tst.w   (dat_071_0030A).l               ; 00916
         ble.b   l_040_00928                     ; 0091C
-        tst.w   (dat_071_00390).l               ; 0091E
+        tst.w   (LockedTarget).l                ; 0091E
         bge.w   l_040_009C0                     ; 00924
 l_040_00928:
         movem.w d0-d1,(dat_071_0030E).l         ; 00928
@@ -609,7 +609,7 @@ l_040_0095C:
         bgt.b   l_040_00994                     ; 00968
         tst.b   (dat_071_00284).l               ; 0096A
         bne.b   l_040_0098C                     ; 00970
-        tst.w   (dat_071_00390).l               ; 00972
+        tst.w   (LockedTarget).l                ; 00972
         blt.b   l_040_00994                     ; 00978
         ori.l   #$4,(SoundRequests).l           ; 0097A
         move.b  #$1,(dat_071_00284).l           ; 00984
@@ -635,7 +635,7 @@ l_040_009C0:
         lea.l   (dat_040_016F4).l,a0            ; 009D8
         move.w  #$a,(DrawColour).l              ; 009DE
         bsr.w   sub_040_01348                   ; 009E6
-        tst.w   (dat_071_00390).l               ; 009EA
+        tst.w   (LockedTarget).l                ; 009EA
         blt.w   l_040_00A6C                     ; 009F0
         movem.w (dat_071_0030E).l,d0-d1         ; 009F4
         add.w   (ViewY).l,d1                    ; 009FC
@@ -749,7 +749,7 @@ sub_040_00B4C:
 l_040_00B6E:
         rts                                     ; 00B6E
 sub_040_00B70:
-        tst.w   (dat_071_00390).l               ; 00B70
+        tst.w   (LockedTarget).l                ; 00B70
         blt.b   sub_040_00B4C                   ; 00B76
         lea.l   (ObjectTable).l,a1              ; 00B78
         adda.w  (ViewObject).l,a1               ; 00B7E
@@ -793,7 +793,7 @@ l_040_00BDA:
 l_040_00C0E:
         cmp.w   $4a(a1),d7                      ; 00C0E
         ble.b   l_040_00C78                     ; 00C12
-        tst.w   (dat_071_00390).l               ; 00C14
+        tst.w   (LockedTarget).l                ; 00C14
         blt.b   l_040_00C78                     ; 00C1A
         cmpi.w  #$fd5d,(dat_071_00516).l        ; 00C1C
         blt.b   l_040_00C5A                     ; 00C24

@@ -272,7 +272,7 @@ l_017_00426:
         move.l  (a7)+,d5                        ; 0042C
         rts                                     ; 0042E
 sub_017_00430:
-        move.w  (dat_071_00390).l,d0            ; 00430
+        move.w  (LockedTarget).l,d0             ; 00430
         blt.b   l_017_00466                     ; 00436
         lea.l   (ObjectTable).l,a1              ; 00438
         adda.w  d0,a1                           ; 0043E
@@ -281,7 +281,7 @@ sub_017_00430:
         btst    #$1,$20(a1)                     ; 00448
         beq.b   l_017_00466                     ; 0044E
 l_017_00450:
-        move.w  #$ffff,(dat_071_00390).l        ; 00450
+        move.w  #$ffff,(LockedTarget).l         ; 00450
         clr.b   (dat_071_00238).l               ; 00458
         move.w  #$ffff,(dat_071_0030A).l        ; 0045E
 l_017_00466:
@@ -1476,7 +1476,7 @@ l_017_01378:
         btst    #$3,$1(a1)                      ; 0137E
         beq.b   l_017_013D2                     ; 01384
 l_017_01386:
-        move.w  (dat_071_00390).l,d0            ; 01386
+        move.w  (LockedTarget).l,d0             ; 01386
         cmpi.w  #$ffff,d0                       ; 0138C
         beq.w   l_017_0130E                     ; 01390
         cmp.w   (CurrentObjectOffset).l,d0      ; 01394
@@ -1683,7 +1683,7 @@ l_017_015DC:
         bne.b   l_017_015EE                     ; 015E8
         adda.w  #$20,a4                         ; 015EA
 l_017_015EE:
-        move.w  (dat_071_00390).l,d0            ; 015EE
+        move.w  (LockedTarget).l,d0             ; 015EE
         blt.b   l_017_01610                     ; 015F4
         cmp.w   (CurrentObjectOffset).l,d0      ; 015F6
         bne.b   l_017_01610                     ; 015FC
@@ -1896,7 +1896,7 @@ sub_017_01862:
 l_017_0188E:
         clr.b   (dat_071_00216).l               ; 0188E
 l_017_01894:
-        move.w  (dat_071_00390).l,d0            ; 01894
+        move.w  (LockedTarget).l,d0             ; 01894
         ble.b   l_017_018E6                     ; 0189A
         lea.l   (ObjectTable).l,a2              ; 0189C
         adda.w  d0,a2                           ; 018A2

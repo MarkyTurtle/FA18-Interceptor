@@ -1,5 +1,6 @@
 ; F/A-18 Interceptor - hunk 39 (code)
-; The head-up display and instruments ("GUN RNG SHOOT"...) (not worked out yet)
+; The instruments' numbers and texts ("GUN RNG SHOOT"...), the target readout (TargetReadout)
+; and the text printer (PrintText: the menus, briefings and typed input).
 ; Included by ../f18_main.s.
 
 ;===============================================================================
@@ -143,7 +144,7 @@ sub_039_00276:
         lea.l   $4(a2),a0                       ; 0029E
         lea.l   $78.w,a4                        ; 002A2
         lea.l   $0.w,a5                         ; 002A6
-        bsr.w   sub_039_011C8                   ; 002AA
+        bsr.w   PrintNumber                     ; 002AA
         tst.b   (dat_071_00183).l               ; 002AE
         beq.b   l_039_00274                     ; 002B4
         move.w  (MouseX).l,d0                   ; 002B6
@@ -159,7 +160,7 @@ l_039_002C0:
         lea.l   $4(a2),a0                       ; 002DA
         lea.l   $7c.w,a4                        ; 002DE
         lea.l   $4.w,a5                         ; 002E2
-        bsr.w   sub_039_011C8                   ; 002E6
+        bsr.w   PrintNumber                     ; 002E6
         move.w  (MouseY).l,d0                   ; 002EA
         bge.b   l_039_002F4                     ; 002F0
         neg.w   d0                              ; 002F2
@@ -173,7 +174,7 @@ l_039_002F4:
         lea.l   $4(a2),a0                       ; 0030E
         lea.l   $80.w,a4                        ; 00312
         lea.l   $8.w,a5                         ; 00316
-        bsr.w   sub_039_011C8                   ; 0031A
+        bsr.w   PrintNumber                     ; 0031A
         rts                                     ; 0031E
 sub_039_00320:
         tst.b   (dat_071_00207).l               ; 00320
@@ -684,8 +685,15 @@ l_039_009BC:
         bra.w   sub_039_00E36                   ; 009E8
 l_039_009EC:
         rts                                     ; 009EC
-sub_039_009EE:
-        move.w  (dat_071_00390).l,d2            ; 009EE
+
+;-------------------------------------------------------------------------------
+; TargetReadout - The locked target's readout on the panel (twice a frame stage, every few
+; frames): its type - MIG-29 ($12), MIG-25 ($13), AF-1 ($14), 707 ($16), 767 ($17), F-16 ($10),
+; CRUISE ($15) - or NO SIG until its signature is confirmed (+$20 bit 6), then in turn its
+; altitude (ALT:), heading (HDG:, degrees) and speed (SPD:).
+;-------------------------------------------------------------------------------
+TargetReadout:
+        move.w  (LockedTarget).l,d2             ; 009EE
         blt.w   l_039_00C10                     ; 009F4
         move.w  (dat_071_0029C).l,d3            ; 009F8
         andi.w  #$81,d3                         ; 009FE
@@ -722,8 +730,8 @@ l_039_00A6A:
         bra.w   l_039_00D78                     ; 00A80
 l_039_00A84:
         move.w  d0,(dat_071_00394).l            ; 00A84
-        lea.l   (dat_071_001DA).l,a2            ; 00A8A
-        lea.l   (dat_039_00DB8).l,a1            ; 00A90
+        lea.l   (TargetText).l,a2               ; 00A8A
+        lea.l   (TextBlankLine).l,a1            ; 00A90
 l_039_00A96:
         move.b  (a1)+,d1                        ; 00A96
         beq.b   l_039_00A9E                     ; 00A98
@@ -736,39 +744,39 @@ l_039_00A9E:
         adda.w  d2,a4                           ; 00AB4
         btst    #$6,$20(a4)                     ; 00AB6
         bne.b   l_039_00AD0                     ; 00ABC
-        lea.l   (dat_039_00E05).l,a1            ; 00ABE
+        lea.l   (TextNoSig).l,a1                ; 00ABE
         andi.b  #$3f,(dat_071_00232).l          ; 00AC4
         bra.w   l_039_00B56                     ; 00ACC
 l_039_00AD0:
         move.b  $62(a4),d1                      ; 00AD0
         cmpi.b  #$12,d1                         ; 00AD4
         bne.b   l_039_00AE4                     ; 00AD8
-        lea.l   (dat_039_00DE2).l,a1            ; 00ADA
+        lea.l   (TextMiG29).l,a1                ; 00ADA
         bra.w   l_039_00B56                     ; 00AE0
 l_039_00AE4:
         cmpi.b  #$13,d1                         ; 00AE4
         bne.b   l_039_00AF2                     ; 00AE8
-        lea.l   (dat_039_00DE9).l,a1            ; 00AEA
+        lea.l   (TextMiG25).l,a1                ; 00AEA
         bra.b   l_039_00B56                     ; 00AF0
 l_039_00AF2:
         cmpi.b  #$14,d1                         ; 00AF2
         bne.b   l_039_00B00                     ; 00AF6
-        lea.l   (dat_039_00DF0).l,a1            ; 00AF8
+        lea.l   (TextAF1).l,a1                  ; 00AF8
         bra.b   l_039_00B28                     ; 00AFE
 l_039_00B00:
         cmpi.b  #$16,d1                         ; 00B00
         bne.b   l_039_00B0E                     ; 00B04
-        lea.l   (sub_039_00E0C).l,a1            ; 00B06
+        lea.l   (Text707).l,a1                  ; 00B06
         bra.b   l_039_00B28                     ; 00B0C
 l_039_00B0E:
         cmpi.b  #$17,d1                         ; 00B0E
         bne.b   l_039_00B1C                     ; 00B12
-        lea.l   (l_039_00E12+1).l,a1            ; 00B14
+        lea.l   (Text767).l,a1                  ; 00B14
         bra.b   l_039_00B28                     ; 00B1A
 l_039_00B1C:
         cmpi.b  #$10,d1                         ; 00B1C
         bne.b   l_039_00B3A                     ; 00B20
-        lea.l   (dat_039_00DF7).l,a1            ; 00B22
+        lea.l   (TextF16).l,a1                  ; 00B22
 l_039_00B28:
         andi.b  #$3f,(dat_071_00232).l          ; 00B28
         ori.b   #$40,(dat_071_00232).l          ; 00B30
@@ -776,7 +784,7 @@ l_039_00B28:
 l_039_00B3A:
         cmpi.b  #$15,d1                         ; 00B3A
         bne.b   l_039_00B64                     ; 00B3E
-        lea.l   (dat_039_00DFE).l,a1            ; 00B40
+        lea.l   (TextCruise).l,a1               ; 00B40
         andi.b  #$3f,(dat_071_00232).l          ; 00B46
         ori.b   #$80,(dat_071_00232).l          ; 00B4E
 l_039_00B56:
@@ -790,7 +798,7 @@ l_039_00B64:
         lea.l   (dat_071_001E7).l,a2            ; 00B64
         subq.w  #$1,d0                          ; 00B6A
         bne.b   l_039_00B9E                     ; 00B6C
-        lea.l   (dat_039_00DD3).l,a1            ; 00B6E
+        lea.l   (TextALT).l,a1                  ; 00B6E
 l_039_00B74:
         move.b  (a1)+,d1                        ; 00B74
         beq.b   l_039_00B7C                     ; 00B76
@@ -807,12 +815,12 @@ l_039_00B7C:
         lea.l   (dat_071_001F1).l,a2            ; 00B8C
         moveq   #$4,d2                          ; 00B92
         moveq   #$0,d4                          ; 00B94
-        bsr.w   sub_039_00D7A                   ; 00B96
+        bsr.w   PutDigits                       ; 00B96
         bra.w   l_039_00CA6                     ; 00B9A
 l_039_00B9E:
         subq.w  #$1,d0                          ; 00B9E
         bne.b   l_039_00BD0                     ; 00BA0
-        lea.l   (dat_039_00DD8).l,a1            ; 00BA2
+        lea.l   (TextHDG).l,a1                  ; 00BA2
 l_039_00BA8:
         move.b  (a1)+,d1                        ; 00BA8
         beq.b   l_039_00BB0                     ; 00BAA
@@ -827,12 +835,12 @@ l_039_00BB0:
         lea.l   (dat_071_001F0).l,a2            ; 00BBE
         moveq   #$2,d2                          ; 00BC4
         moveq   #$1,d4                          ; 00BC6
-        bsr.w   sub_039_00D7A                   ; 00BC8
+        bsr.w   PutDigits                       ; 00BC8
         bra.w   l_039_00CA6                     ; 00BCC
 l_039_00BD0:
         subq.w  #$1,d0                          ; 00BD0
         bne.w   l_039_00CA6                     ; 00BD2
-        lea.l   (dat_039_00DDD).l,a1            ; 00BD6
+        lea.l   (TextSPD).l,a1                  ; 00BD6
 l_039_00BDC:
         move.b  (a1)+,d1                        ; 00BDC
         beq.b   l_039_00BE4                     ; 00BDE
@@ -852,7 +860,7 @@ l_039_00BF6:
         lea.l   (dat_071_001F0).l,a2            ; 00BFE
         moveq   #$3,d2                          ; 00C04
         moveq   #$0,d4                          ; 00C06
-        bsr.w   sub_039_00D7A                   ; 00C08
+        bsr.w   PutDigits                       ; 00C08
         bra.w   l_039_00CA6                     ; 00C0C
 l_039_00C10:
         tst.w   (dat_071_00394).l               ; 00C10
@@ -875,7 +883,7 @@ l_039_00C1C:
         addq.w  #$1,d1                          ; 00C42
         lea.l   (Messages).l,a1                 ; 00C44
         adda.w  d1,a1                           ; 00C4A
-        lea.l   (dat_071_001DA).l,a2            ; 00C4C
+        lea.l   (TargetText).l,a2               ; 00C4C
         moveq   #$1a,d1                         ; 00C52
 l_039_00C54:
         move.b  (a1)+,(a2)+                     ; 00C54
@@ -893,7 +901,7 @@ l_039_00C6E:
 l_039_00C7E:
         lea.l   (Messages).l,a1                 ; 00C7E
         addq.w  #$1,a1                          ; 00C84
-        lea.l   (dat_071_001DA).l,a2            ; 00C86
+        lea.l   (TargetText).l,a2               ; 00C86
         moveq   #$1a,d1                         ; 00C8C
 l_039_00C8E:
         move.b  (a1)+,(a2)+                     ; 00C8E
@@ -904,7 +912,7 @@ l_039_00C96:
         ble.w   l_039_00D78                     ; 00C9C
         subq.b  #$1,(dat_071_0020C).l           ; 00CA0
 l_039_00CA6:
-        lea.l   (dat_071_001DA).l,a2            ; 00CA6
+        lea.l   (TargetText).l,a2               ; 00CA6
         lea.l   dat_039_00098(pc),a1            ; 00CAC
         lea.l   $1e0c.w,a4                      ; 00CB0
         lea.l   $c.w,a5                         ; 00CB4
@@ -966,7 +974,12 @@ sub_039_00D62:
         bra.w   sub_039_00E94                   ; 00D74
 l_039_00D78:
         rts                                     ; 00D78
-sub_039_00D7A:
+
+;-------------------------------------------------------------------------------
+; PutDigits - PutDigits(d0 = value, a2 = the end of the field, d2 = digits - 1, d4 = keep
+; leading zeros): writes the value in decimal backwards into a text.
+;-------------------------------------------------------------------------------
+PutDigits:
         move.l  d0,(BCDIn).l                    ; 00D7A
         jsr     (BinToBCD).l                    ; 00D80
         move.l  (BCDOut).l,d3                   ; 00D86
@@ -988,40 +1001,49 @@ l_039_00DA6:
         dbra    d0,l_039_00DA6                  ; 00DB2
 l_039_00DB6:
         rts                                     ; 00DB6
-dat_039_00DB8:
+; TextBlankLine - 26 spaces: clears the target readout.
+TextBlankLine:
 	dc.b	'                          '
 	dc.b	$00
-dat_039_00DD3:
+; TextALT - "ALT:"
+TextALT:
 	dc.b	$41,$4C,$54,$3A,$00
-dat_039_00DD8:
+; TextHDG - "HDG:"
+TextHDG:
 	dc.b	$48,$44,$47,$3A,$00
-dat_039_00DDD:
+; TextSPD - "SPD:"
+TextSPD:
 	dc.b	$53,$50,$44,$3A,$00
-dat_039_00DE2:
+; TextMiG29 - "MIG-29" (written M1G-29 on the disk).
+TextMiG29:
 	dc.b	'M1G-29'
 	dc.b	$00
-dat_039_00DE9:
+; TextMiG25 - "MIG-25" (written M1G-25).
+TextMiG25:
 	dc.b	'M1G-25'
 	dc.b	$00
-dat_039_00DF0:
+; TextAF1 - " AF-1 "
+TextAF1:
 	dc.b	' AF-1 '
 	dc.b	$00
-dat_039_00DF7:
+; TextF16 - " F-16 "
+TextF16:
 	dc.b	' F-16 '
 	dc.b	$00
-dat_039_00DFE:
+; TextCruise - "CRUISE"
+TextCruise:
 	dc.b	'CRUISE'
 	dc.b	$00
-dat_039_00E05:
+; TextNoSig - "NO SIG": the target's signature is not confirmed yet.
+TextNoSig:
 	dc.b	'NO SIG'
 	dc.b	$00
-sub_039_00E0C:
-        move.l  $37(a7,d3.w),d0                 ; 00E0C
-        move.l  -(a0),d0                        ; 00E10
-l_039_00E12:
-	dc.b	$00,$20,$37,$36  ori.b #$36,-(a0)
-        move.w  -(a0),-(a3)                     ; 00E16
-        move.l  d0,d0                           ; 00E18
+Text707:
+	dc.b	' 707  '
+	dc.b	$00
+Text767:
+	dc.b	' 767  '
+	dc.b	$00
 sub_039_00E1A:
         swap    d6                              ; 00E1A
         move.w  #$0,d6                          ; 00E1C
@@ -1347,7 +1369,12 @@ sub_039_011C2:
         moveq   #$0,d6                          ; 011C2
         moveq   #$0,d7                          ; 011C4
         bra.b   l_039_01200                     ; 011C6
-sub_039_011C8:
+
+;-------------------------------------------------------------------------------
+; PrintNumber - Writes the number in BCDOut as digits (leading zeros as spaces) into a text and
+; draws it on the panel.
+;-------------------------------------------------------------------------------
+PrintNumber:
         moveq   #$0,d6                          ; 011C8
         moveq   #$0,d7                          ; 011CA
 l_039_011CC:
@@ -1412,7 +1439,7 @@ l_039_0125A:
         move.w  #$bfa,d2                        ; 01268
 l_039_0126C:
         or.w    d3,d2                           ; 0126C
-        bsr.w   sub_039_017FE                   ; 0126E
+        bsr.w   DrawCharPlane                   ; 0126E
         move.l  $4(a5),d1                       ; 01272
         add.l   d5,d1                           ; 01276
         move.w  #$b0a,d2                        ; 01278
@@ -1421,7 +1448,7 @@ l_039_0126C:
         move.w  #$bfa,d2                        ; 01286
 l_039_0128A:
         or.w    d3,d2                           ; 0128A
-        bsr.w   sub_039_017FE                   ; 0128C
+        bsr.w   DrawCharPlane                   ; 0128C
         move.l  $8(a5),d1                       ; 01290
         add.l   d5,d1                           ; 01294
         move.w  #$b0a,d2                        ; 01296
@@ -1430,7 +1457,7 @@ l_039_0128A:
         move.w  #$bfa,d2                        ; 012A4
 l_039_012A8:
         or.w    d3,d2                           ; 012A8
-        bsr.w   sub_039_017FE                   ; 012AA
+        bsr.w   DrawCharPlane                   ; 012AA
         move.l  $c(a5),d1                       ; 012AE
         add.l   d5,d1                           ; 012B2
         move.w  #$b0a,d2                        ; 012B4
@@ -1439,36 +1466,36 @@ l_039_012A8:
         move.w  #$bfa,d2                        ; 012C2
 l_039_012C6:
         or.w    d3,d2                           ; 012C6
-        bsr.w   sub_039_017FE                   ; 012C8
+        bsr.w   DrawCharPlane                   ; 012C8
 l_039_012CC:
         dbra    d0,l_039_0120E                  ; 012CC
         rts                                     ; 012D0
 l_039_012D2:
         lea.l   (TextPages).l,a0                ; 012D2
-        move.b  (dat_071_00196).l,d0            ; 012D8
+        move.b  (TextPageIndex).l,d0            ; 012D8
         ext.w   d0                              ; 012DE
         tst.w   $2(a0,d0.w)                     ; 012E0
         beq.b   l_039_012F0                     ; 012E4
-        addq.b  #$2,(dat_071_00196).l           ; 012E6
+        addq.b  #$2,(TextPageIndex).l           ; 012E6
         bra.w   l_039_013E6                     ; 012EC
 l_039_012F0:
         move.b  #$1,(TextStatus).l              ; 012F0
         move.w  #$32,(TextHoldTimer).l          ; 012F8
         bra.w   l_039_013B6                     ; 01300
 l_039_01304:
-        btst    #$0,(dat_071_001AC).l           ; 01304
+        btst    #$0,(PageFlags).l               ; 01304
         bne.b   l_039_0133A                     ; 0130C
         subq.b  #$1,(dat_071_001AF).l           ; 0130E
         blt.b   l_039_0133A                     ; 01314
-        movem.l (dat_071_000DA).l,a1-a2/a4      ; 01316
-        movem.l a1-a2/a4,(dat_071_000CE).l      ; 0131E
+        movem.l (PrintLineStart).l,a1-a2/a4     ; 01316
+        movem.l a1-a2/a4,(PrintPosition).l      ; 0131E
         move.b  (dat_071_001A7).l,d1            ; 01326
         beq.b   l_039_01332                     ; 0132C
         subq.b  #$1,d1                          ; 0132E
         bne.b   l_039_01338                     ; 01330
 l_039_01332:
         moveq   #$2,d1                          ; 01332
-        bsr.w   sub_039_0186A                   ; 01334
+        bsr.w   TypeClick                       ; 01334
 l_039_01338:
         rts                                     ; 01338
 l_039_0133A:
@@ -1477,7 +1504,7 @@ l_039_0133A:
         ext.w   d0                              ; 0133E
         asl.w   #$2,d0                          ; 01340
         move.w  d0,(dat_071_00116).l            ; 01342
-        move.b  (a2),(dat_071_001AC).l          ; 01348
+        move.b  (a2),(PageFlags).l              ; 01348
         blt.b   l_039_0136A                     ; 0134E
         addq.w  #$1,a2                          ; 01350
         move.b  #$1,(dat_071_001AF).l           ; 01352
@@ -1485,27 +1512,27 @@ l_039_0133A:
         move.b  d1,d6                           ; 0135C
         andi.w  #$f0,d6                         ; 0135E
         lsr.w   #$4,d6                          ; 01362
-        move.w  d6,(dat_071_00322).l            ; 01364
+        move.w  d6,(TextColour).l               ; 01364
 l_039_0136A:
         move.w  #$ffff,(dat_071_00118).l        ; 0136A
         adda.l  (dat_071_0010E).l,a4            ; 01372
         andi.w  #$f,d1                          ; 01378
         lea.l   (TextPages).l,a0                ; 0137C
-        move.b  (dat_071_00196).l,d0            ; 01382
+        move.b  (TextPageIndex).l,d0            ; 01382
         ext.w   d0                              ; 01388
         move.w  (a0,d0.w),d0                    ; 0138A
         btst    #$e,d0                          ; 0138E
         beq.b   l_039_0139E                     ; 01392
-        move.b  #$2,(dat_071_001AB).l           ; 01394
+        move.b  #$2,(TypeDelay).l               ; 01394
         bra.b   l_039_013A4                     ; 0139C
 l_039_0139E:
-        move.b  d1,(dat_071_001AB).l            ; 0139E
+        move.b  d1,(TypeDelay).l                ; 0139E
 l_039_013A4:
-        lea.l   (dat_064_02366).l,a1            ; 013A4
-        movem.l a1-a2/a4,(dat_071_000DA).l      ; 013AA
+        lea.l   (TextColumns).l,a1              ; 013A4
+        movem.l a1-a2/a4,(PrintLineStart).l     ; 013AA
         bra.w   l_039_017F4                     ; 013B2
 l_039_013B6:
-        clr.b   (dat_071_00196).l               ; 013B6
+        clr.b   (TextPageIndex).l               ; 013B6
         clr.l   (TextPages).l                   ; 013BC
         bra.b   l_039_013EC                     ; 013C2
 l_039_013C4:
@@ -1519,11 +1546,20 @@ l_039_013E6:
         clr.b   (dat_071_00193).l               ; 013E6
 l_039_013EC:
         rts                                     ; 013EC
-sub_039_013EE:
+
+;-------------------------------------------------------------------------------
+; PrintText - The text printer, once a frame (GameFrame's last stages): shows the queue of text
+; pages (TextPages) one after another, typing them out a character per frame or more with a
+; click (TypeClick), each page held TextHoldTimer frames; sets TextStatus bit 7 when the queue
+; is done. With TextStatus 2 (the callsign) or 3 (the security countercode) it takes typed keys
+; from KeyBuffer instead: letters and digits (KeyToAscii) up to InputLength, backspace, and
+; Return, which saves the callsign (SaveConfig) or checks the code (CheckSecurityAnswer).
+;-------------------------------------------------------------------------------
+PrintText:
         tst.b   (dat_071_00241).l               ; 013EE
         bne.b   l_039_013EC                     ; 013F4
         lea.l   (TextPages).l,a0                ; 013F6
-        move.b  (dat_071_00196).l,d1            ; 013FC
+        move.b  (TextPageIndex).l,d1            ; 013FC
         ext.w   d1                              ; 01402
         move.w  (a0,d1.w),d0                    ; 01404
         beq.b   l_039_013C4                     ; 01408
@@ -1533,8 +1569,8 @@ sub_039_013EE:
 l_039_01414:
         tst.b   (dat_071_00193).l               ; 01414
         bne.w   l_039_0151A                     ; 0141A
-        clr.b   (dat_071_001C6).l               ; 0141E
-        lea.l   (dat_064_02366).l,a1            ; 01424
+        clr.b   (InputPos).l                    ; 0141E
+        lea.l   (TextColumns).l,a1              ; 01424
         lea.l   (TextPageTable).l,a0            ; 0142A
         move.w  d0,d2                           ; 01430
         bgt.b   l_039_01444                     ; 01432
@@ -1571,10 +1607,10 @@ l_039_0146E:
         clr.b   (TextStatus).l                  ; 0148A
         bra.b   l_039_014C4                     ; 01490
 l_039_01492:
-        clr.b   (dat_071_001C9).l               ; 01492
-        clr.b   (dat_071_001C8).l               ; 01498
-        clr.b   (dat_071_001C7).l               ; 0149E
-        lea.l   (dat_071_001B1).l,a0            ; 014A4
+        clr.b   (KeyBufferCount).l              ; 01492
+        clr.b   (KeyBufferOut).l                ; 01498
+        clr.b   (KeyBufferIn).l                 ; 0149E
+        lea.l   (KeyBuffer).l,a0                ; 014A4
         lea.l   (SecurityInput).l,a3            ; 014AA
         moveq   #$9,d0                          ; 014B0
 l_039_014B2:
@@ -1589,20 +1625,20 @@ l_039_014C4:
         move.b  #$1,(dat_071_001AF).l           ; 014CC
 l_039_014D4:
         move.b  #$1,(dat_071_00193).l           ; 014D4
-        move.b  (a2)+,(dat_071_001AC).l         ; 014DC
+        move.b  (a2)+,(PageFlags).l             ; 014DC
         move.b  (a2)+,d1                        ; 014E2
         move.b  d1,d6                           ; 014E4
         andi.w  #$f0,d6                         ; 014E6
         lsr.w   #$4,d6                          ; 014EA
-        move.w  d6,(dat_071_00322).l            ; 014EC
+        move.w  d6,(TextColour).l               ; 014EC
         btst    #$e,d2                          ; 014F2
         beq.b   l_039_01504                     ; 014F6
-        move.b  #$2,(dat_071_001AB).l           ; 014F8
+        move.b  #$2,(TypeDelay).l               ; 014F8
         bra.w   l_039_0165C                     ; 01500
 l_039_01504:
         andi.w  #$f,d1                          ; 01504
-        move.b  d1,(dat_071_001AB).l            ; 01508
-        movem.l a1-a2/a4,(dat_071_000DA).l      ; 0150E
+        move.b  d1,(TypeDelay).l                ; 01508
+        movem.l a1-a2/a4,(PrintLineStart).l     ; 0150E
         bra.w   l_039_0165C                     ; 01516
 l_039_0151A:
         tst.w   (TextHoldTimer).l               ; 0151A
@@ -1611,9 +1647,9 @@ l_039_0151A:
         bge.b   l_039_0155C                     ; 0152C
         subq.w  #$1,(dat_071_00116).l           ; 0152E
         bgt.w   l_039_013EC                     ; 01534
-        btst    #$0,(dat_071_001AC).l           ; 01538
+        btst    #$0,(PageFlags).l               ; 01538
         bne.b   l_039_0154E                     ; 01540
-        movem.l (dat_071_000DA).l,a1-a2/a4      ; 01542
+        movem.l (PrintLineStart).l,a1-a2/a4     ; 01542
         bra.w   l_039_015F6                     ; 0154A
 l_039_0154E:
         subq.w  #$1,(dat_071_00118).l           ; 0154E
@@ -1622,8 +1658,8 @@ l_039_0154E:
 l_039_0155C:
         tst.b   (InputLength).l                 ; 0155C
         blt.w   l_039_015AE                     ; 01562
-        lea.l   (dat_071_001B1).l,a0            ; 01566
-        move.b  (dat_071_001C8).l,d5            ; 0156C
+        lea.l   (KeyBuffer).l,a0                ; 01566
+        move.b  (KeyBufferOut).l,d5             ; 0156C
         ext.w   d5                              ; 01572
         move.b  (a0,d5.w),d4                    ; 01574
         beq.w   l_039_013EC                     ; 01578
@@ -1632,14 +1668,14 @@ l_039_0155C:
         tst.b   (dat_071_001AE).l               ; 01582
         ble.b   l_039_015F6                     ; 01588
         subq.b  #$1,(dat_071_001AE).l           ; 0158A
-        subq.b  #$1,(dat_071_001C9).l           ; 01590
+        subq.b  #$1,(KeyBufferCount).l          ; 01590
         clr.b   (a0,d5.w)                       ; 01596
         addq.b  #$1,d5                          ; 0159A
         cmpi.b  #$a,d5                          ; 0159C
         blt.b   l_039_015A4                     ; 015A0
         clr.b   d5                              ; 015A2
 l_039_015A4:
-        move.b  d5,(dat_071_001C8).l            ; 015A4
+        move.b  d5,(KeyBufferOut).l             ; 015A4
         bra.w   l_039_01654                     ; 015AA
 l_039_015AE:
         cmpi.b  #$3,(TextStatus).l              ; 015AE
@@ -1658,32 +1694,32 @@ l_039_015E4:
         subq.b  #$1,(dat_071_001AE).l           ; 015EE
         bra.b   l_039_01654                     ; 015F4
 l_039_015F6:
-        move.b  (dat_071_001AB).l,d1            ; 015F6
+        move.b  (TypeDelay).l,d1                ; 015F6
         ext.w   d1                              ; 015FC
         move.w  d1,(dat_071_00118).l            ; 015FE
         move.b  #$1,(dat_071_001AE).l           ; 01604
         cmpi.b  #$41,d4                         ; 0160C
         bne.b   l_039_01654                     ; 01610
-        tst.b   (dat_071_001C6).l               ; 01612
+        tst.b   (InputPos).l                    ; 01612
         ble.b   l_039_01654                     ; 01618
-        subq.b  #$1,(dat_071_001C6).l           ; 0161A
+        subq.b  #$1,(InputPos).l                ; 0161A
         addq.b  #$1,(InputLength).l             ; 01620
         movea.l (ConfigBuffer).l,a0             ; 01626
         adda.w  #$1e,a0                         ; 0162C
-        move.b  (dat_071_001C6).l,d5            ; 01630
+        move.b  (InputPos).l,d5                 ; 01630
         ext.w   d5                              ; 01636
         clr.b   (a0,d5.w)                       ; 01638
         lea.l   (SecurityInput).l,a0            ; 0163C
         adda.w  d5,a0                           ; 01642
         clr.b   (a0)+                           ; 01644
         clr.b   (a0)                            ; 01646
-        movem.l (dat_071_000CE).l,a1-a2/a4      ; 01648
+        movem.l (PrintPosition).l,a1-a2/a4      ; 01648
         subq.w  #$4,a1                          ; 01650
         bra.b   l_039_0165C                     ; 01652
 l_039_01654:
-        movem.l (dat_071_000CE).l,a1-a2/a4      ; 01654
+        movem.l (PrintPosition).l,a1-a2/a4      ; 01654
 l_039_0165C:
-        lea.l   (dat_061_0016C).l,a3            ; 0165C
+        lea.l   (Font).l,a3                     ; 0165C
         movea.l (DrawPlanes).l,a5               ; 01662
         move.w  #$1c2,d7                        ; 01668
         cmpi.b  #$2,(TextStatus).l              ; 0166C
@@ -1691,7 +1727,7 @@ l_039_0165C:
         tst.b   d4                              ; 01676
         beq.w   l_039_017F4                     ; 01678
         andi.w  #$ff,d4                         ; 0167C
-        lea.l   (dat_039_018CE).l,a0            ; 01680
+        lea.l   (KeyToAscii).l,a0               ; 01680
         move.b  (a0,d4.w),d4                    ; 01686
         beq.w   l_039_017F4                     ; 0168A
         cmpi.b  #$20,d4                         ; 0168E
@@ -1702,11 +1738,11 @@ l_039_0165C:
         beq.b   l_039_016BC                     ; 016A4
         movea.l (ConfigBuffer).l,a0             ; 016A6
         adda.w  #$1e,a0                         ; 016AC
-        move.b  (dat_071_001C6).l,d5            ; 016B0
+        move.b  (InputPos).l,d5                 ; 016B0
         ext.w   d5                              ; 016B6
         move.b  d4,(a0,d5.w)                    ; 016B8
 l_039_016BC:
-        addq.b  #$1,(dat_071_001C6).l           ; 016BC
+        addq.b  #$1,(InputPos).l                ; 016BC
         subq.b  #$1,(InputLength).l             ; 016C2
         bge.b   l_039_016D8                     ; 016C8
         moveq   #$20,d4                         ; 016CA
@@ -1720,7 +1756,7 @@ l_039_016D8:
         ext.l   d5                              ; 016DA
         add.l   a4,d5                           ; 016DC
         move.w  $2(a1),d3                       ; 016DE
-        move.w  (dat_071_00322).l,d6            ; 016E2
+        move.w  (TextColour).l,d6               ; 016E2
         andi.w  #$ff,d4                         ; 016E8
         cmpi.b  #$8,d4                          ; 016EC
         bne.b   l_039_01702                     ; 016F0
@@ -1732,18 +1768,18 @@ l_039_016FC:
         move.w  #$0,d6                          ; 016FE
 l_039_01702:
         subi.w  #$20,d4                         ; 01702
-        btst    #$0,(dat_071_001AC).l           ; 01706
+        btst    #$0,(PageFlags).l               ; 01706
         beq.b   l_039_01758                     ; 0170E
         tst.w   d4                              ; 01710
         bne.b   l_039_0173A                     ; 01712
         cmpi.b  #$2,(TextStatus).l              ; 01714
         beq.b   l_039_0173A                     ; 0171C
-        move.b  (dat_071_001AC).l,d0            ; 0171E
+        move.b  (PageFlags).l,d0                ; 0171E
         andi.b  #$2,d0                          ; 01724
         beq.b   l_039_01758                     ; 01728
         addq.w  #$4,a1                          ; 0172A
         addq.w  #$1,a2                          ; 0172C
-        movem.l a1-a2/a4,(dat_071_000CE).l      ; 0172E
+        movem.l a1-a2/a4,(PrintPosition).l      ; 0172E
         bra.w   l_039_015F6                     ; 01736
 l_039_0173A:
         tst.b   (dat_071_001AE).l               ; 0173A
@@ -1757,7 +1793,7 @@ l_039_0173A:
 l_039_01752:
         moveq   #$2,d1                          ; 01752
 l_039_01754:
-        bsr.w   sub_039_0186A                   ; 01754
+        bsr.w   TypeClick                       ; 01754
 l_039_01758:
         add.w   d4,d4                           ; 01758
         adda.w  (a3,d4.w),a3                    ; 0175A
@@ -1772,7 +1808,7 @@ l_039_01770:
         or.w    d3,d2                           ; 01770
         move.l  (a5),d1                         ; 01772
         add.l   d5,d1                           ; 01774
-        bsr.w   sub_039_017FE                   ; 01776
+        bsr.w   DrawCharPlane                   ; 01776
         move.l  $4(a5),d1                       ; 0177A
         add.l   d5,d1                           ; 0177E
         btst    #$2,d6                          ; 01780
@@ -1783,7 +1819,7 @@ l_039_0178C:
         move.w  #$bfa,d2                        ; 0178C
 l_039_01790:
         or.w    d3,d2                           ; 01790
-        bsr.w   sub_039_017FE                   ; 01792
+        bsr.w   DrawCharPlane                   ; 01792
         move.l  $8(a5),d1                       ; 01796
         add.l   d5,d1                           ; 0179A
         btst    #$1,d6                          ; 0179C
@@ -1794,7 +1830,7 @@ l_039_017A8:
         move.w  #$bfa,d2                        ; 017A8
 l_039_017AC:
         or.w    d3,d2                           ; 017AC
-        bsr.w   sub_039_017FE                   ; 017AE
+        bsr.w   DrawCharPlane                   ; 017AE
         move.l  $c(a5),d1                       ; 017B2
         add.l   d5,d1                           ; 017B6
         btst    #$0,d6                          ; 017B8
@@ -1805,12 +1841,12 @@ l_039_017C4:
         move.w  #$bfa,d2                        ; 017C4
 l_039_017C8:
         or.w    d3,d2                           ; 017C8
-        bsr.w   sub_039_017FE                   ; 017CA
-        btst    #$0,(dat_071_001AC).l           ; 017CE
+        bsr.w   DrawCharPlane                   ; 017CA
+        btst    #$0,(PageFlags).l               ; 017CE
         bne.b   l_039_017E8                     ; 017D6
         addq.w  #$4,a1                          ; 017D8
         addq.w  #$1,a2                          ; 017DA
-        movem.l a1-a2/a4,(dat_071_000CE).l      ; 017DC
+        movem.l a1-a2/a4,(PrintPosition).l      ; 017DC
         bra.w   l_039_015F6                     ; 017E4
 l_039_017E8:
         tst.b   (dat_071_001AE).l               ; 017E8
@@ -1818,9 +1854,14 @@ l_039_017E8:
         addq.w  #$4,a1                          ; 017F0
         addq.w  #$1,a2                          ; 017F2
 l_039_017F4:
-        movem.l a1-a2/a4,(dat_071_000CE).l      ; 017F4
+        movem.l a1-a2/a4,(PrintPosition).l      ; 017F4
         rts                                     ; 017FC
-sub_039_017FE:
+
+;-------------------------------------------------------------------------------
+; DrawCharPlane - Draws one character's 8-pixel-wide rows into one bit-plane, set or cleared by
+; the colour's bit for that plane (the text is drawn by the CPU, not the blitter).
+;-------------------------------------------------------------------------------
+DrawCharPlane:
         move.l  d0,-(a7)                        ; 017FE
         move.l  d6,-(a7)                        ; 01800
         swap    d2                              ; 01802
@@ -1872,7 +1913,11 @@ l_039_0185E:
         move.l  (a7)+,d6                        ; 01864
         move.l  (a7)+,d0                        ; 01866
         rts                                     ; 01868
-sub_039_0186A:
+
+;-------------------------------------------------------------------------------
+; TypeClick - The printer's click as a character is typed.
+;-------------------------------------------------------------------------------
+TypeClick:
         moveq   #$1,d0                          ; 0186A
         bra.b   l_039_0189A                     ; 0186C
 sub_039_0186E:
@@ -1889,7 +1934,11 @@ l_039_01880:
 sub_039_01886:
         tst.b   (dat_071_00155).l               ; 01886
         bne.b   l_039_018CC                     ; 0188C
-sub_039_0188E:
+
+;-------------------------------------------------------------------------------
+; MenuBeep - The sound of a menu key.
+;-------------------------------------------------------------------------------
+MenuBeep:
         tst.b   (dat_071_001A7).l               ; 0188E
         bne.b   l_039_01880                     ; 01894
         moveq   #$2,d0                          ; 01896
@@ -1913,7 +1962,9 @@ l_039_018A6:
         movem.l (a7)+,d0-d7/a0-a4               ; 018C8
 l_039_018CC:
         rts                                     ; 018CC
-dat_039_018CE:
+; KeyToAscii - Raw key code to character: the digits and letters of the main keyboard, space
+; ($40) and backspace ($41 gives 8); 0 for keys the input ignores.
+KeyToAscii:
 	dc.b	$00
 	dc.b	'1234567890'
 	dc.b	$00,$00,$00,$00,$00

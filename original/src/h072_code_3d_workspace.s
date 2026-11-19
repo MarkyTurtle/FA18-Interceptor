@@ -62,9 +62,13 @@ dat_072_05400:
 	dcb.b	44,$00
 dat_072_0542C:
 	dcb.b	2816,$00
-dat_072_05F2C:
+; RadarList - The objects around the player, turned into the aircraft's own axes (12 bytes of
+; position then the object's word): filled by AddRadarObject, read by the radar.
+RadarList:
 	dcb.b	1120,$00
-dat_072_0638C:
+; RadarBlips - The radar blips last plotted, a list of positions (ended by -1) for each of the
+; two display buffers ($28 bytes apart), so they can be erased.
+RadarBlips:
 	dcb.b	40,$00
 dat_072_063B4:
 	dcb.b	40,$00

@@ -1470,7 +1470,7 @@ GameFrame:
         jsr     (sub_008_00598).l               ; 01192
         move.w  #$60,(FrameStage).l             ; 01198
         jsr     (sub_020_007EA).l               ; 011A0
-        jsr     (sub_020_00AB4).l               ; 011A6
+        jsr     (ClearRadarList).l              ; 011A6
         jsr     (sub_033_00010).l               ; 011AC
         move.w  #$68,(FrameStage).l             ; 011B2
         move.b  (dat_071_0026B).l,d0            ; 011BA
@@ -1535,9 +1535,9 @@ l_000_012A4:
 l_000_012CC:
         jsr     (DrawPanel).l                   ; 012CC
         jsr     (sub_037_002F6).l               ; 012D2
-        jsr     (sub_038_000FE).l               ; 012D8
+        jsr     (DrawRadar).l                   ; 012D8
         jsr     (sub_040_00064).l               ; 012DE
-        jsr     (sub_038_00002).l               ; 012E4
+        jsr     (DrawStatusLights).l            ; 012E4
         jsr     (sub_037_008B8).l               ; 012EA
         move.b  (dat_071_00207).l,d0            ; 012F0
         tst.b   d0                              ; 012F6
@@ -1601,7 +1601,7 @@ l_000_01398:
         jsr     (sub_039_001CC).l               ; 013BE
         jsr     (sub_037_00674).l               ; 013C4
         jsr     (sub_039_00164).l               ; 013CA
-        jsr     (sub_039_009EE).l               ; 013D0
+        jsr     (TargetReadout).l               ; 013D0
         jsr     (sub_037_0049C).l               ; 013D6
         move.b  (dat_071_00207).l,d0            ; 013DC
         tst.b   d0                              ; 013E2
@@ -1622,7 +1622,7 @@ l_000_013F8:
         move.b  (GameMode).l,d0                 ; 0141C
         subq.b  #$2,d0                          ; 01422
         bne.b   l_000_0142C                     ; 01424
-        jsr     (sub_039_009EE).l               ; 01426
+        jsr     (TargetReadout).l               ; 01426
 l_000_0142C:
         move.w  #$1d4,(FrameStage).l            ; 0142C
         jsr     (sub_000_04392).l               ; 01434
@@ -1683,7 +1683,7 @@ l_000_014D0:
         jsr     (sub_039_00276).l               ; 014FC
 l_000_01502:
         move.w  #$220,(FrameStage).l            ; 01502
-        jsr     (sub_039_013EE).l               ; 0150A
+        jsr     (PrintText).l                   ; 0150A
         unlk    a6                              ; 01510
         rts                                     ; 01512
 
@@ -4073,7 +4073,7 @@ ClearTextPages:
         addq.l  #$2,a0                          ; 03474
         move.l  #$1b8,(dat_071_0010E).l         ; 03476
         moveq   #$0,d0                          ; 03480
-        move.b  d0,(dat_071_00196).l            ; 03482
+        move.b  d0,(TextPageIndex).l            ; 03482
         move.b  d0,(dat_071_00193).l            ; 03488
         move.b  d0,(TextStatus).l               ; 0348E
         move.b  d0,(dat_071_00241).l            ; 03494
@@ -4805,19 +4805,19 @@ l_000_03D94:
 l_000_03DAA:
         tst.l   -$c(a6)                         ; 03DAA
         bne.b   l_000_03DBA                     ; 03DAE
-        tst.b   (dat_071_0023E).l               ; 03DB0
+        tst.b   (StatusLights).l                ; 03DB0
         beq.w   l_000_03EAA                     ; 03DB6
 l_000_03DBA:
         move.w  (dat_071_0029C).l,d0            ; 03DBA
         ori.w   #$80,d0                         ; 03DC0
         move.w  d0,(dat_071_0029C).l            ; 03DC4
-        move.b  (dat_071_0023E).l,d0            ; 03DCA
+        move.b  (StatusLights).l,d0             ; 03DCA
         btst    #$4,d0                          ; 03DD0
         beq.b   l_000_03DE0                     ; 03DD4
         move.w  #$8010,-$4(a6)                  ; 03DD6
         bra.w   l_000_03EEA                     ; 03DDC
 l_000_03DE0:
-        move.b  (dat_071_0023E).l,d0            ; 03DE0
+        move.b  (StatusLights).l,d0             ; 03DE0
         btst    #$5,d0                          ; 03DE6
         beq.b   l_000_03DF6                     ; 03DEA
         move.w  #$8012,-$4(a6)                  ; 03DEC
@@ -4838,7 +4838,7 @@ l_000_03E1A:
         move.w  #$8002,-$4(a6)                  ; 03E22
         bra.w   l_000_03EEA                     ; 03E28
 l_000_03E2C:
-        move.b  (dat_071_0023E).l,d0            ; 03E2C
+        move.b  (StatusLights).l,d0             ; 03E2C
         btst    #$3,d0                          ; 03E32
         beq.b   l_000_03E52                     ; 03E36
         move.w  (dat_071_0029C).l,d0            ; 03E38
@@ -4847,7 +4847,7 @@ l_000_03E2C:
         move.w  #$8024,-$4(a6)                  ; 03E48
         bra.w   l_000_03EEA                     ; 03E4E
 l_000_03E52:
-        move.b  (dat_071_0023E).l,d0            ; 03E52
+        move.b  (StatusLights).l,d0             ; 03E52
         btst    #$2,d0                          ; 03E58
         beq.b   l_000_03E76                     ; 03E5C
         move.w  (dat_071_0029C).l,d0            ; 03E5E
@@ -4861,7 +4861,7 @@ l_000_03E76:
         move.w  #$c09,-$4(a6)                   ; 03E7E
         bra.b   l_000_03EEA                     ; 03E84
 l_000_03E86:
-        move.b  (dat_071_0023E).l,d0            ; 03E86
+        move.b  (StatusLights).l,d0             ; 03E86
         btst    #$1,d0                          ; 03E8C
         beq.b   l_000_03EEA                     ; 03E90
         move.w  (dat_071_0029C).l,d0            ; 03E92

@@ -972,15 +972,24 @@ l_020_00AA2:
         ext.l   d7                              ; 00AAE
         unlk    a6                              ; 00AB0
         rts                                     ; 00AB2
-sub_020_00AB4:
+
+;-------------------------------------------------------------------------------
+; ClearRadarList - Empties RadarList.
+;-------------------------------------------------------------------------------
+ClearRadarList:
         clr.w   (dat_071_00B52).l               ; 00AB4
-        move.l  #dat_072_05F2C,(dat_071_0039A).l ; 00ABA
+        move.l  #RadarList,(RadarListEnd).l     ; 00ABA
         rts                                     ; 00AC4
-sub_020_00AC6:
+
+;-------------------------------------------------------------------------------
+; AddRadarObject - Adds an object's position, turned by the player's matrix (dat_071_005CC)
+; into the aircraft's axes, to RadarList.
+;-------------------------------------------------------------------------------
+AddRadarObject:
         move.w  d7,d5                           ; 00AC6
         move.w  d7,-(a7)                        ; 00AC8
         lea.l   (dat_071_005CC).l,a0            ; 00ACA
-        movea.l (dat_071_0039A).l,a3            ; 00AD0
+        movea.l (RadarListEnd).l,a3             ; 00AD0
         move.w  d2,d5                           ; 00AD6
         move.w  d3,d6                           ; 00AD8
         move.w  d4,d7                           ; 00ADA
@@ -1008,7 +1017,7 @@ sub_020_00AC6:
         clr.l   (a3)                            ; 00B06
         clr.l   $4(a3)                          ; 00B08
         clr.l   $8(a3)                          ; 00B0C
-        move.l  a3,(dat_071_0039A).l            ; 00B10
+        move.l  a3,(RadarListEnd).l             ; 00B10
         rts                                     ; 00B16
 sub_020_00B18:
         tst.b   (dat_071_00155).l               ; 00B18

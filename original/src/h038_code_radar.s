@@ -1,5 +1,6 @@
 ; F/A-18 Interceptor - hunk 38 (code)
-; Display drawing not yet identified (plots points for objects).
+; The radar scope (DrawRadar, DrawRadarBlips: confirming a target's signature) and the panel's
+; status lights (DrawStatusLights).
 ; Included by ../f18_main.s.
 
 ;===============================================================================
@@ -8,9 +9,15 @@
 	CODE_HUNK	h038
 l_038_00000:
         rts                                     ; 00000
-sub_038_00002:
+
+;-------------------------------------------------------------------------------
+; DrawStatusLights - The panel's small status lights beside the radar: pairs of big dots, each
+; lit in its colour while a bit of StatusLights is set (and one while the viewed object has
+; +$20 bit 2).
+;-------------------------------------------------------------------------------
+DrawStatusLights:
         move.l  #$fffff,(dat_071_000B6).l       ; 00002
-        btst    #$2,(dat_071_0023E).l           ; 0000C
+        btst    #$2,(StatusLights).l            ; 0000C
         bne.b   l_038_0001C                     ; 00014
         move.w  #$3,d2                          ; 00016
         bra.b   l_038_00020                     ; 0001A
@@ -24,7 +31,7 @@ l_038_00020:
         blt.b   l_038_00000                     ; 00034
         addq.w  #$2,d0                          ; 00036
         jsr     (PlotBig).l                     ; 00038
-        btst    #$1,(dat_071_0023E).l           ; 0003E
+        btst    #$1,(StatusLights).l            ; 0003E
         bne.b   l_038_0004E                     ; 00046
         move.w  #$3,d2                          ; 00048
         bra.b   l_038_00052                     ; 0004C
@@ -36,7 +43,7 @@ l_038_00052:
         jsr     (PlotBig).l                     ; 0005A
         addq.w  #$2,d0                          ; 00060
         jsr     (PlotBig).l                     ; 00062
-        btst    #$4,(dat_071_0023E).l           ; 00068
+        btst    #$4,(StatusLights).l            ; 00068
         bne.b   l_038_00078                     ; 00070
         move.w  #$3,d2                          ; 00072
         bra.b   l_038_0007C                     ; 00076
@@ -49,7 +56,7 @@ l_038_0007C:
         jsr     (PlotBig).l                     ; 00086
         addq.w  #$2,d0                          ; 0008C
         jsr     (PlotBig).l                     ; 0008E
-        btst    #$5,(dat_071_0023E).l           ; 00094
+        btst    #$5,(StatusLights).l            ; 00094
         bne.b   l_038_000A4                     ; 0009C
         move.w  #$3,d2                          ; 0009E
         bra.b   l_038_000A8                     ; 000A2
@@ -78,7 +85,12 @@ l_038_000E4:
         rts                                     ; 000FA
 l_038_000FC:
         rts                                     ; 000FC
-sub_038_000FE:
+
+;-------------------------------------------------------------------------------
+; DrawRadar - The radar scope on the panel (GameFrame stage $D0): its two lines
+; (DrawRadarLines) and the blips (DrawRadarBlips), spread over frames.
+;-------------------------------------------------------------------------------
+DrawRadar:
         move.l  #$fffff,(dat_071_000B6).l       ; 000FE
         move.l  #$16b8,d1                       ; 00108
         movea.w #$4,a4                          ; 0010E
@@ -91,20 +103,24 @@ sub_038_000FE:
         beq.b   l_038_00158                     ; 0012E
         move.w  (FrameCount).l,d0               ; 00130
         andi.w  #$e,d0                          ; 00136
-        beq.b   sub_038_00172                   ; 0013A
+        beq.b   DrawRadarLines                  ; 0013A
         cmpi.w  #$8,d0                          ; 0013C
-        beq.w   sub_038_001EA                   ; 00140
+        beq.w   DrawRadarBlips                  ; 00140
         bra.w   l_038_0026A                     ; 00144
 l_038_00148:
-        move.w  #$ffff,(dat_072_0638C).l        ; 00148
+        move.w  #$ffff,(RadarBlips).l           ; 00148
         move.w  #$ffff,(dat_072_063B4).l        ; 00150
 l_038_00158:
-        bsr.w   sub_038_00172                   ; 00158
-        bsr.w   sub_038_001EA                   ; 0015C
+        bsr.w   DrawRadarLines                  ; 00158
+        bsr.w   DrawRadarBlips                  ; 0015C
         rts                                     ; 00160
 dat_038_00162:
 	dc.b	$00,$9A,$00,$A3,$00,$8B,$00,$93,$00,$A2,$00,$A3,$00,$B1,$00,$93
-sub_038_00172:
+
+;-------------------------------------------------------------------------------
+; DrawRadarLines - The scope's two lines (dat_038_00162), offset by ViewX / ViewY.
+;-------------------------------------------------------------------------------
+DrawRadarLines:
         move.w  #$3,(DrawColour).l              ; 00172
         lea.l   dat_038_00162(pc),a0            ; 0017A
         movem.w (a0)+,d0-d3                     ; 0017E
@@ -136,7 +152,15 @@ l_038_001B4:
         jsr     (DrawLine199).l                 ; 001E0
 l_038_001E6:
         bra.w   l_038_0026A                     ; 001E6
-sub_038_001EA:
+
+;-------------------------------------------------------------------------------
+; DrawRadarBlips - The player's mark at the scope's centre; erases the last frame's blips
+; (RadarBlips, one list per display buffer) and plots each object of RadarList that is in range
+; ($1B either side, $16 ahead and $10 behind, in units of $2000). An aircraft that comes within
+; $10000 has its signature confirmed (+$20 bit 6, the target readout then names it); in mission
+; F1 an F-16 held there counts down VisualConfirmTimer.
+;-------------------------------------------------------------------------------
+DrawRadarBlips:
         move.w  #$9d,d0                         ; 001EA
         add.w   (ViewX).l,d0                    ; 001EE
         blt.b   l_038_0026A                     ; 001F4
@@ -167,7 +191,7 @@ sub_038_001EA:
 l_038_0026A:
         tst.b   (dat_071_00208).l               ; 0026A
         beq.w   l_038_000FC                     ; 00270
-        lea.l   (dat_072_0638C).l,a2            ; 00274
+        lea.l   (RadarBlips).l,a2               ; 00274
         tst.w   (DisplayBuffer).l               ; 0027A
         beq.b   l_038_00286                     ; 00280
         adda.w  #$28,a2                         ; 00282
@@ -198,9 +222,9 @@ l_038_002C0:
         moveq   #$0,d7                          ; 002C0
         addq.b  #$1,(dat_071_00253).l           ; 002C2
         clr.b   (dat_071_0023D).l               ; 002C8
-        lea.l   (dat_072_05F2C).l,a0            ; 002CE
+        lea.l   (RadarList).l,a0                ; 002CE
         moveq   #$1,d6                          ; 002D4
-        lea.l   (dat_072_0638C).l,a2            ; 002D6
+        lea.l   (RadarBlips).l,a2               ; 002D6
         tst.w   (DisplayBuffer).l               ; 002DC
         beq.b   l_038_002E8                     ; 002E2
         adda.w  #$28,a2                         ; 002E4
@@ -275,7 +299,7 @@ l_038_0039E:
         andi.b  #$f0,d1                         ; 003B2
         cmpi.b  #$20,d1                         ; 003B6
         beq.w   l_038_00488                     ; 003BA
-        tst.w   (dat_071_00390).l               ; 003BE
+        tst.w   (LockedTarget).l                ; 003BE
         blt.b   l_038_003F0                     ; 003C4
         cmpi.b  #$10,d1                         ; 003C6
         bne.b   l_038_003F0                     ; 003CA
@@ -376,7 +400,7 @@ l_038_004BE:
         move.w  d3,d4                           ; 00512
         andi.w  #$ff00,d4                       ; 00514
         add.w   d4,d4                           ; 00518
-        cmp.w   (dat_071_00390).l,d4            ; 0051A
+        cmp.w   (LockedTarget).l,d4             ; 0051A
         bne.b   l_038_0052E                     ; 00520
         btst    #$0,(dat_071_00253).l           ; 00522
         beq.w   l_038_005E6                     ; 0052A
@@ -460,7 +484,7 @@ l_038_005FA:
         move.w  #$ffff,(a2)                     ; 005FA
         move.b  (dat_071_0023D).l,d0            ; 005FE
         beq.w   l_038_006C8                     ; 00604
-        move.b  (dat_071_0023E).l,d1            ; 00608
+        move.b  (StatusLights).l,d1             ; 00608
         btst    #$4,d0                          ; 0060E
         bne.b   l_038_00630                     ; 00612
         btst    #$5,d0                          ; 00614
@@ -522,19 +546,19 @@ l_038_006C8:
         bne.b   l_038_006DE                     ; 006D6
         clr.w   (dat_071_004B0).l               ; 006D8
 l_038_006DE:
-        move.b  d0,(dat_071_0023E).l            ; 006DE
+        move.b  d0,(StatusLights).l             ; 006DE
         tst.b   (dat_071_00189).l               ; 006E4
         beq.w   l_038_007CC                     ; 006EA
         clr.b   (dat_071_00189).l               ; 006EE
-        lea.l   (dat_072_05F2C).l,a0            ; 006F4
+        lea.l   (RadarList).l,a0                ; 006F4
         moveq   #$0,d0                          ; 006FA
-        tst.w   (dat_071_00390).l               ; 006FC
+        tst.w   (LockedTarget).l                ; 006FC
         blt.b   l_038_00736                     ; 00702
 l_038_00704:
         move.w  $c(a0,d0.w),d1                  ; 00704
         andi.w  #$ff00,d1                       ; 00708
         add.w   d1,d1                           ; 0070C
-        cmp.w   (dat_071_00390).l,d1            ; 0070E
+        cmp.w   (LockedTarget).l,d1             ; 0070E
         beq.b   l_038_00732                     ; 00714
         addi.w  #$10,d0                         ; 00716
         cmpi.w  #$460,d0                        ; 0071A
@@ -568,7 +592,7 @@ l_038_00736:
         beq.b   l_038_007B4                     ; 00778
         btst    #$1,$20(a2,d2.w)                ; 0077A
         bne.b   l_038_007B4                     ; 00780
-        move.w  d2,(dat_071_00390).l            ; 00782
+        move.w  d2,(LockedTarget).l             ; 00782
         move.w  #$1,(dat_071_00394).l           ; 00788
         move.b  #$1,(dat_071_00256).l           ; 00790
         move.b  #$ff,(dat_071_00257).l          ; 00798
@@ -582,7 +606,7 @@ l_038_007B4:
         bra.w   l_038_00736                     ; 007B8
 l_038_007BC:
         move.b  #$0,(dat_071_00238).l           ; 007BC
-        move.w  #$ffff,(dat_071_00390).l        ; 007C4
+        move.w  #$ffff,(LockedTarget).l         ; 007C4
 l_038_007CC:
         rts                                     ; 007CC
 	dc.b	$00,$00

@@ -82,10 +82,10 @@ stages (`?` = not worked out yet):
 | `$90` | `sub_025_00000` | ? (points: the ground or the sky) |
 | `$A0`-`$B0` | `sub_023_00000`, `DrawObjects`, `sub_000_072DC` | **the 3D view's objects and scenery** |
 | `$C0` | `sub_000_03D4C`, `CockpitSounds` | ? (uses the custom chips), the cockpit's sounds |
-| `$D0` | `DrawPanel`, `sub_037_002F6`, `sub_038_000FE`, `sub_040_00064`, `sub_038_00002`, `sub_037_008B8`, hunk 39 (several, some every 4th / 8th / 16th frame) | **the cockpit**: the instrument panel and the instruments |
+| `$D0` | `DrawPanel`, `sub_037_002F6`, `DrawRadar`, `sub_040_00064`, `DrawStatusLights`, `sub_037_008B8`, hunk 39 (several, some every 4th / 8th / 16th frame) | **the cockpit**: the instrument panel and the instruments |
 | `$1A0` | `sub_036_00BAA`, hunks 37 and 39 | ? (the head-up display) |
 | `$1D0`, `$1D4` | hunk 39, `sub_000_04392`, `sub_029_001A4`, `sub_020_00562` (the time: `ReadTime`), and every 8 / 16 / 32 frames more | ? (the outside views; the clock) |
-| `$210`-`$220` | `sub_036_0000C`, `sub_039_00276`, `sub_039_013EE` (the flight log page, `SaveConfig`) | the menus and pages |
+| `$210`-`$220` | `sub_036_0000C`, `sub_039_00276`, `PrintText` (the flight log page, `SaveConfig`) | the menus and pages |
 
 ## Input
 
@@ -118,8 +118,10 @@ the player's F/A-18 (named `Player...` where the code reaches its fields directl
 aircraft, missiles and other objects. `SmallObjects` are 16 more of 32 bytes. An object's
 record holds (see the header above `ObjectTable` for all that is known):
 
-* whether it exists (`+$01` bit 6), its type (`+$62`: `0` Sidewinder, `1` AMRAAM, `'0'`-`'9'`
-  aircraft...), its state (`+$05`) and a timer (`+$4C`);
+* whether it exists (`+$01` bit 6), its type (`+$62`, below), its state (`+$05`) and a timer
+  (`+$4C`);
+* what has happened to it (`+$20`): bit 1 destroyed, bit 6 its signature confirmed (seen up
+  close, so the radar's readout names it), bit 7 hit by the player;
 * its position: a map cell (`+$06` X, `+$08` Z) and a 32-bit position (`+$14` X, `+$18` Y, `+$1C` Z)
   whose low 22 bits are the position inside the cell; Y is height, negative upwards;
 * its velocity (`+$3E`, `+$42`, `+$46`) and speed (`+$6C`, `+$6E`);
@@ -128,6 +130,22 @@ record holds (see the header above `ObjectTable` for all that is known):
 * its weapons: the selected weapon (`+$63`) and missiles left (`+$5F`: 4 AMRAAMs and 2 Sidewinders
   for the player at the start);
 * its control bits (`+$64`, `+$65`) and the throttle (probably `+$2B`).
+
+The types (`+$62`) seen so far:
+
+| Type | Object |
+|---|---|
+| `$00`, `$01` | Sidewinder, AMRAAM missiles |
+| `$10` | F-16 (the player's, if chosen; the unknown aircraft of mission F1) |
+| `$11` | F/A-18 (the player's) |
+| `$12`, `$13` | MiG-29, MiG-25 |
+| `$14` | Air Force One |
+| `$15` | the cruise missile |
+| `$16`, `$17` | 707, 767 airliners |
+| `$30` | the ejected pilot under his parachute |
+
+The target readout's names (hunk 39) give most of these; the player's type comes from the
+aircraft chosen (`PlayerAircraftType`).
 
 ### The map
 
@@ -204,6 +222,32 @@ the speed from the throttle, and how the fuel is used, are not worked out yet.
   flight log's `+$02`).
 * Falling objects: their velocity is damped horizontally and pulled down vertically (`$3C0`, then
   `$3C`, a frame).
+
+## The cockpit
+
+The bottom of the screen is the instrument panel (`pix/inst5`, drawn by `DrawPanel`); the
+instruments are drawn over it each frame (stage `$D0`), several only every few frames:
+
+* **The radar scope** (`DrawRadar`, hunk 38): every object near the player is turned into the
+  aircraft's own axes (`AddRadarObject` into `RadarList`) and plotted as a blip if it is in the
+  scope's range (about `$1B` x `$2000` either side, `$16` ahead, `$10` behind). Each display
+  buffer keeps the list of its blips (`RadarBlips`) so that they can be erased next time. An
+  aircraft that comes close (`$10000`) has its **signature confirmed** (`+$20` bit 6) - which is
+  what mission F1, Visual Confirmation, asks for.
+* **The target readout** (`TargetReadout`, hunk 39): for the locked target (`LockedTarget`) its
+  type - MIG-29, MIG-25, AF-1, 707, 767, F-16, CRUISE, or NO SIG while its signature is
+  unconfirmed - and in turn its altitude, heading and speed.
+* **The status lights** beside the radar (`DrawStatusLights`, `StatusLights`).
+* The numbers of the other instruments and the head-up display's texts (hunk 39, "GUN RNG
+  SHOOT"...) and hunk 40 are not worked out yet.
+
+The menus, briefings and typed input use the same screen: **the text printer** (`PrintText`)
+types the queued pages a character at a time with a click, drawing each character into the
+bit-planes with the CPU (`DrawCharPlane`, the `Font` in hunk 61, the columns in `TextColumns`).
+A page starts with its position, flags and colour (the high nibble the colour, the low the
+delay between characters); its lines end with 0 and the page with -1. For the callsign and the
+security code it reads the keys from `KeyBuffer` instead (a ring of the last 10 key codes filled
+by `HandleKey`, turned into letters by `KeyToAscii`).
 
 ## The 3D view
 
@@ -439,6 +483,6 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
   records' unknown fields in `ModeTable`.
 * The 3D pipeline (hunks 13-15) and the model format (hunks 41-58).
 * The ground, sky and scenery; the map and what is in each cell.
-* The head-up display and instruments (hunks 38-40).
+* The head-up display and most instruments (hunks 39-40).
 * The views (`dat_071_00155`, `CameraSequence`) and the training's manoeuvres.
 * The rest of the flight log's words, and which sound file is which effect.

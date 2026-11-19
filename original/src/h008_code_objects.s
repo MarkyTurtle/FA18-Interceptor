@@ -1096,7 +1096,7 @@ l_008_00DB8:
         move.w  d0,d7                           ; 00DC2
         asr.w   #$1,d7                          ; 00DC4
         bset    #$4,d7                          ; 00DC6
-        jsr     (sub_020_00AC6).l               ; 00DCA
+        jsr     (AddRadarObject).l              ; 00DCA
 l_008_00DD0:
         addi.w  #$200,d0                        ; 00DD0
         cmpi.w  #$2000,d0                       ; 00DD4

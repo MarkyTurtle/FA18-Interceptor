@@ -366,10 +366,12 @@
 ; Hunk 37: Blitter copies: the title picture and the instrument panel onto the screen.
 	include	"src/h037_code_blitter_copies.s"
 
-; Hunk 38: Display drawing not yet identified (plots points for objects).
-	include	"src/h038_code_display38.s"
+; Hunk 38: The radar scope (DrawRadar, DrawRadarBlips: confirming a target's signature) and the
+;         panel's status lights (DrawStatusLights).
+	include	"src/h038_code_radar.s"
 
-; Hunk 39: The head-up display and instruments ("GUN RNG SHOOT"...) (not worked out yet)
+; Hunk 39: The instruments' numbers and texts ("GUN RNG SHOOT"...), the target readout
+;         (TargetReadout) and the text printer (PrintText: the menus, briefings and typed input).
 	include	"src/h039_code_hud.s"
 
 ; Hunk 40: Display drawing not yet identified (points and lines for objects).

@@ -8,14 +8,14 @@
 	CODE_HUNK	h018
 sub_018_00000:
         move.l  d0,-(a7)                        ; 00000
-        move.w  (dat_071_00390).l,d0            ; 00002
+        move.w  (LockedTarget).l,d0             ; 00002
         cmpi.w  #$ffff,d0                       ; 00008
         beq.b   l_018_00032                     ; 0000C
         cmp.w   (CurrentObjectOffset).l,d0      ; 0000E
         bne.b   l_018_00032                     ; 00014
         move.w  #$4016,d0                       ; 00016
         jsr     (sub_020_00954).l               ; 0001A
-        move.w  #$ffff,(dat_071_00390).l        ; 00020
+        move.w  #$ffff,(LockedTarget).l         ; 00020
         andi.l  #$ffffbdff,(WarningFlags).l     ; 00028
 l_018_00032:
         move.l  (a7)+,d0                        ; 00032

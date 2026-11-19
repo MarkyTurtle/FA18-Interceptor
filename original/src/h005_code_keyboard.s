@@ -1381,7 +1381,7 @@ l_005_011D2:
 l_005_011D4:
         move.b  d4,(GameMode).l                 ; 011D4
 l_005_011DA:
-        jsr     (sub_039_0188E).l               ; 011DA
+        jsr     (MenuBeep).l                    ; 011DA
         bra.w   l_005_01624                     ; 011E0
 l_005_011E4:
         tst.b   d6                              ; 011E4
@@ -1674,24 +1674,24 @@ l_005_01624:
         btst    #$7,d0                          ; 0162C
         bne.b   l_005_0168C                     ; 01630
         move.b  #$1,(KeyPressed).l              ; 01632
-        cmpi.b  #$a,(dat_071_001C9).l           ; 0163A
+        cmpi.b  #$a,(KeyBufferCount).l          ; 0163A
         bge.b   l_005_0168C                     ; 01642
-        move.b  (dat_071_001C7).l,d4            ; 01644
+        move.b  (KeyBufferIn).l,d4              ; 01644
         cmpi.b  #$a,d4                          ; 0164A
         blt.b   l_005_01652                     ; 0164E
         moveq   #$0,d4                          ; 01650
 l_005_01652:
         ext.w   d4                              ; 01652
-        lea.l   (dat_071_001B1).l,a3            ; 01654
+        lea.l   (KeyBuffer).l,a3                ; 01654
         move.b  d0,(a3,d4.w)                    ; 0165A
         andi.w  #$ff,d0                         ; 0165E
-        lea.l   (dat_039_018CE).l,a3            ; 01662
+        lea.l   (KeyToAscii).l,a3               ; 01662
         move.b  (a3,d0.w),d0                    ; 01668
         addq.b  #$1,d4                          ; 0166C
-        move.b  d4,(dat_071_001C7).l            ; 0166E
-        addq.b  #$1,(dat_071_001C9).l           ; 01674
+        move.b  d4,(KeyBufferIn).l              ; 0166E
+        addq.b  #$1,(KeyBufferCount).l          ; 01674
         lea.l   (SecurityInput).l,a3            ; 0167A
-        move.b  (dat_071_001C6).l,d4            ; 01680
+        move.b  (InputPos).l,d4                 ; 01680
         ext.w   d4                              ; 01686
         move.b  d0,(a3,d4.w)                    ; 01688
 l_005_0168C:
