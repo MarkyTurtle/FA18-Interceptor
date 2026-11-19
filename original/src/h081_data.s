@@ -5,7 +5,11 @@
 ; Hunk 81: DATA, $A4 bytes
 ;===============================================================================
 	DATA_HUNK	h081
-dat_081_00000:
+; SoundTable - The sound slots: 37 pointers to 64-byte sound records (0 = empty). A sound
+; record: +$00 the sample data (chip RAM), +$04 its length in bytes (bit 31: shared, not
+; freed), +$08 the period (16.16), +$0C the volume (16.16, 63 = full), +$10 how many times it
+; plays (-1 = loops)...
+SoundTable:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00

@@ -53,7 +53,7 @@ sub_039_00164:
         tst.b   (dat_071_0020B).l               ; 00164
         ble.b   l_039_001C8                     ; 0016A
         subq.b  #$1,(dat_071_0020B).l           ; 0016C
-        lea.l   (dat_071_00B54).l,a1            ; 00172
+        lea.l   (ObjectTable).l,a1              ; 00172
         adda.w  (dat_071_002AE).l,a1            ; 00178
         move.b  $63(a1),d0                      ; 0017E
         andi.b  #$f,d0                          ; 00182
@@ -145,7 +145,7 @@ sub_039_00276:
         bsr.w   sub_039_011C8                   ; 002AA
         tst.b   (dat_071_00183).l               ; 002AE
         beq.b   l_039_00274                     ; 002B4
-        move.w  (dat_071_00146).l,d0            ; 002B6
+        move.w  (MouseX).l,d0                   ; 002B6
         bge.b   l_039_002C0                     ; 002BC
         neg.w   d0                              ; 002BE
 l_039_002C0:
@@ -159,7 +159,7 @@ l_039_002C0:
         lea.l   $7c.w,a4                        ; 002DE
         lea.l   $4.w,a5                         ; 002E2
         bsr.w   sub_039_011C8                   ; 002E6
-        move.w  (dat_071_00148).l,d0            ; 002EA
+        move.w  (MouseY).l,d0                   ; 002EA
         bge.b   l_039_002F4                     ; 002F0
         neg.w   d0                              ; 002F2
 l_039_002F4:
@@ -204,7 +204,7 @@ l_039_0035E:
         rts                                     ; 0035E
 sub_039_00360:
         move.w  #$d,(dat_071_00324).l           ; 00360
-        lea.l   (dat_071_00B54).l,a1            ; 00368
+        lea.l   (ObjectTable).l,a1              ; 00368
         adda.w  (dat_071_002AE).l,a1            ; 0036E
         lea.l   (dat_071_001CA).l,a2            ; 00374
         moveq   #$0,d0                          ; 0037A
@@ -280,7 +280,7 @@ l_039_00434:
         bsr.w   sub_039_011A6                   ; 0045E
         rts                                     ; 00462
 sub_039_00464:
-        lea.l   (dat_071_00B54).l,a4            ; 00464
+        lea.l   (ObjectTable).l,a4              ; 00464
         adda.w  (dat_071_002AE).l,a4            ; 0046A
         move.w  #$d,(dat_071_00324).l           ; 00470
         move.l  #$fffff,(dat_071_000B6).l       ; 00478
@@ -310,7 +310,7 @@ l_039_004A6:
         lea.l   dat_039_0000C(pc),a1            ; 004DE
 l_039_004E2:
         lea.l   (dat_071_001CA).l,a2            ; 004E2
-        lea.l   (dat_071_00B54).l,a0            ; 004E8
+        lea.l   (ObjectTable).l,a0              ; 004E8
         adda.w  (dat_071_002AE).l,a0            ; 004EE
         move.w  $56(a0),d0                      ; 004F4
         move.w  d0,d1                           ; 004F8
@@ -360,7 +360,7 @@ dat_039_00565:
 	dc.b	' SHOOT'
 	dc.b	$00
 sub_039_0056C:
-        lea.l   (dat_071_00B54).l,a1            ; 0056C
+        lea.l   (ObjectTable).l,a1              ; 0056C
         adda.w  (dat_071_002AE).l,a1            ; 00572
         move.b  $63(a1),d0                      ; 00578
         andi.b  #$f0,d0                         ; 0057C
@@ -389,7 +389,7 @@ sub_039_005B6:
         beq.b   l_039_005B4                     ; 005C6
         btst    #$6,(dat_071_0029D).l           ; 005C8
         beq.b   l_039_005B4                     ; 005D0
-        lea.l   (dat_071_00B54).l,a0            ; 005D2
+        lea.l   (ObjectTable).l,a0              ; 005D2
         move.w  (dat_071_002AE).l,d1            ; 005D8
         move.w  $68(a0,d1.w),d0                 ; 005DE
         ext.l   d0                              ; 005E2
@@ -422,7 +422,7 @@ l_039_00648:
 sub_039_0064A:
         rts                                     ; 0064A
 sub_039_0064C:
-        lea.l   (dat_071_00B54).l,a1            ; 0064C
+        lea.l   (ObjectTable).l,a1              ; 0064C
         adda.w  (dat_071_002AE).l,a1            ; 00652
         moveq   #$0,d0                          ; 00658
         btst    #$7,$0(a1)                      ; 0065A
@@ -490,7 +490,7 @@ sub_039_0071A:
         move.l  #$1869f,d0                      ; 00730
         bra.b   l_039_00754                     ; 00736
 l_039_00738:
-        lea.l   (dat_071_00B54).l,a0            ; 00738
+        lea.l   (ObjectTable).l,a0              ; 00738
         adda.w  (dat_071_002AE).l,a0            ; 0073E
         move.l  $18(a0),d0                      ; 00744
         asr.l   #$7,d0                          ; 00748
@@ -560,7 +560,7 @@ l_039_00800:
         move.w  #$c,d5                          ; 00822
         bra.w   sub_039_00E1A                   ; 00826
 sub_039_0082A:
-        lea.l   (dat_071_00B54).l,a1            ; 0082A
+        lea.l   (ObjectTable).l,a1              ; 0082A
         adda.w  (dat_071_002AE).l,a1            ; 00830
         move.l  $72(a1),d0                      ; 00836
         asr.l   #$8,d0                          ; 0083A
@@ -581,7 +581,7 @@ l_039_0084A:
         move.w  #$0,d5                          ; 00870
         bra.w   sub_039_00E36                   ; 00874
 sub_039_00878:
-        lea.l   (dat_071_00B54).l,a1            ; 00878
+        lea.l   (ObjectTable).l,a1              ; 00878
         adda.w  (dat_071_002AE).l,a1            ; 0087E
         move.b  $2b(a1),d0                      ; 00884
         ext.w   d0                              ; 00888
@@ -608,7 +608,7 @@ l_039_008A4:
         move.w  #$4,d5                          ; 008CA
         bra.w   l_039_00E3C                     ; 008CE
 sub_039_008D2:
-        lea.l   (dat_071_00B54).l,a1            ; 008D2
+        lea.l   (ObjectTable).l,a1              ; 008D2
         adda.w  (dat_071_002AE).l,a1            ; 008D8
         move.l  $1c(a1),d0                      ; 008DE
         subi.l  #$10000000,d0                   ; 008E2
@@ -646,7 +646,7 @@ l_039_0092E:
 l_039_0095E:
         rts                                     ; 0095E
 sub_039_00960:
-        lea.l   (dat_071_00B54).l,a1            ; 00960
+        lea.l   (ObjectTable).l,a1              ; 00960
         adda.w  (dat_071_002AE).l,a1            ; 00966
         move.l  $14(a1),d0                      ; 0096C
         subi.l  #$f000000,d0                    ; 00970
@@ -692,7 +692,7 @@ sub_039_009EE:
         subq.b  #$1,(dat_071_00257).l           ; 00A06
         bge.w   l_039_00C10                     ; 00A0C
         move.b  #$ff,(dat_071_00257).l          ; 00A10
-        lea.l   (dat_071_00B54).l,a1            ; 00A18
+        lea.l   (ObjectTable).l,a1              ; 00A18
         tst.b   (dat_071_0020C).l               ; 00A1E
         bgt.b   l_039_00A6A                     ; 00A24
         tst.b   (dat_071_00256).l               ; 00A26
@@ -731,7 +731,7 @@ l_039_00A96:
 l_039_00A9E:
         andi.b  #$3f,(dat_071_00232).l          ; 00A9E
         ori.b   #$80,(dat_071_00232).l          ; 00AA6
-        lea.l   (dat_071_00B54).l,a4            ; 00AAE
+        lea.l   (ObjectTable).l,a4              ; 00AAE
         adda.w  d2,a4                           ; 00AB4
         btst    #$6,$20(a4)                     ; 00AB6
         bne.b   l_039_00AD0                     ; 00ABC
@@ -1190,7 +1190,7 @@ sub_039_00FA8:
         tst.b   (dat_071_00214).l               ; 00FA8
         ble.b   l_039_00FA6                     ; 00FAE
         subq.b  #$1,(dat_071_00214).l           ; 00FB0
-        lea.l   (dat_071_00B54).l,a1            ; 00FB6
+        lea.l   (ObjectTable).l,a1              ; 00FB6
         adda.w  (dat_071_002AE).l,a1            ; 00FBC
         moveq   #$0,d0                          ; 00FC2
         move.b  $5f(a1),d0                      ; 00FC4
@@ -1667,7 +1667,7 @@ l_039_015F6:
         ble.b   l_039_01654                     ; 01618
         subq.b  #$1,(dat_071_001C6).l           ; 0161A
         addq.b  #$1,(dat_071_001C5).l           ; 01620
-        movea.l (dat_002_0296C).l,a0            ; 01626
+        movea.l (ConfigBuffer).l,a0             ; 01626
         adda.w  #$1e,a0                         ; 0162C
         move.b  (dat_071_001C6).l,d5            ; 01630
         ext.w   d5                              ; 01636
@@ -1699,7 +1699,7 @@ l_039_0165C:
         ble.b   l_039_016D8                     ; 0169A
         cmpi.b  #$3,(dat_071_001B0).l           ; 0169C
         beq.b   l_039_016BC                     ; 016A4
-        movea.l (dat_002_0296C).l,a0            ; 016A6
+        movea.l (ConfigBuffer).l,a0             ; 016A6
         adda.w  #$1e,a0                         ; 016AC
         move.b  (dat_071_001C6).l,d5            ; 016B0
         ext.w   d5                              ; 016B6

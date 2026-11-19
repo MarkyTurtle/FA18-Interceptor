@@ -5,7 +5,14 @@
 ; Hunk 20: CODE, $CB0 bytes
 ;===============================================================================
 	CODE_HUNK	h020
-sub_020_00000:
+
+;-------------------------------------------------------------------------------
+; ChecksumPlanes - ChecksumPlanes(plane0-3, width, height): the sum of every word of four
+; bitplanes, each rotated left 2 bits first (16 bits). main checks the title picture with it
+; ($C560 for the original picture: only then does the title sequence play) and keeps the panel
+; and front pictures' sums too.
+;-------------------------------------------------------------------------------
+ChecksumPlanes:
         link.w  a6,#$0                          ; 00000
         movea.l $8(a6),a0                       ; 00004
         movea.l $c(a6),a1                       ; 00008
@@ -43,14 +50,23 @@ l_020_0004A:
         dbra    d1,l_020_0004A                  ; 00050
         unlk    a6                              ; 00054
         rts                                     ; 00056
-dat_020_00058:
+; MonthNames - SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER, 9 characters each, stored back to front
+; (copied backwards into the text).
+MonthNames:
 	dc.b	'REBMETPES  REBOTCO REBMEVON REBMECED'
-sub_020_0007C:
-        movea.l (dat_002_0296C).l,a0            ; 0007C
+
+;-------------------------------------------------------------------------------
+; ShowLogDate - Puts the log's date into the briefing text (dat_064_01096: "DATE: SEPTEMBER 6,
+; 1994"): one day for each hour of flight time (ConfigBuffer+$08 / 3600), from September 1st:
+; month = hours / 32 from the reversed month names at dat_020_00058, day = hours % 32 + 1 (at
+; most 30).
+;-------------------------------------------------------------------------------
+ShowLogDate:
+        movea.l (ConfigBuffer).l,a0             ; 0007C
         move.l  $8(a0),d0                       ; 00082
         divu.w  #$e10,d0                        ; 00086
         move.w  d0,d2                           ; 0008A
-        lea.l   dat_020_00058(pc),a0            ; 0008C
+        lea.l   MonthNames(pc),a0               ; 0008C
         moveq   #$9,d1                          ; 00090
         cmpi.w  #$7f,d0                         ; 00092
         ble.b   l_020_0009A                     ; 00096
@@ -80,51 +96,57 @@ l_020_000C8:
         ext.l   d0                              ; 000CE
         moveq   #$15,d3                         ; 000D0
         moveq   #$2,d2                          ; 000D2
-        bsr.w   sub_020_001C6                   ; 000D4
+        bsr.w   PutNumber                       ; 000D4
         rts                                     ; 000D8
-sub_020_000DA:
+
+;-------------------------------------------------------------------------------
+; ShowFlightLog - Writes the flight log's figures (ConfigBuffer) into the FLIGHT LOG STATISTICS
+; page (hunk 64's text): missions started and completed, cannon / AMRAAM / Sidewinder fired and
+; hits, the flight time (hours, minutes), crashes, hits from missiles.
+;-------------------------------------------------------------------------------
+ShowFlightLog:
         moveq   #$0,d0                          ; 000DA
-        movea.l (dat_002_0296C).l,a1            ; 000DC
+        movea.l (ConfigBuffer).l,a1             ; 000DC
         move.w  $36(a1),d0                      ; 000E2
         lea.l   (dat_064_00858).l,a0            ; 000E6
         moveq   #$25,d3                         ; 000EC
         moveq   #$3,d2                          ; 000EE
-        bsr.w   sub_020_001C6                   ; 000F0
+        bsr.w   PutNumber                       ; 000F0
         move.w  $38(a1),d0                      ; 000F4
         lea.l   (dat_064_00883).l,a0            ; 000F8
         moveq   #$25,d3                         ; 000FE
         moveq   #$3,d2                          ; 00100
-        bsr.w   sub_020_001C6                   ; 00102
+        bsr.w   PutNumber                       ; 00102
         move.w  $3a(a1),d0                      ; 00106
         lea.l   (dat_064_008D9).l,a0            ; 0010A
         moveq   #$17,d3                         ; 00110
         moveq   #$5,d2                          ; 00112
-        bsr.w   sub_020_001C6                   ; 00114
+        bsr.w   PutNumber                       ; 00114
         move.w  $3c(a1),d0                      ; 00118
         lea.l   (dat_064_008D9).l,a0            ; 0011C
         moveq   #$20,d3                         ; 00122
         moveq   #$4,d2                          ; 00124
-        bsr.w   sub_020_001C6                   ; 00126
+        bsr.w   PutNumber                       ; 00126
         move.w  $3e(a1),d0                      ; 0012A
         lea.l   (dat_064_00901).l,a0            ; 0012E
         moveq   #$17,d3                         ; 00134
         moveq   #$5,d2                          ; 00136
-        bsr.w   sub_020_001C6                   ; 00138
+        bsr.w   PutNumber                       ; 00138
         move.w  $40(a1),d0                      ; 0013C
         lea.l   (dat_064_00901).l,a0            ; 00140
         moveq   #$20,d3                         ; 00146
         moveq   #$4,d2                          ; 00148
-        bsr.w   sub_020_001C6                   ; 0014A
+        bsr.w   PutNumber                       ; 0014A
         move.w  $42(a1),d0                      ; 0014E
         lea.l   (dat_064_00929).l,a0            ; 00152
         moveq   #$17,d3                         ; 00158
         moveq   #$5,d2                          ; 0015A
-        bsr.w   sub_020_001C6                   ; 0015C
+        bsr.w   PutNumber                       ; 0015C
         move.w  $44(a1),d0                      ; 00160
         lea.l   (dat_064_00929).l,a0            ; 00164
         moveq   #$20,d3                         ; 0016A
         moveq   #$4,d2                          ; 0016C
-        bsr.w   sub_020_001C6                   ; 0016E
+        bsr.w   PutNumber                       ; 0016E
         move.l  $8(a1),d0                       ; 00172
         divu.w  #$e10,d0                        ; 00176
         move.l  d0,-(a7)                        ; 0017A
@@ -132,7 +154,7 @@ sub_020_000DA:
         lea.l   (dat_064_00955).l,a0            ; 0017E
         moveq   #$17,d3                         ; 00184
         moveq   #$4,d2                          ; 00186
-        bsr.w   sub_020_001C6                   ; 00188
+        bsr.w   PutNumber                       ; 00188
         move.l  (a7)+,d0                        ; 0018C
         swap    d0                              ; 0018E
         ext.l   d0                              ; 00190
@@ -141,17 +163,22 @@ sub_020_000DA:
         lea.l   (dat_064_00955).l,a0            ; 00198
         moveq   #$21,d3                         ; 0019E
         moveq   #$2,d2                          ; 001A0
-        bsr.w   sub_020_001C6                   ; 001A2
+        bsr.w   PutNumber                       ; 001A2
         move.w  $46(a1),d0                      ; 001A6
         lea.l   (dat_064_0097F).l,a0            ; 001AA
         moveq   #$17,d3                         ; 001B0
         moveq   #$4,d2                          ; 001B2
-        bsr.w   sub_020_001C6                   ; 001B4
+        bsr.w   PutNumber                       ; 001B4
         move.w  $48(a1),d0                      ; 001B8
         lea.l   (dat_064_0099D).l,a0            ; 001BC
         moveq   #$17,d3                         ; 001C2
         moveq   #$4,d2                          ; 001C4
-sub_020_001C6:
+
+;-------------------------------------------------------------------------------
+; PutNumber - PutNumber(d0 = value, a0 = the text line, d3 = column, d2 = digits): writes the
+; value into the text in decimal.
+;-------------------------------------------------------------------------------
+PutNumber:
         move.l  d0,(dat_071_004EE).l            ; 001C6
         bsr.w   sub_020_00C58                   ; 001CC
         move.l  (dat_071_004F2).l,d1            ; 001D0
@@ -161,7 +188,7 @@ sub_020_001C6:
         jsr     (sub_000_016BA).l               ; 001DE
         adda.l  #$c,a7                          ; 001E4
         moveq   #$0,d0                          ; 001EA
-        movea.l (dat_002_0296C).l,a1            ; 001EC
+        movea.l (ConfigBuffer).l,a1             ; 001EC
         rts                                     ; 001F2
 sub_020_001F4:
         link.w  a6,#$0                          ; 001F4
@@ -218,7 +245,7 @@ l_020_002BC:
         moveq   #-1,d0                          ; 002BC
         rts                                     ; 002BE
 sub_020_002C0:
-        lea.l   (dat_071_00B54).l,a1            ; 002C0
+        lea.l   (ObjectTable).l,a1              ; 002C0
         movea.l (dat_071_0010A).l,a2            ; 002C6
 l_020_002CC:
         tst.w   (a2)                            ; 002CC
@@ -295,7 +322,7 @@ l_020_0039C:
         rts                                     ; 003C4
 sub_020_003C6:
         jsr     (ReadTime).l                    ; 003C6
-        move.l  (dat_071_004C6).l,d0            ; 003CC
+        move.l  (TimeMicros).l,d0               ; 003CC
         lea.l   (dat_071_00197).l,a1            ; 003D2
         move.l  d0,d1                           ; 003D8
         andi.w  #$f,d0                          ; 003DA
@@ -440,10 +467,10 @@ sub_020_00562:
         clr.l   (dat_071_004E4).l               ; 0058C
         bra.w   l_020_00670                     ; 00592
 l_020_00596:
-        sub.l   (dat_071_004C2).l,d1            ; 00596
+        sub.l   (TimeSeconds).l,d1              ; 00596
         neg.l   d1                              ; 0059C
         mulu.w  #$3e8,d1                        ; 0059E
-        move.l  (dat_071_004C6).l,d0            ; 005A2
+        move.l  (TimeMicros).l,d0               ; 005A2
         sub.l   (dat_071_004D6).l,d0            ; 005A8
         divs.w  #$3e8,d0                        ; 005AE
         ext.l   d0                              ; 005B2
@@ -461,7 +488,7 @@ l_020_005D2:
         ori.w   #$40,(dat_071_0029E).l          ; 005E6
         add.l   d1,(dat_071_004E4).l            ; 005EE
 l_020_005F4:
-        move.l  (dat_071_004C2).l,d0            ; 005F4
+        move.l  (TimeSeconds).l,d0              ; 005F4
         cmp.l   (dat_071_004D2).l,d0            ; 005FA
         beq.b   l_020_00666                     ; 00600
         move.l  d0,(dat_071_004D2).l            ; 00602
@@ -495,15 +522,15 @@ l_020_0065A:
 l_020_00660:
         move.b  d1,(dat_071_00259).l            ; 00660
 l_020_00666:
-        move.l  (dat_071_004C6).l,(dat_071_004D6).l ; 00666
+        move.l  (TimeMicros).l,(dat_071_004D6).l ; 00666
 l_020_00670:
         jsr     (ReadTime).l                    ; 00670
         move.l  (dat_071_004CA).l,d1            ; 00676
         blt.b   l_020_006D0                     ; 0067C
-        sub.l   (dat_071_004C2).l,d1            ; 0067E
+        sub.l   (TimeSeconds).l,d1              ; 0067E
         neg.l   d1                              ; 00684
         mulu.w  #$3e8,d1                        ; 00686
-        move.l  (dat_071_004C6).l,d0            ; 0068A
+        move.l  (TimeMicros).l,d0               ; 0068A
         sub.l   (dat_071_004CE).l,d0            ; 00690
         divs.w  #$3e8,d0                        ; 00696
         ext.l   d0                              ; 0069A
@@ -511,7 +538,7 @@ l_020_00670:
         move.l  d1,(dat_071_004DA).l            ; 0069E
         cmpi.l  #$7fff,d1                       ; 006A4
         bgt.b   l_020_006D0                     ; 006AA
-        move.w  (dat_071_002AA).l,d2            ; 006AC
+        move.w  (FrameCount).l,d2               ; 006AC
         andi.w  #$7,d2                          ; 006B2
         addq.w  #$1,d2                          ; 006B6
         divu.w  d2,d1                           ; 006B8
@@ -551,8 +578,8 @@ l_020_0070E:
 l_020_0071C:
         move.w  d0,(dat_071_004B6).l            ; 0071C
 l_020_00722:
-        move.l  (dat_071_004C2).l,(dat_071_004CA).l ; 00722
-        move.l  (dat_071_004C6).l,(dat_071_004CE).l ; 0072C
+        move.l  (TimeSeconds).l,(dat_071_004CA).l ; 00722
+        move.l  (TimeMicros).l,(dat_071_004CE).l ; 0072C
         rts                                     ; 00736
 sub_020_00738:
         tst.b   (dat_071_00155).l               ; 00738

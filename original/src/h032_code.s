@@ -204,7 +204,7 @@ l_032_00232:
         bgt.b   l_032_0027A                     ; 00256
         asl.w   #$8,d3                          ; 00258
         add.w   d3,d3                           ; 0025A
-        lea.l   (dat_071_00B54).l,a4            ; 0025C
+        lea.l   (ObjectTable).l,a4              ; 0025C
         tst.b   (dat_071_00285).l               ; 00262
         beq.b   l_032_0027A                     ; 00268
         cmpi.b  #$1,$62(a1)                     ; 0026A
@@ -522,7 +522,7 @@ l_032_005A8:
 sub_032_005B2:
         tst.b   (dat_071_00184).l               ; 005B2
         beq.b   l_032_005A8                     ; 005B8
-        lea.l   (dat_071_00B54).l,a1            ; 005BA
+        lea.l   (ObjectTable).l,a1              ; 005BA
         move.w  (dat_071_002AE).l,d2            ; 005C0
         bne.b   l_032_005DE                     ; 005C6
         move.w  (dat_071_00392).l,d2            ; 005C8
@@ -604,7 +604,7 @@ l_032_006A8:
         movem.l d0-d2,(dat_071_00458).l         ; 006E0
         rts                                     ; 006E8
 sub_032_006EA:
-        lea.l   (dat_071_00B54).l,a0            ; 006EA
+        lea.l   (ObjectTable).l,a0              ; 006EA
         adda.w  (dat_071_002AE).l,a0            ; 006F0
         move.w  #$7080,d1                       ; 006F6
         move.w  $68(a0),d4                      ; 006FA
@@ -616,12 +616,12 @@ l_032_00704:
         bsr.w   sub_032_00F68                   ; 0070A
         rts                                     ; 0070E
 sub_032_00710:
-        lea.l   (dat_071_00B54).l,a0            ; 00710
+        lea.l   (ObjectTable).l,a0              ; 00710
         adda.w  (dat_071_002AE).l,a0            ; 00716
         move.w  $68(a0),d4                      ; 0071C
         lea.l   (dat_071_005CC).l,a1            ; 00720
         bsr.w   sub_032_00F3E                   ; 00726
-        lea.l   (dat_071_00B54).l,a0            ; 0072A
+        lea.l   (ObjectTable).l,a0              ; 0072A
         adda.w  (dat_071_002AE).l,a0            ; 00730
         tst.b   (dat_071_00155).l               ; 00736
         bne.b   l_032_00752                     ; 0073C

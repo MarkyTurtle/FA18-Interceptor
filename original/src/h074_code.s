@@ -5,12 +5,16 @@
 ; Hunk 74: CODE, $104 bytes
 ;===============================================================================
 	CODE_HUNK	h074
-dat_074_00000:
+; AudioChannels - The four channels' descriptors (AUD0-AUD3): the channel's registers
+; ($DFF0A0...), the playing sound's variable, its exec Interrupt, its interrupt number (7-10),
+; DMACON on/off bits, INTENA/INTREQ bits, the old handler.
+AudioChannels:
         dc.l    dat_074_00020                   ; 00000
         dc.l    dat_074_0003C                   ; 00004
         dc.l    dat_074_00058                   ; 00008
         dc.l    dat_074_00074                   ; 0000C
-dat_074_00010:
+; ChannelSound - The sound each audio channel is playing (4 longs; 0 = none).
+ChannelSound:
 	dc.b	$00,$00,$00,$00
 dat_074_00014:
 	dc.b	$00,$00,$00,$00
@@ -20,7 +24,7 @@ dat_074_0001C:
 	dc.b	$00,$00,$00,$00
 dat_074_00020:
 	dc.b	$00,$DF,$F0,$A0
-        dc.l    dat_074_00010                   ; 00024
+        dc.l    ChannelSound                    ; 00024
         dc.l    dat_074_00090                   ; 00028
 	dc.b	$00,$00,$00,$07,$82,$01,$00,$01,$80,$80,$00,$80,$00,$00,$00,$00
 dat_074_0003C:

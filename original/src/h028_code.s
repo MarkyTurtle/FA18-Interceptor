@@ -274,7 +274,7 @@ l_028_00C7C:
         lea.l   (dat_071_0060E).l,a4            ; 00C84
         bra.b   l_028_00C9C                     ; 00C8A
 l_028_00C8C:
-        lea.l   (dat_071_00B54).l,a4            ; 00C8C
+        lea.l   (ObjectTable).l,a4              ; 00C8C
         adda.w  (dat_071_002AE).l,a4            ; 00C92
         lea.l   $14(a4),a4                      ; 00C98
 l_028_00C9C:
@@ -720,7 +720,7 @@ l_028_01150:
         bclr    #$1,$4(a1)                      ; 01150
         bra.w   l_028_0134A                     ; 01156
 sub_028_0115A:
-        lea.l   (dat_071_00B54).l,a1            ; 0115A
+        lea.l   (ObjectTable).l,a1              ; 0115A
         adda.w  (dat_071_00386).l,a1            ; 01160
         move.l  $14(a1),d6                      ; 01166
         move.l  $1c(a1),d7                      ; 0116A

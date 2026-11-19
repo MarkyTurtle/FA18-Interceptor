@@ -5,7 +5,11 @@
 ; Hunk 80: CODE, $49C bytes
 ;===============================================================================
 	CODE_HUNK	h080
-sub_080_00000:
+
+;-------------------------------------------------------------------------------
+; FileSize - FileSize(name): Lock + Examine, the file's size (fib_Size) or 0.
+;-------------------------------------------------------------------------------
+FileSize:
         link.w  a6,#$fff0                       ; 00000
         clr.l   -$8(a6)                         ; 00004
         move.l  #$10000,-(a7)                   ; 00008
@@ -40,9 +44,14 @@ l_080_0007C:
         move.l  -$8(a6),d0                      ; 0007C
         unlk    a6                              ; 00080
         rts                                     ; 00082
-sub_080_00084:
+
+;-------------------------------------------------------------------------------
+; AllocSound - AllocSound(size, slot): makes the sound slot (64 bytes) and its sample buffer
+; (size bytes, chip RAM): period $166, volume 63, played once.
+;-------------------------------------------------------------------------------
+AllocSound:
         link.w  a6,#$fffc                       ; 00084
-        tst.l   (dat_078_0000E).l               ; 00088
+        tst.l   (AudioDeviceOpen).l             ; 00088
         bne.b   l_080_00096                     ; 0008E
         moveq   #$0,d0                          ; 00090
         unlk    a6                              ; 00092
@@ -51,17 +60,17 @@ l_080_00096:
         move.l  $c(a6),d0                       ; 00096
         asl.l   #$2,d0                          ; 0009A
         movea.l d0,a0                           ; 0009C
-        adda.l  #dat_081_00000,a0               ; 0009E
+        adda.l  #SoundTable,a0                  ; 0009E
         tst.l   (a0)                            ; 000A4
         beq.b   l_080_000B2                     ; 000A6
         move.l  $c(a6),-(a7)                    ; 000A8
-        bsr.w   sub_080_003EE                   ; 000AC
+        bsr.w   FreeSound                       ; 000AC
         addq.l  #$4,a7                          ; 000B0
 l_080_000B2:
         move.l  $c(a6),d0                       ; 000B2
         asl.l   #$2,d0                          ; 000B6
         movea.l d0,a0                           ; 000B8
-        adda.l  #dat_081_00000,a0               ; 000BA
+        adda.l  #SoundTable,a0                  ; 000BA
         move.l  #$10000,-(a7)                   ; 000C0
         moveq   #$40,d0                         ; 000C6
         move.l  d0,-(a7)                        ; 000C8
@@ -79,7 +88,7 @@ l_080_000E6:
         move.l  $c(a6),d0                       ; 000E6
         asl.l   #$2,d0                          ; 000EA
         movea.l d0,a0                           ; 000EC
-        adda.l  #dat_081_00000,a0               ; 000EE
+        adda.l  #SoundTable,a0                  ; 000EE
         movea.l (a0),a1                         ; 000F4
         moveq   #$2,d0                          ; 000F6
         move.l  d0,-(a7)                        ; 000F8
@@ -94,24 +103,24 @@ l_080_000E6:
         move.l  $c(a6),d0                       ; 00114
         asl.l   #$2,d0                          ; 00118
         movea.l d0,a0                           ; 0011A
-        adda.l  #dat_081_00000,a0               ; 0011C
+        adda.l  #SoundTable,a0                  ; 0011C
         movea.l (a0),a1                         ; 00122
         move.l  $8(a6),$4(a1)                   ; 00124
         movea.l d0,a0                           ; 0012A
-        adda.l  #dat_081_00000,a0               ; 0012C
+        adda.l  #SoundTable,a0                  ; 0012C
         movea.l (a0),a1                         ; 00132
         move.l  #$1660000,$8(a1)                ; 00134
         movea.l d0,a0                           ; 0013C
-        adda.l  #dat_081_00000,a0               ; 0013E
+        adda.l  #SoundTable,a0                  ; 0013E
         movea.l (a0),a1                         ; 00144
         move.l  #$3f0000,$c(a1)                 ; 00146
         movea.l d0,a0                           ; 0014E
-        adda.l  #dat_081_00000,a0               ; 00150
+        adda.l  #SoundTable,a0                  ; 00150
         movea.l (a0),a1                         ; 00156
         moveq   #$1,d1                          ; 00158
         move.l  d1,$10(a1)                      ; 0015A
         movea.l d0,a0                           ; 0015E
-        adda.l  #dat_081_00000,a0               ; 00160
+        adda.l  #SoundTable,a0                  ; 00160
         movea.l (a0),a1                         ; 00166
         clr.l   $20(a1)                         ; 00168
         move.l  d1,d0                           ; 0016C
@@ -121,7 +130,7 @@ l_080_00172:
         move.l  $c(a6),d0                       ; 00172
         asl.l   #$2,d0                          ; 00176
         movea.l d0,a0                           ; 00178
-        adda.l  #dat_081_00000,a0               ; 0017A
+        adda.l  #SoundTable,a0                  ; 0017A
         moveq   #$40,d0                         ; 00180
         move.l  d0,-(a7)                        ; 00182
         move.l  (a0),-(a7)                      ; 00184
@@ -130,16 +139,22 @@ l_080_00172:
         move.l  $c(a6),d0                       ; 0018E
         asl.l   #$2,d0                          ; 00192
         movea.l d0,a0                           ; 00194
-        adda.l  #dat_081_00000,a0               ; 00196
+        adda.l  #SoundTable,a0                  ; 00196
         suba.l  a1,a1                           ; 0019C
         move.l  a1,(a0)                         ; 0019E
         move.l  a1,d0                           ; 001A0
         unlk    a6                              ; 001A2
         rts                                     ; 001A4
-sub_080_001A6:
+
+;-------------------------------------------------------------------------------
+; LoadSound - LoadSound(name, slot): loads a sample file (raw 8-bit signed PCM, the whole file)
+; into a sound slot. Returns 0 if there is no file, no memory, or no sound (audio.device did
+; not open).
+;-------------------------------------------------------------------------------
+LoadSound:
         link.w  a6,#$fff8                       ; 001A6
         move.l  $8(a6),-(a7)                    ; 001AA
-        bsr.w   sub_080_00000                   ; 001AE
+        bsr.w   FileSize                        ; 001AE
         addq.l  #$4,a7                          ; 001B2
         move.l  d0,-$8(a6)                      ; 001B4
         tst.l   d0                              ; 001B8
@@ -150,7 +165,7 @@ sub_080_001A6:
 l_080_001C2:
         move.l  $c(a6),-(a7)                    ; 001C2
         move.l  -$8(a6),-(a7)                   ; 001C6
-        bsr.w   sub_080_00084                   ; 001CA
+        bsr.w   AllocSound                      ; 001CA
         addq.l  #$8,a7                          ; 001CE
         tst.l   d0                              ; 001D0
         bne.b   l_080_001DA                     ; 001D2
@@ -168,7 +183,7 @@ l_080_001DA:
         move.l  $c(a6),d1                       ; 001F4
         asl.l   #$2,d1                          ; 001F8
         movea.l d1,a0                           ; 001FA
-        adda.l  #dat_081_00000,a0               ; 001FC
+        adda.l  #SoundTable,a0                  ; 001FC
         movea.l (a0),a1                         ; 00202
         move.l  d0,-(a7)                        ; 00204
         moveq   #$1,d1                          ; 00206
@@ -184,10 +199,16 @@ l_080_00226:
         moveq   #$1,d0                          ; 00226
         unlk    a6                              ; 00228
         rts                                     ; 0022A
-sub_080_0022C:
+
+;-------------------------------------------------------------------------------
+; CopySound - CopySound(from, to): makes slot "to" a second sound with the same sample data as
+; "from" (its length's bit 31 set: the data is not its own) and the same settings, to be
+; changed afterwards.
+;-------------------------------------------------------------------------------
+CopySound:
         link.w  a6,#$fffc                       ; 0022C
         movem.l a2,-(a7)                        ; 00230
-        tst.l   (dat_078_0000E).l               ; 00234
+        tst.l   (AudioDeviceOpen).l             ; 00234
         bne.b   l_080_00246                     ; 0023A
         moveq   #$0,d0                          ; 0023C
         movem.l (a7)+,a2                        ; 0023E
@@ -197,17 +218,17 @@ l_080_00246:
         move.l  $c(a6),d0                       ; 00246
         asl.l   #$2,d0                          ; 0024A
         movea.l d0,a0                           ; 0024C
-        adda.l  #dat_081_00000,a0               ; 0024E
+        adda.l  #SoundTable,a0                  ; 0024E
         tst.l   (a0)                            ; 00254
         beq.b   l_080_00262                     ; 00256
         move.l  $c(a6),-(a7)                    ; 00258
-        bsr.w   sub_080_003EE                   ; 0025C
+        bsr.w   FreeSound                       ; 0025C
         addq.l  #$4,a7                          ; 00260
 l_080_00262:
         move.l  $8(a6),d0                       ; 00262
         asl.l   #$2,d0                          ; 00266
         movea.l d0,a0                           ; 00268
-        adda.l  #dat_081_00000,a0               ; 0026A
+        adda.l  #SoundTable,a0                  ; 0026A
         tst.l   (a0)                            ; 00270
         bne.b   l_080_0027E                     ; 00272
         moveq   #$0,d0                          ; 00274
@@ -218,7 +239,7 @@ l_080_0027E:
         move.l  $c(a6),d0                       ; 0027E
         asl.l   #$2,d0                          ; 00282
         movea.l d0,a0                           ; 00284
-        adda.l  #dat_081_00000,a0               ; 00286
+        adda.l  #SoundTable,a0                  ; 00286
         move.l  #$10000,-(a7)                   ; 0028C
         moveq   #$40,d0                         ; 00292
         move.l  d0,-(a7)                        ; 00294
@@ -237,111 +258,115 @@ l_080_002B6:
         move.l  $c(a6),d0                       ; 002B6
         asl.l   #$2,d0                          ; 002BA
         movea.l d0,a0                           ; 002BC
-        adda.l  #dat_081_00000,a0               ; 002BE
+        adda.l  #SoundTable,a0                  ; 002BE
         movea.l (a0),a1                         ; 002C4
         move.l  $8(a6),d1                       ; 002C6
         asl.l   #$2,d1                          ; 002CA
         movea.l d1,a0                           ; 002CC
-        adda.l  #dat_081_00000,a0               ; 002CE
+        adda.l  #SoundTable,a0                  ; 002CE
         movea.l (a0),a2                         ; 002D4
         move.l  (a2),(a1)                       ; 002D6
         movea.l d0,a0                           ; 002D8
-        adda.l  #dat_081_00000,a0               ; 002DA
+        adda.l  #SoundTable,a0                  ; 002DA
         movea.l (a0),a1                         ; 002E0
         movea.l d1,a0                           ; 002E2
-        adda.l  #dat_081_00000,a0               ; 002E4
+        adda.l  #SoundTable,a0                  ; 002E4
         movea.l (a0),a2                         ; 002EA
         move.l  $4(a2),d2                       ; 002EC
         ori.l   #$80000000,d2                   ; 002F0
         move.l  d2,$4(a1)                       ; 002F6
         movea.l d0,a0                           ; 002FA
-        adda.l  #dat_081_00000,a0               ; 002FC
+        adda.l  #SoundTable,a0                  ; 002FC
         movea.l (a0),a1                         ; 00302
         movea.l d1,a0                           ; 00304
-        adda.l  #dat_081_00000,a0               ; 00306
+        adda.l  #SoundTable,a0                  ; 00306
         movea.l (a0),a2                         ; 0030C
         move.l  $8(a2),$8(a1)                   ; 0030E
         movea.l d0,a0                           ; 00314
-        adda.l  #dat_081_00000,a0               ; 00316
+        adda.l  #SoundTable,a0                  ; 00316
         movea.l (a0),a1                         ; 0031C
         movea.l d1,a0                           ; 0031E
-        adda.l  #dat_081_00000,a0               ; 00320
+        adda.l  #SoundTable,a0                  ; 00320
         movea.l (a0),a2                         ; 00326
         move.l  $c(a2),$c(a1)                   ; 00328
         movea.l d0,a0                           ; 0032E
-        adda.l  #dat_081_00000,a0               ; 00330
+        adda.l  #SoundTable,a0                  ; 00330
         movea.l (a0),a1                         ; 00336
         movea.l d1,a0                           ; 00338
-        adda.l  #dat_081_00000,a0               ; 0033A
+        adda.l  #SoundTable,a0                  ; 0033A
         movea.l (a0),a2                         ; 00340
         move.l  $10(a2),$10(a1)                 ; 00342
         movea.l d0,a0                           ; 00348
-        adda.l  #dat_081_00000,a0               ; 0034A
+        adda.l  #SoundTable,a0                  ; 0034A
         movea.l (a0),a1                         ; 00350
         movea.l d1,a0                           ; 00352
-        adda.l  #dat_081_00000,a0               ; 00354
+        adda.l  #SoundTable,a0                  ; 00354
         movea.l (a0),a2                         ; 0035A
         move.l  $18(a2),$18(a1)                 ; 0035C
         movea.l d0,a0                           ; 00362
-        adda.l  #dat_081_00000,a0               ; 00364
+        adda.l  #SoundTable,a0                  ; 00364
         movea.l (a0),a1                         ; 0036A
         movea.l d1,a0                           ; 0036C
-        adda.l  #dat_081_00000,a0               ; 0036E
+        adda.l  #SoundTable,a0                  ; 0036E
         movea.l (a0),a2                         ; 00374
         move.l  $1c(a2),$1c(a1)                 ; 00376
         movea.l d0,a0                           ; 0037C
-        adda.l  #dat_081_00000,a0               ; 0037E
+        adda.l  #SoundTable,a0                  ; 0037E
         movea.l (a0),a1                         ; 00384
         movea.l d1,a0                           ; 00386
-        adda.l  #dat_081_00000,a0               ; 00388
+        adda.l  #SoundTable,a0                  ; 00388
         movea.l (a0),a2                         ; 0038E
         move.l  $20(a2),$20(a1)                 ; 00390
         movea.l d0,a0                           ; 00396
-        adda.l  #dat_081_00000,a0               ; 00398
+        adda.l  #SoundTable,a0                  ; 00398
         movea.l (a0),a1                         ; 0039E
         movea.l d1,a0                           ; 003A0
-        adda.l  #dat_081_00000,a0               ; 003A2
+        adda.l  #SoundTable,a0                  ; 003A2
         movea.l (a0),a2                         ; 003A8
         move.l  $2c(a2),$2c(a1)                 ; 003AA
         movea.l d0,a0                           ; 003B0
-        adda.l  #dat_081_00000,a0               ; 003B2
+        adda.l  #SoundTable,a0                  ; 003B2
         movea.l (a0),a1                         ; 003B8
         movea.l d1,a0                           ; 003BA
-        adda.l  #dat_081_00000,a0               ; 003BC
+        adda.l  #SoundTable,a0                  ; 003BC
         movea.l (a0),a2                         ; 003C2
         move.l  $38(a2),$38(a1)                 ; 003C4
         movea.l d0,a0                           ; 003CA
-        adda.l  #dat_081_00000,a0               ; 003CC
+        adda.l  #SoundTable,a0                  ; 003CC
         movea.l (a0),a1                         ; 003D2
         movea.l d1,a0                           ; 003D4
-        adda.l  #dat_081_00000,a0               ; 003D6
+        adda.l  #SoundTable,a0                  ; 003D6
         movea.l (a0),a2                         ; 003DC
         move.l  $3c(a2),$3c(a1)                 ; 003DE
         moveq   #$1,d0                          ; 003E4
         movem.l (a7)+,a2                        ; 003E6
         unlk    a6                              ; 003EA
         rts                                     ; 003EC
-sub_080_003EE:
+
+;-------------------------------------------------------------------------------
+; FreeSound - FreeSound(slot): frees the slot and its sample data (unless it shares another's).
+;-------------------------------------------------------------------------------
+FreeSound:
         link.w  a6,#$0                          ; 003EE
         movem.l a2,-(a7)                        ; 003F2
         move.l  $8(a6),d0                       ; 003F6
         asl.l   #$2,d0                          ; 003FA
         movea.l d0,a0                           ; 003FC
-        adda.l  #dat_081_00000,a0               ; 003FE
+        adda.l  #SoundTable,a0                  ; 003FE
         tst.l   (a0)                            ; 00404
         beq.b   l_080_0046E                     ; 00406
         movea.l d0,a0                           ; 00408
-        adda.l  #dat_081_00000,a0               ; 0040A
+        adda.l  #SoundTable,a0                  ; 0040A
         movea.l (a0),a1                         ; 00410
         move.l  $4(a1),d1                       ; 00412
         andi.l  #$80000000,d1                   ; 00416
         tst.l   d1                              ; 0041C
         bne.b   l_080_00442                     ; 0041E
         movea.l d0,a0                           ; 00420
-        adda.l  #dat_081_00000,a0               ; 00422
+        adda.l  #SoundTable,a0                  ; 00422
         movea.l (a0),a1                         ; 00428
         movea.l d0,a0                           ; 0042A
-        adda.l  #dat_081_00000,a0               ; 0042C
+        adda.l  #SoundTable,a0                  ; 0042C
         movea.l (a0),a2                         ; 00432
         move.l  $4(a2),-(a7)                    ; 00434
         move.l  (a1),-(a7)                      ; 00438
@@ -351,7 +376,7 @@ l_080_00442:
         move.l  $8(a6),d0                       ; 00442
         asl.l   #$2,d0                          ; 00446
         movea.l d0,a0                           ; 00448
-        adda.l  #dat_081_00000,a0               ; 0044A
+        adda.l  #SoundTable,a0                  ; 0044A
         moveq   #$40,d0                         ; 00450
         move.l  d0,-(a7)                        ; 00452
         move.l  (a0),-(a7)                      ; 00454
@@ -360,13 +385,17 @@ l_080_00442:
         move.l  $8(a6),d0                       ; 0045E
         asl.l   #$2,d0                          ; 00462
         movea.l d0,a0                           ; 00464
-        adda.l  #dat_081_00000,a0               ; 00466
+        adda.l  #SoundTable,a0                  ; 00466
         clr.l   (a0)                            ; 0046C
 l_080_0046E:
         movem.l (a7)+,a2                        ; 0046E
         unlk    a6                              ; 00472
         rts                                     ; 00474
-sub_080_00476:
+
+;-------------------------------------------------------------------------------
+; FreeAllSounds - Frees every sound slot.
+;-------------------------------------------------------------------------------
+FreeAllSounds:
         link.w  a6,#$fffc                       ; 00476
         clr.l   -$4(a6)                         ; 0047A
 l_080_0047E:
@@ -374,7 +403,7 @@ l_080_0047E:
         cmpi.l  #$28,d0                         ; 00482
         bge.b   l_080_00498                     ; 00488
         move.l  d0,-(a7)                        ; 0048A
-        bsr.w   sub_080_003EE                   ; 0048C
+        bsr.w   FreeSound                       ; 0048C
         addq.l  #$4,a7                          ; 00490
         addq.l  #$1,-$4(a6)                     ; 00492
         bra.b   l_080_0047E                     ; 00496

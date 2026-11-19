@@ -7,7 +7,7 @@
 	CODE_HUNK	h076
 sub_076_00000:
         movem.l d0-d3/a0-a4,-(a7)               ; 00000
-        move.w  $16(a1),$dff09c.l               ; 00004
+        move.w  $16(a1),(CUSTOM+INTREQ).l       ; 00004
         movea.l $0(a1),a0                       ; 0000C
         movea.l $4(a1),a2                       ; 00010
         movea.l $0(a2),a3                       ; 00014
@@ -17,7 +17,7 @@ sub_076_00000:
         move.l  $4(a3),d0                       ; 00026
         asr.l   #$1,d0                          ; 0002A
         move.w  d0,$4(a0)                       ; 0002C
-        move.w  $10(a1),$dff096.l               ; 00030
+        move.w  $10(a1),(CUSTOM+DMACON).l       ; 00030
         jsr     (sub_076_00108).l               ; 00038
         cmpi.l  #$ffffffff,$10(a3)              ; 0003E
         beq.b   l_076_0007A                     ; 00046
@@ -29,7 +29,7 @@ sub_076_00000:
 l_076_0005C:
         move.w  #$0,$8(a0)                      ; 0005C
         move.w  #$7c,$6(a0)                     ; 00062
-        move.w  $12(a1),$dff096.l               ; 00068
+        move.w  $12(a1),(CUSTOM+DMACON).l       ; 00068
         move.w  #$190,d0                        ; 00070
 l_076_00074:
         subi.w  #$1,d0                          ; 00074
@@ -40,7 +40,7 @@ l_076_0007A:
 sub_076_00080:
         movem.l d0-d3/a0-a4,-(a7)               ; 00080
         moveq   #$0,d3                          ; 00084
-        lea.l   (dat_074_00000).l,a0            ; 00086
+        lea.l   (AudioChannels).l,a0            ; 00086
 l_076_0008C:
         move.l  a0,-(a7)                        ; 0008C
         move.w  d3,-(a7)                        ; 0008E
@@ -128,7 +128,7 @@ l_076_00182:
         bne.b   l_076_001A2                     ; 00194
         move.l  d0,$0(a2)                       ; 00196
         move.l  d3,d0                           ; 0019A
-        jsr     (sub_075_0007C).l               ; 0019C
+        jsr     (AudioIntAck_d0).l              ; 0019C
 l_076_001A2:
         rts                                     ; 001A2
 h076_end:

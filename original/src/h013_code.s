@@ -156,12 +156,12 @@ l_013_001F8:
         rts                                     ; 001FA
 sub_013_001FC:
         moveq   #$12,d0                         ; 001FC
-        move.w  (dat_071_002AA).l,d1            ; 001FE
+        move.w  (FrameCount).l,d1               ; 001FE
         andi.w  #$f,d1                          ; 00204
         bra.b   l_013_0021A                     ; 00208
 sub_013_0020A:
         moveq   #$34,d0                         ; 0020A
-        move.w  (dat_071_002AA).l,d1            ; 0020C
+        move.w  (FrameCount).l,d1               ; 0020C
         andi.w  #$f,d1                          ; 00212
         bra.b   l_013_0021A                     ; 00216
 l_013_00218:
@@ -399,7 +399,7 @@ l_013_004BA:
         rts                                     ; 004BC
 sub_013_004BE:
         move.l  (dat_071_00436).l,d0            ; 004BE
-        lea.l   (dat_071_00B54).l,a4            ; 004C4
+        lea.l   (ObjectTable).l,a4              ; 004C4
         adda.w  (dat_071_00386).l,a4            ; 004CA
         move.b  $4(a4),d3                       ; 004D0
         move.b  d3,d7                           ; 004D4
@@ -969,7 +969,7 @@ l_013_00AF0:
 sub_013_00B16:
         tst.b   (dat_071_00155).l               ; 00B16
         bne.b   l_013_00B3A                     ; 00B1C
-        lea.l   (dat_071_00B54).l,a3            ; 00B1E
+        lea.l   (ObjectTable).l,a3              ; 00B1E
         adda.w  (dat_071_002AE).l,a3            ; 00B24
         move.b  $4(a3),d1                       ; 00B2A
         andi.b  #$40,d1                         ; 00B2E

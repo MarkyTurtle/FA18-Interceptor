@@ -5,7 +5,13 @@
 ; Hunk 77: CODE, $158 bytes
 ;===============================================================================
 	CODE_HUNK	h077
-sub_077_00000:
+
+;-------------------------------------------------------------------------------
+; InitSound - Opens audio.device (allocating the four channels: a port and an IOAudio request)
+; and installs the game's own audio interrupts and vertical blank server (AudioInstall,
+; AddSoundVBlank). Returns 0 if audio.device did not open.
+;-------------------------------------------------------------------------------
+InitSound:
         tst.l   (dat_078_00002).l               ; 00000
         bne.b   l_077_00030                     ; 00006
         move.l  #$10002,-(a7)                   ; 00008
@@ -62,21 +68,26 @@ l_077_000B4:
         moveq   #$1,d0                          ; 000B4
         move.l  d0,(dat_078_0000A).l            ; 000B6
 l_077_000BC:
-        tst.l   (dat_078_0000E).l               ; 000BC
+        tst.l   (AudioDeviceOpen).l             ; 000BC
         bne.b   l_077_000D8                     ; 000C2
-        jsr     (sub_075_00166).l               ; 000C4
-        jsr     (sub_075_000F2).l               ; 000CA
+        jsr     (AudioInstall).l                ; 000C4
+        jsr     (AddSoundVBlank).l              ; 000CA
         moveq   #$1,d0                          ; 000D0
-        move.l  d0,(dat_078_0000E).l            ; 000D2
+        move.l  d0,(AudioDeviceOpen).l          ; 000D2
 l_077_000D8:
         moveq   #$0,d0                          ; 000D8
         rts                                     ; 000DA
-sub_077_000DC:
-        tst.l   (dat_078_0000E).l               ; 000DC
+
+;-------------------------------------------------------------------------------
+; CloseSound - Gives the audio channels back (AudioRemove, RemSoundVBlank) and closes
+; audio.device.
+;-------------------------------------------------------------------------------
+CloseSound:
+        tst.l   (AudioDeviceOpen).l             ; 000DC
         beq.b   l_077_000F6                     ; 000E2
-        jsr     (sub_075_0017E).l               ; 000E4
-        jsr     (sub_075_00114).l               ; 000EA
-        clr.l   (dat_078_0000E).l               ; 000F0
+        jsr     (AudioRemove).l                 ; 000E4
+        jsr     (RemSoundVBlank).l              ; 000EA
+        clr.l   (AudioDeviceOpen).l             ; 000F0
 l_077_000F6:
         tst.l   (dat_078_0000A).l               ; 000F6
         beq.b   l_077_00112                     ; 000FC

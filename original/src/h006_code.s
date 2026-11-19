@@ -68,7 +68,7 @@ sub_006_000F6:
         bra.b   l_006_00106                     ; 000FE
 	dc.b	$48,$E7,$09,$40,$42,$07
 l_006_00106:
-        lea.l   (dat_071_00B54).l,a1            ; 00106
+        lea.l   (ObjectTable).l,a1              ; 00106
         adda.w  (dat_071_00386).l,a1            ; 0010C
         btst    #$7,$3(a1)                      ; 00112
         bne.b   l_006_0012C                     ; 00118
@@ -107,7 +107,7 @@ sub_006_0015E:
         clr.b   (dat_071_0025C).l               ; 001A4
         clr.w   (dat_071_00292).l               ; 001AA
         movem.l d0/d4/a0-a1,-(a7)               ; 001B0
-        lea.l   (dat_071_00B54).l,a0            ; 001B4
+        lea.l   (ObjectTable).l,a0              ; 001B4
         adda.w  #$200,a0                        ; 001BA
         moveq   #$2,d0                          ; 001BE
 l_006_001C0:

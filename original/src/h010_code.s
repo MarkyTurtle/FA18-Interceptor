@@ -153,7 +153,7 @@ l_010_001A2:
         moveq   #$1,d7                          ; 001AC
         tst.b   (dat_071_0016E).l               ; 001AE
         beq.b   l_010_001C2                     ; 001B4
-        move.w  (dat_071_002AA).l,d4            ; 001B6
+        move.w  (FrameCount).l,d4               ; 001B6
         andi.w  #$1,d4                          ; 001BC
         beq.b   l_010_00168                     ; 001C0
 l_010_001C2:
@@ -235,7 +235,7 @@ l_010_002AE:
         move.b  -$64(a6),d6                     ; 002BC
         btst    #$0,d6                          ; 002C0
         beq.w   l_010_0072C                     ; 002C4
-        lea.l   (dat_071_00B54).l,a0            ; 002C8
+        lea.l   (ObjectTable).l,a0              ; 002C8
         adda.w  (dat_071_00386).l,a0            ; 002CE
         move.w  $0(a0),d1                       ; 002D4
         btst    #$6,d1                          ; 002D8
@@ -284,7 +284,7 @@ l_010_00340:
         asr.l   d7,d1                           ; 00366
         asr.l   d7,d2                           ; 00368
         movem.w d0-d2,-$14(a6)                  ; 0036A
-        lea.l   (dat_071_00B54).l,a0            ; 00370
+        lea.l   (ObjectTable).l,a0              ; 00370
         adda.w  (dat_071_00386).l,a0            ; 00376
         adda.w  #$92,a0                         ; 0037C
         lea.l   (dat_071_00596).l,a2            ; 00380
@@ -301,7 +301,7 @@ l_010_00340:
         move.w  (a0),d0                         ; 0039E
         asr.w   #$6,d0                          ; 003A0
         move.w  d0,$10(a2)                      ; 003A2
-        lea.l   (dat_071_00B54).l,a0            ; 003A6
+        lea.l   (ObjectTable).l,a0              ; 003A6
         adda.w  (dat_071_00386).l,a0            ; 003AC
         adda.w  #$a4,a0                         ; 003B2
         move.b  (a1)+,d0                        ; 003B6
@@ -1072,7 +1072,7 @@ l_010_00B0C:
         bne.b   l_010_00B04                     ; 00B14
         btst    #$4,(dat_071_0022B).l           ; 00B16
         beq.b   l_010_00B04                     ; 00B1E
-        lea.l   (dat_071_00B54).l,a0            ; 00B20
+        lea.l   (ObjectTable).l,a0              ; 00B20
         adda.w  (dat_071_00386).l,a0            ; 00B26
         move.w  $0(a0),d0                       ; 00B2C
         andi.w  #$400,d0                        ; 00B30

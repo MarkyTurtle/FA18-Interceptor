@@ -209,7 +209,7 @@ l_009_00230:
         adda.w  d0,a1                           ; 0027C
         bra.b   l_009_002A0                     ; 0027E
 l_009_00280:
-        lea.l   (dat_071_00B54).l,a1            ; 00280
+        lea.l   (ObjectTable).l,a1              ; 00280
         move.w  (dat_071_00384).l,d0            ; 00286
         asl.w   #$8,d0                          ; 0028C
         add.w   d0,d0                           ; 0028E
@@ -541,7 +541,7 @@ l_009_006F8:
         bne.b   l_009_0073C                     ; 00706
         lea.l   (dat_073_00212).l,a0            ; 00708
         move.w  #$ffff,(a0)                     ; 0070E
-        lea.l   (dat_071_00B54).l,a2            ; 00712
+        lea.l   (ObjectTable).l,a2              ; 00712
         clr.w   d0                              ; 00718
 l_009_0071A:
         btst    #$6,$1(a2)                      ; 0071A
@@ -615,7 +615,7 @@ l_009_007D4:
         clr.b   (dat_071_0028B).l               ; 007DA
         btst    #$4,d1                          ; 007E0
         beq.b   l_009_00840                     ; 007E4
-        lea.l   (dat_071_00B54).l,a0            ; 007E6
+        lea.l   (ObjectTable).l,a0              ; 007E6
         move.w  d1,d6                           ; 007EC
         andi.w  #$ff00,d1                       ; 007EE
         add.w   d1,d1                           ; 007F2
@@ -946,7 +946,7 @@ l_009_00B56:
         move.w  (a0),d1                         ; 00B5A
         andi.w  #$ff00,d1                       ; 00B5C
         lsr.w   #$3,d1                          ; 00B60
-        lea.l   (dat_071_00B54).l,a2            ; 00B62
+        lea.l   (ObjectTable).l,a2              ; 00B62
         add.l   $10(a2,d1.w),d0                 ; 00B68
         move.l  (dat_071_00448).l,d1            ; 00B6C
         neg.l   d1                              ; 00B72
@@ -954,7 +954,7 @@ l_009_00B56:
         bgt.w   l_009_00EF0                     ; 00B76
         bra.w   l_009_00EE8                     ; 00B7A
 l_009_00B7E:
-        lea.l   (dat_071_00B54).l,a3            ; 00B7E
+        lea.l   (ObjectTable).l,a3              ; 00B7E
         andi.w  #$ff00,d1                       ; 00B84
         add.w   d1,d1                           ; 00B88
         move.w  $c(a3,d1.w),d2                  ; 00B8A
@@ -981,7 +981,7 @@ l_009_00BD6:
         move.w  (a0),d1                         ; 00BDA
         andi.w  #$ff00,d1                       ; 00BDC
         add.w   d1,d1                           ; 00BE0
-        lea.l   (dat_071_00B54).l,a2            ; 00BE2
+        lea.l   (ObjectTable).l,a2              ; 00BE2
         add.l   $10(a2,d1.w),d0                 ; 00BE8
         move.l  (dat_071_00448).l,d1            ; 00BEC
         neg.l   d1                              ; 00BF2
@@ -1049,7 +1049,7 @@ l_009_00C8A:
         move.w  (a0),d1                         ; 00C98
         andi.w  #$ff00,d1                       ; 00C9A
         add.w   d1,d1                           ; 00C9E
-        lea.l   (dat_071_00B54).l,a2            ; 00CA0
+        lea.l   (ObjectTable).l,a2              ; 00CA0
         adda.w  d1,a2                           ; 00CA6
         movea.l (a4)+,a4                        ; 00CA8
         move.w  (a4),d0                         ; 00CAA
@@ -1133,7 +1133,7 @@ l_009_00D78:
         move.w  (a0),d1                         ; 00D90
         andi.w  #$ff00,d1                       ; 00D92
         add.w   d1,d1                           ; 00D96
-        lea.l   (dat_071_00B54).l,a2            ; 00D98
+        lea.l   (ObjectTable).l,a2              ; 00D98
         adda.w  d1,a2                           ; 00D9E
         lea.l   (a2,d2.w),a5                    ; 00DA0
         move.w  d4,d1                           ; 00DA4
@@ -1218,7 +1218,7 @@ l_009_00E66:
         move.w  (a0),d1                         ; 00E84
         andi.w  #$ff00,d1                       ; 00E86
         add.w   d1,d1                           ; 00E8A
-        lea.l   (dat_071_00B54).l,a2            ; 00E8C
+        lea.l   (ObjectTable).l,a2              ; 00E8C
         adda.w  d1,a2                           ; 00E92
         lea.l   (a2,d2.w),a5                    ; 00E94
         movem.w (a2,d3.w),d2-d4                 ; 00E98
@@ -1332,7 +1332,7 @@ sub_009_00FC8:
 sub_009_00FD8:
         andi.w  #$ff00,d1                       ; 00FD8
         add.w   d1,d1                           ; 00FDC
-        lea.l   (dat_071_00B54).l,a2            ; 00FDE
+        lea.l   (ObjectTable).l,a2              ; 00FDE
         adda.w  d1,a2                           ; 00FE4
 l_009_00FE6:
         move.w  $c(a2),d2                       ; 00FE6
@@ -1387,7 +1387,7 @@ l_009_01070:
         move.l  a2,-(a7)                        ; 01070
         andi.w  #$ff00,d1                       ; 01072
         add.w   d1,d1                           ; 01076
-        lea.l   (dat_071_00B54).l,a2            ; 01078
+        lea.l   (ObjectTable).l,a2              ; 01078
         adda.w  d1,a2                           ; 0107E
         move.w  $6(a2),d1                       ; 01080
         andi.w  #$ff,d1                         ; 01084
@@ -1409,7 +1409,7 @@ sub_009_010AE:
         move.w  (a1),d1                         ; 010B0
         andi.w  #$ff00,d1                       ; 010B2
         add.w   d1,d1                           ; 010B6
-        lea.l   (dat_071_00B54).l,a2            ; 010B8
+        lea.l   (ObjectTable).l,a2              ; 010B8
 l_009_010BE:
         adda.w  d1,a2                           ; 010BE
         moveq   #$0,d1                          ; 010C0

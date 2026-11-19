@@ -13,7 +13,8 @@ dat_078_00006:
 	dc.b	$00,$00,$00,$00
 dat_078_0000A:
 	dc.b	$00,$00,$00,$00
-dat_078_0000E:
+; AudioDeviceOpen - Non-zero once audio.device is open (no sound otherwise).
+AudioDeviceOpen:
 	dc.b	$00,$00,$00,$00
 dat_078_00012:
 	dc.b	'abcdefg'

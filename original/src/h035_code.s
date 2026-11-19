@@ -674,16 +674,16 @@ l_035_0063C:
         movea.l (dat_071_00086).l,a1            ; 00648
         movea.l $c(a1),a1                       ; 0064E
         adda.w  d1,a1                           ; 00652
-        lea.l   $dff000.l,a2                    ; 00654
+        lea.l   (CUSTOM).l,a2                    ; 00654
 l_035_0065A:
-        btst    #$6,$2(a2)                      ; 0065A
+        btst    #$6,DMACONR(a2)                 ; 0065A
         beq.b   l_035_00668                     ; 00660
         nop                                     ; 00662
         nop                                     ; 00664
         bra.b   l_035_0065A                     ; 00666
 l_035_00668:
-        move.w  #$0,$42(a2)                     ; 00668
-        move.w  #$ffff,$74(a2)                  ; 0066E
+        move.w  #$0,BLTCON1(a2)                 ; 00668
+        move.w  #$ffff,BLTADAT(a2)              ; 0066E
         move.w  (dat_071_00324).l,-$2(a6)       ; 00674
 l_035_0067C:
         move.w  -$2(a6),-$4(a6)                 ; 0067C
@@ -717,7 +717,7 @@ l_035_006C2:
         add.w   d0,d0                           ; 006C4
         move.w  dat_035_006D2(pc,d0.w),d0       ; 006C6
         ror.w   d7,d0                           ; 006CA
-        move.w  d0,$44(a2)                      ; 006CC
+        move.w  d0,BLTAFWM(a2)                  ; 006CC
         bra.b   l_035_006F4                     ; 006D0
 dat_035_006D2:
 	dc.b	$00,$00,$80,$00,$C0,$00,$E0,$00,$F0,$00,$F8,$00,$FC,$00,$FE,$00
@@ -746,7 +746,7 @@ dat_035_0071A:
 l_035_0073A:
         moveq   #-1,d0                          ; 0073A
 l_035_0073C:
-        move.w  d0,$46(a2)                      ; 0073C
+        move.w  d0,BLTALWM(a2)                  ; 0073C
         lsr.w   -$4(a6)                         ; 00740
         bcc.b   l_035_0074C                     ; 00744
         move.w  #$3fa,d0                        ; 00746
@@ -754,10 +754,10 @@ l_035_0073C:
 l_035_0074C:
         move.w  #$30a,d0                        ; 0074C
 l_035_00750:
-        move.w  d0,$40(a2)                      ; 00750
-        move.l  a0,$48(a2)                      ; 00754
-        move.l  a0,$54(a2)                      ; 00758
-        move.w  d7,$58(a2)                      ; 0075C
+        move.w  d0,BLTCON0(a2)                  ; 00750
+        move.l  a0,BLTCPTH(a2)                  ; 00754
+        move.l  a0,BLTDPTH(a2)                  ; 00758
+        move.w  d7,BLTSIZE(a2)                  ; 0075C
         lea.l   $1f40(a0),a0                    ; 00760
         lsr.w   -$4(a6)                         ; 00764
         bcc.b   l_035_00770                     ; 00768
@@ -766,16 +766,16 @@ l_035_00750:
 l_035_00770:
         move.w  #$30a,d0                        ; 00770
 l_035_00774:
-        btst    #$6,$2(a2)                      ; 00774
+        btst    #$6,DMACONR(a2)                 ; 00774
         beq.b   l_035_00782                     ; 0077A
         nop                                     ; 0077C
         nop                                     ; 0077E
         bra.b   l_035_00774                     ; 00780
 l_035_00782:
-        move.w  d0,$40(a2)                      ; 00782
-        move.l  a0,$48(a2)                      ; 00786
-        move.l  a0,$54(a2)                      ; 0078A
-        move.w  d7,$58(a2)                      ; 0078E
+        move.w  d0,BLTCON0(a2)                  ; 00782
+        move.l  a0,BLTCPTH(a2)                  ; 00786
+        move.l  a0,BLTDPTH(a2)                  ; 0078A
+        move.w  d7,BLTSIZE(a2)                  ; 0078E
         lea.l   $1f40(a0),a0                    ; 00792
         lsr.w   -$4(a6)                         ; 00796
         bcc.b   l_035_007A2                     ; 0079A
@@ -784,16 +784,16 @@ l_035_00782:
 l_035_007A2:
         move.w  #$30a,d0                        ; 007A2
 l_035_007A6:
-        btst    #$6,$2(a2)                      ; 007A6
+        btst    #$6,DMACONR(a2)                 ; 007A6
         beq.b   l_035_007B4                     ; 007AC
         nop                                     ; 007AE
         nop                                     ; 007B0
         bra.b   l_035_007A6                     ; 007B2
 l_035_007B4:
-        move.w  d0,$40(a2)                      ; 007B4
-        move.l  a0,$48(a2)                      ; 007B8
-        move.l  a0,$54(a2)                      ; 007BC
-        move.w  d7,$58(a2)                      ; 007C0
+        move.w  d0,BLTCON0(a2)                  ; 007B4
+        move.l  a0,BLTCPTH(a2)                  ; 007B8
+        move.l  a0,BLTDPTH(a2)                  ; 007BC
+        move.w  d7,BLTSIZE(a2)                  ; 007C0
         lea.l   $1f40(a0),a0                    ; 007C4
         lsr.w   -$4(a6)                         ; 007C8
         bcc.b   l_035_007D4                     ; 007CC
@@ -802,16 +802,16 @@ l_035_007B4:
 l_035_007D4:
         move.w  #$30a,d0                        ; 007D4
 l_035_007D8:
-        btst    #$6,$2(a2)                      ; 007D8
+        btst    #$6,DMACONR(a2)                 ; 007D8
         beq.b   l_035_007E6                     ; 007DE
         nop                                     ; 007E0
         nop                                     ; 007E2
         bra.b   l_035_007D8                     ; 007E4
 l_035_007E6:
-        move.w  d0,$40(a2)                      ; 007E6
-        move.l  a0,$48(a2)                      ; 007EA
-        move.l  a0,$54(a2)                      ; 007EE
-        move.w  d7,$58(a2)                      ; 007F2
+        move.w  d0,BLTCON0(a2)                  ; 007E6
+        move.l  a0,BLTCPTH(a2)                  ; 007EA
+        move.l  a0,BLTDPTH(a2)                  ; 007EE
+        move.w  d7,BLTSIZE(a2)                  ; 007F2
         adda.w  #$28,a1                         ; 007F6
         tst.w   d4                              ; 007FA
         blt.b   l_035_00806                     ; 007FC

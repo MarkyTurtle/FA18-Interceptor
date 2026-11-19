@@ -13,7 +13,7 @@ sub_024_00006:
         clr.b   (dat_071_0026F).l               ; 00006
         moveq   #$0,d0                          ; 0000C
         link.w  a6,#$ffa4                       ; 0000E
-        lea.l   (dat_071_00B54).l,a0            ; 00012
+        lea.l   (ObjectTable).l,a0              ; 00012
         move.w  (dat_071_00386).l,d0            ; 00018
         move.b  $5e(a0,d0.w),-$1a(a6)           ; 0001E
         andi.b  #$3f,$4(a0,d0.w)                ; 00024
@@ -196,7 +196,7 @@ l_024_0022A:
         move.w  (dat_071_002AE).l,d7            ; 0023C
         cmp.w   (dat_071_00386).l,d7            ; 00242
         bne.b   l_024_00282                     ; 00248
-        lea.l   (dat_071_00B54).l,a3            ; 0024A
+        lea.l   (ObjectTable).l,a3              ; 0024A
         adda.w  d7,a3                           ; 00250
         move.b  $7d(a3),d5                      ; 00252
         andi.w  #$f,d5                          ; 00256
@@ -307,7 +307,7 @@ l_024_0037C:
         move.w  #$1ee,-$48(a6)                  ; 00382
         move.w  #$1f4,-$4a(a6)                  ; 00388
 l_024_0038E:
-        lea.l   (dat_071_00B54).l,a4            ; 0038E
+        lea.l   (ObjectTable).l,a4              ; 0038E
         adda.w  (dat_071_00386).l,a4            ; 00394
         tst.w   -$44(a6)                        ; 0039A
         beq.w   l_024_004E8                     ; 0039E
@@ -467,7 +467,7 @@ l_024_0056C:
 l_024_00574:
         tst.w   -$44(a6)                        ; 00574
         bne.b   l_024_00594                     ; 00578
-        lea.l   (dat_071_00B54).l,a4            ; 0057A
+        lea.l   (ObjectTable).l,a4              ; 0057A
         move.w  (dat_071_00386).l,d0            ; 00580
         move.b  $4(a4,d0.w),d2                  ; 00586
         andi.b  #$40,d2                         ; 0058A
@@ -546,7 +546,7 @@ l_024_00642:
         moveq   #$0,d7                          ; 00648
         rts                                     ; 0064A
 l_024_0064C:
-        lea.l   (dat_071_00B54).l,a3            ; 0064C
+        lea.l   (ObjectTable).l,a3              ; 0064C
         adda.w  (dat_071_00386).l,a3            ; 00652
         cmpi.l  #$7fff,$10(a3)                  ; 00658
         bgt.w   l_024_00B04                     ; 00660
@@ -893,13 +893,13 @@ l_024_00A18:
         unlk    a6                              ; 00A1A
         rts                                     ; 00A1C
 l_024_00A1E:
-        lea.l   (dat_071_00B54).l,a1            ; 00A1E
+        lea.l   (ObjectTable).l,a1              ; 00A1E
         adda.w  (dat_071_00386).l,a1            ; 00A24
         btst    #$3,$1(a1)                      ; 00A2A
         beq.b   l_024_00A7E                     ; 00A30
         tst.b   $5e(a1)                         ; 00A32
         bne.b   l_024_00A68                     ; 00A36
-        movea.l (dat_002_0296C).l,a2            ; 00A38
+        movea.l (ConfigBuffer).l,a2             ; 00A38
         cmpi.b  #$0,$62(a1)                     ; 00A3E
         bne.b   l_024_00A54                     ; 00A44
         btst    #$3,$1(a0)                      ; 00A46
@@ -927,7 +927,7 @@ l_024_00A7E:
         andi.b  #$f0,d0                         ; 00A96
         cmpi.b  #$0,d0                          ; 00A9A
         bne.b   l_024_00AAA                     ; 00A9E
-        movea.l (dat_002_0296C).l,a0            ; 00AA0
+        movea.l (ConfigBuffer).l,a0             ; 00AA0
         addq.w  #$1,$48(a0)                     ; 00AA6
 l_024_00AAA:
         moveq   #$40,d0                         ; 00AAA

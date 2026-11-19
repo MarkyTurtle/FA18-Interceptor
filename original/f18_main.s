@@ -12,6 +12,7 @@
 
 	include	"f18_hunks.i"
 	include	"f18_os.i"
+	include	"f18_hw.i"
 
 ;===============================================================================
 ; The hunk header (the -Fbin build only: with -Fhunkexe vasm writes its own)

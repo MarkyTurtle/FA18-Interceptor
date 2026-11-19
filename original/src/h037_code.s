@@ -11,8 +11,13 @@ dat_037_00000:
         dc.l    dat_002_028F4                   ; 00008
         dc.l    dat_002_028F0                   ; 0000C
         dc.l    dat_002_028EC                   ; 00010
-sub_037_00014:
-        lea.l   $dff000.l,a0                    ; 00014
+
+;-------------------------------------------------------------------------------
+; CopyTitleToScreen - Blits the title picture's five planes (TitleBitMap's saved planes) to the
+; display, 320 x 200.
+;-------------------------------------------------------------------------------
+CopyTitleToScreen:
+        lea.l   (CUSTOM).l,a0                    ; 00014
         movea.l (dat_071_0008A).l,a2            ; 0001A
         lea.l   dat_037_00000(pc),a1            ; 00020
         move.w  #$9f0,d2                        ; 00024
@@ -25,12 +30,12 @@ sub_037_00014:
         movea.l (a1)+,a3                        ; 0003C
         move.l  (a3),d0                         ; 0003E
         jsr     (_WaitBlit).l                   ; 00040
-        move.w  d2,$40(a0)                      ; 00046
-        move.w  #$0,$42(a0)                     ; 0004A
-        move.w  #$ffff,$44(a0)                  ; 00050
-        move.w  #$ffff,$46(a0)                  ; 00056
-        move.w  a5,$64(a0)                      ; 0005C
-        move.w  a5,$66(a0)                      ; 00060
+        move.w  d2,BLTCON0(a0)                  ; 00046
+        move.w  #$0,BLTCON1(a0)                 ; 0004A
+        move.w  #$ffff,BLTAFWM(a0)              ; 00050
+        move.w  #$ffff,BLTALWM(a0)              ; 00056
+        move.w  a5,BLTAMOD(a0)                  ; 0005C
+        move.w  a5,BLTDMOD(a0)                  ; 00060
         bsr.w   sub_037_00084                   ; 00064
         bsr.w   sub_037_00074                   ; 00068
         bsr.w   sub_037_00074                   ; 0006C
@@ -53,11 +58,16 @@ dat_037_00092:
         dc.l    dat_002_02918                   ; 0009E
 l_037_000A2:
         rts                                     ; 000A2
-sub_037_000A4:
+
+;-------------------------------------------------------------------------------
+; DrawPanel - While dat_071_00206 counts down: blits the instrument panel picture (pix/inst5)
+; into the display at row 145 (55 rows, fewer if dat_071_002A8 is set), four planes.
+;-------------------------------------------------------------------------------
+DrawPanel:
         tst.b   (dat_071_00206).l               ; 000A4
         ble.b   l_037_000A2                     ; 000AA
         subq.b  #$1,(dat_071_00206).l           ; 000AC
-        lea.l   $dff000.l,a0                    ; 000B2
+        lea.l   (CUSTOM).l,a0                    ; 000B2
         movea.l (dat_071_00086).l,a2            ; 000B8
         lea.l   dat_037_00092(pc),a1            ; 000BE
         move.w  #$9f0,d2                        ; 000C2
@@ -87,13 +97,13 @@ l_037_000E2:
         add.l   d7,d0                           ; 00110
         addq.w  #$1,d5                          ; 00112
         jsr     (_WaitBlit).l                   ; 00114
-        move.w  #$0,$42(a0)                     ; 0011A
-        move.w  #$ffff,$44(a0)                  ; 00120
-        move.w  #$ffff,$46(a0)                  ; 00126
-        move.w  d5,$64(a0)                      ; 0012C
+        move.w  #$0,BLTCON1(a0)                 ; 0011A
+        move.w  #$ffff,BLTAFWM(a0)              ; 00120
+        move.w  #$ffff,BLTALWM(a0)              ; 00126
+        move.w  d5,BLTAMOD(a0)                  ; 0012C
         subq.w  #$1,d5                          ; 00130
         add.w   a5,d5                           ; 00132
-        move.w  d5,$66(a0)                      ; 00134
+        move.w  d5,BLTDMOD(a0)                  ; 00134
         bsr.w   sub_037_00244                   ; 00138
         bsr.w   sub_037_00234                   ; 0013C
         bsr.w   sub_037_00234                   ; 00140
@@ -153,12 +163,12 @@ l_037_001C0:
         move.l  (a2)+,d4                        ; 001D6
         add.l   d1,d4                           ; 001D8
         jsr     (_WaitBlit).l                   ; 001DA
-        move.w  #$0,$42(a0)                     ; 001E0
-        move.w  d3,$74(a0)                      ; 001E6
-        move.w  d3,$44(a0)                      ; 001EA
-        move.w  d3,$46(a0)                      ; 001EE
-        move.w  d5,$60(a0)                      ; 001F2
-        move.w  d5,$66(a0)                      ; 001F6
+        move.w  #$0,BLTCON1(a0)                 ; 001E0
+        move.w  d3,BLTADAT(a0)                  ; 001E6
+        move.w  d3,BLTAFWM(a0)                  ; 001EA
+        move.w  d3,BLTALWM(a0)                  ; 001EE
+        move.w  d5,BLTCMOD(a0)                  ; 001F2
+        move.w  d5,BLTDMOD(a0)                  ; 001F6
         bsr.w   sub_037_00222                   ; 001FA
         move.w  #$30a,d2                        ; 001FE
         bsr.w   sub_037_00218                   ; 00202
@@ -264,7 +274,7 @@ sub_037_00340:
         tst.b   (dat_071_00213).l               ; 00340
         ble.b   l_037_0033E                     ; 00346
         subq.b  #$1,(dat_071_00213).l           ; 00348
-        lea.l   (dat_071_00B54).l,a0            ; 0034E
+        lea.l   (ObjectTable).l,a0              ; 0034E
         adda.w  (dat_071_002AE).l,a0            ; 00354
         move.b  $62(a0),d1                      ; 0035A
         andi.b  #$f0,d1                         ; 0035E
@@ -377,7 +387,7 @@ sub_037_0049C:
         addi.w  #$9,d2                          ; 004C8
         move.w  d1,d3                           ; 004CC
         move.l  #$fffff,(dat_071_000B6).l       ; 004CE
-        lea.l   (dat_071_00B54).l,a2            ; 004D8
+        lea.l   (ObjectTable).l,a2              ; 004D8
         adda.w  (dat_071_002AE).l,a2            ; 004DE
         btst    #$3,$3(a2)                      ; 004E4
         bne.b   l_037_004F6                     ; 004EA
@@ -400,7 +410,7 @@ l_037_00504:
         bsr.w   sub_037_00A22                   ; 0052E
         blt.b   l_037_005B0                     ; 00532
         move.w  #$30a,d2                        ; 00534
-        lea.l   (dat_071_00B54).l,a0            ; 00538
+        lea.l   (ObjectTable).l,a0              ; 00538
         move.w  (dat_071_002AE).l,d0            ; 0053E
         move.w  (a0,d0.w),d0                    ; 00544
         andi.w  #$800,d0                        ; 00548
@@ -472,18 +482,18 @@ l_037_0061E:
         sub.w   d5,d6                           ; 00622
         add.w   d5,d5                           ; 00624
         add.w   a5,d5                           ; 00626
-        lea.l   $dff000.l,a0                    ; 00628
+        lea.l   (CUSTOM).l,a0                    ; 00628
         jsr     (_WaitBlit).l                   ; 0062E
-        move.w  d2,$40(a0)                      ; 00634
-        move.w  #$0,$42(a0)                     ; 00638
-        move.w  #$ffff,$74(a0)                  ; 0063E
-        move.w  d0,$44(a0)                      ; 00644
-        move.w  d3,$46(a0)                      ; 00648
-        move.w  d5,$60(a0)                      ; 0064C
-        move.w  d5,$66(a0)                      ; 00650
-        move.l  d4,$48(a0)                      ; 00654
-        move.l  d4,$54(a0)                      ; 00658
-        move.w  d6,$58(a0)                      ; 0065C
+        move.w  d2,BLTCON0(a0)                  ; 00634
+        move.w  #$0,BLTCON1(a0)                 ; 00638
+        move.w  #$ffff,BLTADAT(a0)              ; 0063E
+        move.w  d0,BLTAFWM(a0)                  ; 00644
+        move.w  d3,BLTALWM(a0)                  ; 00648
+        move.w  d5,BLTCMOD(a0)                  ; 0064C
+        move.w  d5,BLTDMOD(a0)                  ; 00650
+        move.l  d4,BLTCPTH(a0)                  ; 00654
+        move.l  d4,BLTDPTH(a0)                  ; 00658
+        move.w  d6,BLTSIZE(a0)                  ; 0065C
         rts                                     ; 00660
 dat_037_00662:
         dc.l    dat_062_000E4                   ; 00662
@@ -516,7 +526,7 @@ l_037_006BE:
         tst.b   (dat_071_00215).l               ; 006BE
         ble.b   l_037_00672                     ; 006C4
         subq.b  #$1,(dat_071_00215).l           ; 006C6
-        lea.l   (dat_071_00B54).l,a1            ; 006CC
+        lea.l   (ObjectTable).l,a1              ; 006CC
         adda.w  (dat_071_002AE).l,a1            ; 006D2
         move.b  $7c(a1),d0                      ; 006D8
         lea.l   dat_037_00662(pc),a1            ; 006DC
@@ -549,24 +559,24 @@ l_037_006BE:
         add.l   d7,d3                           ; 00732
         add.l   d7,d0                           ; 00734
         move.w  #$f3a,d2                        ; 00736
-        lea.l   $dff000.l,a0                    ; 0073A
+        lea.l   (CUSTOM).l,a0                    ; 0073A
         jsr     (_WaitBlit).l                   ; 00740
-        move.w  d2,$40(a0)                      ; 00746
-        move.w  #$0,$42(a0)                     ; 0074A
-        move.w  #$ffff,$44(a0)                  ; 00750
-        move.w  #$ffff,$46(a0)                  ; 00756
-        move.w  d5,$64(a0)                      ; 0075C
-        move.w  d5,$62(a0)                      ; 00760
+        move.w  d2,BLTCON0(a0)                  ; 00746
+        move.w  #$0,BLTCON1(a0)                 ; 0074A
+        move.w  #$ffff,BLTAFWM(a0)              ; 00750
+        move.w  #$ffff,BLTALWM(a0)              ; 00756
+        move.w  d5,BLTAMOD(a0)                  ; 0075C
+        move.w  d5,BLTBMOD(a0)                  ; 00760
         subq.w  #$1,d5                          ; 00764
         add.w   a5,d5                           ; 00766
-        move.w  d5,$60(a0)                      ; 00768
-        move.w  d5,$66(a0)                      ; 0076C
-        move.l  d0,$50(a0)                      ; 00770
-        move.l  d3,$4c(a0)                      ; 00774
-        move.l  d4,$48(a0)                      ; 00778
-        move.l  d4,$54(a0)                      ; 0077C
-        move.w  d6,$58(a0)                      ; 00780
-        lea.l   (dat_071_00B54).l,a1            ; 00784
+        move.w  d5,BLTCMOD(a0)                  ; 00768
+        move.w  d5,BLTDMOD(a0)                  ; 0076C
+        move.l  d0,BLTAPTH(a0)                  ; 00770
+        move.l  d3,BLTBPTH(a0)                  ; 00774
+        move.l  d4,BLTCPTH(a0)                  ; 00778
+        move.l  d4,BLTDPTH(a0)                  ; 0077C
+        move.w  d6,BLTSIZE(a0)                  ; 00780
+        lea.l   (ObjectTable).l,a1              ; 00784
         adda.w  (dat_071_002AE).l,a1            ; 0078A
         btst    #$7,$2(a1)                      ; 00790
         beq.b   l_037_007E8                     ; 00796
@@ -622,20 +632,20 @@ l_037_00836:
         move.l  (a3),d3                         ; 0083C
         add.l   d7,d3                           ; 0083E
         add.l   d7,d0                           ; 00840
-        lea.l   $dff000.l,a0                    ; 00842
+        lea.l   (CUSTOM).l,a0                    ; 00842
         jsr     (_WaitBlit).l                   ; 00848
-        move.w  #$0,$42(a0)                     ; 0084E
-        move.w  #$ffff,$44(a0)                  ; 00854
-        move.w  #$ffff,$46(a0)                  ; 0085A
-        move.w  d5,$62(a0)                      ; 00860
+        move.w  #$0,BLTCON1(a0)                 ; 0084E
+        move.w  #$ffff,BLTAFWM(a0)              ; 00854
+        move.w  #$ffff,BLTALWM(a0)              ; 0085A
+        move.w  d5,BLTBMOD(a0)                  ; 00860
         swap    d2                              ; 00864
         sub.w   d2,d5                           ; 00866
         swap    d2                              ; 00868
-        move.w  d5,$64(a0)                      ; 0086A
+        move.w  d5,BLTAMOD(a0)                  ; 0086A
         subq.w  #$1,d5                          ; 0086E
         add.w   a5,d5                           ; 00870
-        move.w  d5,$60(a0)                      ; 00872
-        move.w  d5,$66(a0)                      ; 00876
+        move.w  d5,BLTCMOD(a0)                  ; 00872
+        move.w  d5,BLTDMOD(a0)                  ; 00876
         bsr.w   sub_037_00896                   ; 0087A
         bsr.w   sub_037_00886                   ; 0087E
         bsr.w   sub_037_00886                   ; 00882
@@ -681,7 +691,7 @@ l_037_008F2:
         move.w  d0,(dat_071_00372).l            ; 008F2
         ori.w   #$8000,(dat_071_00372).l        ; 008F8
 l_037_00900:
-        lea.l   $dff000.l,a0                    ; 00900
+        lea.l   (CUSTOM).l,a0                    ; 00900
         movea.l (dat_071_00086).l,a2            ; 00906
         move.l  #$17b0,d1                       ; 0090C
         movea.w #$2,a4                          ; 00912
@@ -718,21 +728,21 @@ l_037_00956:
         move.w  a4,d5                           ; 0096E
         addi.w  #$7,d5                          ; 00970
         jsr     (_WaitBlit).l                   ; 00974
-        move.w  d2,$40(a0)                      ; 0097A
-        move.w  d0,$42(a0)                      ; 0097E
-        move.w  #$ffff,$74(a0)                  ; 00982
-        move.w  d6,$46(a0)                      ; 00988
+        move.w  d2,BLTCON0(a0)                  ; 0097A
+        move.w  d0,BLTCON1(a0)                  ; 0097E
+        move.w  #$ffff,BLTADAT(a0)              ; 00982
+        move.w  d6,BLTALWM(a0)                  ; 00988
         swap    d6                              ; 0098C
-        move.w  d6,$44(a0)                      ; 0098E
-        move.w  d5,$62(a0)                      ; 00992
+        move.w  d6,BLTAFWM(a0)                  ; 0098E
+        move.w  d5,BLTBMOD(a0)                  ; 00992
         subi.w  #$7,d5                          ; 00996
         add.w   a5,d5                           ; 0099A
-        move.w  d5,$60(a0)                      ; 0099C
-        move.w  d5,$66(a0)                      ; 009A0
-        move.l  d4,$4c(a0)                      ; 009A4
-        move.l  d1,$48(a0)                      ; 009A8
-        move.l  d1,$54(a0)                      ; 009AC
-        move.w  d3,$58(a0)                      ; 009B0
+        move.w  d5,BLTCMOD(a0)                  ; 0099C
+        move.w  d5,BLTDMOD(a0)                  ; 009A0
+        move.l  d4,BLTBPTH(a0)                  ; 009A4
+        move.l  d1,BLTCPTH(a0)                  ; 009A8
+        move.l  d1,BLTDPTH(a0)                  ; 009AC
+        move.w  d3,BLTSIZE(a0)                  ; 009B0
         move.l  #$fffff,(dat_071_000B6).l       ; 009B4
         move.w  #$d0,d0                         ; 009BE
         add.w   (dat_071_00358).l,d0            ; 009C2
@@ -748,7 +758,7 @@ l_037_00956:
 l_037_009E8:
         rts                                     ; 009E8
 sub_037_009EA:
-        lea.l   (dat_071_00B54).l,a0            ; 009EA
+        lea.l   (ObjectTable).l,a0              ; 009EA
         move.w  (dat_071_002AE).l,d1            ; 009F0
         move.w  $68(a0,d1.w),d0                 ; 009F6
         ext.l   d0                              ; 009FA

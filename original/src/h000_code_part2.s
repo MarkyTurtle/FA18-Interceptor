@@ -9,7 +9,7 @@ sub_000_04392:
         ext.l   d0                              ; 043A2
         asl.l   d1,d0                           ; 043A4
         movea.l d0,a0                           ; 043A6
-        adda.l  #dat_071_00B54,a0               ; 043A8
+        adda.l  #ObjectTable,a0                 ; 043A8
         move.w  (a0),d0                         ; 043AE
         btst    #$6,d0                          ; 043B0
         bne.b   l_000_043F0                     ; 043B4
@@ -555,7 +555,7 @@ sub_000_04AA0:
         ext.l   d0                              ; 04AB0
         asl.l   d1,d0                           ; 04AB2
         movea.l d0,a0                           ; 04AB4
-        adda.l  #dat_071_00B54,a0               ; 04AB6
+        adda.l  #ObjectTable,a0                 ; 04AB6
         move.l  a0,d0                           ; 04ABC
         move.l  d0,(dat_002_00008).l            ; 04ABE
         move.b  (dat_071_00280).l,-$11(a6)      ; 04AC4
@@ -1227,7 +1227,7 @@ l_000_052BE:
         rts                                     ; 052C4
 sub_000_052C6:
         link.w  a6,#$0                          ; 052C6
-        btst    #$1,(dat_071_0052A).l           ; 052CA
+        btst    #$1,(SoundFlags).l              ; 052CA
         beq.b   l_000_052EC                     ; 052D2
         move.w  $e(a6),d0                       ; 052D4
         ext.l   d0                              ; 052D8
@@ -1431,7 +1431,7 @@ sub_000_0557C:
         ext.l   d0                              ; 05590
         asl.l   d1,d0                           ; 05592
         movea.l d0,a0                           ; 05594
-        adda.l  #dat_071_00B54,a0               ; 05596
+        adda.l  #ObjectTable,a0                 ; 05596
         move.l  a0,(dat_002_00008).l            ; 0559C
         addq.l  #$2,a0                          ; 055A2
         movea.l (dat_002_00008).l,a1            ; 055A4
@@ -2221,7 +2221,7 @@ sub_000_05ED4:
         ext.l   d0                              ; 05EE8
         asl.l   d1,d0                           ; 05EEA
         movea.l d0,a0                           ; 05EEC
-        adda.l  #dat_071_00B54,a0               ; 05EEE
+        adda.l  #ObjectTable,a0                 ; 05EEE
         move.l  a0,d0                           ; 05EF4
         move.l  d0,(dat_002_00008).l            ; 05EF6
         movea.l d0,a0                           ; 05EFC
@@ -2255,7 +2255,7 @@ sub_000_05ED4:
         tst.w   -$32(a6)                        ; 05F54
         bne.b   l_000_05F74                     ; 05F58
         move.w  (dat_071_0014C).l,d0            ; 05F5A
-        move.w  (dat_071_00148).l,d1            ; 05F60
+        move.w  (MouseY).l,d1                   ; 05F60
         sub.w   d1,d0                           ; 05F66
         move.w  d0,-$28(a6)                     ; 05F68
         tst.w   d0                              ; 05F6C
@@ -2436,7 +2436,7 @@ l_000_06158:
 l_000_06172:
         tst.b   (dat_071_001A8).l               ; 06172
         beq.b   l_000_061BC                     ; 06178
-        move.w  (dat_071_00148).l,d0            ; 0617A
+        move.w  (MouseY).l,d0                   ; 0617A
         cmpi.w  #$3c0,d0                        ; 06180
         bge.b   l_000_0618E                     ; 06184
         cmpi.w  #$10,-$28(a6)                   ; 06186
@@ -2445,10 +2445,10 @@ l_000_0618E:
         move.w  -$24(a6),d0                     ; 0618E
         asl.w   #$3,d0                          ; 06192
         move.w  d0,(dat_071_0014C).l            ; 06194
-        move.w  (dat_071_00148).l,d1            ; 0619A
+        move.w  (MouseY).l,d1                   ; 0619A
         tst.w   d1                              ; 061A0
         bmi.b   l_000_061BC                     ; 061A2
-        move.w  d0,(dat_071_00148).l            ; 061A4
+        move.w  d0,(MouseY).l                   ; 061A4
         bra.b   l_000_061BC                     ; 061AA
 l_000_061AC:
         movea.l -$c(a6),a0                      ; 061AC
@@ -2465,16 +2465,16 @@ l_000_061BC:
         beq.w   l_000_0629E                     ; 061CC
         tst.b   (dat_071_001A8).l               ; 061D0
         beq.w   l_000_0629E                     ; 061D6
-        move.w  (dat_071_00148).l,d0            ; 061DA
+        move.w  (MouseY).l,d0                   ; 061DA
         cmpi.w  #$3c0,d0                        ; 061E0
         bge.b   l_000_061F0                     ; 061E4
         cmpi.w  #$10,-$28(a6)                   ; 061E6
         ble.w   l_000_0629E                     ; 061EC
 l_000_061F0:
-        move.w  (dat_071_00148).l,d0            ; 061F0
+        move.w  (MouseY).l,d0                   ; 061F0
         tst.w   d0                              ; 061F6
         bpl.b   l_000_0620A                     ; 061F8
-        clr.w   (dat_071_00148).l               ; 061FA
+        clr.w   (MouseY).l                      ; 061FA
         move.b  #$ff,(dat_071_00240).l          ; 06200
         bra.b   l_000_06264                     ; 06208
 l_000_0620A:
@@ -2482,7 +2482,7 @@ l_000_0620A:
         move.w  (a0),d0                         ; 0620E
         btst    #$3,d0                          ; 06210
         beq.b   l_000_06230                     ; 06214
-        move.w  (dat_071_00148).l,d0            ; 06216
+        move.w  (MouseY).l,d0                   ; 06216
         ext.l   d0                              ; 0621C
         cmpi.l  #$360,d0                        ; 0621E
         bge.b   l_000_06264                     ; 06224
@@ -2490,7 +2490,7 @@ l_000_0620A:
         move.b  d0,(dat_071_00240).l            ; 06228
         bra.b   l_000_06264                     ; 0622E
 l_000_06230:
-        tst.w   (dat_071_00148).l               ; 06230
+        tst.w   (MouseY).l                      ; 06230
         beq.b   l_000_06264                     ; 06236
         movea.l -$4(a6),a0                      ; 06238
         move.b  (a0),d0                         ; 0623C
@@ -2501,12 +2501,12 @@ l_000_06230:
         bne.b   l_000_06254                     ; 0624A
         move.b  #$fe,(dat_071_00280).l          ; 0624C
 l_000_06254:
-        move.w  (dat_071_00148).l,d0            ; 06254
+        move.w  (MouseY).l,d0                   ; 06254
         ext.l   d0                              ; 0625A
         asr.l   #$3,d0                          ; 0625C
         move.b  d0,(dat_071_00240).l            ; 0625E
 l_000_06264:
-        move.w  (dat_071_00148).l,(dat_071_0014C).l ; 06264
+        move.w  (MouseY).l,(dat_071_0014C).l    ; 06264
         bra.b   l_000_0629E                     ; 0626E
 l_000_06270:
         movea.l -$4(a6),a0                      ; 06270
@@ -2517,7 +2517,7 @@ l_000_06270:
         beq.b   l_000_06292                     ; 06282
         moveq   #$0,d0                          ; 06284
         move.w  d0,(dat_071_0014C).l            ; 06286
-        move.w  d0,(dat_071_00148).l            ; 0628C
+        move.w  d0,(MouseY).l                   ; 0628C
 l_000_06292:
         movea.l -$30(a6),a0                     ; 06292
         move.w  (a0),d0                         ; 06296
@@ -3243,7 +3243,7 @@ sub_000_06B0E:
         ext.l   d0                              ; 06B22
         asl.l   d1,d0                           ; 06B24
         movea.l d0,a0                           ; 06B26
-        adda.l  #dat_071_00B54,a0               ; 06B28
+        adda.l  #ObjectTable,a0                 ; 06B28
         move.l  a0,d0                           ; 06B2E
         move.l  d0,(dat_002_00008).l            ; 06B30
         movea.l d0,a0                           ; 06B36
@@ -3556,7 +3556,7 @@ l_000_06F30:
         movea.l (dat_002_00008).l,a0            ; 06F5A
         clr.w   $26(a0)                         ; 06F60
         jsr     (ReadTime).l                    ; 06F64
-        move.l  (dat_071_004C2).l,(dat_071_002DC).l ; 06F6A
+        move.l  (TimeSeconds).l,(dat_071_002DC).l ; 06F6A
         moveq   #$0,d0                          ; 06F74
         move.b  d0,(dat_071_0016F).l            ; 06F76
         moveq   #$1,d0                          ; 06F7C
@@ -3570,10 +3570,10 @@ l_000_06F30:
         move.w  (a0),d0                         ; 06F9C
         ori.w   #$200,d0                        ; 06F9E
         move.w  d0,(a0)                         ; 06FA2
-        movea.l (dat_002_0296C).l,a0            ; 06FA4
+        movea.l (ConfigBuffer).l,a0             ; 06FA4
         move.w  $46(a0),d0                      ; 06FAA
         addq.w  #$1,d0                          ; 06FAE
-        movea.l (dat_002_0296C).l,a0            ; 06FB0
+        movea.l (ConfigBuffer).l,a0             ; 06FB0
         move.w  d0,$46(a0)                      ; 06FB6
         move.b  #$1,(dat_071_00195).l           ; 06FBA
         move.b  #$4,(dat_071_00168).l           ; 06FC2
@@ -3725,7 +3725,7 @@ l_000_071DC:
         bne.b   l_000_0724E                     ; 071E0
         jsr     (ReadTime).l                    ; 071E2
         move.l  (dat_071_002DC).l,d0            ; 071E8
-        move.l  (dat_071_004C2).l,d1            ; 071EE
+        move.l  (TimeSeconds).l,d1              ; 071EE
         sub.l   d0,d1                           ; 071F4
         move.l  d1,(dat_071_002DC).l            ; 071F6
         add.l   d1,(dat_071_002E0).l            ; 071FC
@@ -3865,10 +3865,10 @@ l_000_0737E:
         move.b  d1,(a0)                         ; 073CE
         addq.b  #$1,-$1(a6)                     ; 073D0
         addq.b  #$1,-$2(a6)                     ; 073D4
-        movea.l (dat_002_0296C).l,a0            ; 073D8
+        movea.l (ConfigBuffer).l,a0             ; 073D8
         move.w  $3a(a0),d1                      ; 073DE
         addq.w  #$3,d1                          ; 073E2
-        movea.l (dat_002_0296C).l,a0            ; 073E4
+        movea.l (ConfigBuffer).l,a0             ; 073E4
         move.w  d1,$3a(a0)                      ; 073EA
         move.b  #$1,(dat_071_00195).l           ; 073EE
         movea.l -$14(a6),a0                     ; 073F6

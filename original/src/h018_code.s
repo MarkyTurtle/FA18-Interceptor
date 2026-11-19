@@ -262,7 +262,7 @@ sub_018_0038C:
         bne.w   l_018_005F6                     ; 00392
         move.w  (dat_071_00292).l,d0            ; 00396
         beq.b   l_018_0038A                     ; 0039C
-        lea.l   (dat_071_00B54).l,a1            ; 0039E
+        lea.l   (ObjectTable).l,a1              ; 0039E
         adda.w  d0,a1                           ; 003A4
         btst    #$7,$0(a1)                      ; 003A6
         beq.b   l_018_0038A                     ; 003AC
@@ -357,7 +357,7 @@ l_018_0051E:
 sub_018_00520:
         tst.b   (dat_071_00168).l               ; 00520
         bne.b   l_018_0051E                     ; 00526
-        lea.l   (dat_071_00B54).l,a1            ; 00528
+        lea.l   (ObjectTable).l,a1              ; 00528
         btst    #$6,$1(a1)                      ; 0052E
         beq.b   l_018_0051E                     ; 00534
         move.w  $2(a1),d0                       ; 00536
@@ -423,7 +423,7 @@ l_018_00606:
 l_018_00618:
         rts                                     ; 00618
 sub_018_0061A:
-        lea.l   (dat_071_00B54).l,a0            ; 0061A
+        lea.l   (ObjectTable).l,a0              ; 0061A
         btst    #$0,$21(a0)                     ; 00620
         beq.b   l_018_00658                     ; 00626
         btst    #$7,$3(a0)                      ; 00628

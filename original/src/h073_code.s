@@ -93,22 +93,26 @@ dat_073_01628:
 dat_073_0162A:
 	dc.b	$00
 	dc.b	$00
-dat_073_0162C:
+; RecordBuffer - The flight recording's positions (textply).
+RecordBuffer:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_073_01630:
+; RecordLength - Its size in bytes (the controls are 4 times that).
+RecordLength:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_073_01634:
+; RecordPointer - Where the replay has got to in RecordBuffer.
+RecordPointer:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_073_01638:
+; RecordControls - The flight recording's controls (textctl).
+RecordControls:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -132,7 +136,8 @@ dat_073_01644:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_073_0164C:
+; InfoData - The InfoData buffer for CheckDisk.
+InfoData:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00

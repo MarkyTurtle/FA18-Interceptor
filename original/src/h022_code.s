@@ -26,19 +26,19 @@ l_022_00024:
         move.w  (dat_071_00368).l,$2(a0)        ; 0003C
         bra.b   l_022_000B2                     ; 00044
 l_022_00046:
-        move.l  (dat_073_0162C).l,d0            ; 00046
-        add.l   (dat_073_01630).l,d0            ; 0004C
-        movea.l (dat_073_01634).l,a0            ; 00052
+        move.l  (RecordBuffer).l,d0             ; 00046
+        add.l   (RecordLength).l,d0             ; 0004C
+        movea.l (RecordPointer).l,a0            ; 00052
         cmp.l   a0,d0                           ; 00058
         bgt.b   l_022_00082                     ; 0005A
         move.b  #$4,(dat_071_0021B).l           ; 0005C
         move.b  #$1,(dat_071_0017E).l           ; 00064
-        move.l  (dat_073_0162C).l,(dat_073_01634).l ; 0006C
-        move.l  (dat_073_01638).l,(dat_073_0163C).l ; 00076
+        move.l  (RecordBuffer).l,(RecordPointer).l ; 0006C
+        move.l  (RecordControls).l,(dat_073_0163C).l ; 00076
         rts                                     ; 00080
 l_022_00082:
         move.b  (dat_071_00BB9).l,(a0)+         ; 00082
-        move.l  a0,(dat_073_01634).l            ; 00088
+        move.l  a0,(RecordPointer).l            ; 00088
         movea.l (dat_073_0163C).l,a1            ; 0008E
         move.w  (dat_071_00366).l,(a1)+         ; 00094
         move.w  (dat_071_00368).l,(a1)+         ; 0009A
@@ -92,7 +92,7 @@ l_022_00110:
         bne.b   l_022_00144                     ; 00126
         bra.w   l_022_001D6                     ; 00128
 l_022_0012C:
-        move.w  (dat_071_002AA).l,d0            ; 0012C
+        move.w  (FrameCount).l,d0               ; 0012C
         andi.w  #$1f,d0                         ; 00132
         cmp.w   (dat_071_00384).l,d0            ; 00136
         bne.b   l_022_00144                     ; 0013C
@@ -572,7 +572,7 @@ l_022_00710:
         ori.w   #$200,$0(a1)                    ; 00710
         btst    #$6,d0                          ; 00716
         bne.b   l_022_00736                     ; 0071A
-        movea.l (dat_002_0296C).l,a0            ; 0071C
+        movea.l (ConfigBuffer).l,a0             ; 0071C
         addq.w  #$1,$46(a0)                     ; 00722
         move.b  #$1,(dat_071_00195).l           ; 00726
         move.b  #$4,(dat_071_00168).l           ; 0072E
@@ -749,7 +749,7 @@ l_022_009B6:
         clr.w   $78(a1)                         ; 009BA
         rts                                     ; 009BE
 sub_022_009C0:
-        lea.l   (dat_071_00B54).l,a1            ; 009C0
+        lea.l   (ObjectTable).l,a1              ; 009C0
         adda.w  (dat_071_00386).l,a1            ; 009C6
         tst.b   (dat_071_00154).l               ; 009CC
         beq.b   l_022_009B6                     ; 009D2
@@ -854,7 +854,7 @@ sub_022_00AB6:
         move.w  (dat_071_00386).l,d0            ; 00AB6
         cmp.w   (dat_073_0165A).l,d0            ; 00ABC
         bne.b   l_022_00AB4                     ; 00AC2
-        lea.l   (dat_071_00B54).l,a1            ; 00AC4
+        lea.l   (ObjectTable).l,a1              ; 00AC4
         adda.w  d0,a1                           ; 00ACA
         tst.b   (dat_071_0017E).l               ; 00ACC
         bne.b   l_022_00AB4                     ; 00AD2

@@ -83,7 +83,7 @@ sub_015_000B4:
         link.w  a6,#$ffd2                       ; 000C2
         move.w  #$ffff,-$26(a6)                 ; 000C6
         clr.w   -$1e(a6)                        ; 000CC
-        lea.l   (dat_071_00B54).l,a1            ; 000D0
+        lea.l   (ObjectTable).l,a1              ; 000D0
         adda.w  d0,a1                           ; 000D6
         clr.b   d0                              ; 000D8
         cmpi.b  #$6,(dat_073_01658).l           ; 000DA
@@ -133,7 +133,7 @@ l_015_0016C:
 l_015_00172:
         move.w  #$ffff,-$22(a6)                 ; 00172
 l_015_00178:
-        lea.l   (dat_071_00B54).l,a1            ; 00178
+        lea.l   (ObjectTable).l,a1              ; 00178
         adda.w  (dat_071_00386).l,a1            ; 0017E
         move.b  -$20(a6),d0                     ; 00184
         ext.w   d0                              ; 00188
@@ -337,7 +337,7 @@ l_015_00394:
         unlk    a6                              ; 00398
         rts                                     ; 0039A
 sub_015_0039C:
-        lea.l   (dat_071_00B54).l,a3            ; 0039C
+        lea.l   (ObjectTable).l,a3              ; 0039C
         move.w  (dat_071_00386).l,d0            ; 003A2
         addi.w  #$a4,d0                         ; 003A8
         adda.w  d0,a3                           ; 003AC
@@ -508,7 +508,7 @@ sub_015_003EC:
         movem.w d0-d2/d6-d7/a4,$cc(a3)          ; 00584
         rts                                     ; 0058A
 sub_015_0058C:
-        lea.l   (dat_071_00B54).l,a3            ; 0058C
+        lea.l   (ObjectTable).l,a3              ; 0058C
         move.w  (dat_071_00386).l,d0            ; 00592
         addi.w  #$a4,d0                         ; 00598
         adda.w  d0,a3                           ; 0059C
@@ -598,7 +598,7 @@ sub_015_005A8:
         moveq   #$0,d0                          ; 00680
         rts                                     ; 00682
 sub_015_00684:
-        lea.l   (dat_071_00B54).l,a3            ; 00684
+        lea.l   (ObjectTable).l,a3              ; 00684
         move.w  (dat_071_00386).l,d0            ; 0068A
         addi.w  #$a4,d0                         ; 00690
         adda.w  d0,a3                           ; 00694
@@ -656,7 +656,7 @@ sub_015_006A0:
         moveq   #$0,d0                          ; 00728
         rts                                     ; 0072A
 sub_015_0072C:
-        lea.l   (dat_071_00B54).l,a3            ; 0072C
+        lea.l   (ObjectTable).l,a3              ; 0072C
         move.w  (dat_071_00386).l,d0            ; 00732
         addi.w  #$a4,d0                         ; 00738
         adda.w  d0,a3                           ; 0073C

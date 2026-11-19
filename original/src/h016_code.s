@@ -602,7 +602,7 @@ dat_016_00144:
         dc.l    dat_056_00000                   ; 00A70
 	dc.b	$00,$00,$00,$00
 sub_016_00A78:
-        lea.l   (dat_071_00B54).l,a1            ; 00A78
+        lea.l   (ObjectTable).l,a1              ; 00A78
         adda.w  (dat_071_00386).l,a1            ; 00A7E
         move.w  $0(a1),d1                       ; 00A84
         move.w  d1,d2                           ; 00A88
@@ -628,7 +628,7 @@ l_016_00ABC:
 l_016_00AD0:
         rts                                     ; 00AD0
 sub_016_00AD2:
-        lea.l   (dat_071_00B54).l,a1            ; 00AD2
+        lea.l   (ObjectTable).l,a1              ; 00AD2
         adda.w  (dat_071_00386).l,a1            ; 00AD8
         lea.l   (dat_058_00000).l,a0            ; 00ADE
         move.w  $4c(a1),d0                      ; 00AE4
@@ -660,7 +660,7 @@ l_016_00B5A:
         move.l  #dat_058_00000,(dat_071_0040A).l ; 00B64
         bra.w   l_016_00AB6                     ; 00B6E
 sub_016_00B72:
-        lea.l   (dat_071_00B54).l,a1            ; 00B72
+        lea.l   (ObjectTable).l,a1              ; 00B72
         adda.w  (dat_071_00386).l,a1            ; 00B78
         lea.l   (dat_058_002A6).l,a0            ; 00B7E
         move.w  $4c(a1),d0                      ; 00B84

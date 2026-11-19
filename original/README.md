@@ -11,7 +11,9 @@
 | `f18_hunks.i` | The hunk structure: the macros that let `f18_main.s` assemble either to the exact file (`-Fbin`) or as an ordinary executable (`-Fhunkexe -DHUNKEXE`) |
 | `build.py`, `build.sh` | Assemble `f18_main.s` both ways and check it against the original (`../BUILDING.md`) |
 | `disk/files/` | Every file from the disk, in its folders, as on the disk (`F-18 Interceptor/` is the volume) |
-| `disk/FILES.md` | What each file is |
+| `disk/FILES.md` | What each file is, and **the formats**: the pictures, the sound samples, the flight log, the flight recording |
+| `docs/CODE.md` | **The code**: how it runs, what each hunk is, the includes |
+| `f18_os.i`, `f18_hw.i` | The system library calls and structures; the custom chip registers |
 | `disk/SHA1SUMS` | SHA-1 of the IPF, the decoded ADF and every file |
 | `tools/` | below |
 
@@ -49,6 +51,8 @@ original bytes and the same image. `make.py` is kept for the record (it writes t
 
 | | |
 |---|---|
+| `tools/rename.py` | Renames labels across the source and adds their header boxes, then checks the build |
+| `tools/decode.py` | Turns a `dc.b` region that is code into instructions, then checks the build |
 | `tools/disasm/make.py` | How the source was first made (kept for the record): generates it from `main_cfg.py` with the engine into `tools/disasm/regen/` and runs `build.py`'s checks there. The source in this folder is edited by hand and no longer made from it |
 | `tools/disasm/hunk.py` | The hunk layer over the engine: each hunk gets its own virtual base (`$40000000 + n*$100000`) and every relocated long is patched to the virtual address it points at, so the engine traces across hunks and only relocated longs become labels; it writes the source with the hunk structure |
 | `tools/disasm/core.py`, `hw.py` | The disassembly engine (from the New Zealand Story disassembly): traces the code from the entry points (capstone), sweeps for code nothing reaches, checks with vasm that every instruction reassembles to its own bytes (any that does not is written as `dc.w`) |

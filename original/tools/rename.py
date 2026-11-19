@@ -6,6 +6,7 @@ check the build still gives the original bytes.
 NAMES.txt, one label per line ('#' starts a comment line):
 
   OLD  NEW  [- description]
+  OLD  NEW  - !description        (replaces the label's existing header or comment)
 
 * OLD is renamed NEW everywhere (whole words only). OLD may already be NEW: then only the
   description is added.
@@ -77,10 +78,20 @@ def main():
                 l = new + sep + cmt
             m = re.match(r'^([A-Za-z_.][\w.]*):', l)
             if m and m.group(1) in desc:
+                text0 = desc[m.group(1)]
+                if text0.startswith('!') and out and out[-1].startswith(';'):    # replace the old header
+                    if out[-1].startswith(';---'):
+                        j = len(out) - 2
+                        while j >= 0 and not out[j].startswith(';---'):
+                            j -= 1
+                        del out[j:]
+                    else:
+                        while out and out[-1].startswith('; '):
+                            out.pop()
                 prev = out[-1] if out else ''
                 if not prev.startswith(';'):
                     code_label = not m.group(1).startswith(('dat_', 'g_', 'v_')) and is_code(lines, i)
-                    text = f'{m.group(1)} - {desc[m.group(1)]}'
+                    text = f'{m.group(1)} - {desc[m.group(1)].lstrip("!").strip()}'
                     wrapped = textwrap.wrap(text, WIDTH - 2)
                     if code_label:
                         if out and out[-1] != '':

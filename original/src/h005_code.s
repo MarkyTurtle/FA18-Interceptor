@@ -20,29 +20,29 @@ sub_005_00010:
         tst.w   (a0)                            ; 0002C
         beq.b   l_005_00098                     ; 0002E
         bclr    #$0,(a0)                        ; 00030
-        bne.w   l_005_00FFA                     ; 00034
+        bne.w   Key_G                           ; 00034
         bclr    #$1,(a0)                        ; 00038
-        bne.w   l_005_009FE                     ; 0003C
+        bne.w   Key_A                           ; 0003C
         bclr    #$2,(a0)                        ; 00040
-        bne.w   l_005_00604                     ; 00044
+        bne.w   Key_Space                       ; 00044
         bclr    #$3,(a0)                        ; 00048
-        bne.w   l_005_00614                     ; 0004C
+        bne.w   Key_SpaceUp                     ; 0004C
         bclr    #$4,(a0)                        ; 00050
-        bne.w   l_005_00F62                     ; 00054
+        bne.w   Key_Return                      ; 00054
         bclr    #$5,(a0)                        ; 00058
-        bne.w   l_005_0050E                     ; 0005C
+        bne.w   Key_E                           ; 0005C
         bclr    #$6,(a0)                        ; 00060
-        bne.w   l_005_005B0                     ; 00064
+        bne.w   Key_R                           ; 00064
         bclr    #$7,(a0)                        ; 00068
-        bne.w   l_005_0058C                     ; 0006C
+        bne.w   Key_T                           ; 0006C
         bclr    #$0,$1(a0)                      ; 00070
-        bne.w   l_005_009C4                     ; 00076
+        bne.w   Key_Backslash_Backspace         ; 00076
         bclr    #$1,$1(a0)                      ; 0007A
-        bne.w   l_005_014C8                     ; 00080
+        bne.w   Key_F                           ; 00080
         bclr    #$2,$1(a0)                      ; 00084
-        bne.w   l_005_0155A                     ; 0008A
+        bne.w   Key_C                           ; 0008A
         bclr    #$3,$1(a0)                      ; 0008E
-        bne.w   l_005_015DA                     ; 00094
+        bne.w   Key_J                           ; 00094
 l_005_00098:
         cmpi.b  #$2,(dat_071_0021B).l           ; 00098
         beq.w   l_005_00158                     ; 000A0
@@ -52,7 +52,7 @@ l_005_00098:
         tst.w   (a0)                            ; 000B6
         beq.w   l_005_0014C                     ; 000B8
         bclr    #$0,(a0)                        ; 000BC
-        bne.w   l_005_01374                     ; 000C0
+        bne.w   Key_M                           ; 000C0
         bclr    #$1,(a0)                        ; 000C4
         bne.w   l_005_00A54                     ; 000C8
         bclr    #$2,(a0)                        ; 000CC
@@ -60,27 +60,27 @@ l_005_00098:
         bclr    #$3,(a0)                        ; 000D4
         bne.w   l_005_00BD8                     ; 000D8
         bclr    #$4,(a0)                        ; 000DC
-        bne.w   l_005_00CE0                     ; 000E0
+        bne.w   Key_KP8                         ; 000E0
         bclr    #$5,(a0)                        ; 000E4
-        bne.w   l_005_00B68                     ; 000E8
+        bne.w   Key_KP9                         ; 000E8
         bclr    #$6,(a0)                        ; 000EC
-        bne.w   l_005_00D48                     ; 000F0
+        bne.w   Key_KP6                         ; 000F0
         bclr    #$7,(a0)                        ; 000F4
-        bne.w   l_005_00B82                     ; 000F8
+        bne.w   Key_KP3                         ; 000F8
         bclr    #$0,$1(a0)                      ; 000FC
-        bne.w   l_005_00CFC                     ; 00102
+        bne.w   Key_KP2                         ; 00102
         bclr    #$1,$1(a0)                      ; 00106
-        bne.w   l_005_00D94                     ; 0010C
+        bne.w   Key_KP1                         ; 0010C
         bclr    #$2,$1(a0)                      ; 00110
-        bne.w   l_005_00D18                     ; 00116
+        bne.w   Key_KP4                         ; 00116
         bclr    #$3,$1(a0)                      ; 0011A
-        bne.w   l_005_00D72                     ; 00120
+        bne.w   Key_KP7                         ; 00120
         bclr    #$4,$1(a0)                      ; 00124
         bne.w   l_005_00B9E                     ; 0012A
         bclr    #$5,$1(a0)                      ; 0012E
-        bne.w   l_005_00BAA                     ; 00134
+        bne.w   Key_KPDot                       ; 00134
         bclr    #$6,$1(a0)                      ; 00138
-        bne.w   l_005_00F4E                     ; 0013E
+        bne.w   Key_KP2Up_KP4Up_KP6Up           ; 0013E
         bclr    #$7,$1(a0)                      ; 00142
         bne.w   l_005_00C78                     ; 00148
 l_005_0014C:
@@ -90,7 +90,15 @@ l_005_00158:
         rts                                     ; 00158
 l_005_0015A:
         rts                                     ; 0015A
-sub_005_0015C:
+
+;-------------------------------------------------------------------------------
+; HandleKey - HandleKey(code): the keyboard commands. Takes a raw key code from GetKey
+; (releases have $80 added) and, depending on what the game is doing (its modes in
+; dat_071_00155, dat_071_0027E, dat_071_0021B, dat_071_00276...), goes to the key's command:
+; the Key_ labels below are named by the key that leads there (Amiga raw key codes: $40 Space,
+; $4C-$4F the cursor keys, $50-$59 F1-F10, $0F-$3F the numeric keypad...).
+;-------------------------------------------------------------------------------
+HandleKey:
         link.w  a6,#$0                          ; 0015C
         move.l  $8(a6),d0                       ; 00160
         unlk    a6                              ; 00164
@@ -133,51 +141,51 @@ l_005_0017A:
         cmpi.b  #$5,d1                          ; 00208
         bge.w   l_005_00418                     ; 0020C
         cmpi.b  #$40,d0                         ; 00210
-        beq.w   l_005_00604                     ; 00214
+        beq.w   Key_Space                       ; 00214
         cmpi.b  #$4c,d0                         ; 00218
-        beq.w   l_005_008E4                     ; 0021C
+        beq.w   Key_Up                          ; 0021C
         cmpi.b  #$4d,d0                         ; 00220
-        beq.w   l_005_008DC                     ; 00224
+        beq.w   Key_Down                        ; 00224
         cmpi.b  #$4f,d0                         ; 00228
-        beq.w   l_005_00928                     ; 0022C
+        beq.w   Key_Left                        ; 0022C
         cmpi.b  #$4e,d0                         ; 00230
-        beq.w   l_005_00930                     ; 00234
+        beq.w   Key_Right                       ; 00234
         cmpi.b  #$38,d0                         ; 00238
-        beq.w   l_005_00976                     ; 0023C
+        beq.w   Key_Comma                       ; 0023C
         cmpi.b  #$39,d0                         ; 00240
-        beq.w   l_005_0097C                     ; 00244
+        beq.w   Key_Period                      ; 00244
         cmpi.b  #$c,d0                          ; 00248
-        beq.w   l_005_009A0                     ; 0024C
+        beq.w   Key_Equals                      ; 0024C
         cmpi.b  #$b,d0                          ; 00250
-        beq.w   l_005_009A4                     ; 00254
+        beq.w   Key_Minus                       ; 00254
         cmpi.b  #$d,d0                          ; 00258
-        beq.w   l_005_009C4                     ; 0025C
+        beq.w   Key_Backslash_Backspace         ; 0025C
         cmpi.b  #$41,d0                         ; 00260
-        beq.w   l_005_009C4                     ; 00264
+        beq.w   Key_Backslash_Backspace         ; 00264
         cmpi.b  #$12,d0                         ; 00268
-        beq.w   l_005_0050E                     ; 0026C
+        beq.w   Key_E                           ; 0026C
         cmpi.b  #$13,d0                         ; 00270
-        beq.w   l_005_005B0                     ; 00274
+        beq.w   Key_R                           ; 00274
         cmpi.b  #$24,d0                         ; 00278
-        beq.w   l_005_00FFA                     ; 0027C
+        beq.w   Key_G                           ; 0027C
         cmpi.b  #$20,d0                         ; 00280
-        beq.w   l_005_009FE                     ; 00284
+        beq.w   Key_A                           ; 00284
         cmpi.b  #$23,d0                         ; 00288
-        beq.w   l_005_014C8                     ; 0028C
+        beq.w   Key_F                           ; 0028C
         cmpi.b  #$33,d0                         ; 00290
-        beq.w   l_005_0155A                     ; 00294
+        beq.w   Key_C                           ; 00294
         cmpi.b  #$26,d0                         ; 00298
-        beq.w   l_005_015DA                     ; 0029C
+        beq.w   Key_J                           ; 0029C
         cmpi.b  #$25,d0                         ; 002A0
-        beq.w   l_005_0064C                     ; 002A4
+        beq.w   Key_H                           ; 002A4
         cmpi.b  #$21,d0                         ; 002A8
-        beq.w   l_005_0143A                     ; 002AC
+        beq.w   Key_S                           ; 002AC
         cmpi.b  #$14,d0                         ; 002B0
-        beq.w   l_005_0058C                     ; 002B4
+        beq.w   Key_T                           ; 002B4
         cmpi.b  #$15,d0                         ; 002B8
-        beq.w   l_005_0061E                     ; 002BC
+        beq.w   Key_Y                           ; 002BC
         cmpi.b  #$37,d0                         ; 002C0
-        beq.w   l_005_01374                     ; 002C4
+        beq.w   Key_M                           ; 002C4
 l_005_002C8:
         move.b  (dat_071_0027E).l,d3            ; 002C8
         beq.b   l_005_002DC                     ; 002CE
@@ -186,43 +194,43 @@ l_005_002C8:
         bra.w   l_005_00364                     ; 002D8
 l_005_002DC:
         cmpi.b  #$44,d0                         ; 002DC
-        beq.w   l_005_00F62                     ; 002E0
+        beq.w   Key_Return                      ; 002E0
         cmpi.b  #$3e,d0                         ; 002E4
-        beq.w   l_005_00CE0                     ; 002E8
+        beq.w   Key_KP8                         ; 002E8
         cmpi.b  #$1e,d0                         ; 002EC
-        beq.w   l_005_00CFC                     ; 002F0
+        beq.w   Key_KP2                         ; 002F0
         cmpi.b  #$2d,d0                         ; 002F4
-        beq.w   l_005_00D18                     ; 002F8
+        beq.w   Key_KP4                         ; 002F8
         cmpi.b  #$2f,d0                         ; 002FC
-        beq.w   l_005_00D48                     ; 00300
+        beq.w   Key_KP6                         ; 00300
         cmpi.b  #$3d,d0                         ; 00304
-        beq.w   l_005_00D72                     ; 00308
+        beq.w   Key_KP7                         ; 00308
         cmpi.b  #$1d,d0                         ; 0030C
-        beq.w   l_005_00D94                     ; 00310
+        beq.w   Key_KP1                         ; 00310
         cmpi.b  #$2e,d0                         ; 00314
-        beq.w   l_005_00BE0                     ; 00318
+        beq.w   Key_KP5                         ; 00318
         cmpi.b  #$3f,d0                         ; 0031C
-        beq.w   l_005_00B68                     ; 00320
+        beq.w   Key_KP9                         ; 00320
         cmpi.b  #$1f,d0                         ; 00324
-        beq.w   l_005_00B82                     ; 00328
+        beq.w   Key_KP3                         ; 00328
         cmpi.b  #$3c,d0                         ; 0032C
-        beq.w   l_005_00BAA                     ; 00330
+        beq.w   Key_KPDot                       ; 00330
         cmpi.b  #$9e,d0                         ; 00334
-        beq.w   l_005_00F4E                     ; 00338
+        beq.w   Key_KP2Up_KP4Up_KP6Up           ; 00338
         cmpi.b  #$ad,d0                         ; 0033C
-        beq.w   l_005_00F4E                     ; 00340
+        beq.w   Key_KP2Up_KP4Up_KP6Up           ; 00340
         cmpi.b  #$af,d0                         ; 00344
-        beq.w   l_005_00F4E                     ; 00348
+        beq.w   Key_KP2Up_KP4Up_KP6Up           ; 00348
         cmpi.b  #$bd,d0                         ; 0034C
-        beq.w   l_005_00F4E                     ; 00350
+        beq.w   Key_KP2Up_KP4Up_KP6Up           ; 00350
         cmpi.b  #$9d,d0                         ; 00354
-        beq.w   l_005_00F4E                     ; 00358
+        beq.w   Key_KP2Up_KP4Up_KP6Up           ; 00358
 l_005_0035C:
         cmpi.b  #$43,d0                         ; 0035C
-        beq.w   l_005_00A4C                     ; 00360
+        beq.w   Key_KPEnter                     ; 00360
 l_005_00364:
         cmpi.b  #$45,d0                         ; 00364
-        beq.w   l_005_0160C                     ; 00368
+        beq.w   Key_Esc                         ; 00368
         cmpi.b  #$2,(dat_071_00276).l           ; 0036C
         beq.w   l_005_003F8                     ; 00374
         cmpi.b  #$5,d3                          ; 00378
@@ -283,84 +291,84 @@ l_005_003F4:
         bra.w   l_005_01060                     ; 003F4
 l_005_003F8:
         cmpi.b  #$1b,d0                         ; 003F8
-        beq.w   l_005_00ECA                     ; 003FC
+        beq.w   Key_RBracket                    ; 003FC
         cmpi.b  #$1a,d0                         ; 00400
-        beq.w   l_005_00EEA                     ; 00404
+        beq.w   Key_LBracket                    ; 00404
         cmpi.b  #$9b,d0                         ; 00408
-        beq.w   l_005_00F4E                     ; 0040C
+        beq.w   Key_KP2Up_KP4Up_KP6Up           ; 0040C
         cmpi.b  #$9a,d0                         ; 00410
-        beq.w   l_005_00F4E                     ; 00414
+        beq.w   Key_KP2Up_KP4Up_KP6Up           ; 00414
 l_005_00418:
         cmpi.b  #$19,d0                         ; 00418
-        beq.w   l_005_01456                     ; 0041C
+        beq.w   Key_P                           ; 0041C
 l_005_00420:
         cmpi.b  #$2,(dat_071_0027D).l           ; 00420
         bne.b   l_005_00432                     ; 00428
         cmpi.b  #$43,d0                         ; 0042A
-        beq.w   l_005_00A4C                     ; 0042E
+        beq.w   Key_KPEnter                     ; 0042E
 l_005_00432:
         cmpi.b  #$cc,d0                         ; 00432
-        beq.w   l_005_008EC                     ; 00436
+        beq.w   Key_UpUp_DownUp                 ; 00436
         cmpi.b  #$cd,d0                         ; 0043A
-        beq.w   l_005_008EC                     ; 0043E
+        beq.w   Key_UpUp_DownUp                 ; 0043E
         cmpi.b  #$cf,d0                         ; 00442
-        beq.w   l_005_00938                     ; 00446
+        beq.w   Key_LeftUp_RightUp              ; 00446
         cmpi.b  #$ce,d0                         ; 0044A
-        beq.w   l_005_00938                     ; 0044E
+        beq.w   Key_LeftUp_RightUp              ; 0044E
         cmpi.b  #$b8,d0                         ; 00452
-        beq.w   l_005_00982                     ; 00456
+        beq.w   Key_CommaUp_PeriodUp            ; 00456
         cmpi.b  #$b9,d0                         ; 0045A
-        beq.w   l_005_00982                     ; 0045E
+        beq.w   Key_CommaUp_PeriodUp            ; 0045E
         cmpi.b  #$8c,d0                         ; 00462
-        beq.w   l_005_009A8                     ; 00466
+        beq.w   Key_EqualsUp_MinusUp            ; 00466
         cmpi.b  #$8b,d0                         ; 0046A
-        beq.w   l_005_009A8                     ; 0046E
+        beq.w   Key_EqualsUp_MinusUp            ; 0046E
         cmpi.b  #$c0,d0                         ; 00472
-        beq.w   l_005_00614                     ; 00476
+        beq.w   Key_SpaceUp                     ; 00476
         cmpi.b  #$60,d0                         ; 0047A
-        beq.b   l_005_00486                     ; 0047E
+        beq.b   Key_LShift                      ; 0047E
         cmpi.b  #$61,d0                         ; 00480
         bne.b   l_005_00492                     ; 00484
-l_005_00486:
+Key_LShift:
         move.b  #$1,(dat_071_00248).l           ; 00486
-        bra.w   l_005_0169E                     ; 0048E
+        bra.w   Key_LShiftUp_RShiftUp           ; 0048E
 l_005_00492:
         cmpi.b  #$e0,d0                         ; 00492
-        beq.w   l_005_0169E                     ; 00496
+        beq.w   Key_LShiftUp_RShiftUp           ; 00496
         cmpi.b  #$e1,d0                         ; 0049A
-        beq.w   l_005_0169E                     ; 0049E
+        beq.w   Key_LShiftUp_RShiftUp           ; 0049E
         cmpi.b  #$66,d0                         ; 004A2
-        beq.b   l_005_004B2                     ; 004A6
+        beq.b   Key_LAmiga                      ; 004A6
         cmpi.b  #$e6,d0                         ; 004A8
         bne.b   l_005_004BE                     ; 004AC
-        bra.w   l_005_0169E                     ; 004AE
-l_005_004B2:
+        bra.w   Key_LShiftUp_RShiftUp           ; 004AE
+Key_LAmiga:
         move.b  #$1,(dat_071_00249).l           ; 004B2
-        bra.w   l_005_0169E                     ; 004BA
+        bra.w   Key_LShiftUp_RShiftUp           ; 004BA
 l_005_004BE:
         cmpi.b  #$67,d0                         ; 004BE
-        beq.b   l_005_004CE                     ; 004C2
+        beq.b   Key_RAmiga                      ; 004C2
         cmpi.b  #$e7,d0                         ; 004C4
         bne.b   l_005_004DA                     ; 004C8
-        bra.w   l_005_0169E                     ; 004CA
-l_005_004CE:
+        bra.w   Key_LShiftUp_RShiftUp           ; 004CA
+Key_RAmiga:
         move.b  #$1,(dat_071_0024A).l           ; 004CE
-        bra.w   l_005_0169E                     ; 004D6
+        bra.w   Key_LShiftUp_RShiftUp           ; 004D6
 l_005_004DA:
         cmpi.b  #$2,(dat_071_001B0).l           ; 004DA
         beq.b   l_005_004EC                     ; 004E2
         cmpi.b  #$31,d0                         ; 004E4
-        beq.w   l_005_016A0                     ; 004E8
+        beq.w   Key_Z_Del                       ; 004E8
 l_005_004EC:
         cmpi.b  #$46,d0                         ; 004EC
-        beq.w   l_005_016A0                     ; 004F0
+        beq.w   Key_Z_Del                       ; 004F0
         cmpi.b  #$45,d0                         ; 004F4
-        beq.w   l_005_0160C                     ; 004F8
+        beq.w   Key_Esc                         ; 004F8
         cmpi.b  #$44,d0                         ; 004FC
         bne.w   l_005_01624                     ; 00500
         clr.b   (dat_071_001A3).l               ; 00504
         bra.w   l_005_01624                     ; 0050A
-l_005_0050E:
+Key_E:
         tst.b   d6                              ; 0050E
         bne.b   l_005_00516                     ; 00510
         bra.w   l_005_01624                     ; 00512
@@ -393,7 +401,7 @@ l_005_00568:
         move.l  d1,(dat_071_002E8).l            ; 0057A
         move.b  #$0,(dat_071_00179).l           ; 00580
         bra.w   sub_005_00E6E                   ; 00588
-l_005_0058C:
+Key_T:
         jsr     (sub_039_01886).l               ; 0058C
         bset    #$7,(dat_071_0036A).l           ; 00592
         move.b  #$1,(dat_071_00189).l           ; 0059A
@@ -401,10 +409,10 @@ l_005_0058C:
 	dc.b	$41,$F9
         dc.l    dat_071_00184                   ; 005A8
 	dc.b	$60,$00,$10,$4E
-l_005_005B0:
+Key_R:
         jsr     (sub_039_01886).l               ; 005B0
         bset    #$6,(dat_071_0036A).l           ; 005B6
-        lea.l   (dat_071_00B54).l,a0            ; 005BE
+        lea.l   (ObjectTable).l,a0              ; 005BE
         adda.w  (dat_071_002AE).l,a0            ; 005C4
         move.b  $63(a0),d4                      ; 005CA
         andi.b  #$f,d4                          ; 005CE
@@ -424,15 +432,15 @@ l_005_005EE:
         or.b    d4,$63(a0)                      ; 005F4
         move.b  #$3,(dat_071_0020B).l           ; 005F8
         bra.w   l_005_01624                     ; 00600
-l_005_00604:
+Key_Space:
         tst.b   d6                              ; 00604
         bne.w   l_005_01624                     ; 00606
         jsr     (sub_006_0008E).l               ; 0060A
         bra.w   l_005_01624                     ; 00610
-l_005_00614:
+Key_SpaceUp:
         jsr     (sub_006_000E4).l               ; 00614
         bra.w   l_005_01624                     ; 0061A
-l_005_0061E:
+Key_Y:
         move.w  (dat_071_00394).l,d0            ; 0061E
         addq.w  #$1,d0                          ; 00624
         cmpi.w  #$3,d0                          ; 00626
@@ -444,7 +452,7 @@ l_005_0062E:
         move.b  #$5,(dat_071_00256).l           ; 00638
         move.b  #$2,(dat_071_0020C).l           ; 00640
         bra.w   l_005_01624                     ; 00648
-l_005_0064C:
+Key_H:
         move.b  (dat_071_00171).l,d4            ; 0064C
         addq.b  #$1,d4                          ; 00652
         cmpi.b  #$1,d4                          ; 00654
@@ -470,13 +478,13 @@ sub_005_00666:
         beq.b   l_005_006B2                     ; 006AA
         move.w  d0,(dat_071_00368).l            ; 006AC
 l_005_006B2:
-        move.l  (dat_073_01630).l,d0            ; 006B2
+        move.l  (RecordLength).l,d0             ; 006B2
         add.l   d0,d0                           ; 006B8
         add.l   d0,d0                           ; 006BA
-        add.l   (dat_073_01638).l,d0            ; 006BC
+        add.l   (RecordControls).l,d0           ; 006BC
         cmp.l   a2,d0                           ; 006C2
         bgt.b   l_005_006CC                     ; 006C4
-        movea.l (dat_073_01638).l,a2            ; 006C6
+        movea.l (RecordControls).l,a2           ; 006C6
 l_005_006CC:
         move.l  a2,(dat_073_01640).l            ; 006CC
 l_005_006D2:
@@ -488,14 +496,14 @@ l_005_006D2:
         cmpi.b  #$ff,(a3)+                      ; 006E4
         beq.b   l_005_00724                     ; 006E8
 l_005_006EA:
-        cmpa.l  (dat_073_01634).l,a0            ; 006EA
+        cmpa.l  (RecordPointer).l,a0            ; 006EA
         beq.b   l_005_00724                     ; 006F0
-        move.l  (dat_073_0162C).l,d0            ; 006F2
-        add.l   (dat_073_01630).l,d0            ; 006F8
+        move.l  (RecordBuffer).l,d0             ; 006F2
+        add.l   (RecordLength).l,d0             ; 006F8
         cmp.l   a0,d0                           ; 006FE
         bgt.b   l_005_00728                     ; 00700
-        move.l  (dat_073_0162C).l,(dat_073_01644).l ; 00702
-        move.l  (dat_073_01638).l,(dat_073_01640).l ; 0070C
+        move.l  (RecordBuffer).l,(dat_073_01644).l ; 00702
+        move.l  (RecordControls).l,(dat_073_01640).l ; 0070C
         addq.l  #$4,(dat_073_01640).l           ; 00716
         movea.l (dat_073_01644).l,a0            ; 0071C
         bra.b   l_005_006D2                     ; 00722
@@ -686,13 +694,13 @@ l_005_008C8:
         or.b    d2,d1                           ; 008D2
         move.b  d1,(dat_071_00BB9).l            ; 008D4
         rts                                     ; 008DA
-l_005_008DC:
+Key_Down:
         bsr.w   sub_005_008F4                   ; 008DC
         bra.w   l_005_01624                     ; 008E0
-l_005_008E4:
+Key_Up:
         bsr.w   sub_005_008F8                   ; 008E4
         bra.w   l_005_01624                     ; 008E8
-l_005_008EC:
+Key_UpUp_DownUp:
         bsr.w   sub_005_008FC                   ; 008EC
         bra.w   l_005_01624                     ; 008F0
 sub_005_008F4:
@@ -716,13 +724,13 @@ l_005_00914:
         move.b  d1,(dat_071_00BB9).l            ; 00920
 l_005_00926:
         rts                                     ; 00926
-l_005_00928:
+Key_Left:
         bsr.w   sub_005_00940                   ; 00928
         bra.w   l_005_01624                     ; 0092C
-l_005_00930:
+Key_Right:
         bsr.w   sub_005_00944                   ; 00930
         bra.w   l_005_01624                     ; 00934
-l_005_00938:
+Key_LeftUp_RightUp:
         bsr.w   sub_005_00948                   ; 00938
         bra.w   l_005_01624                     ; 0093C
 sub_005_00940:
@@ -746,13 +754,13 @@ l_005_00962:
         move.b  d1,(dat_071_00BB9).l            ; 0096E
 l_005_00974:
         rts                                     ; 00974
-l_005_00976:
+Key_Comma:
         move.b  #$80,d2                         ; 00976
         bra.b   l_005_00984                     ; 0097A
-l_005_0097C:
+Key_Period:
         move.b  #$40,d2                         ; 0097C
         bra.b   l_005_00984                     ; 00980
-l_005_00982:
+Key_CommaUp_PeriodUp:
         moveq   #$0,d2                          ; 00982
 l_005_00984:
         move.b  (dat_071_00BB9).l,d1            ; 00984
@@ -761,13 +769,13 @@ l_005_00984:
         move.b  d1,(dat_071_00BB9).l            ; 00990
         move.b  d2,(dat_071_001FF).l            ; 00996
         bra.w   l_005_01624                     ; 0099C
-l_005_009A0:
+Key_Equals:
         moveq   #$1,d2                          ; 009A0
         bra.b   l_005_009AA                     ; 009A2
-l_005_009A4:
+Key_Minus:
         moveq   #$2,d2                          ; 009A4
         bra.b   l_005_009AA                     ; 009A6
-l_005_009A8:
+Key_EqualsUp_MinusUp:
         moveq   #$0,d2                          ; 009A8
 l_005_009AA:
         move.b  (dat_071_00BB9).l,d1            ; 009AA
@@ -776,19 +784,19 @@ l_005_009AA:
         move.b  d1,(dat_071_00BB9).l            ; 009B6
         bsr.w   sub_005_009EA                   ; 009BC
         bra.w   l_005_01624                     ; 009C0
-l_005_009C4:
+Key_Backslash_Backspace:
         bsr.w   sub_005_009EA                   ; 009C4
         jsr     (sub_039_01886).l               ; 009C8
         bset    #$0,(dat_071_0036B).l           ; 009CE
         move.b  #$3,(dat_071_0020F).l           ; 009D6
-        eori.w  #$800,(dat_071_00B54).l         ; 009DE
+        eori.w  #$800,(ObjectTable).l           ; 009DE
         bra.w   l_005_01624                     ; 009E6
 sub_005_009EA:
         clr.b   (dat_071_00240).l               ; 009EA
-        clr.w   (dat_071_00148).l               ; 009F0
+        clr.w   (MouseY).l                      ; 009F0
         clr.w   (dat_071_0014C).l               ; 009F6
         rts                                     ; 009FC
-l_005_009FE:
+Key_A:
         bset    #$1,(dat_071_0036A).l           ; 009FE
         cmpi.b  #$11,(dat_071_00BB6).l          ; 00A06
         bne.w   l_005_01624                     ; 00A0E
@@ -804,7 +812,7 @@ l_005_00A40:
         jsr     (sub_020_00954).l               ; 00A40
         swap    d0                              ; 00A46
         bra.w   l_005_01624                     ; 00A48
-l_005_00A4C:
+Key_KPEnter:
         move.b  #$2,(dat_071_00173).l           ; 00A4C
 l_005_00A54:
         tst.b   d6                              ; 00A54
@@ -819,7 +827,7 @@ l_005_00A74:
         move.b  #$1,(dat_071_00184).l           ; 00A74
         clr.b   (dat_071_0017D).l               ; 00A7C
 l_005_00A82:
-        lea.l   (dat_071_00B54).l,a0            ; 00A82
+        lea.l   (ObjectTable).l,a0              ; 00A82
         move.w  (dat_071_002AE).l,d4            ; 00A88
         move.w  $68(a0,d4.w),(dat_071_002FA).l  ; 00A8E
         ori.w   #$2,(dat_071_00296).l           ; 00A96
@@ -839,7 +847,7 @@ l_005_00AAA:
         andi.w  #$7fff,d0                       ; 00AD2
         asl.w   #$8,d0                          ; 00AD6
         add.w   d0,d0                           ; 00AD8
-        lea.l   (dat_071_00B54).l,a1            ; 00ADA
+        lea.l   (ObjectTable).l,a1              ; 00ADA
         adda.w  d0,a1                           ; 00AE0
         cmpi.b  #$20,$62(a1)                    ; 00AE2
         bne.b   l_005_00AF8                     ; 00AE8
@@ -887,7 +895,7 @@ l_005_00B44:
 l_005_00B64:
         moveq   #$0,d4                          ; 00B64
         bra.b   l_005_00BB4                     ; 00B66
-l_005_00B68:
+Key_KP9:
         bset    #$5,(dat_071_0036C).l           ; 00B68
         tst.b   (dat_071_00155).l               ; 00B70
         beq.w   sub_005_00CEE                   ; 00B76
@@ -896,7 +904,7 @@ l_005_00B68:
 l_005_00B7E:
         moveq   #$2,d4                          ; 00B7E
         bra.b   l_005_00BB4                     ; 00B80
-l_005_00B82:
+Key_KP3:
         bset    #$7,(dat_071_0036C).l           ; 00B82
         moveq   #$3,d4                          ; 00B8A
         bra.b   l_005_00BB4                     ; 00B8C
@@ -916,7 +924,7 @@ l_005_00B9E:
         bset    #$4,(dat_071_0036D).l           ; 00B9E
         moveq   #$8,d4                          ; 00BA6
         bra.b   l_005_00BB4                     ; 00BA8
-l_005_00BAA:
+Key_KPDot:
         bset    #$5,(dat_071_0036D).l           ; 00BAA
         moveq   #$9,d4                          ; 00BB2
 l_005_00BB4:
@@ -929,7 +937,7 @@ l_005_00BB4:
 l_005_00BD8:
         tst.b   (dat_071_00155).l               ; 00BD8
         bne.b   l_005_00BF2                     ; 00BDE
-l_005_00BE0:
+Key_KP5:
         move.b  (dat_071_00155).l,d4            ; 00BE0
         bne.b   l_005_00B9E                     ; 00BE6
         bset    #$3,(dat_071_0036C).l           ; 00BE8
@@ -992,7 +1000,7 @@ l_005_00CC8:
 l_005_00CDA:
         moveq   #$1,d4                          ; 00CDA
         bra.w   l_005_00C48                     ; 00CDC
-l_005_00CE0:
+Key_KP8:
         bset    #$4,(dat_071_0036C).l           ; 00CE0
         tst.b   d5                              ; 00CE8
         bne.w   l_005_00B64                     ; 00CEA
@@ -1000,14 +1008,14 @@ sub_005_00CEE:
         clr.b   d7                              ; 00CEE
         move.b  #$0,(dat_071_00178).l           ; 00CF0
         bra.w   l_005_00DB4                     ; 00CF8
-l_005_00CFC:
+Key_KP2:
         bset    #$0,(dat_071_0036D).l           ; 00CFC
         tst.b   d5                              ; 00D04
         bne.w   sub_005_00B8E                   ; 00D06
         moveq   #$6,d7                          ; 00D0A
         move.b  #$0,(dat_071_00178).l           ; 00D0C
         bra.w   l_005_00DB4                     ; 00D14
-l_005_00D18:
+Key_KP4:
         bset    #$2,(dat_071_0036D).l           ; 00D18
         tst.b   d5                              ; 00D20
         bne.w   l_005_00B96                     ; 00D22
@@ -1021,7 +1029,7 @@ l_005_00D18:
 l_005_00D44:
         moveq   #$b,d7                          ; 00D44
         bra.b   l_005_00DB4                     ; 00D46
-l_005_00D48:
+Key_KP6:
         bset    #$6,(dat_071_0036C).l           ; 00D48
         tst.b   d5                              ; 00D50
         bne.w   l_005_00B7E                     ; 00D52
@@ -1030,7 +1038,7 @@ l_005_00D48:
         cmpi.b  #$b,(dat_071_00177).l           ; 00D64
         ble.b   l_005_00DC2                     ; 00D6C
         bra.w   sub_005_00CEE                   ; 00D6E
-l_005_00D72:
+Key_KP7:
         bset    #$3,(dat_071_0036D).l           ; 00D72
         tst.b   d5                              ; 00D7A
         bne.w   l_005_00B9A                     ; 00D7C
@@ -1038,7 +1046,7 @@ l_005_00D72:
         move.b  #$0,(dat_071_00178).l           ; 00D82
         move.b  #$ff,(dat_071_00228).l          ; 00D8A
         bra.b   l_005_00DB4                     ; 00D92
-l_005_00D94:
+Key_KP1:
         bset    #$1,(dat_071_0036D).l           ; 00D94
         tst.b   d5                              ; 00D9C
         bne.w   l_005_00B92                     ; 00D9E
@@ -1054,7 +1062,7 @@ l_005_00DC2:
         move.b  #$ff,(dat_071_00228).l          ; 00DD0
         move.b  #$0,(dat_071_00179).l           ; 00DD8
         move.b  #$ff,(dat_071_00261).l          ; 00DE0
-        lea.l   (dat_071_00B54).l,a0            ; 00DE8
+        lea.l   (ObjectTable).l,a0              ; 00DE8
         adda.w  (dat_071_002AE).l,a0            ; 00DEE
         move.b  $62(a0),d4                      ; 00DF4
         andi.b  #$f0,d4                         ; 00DF8
@@ -1114,7 +1122,7 @@ l_005_00EB0:
         bra.w   l_005_01624                     ; 00EB8
 dat_005_00EBC:
 	dc.b	$00,$F9,$F2,$EB,$CE,$32,$32,$32,$32,$15,$0E,$07,$32,$32
-l_005_00ECA:
+Key_RBracket:
         moveq   #$20,d3                         ; 00ECA
         tst.b   d5                              ; 00ECC
         beq.b   l_005_00EDA                     ; 00ECE
@@ -1125,7 +1133,7 @@ l_005_00EDA:
         bge.b   l_005_00F08                     ; 00EE0
         asr.w   (dat_071_00412).l               ; 00EE2
         bra.b   l_005_00F08                     ; 00EE8
-l_005_00EEA:
+Key_LBracket:
         tst.b   d5                              ; 00EEA
         beq.b   l_005_00EF8                     ; 00EEC
         tst.b   (dat_071_00185).l               ; 00EEE
@@ -1149,11 +1157,11 @@ l_005_00F2C:
 l_005_00F42:
         bset    #$7,(dat_071_001AD).l           ; 00F42
         bra.w   l_005_01624                     ; 00F4A
-l_005_00F4E:
+Key_KP2Up_KP4Up_KP6Up:
         bset    #$6,(dat_071_0036D).l           ; 00F4E
         move.b  #$5,(dat_071_00261).l           ; 00F56
         bra.w   l_005_01624                     ; 00F5E
-l_005_00F62:
+Key_Return:
         cmpi.b  #$2,(dat_071_00276).l           ; 00F62
         beq.b   l_005_00F7E                     ; 00F6A
         cmpi.b  #$7d,(dat_071_00276).l          ; 00F6C
@@ -1188,7 +1196,7 @@ l_005_00FD2:
         move.b  #$3,(dat_071_00214).l           ; 00FE8
         clr.b   (dat_071_00284).l               ; 00FF0
         bra.w   l_005_01624                     ; 00FF6
-l_005_00FFA:
+Key_G:
         bset    #$0,(dat_071_0036A).l           ; 00FFA
         btst    #$7,(dat_071_00B57).l           ; 01002
         bne.b   l_005_0102E                     ; 0100A
@@ -1297,7 +1305,7 @@ l_005_01132:
         ble.b   l_005_01150                     ; 0114A
         move.w  #$3c0,d4                        ; 0114C
 l_005_01150:
-        move.w  d4,(dat_071_00148).l            ; 01150
+        move.w  d4,(MouseY).l                   ; 01150
         move.w  d4,(dat_071_0014C).l            ; 01156
         bra.w   l_005_01624                     ; 0115C
 l_005_01160:
@@ -1319,7 +1327,7 @@ l_005_01160:
         beq.w   l_005_01226                     ; 01198
         cmpi.b  #$7,d4                          ; 0119C
         beq.w   l_005_01222                     ; 011A0
-        movea.l (dat_002_0296C).l,a0            ; 011A4
+        movea.l (ConfigBuffer).l,a0             ; 011A4
         tst.w   $0(a0)                          ; 011AA
         bne.b   l_005_011B2                     ; 011AE
         bra.b   l_005_011DA                     ; 011B0
@@ -1439,7 +1447,7 @@ sub_005_012D0:
         move.b  #$3,(dat_071_00206).l           ; 01310
         bra.w   l_005_01624                     ; 01318
 l_005_0131C:
-        lea.l   (dat_071_00B54).l,a0            ; 0131C
+        lea.l   (ObjectTable).l,a0              ; 0131C
         move.w  $68(a0,d1.w),(dat_071_002FA).l  ; 01322
         move.b  $62(a0,d1.w),d4                 ; 0132A
         andi.b  #$f0,d4                         ; 0132E
@@ -1454,7 +1462,7 @@ l_005_0131C:
 	dc.b	$02,$70,$FF,$BF,$40,$00,$60,$00,$02,$BC,$4E,$B9
         dc.l    sub_006_00132                   ; 0136C
 	dc.b	$60,$00,$02,$B2
-l_005_01374:
+Key_M:
         tst.b   (dat_071_0027E).l               ; 01374
         bne.w   l_005_01624                     ; 0137A
         bset    #$0,(dat_071_0036C).l           ; 0137E
@@ -1492,14 +1500,14 @@ l_005_0139C:
         beq.w   l_005_00A82                     ; 0142A
         move.w  #$b3,(dat_071_00354).l          ; 0142E
         bra.w   l_005_01624                     ; 01436
-l_005_0143A:
+Key_S:
         cmpi.b  #$7d,(dat_071_00276).l          ; 0143A
         bne.b   l_005_01452                     ; 01442
         jsr     (sub_039_01886).l               ; 01444
         eori.w  #$1000,(dat_071_01356).l        ; 0144A
 l_005_01452:
         bra.w   l_005_01624                     ; 01452
-l_005_01456:
+Key_P:
         tst.b   (dat_071_0027E).l               ; 01456
         blt.w   l_005_01624                     ; 0145C
         tst.b   (dat_071_0017E).l               ; 01460
@@ -1513,7 +1521,7 @@ l_005_0147A:
         move.w  (a7)+,d0                        ; 01482
         tst.b   (dat_071_0021B).l               ; 01484
         bne.b   l_005_014A8                     ; 0148A
-        move.l  (dat_073_01634).l,d3            ; 0148C
+        move.l  (RecordPointer).l,d3            ; 0148C
         ble.b   l_005_014A8                     ; 01492
         tst.b   (dat_071_00160).l               ; 01494
         beq.b   l_005_014A8                     ; 0149A
@@ -1528,9 +1536,9 @@ l_005_014A8:
         bra.w   l_005_01624                     ; 014B0
 sub_005_014B4:
         move.b  #$1,(dat_071_0017E).l           ; 014B4
-        andi.w  #$fff8,(dat_071_002AA).l        ; 014BC
+        andi.w  #$fff8,(FrameCount).l           ; 014BC
         bra.w   l_005_01624                     ; 014C4
-l_005_014C8:
+Key_F:
         tst.b   d6                              ; 014C8
         bne.b   l_005_0150A                     ; 014CA
         bset    #$1,(dat_071_0036B).l           ; 014CC
@@ -1571,7 +1579,7 @@ l_005_0153A:
         move.w  (a7)+,d0                        ; 01554
 l_005_01556:
         bra.w   l_005_01624                     ; 01556
-l_005_0155A:
+Key_C:
         bset    #$2,(dat_071_0036B).l           ; 0155A
         subq.b  #$1,(dat_071_0021C).l           ; 01562
         ble.b   l_005_01582                     ; 01568
@@ -1591,14 +1599,14 @@ l_005_0158C:
 l_005_0159C:
         tst.l   (dat_073_01644).l               ; 0159C
         beq.w   l_005_01624                     ; 015A2
-        move.l  (dat_073_0162C).l,(dat_073_01644).l ; 015A6
-        move.l  (dat_073_01638).l,(dat_073_01640).l ; 015B0
+        move.l  (RecordBuffer).l,(dat_073_01644).l ; 015A6
+        move.l  (RecordControls).l,(dat_073_01640).l ; 015B0
         addq.l  #$1,(dat_073_01644).l           ; 015BA
         addq.l  #$8,(dat_073_01640).l           ; 015C0
         move.b  #$3,(dat_071_0021B).l           ; 015C6
         move.b  #$1,(dat_071_001FA).l           ; 015CE
         bra.w   l_005_01624                     ; 015D6
-l_005_015DA:
+Key_J:
         lea.l   (dat_071_00180).l,a0            ; 015DA
         bset    #$3,(dat_071_0036B).l           ; 015E0
         move.b  #$3,(dat_071_00210).l           ; 015E8
@@ -1612,7 +1620,7 @@ sub_005_015FC:
 l_005_01606:
         move.b  #$1,(a0)                        ; 01606
         bra.b   l_005_01624                     ; 0160A
-l_005_0160C:
+Key_Esc:
         tst.b   d6                              ; 0160C
         beq.b   l_005_01612                     ; 0160E
         bra.b   l_005_0161C                     ; 01610
@@ -1651,9 +1659,9 @@ l_005_0168C:
         clr.b   (dat_071_00248).l               ; 0168C
         clr.b   (dat_071_00249).l               ; 01692
         clr.b   (dat_071_0024A).l               ; 01698
-l_005_0169E:
+Key_LShiftUp_RShiftUp:
         rts                                     ; 0169E
-l_005_016A0:
+Key_Z_Del:
         jmp     (l_007_00000).l                 ; 016A0
 	dc.b	$00,$00
 h005_end:

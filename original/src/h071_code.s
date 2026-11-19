@@ -33,7 +33,9 @@
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0001C:
+; TitleChecksum - The title picture's checksum ($C560 when it is the original: then the title
+; sequence plays).
+TitleChecksum:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -270,10 +272,12 @@ dat_071_00142:
 dat_071_00144:
 	dc.b	$00
 	dc.b	$00
-dat_071_00146:
+; MouseX - The mouse pointer's x (moved by MouseInterrupt).
+MouseX:
 	dc.b	$00
 	dc.b	$00
-dat_071_00148:
+; MouseY - The mouse pointer's y.
+MouseY:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -859,7 +863,9 @@ dat_071_002A6:
 dat_071_002A8:
 	dc.b	$00
 	dc.b	$00
-dat_071_002AA:
+; FrameCount - Counts frames (GameFrame runs some parts every 2nd, 4th, 8th, 16th or 32nd
+; frame).
+FrameCount:
 	dc.b	$00
 dat_071_002AB:
 	dc.b	$00
@@ -1404,7 +1410,8 @@ dat_071_004A0:
 dat_071_004A2:
 	dc.b	$00
 	dc.b	$00
-dat_071_004A4:
+; FrameStage - Which part of GameFrame is running ($08, $10 ... $1D4): set before each part.
+FrameStage:
 	dc.b	$00
 	dc.b	$00
 dat_071_004A6:
@@ -1442,12 +1449,14 @@ dat_071_004B8:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_004C2:
+; TimeSeconds - The system time (ReadTime): seconds.
+TimeSeconds:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_004C6:
+; TimeMicros - The system time (ReadTime): microseconds.
+TimeMicros:
 	dc.b	$00
 	dc.b	$00
 dat_071_004C8:
@@ -1581,7 +1590,8 @@ dat_071_00527:
 dat_071_00528:
 	dc.b	$00
 	dc.b	$00
-dat_071_0052A:
+; SoundFlags - Sound flags (bit 2: text201 loaded).
+SoundFlags:
 	dc.b	$00
 dat_071_0052B:
 	dc.b	$00
@@ -1918,7 +1928,8 @@ dat_071_00B50:
 dat_071_00B52:
 	dc.b	$00
 	dc.b	$00
-dat_071_00B54:
+; ObjectTable - The aircraft and other objects: records of 512 bytes (index << 9).
+ObjectTable:
 	dc.b	$00
 	dc.b	$00
 dat_071_00B56:

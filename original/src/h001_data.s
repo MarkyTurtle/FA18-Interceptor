@@ -100,7 +100,8 @@ dat_001_000B4:
 dat_001_000C4:
 	dc.b	'graphics.library'
 	dc.b	$00,$00,$00,$00
-dat_001_000D8:
+; ConfigOnDisk - 1 when df0:config was read or written.
+ConfigOnDisk:
 	dc.b	$00,$00
 dat_001_000DA:
 	dc.b	'df0:config'

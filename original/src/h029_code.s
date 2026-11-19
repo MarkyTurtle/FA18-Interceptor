@@ -20,7 +20,7 @@ sub_029_00002:
         lea.l   (dat_071_0060E).l,a4            ; 00030
         bra.b   l_029_00048                     ; 00036
 l_029_00038:
-        lea.l   (dat_071_00B54).l,a4            ; 00038
+        lea.l   (ObjectTable).l,a4              ; 00038
         move.w  (dat_071_002AE).l,d2            ; 0003E
         lea.l   $14(a4,d2.w),a4                 ; 00044
 l_029_00048:
@@ -58,7 +58,7 @@ l_029_000A0:
         andi.w  #$7fff,d0                       ; 000B0
         asl.w   #$8,d0                          ; 000B4
         add.w   d0,d0                           ; 000B6
-        lea.l   (dat_071_00B54).l,a1            ; 000B8
+        lea.l   (ObjectTable).l,a1              ; 000B8
         adda.w  d0,a1                           ; 000BE
         btst    #$6,$1(a1)                      ; 000C0
         beq.w   l_029_00198                     ; 000C6
@@ -274,7 +274,7 @@ l_029_00366:
         move.l  (a7)+,d0                        ; 0036E
         moveq   #$0,d6                          ; 00370
 l_029_00372:
-        lea.l   (dat_071_00B54).l,a0            ; 00372
+        lea.l   (ObjectTable).l,a0              ; 00372
         adda.w  d6,a0                           ; 00378
         move.w  $0(a0),d7                       ; 0037A
         move.w  d7,d2                           ; 0037E
@@ -379,7 +379,7 @@ sub_029_00592:
         bra.b   l_029_00590                     ; 005C6
 l_029_005C8:
         move.l  a0,d7                           ; 005C8
-        subi.l  #dat_071_00B54,d7               ; 005CA
+        subi.l  #ObjectTable,d7                 ; 005CA
         cmp.w   (dat_071_0038A).l,d7            ; 005D0
         bne.b   l_029_00600                     ; 005D6
         tst.b   (dat_071_0027F).l               ; 005D8
@@ -397,7 +397,7 @@ l_029_005F8:
 l_029_00600:
         tst.b   (dat_071_00185).l               ; 00600
         bne.w   l_029_0068E                     ; 00606
-        move.w  (dat_071_002AA).l,d7            ; 0060A
+        move.w  (FrameCount).l,d7               ; 0060A
         move.b  (dat_071_00227).l,d6            ; 00610
         blt.w   l_029_00590                     ; 00616
         beq.b   l_029_00624                     ; 0061A
