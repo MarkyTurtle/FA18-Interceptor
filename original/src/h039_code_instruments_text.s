@@ -986,7 +986,7 @@ l_039_00CA6:
         moveq   #$19,d0                         ; 00CB8
         move.w  #$fca,d6                        ; 00CBA
         swap    d6                              ; 00CBE
-        move.w  (dat_071_00356).l,d6            ; 00CC0
+        move.w  (ViewShift).l,d6                ; 00CC0
         move.l  (dat_071_002E8).l,d7            ; 00CC6
         movem.l d0/d6-d7/a1-a2/a4-a5,-(a7)      ; 00CCC
         move.b  (dat_071_00232).l,d3            ; 00CD0
@@ -1136,7 +1136,7 @@ l_039_00E3C:
         move.w  #$fca,d6                        ; 00E3C
 l_039_00E40:
         swap    d6                              ; 00E40
-        move.w  (dat_071_00356).l,d6            ; 00E42
+        move.w  (ViewShift).l,d6                ; 00E42
         move.l  (dat_071_002E8).l,d7            ; 00E48
         move.w  d0,d2                           ; 00E4E
 l_039_00E50:
@@ -1337,7 +1337,7 @@ l_039_01048:
         move.w  d0,-(a7)                        ; 0106C
         moveq   #$2,d0                          ; 0106E
         swap    d6                              ; 01070
-        move.w  (dat_071_00356).l,d6            ; 01072
+        move.w  (ViewShift).l,d6                ; 01072
         move.l  (dat_071_002E8).l,d7            ; 01078
         bsr.w   sub_039_00E94                   ; 0107E
         move.w  (a7)+,d0                        ; 01082
@@ -1361,7 +1361,7 @@ l_039_010B0:
         move.w  #$fca,d6                        ; 010C2
         swap    d6                              ; 010C6
         moveq   #$2,d0                          ; 010C8
-        move.w  (dat_071_00356).l,d6            ; 010CA
+        move.w  (ViewShift).l,d6                ; 010CA
         move.l  (dat_071_002E8).l,d7            ; 010D0
         bra.w   sub_039_00E94                   ; 010D6
 l_039_010DA:
@@ -1375,7 +1375,7 @@ l_039_010DA:
         move.w  #$4,d5                          ; 010F8
         move.w  #$fca,d6                        ; 010FC
         swap    d6                              ; 01100
-        move.w  (dat_071_00356).l,d6            ; 01102
+        move.w  (ViewShift).l,d6                ; 01102
         move.l  (dat_071_002E8).l,d7            ; 01108
         moveq   #$2,d0                          ; 0110E
         bsr.w   sub_039_00E94                   ; 01110
@@ -1388,7 +1388,7 @@ l_039_010DA:
         moveq   #$2,d0                          ; 0112C
         move.w  #$fca,d6                        ; 0112E
         swap    d6                              ; 01132
-        move.w  (dat_071_00356).l,d6            ; 01134
+        move.w  (ViewShift).l,d6                ; 01134
         move.l  (dat_071_002E8).l,d7            ; 0113A
         bra.w   sub_039_00E94                   ; 01140
 sub_039_01144:
@@ -1424,17 +1424,17 @@ sub_039_01144:
         moveq   #$1,d4                          ; 01192
         bra.b   l_039_011D0                     ; 01194
 sub_039_01196:
-        move.w  (dat_071_00356).l,d6            ; 01196
+        move.w  (ViewShift).l,d6                ; 01196
         move.l  (dat_071_002E8).l,d7            ; 0119C
         bra.b   l_039_011CC                     ; 011A2
 sub_039_011A4:
         moveq   #$0,d4                          ; 011A4
 sub_039_011A6:
-        move.w  (dat_071_00356).l,d6            ; 011A6
+        move.w  (ViewShift).l,d6                ; 011A6
         move.l  (dat_071_002E8).l,d7            ; 011AC
         bra.b   l_039_011D0                     ; 011B2
 sub_039_011B4:
-        move.w  (dat_071_00356).l,d6            ; 011B4
+        move.w  (ViewShift).l,d6                ; 011B4
         move.l  (dat_071_002E8).l,d7            ; 011BA
         bra.b   l_039_01200                     ; 011C0
 sub_039_011C2:

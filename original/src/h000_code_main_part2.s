@@ -29,7 +29,7 @@ CheckViewObjectGone:
         bne.b   l_000_043F0                     ; 043D4
         clr.b   (dat_071_00177).l               ; 043D6
         moveq   #$0,d0                          ; 043DC
-        move.w  d0,(dat_071_00356).l            ; 043DE
+        move.w  d0,(ViewShift).l                ; 043DE
         move.w  d0,(ViewX).l                    ; 043E4
         jsr     (sub_005_00E6E).l               ; 043EA
 l_000_043F0:

@@ -1121,7 +1121,7 @@ l_005_00E2C:
 l_005_00E30:
         cmp.w   (ClipY).l,d7                    ; 00E30
         bne.b   l_005_00E4C                     ; 00E36
-        move.w  #$32,(dat_071_00356).l          ; 00E38
+        move.w  #$32,(ViewShift).l              ; 00E38
         move.w  #$320,(ViewX).l                 ; 00E40
         bra.w   l_005_01624                     ; 00E48
 l_005_00E4C:
@@ -1130,7 +1130,7 @@ l_005_00E4C:
         ext.w   d4                              ; 00E58
         move.b  (a0,d4.w),d4                    ; 00E5A
         ext.w   d4                              ; 00E5E
-        move.w  d4,(dat_071_00356).l            ; 00E60
+        move.w  d4,(ViewShift).l                ; 00E60
         asl.w   #$4,d4                          ; 00E66
         move.w  d4,(ViewX).l                    ; 00E68
 sub_005_00E6E:
@@ -1492,7 +1492,7 @@ l_005_0131C:
         andi.b  #$f0,d4                         ; 0132E
         cmpi.b  #$30,d4                         ; 01332
         bne.w   sub_005_00CEE                   ; 01336
-        move.w  #$32,(dat_071_00356).l          ; 0133A
+        move.w  #$32,(ViewShift).l              ; 0133A
         move.w  #$320,(ViewX).l                 ; 01342
         clr.b   (dat_071_00177).l               ; 0134A
         bsr.w   sub_005_00E6E                   ; 01350

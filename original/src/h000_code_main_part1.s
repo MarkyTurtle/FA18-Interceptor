@@ -1457,7 +1457,7 @@ GameFrame:
         tst.b   (dat_071_00165).l               ; 01140
         beq.w   l_000_014C0                     ; 01146
         move.w  #$8,(FrameStage).l              ; 0114A
-        jsr     (sub_000_041E8).l               ; 01152
+        jsr     (SwitchView).l                  ; 01152
         move.w  #$10,(FrameStage).l             ; 01158
         jsr     (sub_022_000B6).l               ; 01160
         jsr     (UpdateViewCell).l              ; 01166
@@ -2242,7 +2242,7 @@ DemoSetup:
         clr.b   (dat_071_0027D).l               ; 01C44
         move.b  #$1,(dat_071_00165).l           ; 01C4A
         moveq   #$0,d0                          ; 01C52
-        move.w  d0,(dat_071_00356).l            ; 01C54
+        move.w  d0,(ViewShift).l                ; 01C54
         move.w  d0,(ViewX).l                    ; 01C5A
         jsr     (RedrawPanel).l                 ; 01C60
         move.b  #$ff,(RedrawFlags).l            ; 01C66
@@ -2257,7 +2257,7 @@ DemoSetup:
         move.b  #$1,(dat_071_00165).l           ; 01C8C
         bsr.w   ClearTextPages                  ; 01C94
         moveq   #$0,d0                          ; 01C98
-        move.w  d0,(dat_071_00356).l            ; 01C9A
+        move.w  d0,(ViewShift).l                ; 01C9A
         move.w  d0,(ViewX).l                    ; 01CA0
         jsr     (RedrawPanel).l                 ; 01CA6
         move.b  #$ff,(RedrawFlags).l            ; 01CAC
@@ -2672,7 +2672,7 @@ l_000_02252:
         move.b  d0,(dat_071_0027D).l            ; 0227A
         move.b  d0,(dat_071_00165).l            ; 02280
         moveq   #$0,d0                          ; 02286
-        move.w  d0,(dat_071_00356).l            ; 02288
+        move.w  d0,(ViewShift).l                ; 02288
         move.w  d0,(ViewX).l                    ; 0228E
         jsr     (RedrawPanel).l                 ; 02294
         move.b  #$ff,(RedrawFlags).l            ; 0229A
@@ -3788,15 +3788,15 @@ l_000_03078:
         move.b  d0,(OutsideView).l              ; 030C0
         tst.b   d0                              ; 030C6
         beq.b   l_000_030DC                     ; 030C8
-        move.w  #$32,(dat_071_00356).l          ; 030CA
+        move.w  #$32,(ViewShift).l              ; 030CA
         move.w  #$a7,(ClipY).l                  ; 030D2
         bra.b   l_000_030EA                     ; 030DA
 l_000_030DC:
-        clr.w   (dat_071_00356).l               ; 030DC
+        clr.w   (ViewShift).l                   ; 030DC
         move.w  #$90,(ClipY).l                  ; 030E2
 l_000_030EA:
         clr.b   (dat_071_00177).l               ; 030EA
-        move.w  (dat_071_00356).l,d0            ; 030F0
+        move.w  (ViewShift).l,d0                ; 030F0
         asl.w   #$4,d0                          ; 030F6
         move.w  d0,(ViewX).l                    ; 030F8
         jsr     (RedrawInstruments).l           ; 030FE
@@ -5080,7 +5080,17 @@ l_000_041DE:
         clr.b   (WarningTicks).l                ; 041DE
         unlk    a6                              ; 041E4
         rts                                     ; 041E6
-sub_000_041E8:
+
+;-------------------------------------------------------------------------------
+; SwitchView - Stage $08: when GunFlags bit 1 asks (the view key), switches between the cockpit
+; and the outside view (OutsideView from dat_071_00203): going outside shifts what is drawn in
+; the cockpit's place off the screen (ViewShift 50, ViewX 800), coming back puts it at 0; then
+; the gun sound is restarted, everything redrawn and ClipY set ($A7, or $B3 when dat_071_0017D
+; is set). Under a parachute (+$62 $30) the view is always outside. Outside, GunFlags bit 4
+; flips dat_071_0017C; in camera sequence 6 below height $24000 the view's bottom returns to
+; $A7.
+;-------------------------------------------------------------------------------
+SwitchView:
         link.w  a6,#$fffe                       ; 041E8
         move.b  (OutsideView).l,d0              ; 041EC
         tst.b   d0                              ; 041F2
@@ -5109,13 +5119,13 @@ l_000_04206:
         beq.b   l_000_0426C                     ; 0424C
         moveq   #$0,d0                          ; 0424E
         move.b  d0,(OutsideView).l              ; 04250
-        clr.w   (dat_071_00356).l               ; 04256
+        clr.w   (ViewShift).l                   ; 04256
         move.b  d0,(dat_071_00176).l            ; 0425C
         move.b  #$1,(dat_071_00205).l           ; 04262
         bra.b   l_000_0427E                     ; 0426A
 l_000_0426C:
         move.b  (dat_071_00203).l,(OutsideView).l ; 0426C
-        move.w  #$32,(dat_071_00356).l          ; 04276
+        move.w  #$32,(ViewShift).l              ; 04276
 l_000_0427E:
         moveq   #$3,d0                          ; 0427E
         move.l  d0,-(a7)                        ; 04280
@@ -5123,9 +5133,9 @@ l_000_0427E:
         addq.l  #$4,a7                          ; 04288
         cmpi.b  #$30,-$1(a6)                    ; 0428A
         bne.b   l_000_0429A                     ; 04290
-        move.w  #$32,(dat_071_00356).l          ; 04292
+        move.w  #$32,(ViewShift).l              ; 04292
 l_000_0429A:
-        move.w  (dat_071_00356).l,d0            ; 0429A
+        move.w  (ViewShift).l,d0                ; 0429A
         asl.w   #$4,d0                          ; 042A0
         move.w  d0,(ViewX).l                    ; 042A2
         jsr     (StartGunSound).l               ; 042A8
@@ -5146,10 +5156,10 @@ l_000_042E4:
 l_000_042EC:
         cmpi.b  #$30,-$1(a6)                    ; 042EC
         bne.b   l_000_04330                     ; 042F2
-        move.w  (dat_071_00356).l,d0            ; 042F4
+        move.w  (ViewShift).l,d0                ; 042F4
         tst.w   d0                              ; 042FA
         bne.b   l_000_04330                     ; 042FC
-        move.w  #$32,(dat_071_00356).l          ; 042FE
+        move.w  #$32,(ViewShift).l              ; 042FE
         move.w  #$320,(ViewX).l                 ; 04306
         jsr     (StartGunSound).l               ; 0430E
         clr.b   (dat_071_00177).l               ; 04314

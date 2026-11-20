@@ -1115,13 +1115,13 @@ l_036_00BA8:
         rts                                     ; 00BA8
 sub_036_00BAA:
         move.w  #$c,d7                          ; 00BAA
-        sub.w   (dat_071_00356).l,d7            ; 00BAE
+        sub.w   (ViewShift).l,d7                ; 00BAE
         blt.b   l_036_00BA8                     ; 00BB4
         move.w  #$c,d7                          ; 00BB6
         addi.w  #$2,d7                          ; 00BBA
         neg.w   d7                              ; 00BBE
         addi.w  #$14,d7                         ; 00BC0
-        sub.w   (dat_071_00356).l,d7            ; 00BC4
+        sub.w   (ViewShift).l,d7                ; 00BC4
         blt.b   l_036_00BA8                     ; 00BCA
         move.l  #$1990,d1                       ; 00BCC
         movea.w #$2,a4                          ; 00BD2
@@ -1584,7 +1584,7 @@ sub_036_0106A:
         beq.b   l_036_010D2                     ; 010B8
         move.w  (dat_071_0034C).l,d6            ; 010BA
         asr.w   #$4,d6                          ; 010C0
-        move.w  (dat_071_00356).l,d7            ; 010C2
+        move.w  (ViewShift).l,d7                ; 010C2
         addi.w  #$c,d7                          ; 010C8
         cmp.w   d7,d6                           ; 010CC
         bne.b   l_036_010D2                     ; 010CE

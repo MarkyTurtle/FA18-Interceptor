@@ -1237,7 +1237,10 @@ dat_071_00352:
 ClipY:
 	dc.b	$00
 	dc.b	$00
-dat_071_00356:
+; ViewShift - How far the cockpit's drawing is moved, in 16-pixel words (ViewX = ViewShift x
+; 16): 0 in the cockpit, 50 (off the screen) in the outside views; the digits drawn by
+; sub_039_011A6 move with it.
+ViewShift:
 	dc.b	$00
 	dc.b	$00
 ; ViewX - The x offset of what is drawn with PlotInView (the view window's left edge).

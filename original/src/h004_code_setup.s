@@ -92,7 +92,7 @@ l_004_000E4:
         move.w  #$1c20,(dat_071_00464).l        ; 00142
         move.w  #$0,(dat_071_00466).l           ; 0014A
         move.w  #$a7,(ClipY).l                  ; 00152
-        move.w  #$32,(dat_071_00356).l          ; 0015A
+        move.w  #$32,(ViewShift).l              ; 0015A
         move.w  #$320,(ViewX).l                 ; 00162
         moveq   #-1,d0                          ; 0016A
         move.l  d0,(dat_071_004CA).l            ; 0016C

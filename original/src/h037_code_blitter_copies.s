@@ -110,7 +110,7 @@ l_037_000E2:
         bsr.w   sub_037_00234                   ; 00140
         bsr.w   sub_037_00234                   ; 00144
 l_037_00148:
-        tst.w   (dat_071_00356).l               ; 00148
+        tst.w   (ViewShift).l                   ; 00148
         beq.w   l_037_00216                     ; 0014E
         move.w  (ClipY).l,d0                    ; 00152
         subi.w  #$90,d0                         ; 00158
@@ -122,7 +122,7 @@ l_037_00148:
         add.w   d1,d0                           ; 00166
         ext.l   d0                              ; 00168
         move.l  #$16a8,d1                       ; 0016A
-        move.w  (dat_071_00356).l,d6            ; 00170
+        move.w  (ViewShift).l,d6                ; 00170
         bgt.b   l_037_00194                     ; 00176
         cmpi.w  #$ffec,d6                       ; 00178
         bgt.b   l_037_00184                     ; 0017C
@@ -776,7 +776,7 @@ l_037_00A1A:
         move.w  d0,(dat_071_00294).l            ; 00A1A
         rts                                     ; 00A20
 sub_037_00A22:
-        move.w  (dat_071_00356).l,d5            ; 00A22
+        move.w  (ViewShift).l,d5                ; 00A22
         add.w   d5,d7                           ; 00A28
         bge.b   l_037_00A40                     ; 00A2A
         neg.w   d7                              ; 00A2C

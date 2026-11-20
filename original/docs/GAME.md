@@ -72,7 +72,7 @@ stages (`?` = not worked out yet):
 | Stage | Routines | What |
 |---|---|---|
 | (first) | `ReadControls`, `RunGameState`, `WarningTicker` | the joystick, buttons and keys; **the game's state** (below); the warnings' 8-frame beat |
-| `$08` | `sub_000_041E8` | ? (the view, the gun sound, the instruments) |
+| `$08` | `SwitchView` | the cockpit or the outside view (`OutsideView`, `ViewShift`) |
 | `$10` | `UpdateViewCell` (which calls `UpdateAllObjects`) | **the objects**: every object's update - computer pilots, the player's controls or the replay, engine, attitude, flight, missiles; the flight recording - and which map cell the view is in |
 | `$20` | `SetupCamera`, `SetCockpitEye`, `SetViewOctant`, `SetHeightBand`, `UpdateScenery` | **the camera**: the pilot's eye in the aircraft, the compass eighth faced, how high the view is (`HeightBand`), and the scenery lists rebuilt when needed |
 | `$60` | `ShakeView`, `ClearRadarList`, `DrawSkyAndGround` | the view shaken (`ShakeKind`), the radar's list emptied, and **the sky and the ground** (below) |
@@ -670,9 +670,14 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
 * The countermeasures (flares, chaff), damage, landing on the carrier (the flags the judges test).
 * How an enemy decides to attack (who sets `+$63` and the forward-cone bits `+$64`), and the
   object records' unknown fields in `ModeTable`.
-* The 3D pipeline's special shape operations (hunks 12-15) and the clipping (hunk 19).
+* The clipping (hunk 19), the runway's view-dependent operations ($1C-$28) in detail, and op
+  `$7C`.
 * What each scenery shape is; the operations no shape uses; what `dat_071_002A2` bit `$2000` (a whole-sky
   view) and the second view table (`CheckViewTable2`) are for.
-* Some of the instruments (hunk 39), and the head-up display's target box in detail.
-* The views (`OutsideView`, `ViewChoice`, `CameraSequence`).
+* Some of the instruments (hunk 39) and the panel's blitter-drawn gauges (hunk 37); the
+  head-up display's target box in detail; the outside views' extra drawing (`sub_029_001A4`)
+  and stage `$1A0` (`sub_036_00BAA`); the particle records at `dat_071_00642` (hunk 23,
+  `sub_000_072DC`).
+* The outside views' choices (`ViewChoice`, `CameraSequence`); what `GunFlags` bits 1, 3 and 4
+  are besides the view switch.
 * The rest of the flight log's words, and which sound file is which effect.

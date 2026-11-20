@@ -700,7 +700,7 @@ l_020_007E8:
 ShakeView:
         move.b  (ShakeKind).l,d0                ; 007EA
         beq.b   l_020_007E8                     ; 007F0
-        move.w  (dat_071_00356).l,d1            ; 007F2
+        move.w  (ViewShift).l,d1                ; 007F2
         bge.b   l_020_007FC                     ; 007F8
         neg.w   d1                              ; 007FA
 l_020_007FC:

@@ -45,7 +45,7 @@ def hud(speed=0x400, flying=True, aircraft=0x11, **kw):
     g.setw(rec + 0x6E, speed)
     g.setb(g['OutsideView'], 0)
     g.setw(g['ViewX'], 0); g.setw(g['ViewY'], 0)      # the cockpit view, not panned
-    g.setw(g['dat_071_00356'], 0)                      # the digits' byte offset to match
+    g.setw(g['ViewShift'], 0)                      # the digits' byte offset to match
     g.setb(rec + 0x62, aircraft)
     g.setb(g['dat_071_00171'], 1 if flying else 0)
     scene.OUT.clear(); CHARS.clear()
