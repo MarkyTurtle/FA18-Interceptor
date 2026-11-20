@@ -530,8 +530,8 @@ l_032_00592:
         rts                                     ; 00592
 
 ;-------------------------------------------------------------------------------
-; SetupCamera - The camera, once a frame: from the cockpit (CockpitViewMatrix) or, in the outside
-; views (OutsideView), from a point near the viewed object (SetOutsideCamera).
+; SetupCamera - The camera, once a frame: from the cockpit (CockpitViewMatrix) or, in the
+; outside views (OutsideView), from a point near the viewed object (SetOutsideCamera).
 ;-------------------------------------------------------------------------------
 SetupCamera:
         tst.b   (OutsideView).l                 ; 00594

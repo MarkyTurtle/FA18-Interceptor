@@ -242,8 +242,8 @@ PointAheadOfView:
         rts                                     ; 002EE
 
 ;-------------------------------------------------------------------------------
-; TurnByPanelMatrix - Turns (d3, d4, d5) by the viewed object's matrix (after CameraHeadingMatrix),
-; into dat_071_005DE.
+; TurnByPanelMatrix - Turns (d3, d4, d5) by the viewed object's matrix (after
+; CameraHeadingMatrix), into dat_071_005DE.
 ;-------------------------------------------------------------------------------
 TurnByPanelMatrix:
         movem.l a1-a2,-(a7)                     ; 002F0

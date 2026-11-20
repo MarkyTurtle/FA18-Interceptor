@@ -8,7 +8,13 @@
 	CODE_HUNK	h029
 l_029_00000:
         rts                                     ; 00000
-sub_029_00002:
+
+;-------------------------------------------------------------------------------
+; DrawStartPointMarkers - In free flight, at the start point's choice (camera sequence 5 on,
+; from high up): marks and numbers over the start points (StartPoints), the chosen one picked
+; out.
+;-------------------------------------------------------------------------------
+DrawStartPointMarkers:
         cmpi.b  #$1,(GameMode).l                ; 00002
         bne.b   l_029_00000                     ; 0000A
         cmpi.b  #$5,(CameraSequence).l          ; 0000C
@@ -129,7 +135,7 @@ l_029_00110:
         asr.l   #$8,d2                          ; 0015A
         movem.l a0/a4,-(a7)                     ; 0015C
         move.w  #$2,(DrawColour).l              ; 00160
-        jsr     (sub_035_00038).l               ; 00168
+        jsr     (PlotPoint3DSmall).l            ; 00168
         move.w  (LoopIndex).l,d2                ; 0016E
         addq.w  #$1,d2                          ; 00174
         move.w  (dat_071_00328).l,d0            ; 00176
@@ -306,7 +312,7 @@ l_029_00398:
         andi.b  #$f0,d7                         ; 003C6
         cmpi.b  #$20,d7                         ; 003CA
         bne.b   l_029_003D6                     ; 003CE
-        bsr.w   sub_029_00568                   ; 003D0
+        bsr.w   MapMarkerPoint                  ; 003D0
         bra.b   l_029_00410                     ; 003D4
 l_029_003D6:
         cmpi.b  #$3,(GameMode).l                ; 003D6
@@ -326,7 +332,7 @@ l_029_00404:
         move.l  (a7)+,d0                        ; 00406
         move.l  d0,-(a7)                        ; 00408
         move.w  d6,-(a7)                        ; 0040A
-        bsr.w   sub_029_00592                   ; 0040C
+        bsr.w   MapMarkerObject                 ; 0040C
 l_029_00410:
         move.w  (a7)+,d6                        ; 00410
         move.l  (a7)+,d0                        ; 00412
@@ -359,7 +365,11 @@ dat_029_00424:
 	dc.b	$00,$FF,$04,$01,$FE,$03,$02,$FE,$01,$80
 dat_029_0055E:
 	dc.b	$FF,$01,$01,$00,$FB,$0B,$01,$FC,$09,$80
-sub_029_00568:
+
+;-------------------------------------------------------------------------------
+; MapMarkerPoint - DrawMapMarkers' mark at a point (dat_072_04202), in colour 3.
+;-------------------------------------------------------------------------------
+MapMarkerPoint:
         tst.b   (dat_071_00227).l               ; 00568
         blt.b   l_029_00590                     ; 0056E
         movem.w (dat_072_04202).l,d0-d2         ; 00570
@@ -370,7 +380,12 @@ sub_029_00568:
         bra.w   l_029_006E8                     ; 0058C
 l_029_00590:
         rts                                     ; 00590
-sub_029_00592:
+
+;-------------------------------------------------------------------------------
+; MapMarkerObject - DrawMapMarkers' mark for an object (a0): its place turned into the view,
+; then MapMarkerPoint.
+;-------------------------------------------------------------------------------
+MapMarkerObject:
         movem.w (dat_072_04202).l,d0-d2         ; 00592
         move.l  $14(a0),d2                      ; 0059A
         move.l  $1c(a0),d4                      ; 0059E

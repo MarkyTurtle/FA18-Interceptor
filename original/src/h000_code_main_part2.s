@@ -1055,7 +1055,7 @@ l_000_05066:
         move.l  d2,-(a7)                        ; 05074
         move.l  d1,-(a7)                        ; 05076
         move.l  d0,-(a7)                        ; 05078
-        jsr     (sub_000_09EFA).l               ; 0507A
+        jsr     (EnginePitch).l                 ; 0507A
         lea.l   $c(a7),a7                       ; 05080
         bra.w   l_000_05284                     ; 05084
 l_000_05088:
@@ -1218,14 +1218,14 @@ l_000_05234:
         lea.l   $c(a7),a7                       ; 0525C
         bra.b   l_000_05284                     ; 05260
 l_000_05262:
-        bsr.w   sub_000_05502                   ; 05262
+        bsr.w   EngineSoundLevel                ; 05262
         ext.l   d0                              ; 05266
         move.l  d0,-(a7)                        ; 05268
         jsr     (PlayWindSound).l               ; 0526A
         addq.l  #$4,a7                          ; 05270
         bra.b   l_000_05284                     ; 05272
 l_000_05274:
-        bsr.w   sub_000_05502                   ; 05274
+        bsr.w   EngineSoundLevel                ; 05274
         ext.l   d0                              ; 05278
         move.l  d0,-(a7)                        ; 0527A
         jsr     (PlayWindSound).l               ; 0527C
@@ -1412,7 +1412,12 @@ FiveEighths:
         ext.l   d0                              ; 054FC
         unlk    a6                              ; 054FE
         rts                                     ; 05500
-sub_000_05502:
+
+;-------------------------------------------------------------------------------
+; EngineSoundLevel - The engine sound's level from the cockpit object's speed (+$6E; 16 under a
+; parachute).
+;-------------------------------------------------------------------------------
+EngineSoundLevel:
         link.w  a6,#$fffe                       ; 05502
         movea.l (CockpitObject).l,a0            ; 05506
         move.b  $62(a0),d0                      ; 0550C

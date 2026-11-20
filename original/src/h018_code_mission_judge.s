@@ -30,7 +30,7 @@ JudgeMission:
         clr.b   (LaunchRequest).l               ; 00036
         clr.b   (InstructorFire).l              ; 0003C
         clr.b   (FireNow).l                     ; 00042
-        jsr     (sub_017_00430).l               ; 00048
+        jsr     (CheckLockedTarget).l           ; 00048
         btst    #$6,(dat_071_0029D).l           ; 0004E
         beq.b   l_018_000C4                     ; 00056
         tst.b   (DemoActive).l                  ; 00058

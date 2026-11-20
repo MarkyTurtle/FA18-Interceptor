@@ -101,7 +101,7 @@ l_033_000A0:
         clr.l   (a4)+                           ; 000B4
         clr.l   (a4)+                           ; 000B6
         clr.l   (a4)                            ; 000B8
-        jsr     (sub_034_00000).l               ; 000BA
+        jsr     (FindHorizonEdges).l            ; 000BA
         lea.l   (dat_073_000DC).l,a1            ; 000C0
         tst.w   $2(a1)                          ; 000C6
         beq.b   l_033_00106                     ; 000CA
@@ -397,7 +397,7 @@ DrawSun:
         asr.l   #$8,d2                          ; 0040E
         moveq   #$8,d6                          ; 00410
         move.w  #$9,(DrawColour).l              ; 00412
-        jsr     (sub_035_0002C).l               ; 0041A
+        jsr     (PlotPoint3DBig).l              ; 0041A
         rts                                     ; 00420
 	dc.b	$00,$00
 h033_end:

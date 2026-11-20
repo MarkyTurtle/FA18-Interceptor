@@ -44,7 +44,7 @@ l_031_0001A:
         move.w  d6,d0                           ; 00066
         move.w  d2,d1                           ; 00068
         move.w  d5,d2                           ; 0006A
-        jsr     (sub_035_00038).l               ; 0006C
+        jsr     (PlotPoint3DSmall).l            ; 0006C
         beq.b   l_031_0007E                     ; 00072
         move.w  $26(a3),d0                      ; 00074
         andi.w  #$202,d0                        ; 00078
@@ -149,7 +149,7 @@ l_031_0018C:
         cmpa.l  #dat_072_0420E,a1               ; 001A2
         blt.b   l_031_0018C                     ; 001A8
         move.l  a2,-(a7)                        ; 001AA
-        jsr     (sub_035_00100).l               ; 001AC
+        jsr     (ProjectDrawLine).l             ; 001AC
         movea.l (a7)+,a2                        ; 001B2
         subq.w  #$1,-$a(a6)                     ; 001B4
         bgt.b   l_031_00186                     ; 001B8
@@ -527,7 +527,7 @@ l_031_006CE:
         bne.b   l_031_006EC                     ; 006D6
         movem.w (dat_072_03002).l,d0-d1         ; 006D8
         move.w  -$3c(a6),d6                     ; 006E0
-        jsr     (sub_035_00550).l               ; 006E4
+        jsr     (DrawBlobRows).l                ; 006E4
         bra.b   l_031_006A4                     ; 006EA
 l_031_006EC:
         jsr     (FillPolygon).l                 ; 006EC

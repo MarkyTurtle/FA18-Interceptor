@@ -7,7 +7,13 @@
 ; Hunk 34: CODE, $510 bytes
 ;===============================================================================
 	CODE_HUNK	h034
-sub_034_00000:
+
+;-------------------------------------------------------------------------------
+; FindHorizonEdges - Where the horizon crosses the view's four edges: tests each corner
+; (dat_072_03600) against the horizon and puts the crossing points into dat_072_03000
+; (HorizonCrossTop, Bottom, Left, Right).
+;-------------------------------------------------------------------------------
+FindHorizonEdges:
         link.w  a6,#$fffc                       ; 00000
         clr.b   -$2(a6)                         ; 00004
         lea.l   (dat_072_03600).l,a0            ; 00008
@@ -53,14 +59,14 @@ l_034_0005A:
         move.w  $4(a1,d1.w),d6                  ; 0006E
         cmp.w   d2,d6                           ; 00072
         ble.w   l_034_00284                     ; 00074
-        bsr.w   sub_034_00302                   ; 00078
+        bsr.w   HorizonCrossTop                 ; 00078
         beq.w   l_034_0022E                     ; 0007C
         tst.w   (ClipSwitch).l                  ; 00080
         bge.b   l_034_000DC                     ; 00086
         neg.w   d2                              ; 00088
         cmp.w   d2,d6                           ; 0008A
         ble.b   l_034_000DC                     ; 0008C
-        bsr.w   sub_034_00378                   ; 0008E
+        bsr.w   HorizonCrossBottom              ; 0008E
         bne.b   l_034_000DC                     ; 00092
         addq.w  #$1,(dat_073_000E2).l           ; 00094
         move.w  d0,(dat_073_000EA).l            ; 0009A
@@ -75,14 +81,14 @@ l_034_000A4:
         neg.w   d2                              ; 000B6
         cmp.w   d2,d6                           ; 000B8
         ble.w   l_034_00284                     ; 000BA
-        bsr.w   sub_034_00378                   ; 000BE
+        bsr.w   HorizonCrossBottom              ; 000BE
         beq.w   l_034_00272                     ; 000C2
         tst.w   (ClipSwitch).l                  ; 000C6
         bge.b   l_034_000DC                     ; 000CC
         neg.w   d2                              ; 000CE
         cmp.w   d2,d6                           ; 000D0
         ble.b   l_034_000DC                     ; 000D2
-        bsr.w   sub_034_00302                   ; 000D4
+        bsr.w   HorizonCrossTop                 ; 000D4
         beq.w   l_034_0022E                     ; 000D8
 l_034_000DC:
         tst.w   d4                              ; 000DC
@@ -96,7 +102,7 @@ l_034_000DC:
         neg.w   d2                              ; 000F2
         cmp.w   d2,d6                           ; 000F4
         ble.w   l_034_00284                     ; 000F6
-        bsr.w   sub_034_0046A                   ; 000FA
+        bsr.w   HorizonCrossRight               ; 000FA
         beq.b   l_034_00172                     ; 000FE
         tst.w   (ClipSwitch).l                  ; 00100
         bge.w   l_034_00284                     ; 00106
@@ -105,7 +111,7 @@ l_034_000DC:
         neg.w   d2                              ; 00110
         cmp.w   d2,d6                           ; 00112
         ble.w   l_034_00284                     ; 00114
-        bsr.w   sub_034_003F4                   ; 00118
+        bsr.w   HorizonCrossLeft                ; 00118
         bne.w   l_034_00284                     ; 0011C
 l_034_00120:
         addq.w  #$1,(dat_073_000DC).l           ; 00120
@@ -118,7 +124,7 @@ l_034_00130:
         move.w  $4(a1,d1.w),d6                  ; 0013A
         cmp.w   d2,d6                           ; 0013E
         ble.w   l_034_00284                     ; 00140
-        bsr.w   sub_034_003F4                   ; 00144
+        bsr.w   HorizonCrossLeft                ; 00144
         beq.b   l_034_00120                     ; 00148
         tst.w   (ClipSwitch).l                  ; 0014A
         bge.w   l_034_00284                     ; 00150
@@ -130,7 +136,7 @@ l_034_00130:
         neg.w   d2                              ; 00162
         cmp.w   d2,d6                           ; 00164
         ble.w   l_034_00284                     ; 00166
-        bsr.w   sub_034_0046A                   ; 0016A
+        bsr.w   HorizonCrossRight               ; 0016A
         bne.w   l_034_00284                     ; 0016E
 l_034_00172:
         addq.w  #$1,(dat_073_000E0).l           ; 00172
@@ -143,14 +149,14 @@ l_034_00182:
         move.w  $4(a1,d1.w),d6                  ; 0018A
         cmp.w   d2,d6                           ; 0018E
         ble.w   l_034_00284                     ; 00190
-        bsr.w   sub_034_003F4                   ; 00194
+        bsr.w   HorizonCrossLeft                ; 00194
         beq.b   l_034_00120                     ; 00198
         tst.w   (ClipSwitch).l                  ; 0019A
         bge.b   l_034_001F4                     ; 001A0
         neg.w   d2                              ; 001A2
         cmp.w   d2,d6                           ; 001A4
         ble.b   l_034_001F4                     ; 001A6
-        bsr.w   sub_034_0046A                   ; 001A8
+        bsr.w   HorizonCrossRight               ; 001A8
         bne.b   l_034_001F4                     ; 001AC
         addq.w  #$1,(dat_073_000E0).l           ; 001AE
         move.w  d0,(dat_073_000E8).l            ; 001B4
@@ -165,14 +171,14 @@ l_034_001BE:
         neg.w   d2                              ; 001D0
         cmp.w   d2,d6                           ; 001D2
         ble.w   l_034_00284                     ; 001D4
-        bsr.w   sub_034_0046A                   ; 001D8
+        bsr.w   HorizonCrossRight               ; 001D8
         beq.b   l_034_00172                     ; 001DC
         tst.w   (ClipSwitch).l                  ; 001DE
         bge.b   l_034_001F4                     ; 001E4
         neg.w   d2                              ; 001E6
         cmp.w   d2,d6                           ; 001E8
         ble.b   l_034_001F4                     ; 001EA
-        bsr.w   sub_034_003F4                   ; 001EC
+        bsr.w   HorizonCrossLeft                ; 001EC
         beq.w   l_034_00120                     ; 001F0
 l_034_001F4:
         tst.w   d3                              ; 001F4
@@ -186,7 +192,7 @@ l_034_001F4:
         neg.w   d2                              ; 0020A
         cmp.w   d2,d6                           ; 0020C
         ble.b   l_034_00284                     ; 0020E
-        bsr.w   sub_034_00378                   ; 00210
+        bsr.w   HorizonCrossBottom              ; 00210
         beq.b   l_034_00272                     ; 00214
         tst.w   (ClipSwitch).l                  ; 00216
         bge.b   l_034_00284                     ; 0021C
@@ -195,7 +201,7 @@ l_034_001F4:
         neg.w   d2                              ; 00222
         cmp.w   d2,d6                           ; 00224
         ble.b   l_034_00284                     ; 00226
-        bsr.w   sub_034_00302                   ; 00228
+        bsr.w   HorizonCrossTop                 ; 00228
         bne.b   l_034_00284                     ; 0022C
 l_034_0022E:
         addq.w  #$1,(dat_073_000DE).l           ; 0022E
@@ -208,7 +214,7 @@ l_034_0023C:
         move.w  $4(a1,d1.w),d6                  ; 00244
         cmp.w   d2,d6                           ; 00248
         ble.b   l_034_00284                     ; 0024A
-        bsr.w   sub_034_00302                   ; 0024C
+        bsr.w   HorizonCrossTop                 ; 0024C
         beq.b   l_034_0022E                     ; 00250
         tst.w   (ClipSwitch).l                  ; 00252
         bge.b   l_034_00284                     ; 00258
@@ -220,7 +226,7 @@ l_034_0023C:
         neg.w   d2                              ; 00266
         cmp.w   d2,d6                           ; 00268
         ble.b   l_034_00284                     ; 0026A
-        bsr.w   sub_034_00378                   ; 0026C
+        bsr.w   HorizonCrossBottom              ; 0026C
         bne.b   l_034_00284                     ; 00270
 l_034_00272:
         addq.w  #$1,(dat_073_000E2).l           ; 00272
@@ -286,7 +292,12 @@ l_034_002F6:
 l_034_002FC:
         move.w  #$b3,d4                         ; 002FC
         bra.b   l_034_002DC                     ; 00300
-sub_034_00302:
+
+;-------------------------------------------------------------------------------
+; HorizonCrossTop - The point where the horizon crosses one edge of the view (the edge from the
+; corner at a1 + d1).
+;-------------------------------------------------------------------------------
+HorizonCrossTop:
         movem.l d0-d6,-(a7)                     ; 00302
         movem.w (a1,d1.w),d0-d2                 ; 00306
         subq.w  #$1,d3                          ; 0030C
@@ -351,7 +362,11 @@ l_034_0036C:
         bra.w   l_034_004DE                     ; 00370
 l_034_00374:
         bra.w   l_034_00500                     ; 00374
-sub_034_00378:
+
+;-------------------------------------------------------------------------------
+; HorizonCrossBottom - As HorizonCrossTop, for another edge.
+;-------------------------------------------------------------------------------
+HorizonCrossBottom:
         movem.l d0-d6,-(a7)                     ; 00378
         movem.w (a1,d1.w),d0-d2                 ; 0037C
         subq.w  #$1,d3                          ; 00382
@@ -419,7 +434,11 @@ l_034_003E6:
         bra.w   l_034_004DE                     ; 003EC
 l_034_003F0:
         bra.w   l_034_00500                     ; 003F0
-sub_034_003F4:
+
+;-------------------------------------------------------------------------------
+; HorizonCrossLeft - As HorizonCrossTop, for another edge.
+;-------------------------------------------------------------------------------
+HorizonCrossLeft:
         movem.l d0-d6,-(a7)                     ; 003F4
         movem.w (a1,d1.w),d0-d2                 ; 003F8
         subq.w  #$1,d3                          ; 003FE
@@ -484,7 +503,11 @@ l_034_0045E:
         bra.w   l_034_004DE                     ; 00462
 l_034_00466:
         bra.w   l_034_00500                     ; 00466
-sub_034_0046A:
+
+;-------------------------------------------------------------------------------
+; HorizonCrossRight - As HorizonCrossTop, for another edge.
+;-------------------------------------------------------------------------------
+HorizonCrossRight:
         movem.l d0-d6,-(a7)                     ; 0046A
         movem.w (a1,d1.w),d0-d2                 ; 0046E
         subq.w  #$1,d3                          ; 00474

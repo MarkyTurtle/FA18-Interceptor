@@ -24,7 +24,7 @@ ShapeOps:
         dc.l    ShapeLine                       ; 00008
         dc.l    ShapePolygon                    ; 0000C
         dc.l    ShapeShadow                     ; 00010
-        dc.l    sub_013_0096E                   ; 00014
+        dc.l    ShapeLineGridOffset             ; 00014
         dc.l    ShapeLineRow                    ; 00018
         dc.l    ShapeRunwaySide                 ; 0001C
         dc.l    ShapeRunwaySide2                ; 00020
@@ -42,40 +42,40 @@ ShapeOps:
         dc.l    ShapePaneGrid                   ; 00050
         dc.l    ShapePaneGrid2                  ; 00054
         dc.l    ShapeLineGridColour             ; 00058
-        dc.l    sub_014_00086                   ; 0005C
+        dc.l    ShapeQuadListPat                ; 0005C
         dc.l    ShapePolygonN                   ; 00060
         dc.l    ShapePolygonN2                  ; 00064
         dc.l    ShapePolygonRun                 ; 00068
-        dc.l    sub_013_01158                   ; 0006C
-        dc.l    sub_015_00774                   ; 00070
-        dc.l    sub_015_00778                   ; 00074
+        dc.l    ShapeParallelogramPat2          ; 0006C
+        dc.l    ShapeEndList                    ; 00070
+        dc.l    ShapeEndList2                   ; 00074
         dc.l    ShapeParallelogramPat           ; 00078
         dc.l    ShapeSceneryTest                ; 0007C
-        dc.l    sub_013_00D58                   ; 00080
+        dc.l    ShapePaneGridColourSolid        ; 00080
         dc.l    ShapeCockpitFlag                ; 00084
         dc.l    ShapeMakeVertices               ; 00088
-        dc.l    sub_013_01228                   ; 0008C
+        dc.l    ShapeMakeVerticesAt             ; 0008C
         dc.l    ShapeMakeVertices2              ; 00090
-        dc.l    sub_013_012DC                   ; 00094
-        dc.l    sub_014_00DA8                   ; 00098
-        dc.l    sub_013_006E8                   ; 0009C
-        dc.l    sub_013_008AA                   ; 000A0
+        dc.l    ShapeMakeVerticesAt2            ; 00094
+        dc.l    MakeVerticesMoved2              ; 00098
+        dc.l    ShapeRunwayStrip                ; 0009C
+        dc.l    ShapeRunwayStrip2               ; 000A0
         dc.l    ShapeMakeVertices3              ; 000A4
         dc.l    MakeVerticesF16                 ; 000A8
         dc.l    MakeVerticesMiG                 ; 000AC
-        dc.l    sub_014_00BCE                   ; 000B0
+        dc.l    MakeMidpointBoth                ; 000B0
         dc.l    MakeVerticesSidewinder          ; 000B4
-        dc.l    sub_014_00DA8                   ; 000B8
+        dc.l    MakeVerticesMoved2              ; 000B8
         dc.l    MakeVerticesSidewinder          ; 000BC
         dc.l    ShapeLineAlt                    ; 000C0
         dc.l    ShapePointIfFront               ; 000C4
-        dc.l    sub_014_00868                   ; 000C8
+        dc.l    ShapeEjectionStep               ; 000C8
         dc.l    ShapeSkipUnlessFlag3            ; 000CC
         dc.l    MakeVerticesBetween             ; 000D0
         dc.l    MakeVerticesMoved               ; 000D4
         dc.l    ShapeSkipBeforeEjection         ; 000D8
         dc.l    ShapePolygonTable               ; 000DC
-        dc.l    sub_015_0058C                   ; 000E0
+        dc.l    MakeVerticesFA18Both            ; 000E0
         dc.l    ShapePaneGridColour             ; 000E4
         dc.l    ShapePointAlt                   ; 000E8
         dc.l    MakeVerticesFA18                ; 000EC
@@ -83,7 +83,7 @@ ShapeOps:
         dc.l    MakeVerticesFA18                ; 000F4
         dc.l    ShapeBlob                       ; 000F8
         dc.l    MakeVerticesCruise              ; 000FC
-        dc.l    sub_015_00684                   ; 00100
+        dc.l    MakeVerticesBoth8A              ; 00100
         dc.l    MakeVerticesPod                 ; 00104
         dc.l    ShapeSkipDuringEjection         ; 00108
         dc.l    ShapeSkipIfBack                 ; 0010C
@@ -120,7 +120,7 @@ ShapePoint:
         rts                                     ; 0015C
 
 ;-------------------------------------------------------------------------------
-; ShapePointAlt - Op $E8: a point (as ShapePoint) plotted by sub_035_00034 instead.
+; ShapePointAlt - Op $E8: a point (as ShapePoint) plotted by PlotPoint3DMedium instead.
 ;-------------------------------------------------------------------------------
 ShapePointAlt:
         lea.l   (VertexBuffer).l,a3             ; 0015E
@@ -128,7 +128,7 @@ ShapePointAlt:
         movem.w (a3),d0-d2                      ; 00166
         move.w  (a2)+,(DrawColour).l            ; 0016A
         movem.l a1-a2,-(a7)                     ; 00170
-        jsr     (sub_035_00034).l               ; 00174
+        jsr     (PlotPoint3DMedium).l           ; 00174
         movem.l (a7)+,a1-a2                     ; 0017A
         rts                                     ; 0017E
 
@@ -267,10 +267,10 @@ l_013_002B0:
         rts                                     ; 002B2
 
 ;-------------------------------------------------------------------------------
-; ShapeLineAlt - Op $C0: a line (as ShapeLine) drawn by sub_035_00100 instead.
+; ShapeLineAlt - Op $C0: a line (as ShapeLine) drawn by ProjectDrawLine instead.
 ;-------------------------------------------------------------------------------
 ShapeLineAlt:
-        lea.l   (sub_035_00100).l,a4            ; 002B4
+        lea.l   (ProjectDrawLine).l,a4          ; 002B4
         bra.b   l_013_002D2                     ; 002BA
 
 ;-------------------------------------------------------------------------------
@@ -682,7 +682,12 @@ l_013_00672:
 l_013_006E4:
         moveq   #-1,d0                          ; 006E4
         rts                                     ; 006E6
-sub_013_006E8:
+
+;-------------------------------------------------------------------------------
+; ShapeRunwayStrip - A runway operation: tests the viewer's side of the shape (VertexBuffer
+; +6), then draws a strip of polygons along it.
+;-------------------------------------------------------------------------------
+ShapeRunwayStrip:
         clr.w   -$7e(a6)                        ; 006E8
         move.l  (a2)+,d0                        ; 006EC
         move.w  (a2)+,-$5e(a6)                  ; 006EE
@@ -825,7 +830,11 @@ l_013_0089C:
 l_013_008A6:
         moveq   #-1,d0                          ; 008A6
         rts                                     ; 008A8
-sub_013_008AA:
+
+;-------------------------------------------------------------------------------
+; ShapeRunwayStrip2 - As ShapeRunwayStrip (another form).
+;-------------------------------------------------------------------------------
+ShapeRunwayStrip2:
         move.l  (a2)+,d0                        ; 008AA
         lea.l   (VertexBuffer).l,a3             ; 008AC
         movem.w $6(a3),d1-d3                    ; 008B2
@@ -896,7 +905,12 @@ l_013_00958:
         jsr     (ClipFillPolygon).l             ; 00962
         movem.l (a7)+,a1-a2/a5                  ; 00968
         rts                                     ; 0096C
-sub_013_0096E:
+
+;-------------------------------------------------------------------------------
+; ShapeLineGridOffset - A line grid across a face, with its corner vertices copied to
+; dat_072_03C04 first.
+;-------------------------------------------------------------------------------
+ShapeLineGridOffset:
         movem.l a1/a5,-(a7)                     ; 0096E
         lea.l   (dat_072_03C04).l,a0            ; 00972
         lea.l   (VertexBuffer).l,a3             ; 00978
@@ -1099,7 +1113,12 @@ ShapeSceneryTest:
         ble.b   l_013_00B3E                     ; 00B58
         tst.b   (dat_071_0023C).l               ; 00B5A
         bne.b   l_013_00B3E                     ; 00B60
-sub_013_00B62:
+
+;-------------------------------------------------------------------------------
+; SceneryFacing - For DrawSceneryPlain: the scenery item's facing from two of its points (into
+; d5, d7).
+;-------------------------------------------------------------------------------
+SceneryFacing:
         move.w  (a3)+,d5                        ; 00B62
         move.w  (a3)+,d7                        ; 00B64
         sub.w   (a3)+,d5                        ; 00B66
@@ -1254,7 +1273,11 @@ l_013_00D0C:
         movem.l (a7)+,a1-a2/a5                  ; 00D4E
         move.w  -$7e(a6),d0                     ; 00D52
         rts                                     ; 00D56
-sub_013_00D58:
+
+;-------------------------------------------------------------------------------
+; ShapePaneGridColourSolid - ShapePaneGrid in a given colour with a solid pattern.
+;-------------------------------------------------------------------------------
+ShapePaneGridColourSolid:
         move.l  #$fffff,(FillPattern).l         ; 00D58
         move.w  (a2)+,(DrawColour).l            ; 00D62
         bra.b   l_013_00D88                     ; 00D68
@@ -1350,7 +1373,7 @@ l_013_00E26:
         add.w   -$42(a6),d3                     ; 00E80
         movem.w d1-d6,(a0)                      ; 00E84
         movem.l a3-a4,-(a7)                     ; 00E88
-        jsr     (sub_019_00018).l               ; 00E8C
+        jsr     (ClipFillPolygonBuffer).l       ; 00E8C
         or.w    d0,-$7e(a6)                     ; 00E92
         movem.l (a7)+,a3-a4                     ; 00E96
         subq.w  #$1,-$38(a6)                    ; 00E9A
@@ -1397,7 +1420,7 @@ l_013_00EBC:
         sub.w   -$44(a6),d2                     ; 00F16
         sub.w   -$42(a6),d3                     ; 00F1A
         movem.w d1-d6,(a0)                      ; 00F1E
-        jsr     (sub_019_00018).l               ; 00F22
+        jsr     (ClipFillPolygonBuffer).l       ; 00F22
         subq.w  #$1,-$3a(a6)                    ; 00F28
         bgt.w   l_013_00EAA                     ; 00F2C
         movem.l (a7)+,a1-a2/a5                  ; 00F30
@@ -1495,7 +1518,7 @@ l_013_00FE6:
         add.w   -$42(a6),d3                     ; 0104C
         movem.w d1-d6,(a0)                      ; 01050
         movem.l a2-a3,-(a7)                     ; 01054
-        jsr     (sub_019_00018).l               ; 01058
+        jsr     (ClipFillPolygonBuffer).l       ; 01058
         or.w    d0,-$7e(a6)                     ; 0105E
         movem.l (a7)+,a2-a3                     ; 01062
         subq.w  #$1,-$3a(a6)                    ; 01066
@@ -1573,7 +1596,11 @@ l_013_010F4:
         movem.l (a7)+,a1/a5                     ; 0114E
         move.w  -$7e(a6),d0                     ; 01152
         rts                                     ; 01156
-sub_013_01158:
+
+;-------------------------------------------------------------------------------
+; ShapeParallelogramPat2 - ShapeParallelogramPat with the pattern 2,0,2,0.
+;-------------------------------------------------------------------------------
+ShapeParallelogramPat2:
         move.w  #$2,d0                          ; 01158
         move.w  #$0,d1                          ; 0115C
         move.w  #$2,d2                          ; 01160
@@ -1615,7 +1642,7 @@ l_013_01170:
         and.w   d4,d0                           ; 011C0
         blt.b   l_013_011D4                     ; 011C2
         movem.w d2-d4,(a0)                      ; 011C4
-        jsr     (sub_019_00018).l               ; 011C8
+        jsr     (ClipFillPolygonBuffer).l       ; 011C8
         movem.l (a7)+,a1-a2/a5                  ; 011CE
         rts                                     ; 011D2
 l_013_011D4:
@@ -1660,7 +1687,11 @@ l_013_0120C:
         suba.w  d2,a4                           ; 0121E
         movem.w d6-d7/a4,$36(a3)                ; 01220
         bra.b   l_013_01230                     ; 01226
-sub_013_01228:
+
+;-------------------------------------------------------------------------------
+; ShapeMakeVerticesAt - ShapeMakeVertices from the vertex given (another form).
+;-------------------------------------------------------------------------------
+ShapeMakeVerticesAt:
         lea.l   (VertexBuffer).l,a3             ; 01228
         adda.w  (a2)+,a3                        ; 0122E
 l_013_01230:
@@ -1738,7 +1769,11 @@ l_013_012C0:
         suba.w  d2,a4                           ; 012D2
         movem.w d6-d7/a4,$4e(a3)                ; 012D4
         bra.b   l_013_012E4                     ; 012DA
-sub_013_012DC:
+
+;-------------------------------------------------------------------------------
+; ShapeMakeVerticesAt2 - As ShapeMakeVerticesAt.
+;-------------------------------------------------------------------------------
+ShapeMakeVerticesAt2:
         lea.l   (VertexBuffer).l,a3             ; 012DC
         adda.w  (a2)+,a3                        ; 012E2
 l_013_012E4:

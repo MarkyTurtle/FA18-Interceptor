@@ -16,7 +16,7 @@ l_012_00000:
 ; the camera (ViewOffsetY). Picks a level of detail by distance (dat_071_00510, scaled by
 ; RadarScale unless GroundDetail is set), then turns its vertices - x and z only, all at the
 ; shape's height - by the view matrix into VertexBuffer, and runs its face list through
-; ShapeOps (with further vertex groups, sub_012_0020E, as DrawModel's TransformMoreVertices).
+; ShapeOps (with further vertex groups, TransformGroundVertices, as DrawModel's TransformMoreVertices).
 ;-------------------------------------------------------------------------------
 DrawGroundShape:
         cmpi.l  #$ffc80000,(ViewOffsetY).l      ; 00004
@@ -190,7 +190,7 @@ l_012_001DA:
         move.w  (a2)+,d0                        ; 001DA
         beq.b   l_012_001E4                     ; 001DC
         move.w  (a2)+,d7                        ; 001DE
-        bsr.w   sub_012_0020E                   ; 001E0
+        bsr.w   TransformGroundVertices         ; 001E0
 l_012_001E4:
         move.w  (a2)+,d0                        ; 001E4
         move.w  d0,d1                           ; 001E6
@@ -206,7 +206,12 @@ l_012_001F2:
         blt.b   l_012_001A6                     ; 00204
         or.w    d0,-$7c(a6)                     ; 00206
         bra.w   l_012_00168                     ; 0020A
-sub_012_0020E:
+
+;-------------------------------------------------------------------------------
+; TransformGroundVertices - TransformMoreVertices for the flat ground shapes: further vertex
+; groups of the shape (CurrentShape) turned into VertexBuffer.
+;-------------------------------------------------------------------------------
+TransformGroundVertices:
         lea.l   (VertexBuffer).l,a3             ; 0020E
         move.w  d7,d2                           ; 00214
         asr.w   #$1,d2                          ; 00216

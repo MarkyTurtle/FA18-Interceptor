@@ -69,7 +69,7 @@ l_017_000C0:
         ble.b   l_017_000CE                     ; 000C6
         subq.b  #$1,(dat_071_0021E).l           ; 000C8
 l_017_000CE:
-        bsr.w   sub_017_00430                   ; 000CE
+        bsr.w   CheckLockedTarget               ; 000CE
         clr.w   (CurrentObject).l               ; 000D2
         clr.w   (CurrentObjectOffset).l         ; 000D8
         lea.l   (ObjectTable).l,a1              ; 000DE
@@ -271,7 +271,12 @@ l_017_00426:
         jsr     (JudgeMission).l                ; 00426
         move.l  (a7)+,d5                        ; 0042C
         rts                                     ; 0042E
-sub_017_00430:
+
+;-------------------------------------------------------------------------------
+; CheckLockedTarget - Drops the radar lock (LockedTarget -1, the seeker cleared) when the
+; locked object no longer exists or has been destroyed (+$20 bit 1).
+;-------------------------------------------------------------------------------
+CheckLockedTarget:
         move.w  (LockedTarget).l,d0             ; 00430
         blt.b   l_017_00466                     ; 00436
         lea.l   (ObjectTable).l,a1              ; 00438

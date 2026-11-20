@@ -678,7 +678,7 @@ l_028_01096:
         subq.w  #$1,d1                          ; 010DA
         bgt.b   l_028_01096                     ; 010DC
         movem.l d0/a3,-(a7)                     ; 010DE
-        jsr     (sub_019_00018).l               ; 010E2
+        jsr     (ClipFillPolygonBuffer).l       ; 010E2
         movem.l (a7)+,d0/a3                     ; 010E8
         bra.w   l_028_01046                     ; 010EC
 l_028_010F0:

@@ -1373,7 +1373,7 @@ dat_071_00378:
 	dc.b	$00
 	dc.b	$00
 ; LoopIndex - A loop counter shared by several drawing loops (the far scenery lists,
-; DrawObjects, DrawHUDFixed, DrawTargetBox, sub_029_00002).
+; DrawObjects, DrawHUDFixed, DrawTargetBox, DrawStartPointMarkers).
 LoopIndex:
 	dc.b	$00
 	dc.b	$00

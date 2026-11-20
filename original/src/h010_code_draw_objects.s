@@ -253,7 +253,7 @@ l_010_00256:
         bne.b   l_010_002AE                     ; 0029E
 l_010_002A0:
         lea.l   $2(a1),a3                       ; 002A0
-        jsr     (sub_013_00B62).l               ; 002A4
+        jsr     (SceneryFacing).l               ; 002A4
         blt.w   l_010_00168                     ; 002AA
 l_010_002AE:
         move.w  #$0,(PolygonBuffer).l           ; 002AE
@@ -1139,7 +1139,7 @@ l_010_00B94:
         move.w  (DistanceShift).l,d7            ; 00B94
         jsr     (DrawPuff).l                    ; 00B9A
 l_010_00BA0:
-        jsr     (sub_015_000B4).l               ; 00BA0
+        jsr     (DrawObjectFlame).l             ; 00BA0
         move.w  -$7c(a6),d0                     ; 00BA6
         unlk    a6                              ; 00BAA
         rts                                     ; 00BAC

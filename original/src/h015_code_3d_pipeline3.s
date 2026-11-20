@@ -9,7 +9,7 @@
 
 ;-------------------------------------------------------------------------------
 ; ShapeBlob - Op $F8: a vertex, a colour and a size: a round blob, its radius the size over the
-; distance (at most $7F), plotted by sub_035_0002C.
+; distance (at most $7F), plotted by PlotPoint3DBig.
 ;-------------------------------------------------------------------------------
 ShapeBlob:
         lea.l   (VertexBuffer).l,a3             ; 00000
@@ -17,7 +17,7 @@ ShapeBlob:
         move.w  (a2)+,(DrawColour).l            ; 00008
         move.w  (a2)+,d6                        ; 0000E
         movem.l a1-a2/a5,-(a7)                  ; 00010
-        bsr.w   sub_015_00062                   ; 00014
+        bsr.w   DrawBlob                        ; 00014
         movem.l (a7)+,a1-a2/a5                  ; 00018
         rts                                     ; 0001C
 
@@ -40,7 +40,7 @@ l_015_0002A:
         andi.w  #$7fff,d6                       ; 00046
 l_015_0004A:
         move.l  a2,-(a7)                        ; 0004A
-        bsr.w   sub_015_00062                   ; 0004C
+        bsr.w   DrawBlob                        ; 0004C
         or.w    d0,-$7e(a6)                     ; 00050
         movea.l (a7)+,a2                        ; 00054
         bra.b   l_015_0002A                     ; 00056
@@ -48,7 +48,12 @@ l_015_00058:
         movem.l (a7)+,a1/a5                     ; 00058
         move.w  -$7e(a6),d0                     ; 0005C
         rts                                     ; 00060
-sub_015_00062:
+
+;-------------------------------------------------------------------------------
+; DrawBlob - Draws a round blob at the vertex a3 (scaled by -8(a6)), its size by the distance
+; (ShapeBlob, ShapeBlobList).
+;-------------------------------------------------------------------------------
+DrawBlob:
         movem.w (a3),d3-d5                      ; 00062
         move.w  -$8(a6),d0                      ; 00066
         asl.w   d0,d3                           ; 0006A
@@ -81,12 +86,17 @@ l_015_00086:
 l_015_000A4:
         move.w  #$7f,d6                         ; 000A4
 l_015_000A8:
-        jsr     (sub_035_0002C).l               ; 000A8
+        jsr     (PlotPoint3DBig).l              ; 000A8
         rts                                     ; 000AE
 l_015_000B0:
         moveq   #$0,d0                          ; 000B0
         rts                                     ; 000B2
-sub_015_000B4:
+
+;-------------------------------------------------------------------------------
+; DrawObjectFlame - For the object dat_073_0165A: draws a blob behind it (the engine's flame or
+; a missile's smoke), its size and colour changing.
+;-------------------------------------------------------------------------------
+DrawObjectFlame:
         move.w  (CurrentObjectOffset).l,d0      ; 000B4
         cmp.w   (dat_073_0165A).l,d0            ; 000BA
         bne.b   l_015_000B0                     ; 000C0
@@ -265,7 +275,7 @@ l_015_0027C:
         add.w   d4,d1                           ; 002B8
         add.w   d5,d2                           ; 002BA
         add.w   d7,d6                           ; 002BC
-        jsr     (sub_035_0002C).l               ; 002BE
+        jsr     (PlotPoint3DBig).l              ; 002BE
         or.w    d0,-$1e(a6)                     ; 002C4
         movem.w (a7),d0-d2/d6/a3                ; 002C8
         movem.w -$2c(a6),d3-d5/d7/a4            ; 002CC
@@ -288,7 +298,7 @@ l_015_0027C:
         add.w   d4,d1                           ; 002F2
         add.w   d5,d2                           ; 002F4
         add.w   d7,d6                           ; 002F6
-        jsr     (sub_035_0002C).l               ; 002F8
+        jsr     (PlotPoint3DBig).l              ; 002F8
         or.w    d0,-$1e(a6)                     ; 002FE
         movem.w (a7),d0-d2/d6/a3                ; 00302
         movem.w -$2c(a6),d3-d5/d7/a4            ; 00306
@@ -311,7 +321,7 @@ l_015_0027C:
         add.w   d4,d1                           ; 0032C
         add.w   d5,d2                           ; 0032E
         add.w   d7,d6                           ; 00330
-        jsr     (sub_035_0002C).l               ; 00332
+        jsr     (PlotPoint3DBig).l              ; 00332
         or.w    d0,-$1e(a6)                     ; 00338
         movem.w (a7)+,d0-d2/d6/a3               ; 0033C
 l_015_00340:
@@ -322,7 +332,7 @@ l_015_00340:
         asr.w   #$3,d7                          ; 0034E
         sub.w   d7,d6                           ; 00350
 l_015_00352:
-        jsr     (sub_035_0002C).l               ; 00352
+        jsr     (PlotPoint3DBig).l              ; 00352
         or.w    d0,-$1e(a6)                     ; 00358
         tst.w   -$22(a6)                        ; 0035C
         blt.b   l_015_00376                     ; 00360
@@ -356,10 +366,10 @@ MakeVerticesFA18:
         move.w  (CurrentObjectOffset).l,d0      ; 003A2
         addi.w  #$a4,d0                         ; 003A8
         adda.w  d0,a3                           ; 003AC
-        bsr.w   sub_015_003EC                   ; 003AE
+        bsr.w   FA18Midpoints                   ; 003AE
         lea.l   (VertexBuffer).l,a3             ; 003B2
         adda.w  (a2)+,a3                        ; 003B8
-        bsr.w   sub_015_003EC                   ; 003BA
+        bsr.w   FA18Midpoints                   ; 003BA
         movem.w $6c(a3),d0-d5                   ; 003BE
         add.w   d0,d3                           ; 003C4
         add.w   d1,d4                           ; 003C6
@@ -377,7 +387,11 @@ MakeVerticesFA18:
         movem.w d3-d5,$294(a3)                  ; 003E2
         moveq   #$0,d0                          ; 003E8
         rts                                     ; 003EA
-sub_015_003EC:
+
+;-------------------------------------------------------------------------------
+; FA18Midpoints - Part of MakeVerticesFA18: midpoints of edges, into +$84.
+;-------------------------------------------------------------------------------
+FA18Midpoints:
         movem.w $12(a3),d0-d5                   ; 003EC
         add.w   d0,d3                           ; 003F2
         add.w   d1,d4                           ; 003F4
@@ -522,14 +536,23 @@ sub_015_003EC:
         adda.w  d5,a4                           ; 00582
         movem.w d0-d2/d6-d7/a4,$cc(a3)          ; 00584
         rts                                     ; 0058A
-sub_015_0058C:
+
+;-------------------------------------------------------------------------------
+; MakeVerticesFA18Both - An F/A-18 vertex builder for the object's own vertices and then
+; VertexBuffer.
+;-------------------------------------------------------------------------------
+MakeVerticesFA18Both:
         lea.l   (ObjectTable).l,a3              ; 0058C
         move.w  (CurrentObjectOffset).l,d0      ; 00592
         addi.w  #$a4,d0                         ; 00598
         adda.w  d0,a3                           ; 0059C
-        bsr.w   sub_015_005A8                   ; 0059E
+        bsr.w   FA18MovedVertices               ; 0059E
         lea.l   (VertexBuffer).l,a3             ; 005A2
-sub_015_005A8:
+
+;-------------------------------------------------------------------------------
+; FA18MovedVertices - Moves F/A-18 vertices by the difference of two others.
+;-------------------------------------------------------------------------------
+FA18MovedVertices:
         movem.w $18(a3),d0-d2                   ; 005A8
         movem.w $2a(a3),d3-d7/a4                ; 005AE
         sub.w   d0,d3                           ; 005B4
@@ -612,14 +635,23 @@ sub_015_005A8:
         movem.w d0-d2,$84(a3)                   ; 0067A
         moveq   #$0,d0                          ; 00680
         rts                                     ; 00682
-sub_015_00684:
+
+;-------------------------------------------------------------------------------
+; MakeVerticesBoth8A - A vertex builder (into +$8A) for the object's own vertices and then
+; VertexBuffer.
+;-------------------------------------------------------------------------------
+MakeVerticesBoth8A:
         lea.l   (ObjectTable).l,a3              ; 00684
         move.w  (CurrentObjectOffset).l,d0      ; 0068A
         addi.w  #$a4,d0                         ; 00690
         adda.w  d0,a3                           ; 00694
-        bsr.w   sub_015_006A0                   ; 00696
+        bsr.w   MovedVertex8A                   ; 00696
         lea.l   (VertexBuffer).l,a3             ; 0069A
-sub_015_006A0:
+
+;-------------------------------------------------------------------------------
+; MovedVertex8A - A vertex moved by an edge's difference, into +$8A.
+;-------------------------------------------------------------------------------
+MovedVertex8A:
         movem.w (a3),d0-d7/a4                   ; 006A0
         sub.w   d0,d6                           ; 006A4
         sub.w   d1,d7                           ; 006A6
@@ -679,9 +711,13 @@ MakeVerticesPod:
         move.w  (CurrentObjectOffset).l,d0      ; 00732
         addi.w  #$a4,d0                         ; 00738
         adda.w  d0,a3                           ; 0073C
-        bsr.w   sub_015_00748                   ; 0073E
+        bsr.w   PodMovedVertex                  ; 0073E
         lea.l   (VertexBuffer).l,a3             ; 00742
-sub_015_00748:
+
+;-------------------------------------------------------------------------------
+; PodMovedVertex - Part of MakeVerticesPod: a vertex moved by an edge's difference, into +$8A.
+;-------------------------------------------------------------------------------
+PodMovedVertex:
         movem.w (a3),d0-d7/a4                   ; 00748
         sub.w   d0,d6                           ; 0074C
         sub.w   d1,d7                           ; 0074E
@@ -697,10 +733,18 @@ sub_015_00748:
         movem.w d3-d5,$90(a3)                   ; 0076A
         moveq   #$0,d0                          ; 00770
         rts                                     ; 00772
-sub_015_00774:
+
+;-------------------------------------------------------------------------------
+; ShapeEndList - A shape operation that ends the list (d0 = 0).
+;-------------------------------------------------------------------------------
+ShapeEndList:
         moveq   #$0,d0                          ; 00774
         rts                                     ; 00776
-sub_015_00778:
+
+;-------------------------------------------------------------------------------
+; ShapeEndList2 - A shape operation that ends the list (d0 = 0).
+;-------------------------------------------------------------------------------
+ShapeEndList2:
         moveq   #$0,d0                          ; 00778
         rts                                     ; 0077A
 h015_end:

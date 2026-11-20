@@ -214,7 +214,7 @@ l_000_077D0:
 
 ;-------------------------------------------------------------------------------
 ; BulletHitEffects - What follows a bullet's hit (CurrentBullet): sets its timer and flags for
-; the hit's drawing and the damage (sub_000_07AFE).
+; the hit's drawing and the damage (BulletDamage).
 ;-------------------------------------------------------------------------------
 BulletHitEffects:
         link.w  a6,#$fff6                       ; 077D8
@@ -368,7 +368,7 @@ l_000_079B6:
         move.w  $a(a6),d0                       ; 07A12
         ext.l   d0                              ; 07A16
         move.l  d0,-(a7)                        ; 07A18
-        bsr.w   sub_000_07AFE                   ; 07A1A
+        bsr.w   BulletDamage                    ; 07A1A
         addq.l  #$4,a7                          ; 07A1E
         movem.l (a7)+,d2-d5                     ; 07A20
         unlk    a6                              ; 07A24
@@ -377,7 +377,7 @@ l_000_079B6:
 ;-------------------------------------------------------------------------------
 ; BulletHitsObject - A bullet hit an object (the number on the stack): notes it
 ; (BulletHitObject), moves the bullet into the object's cell and applies the hit
-; (sub_000_07AFE).
+; (BulletDamage).
 ;-------------------------------------------------------------------------------
 BulletHitsObject:
         link.w  a6,#$0                          ; 07A28
@@ -426,11 +426,16 @@ BulletHitsObject:
         move.w  $a(a6),d0                       ; 07AEE
         ext.l   d0                              ; 07AF2
         move.l  d0,-(a7)                        ; 07AF4
-        bsr.b   sub_000_07AFE                   ; 07AF6
+        bsr.b   BulletDamage                    ; 07AF6
         addq.l  #$4,a7                          ; 07AF8
         unlk    a6                              ; 07AFA
         rts                                     ; 07AFC
-sub_000_07AFE:
+
+;-------------------------------------------------------------------------------
+; BulletDamage - What a bullet's hit does to what it hit (every few frames by FrameCount's low
+; bits): the damage and its effects (BulletDamageAt).
+;-------------------------------------------------------------------------------
+BulletDamage:
         link.w  a6,#$ffe8                       ; 07AFE
         movem.l d2-d3,-(a7)                     ; 07B02
         move.w  (FrameCount).l,d0               ; 07B06
@@ -513,12 +518,17 @@ l_000_07BA0:
         move.l  d0,-(a7)                        ; 07C10
         move.l  d1,-(a7)                        ; 07C12
         move.l  d2,-(a7)                        ; 07C14
-        bsr.b   sub_000_07C24                   ; 07C16
+        bsr.b   BulletDamageAt                  ; 07C16
         lea.l   $10(a7),a7                      ; 07C18
         movem.l (a7)+,d2-d3                     ; 07C1C
         unlk    a6                              ; 07C20
         rts                                     ; 07C22
-sub_000_07C24:
+
+;-------------------------------------------------------------------------------
+; BulletDamageAt - Part of BulletDamage: the hit's effect at a point (four values on the
+; stack).
+;-------------------------------------------------------------------------------
+BulletDamageAt:
         link.w  a6,#$fff4                       ; 07C24
         movem.l d2-d3,-(a7)                     ; 07C28
         move.w  $a(a6),d0                       ; 07C2C
@@ -3071,7 +3081,12 @@ l_000_09D70:
 l_000_09D76:
         unlk    a6                              ; 09D76
         rts                                     ; 09D78
-sub_000_09D7A:
+
+;-------------------------------------------------------------------------------
+; PlayStartSound - Plays sound $23 on channels 0 and 1 (if SoundFlags bit 2): at the start and
+; when a flight is set up.
+;-------------------------------------------------------------------------------
+PlayStartSound:
         link.w  a6,#$0                          ; 09D7A
         btst    #$2,(SoundFlags).l              ; 09D7E
         beq.b   l_000_09DAE                     ; 09D86
@@ -3192,7 +3207,7 @@ sub_000_09EBE:
         move.l  $10(a6),-(a7)                   ; 09ECC
         move.l  $c(a6),-(a7)                    ; 09ED0
         move.l  $8(a6),-(a7)                    ; 09ED4
-        bsr.b   sub_000_09EFA                   ; 09ED8
+        bsr.b   EnginePitch                     ; 09ED8
         lea.l   $c(a7),a7                       ; 09EDA
         bra.b   l_000_09EF6                     ; 09EDE
 l_000_09EE0:
@@ -3201,12 +3216,17 @@ l_000_09EE0:
         move.l  $10(a6),-(a7)                   ; 09EE6
         move.l  d0,-(a7)                        ; 09EEA
         move.l  $8(a6),-(a7)                    ; 09EEC
-        bsr.b   sub_000_09EFA                   ; 09EF0
+        bsr.b   EnginePitch                     ; 09EF0
         lea.l   $c(a7),a7                       ; 09EF2
 l_000_09EF6:
         unlk    a6                              ; 09EF6
         rts                                     ; 09EF8
-sub_000_09EFA:
+
+;-------------------------------------------------------------------------------
+; EnginePitch - Sets the engine sound's period from the value on the stack (if loaded,
+; SoundsLoaded bit 1).
+;-------------------------------------------------------------------------------
+EnginePitch:
         link.w  a6,#$0                          ; 09EFA
         movem.l d2,-(a7)                        ; 09EFE
         btst    #$1,(SoundsLoaded).l            ; 09F02

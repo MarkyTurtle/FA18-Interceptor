@@ -19,7 +19,12 @@ l_019_00004:
 ;-------------------------------------------------------------------------------
 ClipFillPolygon:
         nop                                     ; 00016
-sub_019_00018:
+
+;-------------------------------------------------------------------------------
+; ClipFillPolygonBuffer - ClipFillPolygon's second entry: for a polygon already in
+; PolygonBuffer (count, then x, y, z words per corner).
+;-------------------------------------------------------------------------------
+ClipFillPolygonBuffer:
         link.w  a6,#$fffa                       ; 00018
         clr.w   d7                              ; 0001C
         lea.l   (PolygonBuffer).l,a0            ; 0001E
@@ -119,7 +124,7 @@ l_019_000EE:
         movem.w d0-d2,(a3)                      ; 000F2
         movem.w (a7)+,d0-d2                     ; 000F6
         movem.w d0-d2,(a2)                      ; 000FA
-        bsr.w   sub_019_00138                   ; 000FE
+        bsr.w   ClipPolygonEdge2                ; 000FE
         addq.b  #$1,$4(a4)                      ; 00102
         bra.b   l_019_0010E                     ; 00106
 l_019_00108:
@@ -130,7 +135,7 @@ l_019_0010E:
         cmp.w   d2,d1                           ; 0010E
         bgt.b   l_019_00120                     ; 00110
         movem.w d0-d2,(a3)                      ; 00112
-        bsr.w   sub_019_00138                   ; 00116
+        bsr.w   ClipPolygonEdge2                ; 00116
         beq.b   l_019_00126                     ; 0011A
         addq.b  #$1,$4(a4)                      ; 0011C
 l_019_00120:
@@ -140,7 +145,12 @@ l_019_00126:
         move.w  #$1,(DebugCheckpoint).l         ; 00126
         jsr     (Nop).l                         ; 0012E
         bra.w   l_019_00054                     ; 00134
-sub_019_00138:
+
+;-------------------------------------------------------------------------------
+; ClipPolygonEdge2 - Clips the polygon being built against the next of the view's planes (the
+; second), passing each new corner on to the next plane's routine.
+;-------------------------------------------------------------------------------
+ClipPolygonEdge2:
         movem.w d0-d2,-(a7)                     ; 00138
         movem.w (a3),d0-d2                      ; 0013C
         tst.b   $1(a4)                          ; 00140
@@ -223,7 +233,7 @@ l_019_001D0:
         movem.w d0-d2,(a3)                      ; 001D6
         movem.w (a7)+,d0-d2                     ; 001DA
         movem.w d0-d2,$10(a2)                   ; 001DE
-        bsr.w   sub_019_0022A                   ; 001E4
+        bsr.w   ClipPolygonEdge3                ; 001E4
         addq.b  #$1,$5(a4)                      ; 001E8
         bra.b   l_019_001F8                     ; 001EC
 l_019_001EE:
@@ -238,7 +248,7 @@ l_019_001F8:
         bgt.b   l_019_0020E                     ; 001FC
         neg.w   d1                              ; 001FE
         movem.w d0-d2,(a3)                      ; 00200
-        bsr.w   sub_019_0022A                   ; 00204
+        bsr.w   ClipPolygonEdge3                ; 00204
         beq.b   l_019_00216                     ; 00208
         addq.b  #$1,$5(a4)                      ; 0020A
 l_019_0020E:
@@ -250,7 +260,11 @@ l_019_00216:
         jsr     (Nop).l                         ; 0021E
         movem.w (a7)+,d0-d2                     ; 00224
         rts                                     ; 00228
-sub_019_0022A:
+
+;-------------------------------------------------------------------------------
+; ClipPolygonEdge3 - As ClipPolygonEdge2, the third plane.
+;-------------------------------------------------------------------------------
+ClipPolygonEdge3:
         movem.w d0-d2,-(a7)                     ; 0022A
         movem.w (a3),d0-d2                      ; 0022E
         tst.b   $2(a4)                          ; 00232
@@ -329,7 +343,7 @@ l_019_002BC:
         movem.w d0-d2,(a3)                      ; 002C0
         movem.w (a7)+,d0-d2                     ; 002C4
         movem.w d0-d2,$20(a2)                   ; 002C8
-        bsr.w   sub_019_0030E                   ; 002CE
+        bsr.w   ClipPolygonEdge4                ; 002CE
         addq.b  #$1,$6(a4)                      ; 002D2
         bra.b   l_019_002E0                     ; 002D6
 l_019_002D8:
@@ -340,7 +354,7 @@ l_019_002E0:
         cmp.w   d2,d0                           ; 002E0
         bgt.b   l_019_002F2                     ; 002E2
         movem.w d0-d2,(a3)                      ; 002E4
-        bsr.w   sub_019_0030E                   ; 002E8
+        bsr.w   ClipPolygonEdge4                ; 002E8
         beq.b   l_019_002FA                     ; 002EC
         addq.b  #$1,$6(a4)                      ; 002EE
 l_019_002F2:
@@ -352,7 +366,12 @@ l_019_002FA:
         jsr     (Nop).l                         ; 00302
         movem.w (a7)+,d0-d2                     ; 00308
         rts                                     ; 0030C
-sub_019_0030E:
+
+;-------------------------------------------------------------------------------
+; ClipPolygonEdge4 - As ClipPolygonEdge2, the last plane: its corners are projected and the
+; polygon filled (FillPolygon).
+;-------------------------------------------------------------------------------
+ClipPolygonEdge4:
         movem.w d0-d2,-(a7)                     ; 0030E
         movem.w (a3),d0-d2                      ; 00312
         tst.b   $3(a4)                          ; 00316
@@ -543,7 +562,7 @@ l_019_00494:
         add.w   d3,d0                           ; 00494
         move.w  d1,d2                           ; 00496
         movem.w d0-d2,(a3)                      ; 00498
-        bsr.w   sub_019_00138                   ; 0049C
+        bsr.w   ClipPolygonEdge2                ; 0049C
 l_019_004A0:
         tst.b   $5(a4)                          ; 004A0
         beq.w   l_019_00540                     ; 004A4
@@ -622,7 +641,7 @@ l_019_00532:
         move.w  d1,d2                           ; 00534
         neg.w   d2                              ; 00536
         movem.w d0-d2,(a3)                      ; 00538
-        bsr.w   sub_019_0022A                   ; 0053C
+        bsr.w   ClipPolygonEdge3                ; 0053C
 l_019_00540:
         tst.b   $6(a4)                          ; 00540
         beq.w   l_019_005D6                     ; 00544
@@ -696,7 +715,7 @@ l_019_005CA:
         add.w   d4,d1                           ; 005CA
         move.w  d0,d2                           ; 005CC
         movem.w d0-d2,(a3)                      ; 005CE
-        bsr.w   sub_019_0030E                   ; 005D2
+        bsr.w   ClipPolygonEdge4                ; 005D2
 l_019_005D6:
         tst.b   $7(a4)                          ; 005D6
         beq.w   l_019_00676                     ; 005DA

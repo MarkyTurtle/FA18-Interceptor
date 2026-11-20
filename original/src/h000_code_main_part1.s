@@ -447,7 +447,7 @@ l_000_00484:
 l_000_00560:
         moveq   #$f,d0                          ; 00560
         move.l  d0,-(a7)                        ; 00562
-        jsr     (sub_000_09D7A).l               ; 00564
+        jsr     (PlayStartSound).l              ; 00564
         addq.l  #$4,a7                          ; 0056A
 l_000_0056C:
         move.l  #$43000,-(a7)                   ; 0056C
@@ -521,7 +521,7 @@ l_000_0063C:
 l_000_00680:
         moveq   #$32,d0                         ; 00680
         move.l  d0,-(a7)                        ; 00682
-        jsr     (sub_000_09D7A).l               ; 00684
+        jsr     (PlayStartSound).l              ; 00684
         addq.l  #$4,a7                          ; 0068A
         move.l  #$a000,-(a7)                    ; 0068C
         bsr.w   BusyWait                        ; 00692
@@ -1459,10 +1459,10 @@ GameFrame:
         move.w  #$8,(FrameStage).l              ; 0114A
         jsr     (SwitchView).l                  ; 01152
         move.w  #$10,(FrameStage).l             ; 01158
-        jsr     (sub_022_000B6).l               ; 01160
+        jsr     (NoUpdate2).l                   ; 01160
         jsr     (UpdateViewCell).l              ; 01166
         move.w  #$20,(FrameStage).l             ; 0116C
-        jsr     (sub_022_000B4).l               ; 01174
+        jsr     (NoUpdate).l                    ; 01174
         jsr     (SetupCamera).l                 ; 0117A
         jsr     (SetCockpitEye).l               ; 01180
         jsr     (SetViewOctant).l               ; 01186
@@ -1672,7 +1672,7 @@ l_000_014C0:
         jsr     (_FreeSprite).l                 ; 014C8
         addq.l  #$4,a7                          ; 014CE
 l_000_014D0:
-        jsr     (sub_029_00002).l               ; 014D0
+        jsr     (DrawStartPointMarkers).l       ; 014D0
         tst.b   (dat_071_00182).l               ; 014D6
         beq.b   l_000_01502                     ; 014DC
         tst.b   (FlightScreen).l                ; 014DE
@@ -2563,7 +2563,7 @@ StateFlightSetup:
         bhi.b   l_000_0207E                     ; 0206E
         moveq   #$28,d0                         ; 02070
         move.l  d0,-(a7)                        ; 02072
-        jsr     (sub_000_09D7A).l               ; 02074
+        jsr     (PlayStartSound).l              ; 02074
         addq.l  #$4,a7                          ; 0207A
         bra.b   l_000_020A8                     ; 0207C
 l_000_0207E:

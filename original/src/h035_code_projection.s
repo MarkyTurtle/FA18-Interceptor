@@ -34,14 +34,27 @@ ProjectPoint:
 PlotPoint3D:
         move.w  (DistanceShift).l,d7            ; 00024
         bra.b   l_035_0003A                     ; 0002A
-sub_035_0002C:
+
+;-------------------------------------------------------------------------------
+; PlotPoint3DBig - PlotPoint3D as a big blob (size step -4).
+;-------------------------------------------------------------------------------
+PlotPoint3DBig:
         moveq   #-4,d7                          ; 0002C
         bra.b   l_035_0003A                     ; 0002E
 	dc.b	$7E,$FD,$60,$06
-sub_035_00034:
+
+;-------------------------------------------------------------------------------
+; PlotPoint3DMedium - PlotPoint3D as a medium blob (size step -2).
+;-------------------------------------------------------------------------------
+PlotPoint3DMedium:
         moveq   #-2,d7                          ; 00034
         bra.b   l_035_0003A                     ; 00036
-sub_035_00038:
+
+;-------------------------------------------------------------------------------
+; PlotPoint3DSmall - PlotPoint3D as one point (size step -1): a point (d0-d2, relative to the
+; camera) projected and plotted if in front and inside the view.
+;-------------------------------------------------------------------------------
+PlotPoint3DSmall:
         moveq   #-1,d7                          ; 00038
 l_035_0003A:
         cmp.w   d2,d0                           ; 0003A
@@ -100,7 +113,7 @@ l_035_000C4:
         jsr     (PlotBigAbove).l                ; 000C4
         bra.b   l_035_000D0                     ; 000CA
 l_035_000CC:
-        bsr.w   sub_035_00550                   ; 000CC
+        bsr.w   DrawBlobRows                    ; 000CC
 l_035_000D0:
         moveq   #$1,d0                          ; 000D0
         rts                                     ; 000D2
@@ -130,7 +143,12 @@ l_035_000E8:
 l_035_000FC:
         moveq   #$0,d0                          ; 000FC
         rts                                     ; 000FE
-sub_035_00100:
+
+;-------------------------------------------------------------------------------
+; ProjectDrawLine - Draws the 3D line at dat_072_04202 without clipping: both ends must be in
+; front and in the view.
+;-------------------------------------------------------------------------------
+ProjectDrawLine:
         lea.l   (dat_072_04202).l,a1            ; 00100
         move.w  (a1)+,d0                        ; 00106
         move.w  (a1)+,d1                        ; 00108
@@ -245,14 +263,14 @@ l_035_001F0:
         move.w  $a(a1),d6                       ; 001FC
         cmp.w   d2,d6                           ; 00200
         ble.b   l_035_001D4                     ; 00202
-        bsr.w   sub_035_00456                   ; 00204
+        bsr.w   ClipLineLeft                    ; 00204
         beq.w   l_035_00386                     ; 00208
         tst.w   (ClipSwitch).l                  ; 0020C
         bge.b   l_035_0025A                     ; 00212
         neg.w   d2                              ; 00214
         cmp.w   d2,d6                           ; 00216
         ble.b   l_035_0025A                     ; 00218
-        bsr.w   sub_035_00484                   ; 0021A
+        bsr.w   ClipLineRight                   ; 0021A
         bne.b   l_035_0025A                     ; 0021E
         bra.w   l_035_003CA                     ; 00220
 l_035_00224:
@@ -265,14 +283,14 @@ l_035_00224:
         neg.w   d2                              ; 00236
         cmp.w   d2,d6                           ; 00238
         ble.b   l_035_001D4                     ; 0023A
-        bsr.w   sub_035_00484                   ; 0023C
+        bsr.w   ClipLineRight                   ; 0023C
         beq.w   l_035_003BE                     ; 00240
         tst.w   (ClipSwitch).l                  ; 00244
         bge.b   l_035_0025A                     ; 0024A
         neg.w   d2                              ; 0024C
         cmp.w   d2,d6                           ; 0024E
         ble.b   l_035_0025A                     ; 00250
-        bsr.w   sub_035_00456                   ; 00252
+        bsr.w   ClipLineLeft                    ; 00252
         beq.w   l_035_00386                     ; 00256
 l_035_0025A:
         tst.w   d4                              ; 0025A
@@ -286,7 +304,7 @@ l_035_0025A:
         neg.w   d2                              ; 00270
         cmp.w   d2,d6                           ; 00272
         ble.w   l_035_001D4                     ; 00274
-        bsr.w   sub_035_004E6                   ; 00278
+        bsr.w   ClipLineBottom                  ; 00278
         beq.b   l_035_002E4                     ; 0027C
         tst.w   (ClipSwitch).l                  ; 0027E
         bge.w   l_035_001D4                     ; 00284
@@ -295,7 +313,7 @@ l_035_0025A:
         neg.w   d2                              ; 0028E
         cmp.w   d2,d6                           ; 00290
         ble.w   l_035_001D4                     ; 00292
-        bsr.w   sub_035_004B8                   ; 00296
+        bsr.w   ClipLineTop                     ; 00296
         bne.w   l_035_001D4                     ; 0029A
 l_035_0029E:
         bra.w   l_035_003CA                     ; 0029E
@@ -306,7 +324,7 @@ l_035_002A2:
         move.w  $a(a1),d6                       ; 002AC
         cmp.w   d2,d6                           ; 002B0
         ble.w   l_035_001D4                     ; 002B2
-        bsr.w   sub_035_004B8                   ; 002B6
+        bsr.w   ClipLineTop                     ; 002B6
         beq.b   l_035_0029E                     ; 002BA
         tst.w   (ClipSwitch).l                  ; 002BC
         bge.w   l_035_001D4                     ; 002C2
@@ -318,7 +336,7 @@ l_035_002A2:
         neg.w   d2                              ; 002D4
         cmp.w   d2,d6                           ; 002D6
         ble.w   l_035_001D4                     ; 002D8
-        bsr.w   sub_035_004E6                   ; 002DC
+        bsr.w   ClipLineBottom                  ; 002DC
         bne.w   l_035_001D4                     ; 002E0
 l_035_002E4:
         bra.w   l_035_003CA                     ; 002E4
@@ -329,14 +347,14 @@ l_035_002E8:
         move.w  $a(a1),d6                       ; 002F0
         cmp.w   d2,d6                           ; 002F4
         ble.w   l_035_001D4                     ; 002F6
-        bsr.w   sub_035_004B8                   ; 002FA
+        bsr.w   ClipLineTop                     ; 002FA
         beq.b   l_035_0029E                     ; 002FE
         tst.w   (ClipSwitch).l                  ; 00300
         bge.b   l_035_0034E                     ; 00306
         neg.w   d2                              ; 00308
         cmp.w   d2,d6                           ; 0030A
         ble.b   l_035_0034E                     ; 0030C
-        bsr.w   sub_035_004E6                   ; 0030E
+        bsr.w   ClipLineBottom                  ; 0030E
         bne.b   l_035_0034E                     ; 00312
         bra.w   l_035_003CA                     ; 00314
 l_035_00318:
@@ -349,14 +367,14 @@ l_035_00318:
         neg.w   d2                              ; 0032A
         cmp.w   d2,d6                           ; 0032C
         ble.w   l_035_001D4                     ; 0032E
-        bsr.w   sub_035_004E6                   ; 00332
+        bsr.w   ClipLineBottom                  ; 00332
         beq.b   l_035_002E4                     ; 00336
         tst.w   (ClipSwitch).l                  ; 00338
         bge.b   l_035_0034E                     ; 0033E
         neg.w   d2                              ; 00340
         cmp.w   d2,d6                           ; 00342
         ble.b   l_035_0034E                     ; 00344
-        bsr.w   sub_035_004B8                   ; 00346
+        bsr.w   ClipLineTop                     ; 00346
         beq.w   l_035_0029E                     ; 0034A
 l_035_0034E:
         tst.w   d3                              ; 0034E
@@ -370,7 +388,7 @@ l_035_0034E:
         neg.w   d2                              ; 00362
         cmp.w   d2,d6                           ; 00364
         ble.b   l_035_003C4                     ; 00366
-        bsr.w   sub_035_00484                   ; 00368
+        bsr.w   ClipLineRight                   ; 00368
         beq.b   l_035_003BE                     ; 0036C
         tst.w   (ClipSwitch).l                  ; 0036E
         bge.b   l_035_003C4                     ; 00374
@@ -379,7 +397,7 @@ l_035_0034E:
         neg.w   d2                              ; 0037A
         cmp.w   d2,d6                           ; 0037C
         ble.b   l_035_003C4                     ; 0037E
-        bsr.w   sub_035_00456                   ; 00380
+        bsr.w   ClipLineLeft                    ; 00380
         bne.b   l_035_003C4                     ; 00384
 l_035_00386:
         bra.b   l_035_003CA                     ; 00386
@@ -390,7 +408,7 @@ l_035_00388:
         move.w  $a(a1),d6                       ; 00390
         cmp.w   d2,d6                           ; 00394
         ble.b   l_035_003C4                     ; 00396
-        bsr.w   sub_035_00456                   ; 00398
+        bsr.w   ClipLineLeft                    ; 00398
         beq.b   l_035_00386                     ; 0039C
         tst.w   (ClipSwitch).l                  ; 0039E
         bge.b   l_035_003C4                     ; 003A4
@@ -402,7 +420,7 @@ l_035_00388:
         neg.w   d2                              ; 003B2
         cmp.w   d2,d6                           ; 003B4
         ble.b   l_035_003C4                     ; 003B6
-        bsr.w   sub_035_00484                   ; 003B8
+        bsr.w   ClipLineRight                   ; 003B8
         bne.b   l_035_003C4                     ; 003BC
 l_035_003BE:
         bra.b   l_035_003CA                     ; 003BE
@@ -465,7 +483,12 @@ l_035_0044A:
 l_035_00450:
         move.w  #$b3,d4                         ; 00450
         bra.b   l_035_003FA                     ; 00454
-sub_035_00456:
+
+;-------------------------------------------------------------------------------
+; ClipLineLeft - Clips the line being drawn (ClipDrawLine3D) against one edge plane of the
+; view.
+;-------------------------------------------------------------------------------
+ClipLineLeft:
         movem.l d0-d6,-(a7)                     ; 00456
         movem.w $6(a1),d0-d2                    ; 0045A
         move.w  d2,d6                           ; 00460
@@ -486,7 +509,11 @@ l_035_0046C:
         sub.w   d6,d2                           ; 0047C
         move.w  d2,d0                           ; 0047E
         bra.w   l_035_00516                     ; 00480
-sub_035_00484:
+
+;-------------------------------------------------------------------------------
+; ClipLineRight - As ClipLineLeft, for another edge plane.
+;-------------------------------------------------------------------------------
+ClipLineRight:
         movem.l d0-d6,-(a7)                     ; 00484
         movem.w $6(a1),d0-d2                    ; 00488
         neg.w   d0                              ; 0048E
@@ -510,7 +537,11 @@ l_035_0049E:
         move.w  d2,d0                           ; 004B0
         neg.w   d0                              ; 004B2
         bra.w   l_035_00516                     ; 004B4
-sub_035_004B8:
+
+;-------------------------------------------------------------------------------
+; ClipLineTop - As ClipLineLeft, for another edge plane.
+;-------------------------------------------------------------------------------
+ClipLineTop:
         movem.l d0-d6,-(a7)                     ; 004B8
         movem.w $6(a1),d0-d2                    ; 004BC
         move.w  d2,d6                           ; 004C2
@@ -531,7 +562,11 @@ l_035_004CE:
         sub.w   d6,d2                           ; 004DE
         move.w  d2,d1                           ; 004E0
         bra.w   l_035_00516                     ; 004E2
-sub_035_004E6:
+
+;-------------------------------------------------------------------------------
+; ClipLineBottom - As ClipLineLeft, for another edge plane.
+;-------------------------------------------------------------------------------
+ClipLineBottom:
         movem.l d0-d6,-(a7)                     ; 004E6
         movem.w $6(a1),d0-d2                    ; 004EA
         neg.w   d1                              ; 004F0
@@ -580,7 +615,12 @@ l_035_00540:
 l_035_00548:
         jsr     (Plot2).l                       ; 00548
         rts                                     ; 0054E
-sub_035_00550:
+
+;-------------------------------------------------------------------------------
+; DrawBlobRows - Draws a blob as rows of horizontal lines (its size d6), using the list at
+; dat_073_016A4.
+;-------------------------------------------------------------------------------
+DrawBlobRows:
         move.w  d6,d5                           ; 00550
         subq.w  #$1,d5                          ; 00552
         blt.b   l_035_00548                     ; 00554

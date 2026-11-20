@@ -45,7 +45,7 @@ l_014_0002E:
         and.w   (a4),d6                         ; 00068
         blt.b   l_014_0002E                     ; 0006A
         move.l  a2,-(a7)                        ; 0006C
-        jsr     (sub_019_00018).l               ; 0006E
+        jsr     (ClipFillPolygonBuffer).l       ; 0006E
         or.w    d0,-$7e(a6)                     ; 00074
         movea.l (a7)+,a2                        ; 00078
         bra.b   l_014_0002E                     ; 0007A
@@ -53,7 +53,11 @@ l_014_0007C:
         movem.l (a7)+,a1/a5                     ; 0007C
         move.w  -$7e(a6),d0                     ; 00080
         rts                                     ; 00084
-sub_014_00086:
+
+;-------------------------------------------------------------------------------
+; ShapeQuadListPat - ShapeQuadList's form with the pattern 2,0,2,0.
+;-------------------------------------------------------------------------------
+ShapeQuadListPat:
         move.w  #$2,d0                          ; 00086
         move.w  #$0,d1                          ; 0008A
         move.w  #$2,d2                          ; 0008E
@@ -120,7 +124,7 @@ l_014_00114:
         add.w   -$42(a6),d3                     ; 00156
         movem.w d1-d6,(a0)                      ; 0015A
         move.l  a3,-(a7)                        ; 0015E
-        jsr     (sub_019_00018).l               ; 00160
+        jsr     (ClipFillPolygonBuffer).l       ; 00160
         or.w    d0,-$7e(a6)                     ; 00166
         movea.l (a7)+,a3                        ; 0016A
         subq.w  #$1,-$38(a6)                    ; 0016C
@@ -783,7 +787,12 @@ l_014_007B4:
         movem.w d3-d7/a4,$60(a3)                ; 0085E
         moveq   #$0,d0                          ; 00864
         rts                                     ; 00866
-sub_014_00868:
+
+;-------------------------------------------------------------------------------
+; ShapeEjectionStep - Picks part of the list by the ejection's step (+$7C low nibble, up to 6)
+; of the object drawn.
+;-------------------------------------------------------------------------------
+ShapeEjectionStep:
         lea.l   (ObjectTable).l,a3              ; 00868
         adda.w  (CurrentObjectOffset).l,a3      ; 0086E
         moveq   #$0,d0                          ; 00874
@@ -1043,10 +1052,14 @@ MakeVerticesMiG:
         move.w  (CurrentObjectOffset).l,d0      ; 00ADE
         addi.w  #$a4,d0                         ; 00AE4
         adda.w  d0,a3                           ; 00AE8
-        bsr.w   sub_014_00AF6                   ; 00AEA
+        bsr.w   MiGMovedVertex                  ; 00AEA
         lea.l   (VertexBuffer).l,a3             ; 00AEE
         adda.w  (a2)+,a3                        ; 00AF4
-sub_014_00AF6:
+
+;-------------------------------------------------------------------------------
+; MiGMovedVertex - Part of MakeVerticesMiG: a vertex moved by an edge's difference, into +$54.
+;-------------------------------------------------------------------------------
+MiGMovedVertex:
         movem.w $12(a3),d0-d7/a4                ; 00AF6
         sub.w   d0,d6                           ; 00AFC
         sub.w   d1,d7                           ; 00AFE
@@ -1123,15 +1136,24 @@ sub_014_00AF6:
         movem.w d0-d2,$4e(a3)                   ; 00BC4
         moveq   #$0,d0                          ; 00BCA
         rts                                     ; 00BCC
-sub_014_00BCE:
+
+;-------------------------------------------------------------------------------
+; MakeMidpointBoth - MakeMidpoint for the object's own vertices (ObjectTable +$A4) and then for
+; VertexBuffer.
+;-------------------------------------------------------------------------------
+MakeMidpointBoth:
         lea.l   (ObjectTable).l,a3              ; 00BCE
         move.w  (CurrentObjectOffset).l,d0      ; 00BD4
         addi.w  #$a4,d0                         ; 00BDA
         adda.w  d0,a3                           ; 00BDE
-        bsr.w   sub_014_00BEC                   ; 00BE0
+        bsr.w   MakeMidpoint                    ; 00BE0
         lea.l   (VertexBuffer).l,a3             ; 00BE4
         adda.w  (a2)+,a3                        ; 00BEA
-sub_014_00BEC:
+
+;-------------------------------------------------------------------------------
+; MakeMidpoint - New vertices half way along edges of the vertices at a3.
+;-------------------------------------------------------------------------------
+MakeMidpoint:
         movem.w $0(a3),d0-d5                    ; 00BEC
         sub.w   d0,d3                           ; 00BF2
         sub.w   d1,d4                           ; 00BF4
@@ -1165,10 +1187,10 @@ MakeVerticesF16:
         move.w  (CurrentObjectOffset).l,d0      ; 00C2C
         addi.w  #$a4,d0                         ; 00C32
         adda.w  d0,a3                           ; 00C36
-        bsr.w   sub_014_00C76                   ; 00C38
+        bsr.w   F16MovedVertex                  ; 00C38
         lea.l   (VertexBuffer).l,a3             ; 00C3C
         adda.w  (a2)+,a3                        ; 00C42
-        bsr.w   sub_014_00C76                   ; 00C44
+        bsr.w   F16MovedVertex                  ; 00C44
         movem.w $4e(a3),d0-d5                   ; 00C48
         add.w   d0,d3                           ; 00C4E
         add.w   d1,d4                           ; 00C50
@@ -1186,7 +1208,11 @@ MakeVerticesF16:
         movem.w d3-d5,$258(a3)                  ; 00C6C
         moveq   #$0,d0                          ; 00C72
         rts                                     ; 00C74
-sub_014_00C76:
+
+;-------------------------------------------------------------------------------
+; F16MovedVertex - Part of MakeVerticesF16: a vertex moved by an edge's difference, into +$96.
+;-------------------------------------------------------------------------------
+F16MovedVertex:
         movem.w $12(a3),d0-d7/a4                ; 00C76
         sub.w   d0,d6                           ; 00C7C
         sub.w   d1,d7                           ; 00C7E
@@ -1288,7 +1314,12 @@ sub_014_00C76:
         asr.w   #$1,d2                          ; 00D9E
         movem.w d0-d2,$90(a3)                   ; 00DA0
         rts                                     ; 00DA6
-sub_014_00DA8:
+
+;-------------------------------------------------------------------------------
+; MakeVerticesMoved2 - New vertices in VertexBuffer, moved by the difference between two
+; others.
+;-------------------------------------------------------------------------------
+MakeVerticesMoved2:
         lea.l   (VertexBuffer).l,a3             ; 00DA8
         movem.w (a3),d0-d7/a4                   ; 00DAE
         sub.w   d6,d3                           ; 00DB2
@@ -1442,9 +1473,14 @@ MakeVerticesCruise:
         move.w  (CurrentObjectOffset).l,d0      ; 00F4A
         addi.w  #$a4,d0                         ; 00F50
         adda.w  d0,a3                           ; 00F54
-        bsr.w   sub_014_00F60                   ; 00F56
+        bsr.w   CruiseMovedVertex               ; 00F56
         lea.l   (VertexBuffer).l,a3             ; 00F5A
-sub_014_00F60:
+
+;-------------------------------------------------------------------------------
+; CruiseMovedVertex - Part of MakeVerticesCruise: a vertex moved by an edge's difference, into
+; +$60.
+;-------------------------------------------------------------------------------
+CruiseMovedVertex:
         movem.w (a3),d0-d7/a4                   ; 00F60
         sub.w   d3,d6                           ; 00F64
         sub.w   d4,d7                           ; 00F66
