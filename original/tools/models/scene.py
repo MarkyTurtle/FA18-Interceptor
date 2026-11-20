@@ -81,7 +81,7 @@ def paint(prims, scale=3, horizon=None):
     """The sky and the ground behind are the copper's work (colour 0 changed down the screen),
     not drawn: they are filled in here at the horizon's height."""
     pal = render.palette()
-    im = Image.new('RGB', (320 * scale, 180 * scale), (96, 128, 192))
+    im = Image.new('RGB', (320 * scale, 180 * scale), pal[5])
     d = ImageDraw.Draw(im)
     if horizon is not None:
         d.rectangle([0, horizon * scale, 320 * scale, 180 * scale], fill=pal[4])

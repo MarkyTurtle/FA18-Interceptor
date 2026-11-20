@@ -7,7 +7,12 @@ g = dm.g
 
 
 def palette(label=None):
-    if label is None or label == 'inst5':
+    """The game's palette in flight: the brightest of the 16 fade levels at dat_021_00080, which
+    the game loads into its view (the panel picture's own CMAP has colours 9 and 11 the other
+    way round)."""
+    if label is None:
+        return _palette('dat_021_00080')[:16]
+    if label == 'inst5':
         d = open(os.path.join(dm.ROOT if hasattr(dm, 'ROOT') else '', 'disk', 'files', 'F-18 Interceptor', 'pix', 'inst5'), 'rb').read()
         i = d.index(b'CMAP'); n = int.from_bytes(d[i + 4:i + 8], 'big'); c = d[i + 8:i + 8 + n]
         return [tuple(c[j:j + 3]) for j in range(0, n, 3)]

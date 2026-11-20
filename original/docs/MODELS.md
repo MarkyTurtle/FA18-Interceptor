@@ -11,7 +11,8 @@ It then captures what the game would have drawn:
 * the lines and the points.
 
 Each primitive is captured in the camera's space and drawn again with Python's PIL, in the
-colours of the flight's palette (the instrument panel picture's).
+colours of the flight's palette. That is the brightest of the 16 fade levels in hunk 21
+(`dat_021_00080`), which the game loads for its view.
 
 Each picture is scaled to fit its panel, so sizes cannot be compared between pictures.
 
@@ -28,6 +29,8 @@ The first version of these pictures had faults, since corrected:
 * Faces were missing from some shapes, such as Coit Tower's front. The drawing lists' plane
   tests compare the camera's position against the shape (`dat_071_00442`-`00448`), and the tool
   had not set it.
+* The colours were taken from the instrument panel picture. Its palette has colours 9 and 11
+  the other way round from the game's, which turned the dark green hills orange.
 * The emulator kept the first routine it was asked to run and ran it again for later calls.
   It translates code once and keeps it, and the tool rewrote its call in place without
   flushing it.
@@ -95,7 +98,7 @@ Most of the rest are pieces that only make sense put together:
 
 * runway and taxiway markings, drawn as lines, and runway numbers;
 * building blocks;
-* the orange hills (42).
+* the hills and parks, dark green (42).
 
 The scenery maps place them, so the in-game views below show what they make. They include the runways'
 numbers (for example 64, 65).
@@ -121,8 +124,12 @@ Then it runs the 3D stages of a frame (`UpdateViewCell`, `SetupCamera`, the scen
 game's clipping and projection, the lines and the points. They are painted in order, in screen
 coordinates, so these are the game's own frames.
 
+Colour 9 (orange) is the missiles' exhaust trail; colour 11 (dark green) is the hills and the
+pilot's flight suit.
+
 There are two exceptions. The sky and the ground behind everything come from the copper (colour
-0 changed down the screen), not from drawing, so they are filled in at the horizon. The cockpit
+0 changed down the screen), not from drawing, so they are filled in at the horizon. They use colour 5 for the sky and colour 4 for the ground,
+which is a guess: the code that sets those colours has not been found yet. The cockpit
 is left out.
 
 ![On the runway](images/view_runway.png)
@@ -134,7 +141,7 @@ is left out.
 ![The city's hills and Sutro Tower](images/view_sutro.png)
 
 The ground is drawn in the colours of the land, the water (the bay), the city (grey) and the
-hills (orange). The scenery maps' pieces become the airfields with their runways and control
+hills and parks (dark green). The scenery maps' pieces become the airfields with their runways and control
 tower, the bridges and the city.
 
 Some places:
