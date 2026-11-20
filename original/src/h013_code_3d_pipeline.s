@@ -578,7 +578,7 @@ l_013_005B2:
         movem.l d1-d3,-$94(a6)                  ; 005C8
 l_013_005CE:
         movem.l -$94(a6),d1-d3                  ; 005CE
-        move.l  (dat_071_00500).l,d4            ; 005D4
+        move.l  (ObjectViewPosL).l,d4           ; 005D4
         move.l  (dat_071_00508).l,d5            ; 005DA
         asr.l   d0,d4                           ; 005E0
         asr.l   d0,d5                           ; 005E2
@@ -645,7 +645,7 @@ l_013_00672:
         add.w   -$14(a6),d2                     ; 00684
         move.w  -$12(a6),d3                     ; 00688
         add.w   -$10(a6),d4                     ; 0068C
-        lea.l   (dat_071_005A8).l,a5            ; 00690
+        lea.l   (ViewMatrix).l,a5               ; 00690
         move.w  d2,d5                           ; 00696
         move.w  d3,d6                           ; 00698
         move.w  d4,d7                           ; 0069A
@@ -706,7 +706,7 @@ sub_013_006E8:
         neg.w   d6                              ; 0072E
         neg.w   d7                              ; 00730
         move.w  (ObjectViewPos).l,d2            ; 00732
-        move.w  (dat_071_004FE).l,d3            ; 00738
+        move.w  (ObjectViewPosZ).l,d3           ; 00738
         move.w  (DistanceShift).l,d5            ; 0073E
         asl.w   d5,d2                           ; 00744
         asl.w   d5,d3                           ; 00746
@@ -846,7 +846,7 @@ sub_013_008AA:
         neg.w   d6                              ; 008E4
         neg.w   d7                              ; 008E6
         move.w  (ObjectViewPos).l,d2            ; 008E8
-        move.w  (dat_071_004FE).l,d3            ; 008EE
+        move.w  (ObjectViewPosZ).l,d3           ; 008EE
         move.w  (DistanceShift).l,d5            ; 008F4
         asl.w   d5,d2                           ; 008FA
         asl.w   d5,d3                           ; 008FC
@@ -1092,7 +1092,7 @@ l_013_00B3E:
 ; worked out).
 ;-------------------------------------------------------------------------------
 ShapeSceneryTest:
-        movea.l (dat_071_00402).l,a3            ; 00B42
+        movea.l (CurrentShape).l,a3             ; 00B42
         adda.w  #$a,a3                          ; 00B48
         adda.w  (a2)+,a3                        ; 00B4C
         cmpi.l  #$fffffec0,(ViewOffsetY8).l     ; 00B4E
@@ -1114,7 +1114,7 @@ sub_013_00B62:
         sub.w   (ObjectViewPos).l,d5            ; 00B82
         clr.w   d6                              ; 00B88
         move.w  -$22(a6),d7                     ; 00B8A
-        sub.w   (dat_071_004FE).l,d7            ; 00B8E
+        sub.w   (ObjectViewPosZ).l,d7           ; 00B8E
         move.w  #$100,d0                        ; 00B94
         jsr     (ScaleToLengthD0).l             ; 00B98
         movem.w (a7)+,d0-d2                     ; 00B9E

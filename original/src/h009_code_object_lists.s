@@ -63,7 +63,7 @@ l_009_000A2:
         tst.b   (SceneryDetailed).l             ; 000BE
         beq.b   l_009_000E2                     ; 000C4
         lea.l   (dat_008_0151A).l,a1            ; 000C6
-        move.b  (dat_071_00220).l,d6            ; 000CC
+        move.b  (ViewPlace).l,d6                ; 000CC
         ext.w   d6                              ; 000D2
         add.w   d6,d6                           ; 000D4
         add.w   d6,d6                           ; 000D6
@@ -96,12 +96,12 @@ l_009_000E8:
         add.w   d1,d1                           ; 0011E
         add.w   d6,d1                           ; 00120
         lea.l   (a4,d1.w),a3                    ; 00122
-        move.l  a3,(dat_071_003FE).l            ; 00126
-        addi.l  #$60,(dat_071_003FE).l          ; 0012C
+        move.l  a3,(SceneryListLimit).l         ; 00126
+        addi.l  #$60,(SceneryListLimit).l       ; 0012C
         move.l  a2,(a5)                         ; 00136
         moveq   #$0,d1                          ; 00138
 l_009_0013A:
-        cmpa.l  (dat_071_003FE).l,a3            ; 0013A
+        cmpa.l  (SceneryListLimit).l,a3         ; 0013A
         bge.w   l_009_00546                     ; 00140
         cmpi.b  #$ff,(a3)                       ; 00144
         beq.w   l_009_00546                     ; 00148
@@ -151,7 +151,7 @@ l_009_001B2:
 l_009_001BE:
         move.l  a1,-(a7)                        ; 001BE
         lea.l   (dat_008_0151A).l,a1            ; 001C0
-        move.b  (dat_071_00220).l,d7            ; 001C6
+        move.b  (ViewPlace).l,d7                ; 001C6
         ext.w   d7                              ; 001CC
         add.w   d7,d7                           ; 001CE
         add.w   d7,d7                           ; 001D0
@@ -187,7 +187,7 @@ l_009_00224:
         add.w   d6,d6                           ; 0022E
 l_009_00230:
         lea.l   (dat_008_0151A).l,a1            ; 00230
-        move.b  (dat_071_00220).l,d7            ; 00236
+        move.b  (ViewPlace).l,d7                ; 00236
         ext.w   d7                              ; 0023C
         add.w   d7,d7                           ; 0023E
         add.w   d7,d7                           ; 00240

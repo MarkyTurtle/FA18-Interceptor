@@ -176,7 +176,7 @@ l_040_0021E:
         move.w  d1,-(a7)                        ; 00254
         addi.w  #$5b,d1                         ; 00256
         add.w   (ViewY).l,d1                    ; 0025A
-        move.w  d1,(dat_071_0035C).l            ; 00260
+        move.w  d1,(HUDTapeOffset).l            ; 00260
         addq.w  #$2,d1                          ; 00266
         tst.w   d0                              ; 00268
         ble.b   l_040_00278                     ; 0026A
@@ -195,7 +195,7 @@ l_040_00278:
         move.l  d5,-(a7)                        ; 0028C
         move.w  d1,-(a7)                        ; 0028E
         bsr.w   HUDDigits2Alt                   ; 00290
-        move.l  #$5,(dat_071_004F6).l           ; 00294
+        move.l  #$5,(HUDScaleStep).l            ; 00294
         move.w  (a7)+,d1                        ; 0029E
         move.l  (a7)+,d5                        ; 002A0
         move.l  (BCDOut).l,-(a7)                ; 002A2
@@ -212,7 +212,7 @@ l_040_002AC:
         jsr     (PlotInView).l                  ; 002C6
         move.l  (a7)+,d5                        ; 002CC
         move.l  d5,-(a7)                        ; 002CE
-        lea.l   (dat_071_004F6).l,a1            ; 002D0
+        lea.l   (HUDScaleStep).l,a1             ; 002D0
         lea.l   (ObjectViewPos).l,a2            ; 002D6
         addi.w  #$0,d0                          ; 002DC
         abcd.b  -(a2),-(a1)                     ; 002E0
@@ -239,7 +239,7 @@ l_040_002FA:
         jsr     (PlotInView).l                  ; 00320
         move.l  (a7)+,d5                        ; 00326
         move.l  d5,-(a7)                        ; 00328
-        lea.l   (dat_071_004F6).l,a1            ; 0032A
+        lea.l   (HUDScaleStep).l,a1             ; 0032A
         lea.l   (ObjectViewPos).l,a2            ; 00330
         addi.w  #$0,d0                          ; 00336
 	dc.b	$83,$0A,$83,$0A  sbcd -(a2),-(a1),#$830a
@@ -335,7 +335,7 @@ l_040_0044A:
         move.w  d1,d5                           ; 00476
         addi.w  #$5b,d1                         ; 00478
         add.w   (ViewY).l,d1                    ; 0047C
-        move.w  d1,(dat_071_0035C).l            ; 00482
+        move.w  d1,(HUDTapeOffset).l            ; 00482
         asl.w   #$3,d5                          ; 00488
         move.w  d5,d3                           ; 0048A
         add.w   d3,d3                           ; 0048C
@@ -346,14 +346,14 @@ l_040_0044A:
         move.l  d5,-(a7)                        ; 0049A
         bsr.w   HUDDigits2                      ; 0049C
         move.l  (a7)+,d5                        ; 004A0
-        move.l  #$5,(dat_071_004F6).l           ; 004A2
+        move.l  #$5,(HUDScaleStep).l            ; 004A2
         move.l  (BCDOut).l,-(a7)                ; 004AC
         move.l  d5,-(a7)                        ; 004B2
 l_040_004B4:
         subi.l  #$258,d5                        ; 004B4
         cmpi.l  #$af0,d5                        ; 004BA
         blt.b   l_040_004E2                     ; 004C0
-        lea.l   (dat_071_004F6).l,a1            ; 004C2
+        lea.l   (HUDScaleStep).l,a1             ; 004C2
         lea.l   (ObjectViewPos).l,a2            ; 004C8
         addi.w  #$0,d0                          ; 004CE
         abcd.b  -(a2),-(a1)                     ; 004D2
@@ -372,7 +372,7 @@ l_040_004EA:
         addi.l  #$258,d5                        ; 004F4
         cmpi.l  #$1130,d5                       ; 004FA
         bgt.b   l_040_00522                     ; 00500
-        lea.l   (dat_071_004F6).l,a1            ; 00502
+        lea.l   (HUDScaleStep).l,a1             ; 00502
         lea.l   (ObjectViewPos).l,a2            ; 00508
         addi.w  #$0,d0                          ; 0050E
 	dc.b	$83,$0A,$83,$0A  sbcd -(a2),-(a1),#$830a
@@ -456,21 +456,21 @@ l_040_00608:
         neg.w   d1                              ; 00632
         move.w  d1,d5                           ; 00634
         addi.w  #$9f,d5                         ; 00636
-        move.w  d5,(dat_071_0035C).l            ; 0063A
+        move.w  d5,(HUDTapeOffset).l            ; 0063A
         asl.w   #$3,d1                          ; 00640
         lea.l   (HeadingLabelPlaces).l,a1       ; 00642
         adda.w  d1,a1                           ; 00648
         move.w  d1,-(a7)                        ; 0064A
         bsr.w   HUDDigits3                      ; 0064C
         move.w  (a7)+,d1                        ; 00650
-        move.l  #$a,(dat_071_004F6).l           ; 00652
+        move.l  #$a,(HUDScaleStep).l            ; 00652
         move.l  (BCDOut).l,-(a7)                ; 0065C
         move.w  d1,-(a7)                        ; 00662
 l_040_00664:
         addi.w  #$a0,d1                         ; 00664
         cmpi.w  #$b0,d1                         ; 00668
         bgt.b   l_040_006A8                     ; 0066C
-        lea.l   (dat_071_004F6).l,a1            ; 0066E
+        lea.l   (HUDScaleStep).l,a1             ; 0066E
         lea.l   (ObjectViewPos).l,a2            ; 00674
         addi.w  #$0,d0                          ; 0067A
         abcd.b  -(a2),-(a1)                     ; 0067E
@@ -496,7 +496,7 @@ l_040_006C2:
         subi.w  #$a0,d1                         ; 006C2
         cmpi.w  #$ff50,d1                       ; 006C6
         blt.b   l_040_006F4                     ; 006CA
-        lea.l   (dat_071_004F6).l,a1            ; 006CC
+        lea.l   (HUDScaleStep).l,a1             ; 006CC
         lea.l   (ObjectViewPos).l,a2            ; 006D2
         addi.w  #$0,d0                          ; 006D8
 	dc.b	$83,$0A,$83,$0A  sbcd -(a2),-(a1),#$830a
@@ -740,7 +740,7 @@ ComputeGunPipper:
         asr.l   #$8,d2                          ; 00A9A
         asr.l   #$8,d3                          ; 00A9C
         asr.l   #$8,d4                          ; 00A9E
-        lea.l   (dat_071_005A8).l,a2            ; 00AA0
+        lea.l   (ViewMatrix).l,a2               ; 00AA0
         move.w  d2,d5                           ; 00AA6
         move.w  d3,d6                           ; 00AA8
         move.w  d4,d7                           ; 00AAA
@@ -985,7 +985,7 @@ HUDTapeTicks:
         move.w  d0,-$4(a6)                      ; 00D6E
         move.w  d1,-$6(a6)                      ; 00D72
         add.w   d1,d0                           ; 00D76
-        move.w  (dat_071_0035C).l,d1            ; 00D78
+        move.w  (HUDTapeOffset).l,d1            ; 00D78
         move.w  d1,-(a7)                        ; 00D7E
         jsr     (Plot2).l                       ; 00D80
         move.w  (a7)+,d1                        ; 00D86
@@ -1010,7 +1010,7 @@ l_040_00DBE:
         addq.w  #$1,-$2(a6)                     ; 00DC0
         bra.b   l_040_00D8E                     ; 00DC4
 l_040_00DC6:
-        move.w  (dat_071_0035C).l,d1            ; 00DC6
+        move.w  (HUDTapeOffset).l,d1            ; 00DC6
         move.w  #$0,-$2(a6)                     ; 00DCC
 l_040_00DD2:
         move.w  -$4(a6),d0                      ; 00DD2
@@ -1042,7 +1042,7 @@ l_040_00E0A:
 HUDHeadingTicks:
         link.w  a6,#$fff8                       ; 00E0E
         move.w  d1,-$4(a6)                      ; 00E12
-        move.w  (dat_071_0035C).l,d0            ; 00E16
+        move.w  (HUDTapeOffset).l,d0            ; 00E16
         jsr     (PlotInView).l                  ; 00E1C
         blt.b   l_040_00E2C                     ; 00E22
         subq.w  #$1,d1                          ; 00E24
@@ -1076,7 +1076,7 @@ l_040_00E7C:
         addq.w  #$1,-$2(a6)                     ; 00E7E
         bra.b   l_040_00E32                     ; 00E82
 l_040_00E84:
-        move.w  (dat_071_0035C).l,d0            ; 00E84
+        move.w  (HUDTapeOffset).l,d0            ; 00E84
         add.w   (ViewX).l,d0                    ; 00E8A
         move.w  #$0,-$2(a6)                     ; 00E90
 l_040_00E96:

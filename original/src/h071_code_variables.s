@@ -66,7 +66,9 @@ dat_071_0002C:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00030:
+; LivePalette - Points at the palette in use (16 words, then the sprites'): the fades copy into
+; it and ShowDisplay loads it.
+LivePalette:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -165,7 +167,8 @@ DrawXor:
 	dc.b	$00
 dat_071_000B9:
 	dc.b	$00
-dat_071_000BA:
+; FillPattern2 - The second long of FillPattern.
+FillPattern2:
 	dc.b	$00
 ; DrawXorMask - The planes XORed when DrawXor >= 0.
 DrawXorMask:
@@ -309,7 +312,9 @@ MouseY:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0014C:
+; ThrottleMouseY - The mouse's Y position last frame, for setting the throttle with the mouse
+; (EngineAndSpeed).
+ThrottleMouseY:
 	dc.b	$00
 	dc.b	$00
 dat_071_0014E:
@@ -350,7 +355,9 @@ dat_071_0015E:
 	dc.b	$00
 dat_071_0015F:
 	dc.b	$00
-dat_071_00160:
+; DemoActive - Set while the demo or a recorded flight is playing (DemoSetup); the judges and
+; the P key test it.
+DemoActive:
 	dc.b	$00
 ; AircraftChosen - Set while the aircraft select page waits for 1 or 2.
 AircraftChosen:
@@ -524,7 +531,9 @@ TypeDelay:
 ; time.
 PageFlags:
 	dc.b	$00
-dat_071_001AD:
+; GroundDetail - Bit 7 toggled by the [ key (set at the start): whether the ground's extra
+; detail is drawn (the scenery's distance limits, the ground shapes, the water).
+GroundDetail:
 	dc.b	$00
 dat_071_001AE:
 	dc.b	$00
@@ -668,7 +677,10 @@ dat_071_00204:
 	dc.b	$00
 dat_071_00205:
 	dc.b	$00
-dat_071_00206:
+; PanelBlitCount - Frames left in which the instrument panel picture is blitted in full
+; (DrawPanel): set to 3 when the cockpit appears or the view changes, counted down by
+; GameFrame.
+PanelBlitCount:
 	dc.b	$00
 ; PanelRedraw - While above 0 every readout of the panel is drawn each frame (otherwise each
 ; only every fourth frame, in turn); RedrawInstruments sets it and GameFrame counts it down.
@@ -682,7 +694,9 @@ dat_071_0020A:
 	dc.b	$00
 dat_071_0020B:
 	dc.b	$00
-dat_071_0020C:
+; TargetReadoutRedraw - Frames left to redraw the target readout in full (set to 2 by the Y key
+; and RedrawInstruments).
+TargetReadoutRedraw:
 	dc.b	$00
 dat_071_0020D:
 	dc.b	$00
@@ -696,7 +710,9 @@ dat_071_00211:
 	dc.b	$00
 dat_071_00212:
 	dc.b	$00
-dat_071_00213:
+; StoresRedraw - Frames left to redraw the stores display (DrawStores): set to 3 when a weapon
+; is fired or selected.
+StoresRedraw:
 	dc.b	$00
 dat_071_00214:
 	dc.b	$00
@@ -726,7 +742,9 @@ dat_071_0021E:
 	dc.b	$00
 dat_071_0021F:
 	dc.b	$00
-dat_071_00220:
+; ViewPlace - Which part of its map cell the view is in (UpdateViewCell): used to pick the
+; scenery and by the view tables (LookupViewTable).
+ViewPlace:
 	dc.b	$00
 ; ViewSubCell - The viewing object's sub-cell (its +$0A).
 ViewSubCell:
@@ -753,7 +771,9 @@ dat_071_00229:
 	dc.b	$00
 dat_071_0022A:
 	dc.b	$00
-dat_071_0022B:
+; ObjectDrawFlags - Flags for the object being drawn (DrawObjects; bit 6 and bit 4 tested by
+; DrawModel, DistanceScale and the ground shapes).
+ObjectDrawFlags:
 	dc.b	$00
 dat_071_0022C:
 	dc.b	$00
@@ -900,7 +920,9 @@ FadeTarget:
 	dc.b	$00
 dat_071_00273:
 	dc.b	$00
-dat_071_00274:
+; PaletteLoadCount - Frames left in which ShowDisplay loads LivePalette into the display (set
+; when it changes).
+PaletteLoadCount:
 	dc.b	$00
 dat_071_00275:
 	dc.b	$00
@@ -978,7 +1000,8 @@ DebriefDelay:
 RescuePod:
 	dc.b	$00
 	dc.b	$00
-dat_071_00294:
+; CompassPos - The compass strip's position (CompassPosition).
+CompassPos:
 	dc.b	$00
 	dc.b	$00
 ; GunFlags - Bit 3: the gun is firing.
@@ -991,7 +1014,11 @@ dat_071_00298:
 dat_071_0029A:
 	dc.b	$00
 	dc.b	$00
-dat_071_0029C:
+; StatusBits - A word of status bits: 0 a warning or message is showing (StartWarning), 3
+; tested by the G key, 6 waiting for the flight to start (set at the ready screen, cleared once
+; flying), 8 set by UpdateObject, 10 the view is shaking (ShakeView), 11 set when the aircraft
+; is placed; 13-14 cleared on a crash.
+StatusBits:
 	dc.b	$00
 dat_071_0029D:
 	dc.b	$00
@@ -1087,7 +1114,9 @@ dat_071_002D8:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_002DC:
+; FlightStartTime - When the flight began (TimeSeconds; moved on by the time spent paused), for
+; the flight's length in the log.
+FlightStartTime:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1205,7 +1234,9 @@ DrawColour:
 	dc.b	$00
 dat_071_00325:
 	dc.b	$00
-dat_071_00326:
+; ColourBits - The colour being drawn (a copy of DrawColour), shifted right one bit per bit-
+; plane as the line and fill routines go through the planes.
+ColourBits:
 	dc.b	$00
 dat_071_00327:
 	dc.b	$00
@@ -1283,7 +1314,9 @@ ViewX:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0035C:
+; HUDTapeOffset - Where a HUD scale's ticks start (the tape's or heading scale's pixel offset
+; this frame).
+HUDTapeOffset:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1311,7 +1344,9 @@ dat_071_0036B:
 ; KP9, 6 KP6, 7 KP3), passed on each frame by ReadControls (FrameEvents2).
 ViewKeys:
 	dc.b	$00
-dat_071_0036D:
+; ViewKeys2 - More view keys pressed since the last frame (bits: 0 KP2, 2 KP4, 3 KP7, 5 KP dot,
+; 7 KP5...).
+ViewKeys2:
 	dc.b	$00
 ; DebugCheckpoint - A number written just before many calls to Nop: where the program last was,
 ; left from debugging (nothing reads it).
@@ -1321,7 +1356,8 @@ DebugCheckpoint:
 dat_071_00370:
 	dc.b	$00
 	dc.b	$00
-dat_071_00372:
+; CompassShown - The compass position last drawn (bit 15: draw it again).
+CompassShown:
 	dc.b	$00
 	dc.b	$00
 dat_071_00374:
@@ -1359,7 +1395,8 @@ dat_071_00385:
 CurrentObjectOffset:
 	dc.b	$00
 	dc.b	$00
-dat_071_00388:
+; BulletHitObject - The object a bullet hit (BulletHitTest), 0 for none.
+BulletHitObject:
 	dc.b	$00
 	dc.b	$00
 dat_071_0038A:
@@ -1379,7 +1416,9 @@ LockedTarget:
 EjectedPilot:
 	dc.b	$00
 	dc.b	$00
-dat_071_00394:
+; TargetReadoutMode - What the target readout shows (TargetReadout): stepped by the Y key, set
+; to 1 by the radar when a blip is found; bit 15 marks it changed.
+TargetReadoutMode:
 	dc.b	$00
 	dc.b	$00
 dat_071_00396:
@@ -1395,12 +1434,16 @@ RadarListEnd:
 	dc.b	$00
 dat_071_0039E:
 	dcb.b	96,$00
-dat_071_003FE:
+; SceneryListLimit - The end of the scenery list being built (BuildSceneryList,
+; AddCellScenery): no more entries are added past it.
+SceneryListLimit:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00402:
+; CurrentShape - The scenery item (or shape header) being drawn, for the shape operations that
+; read it (the runway's, ShapeSceneryTest).
+CurrentShape:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1544,10 +1587,13 @@ dat_071_00460:
 dat_071_00462:
 	dc.b	$00
 	dc.b	$00
-dat_071_00464:
+; OutsideCamPitch - The outside camera's pitch (90 degrees, $1C20, looking straight down for
+; the map view); with OutsideCamHeading, from dat_071_00490 / 00492 when it follows.
+OutsideCamPitch:
 	dc.b	$00
 	dc.b	$00
-dat_071_00466:
+; OutsideCamHeading - The outside camera's heading (see OutsideCamPitch).
+OutsideCamHeading:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1611,7 +1657,9 @@ dat_071_00496:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0049A:
+; ClipSwitch - Never written (always 0): the clipping routines test it and always take the same
+; branch - a switch left from development.
+ClipSwitch:
 	dc.b	$00
 	dc.b	$00
 dat_071_0049C:
@@ -1640,7 +1688,9 @@ StateTimer:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_004AE:
+; WarningPlaying - The warning sound now playing (a CurrentWarning word): UpdateWarnings starts
+; a new one only when it differs.
+WarningPlaying:
 	dc.b	$00
 	dc.b	$00
 ; CurrentWarning - The warning sound now chosen (UpdateWarnings): a sound word, its low byte
@@ -1744,7 +1794,9 @@ BCDOut:
 dat_071_004F4:
 	dc.b	$00
 	dc.b	$00
-dat_071_004F6:
+; HUDScaleStep - The step between a HUD scale's numbers (5 on the tapes, 10 on the heading
+; scale), used with its digit places.
+HUDScaleStep:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1756,10 +1808,13 @@ ObjectViewPos:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_004FE:
+; ObjectViewPosZ - The z word of ObjectViewPos.
+ObjectViewPosZ:
 	dc.b	$00
 	dc.b	$00
-dat_071_00500:
+; ObjectViewPosL - The position of the object being drawn relative to the camera, as longs (x,
+; then y and z at +4, +8).
+ObjectViewPosL:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1808,7 +1863,9 @@ WarningFlags:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00523:
+; ControlBits - Bits used by FlightControls from frame to frame (bit 7 a held control; others
+; tested).
+ControlBits:
 	dc.b	$00
 ; SoundRequests - Sound request bits for CockpitSounds (4 bytes: $00524-$00527), set by the
 ; game (UpdateObject sets $80 for a warning...).
@@ -1817,7 +1874,9 @@ SoundRequests:
 	dc.b	$00
 dat_071_00526:
 	dc.b	$00
-dat_071_00527:
+; CockpitSoundBits - Requests for the cockpit's sounds, one bit each, set by the warnings and
+; the controls and played by CockpitSounds.
+CockpitSoundBits:
 	dc.b	$00
 dat_071_00528:
 	dc.b	$00
@@ -1967,7 +2026,9 @@ dat_071_00596:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_005A8:
+; ViewMatrix - The view's rotation: a 3 x 3 matrix of words (x 256 scale) turning a position
+; relative to the camera into view space; set up with the camera each frame.
+ViewMatrix:
 	dc.b	$00
 	dc.b	$00
 dat_071_005AA:
@@ -1987,7 +2048,9 @@ dat_071_005AA:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_005BA:
+; PanelViewMatrix - A second view matrix, for the panel's attitude indicator
+; (MakeSkyPolygonPanel).
+PanelViewMatrix:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2111,7 +2174,9 @@ dat_071_00622:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00626:
+; FlyByPoint - A point (x, y, z longs) where the fly-by's camera or a placed object goes
+; (FlyBySetup and the mode setup).
+FlyByPoint:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00

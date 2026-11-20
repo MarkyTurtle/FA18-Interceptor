@@ -30,7 +30,7 @@ l_033_00024:
 ; for the instrument panel's attitude indicator.
 ;-------------------------------------------------------------------------------
 MakeSkyPolygonPanel:
-        lea.l   (dat_071_005BA).l,a2            ; 0002A
+        lea.l   (PanelViewMatrix).l,a2          ; 0002A
         bra.b   l_033_00038                     ; 00030
 
 ;-------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ MakeSkyPolygonPanel:
 ; set) when there is sky to fill, 1 when there is none.
 ;-------------------------------------------------------------------------------
 MakeSkyPolygon:
-        lea.l   (dat_071_005A8).l,a2            ; 00032
+        lea.l   (ViewMatrix).l,a2               ; 00032
 l_033_00038:
         lea.l   (a2),a4                         ; 00038
         link.w  a6,#$fffe                       ; 0003A
@@ -290,7 +290,7 @@ SkyFillsView:
         move.w  (dat_071_0045A).l,d0            ; 0033A
         bra.b   l_033_00348                     ; 00340
 l_033_00342:
-        move.w  (dat_071_00464).l,d0            ; 00342
+        move.w  (OutsideCamPitch).l,d0          ; 00342
 l_033_00348:
         cmpi.w  #$3840,d0                       ; 00348
         bgt.b   l_033_00350                     ; 0034C
@@ -298,7 +298,7 @@ l_033_00348:
 l_033_00350:
         move.w  #$1,(FillPattern).l             ; 00350
         move.w  #$1,(DrawXor).l                 ; 00358
-        clr.l   (dat_071_000BA).l               ; 00360
+        clr.l   (FillPattern2).l                ; 00360
         move.b  #$1,(dat_071_0026E).l           ; 00366
         moveq   #$0,d0                          ; 0036E
         unlk    a6                              ; 00370
@@ -370,7 +370,7 @@ DrawSun:
         move.w  #$e000,d2                       ; 003CE
         move.w  #$3800,d3                       ; 003D2
         move.w  #$e000,d4                       ; 003D6
-        lea.l   (dat_071_005A8).l,a0            ; 003DA
+        lea.l   (ViewMatrix).l,a0               ; 003DA
         move.w  d2,d5                           ; 003E0
         move.w  d3,d6                           ; 003E2
         move.w  d4,d0                           ; 003E4

@@ -37,17 +37,27 @@ CopyTitleToScreen:
         move.w  #$ffff,BLTALWM(a0)              ; 00056
         move.w  a5,BLTAMOD(a0)                  ; 0005C
         move.w  a5,BLTDMOD(a0)                  ; 00060
-        bsr.w   sub_037_00084                   ; 00064
-        bsr.w   sub_037_00074                   ; 00068
-        bsr.w   sub_037_00074                   ; 0006C
-        bsr.w   sub_037_00074                   ; 00070
-sub_037_00074:
+        bsr.w   BlitCopyGo                      ; 00064
+        bsr.w   BlitCopyWaitGo                  ; 00068
+        bsr.w   BlitCopyWaitGo                  ; 0006C
+        bsr.w   BlitCopyWaitGo                  ; 00070
+
+;-------------------------------------------------------------------------------
+; BlitCopyWaitGo - The blitter copy helpers' "next plane": takes the next destination (a2)+ and
+; source (a1)+, waits for the blitter, sets BLTCON0 (d2) and falls into BlitCopyGo.
+;-------------------------------------------------------------------------------
+BlitCopyWaitGo:
         move.l  (a2)+,d4                        ; 00074
         movea.l (a1)+,a3                        ; 00076
         move.l  (a3),d0                         ; 00078
         jsr     (_WaitBlit).l                   ; 0007A
         move.w  d2,$40(a0)                      ; 00080
-sub_037_00084:
+
+;-------------------------------------------------------------------------------
+; BlitCopyGo - Starts a blitter copy: A pointer d0, D pointer d4, BLTSIZE d6 (a0 = the custom
+; chips).
+;-------------------------------------------------------------------------------
+BlitCopyGo:
         move.l  d0,$50(a0)                      ; 00084
         move.l  d4,$54(a0)                      ; 00088
         move.w  d6,$58(a0)                      ; 0008C
@@ -65,9 +75,9 @@ l_037_000A2:
 ; into the display at row 145 (55 rows, fewer if dat_071_002A8 is set), four planes.
 ;-------------------------------------------------------------------------------
 DrawPanel:
-        tst.b   (dat_071_00206).l               ; 000A4
+        tst.b   (PanelBlitCount).l              ; 000A4
         ble.b   l_037_000A2                     ; 000AA
-        subq.b  #$1,(dat_071_00206).l           ; 000AC
+        subq.b  #$1,(PanelBlitCount).l          ; 000AC
         lea.l   (CUSTOM).l,a0                    ; 000B2
         movea.l (DrawPlanes).l,a2               ; 000B8
         lea.l   dat_037_00092(pc),a1            ; 000BE
@@ -105,10 +115,10 @@ l_037_000E2:
         subq.w  #$1,d5                          ; 00130
         add.w   a5,d5                           ; 00132
         move.w  d5,BLTDMOD(a0)                  ; 00134
-        bsr.w   sub_037_00244                   ; 00138
-        bsr.w   sub_037_00234                   ; 0013C
-        bsr.w   sub_037_00234                   ; 00140
-        bsr.w   sub_037_00234                   ; 00144
+        bsr.w   BlitAtoDGo                      ; 00138
+        bsr.w   BlitAtoDWaitGo                  ; 0013C
+        bsr.w   BlitAtoDWaitGo                  ; 00140
+        bsr.w   BlitAtoDWaitGo                  ; 00144
 l_037_00148:
         tst.w   (ViewShift).l                   ; 00148
         beq.w   l_037_00216                     ; 0014E
@@ -170,33 +180,51 @@ l_037_001C0:
         move.w  d3,BLTALWM(a0)                  ; 001EE
         move.w  d5,BLTCMOD(a0)                  ; 001F2
         move.w  d5,BLTDMOD(a0)                  ; 001F6
-        bsr.w   sub_037_00222                   ; 001FA
+        bsr.w   BlitDestGo                      ; 001FA
         move.w  #$30a,d2                        ; 001FE
-        bsr.w   sub_037_00218                   ; 00202
+        bsr.w   BlitDestWaitGo                  ; 00202
         move.w  #$3fa,d2                        ; 00206
-        bsr.w   sub_037_00218                   ; 0020A
+        bsr.w   BlitDestWaitGo                  ; 0020A
         move.w  #$3fa,d2                        ; 0020E
-        bsr.w   sub_037_00218                   ; 00212
+        bsr.w   BlitDestWaitGo                  ; 00212
 l_037_00216:
         rts                                     ; 00216
-sub_037_00218:
+
+;-------------------------------------------------------------------------------
+; BlitDestWaitGo - Next plane of a blit that reads and writes the destination only (C and D at
+; (a2)+ + d1): waits, then BlitDestGo.
+;-------------------------------------------------------------------------------
+BlitDestWaitGo:
         move.l  (a2)+,d4                        ; 00218
         add.l   d1,d4                           ; 0021A
         jsr     (_WaitBlit).l                   ; 0021C
-sub_037_00222:
+
+;-------------------------------------------------------------------------------
+; BlitDestGo - Starts a blit on the destination only: BLTCON0 d2, C = D = d4, BLTSIZE d6.
+;-------------------------------------------------------------------------------
+BlitDestGo:
         move.w  d2,$40(a0)                      ; 00222
         move.l  d4,$48(a0)                      ; 00226
         move.l  d4,$54(a0)                      ; 0022A
         move.w  d6,$58(a0)                      ; 0022E
         rts                                     ; 00232
-sub_037_00234:
+
+;-------------------------------------------------------------------------------
+; BlitAtoDWaitGo - Next plane of an A-to-D blit: the destination (a2)+ + d1, the source plane
+; (a1)+ + d7; waits, then BlitAtoDGo.
+;-------------------------------------------------------------------------------
+BlitAtoDWaitGo:
         move.l  (a2)+,d4                        ; 00234
         add.l   d1,d4                           ; 00236
         movea.l (a1)+,a3                        ; 00238
         move.l  (a3),d0                         ; 0023A
         add.l   d7,d0                           ; 0023C
         jsr     (_WaitBlit).l                   ; 0023E
-sub_037_00244:
+
+;-------------------------------------------------------------------------------
+; BlitAtoDGo - Starts an A-to-D blit: BLTCON0 d2, A d0, D d4, BLTSIZE d6.
+;-------------------------------------------------------------------------------
+BlitAtoDGo:
         move.w  d2,$40(a0)                      ; 00244
         move.l  d0,$50(a0)                      ; 00248
         move.l  d4,$54(a0)                      ; 0024C
@@ -204,7 +232,12 @@ sub_037_00244:
         rts                                     ; 00254
 l_037_00256:
         rts                                     ; 00256
-sub_037_00258:
+
+;-------------------------------------------------------------------------------
+; DrawFuelGauge - The panel's fuel gauge: redrawn when the fuel shown (FuelShown / 1024)
+; changes or the panel is redrawn in full.
+;-------------------------------------------------------------------------------
+DrawFuelGauge:
         move.w  (FuelShown).l,d2                ; 00258
         andi.w  #$7fff,d2                       ; 0025E
         lsr.w   #$8,d2                          ; 00262
@@ -251,7 +284,12 @@ dat_037_002E6:
         dc.l    dat_002_02950                   ; 002EA
         dc.l    dat_002_0294C                   ; 002EE
         dc.l    dat_002_02948                   ; 002F2
-sub_037_002F6:
+
+;-------------------------------------------------------------------------------
+; DrawPanelPiece - Blits one fixed piece of the panel (from dat_037_002E2) with
+; BlitPanelPicture; called each frame by GameFrame.
+;-------------------------------------------------------------------------------
+DrawPanelPiece:
         lea.l   dat_037_002E6(pc),a1            ; 002F6
         lea.l   dat_037_002E2(pc),a3            ; 002FA
         move.w  #$fce,d2                        ; 002FE
@@ -262,7 +300,7 @@ sub_037_002F6:
         move.w  #$312,d6                        ; 00310
         movea.w #$5,a5                          ; 00314
         move.w  #$1,d7                          ; 00318
-        bsr.w   sub_037_007EA                   ; 0031C
+        bsr.w   BlitPanelPicture                ; 0031C
         rts                                     ; 00320
 dat_037_00322:
 	dc.b	$00,$55,$00,$AC,$00,$33,$00,$AC,$FF,$FF
@@ -271,10 +309,15 @@ dat_037_0032C:
 	dc.b	$FF,$FF
 l_037_0033E:
         rts                                     ; 0033E
-sub_037_00340:
-        tst.b   (dat_071_00213).l               ; 00340
+
+;-------------------------------------------------------------------------------
+; DrawStores - The panel's stores display (the missiles on their pylons), while StoresRedraw
+; counts down and the viewed object is an aircraft: marks for each pylon (DrawStoresMarks).
+;-------------------------------------------------------------------------------
+DrawStores:
+        tst.b   (StoresRedraw).l                ; 00340
         ble.b   l_037_0033E                     ; 00346
-        subq.b  #$1,(dat_071_00213).l           ; 00348
+        subq.b  #$1,(StoresRedraw).l            ; 00348
         lea.l   (ObjectTable).l,a0              ; 0034E
         adda.w  (ViewObject).l,a0               ; 00354
         move.b  $62(a0),d1                      ; 0035A
@@ -320,7 +363,7 @@ l_037_003E2:
 l_037_003F8:
         bset    #$1f,d4                         ; 003F8
 l_037_003FC:
-        bsr.w   sub_037_00422                   ; 003FC
+        bsr.w   DrawStoresMarks                 ; 003FC
         lea.l   dat_037_0032C(pc),a1            ; 00400
         move.b  $5f(a0),d4                      ; 00404
         andi.b  #$f,d4                          ; 00408
@@ -331,9 +374,14 @@ l_037_003FC:
 l_037_00418:
         bset    #$1f,d4                         ; 00418
 l_037_0041C:
-        bsr.w   sub_037_00422                   ; 0041C
+        bsr.w   DrawStoresMarks                 ; 0041C
         rts                                     ; 00420
-sub_037_00422:
+
+;-------------------------------------------------------------------------------
+; DrawStoresMarks - Draws the marks of a list of pylons (a1: x, y pairs, ended by a negative
+; word) in a colour by what each holds (d4: 0 empty, 1 colour 1, more colour 4).
+;-------------------------------------------------------------------------------
+DrawStoresMarks:
         subq.b  #$1,d4                          ; 00422
         bge.b   l_037_00430                     ; 00424
         move.w  #$0,(DrawColour).l              ; 00426
@@ -352,9 +400,9 @@ l_037_0044A:
         blt.b   l_037_0049A                     ; 0044C
         move.w  (a1)+,d1                        ; 0044E
         add.w   (ViewX).l,d0                    ; 00450
-        ble.b   sub_037_00422                   ; 00456
+        ble.b   DrawStoresMarks                 ; 00456
         cmpi.w  #$13e,d0                        ; 00458
-        bge.b   sub_037_00422                   ; 0045C
+        bge.b   DrawStoresMarks                 ; 0045C
         move.w  d0,d2                           ; 0045E
         add.w   (ViewY).l,d1                    ; 00460
         move.w  d1,d3                           ; 00466
@@ -370,7 +418,7 @@ l_037_0044A:
         addq.w  #$2,d0                          ; 0048C
         jsr     (Plot).l                        ; 0048E
         movem.l (a7)+,d4-d5/a0-a1               ; 00494
-        bra.b   sub_037_00422                   ; 00498
+        bra.b   DrawStoresMarks                 ; 00498
 l_037_0049A:
         rts                                     ; 0049A
 sub_037_0049C:
@@ -421,7 +469,7 @@ l_037_00552:
         moveq   #$c,d4                          ; 00552
         move.w  #$7f,d0                         ; 00554
         move.w  #$8000,d3                       ; 00558
-        bsr.w   sub_037_00604                   ; 0055C
+        bsr.w   BlitBox                         ; 0055C
 l_037_00560:
         tst.b   (dat_071_00210).l               ; 00560
         ble.b   l_037_005B0                     ; 00566
@@ -442,7 +490,7 @@ l_037_005A0:
         moveq   #$c,d4                          ; 005A0
         move.w  #$fff,d0                        ; 005A2
         move.w  #$fc00,d3                       ; 005A6
-        bsr.w   sub_037_00604                   ; 005AA
+        bsr.w   BlitBox                         ; 005AA
 l_037_005AE:
         rts                                     ; 005AE
 l_037_005B0:
@@ -467,7 +515,12 @@ l_037_005FA:
         moveq   #$c,d4                          ; 005FA
         move.w  #$7f,d0                         ; 005FC
         move.w  #$ffff,d3                       ; 00600
-sub_037_00604:
+
+;-------------------------------------------------------------------------------
+; BlitBox - Fills or clears a box in one plane by blitter (the plane d4 of DrawPlanes, the
+; edges' masks in d0 / d3).
+;-------------------------------------------------------------------------------
+BlitBox:
         movea.l (DrawPlanes).l,a2               ; 00604
         move.l  (a2,d4.w),d4                    ; 0060A
         tst.w   d5                              ; 0060E
@@ -522,7 +575,7 @@ l_037_006B0:
         moveq   #$c,d4                          ; 006B0
         move.w  #$3f,d0                         ; 006B2
         move.w  #$fffe,d3                       ; 006B6
-        bsr.w   sub_037_00604                   ; 006BA
+        bsr.w   BlitBox                         ; 006BA
 l_037_006BE:
         tst.b   (dat_071_00215).l               ; 006BE
         ble.b   l_037_00672                     ; 006C4
@@ -600,7 +653,12 @@ l_037_006BE:
         jsr     (DrawLine199).l                 ; 007E2
 l_037_007E8:
         rts                                     ; 007E8
-sub_037_007EA:
+
+;-------------------------------------------------------------------------------
+; BlitPanelPicture - Blits a piece of a picture onto the panel with its mask (ClipPanelBlit for
+; the view's shift and the shaking), plane by plane (BlitMaskWaitGo).
+;-------------------------------------------------------------------------------
+BlitPanelPicture:
         movea.l #$0,a0                          ; 007EA
         movea.l (DrawPlanes).l,a2               ; 007F0
         add.l   (PanelShakeOffset).l,d1         ; 007F6
@@ -647,17 +705,26 @@ l_037_00836:
         add.w   a5,d5                           ; 00870
         move.w  d5,BLTCMOD(a0)                  ; 00872
         move.w  d5,BLTDMOD(a0)                  ; 00876
-        bsr.w   sub_037_00896                   ; 0087A
-        bsr.w   sub_037_00886                   ; 0087E
-        bsr.w   sub_037_00886                   ; 00882
-sub_037_00886:
+        bsr.w   BlitMaskGo                      ; 0087A
+        bsr.w   BlitMaskWaitGo                  ; 0087E
+        bsr.w   BlitMaskWaitGo                  ; 00882
+
+;-------------------------------------------------------------------------------
+; BlitMaskWaitGo - Next plane of a masked blit (A the mask, B the picture plane (a1)+ + d7, C
+; and D the screen): waits, then BlitMaskGo.
+;-------------------------------------------------------------------------------
+BlitMaskWaitGo:
         move.l  (a2)+,d4                        ; 00886
         add.l   d1,d4                           ; 00888
         movea.l (a1)+,a3                        ; 0088A
         move.l  (a3),d3                         ; 0088C
         add.l   d7,d3                           ; 0088E
         jsr     (_WaitBlit).l                   ; 00890
-sub_037_00896:
+
+;-------------------------------------------------------------------------------
+; BlitMaskGo - Starts a masked blit: BLTCON0 d2, A d0, B d3, C = D = d4, BLTSIZE d6.
+;-------------------------------------------------------------------------------
+BlitMaskGo:
         move.w  d2,$40(a0)                      ; 00896
         move.l  d0,$50(a0)                      ; 0089A
         move.l  d3,$4c(a0)                      ; 0089E
@@ -671,12 +738,17 @@ l_037_008B0:
 	dc.b	$4E,$75
 l_037_008B6:
         rts                                     ; 008B6
-sub_037_008B8:
-        bsr.w   sub_037_009EA                   ; 008B8
-        move.w  (dat_071_00294).l,d0            ; 008BC
+
+;-------------------------------------------------------------------------------
+; DrawCompass - The panel's compass strip: scrolled to the heading (CompassPosition), redrawn
+; when it moves or the panel is redrawn in full.
+;-------------------------------------------------------------------------------
+DrawCompass:
+        bsr.w   CompassPosition                 ; 008B8
+        move.w  (CompassPos).l,d0               ; 008BC
         tst.b   (PanelRedraw).l                 ; 008C2
         bgt.b   l_037_008F2                     ; 008C8
-        move.w  (dat_071_00372).l,d2            ; 008CA
+        move.w  (CompassShown).l,d2             ; 008CA
         blt.b   l_037_008E2                     ; 008D0
         cmp.w   d2,d0                           ; 008D2
         beq.b   l_037_008B6                     ; 008D4
@@ -684,13 +756,13 @@ sub_037_008B8:
         bne.b   l_037_008B6                     ; 008DE
         bra.b   l_037_008F2                     ; 008E0
 l_037_008E2:
-        andi.w  #$7fff,(dat_071_00372).l        ; 008E2
+        andi.w  #$7fff,(CompassShown).l         ; 008E2
         andi.w  #$7fff,d2                       ; 008EA
         move.w  d2,d0                           ; 008EE
         bra.b   l_037_00900                     ; 008F0
 l_037_008F2:
-        move.w  d0,(dat_071_00372).l            ; 008F2
-        ori.w   #$8000,(dat_071_00372).l        ; 008F8
+        move.w  d0,(CompassShown).l             ; 008F2
+        ori.w   #$8000,(CompassShown).l         ; 008F8
 l_037_00900:
         lea.l   (CUSTOM).l,a0                    ; 00900
         movea.l (DrawPlanes).l,a2               ; 00906
@@ -758,7 +830,12 @@ l_037_00956:
         jsr     (DrawLine199).l                 ; 009E2
 l_037_009E8:
         rts                                     ; 009E8
-sub_037_009EA:
+
+;-------------------------------------------------------------------------------
+; CompassPosition - From the viewed object's heading (+$68): the heading in tens
+; (dat_071_00370) and the compass strip's position (dat_071_00294, 0-$5F, wrapping).
+;-------------------------------------------------------------------------------
+CompassPosition:
         lea.l   (ObjectTable).l,a0              ; 009EA
         move.w  (ViewObject).l,d1               ; 009F0
         move.w  $68(a0,d1.w),d0                 ; 009F6
@@ -773,7 +850,7 @@ sub_037_009EA:
         bge.b   l_037_00A1A                     ; 00A14
         addi.w  #$60,d0                         ; 00A16
 l_037_00A1A:
-        move.w  d0,(dat_071_00294).l            ; 00A1A
+        move.w  d0,(CompassPos).l               ; 00A1A
         rts                                     ; 00A20
 
 ;-------------------------------------------------------------------------------

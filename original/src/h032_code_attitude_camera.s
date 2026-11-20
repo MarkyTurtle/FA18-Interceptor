@@ -182,7 +182,7 @@ l_032_001F4:
         andi.b  #$f0,d0                         ; 001F8
         cmpi.b  #$10,d0                         ; 001FC
         bne.b   l_032_00232                     ; 00200
-        move.w  (dat_071_0029C).l,d0            ; 00202
+        move.w  (StatusBits).l,d0               ; 00202
         andi.w  #$40,d0                         ; 00208
         beq.b   l_032_00218                     ; 0020C
         move.l  a1,-(a7)                        ; 0020E
@@ -607,8 +607,8 @@ l_032_0065E:
 l_032_00664:
         tst.b   (WorldFrozen).l                 ; 00664
         bne.b   l_032_006A8                     ; 0066A
-        move.w  (dat_071_00464).l,d0            ; 0066C
-        move.w  (dat_071_00466).l,d1            ; 00672
+        move.w  (OutsideCamPitch).l,d0          ; 0066C
+        move.w  (OutsideCamHeading).l,d1        ; 00672
         ext.l   d0                              ; 00678
         ext.l   d1                              ; 0067A
         tst.b   (NewView).l                     ; 0067C
@@ -618,16 +618,16 @@ l_032_00686:
         movem.l d0-d5,-(a7)                     ; 00686
         jsr     (VectorToAngles).l              ; 0068A
         adda.w  #$18,a7                         ; 00690
-        move.w  (dat_071_00490).l,(dat_071_00464).l ; 00694
-        move.w  (dat_071_00492).l,(dat_071_00466).l ; 0069E
+        move.w  (dat_071_00490).l,(OutsideCamPitch).l ; 00694
+        move.w  (dat_071_00492).l,(OutsideCamHeading).l ; 0069E
 l_032_006A8:
-        move.w  (dat_071_00464).l,d0            ; 006A8
-        move.w  (dat_071_00466).l,d2            ; 006AE
-        lea.l   (dat_071_005A8).l,a1            ; 006B4
+        move.w  (OutsideCamPitch).l,d0          ; 006A8
+        move.w  (OutsideCamHeading).l,d2        ; 006AE
+        lea.l   (ViewMatrix).l,a1               ; 006B4
         bsr.w   sub_032_00F86                   ; 006BA
-        lea.l   (dat_071_005A8).l,a1            ; 006BE
+        lea.l   (ViewMatrix).l,a1               ; 006BE
         bsr.w   sub_032_011A4                   ; 006C4
-        move.w  (dat_071_00466).l,d4            ; 006C8
+        move.w  (OutsideCamHeading).l,d4        ; 006C8
         lea.l   (dat_071_005CC).l,a1            ; 006CE
         bsr.w   sub_032_00F3E                   ; 006D4
         movem.w (Player_66).l,d0-d2             ; 006D8
@@ -656,7 +656,7 @@ sub_032_00710:
         tst.b   (OutsideView).l                 ; 00736
         bne.b   l_032_00752                     ; 0073C
         movem.w $66(a0),d0/d2/d4                ; 0073E
-        lea.l   (dat_071_005BA).l,a1            ; 00744
+        lea.l   (PanelViewMatrix).l,a1          ; 00744
         move.l  a0,-(a7)                        ; 0074A
         bsr.w   sub_032_00FD6                   ; 0074C
         movea.l (a7)+,a0                        ; 00750
@@ -780,9 +780,9 @@ l_032_00892:
         move.w  (dat_071_0045A).l,d0            ; 00892
         move.w  (dat_071_0045E).l,d2            ; 00898
         move.w  (dat_071_00462).l,d4            ; 0089E
-        lea.l   (dat_071_005A8).l,a1            ; 008A4
+        lea.l   (ViewMatrix).l,a1               ; 008A4
         bsr.w   sub_032_00FD6                   ; 008AA
-        lea.l   (dat_071_005A8).l,a1            ; 008AE
+        lea.l   (ViewMatrix).l,a1               ; 008AE
         bsr.w   sub_032_011A4                   ; 008B4
         rts                                     ; 008B8
 dat_032_008BA:

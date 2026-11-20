@@ -154,7 +154,7 @@ l_025_001CC:
         movem.w (a2)+,d3-d4                     ; 001CC
         add.w   a4,d3                           ; 001D0
         add.w   a5,d4                           ; 001D2
-        lea.l   (dat_071_005A8).l,a0            ; 001D4
+        lea.l   (ViewMatrix).l,a0               ; 001D4
         move.w  (a0)+,d0                        ; 001DA
         addq.w  #$2,a0                          ; 001DC
         move.w  (a0)+,d2                        ; 001DE
@@ -237,7 +237,7 @@ l_025_0028C:
 l_025_00292:
         move.w  a4,d3                           ; 00292
         move.w  a5,d4                           ; 00294
-        lea.l   (dat_071_005A8).l,a0            ; 00296
+        lea.l   (ViewMatrix).l,a0               ; 00296
         move.w  (a0)+,d0                        ; 0029C
         addq.w  #$2,a0                          ; 0029E
         move.w  (a0)+,d2                        ; 002A0

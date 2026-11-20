@@ -30,7 +30,7 @@ PutDifficulty:
 sub_004_0002C:
         lea.l   (FileSize).l,a0                 ; 0002C
         move.w  #$fffc,$2a(a0)                  ; 00032
-        clr.b   (dat_071_00274).l               ; 00038
+        clr.b   (PaletteLoadCount).l            ; 00038
         clr.b   (dat_071_001A5).l               ; 0003E
         move.b  #$f,(FadeLevel).l               ; 00044
         move.b  #$f,(FadeTarget).l              ; 0004C
@@ -89,8 +89,8 @@ l_004_000E4:
         clr.l   (dat_071_0061A).l               ; 00130
         clr.l   (dat_071_0061E).l               ; 00136
         clr.l   (dat_071_00622).l               ; 0013C
-        move.w  #$1c20,(dat_071_00464).l        ; 00142
-        move.w  #$0,(dat_071_00466).l           ; 0014A
+        move.w  #$1c20,(OutsideCamPitch).l      ; 00142
+        move.w  #$0,(OutsideCamHeading).l       ; 0014A
         move.w  #$a7,(ClipY).l                  ; 00152
         move.w  #$32,(ViewShift).l              ; 0015A
         move.w  #$320,(ViewX).l                 ; 00162
@@ -104,7 +104,7 @@ l_004_000E4:
         move.w  #$a8,(dat_071_0040E).l          ; 00198
         move.w  #$fc,(dat_071_00410).l          ; 001A0
         move.w  #$80,(RadarScale).l             ; 001A8
-        move.b  #$80,(dat_071_001AD).l          ; 001B0
+        move.b  #$80,(GroundDetail).l           ; 001B0
         lea.l   (dat_073_00058).l,a0            ; 001B8
         moveq   #$15,d1                         ; 001BE
         clr.w   d0                              ; 001C0
@@ -132,7 +132,7 @@ l_004_001EC:
         jsr     (UpdateScenery).l               ; 00202
         rts                                     ; 00208
 sub_004_0020A:
-        lea.l   (dat_071_00160).l,a0            ; 0020A
+        lea.l   (DemoActive).l,a0               ; 0020A
         move.l  #ConfigChanged,d0               ; 00210
         sub.l   a0,d0                           ; 00216
         subq.w  #$1,d0                          ; 00218
@@ -150,7 +150,7 @@ l_004_00232:
         rts                                     ; 00238
 sub_004_0023A:
         lea.l   (FlightPhysics).l,a0            ; 0023A
-        move.l  #dat_071_00160,d0               ; 00240
+        move.l  #DemoActive,d0                  ; 00240
         sub.l   a0,d0                           ; 00246
         subq.w  #$1,d0                          ; 00248
 l_004_0024A:
@@ -194,7 +194,7 @@ sub_004_002DA:
         moveq   #$0,d4                          ; 002DC
         move.w  #$e980,d5                       ; 002DE
         bsr.w   sub_004_0032E                   ; 002E2
-        movem.l d0-d2,(dat_071_00626).l         ; 002E6
+        movem.l d0-d2,(FlyByPoint).l            ; 002E6
         rts                                     ; 002EE
 sub_004_002F0:
         movem.l a1-a2,-(a7)                     ; 002F0
@@ -272,7 +272,7 @@ sub_004_003E8:
         move.b  d0,(Player_2B).l                ; 00400
         asl.w   #$3,d0                          ; 00406
         move.w  d0,(MouseY).l                   ; 00408
-        move.w  d0,(dat_071_0014C).l            ; 0040E
+        move.w  d0,(ThrottleMouseY).l           ; 0040E
         move.b  #$fe,(EngineSoundRequest).l     ; 00414
         lea.l   (ModelTable).l,a0               ; 0041C
         move.b  (PlayerAircraftType).l,d1       ; 00422
@@ -501,7 +501,7 @@ sub_004_00708:
         clr.l   (WarningFlags).l                ; 00746
         clr.l   (SoundRequests).l               ; 0074C
         clr.w   (CurrentWarning).l              ; 00752
-        clr.w   (dat_071_004AE).l               ; 00758
+        clr.w   (WarningPlaying).l              ; 00758
         move.w  #$ffff,(dat_071_004B4).l        ; 0075E
         rts                                     ; 00766
 sub_004_00768:

@@ -762,41 +762,41 @@ l_039_009EC:
 TargetReadout:
         move.w  (LockedTarget).l,d2             ; 009EE
         blt.w   l_039_00C10                     ; 009F4
-        move.w  (dat_071_0029C).l,d3            ; 009F8
+        move.w  (StatusBits).l,d3               ; 009F8
         andi.w  #$81,d3                         ; 009FE
         bne.w   l_039_00C10                     ; 00A02
         subq.b  #$1,(dat_071_00257).l           ; 00A06
         bge.w   l_039_00C10                     ; 00A0C
         move.b  #$ff,(dat_071_00257).l          ; 00A10
         lea.l   (ObjectTable).l,a1              ; 00A18
-        tst.b   (dat_071_0020C).l               ; 00A1E
+        tst.b   (TargetReadoutRedraw).l         ; 00A1E
         bgt.b   l_039_00A6A                     ; 00A24
         tst.b   (dat_071_00256).l               ; 00A26
         blt.b   l_039_00A40                     ; 00A2C
         btst    #$0,(dat_071_00256).l           ; 00A2E
         beq.b   l_039_009EC                     ; 00A36
-        move.w  (dat_071_00394).l,d0            ; 00A38
+        move.w  (TargetReadoutMode).l,d0        ; 00A38
         bra.b   l_039_00A58                     ; 00A3E
 l_039_00A40:
         move.b  #$1,(dat_071_00256).l           ; 00A40
-        move.w  (dat_071_00394).l,d0            ; 00A48
+        move.w  (TargetReadoutMode).l,d0        ; 00A48
         addq.w  #$1,d0                          ; 00A4E
         cmpi.w  #$3,d0                          ; 00A50
         ble.b   l_039_00A58                     ; 00A54
         moveq   #$1,d0                          ; 00A56
 l_039_00A58:
         bset    #$f,d0                          ; 00A58
-        move.w  d0,(dat_071_00394).l            ; 00A5C
-        move.b  #$2,(dat_071_0020C).l           ; 00A62
+        move.w  d0,(TargetReadoutMode).l        ; 00A5C
+        move.b  #$2,(TargetReadoutRedraw).l     ; 00A62
 l_039_00A6A:
-        move.w  (dat_071_00394).l,d0            ; 00A6A
+        move.w  (TargetReadoutMode).l,d0        ; 00A6A
         bclr    #$f,d0                          ; 00A70
         bne.b   l_039_00A84                     ; 00A74
-        subq.b  #$1,(dat_071_0020C).l           ; 00A76
+        subq.b  #$1,(TargetReadoutRedraw).l     ; 00A76
         bge.w   l_039_00CA6                     ; 00A7C
         bra.w   l_039_00D78                     ; 00A80
 l_039_00A84:
-        move.w  d0,(dat_071_00394).l            ; 00A84
+        move.w  d0,(TargetReadoutMode).l        ; 00A84
         lea.l   (TargetText).l,a2               ; 00A8A
         lea.l   (TextBlankLine).l,a1            ; 00A90
 l_039_00A96:
@@ -930,12 +930,12 @@ l_039_00BF6:
         bsr.w   PutDigits                       ; 00C08
         bra.w   l_039_00CA6                     ; 00C0C
 l_039_00C10:
-        tst.w   (dat_071_00394).l               ; 00C10
+        tst.w   (TargetReadoutMode).l           ; 00C10
         beq.b   l_039_00C1C                     ; 00C16
         bgt.b   l_039_00C64                     ; 00C18
         bra.b   l_039_00C6E                     ; 00C1A
 l_039_00C1C:
-        move.w  (dat_071_004AE).l,d0            ; 00C1C
+        move.w  (WarningPlaying).l,d0           ; 00C1C
         cmp.w   (dat_071_004B4).l,d0            ; 00C22
         beq.b   l_039_00C96                     ; 00C28
         move.w  d0,(dat_071_004B4).l            ; 00C2A
@@ -955,16 +955,16 @@ l_039_00C1C:
 l_039_00C54:
         move.b  (a1)+,(a2)+                     ; 00C54
         dbra    d1,l_039_00C54                  ; 00C56
-        move.b  #$2,(dat_071_0020C).l           ; 00C5A
+        move.b  #$2,(TargetReadoutRedraw).l     ; 00C5A
         bra.b   l_039_00CA6                     ; 00C62
 l_039_00C64:
-        move.w  #$ffff,(dat_071_00394).l        ; 00C64
+        move.w  #$ffff,(TargetReadoutMode).l    ; 00C64
         bra.b   l_039_00C7E                     ; 00C6C
 l_039_00C6E:
-        clr.w   (dat_071_00394).l               ; 00C6E
+        clr.w   (TargetReadoutMode).l           ; 00C6E
         bra.b   l_039_00C7E                     ; 00C74
 	dc.b	$13,$FC,$00,$02
-        dc.l    dat_071_0020C                   ; 00C7A
+        dc.l    TargetReadoutRedraw             ; 00C7A
 l_039_00C7E:
         lea.l   (Messages).l,a1                 ; 00C7E
         addq.w  #$1,a1                          ; 00C84
@@ -975,9 +975,9 @@ l_039_00C8E:
         dbra    d1,l_039_00C8E                  ; 00C90
         bra.b   l_039_00CA6                     ; 00C94
 l_039_00C96:
-        tst.b   (dat_071_0020C).l               ; 00C96
+        tst.b   (TargetReadoutRedraw).l         ; 00C96
         ble.w   l_039_00D78                     ; 00C9C
-        subq.b  #$1,(dat_071_0020C).l           ; 00CA0
+        subq.b  #$1,(TargetReadoutRedraw).l     ; 00CA0
 l_039_00CA6:
         lea.l   (TargetText).l,a2               ; 00CA6
         lea.l   dat_039_00098(pc),a1            ; 00CAC

@@ -34,7 +34,7 @@ l_012_0001E:
         move.l  #$fffff,(FillPattern).l         ; 00022
         move.w  (dat_071_00510).l,d2            ; 0002C
         move.w  d2,-$96(a6)                     ; 00032
-        tst.b   (dat_071_001AD).l               ; 00036
+        tst.b   (GroundDetail).l                ; 00036
         bne.b   l_012_00050                     ; 0003C
         move.w  (RadarScale).l,d3               ; 0003E
         ext.l   d3                              ; 00044
@@ -64,13 +64,13 @@ l_012_0007A:
         cmpi.w  #$ffff,d0                       ; 0007A
         beq.b   l_012_00072                     ; 0007E
         movea.l (a2)+,a1                        ; 00080
-        move.l  a1,(dat_071_00402).l            ; 00082
+        move.l  a1,(CurrentShape).l             ; 00082
         move.l  a2,(ShapeNow).l                 ; 00088
         move.w  (ViewOffsetX8).l,d0             ; 0008E
         move.l  (ViewOffsetY).l,d1              ; 00094
         asr.l   #$8,d1                          ; 0009A
         move.w  (ViewOffsetZ8).l,d2             ; 0009C
-        move.b  (dat_071_0022B).l,d7            ; 000A2
+        move.b  (ObjectDrawFlags).l,d7          ; 000A2
         andi.b  #$f,d7                          ; 000A8
         ext.w   d7                              ; 000AC
         move.w  d7,-$8(a6)                      ; 000AE
@@ -82,10 +82,10 @@ l_012_000BA:
         movem.w d0-d2,-$86(a6)                  ; 000BA
         clr.w   (PolygonBuffer).l               ; 000C0
         lea.l   (VertexBuffer).l,a3             ; 000C6
-        lea.l   (dat_071_005A8).l,a2            ; 000CC
+        lea.l   (ViewMatrix).l,a2               ; 000CC
         lea.l   (a2),a4                         ; 000D2
         move.w  (ObjectViewPos).l,d0            ; 000D4
-        move.w  (dat_071_004FE).l,d1            ; 000DA
+        move.w  (ObjectViewPosZ).l,d1           ; 000DA
         add.w   -$86(a6),d0                     ; 000E0
         add.w   -$82(a6),d1                     ; 000E4
         lea.l   -$a(a6),a0                      ; 000E8
@@ -213,15 +213,15 @@ sub_012_0020E:
         add.w   d7,d2                           ; 00218
         adda.w  d2,a3                           ; 0021A
         move.w  d0,-$a(a6)                      ; 0021C
-        movea.l (dat_071_00402).l,a1            ; 00220
+        movea.l (CurrentShape).l,a1             ; 00220
         addq.w  #$6,a1                          ; 00226
         adda.w  d7,a1                           ; 00228
-        lea.l   (dat_071_005A8).l,a0            ; 0022A
+        lea.l   (ViewMatrix).l,a0               ; 0022A
         lea.l   (a0),a4                         ; 00230
         move.w  -$86(a6),d0                     ; 00232
         move.w  -$82(a6),d1                     ; 00236
         add.w   (ObjectViewPos).l,d0            ; 0023A
-        add.w   (dat_071_004FE).l,d1            ; 00240
+        add.w   (ObjectViewPosZ).l,d1           ; 00240
         movem.w -$78(a6),d3/d6                  ; 00246
 l_012_0024C:
         move.w  (a1)+,d2                        ; 0024C
@@ -462,7 +462,7 @@ l_012_00456:
         cmp.l   (a0)+,d4                        ; 00456
         bgt.b   l_012_0048C                     ; 00458
 l_012_0045A:
-        move.b  (dat_071_00220).l,d6            ; 0045A
+        move.b  (ViewPlace).l,d6                ; 0045A
 l_012_00460:
         move.b  (a0)+,d5                        ; 00460
         blt.b   l_012_0046E                     ; 00462

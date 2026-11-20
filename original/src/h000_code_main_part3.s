@@ -359,7 +359,7 @@ l_000_079B6:
         add.l   d3,d1                           ; 07A02
         asr.l   #$4,d1                          ; 07A04
         move.l  d1,(dat_071_0042A).l            ; 07A06
-        clr.w   (dat_071_00388).l               ; 07A0C
+        clr.w   (BulletHitObject).l             ; 07A0C
         move.w  $a(a6),d0                       ; 07A12
         ext.l   d0                              ; 07A16
         move.l  d0,-(a7)                        ; 07A18
@@ -371,7 +371,7 @@ l_000_079B6:
 sub_000_07A28:
         link.w  a6,#$0                          ; 07A28
         move.w  $e(a6),d0                       ; 07A2C
-        move.w  d0,(dat_071_00388).l            ; 07A30
+        move.w  d0,(BulletHitObject).l          ; 07A30
         moveq   #$9,d1                          ; 07A36
         ext.l   d0                              ; 07A38
         asl.l   d1,d0                           ; 07A3A
@@ -442,7 +442,7 @@ l_000_07B36:
 l_000_07B3C:
         move.w  #$fff0,-$4(a6)                  ; 07B3C
 l_000_07B42:
-        move.w  (dat_071_00388).l,d0            ; 07B42
+        move.w  (BulletHitObject).l,d0          ; 07B42
         moveq   #$9,d1                          ; 07B48
         ext.l   d0                              ; 07B4A
         asl.l   d1,d0                           ; 07B4C
@@ -855,7 +855,7 @@ l_000_08110:
         move.l  d1,-(a7)                        ; 0818E
         jsr     (_AllocMem).l                   ; 08190
         addq.l  #$8,a7                          ; 08196
-        move.l  d0,(dat_071_00030).l            ; 08198
+        move.l  d0,(LivePalette).l              ; 08198
         movea.l (GameColorMap).l,a0             ; 0819E
         move.l  $4(a0),-$4(a6)                  ; 081A4
         clr.l   -$8(a6)                         ; 081AA
@@ -958,7 +958,7 @@ l_000_082EC:
         addq.l  #$4,a7                          ; 0832C
         moveq   #$20,d0                         ; 0832E
         move.l  d0,-(a7)                        ; 08330
-        move.l  (dat_071_00030).l,-(a7)         ; 08332
+        move.l  (LivePalette).l,-(a7)           ; 08332
         pea.l   (GameViewPort).l                ; 08338
         jsr     (_LoadRGB4).l                   ; 0833E
         lea.l   $c(a7),a7                       ; 08344
@@ -973,11 +973,11 @@ l_000_082EC:
         move.b  d0,(dat_071_00269).l            ; 0836C
         bra.w   l_000_082EC                     ; 08372
 l_000_08376:
-        tst.b   (dat_071_00274).l               ; 08376
+        tst.b   (PaletteLoadCount).l            ; 08376
         beq.b   l_000_083C0                     ; 0837C
-        move.b  (dat_071_00274).l,d0            ; 0837E
+        move.b  (PaletteLoadCount).l,d0         ; 0837E
         subq.b  #$1,d0                          ; 08384
-        move.b  d0,(dat_071_00274).l            ; 08386
+        move.b  d0,(PaletteLoadCount).l         ; 08386
         move.w  (dat_071_002A2).l,d0            ; 0838C
         btst    #$8,d0                          ; 08392
         bne.b   l_000_083C0                     ; 08396
@@ -986,7 +986,7 @@ l_000_08376:
         addq.l  #$4,a7                          ; 083A4
         moveq   #$20,d0                         ; 083A6
         move.l  d0,-(a7)                        ; 083A8
-        move.l  (dat_071_00030).l,-(a7)         ; 083AA
+        move.l  (LivePalette).l,-(a7)           ; 083AA
         pea.l   (GameViewPort).l                ; 083B0
         jsr     (_LoadRGB4).l                   ; 083B6
         lea.l   $c(a7),a7                       ; 083BC
@@ -2399,7 +2399,7 @@ l_000_09480:
         move.b  (FadeTarget).l,d1               ; 09534
         cmp.b   d1,d0                           ; 0953A
         bne.b   l_000_09596                     ; 0953C
-        move.l  (dat_071_00030).l,-$14(a6)      ; 0953E
+        move.l  (LivePalette).l,-$14(a6)        ; 0953E
         clr.w   -$2(a6)                         ; 09546
 l_000_0954A:
         cmpi.w  #$10,-$2(a6)                    ; 0954A
@@ -2412,14 +2412,14 @@ l_000_0954A:
         addq.w  #$1,-$2(a6)                     ; 09564
         bra.b   l_000_0954A                     ; 09568
 l_000_0956A:
-        move.b  #$3,(dat_071_00274).l           ; 0956A
+        move.b  #$3,(PaletteLoadCount).l        ; 0956A
         bra.b   l_000_09596                     ; 09572
 l_000_09574:
-        tst.b   (dat_071_00274).l               ; 09574
+        tst.b   (PaletteLoadCount).l            ; 09574
         beq.b   l_000_09596                     ; 0957A
         moveq   #$10,d0                         ; 0957C
         move.l  d0,-(a7)                        ; 0957E
-        move.l  (dat_071_00030).l,-(a7)         ; 09580
+        move.l  (LivePalette).l,-(a7)           ; 09580
         pea.l   (GameViewPort).l                ; 09586
         jsr     (_LoadRGB4).l                   ; 0958C
         lea.l   $c(a7),a7                       ; 09592

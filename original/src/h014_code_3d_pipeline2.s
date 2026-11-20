@@ -496,7 +496,7 @@ ShapeRunwaySide:
         lea.l   (dat_072_03C02).l,a0            ; 00544
         move.w  #$3,(a0)+                       ; 0054A
         move.w  (a2)+,(DrawColour).l            ; 0054E
-        movea.l (dat_071_00402).l,a4            ; 00554
+        movea.l (CurrentShape).l,a4             ; 00554
         move.w  (a2)+,d0                        ; 0055A
         move.w  $a(a4,d0.w),d1                  ; 0055C
         move.w  $e(a4,d0.w),d2                  ; 00560
@@ -512,7 +512,7 @@ ShapeRunwaySide:
         asr.w   d7,d3                           ; 00580
         asr.w   d7,d4                           ; 00582
         add.w   (ObjectViewPos).l,d3            ; 00584
-        add.w   (dat_071_004FE).l,d4            ; 0058A
+        add.w   (ObjectViewPosZ).l,d4           ; 0058A
         move.w  (DistanceShift).l,d7            ; 00590
         asl.w   d7,d3                           ; 00596
         asl.w   d7,d4                           ; 00598
@@ -584,7 +584,7 @@ ShapeRunwaySide2:
         sub.w   d4,d7                           ; 0064C
         swap    d6                              ; 0064E
         swap    d7                              ; 00650
-        movea.l (dat_071_00402).l,a4            ; 00652
+        movea.l (CurrentShape).l,a4             ; 00652
         move.w  (a2)+,d0                        ; 00658
         move.w  $a(a4,d0.w),d1                  ; 0065A
         move.w  $e(a4,d0.w),d2                  ; 0065E
@@ -600,7 +600,7 @@ ShapeRunwaySide2:
         asr.w   d7,d3                           ; 0067E
         asr.w   d7,d4                           ; 00680
         add.w   (ObjectViewPos).l,d3            ; 00682
-        add.w   (dat_071_004FE).l,d4            ; 00688
+        add.w   (ObjectViewPosZ).l,d4           ; 00688
         move.w  (DistanceShift).l,d7            ; 0068E
         asl.w   d7,d3                           ; 00694
         asl.w   d7,d4                           ; 00696

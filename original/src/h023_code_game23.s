@@ -113,7 +113,7 @@ BulletHitTest:
         move.w  (dat_071_00B50).l,-$12(a6)      ; 000FC
         movem.w (dat_071_00B42).l,d0-d2         ; 00104
         movem.w d0-d2,-$10(a6)                  ; 0010C
-        move.w  #$0,(dat_071_00388).l           ; 00112
+        move.w  #$0,(BulletHitObject).l         ; 00112
         lea.l   (ObjectTable).l,a0              ; 0011A
         move.w  $c(a0),-$1a(a6)                 ; 00120
         move.l  $10(a0),-$16(a6)                ; 00126
@@ -154,7 +154,7 @@ l_023_0014A:
         move.w  (a0,d0.w),d1                    ; 001B0
         andi.w  #$40,d1                         ; 001B4
         beq.w   l_023_002E8                     ; 001B8
-        move.w  d2,(dat_071_00388).l            ; 001BC
+        move.w  d2,(BulletHitObject).l          ; 001BC
         move.w  $c(a0,d0.w),d2                  ; 001C2
         move.l  $10(a0,d0.w),d3                 ; 001C6
         move.w  $e(a0,d0.w),d4                  ; 001CA
@@ -464,7 +464,7 @@ l_023_004DA:
         add.l   d2,$8(a3)                       ; 004E8
         move.b  -$2(a6),d0                      ; 004EC
         ext.w   d0                              ; 004F0
-        move.w  d0,(dat_071_00388).l            ; 004F2
+        move.w  d0,(BulletHitObject).l          ; 004F2
         move.l  d5,-(a7)                        ; 004F8
         moveq   #$0,d7                          ; 004FA
         move.b  -$4(a6),d0                      ; 004FC
@@ -490,7 +490,7 @@ l_023_00530:
         bne.w   l_023_00480                     ; 00538
         movea.l (ConfigBuffer).l,a1             ; 0053C
         addq.w  #$1,$3c(a1)                     ; 00542
-        move.w  (dat_071_00388).l,d0            ; 00546
+        move.w  (BulletHitObject).l,d0          ; 00546
         asl.w   #$8,d0                          ; 0054C
         add.w   d0,d0                           ; 0054E
         move.w  d0,d7                           ; 00550
@@ -646,7 +646,7 @@ sub_023_006D8:
         movea.l d3,a1                           ; 006EE
         move.w  d4,-$42(a6)                     ; 006F0
         lea.l   (ObjectTable).l,a3              ; 006F4
-        move.w  (dat_071_00388).l,d0            ; 006FA
+        move.w  (BulletHitObject).l,d0          ; 006FA
         asl.w   #$8,d0                          ; 00700
         add.w   d0,d0                           ; 00702
         adda.w  d0,a3                           ; 00704
@@ -718,7 +718,7 @@ sub_023_007A2:
         movea.l d3,a1                           ; 007B8
         movea.w d4,a4                           ; 007BA
         lea.l   (ObjectTable).l,a0              ; 007BC
-        move.w  (dat_071_00388).l,d0            ; 007C2
+        move.w  (BulletHitObject).l,d0          ; 007C2
         asl.w   #$8,d0                          ; 007C8
         add.w   d0,d0                           ; 007CA
         adda.w  d0,a0                           ; 007CC

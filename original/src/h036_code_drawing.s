@@ -601,7 +601,7 @@ DrawLine199:
 DrawLine:
         movea.w (ClipY).l,a2                    ; 005EE
 l_036_005F4:
-        move.w  (DrawColour).l,(dat_071_00326).l ; 005F4
+        move.w  (DrawColour).l,(ColourBits).l   ; 005F4
         cmp.w   d1,d3                           ; 005FE
         beq.b   l_036_005E0                     ; 00600
         bls.b   l_036_0062A                     ; 00602
@@ -1050,61 +1050,61 @@ l_036_00AE0:
         btst    #$0,(DrawMask).l                ; 00AE0
         beq.b   l_036_00B06                     ; 00AE8
         moveq   #$c,d0                          ; 00AEA
-        move.w  (dat_071_000BA).l,d4            ; 00AEC
+        move.w  (FillPattern2).l,d4             ; 00AEC
         move.w  (DrawXor).l,d3                  ; 00AF2
         bge.b   l_036_00B00                     ; 00AF8
-        move.w  (dat_071_00326).l,d3            ; 00AFA
+        move.w  (ColourBits).l,d3               ; 00AFA
 l_036_00B00:
         bsr.w   PlaneOpUnderFill                ; 00B00
         bra.b   l_036_00B0C                     ; 00B04
 l_036_00B06:
-        lsr.w   (dat_071_00326).l               ; 00B06
+        lsr.w   (ColourBits).l                  ; 00B06
 l_036_00B0C:
         btst    #$1,(DrawMask).l                ; 00B0C
         beq.b   l_036_00B38                     ; 00B14
         moveq   #$8,d0                          ; 00B16
         move.w  (DrawXor).l,d3                  ; 00B18
         blt.b   l_036_00B2C                     ; 00B1E
-        move.w  (dat_071_000BA).l,d4            ; 00B20
+        move.w  (FillPattern2).l,d4             ; 00B20
         asr.w   #$1,d3                          ; 00B26
         asr.w   #$1,d4                          ; 00B28
         bra.b   l_036_00B32                     ; 00B2A
 l_036_00B2C:
-        move.w  (dat_071_00326).l,d3            ; 00B2C
+        move.w  (ColourBits).l,d3               ; 00B2C
 l_036_00B32:
         bsr.w   PlaneOpUnderFill                ; 00B32
         bra.b   l_036_00B3E                     ; 00B36
 l_036_00B38:
-        lsr.w   (dat_071_00326).l               ; 00B38
+        lsr.w   (ColourBits).l                  ; 00B38
 l_036_00B3E:
         btst    #$2,(DrawMask).l                ; 00B3E
         beq.b   l_036_00B6A                     ; 00B46
         moveq   #$4,d0                          ; 00B48
         move.w  (DrawXor).l,d3                  ; 00B4A
         blt.b   l_036_00B5E                     ; 00B50
-        move.w  (dat_071_000BA).l,d4            ; 00B52
+        move.w  (FillPattern2).l,d4             ; 00B52
         asr.w   #$2,d3                          ; 00B58
         asr.w   #$2,d4                          ; 00B5A
         bra.b   l_036_00B64                     ; 00B5C
 l_036_00B5E:
-        move.w  (dat_071_00326).l,d3            ; 00B5E
+        move.w  (ColourBits).l,d3               ; 00B5E
 l_036_00B64:
         bsr.w   PlaneOpUnderFill                ; 00B64
         bra.b   l_036_00B70                     ; 00B68
 l_036_00B6A:
-        lsr.w   (dat_071_00326).l               ; 00B6A
+        lsr.w   (ColourBits).l                  ; 00B6A
 l_036_00B70:
         btst    #$3,(DrawMask).l                ; 00B70
         beq.b   l_036_00B9A                     ; 00B78
         moveq   #$0,d0                          ; 00B7A
         move.w  (DrawXor).l,d3                  ; 00B7C
         blt.b   l_036_00B90                     ; 00B82
-        move.w  (dat_071_000BA).l,d4            ; 00B84
+        move.w  (FillPattern2).l,d4             ; 00B84
         asr.w   #$3,d3                          ; 00B8A
         asr.w   #$3,d4                          ; 00B8C
         bra.b   l_036_00B96                     ; 00B8E
 l_036_00B90:
-        move.w  (dat_071_00326).l,d3            ; 00B90
+        move.w  (ColourBits).l,d3               ; 00B90
 l_036_00B96:
         bsr.w   PlaneOpUnderFill                ; 00B96
 l_036_00B9A:
@@ -1391,7 +1391,7 @@ l_036_00E5C:
 l_036_00E62:
         exg.l   d1,d2                           ; 00E62
         movem.w d0-d3,(dat_071_0034C).l         ; 00E64
-        move.w  (DrawColour).l,(dat_071_00326).l ; 00E6C
+        move.w  (DrawColour).l,(ColourBits).l   ; 00E6C
         lea.l   (dat_072_03000).l,a2            ; 00E76
         lea.l   (dat_071_00340).l,a3            ; 00E7C
         move.w  (a2)+,(a3)                      ; 00E82
@@ -1516,7 +1516,7 @@ l_036_00FB6:
 ; clears it under the fill (~A & B), d3 = 1 sets it (A | B), d4 = 1 flips it (A ^ B).
 ;-------------------------------------------------------------------------------
 PlaneOpUnderFill:
-        lsr.w   (dat_071_00326).l               ; 00FD6
+        lsr.w   (ColourBits).l                  ; 00FD6
         movea.l (DrawPlanes).l,a2               ; 00FDC
         move.l  (a2,d0.w),d2                    ; 00FE2
         move.w  (dat_071_0033E).l,d0            ; 00FE6

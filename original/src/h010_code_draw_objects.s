@@ -36,7 +36,7 @@ DrawScenery:
 ; lines are drawn.
 ;-------------------------------------------------------------------------------
 DrawModel:
-        btst    #$6,(dat_071_0022B).l           ; 00014
+        btst    #$6,(ObjectDrawFlags).l         ; 00014
         bne.b   l_010_00000                     ; 0001C
         tst.b   (OutsideView).l                 ; 0001E
         bne.w   DrawSceneryPlain                ; 00024
@@ -101,7 +101,7 @@ DrawSceneryPlain:
 l_010_000E4:
         move.w  (dat_071_00510).l,d1            ; 000E4
         move.w  d1,-$96(a6)                     ; 000EA
-        tst.b   (dat_071_001AD).l               ; 000EE
+        tst.b   (GroundDetail).l                ; 000EE
         bne.b   l_010_00108                     ; 000F4
         move.w  (RadarScale).l,d3               ; 000F6
         ext.l   d3                              ; 000FC
@@ -187,7 +187,7 @@ l_010_001C2:
         andi.w  #$fff,d0                        ; 001C6
         movea.l -$2c(a6),a3                     ; 001CA
         lea.l   (a3,d0.w),a1                    ; 001CE
-        move.l  a1,(dat_071_00402).l            ; 001D2
+        move.l  a1,(CurrentShape).l             ; 001D2
         move.l  a2,(ShapeNow).l                 ; 001D8
         move.w  (a1)+,d0                        ; 001DE
         move.b  d0,-$88(a6)                     ; 001E0
@@ -299,7 +299,7 @@ l_010_00338:
 l_010_00340:
         move.l  -$20(a6),d0                     ; 00340
         move.l  -$18(a6),d2                     ; 00344
-        move.l  (dat_071_00500).l,d3            ; 00348
+        move.l  (ObjectViewPosL).l,d3           ; 00348
         move.l  (dat_071_00508).l,d4            ; 0034E
         add.l   d3,d0                           ; 00354
         add.l   d4,d2                           ; 00356
@@ -386,7 +386,7 @@ l_010_00428:
         add.w   -$14(a6),d2                     ; 00436
         add.w   -$12(a6),d3                     ; 0043A
         add.w   -$10(a6),d4                     ; 0043E
-        lea.l   (dat_071_005A8).l,a2            ; 00442
+        lea.l   (ViewMatrix).l,a2               ; 00442
         move.w  d2,d5                           ; 00448
         move.w  d3,d6                           ; 0044A
         move.w  d4,d7                           ; 0044C
@@ -499,7 +499,7 @@ l_010_00542:
         add.w   -$14(a6),d2                     ; 00550
         add.w   -$12(a6),d3                     ; 00554
         add.w   -$10(a6),d4                     ; 00558
-        lea.l   (dat_071_005A8).l,a2            ; 0055C
+        lea.l   (ViewMatrix).l,a2               ; 0055C
         move.w  d2,d5                           ; 00562
         move.w  d3,d6                           ; 00564
         move.w  d4,d7                           ; 00566
@@ -703,11 +703,11 @@ l_010_0072C:
         move.b  (a1)+,d3                        ; 0072C
         ext.w   d3                              ; 0072E
         addq.w  #$1,a1                          ; 00730
-        lea.l   (dat_071_005A8).l,a2            ; 00732
+        lea.l   (ViewMatrix).l,a2               ; 00732
         lea.l   (a2),a4                         ; 00738
         movem.l -$20(a6),d0-d2                  ; 0073A
         exg.l   d1,d2                           ; 00740
-        add.l   (dat_071_00500).l,d0            ; 00742
+        add.l   (ObjectViewPosL).l,d0           ; 00742
         add.l   (dat_071_00508).l,d1            ; 00748
         add.l   (dat_071_00504).l,d2            ; 0074E
         moveq   #$8,d7                          ; 00754
@@ -838,7 +838,7 @@ l_010_00852:
         add.w   d0,d2                           ; 0086E
         add.w   a5,d3                           ; 00870
         add.w   d1,d4                           ; 00872
-        lea.l   (dat_071_005A8).l,a2            ; 00874
+        lea.l   (ViewMatrix).l,a2               ; 00874
         move.w  d2,d5                           ; 0087A
         move.w  d3,d6                           ; 0087C
         move.w  d4,d7                           ; 0087E
@@ -879,7 +879,7 @@ l_010_008BE:
         add.w   d0,d2                           ; 008CC
         add.w   a5,d3                           ; 008CE
         add.w   d1,d4                           ; 008D0
-        lea.l   (dat_071_005A8).l,a2            ; 008D2
+        lea.l   (ViewMatrix).l,a2               ; 008D2
         move.w  d2,d5                           ; 008D8
         move.w  d3,d6                           ; 008DA
         move.w  d4,d7                           ; 008DC
@@ -974,7 +974,7 @@ l_010_009B4:
         bra.w   l_010_00852                     ; 009BC
 l_010_009C0:
         move.l  #$fffff,(FillPattern).l         ; 009C0
-        clr.l   (dat_071_000BA).l               ; 009CA
+        clr.l   (FillPattern2).l                ; 009CA
         movea.l (ShapeNow).l,a5                 ; 009D0
         clr.w   -$66(a6)                        ; 009D6
         clr.w   -$7c(a6)                        ; 009DA
@@ -1094,9 +1094,9 @@ l_010_00B04:
         unlk    a6                              ; 00B08
         rts                                     ; 00B0A
 l_010_00B0C:
-        btst    #$6,(dat_071_0022B).l           ; 00B0C
+        btst    #$6,(ObjectDrawFlags).l         ; 00B0C
         bne.b   l_010_00B04                     ; 00B14
-        btst    #$4,(dat_071_0022B).l           ; 00B16
+        btst    #$4,(ObjectDrawFlags).l         ; 00B16
         beq.b   l_010_00B04                     ; 00B1E
         lea.l   (ObjectTable).l,a0              ; 00B20
         adda.w  (CurrentObjectOffset).l,a0      ; 00B26
@@ -1220,7 +1220,7 @@ TransformMoreVertices:
         lea.l   (VertexBuffer).l,a3             ; 00C62
         move.l  a1,-(a7)                        ; 00C68
         move.w  d0,-$a(a6)                      ; 00C6A
-        movea.l (dat_071_00402).l,a1            ; 00C6E
+        movea.l (CurrentShape).l,a1             ; 00C6E
         move.b  $7(a1),d6                       ; 00C74
         btst    #$0,d6                          ; 00C78
         beq.w   l_010_00D5A                     ; 00C7C
@@ -1231,7 +1231,7 @@ TransformMoreVertices:
         adda.w  d7,a3                           ; 00C90
         movem.l -$20(a6),d0-d2                  ; 00C92
         exg.l   d1,d2                           ; 00C98
-        movem.l (dat_071_00500).l,d3-d5         ; 00C9A
+        movem.l (ObjectViewPosL).l,d3-d5        ; 00C9A
         add.l   d3,d0                           ; 00CA2
         add.l   d4,d2                           ; 00CA4
         add.l   d5,d1                           ; 00CA6
@@ -1320,11 +1320,11 @@ l_010_00D4A:
 l_010_00D5A:
         adda.w  #$a,a1                          ; 00D5A
         adda.w  d7,a1                           ; 00D5E
-        lea.l   (dat_071_005A8).l,a0            ; 00D60
+        lea.l   (ViewMatrix).l,a0               ; 00D60
         lea.l   (a0),a4                         ; 00D66
         movem.l -$20(a6),d0-d2                  ; 00D68
         exg.l   d1,d2                           ; 00D6E
-        add.l   (dat_071_00500).l,d0            ; 00D70
+        add.l   (ObjectViewPosL).l,d0           ; 00D70
         add.l   (dat_071_00508).l,d1            ; 00D76
         moveq   #$8,d3                          ; 00D7C
         sub.w   -$6(a6),d3                      ; 00D7E
@@ -1447,7 +1447,7 @@ PlaneFacesCamera:
         asr.w   d7,d1                           ; 00E6C
         asr.w   d7,d2                           ; 00E6E
         add.w   (ObjectViewPos).l,d0            ; 00E70
-        add.w   (dat_071_004FE).l,d2            ; 00E76
+        add.w   (ObjectViewPosZ).l,d2           ; 00E76
         sub.w   -$26(a6),d0                     ; 00E7C
         sub.w   -$24(a6),d1                     ; 00E80
         sub.w   -$22(a6),d2                     ; 00E84
@@ -1518,7 +1518,7 @@ l_010_00F02:
 ; which).
 ;-------------------------------------------------------------------------------
 AxisPlaneTest:
-        movea.l (dat_071_00402).l,a0            ; 00F0A
+        movea.l (CurrentShape).l,a0             ; 00F0A
         move.w  d7,d1                           ; 00F10
         andi.w  #$c00,d7                        ; 00F12
         asr.w   #$8,d7                          ; 00F16
@@ -1533,7 +1533,7 @@ AxisPlaneTest:
         asr.w   d5,d2                           ; 00F2E
         move.w  (ViewOffsetZ8).l,d7             ; 00F30
         neg.w   d7                              ; 00F36
-        move.w  (dat_071_004FE).l,d6            ; 00F38
+        move.w  (ObjectViewPosZ).l,d6           ; 00F38
         move.w  (DistanceShift).l,d5            ; 00F3E
         asl.w   d5,d6                           ; 00F44
         add.w   d6,d2                           ; 00F46

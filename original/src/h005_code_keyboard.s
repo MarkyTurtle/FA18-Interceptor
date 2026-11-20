@@ -443,16 +443,16 @@ Key_SpaceUp:
         jsr     (FireReleased).l                ; 00614
         bra.w   l_005_01624                     ; 0061A
 Key_Y:
-        move.w  (dat_071_00394).l,d0            ; 0061E
+        move.w  (TargetReadoutMode).l,d0        ; 0061E
         addq.w  #$1,d0                          ; 00624
         cmpi.w  #$3,d0                          ; 00626
         ble.b   l_005_0062E                     ; 0062A
         moveq   #$1,d0                          ; 0062C
 l_005_0062E:
         bset    #$f,d0                          ; 0062E
-        move.w  d0,(dat_071_00394).l            ; 00632
+        move.w  d0,(TargetReadoutMode).l        ; 00632
         move.b  #$5,(dat_071_00256).l           ; 00638
-        move.b  #$2,(dat_071_0020C).l           ; 00640
+        move.b  #$2,(TargetReadoutRedraw).l     ; 00640
         bra.w   l_005_01624                     ; 00648
 Key_H:
         move.b  (dat_071_00171).l,d4            ; 0064C
@@ -829,7 +829,7 @@ Key_Backslash_Backspace:
 sub_005_009EA:
         clr.b   (dat_071_00240).l               ; 009EA
         clr.w   (MouseY).l                      ; 009F0
-        clr.w   (dat_071_0014C).l               ; 009F6
+        clr.w   (ThrottleMouseY).l              ; 009F6
         rts                                     ; 009FC
 Key_A:
         bset    #$1,(JoyEvents).l               ; 009FE
@@ -956,11 +956,11 @@ l_005_00B9A:
         moveq   #$7,d4                          ; 00B9A
         bra.b   l_005_00BB4                     ; 00B9C
 l_005_00B9E:
-        bset    #$4,(dat_071_0036D).l           ; 00B9E
+        bset    #$4,(ViewKeys2).l               ; 00B9E
         moveq   #$8,d4                          ; 00BA6
         bra.b   l_005_00BB4                     ; 00BA8
 Key_KPDot:
-        bset    #$5,(dat_071_0036D).l           ; 00BAA
+        bset    #$5,(ViewKeys2).l               ; 00BAA
         moveq   #$9,d4                          ; 00BB2
 l_005_00BB4:
         move.b  d4,(ViewChoice).l               ; 00BB4
@@ -1009,7 +1009,7 @@ l_005_00C6C:
         move.b  #$ff,(dat_071_00261).l          ; 00C6C
         bra.w   l_005_01624                     ; 00C74
 l_005_00C78:
-        bset    #$7,(dat_071_0036D).l           ; 00C78
+        bset    #$7,(ViewKeys2).l               ; 00C78
         move.b  (OutsideView).l,d4              ; 00C80
         beq.w   l_005_01624                     ; 00C86
         tst.b   (CameraSequence).l              ; 00C8A
@@ -1044,14 +1044,14 @@ sub_005_00CEE:
         move.b  #$0,(dat_071_00178).l           ; 00CF0
         bra.w   l_005_00DB4                     ; 00CF8
 Key_KP2:
-        bset    #$0,(dat_071_0036D).l           ; 00CFC
+        bset    #$0,(ViewKeys2).l               ; 00CFC
         tst.b   d5                              ; 00D04
         bne.w   sub_005_00B8E                   ; 00D06
         moveq   #$6,d7                          ; 00D0A
         move.b  #$0,(dat_071_00178).l           ; 00D0C
         bra.w   l_005_00DB4                     ; 00D14
 Key_KP4:
-        bset    #$2,(dat_071_0036D).l           ; 00D18
+        bset    #$2,(ViewKeys2).l               ; 00D18
         tst.b   d5                              ; 00D20
         bne.w   l_005_00B96                     ; 00D22
         move.b  #$0,(dat_071_00178).l           ; 00D26
@@ -1074,7 +1074,7 @@ Key_KP6:
         ble.b   l_005_00DC2                     ; 00D6C
         bra.w   sub_005_00CEE                   ; 00D6E
 Key_KP7:
-        bset    #$3,(dat_071_0036D).l           ; 00D72
+        bset    #$3,(ViewKeys2).l               ; 00D72
         tst.b   d5                              ; 00D7A
         bne.w   l_005_00B9A                     ; 00D7C
         moveq   #$c,d7                          ; 00D80
@@ -1082,7 +1082,7 @@ Key_KP7:
         move.b  #$ff,(RedrawFlags).l            ; 00D8A
         bra.b   l_005_00DB4                     ; 00D92
 Key_KP1:
-        bset    #$1,(dat_071_0036D).l           ; 00D94
+        bset    #$1,(ViewKeys2).l               ; 00D94
         tst.b   d5                              ; 00D9C
         bne.w   l_005_00B92                     ; 00D9E
         moveq   #$d,d7                          ; 00DA2
@@ -1090,7 +1090,7 @@ Key_KP1:
         move.b  #$ff,(RedrawFlags).l            ; 00DAC
 l_005_00DB4:
         move.b  d7,(ViewZoom).l                 ; 00DB4
-        move.b  #$3,(dat_071_00206).l           ; 00DBA
+        move.b  #$3,(PanelBlitCount).l          ; 00DBA
 l_005_00DC2:
         jsr     (StartGunSound).l               ; 00DC2
         move.w  #$ffff,(TargetScreenPos).l      ; 00DC8
@@ -1180,20 +1180,20 @@ l_005_00EF8:
 l_005_00F08:
         move.b  #$3,(dat_071_0020D).l           ; 00F08
         move.b  #$ff,(dat_071_00261).l          ; 00F10
-        move.b  (dat_071_001AD).l,d4            ; 00F18
+        move.b  (GroundDetail).l,d4             ; 00F18
         andi.b  #$7f,d4                         ; 00F1E
         bne.b   l_005_00F2C                     ; 00F22
         move.b  #$ff,(RedrawFlags).l            ; 00F24
 l_005_00F2C:
         cmpi.w  #$80,(RadarScale).l             ; 00F2C
         beq.b   l_005_00F42                     ; 00F34
-        bclr    #$7,(dat_071_001AD).l           ; 00F36
+        bclr    #$7,(GroundDetail).l            ; 00F36
         bra.w   l_005_01624                     ; 00F3E
 l_005_00F42:
-        bset    #$7,(dat_071_001AD).l           ; 00F42
+        bset    #$7,(GroundDetail).l            ; 00F42
         bra.w   l_005_01624                     ; 00F4A
 Key_KP2Up_KP4Up_KP6Up:
-        bset    #$6,(dat_071_0036D).l           ; 00F4E
+        bset    #$6,(ViewKeys2).l               ; 00F4E
         move.b  #$5,(dat_071_00261).l           ; 00F56
         bra.w   l_005_01624                     ; 00F5E
 Key_Return:
@@ -1227,7 +1227,7 @@ l_005_00FA2:
 l_005_00FD2:
         andi.b  #$f,(PlayerWeapon).l            ; 00FD2
         or.b    d4,(PlayerWeapon).l             ; 00FDA
-        move.b  #$3,(dat_071_00213).l           ; 00FE0
+        move.b  #$3,(StoresRedraw).l            ; 00FE0
         move.b  #$3,(dat_071_00214).l           ; 00FE8
         clr.b   (ShootCue).l                    ; 00FF0
         bra.w   l_005_01624                     ; 00FF6
@@ -1341,7 +1341,7 @@ l_005_01132:
         move.w  #$3c0,d4                        ; 0114C
 l_005_01150:
         move.w  d4,(MouseY).l                   ; 01150
-        move.w  d4,(dat_071_0014C).l            ; 01156
+        move.w  d4,(ThrottleMouseY).l           ; 01156
         bra.w   l_005_01624                     ; 0115C
 l_005_01160:
         tst.b   (GameMode).l                    ; 01160
@@ -1424,7 +1424,7 @@ l_005_01232:
         moveq   #$7f,d4                         ; 01244
         bra.b   l_005_011D4                     ; 01246
 l_005_01248:
-        btst    #$3,(dat_071_0029C).l           ; 01248
+        btst    #$3,(StatusBits).l              ; 01248
         bne.b   l_005_012B0                     ; 01250
         lea.l   (StartPoints).l,a0              ; 01252
         move.b  d4,d1                           ; 01258
@@ -1483,7 +1483,7 @@ ViewFollow:
         tst.b   (OutsideView).l                 ; 012FE
         beq.b   l_005_0131C                     ; 01304
         move.b  (dat_071_00203).l,(OutsideView).l ; 01306
-        move.b  #$3,(dat_071_00206).l           ; 01310
+        move.b  #$3,(PanelBlitCount).l          ; 01310
         bra.w   l_005_01624                     ; 01318
 l_005_0131C:
         lea.l   (ObjectTable).l,a0              ; 0131C
@@ -1530,8 +1530,8 @@ l_005_0139C:
         clr.l   (dat_071_0061A).l               ; 013EE
         clr.l   (dat_071_0061E).l               ; 013F4
         clr.l   (dat_071_00622).l               ; 013FA
-        move.w  #$1c20,(dat_071_00464).l        ; 01400
-        clr.w   (dat_071_00466).l               ; 01408
+        move.w  #$1c20,(OutsideCamPitch).l      ; 01400
+        clr.w   (OutsideCamHeading).l           ; 01408
         clr.b   (CameraFollows).l               ; 0140E
         move.b  #$1,(NewView).l                 ; 01414
         move.b  #$1,(MapView).l                 ; 0141C
@@ -1562,7 +1562,7 @@ l_005_0147A:
         bne.b   l_005_014A8                     ; 0148A
         move.l  (RecordPointer).l,d3            ; 0148C
         ble.b   l_005_014A8                     ; 01492
-        tst.b   (dat_071_00160).l               ; 01494
+        tst.b   (DemoActive).l                  ; 01494
         beq.b   l_005_014A8                     ; 0149A
         movea.l d3,a0                           ; 0149C
         moveq   #-1,d3                          ; 0149E

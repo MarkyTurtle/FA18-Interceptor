@@ -593,7 +593,7 @@ l_038_00736:
         btst    #$1,$20(a2,d2.w)                ; 0077A
         bne.b   l_038_007B4                     ; 00780
         move.w  d2,(LockedTarget).l             ; 00782
-        move.w  #$1,(dat_071_00394).l           ; 00788
+        move.w  #$1,(TargetReadoutMode).l       ; 00788
         move.b  #$1,(dat_071_00256).l           ; 00790
         move.b  #$ff,(dat_071_00257).l          ; 00798
         asr.w   #$4,d0                          ; 007A0

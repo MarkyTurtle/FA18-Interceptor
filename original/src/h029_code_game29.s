@@ -102,7 +102,7 @@ l_029_00110:
         asr.l   d5,d2                           ; 00120
         asr.l   d5,d3                           ; 00122
         asr.l   d5,d4                           ; 00124
-        lea.l   (dat_071_005A8).l,a1            ; 00126
+        lea.l   (ViewMatrix).l,a1               ; 00126
         move.w  d2,d5                           ; 0012C
         move.w  d3,d6                           ; 0012E
         move.w  d4,d0                           ; 00130

@@ -389,7 +389,7 @@ l_008_003EE:
         neg.w   d1                              ; 0043E
         asl.w   #$2,d1                          ; 00440
         add.w   d0,d1                           ; 00442
-        move.b  d1,(dat_071_00220).l            ; 00444
+        move.b  d1,(ViewPlace).l                ; 00444
         bra.w   l_008_00526                     ; 0044A
 l_008_0044E:
         move.w  d5,-(a7)                        ; 0044E
@@ -440,7 +440,7 @@ l_008_004D8:
 l_008_004DA:
         move.b  d1,(ViewSubCell).l              ; 004DA
 l_008_004E0:
-        cmp.b   (dat_071_00220).l,d3            ; 004E0
+        cmp.b   (ViewPlace).l,d3                ; 004E0
         beq.b   l_008_00506                     ; 004E6
         cmpi.b  #$2,(CameraSequence).l          ; 004E8
         bne.b   l_008_004FE                     ; 004F0
@@ -449,7 +449,7 @@ l_008_004E0:
 l_008_004FE:
         moveq   #-1,d5                          ; 004FE
 l_008_00500:
-        move.b  d3,(dat_071_00220).l            ; 00500
+        move.b  d3,(ViewPlace).l                ; 00500
 l_008_00506:
         cmp.w   (ViewCellX).l,d0                ; 00506
         beq.b   l_008_00516                     ; 0050C
@@ -732,7 +732,7 @@ l_008_008C2:
         move.w  (a0)+,d7                        ; 008CA
         cmpi.w  #$ffff,d7                       ; 008CC
         beq.w   l_008_009F2                     ; 008D0
-        move.b  d7,(dat_071_0022B).l            ; 008D4
+        move.b  d7,(ObjectDrawFlags).l          ; 008D4
         move.b  d7,d0                           ; 008DA
         andi.w  #$f,d0                          ; 008DC
         move.w  d0,(DistanceShift).l            ; 008E0
@@ -749,7 +749,7 @@ l_008_00904:
         asl.l   #$8,d2                          ; 00910
         asl.l   #$8,d3                          ; 00912
         asl.l   #$8,d4                          ; 00914
-        movem.l d2-d4,(dat_071_00500).l         ; 00916
+        movem.l d2-d4,(ObjectViewPosL).l        ; 00916
         cmpi.l  #DrawSceneryNear,(a1)           ; 0091E
         beq.b   l_008_00988                     ; 00924
         move.w  $4(a0),d1                       ; 00926
@@ -822,7 +822,7 @@ l_008_009F2:
 ;-------------------------------------------------------------------------------
 DrawObjects:
         move.b  #$1,(SceneryDetailed).l         ; 009F4
-        move.b  #$4,(dat_071_0022B).l           ; 009FC
+        move.b  #$4,(ObjectDrawFlags).l         ; 009FC
         clr.b   (dat_071_0028D).l               ; 00A04
         clr.w   (dat_071_0048A).l               ; 00A0A
         clr.l   (dat_071_00302).l               ; 00A10
@@ -913,7 +913,7 @@ l_008_00AEA:
         asr.l   d6,d2                           ; 00B18
         asr.l   d6,d3                           ; 00B1A
         asr.l   d6,d4                           ; 00B1C
-        movem.l d2-d4,(dat_071_00500).l         ; 00B1E
+        movem.l d2-d4,(ObjectViewPosL).l        ; 00B1E
         asr.l   #$8,d2                          ; 00B26
         asr.l   #$8,d3                          ; 00B28
         asr.l   #$8,d4                          ; 00B2A
@@ -944,7 +944,7 @@ l_008_00B7A:
         move.w  (a0)+,d7                        ; 00B88
         cmpi.w  #$ffff,d7                       ; 00B8A
         beq.w   l_008_00D0E                     ; 00B8E
-        move.b  d7,(dat_071_0022B).l            ; 00B92
+        move.b  d7,(ObjectDrawFlags).l          ; 00B92
         move.b  d7,d0                           ; 00B98
         andi.w  #$f,d0                          ; 00B9A
         move.w  d0,(DistanceShift).l            ; 00B9E
@@ -977,14 +977,14 @@ l_008_00BFA:
 l_008_00C00:
         bsr.w   sub_008_00DEE                   ; 00C00
 l_008_00C04:
-        movem.l d2-d4,(dat_071_00500).l         ; 00C04
+        movem.l d2-d4,(ObjectViewPosL).l        ; 00C04
         asr.l   #$8,d2                          ; 00C0C
         asr.l   #$8,d3                          ; 00C0E
         asr.l   #$8,d4                          ; 00C10
         movem.w d2-d4,(ObjectViewPos).l         ; 00C12
         bra.b   l_008_00C24                     ; 00C1A
 l_008_00C1C:
-        movem.l d2-d4,(dat_071_00500).l         ; 00C1C
+        movem.l d2-d4,(ObjectViewPosL).l        ; 00C1C
 l_008_00C24:
         move.w  $4(a0),d1                       ; 00C24
         ext.l   d1                              ; 00C28
@@ -1223,7 +1223,7 @@ l_008_00F44:
         move.l  #dat_008_0151A,-$1c(a6)         ; 00F4C
         move.w  (ViewBlockX).l,-$26(a6)         ; 00F54
         move.w  (ViewBlockZ).l,-$28(a6)         ; 00F5C
-        move.b  (dat_071_00220).l,-$2a(a6)      ; 00F64
+        move.b  (ViewPlace).l,-$2a(a6)          ; 00F64
 l_008_00F6C:
         lea.l   (dat_065_00040).l,a1            ; 00F6C
         move.b  -$2a(a6),d0                     ; 00F72
@@ -1266,7 +1266,7 @@ l_008_00FBA:
         move.b  (a0,d1.w),d1                    ; 00FF2
         bra.b   l_008_01054                     ; 00FF6
 l_008_00FF8:
-        move.b  (dat_071_00220).l,d0            ; 00FF8
+        move.b  (ViewPlace).l,d0                ; 00FF8
         ext.w   d0                              ; 00FFE
         move.w  d0,d1                           ; 01000
         lea.l   (dat_065_00070).l,a0            ; 01002
@@ -1426,12 +1426,12 @@ l_008_0117A:
         add.w   d0,d0                           ; 0119C
         add.w   d7,d0                           ; 0119E
         lea.l   (a1,d0.w),a2                    ; 011A0
-        move.l  a2,(dat_071_003FE).l            ; 011A4
-        addi.l  #$5d,(dat_071_003FE).l          ; 011AA
+        move.l  a2,(SceneryListLimit).l         ; 011A4
+        addi.l  #$5d,(SceneryListLimit).l       ; 011AA
 l_008_011B4:
         subq.b  #$1,d5                          ; 011B4
         blt.b   l_008_011FE                     ; 011B6
-        cmpa.l  (dat_071_003FE).l,a2            ; 011B8
+        cmpa.l  (SceneryListLimit).l,a2         ; 011B8
         bge.b   l_008_0120E                     ; 011BE
         move.b  (a5)+,d7                        ; 011C0
         move.b  d7,d0                           ; 011C2
@@ -1595,10 +1595,10 @@ l_008_0132C:
         add.w   d1,d4                           ; 0135E
         swap    d1                              ; 01360
         lea.l   (a1,d4.w),a2                    ; 01362
-        move.l  a2,(dat_071_003FE).l            ; 01366
-        addi.l  #$5d,(dat_071_003FE).l          ; 0136C
+        move.l  a2,(SceneryListLimit).l         ; 01366
+        addi.l  #$5d,(SceneryListLimit).l       ; 0136C
 l_008_01376:
-        cmpa.l  (dat_071_003FE).l,a2            ; 01376
+        cmpa.l  (SceneryListLimit).l,a2         ; 01376
         bge.b   l_008_0130E                     ; 0137C
         move.b  (a2),d4                         ; 0137E
         blt.b   l_008_01396                     ; 01380
@@ -1646,10 +1646,10 @@ l_008_013C0:
         add.w   d1,d4                           ; 013F2
         swap    d1                              ; 013F4
         lea.l   (a1,d4.w),a2                    ; 013F6
-        move.l  a2,(dat_071_003FE).l            ; 013FA
-        addi.l  #$5d,(dat_071_003FE).l          ; 01400
+        move.l  a2,(SceneryListLimit).l         ; 013FA
+        addi.l  #$5d,(SceneryListLimit).l       ; 01400
 l_008_0140A:
-        cmpa.l  (dat_071_003FE).l,a2            ; 0140A
+        cmpa.l  (SceneryListLimit).l,a2         ; 0140A
         bge.b   l_008_01448                     ; 01410
         move.b  (a2),d4                         ; 01412
         blt.b   l_008_0142A                     ; 01414

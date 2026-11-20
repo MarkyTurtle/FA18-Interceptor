@@ -914,7 +914,7 @@ l_017_00C4E:
 l_017_00C5C:
         or.b    d2,d1                           ; 00C5C
         move.b  d1,$5f(a2)                      ; 00C5E
-        move.b  #$3,(dat_071_00213).l           ; 00C62
+        move.b  #$3,(StoresRedraw).l            ; 00C62
         move.b  #$3,(dat_071_00214).l           ; 00C6A
         cmpi.b  #$10,$62(a2)                    ; 00C72
         beq.b   l_017_00C82                     ; 00C78

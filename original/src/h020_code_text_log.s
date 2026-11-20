@@ -618,7 +618,7 @@ l_020_00722:
 SetViewOctant:
         tst.b   (OutsideView).l                 ; 00738
         beq.b   l_020_00748                     ; 0073E
-        move.w  (dat_071_00466).l,d0            ; 00740
+        move.w  (OutsideCamHeading).l,d0        ; 00740
         bra.b   l_020_0074E                     ; 00746
 l_020_00748:
         move.l  (dat_071_0045C).l,d0            ; 00748
@@ -714,11 +714,11 @@ l_020_007FC:
         move.b  (a1),d1                         ; 00810
         cmp.b   (ShakeStep).l,d1                ; 00812
         ble.b   l_020_00874                     ; 00818
-        move.w  (dat_071_0029C).l,d2            ; 0081A
+        move.w  (StatusBits).l,d2               ; 0081A
         andi.w  #$400,d2                        ; 00820
         bne.b   l_020_00834                     ; 00824
         clr.b   (ShakeStep).l                   ; 00826
-        ori.w   #$400,(dat_071_0029C).l         ; 0082C
+        ori.w   #$400,(StatusBits).l            ; 0082C
 l_020_00834:
         addq.w  #$4,d0                          ; 00834
         movea.l (a0,d0.w),a1                    ; 00836
@@ -742,7 +742,7 @@ l_020_00834:
 l_020_00874:
         clr.b   (ShakeKind).l                   ; 00874
         clr.b   (ShakeStep).l                   ; 0087A
-        andi.w  #$fbff,(dat_071_0029C).l        ; 00880
+        andi.w  #$fbff,(StatusBits).l           ; 00880
         clr.l   (PanelShakeOffset).l            ; 00888
         move.w  #$90,(ClipY).l                  ; 0088E
 l_020_00896:
@@ -831,7 +831,7 @@ l_020_00946:
 StartWarning:
         move.w  d1,-(a7)                        ; 00954
         move.w  d0,(CurrentWarning).l           ; 00956
-        ori.w   #$1,(dat_071_0029C).l           ; 0095C
+        ori.w   #$1,(StatusBits).l              ; 0095C
         andi.w  #$ff00,d0                       ; 00964
         move.w  d0,d1                           ; 00968
         andi.w  #$2000,d1                       ; 0096A
@@ -1051,8 +1051,8 @@ sub_020_00B18:
         bne.w   l_020_00BCE                     ; 00B32
         tst.b   (CameraSequence).l              ; 00B36
         bne.w   l_020_00BCE                     ; 00B3C
-        move.w  (dat_071_00464).l,d4            ; 00B40
-        move.w  (dat_071_00466).l,d1            ; 00B46
+        move.w  (OutsideCamPitch).l,d4          ; 00B40
+        move.w  (OutsideCamHeading).l,d1        ; 00B46
         move.b  (PitchInput).l,d2               ; 00B4C
         beq.b   l_020_00BA0                     ; 00B52
         andi.b  #$20,d2                         ; 00B54
@@ -1081,7 +1081,7 @@ l_020_00B8E:
         bge.b   l_020_00B98                     ; 00B92
         addi.w  #$7080,d4                       ; 00B94
 l_020_00B98:
-        move.w  d4,(dat_071_00464).l            ; 00B98
+        move.w  d4,(OutsideCamPitch).l          ; 00B98
         bra.b   l_020_00BCE                     ; 00B9E
 l_020_00BA0:
         move.b  (RollInput).l,d2                ; 00BA0
@@ -1098,7 +1098,7 @@ l_020_00BBE:
         bge.b   l_020_00BC8                     ; 00BC2
         addi.w  #$7080,d1                       ; 00BC4
 l_020_00BC8:
-        move.w  d1,(dat_071_00466).l            ; 00BC8
+        move.w  d1,(OutsideCamHeading).l        ; 00BC8
 l_020_00BCE:
         rts                                     ; 00BCE
 

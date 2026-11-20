@@ -130,7 +130,7 @@ DrawBulletHit:
         move.w  #$3,-$a(a6)                     ; 00154
         move.w  #$f,(FillPattern).l             ; 0015A
         move.w  #$ffff,(DrawXor).l              ; 00162
-        clr.l   (dat_071_000BA).l               ; 0016A
+        clr.l   (FillPattern2).l                ; 0016A
         move.w  #$9,(DrawColour).l              ; 00170
         lea.l   (dat_031_001BE).l,a2            ; 00178
         movea.w -$8(a6),a4                      ; 0017E
@@ -165,7 +165,7 @@ dat_031_001BE:
 ; (dat_071_005A8): the result in d6, d2, d5.
 ;-------------------------------------------------------------------------------
 TurnToView:
-        lea.l   (dat_071_005A8).l,a0            ; 001E2
+        lea.l   (ViewMatrix).l,a0               ; 001E2
         movem.w (a0)+,d0-d2                     ; 001E8
         muls.w  d3,d0                           ; 001EC
         muls.w  d4,d1                           ; 001EE
@@ -264,7 +264,7 @@ l_031_003E0:
 DrawPuff:
         move.w  #$f,(FillPattern).l             ; 003E2
         move.w  #$ffff,(DrawXor).l              ; 003EA
-        clr.l   (dat_071_000BA).l               ; 003F2
+        clr.l   (FillPattern2).l                ; 003F2
         move.l  d1,d5                           ; 003F8
         add.l   (ViewOffsetY8).l,d5             ; 003FA
         bge.b   l_031_00404                     ; 00400
@@ -439,7 +439,7 @@ l_031_005FA:
         asr.w   d7,d3                           ; 00606
         asr.w   d7,d4                           ; 00608
         asr.w   d7,d5                           ; 0060A
-        lea.l   (dat_071_005A8).l,a0            ; 0060C
+        lea.l   (ViewMatrix).l,a0               ; 0060C
         movem.w (a0)+,d0-d2                     ; 00612
         muls.w  d3,d0                           ; 00616
         muls.w  d4,d1                           ; 00618

@@ -225,7 +225,7 @@ l_026_001CA:
 l_026_00274:
         rts                                     ; 00274
 sub_026_00276:
-        tst.b   (dat_071_00160).l               ; 00276
+        tst.b   (DemoActive).l                  ; 00276
         bne.b   l_026_00274                     ; 0027C
         lea.l   (dat_027_00140).l,a3            ; 0027E
         moveq   #$0,d7                          ; 00284
@@ -863,8 +863,8 @@ l_026_00A68:
 l_026_00A70:
         jsr     (sub_004_00316).l               ; 00A70
 l_026_00A76:
-        movem.l d0-d2,(dat_071_00626).l         ; 00A76
-        movem.l (dat_071_00626).l,d5-d7         ; 00A7E
+        movem.l d0-d2,(FlyByPoint).l            ; 00A76
+        movem.l (FlyByPoint).l,d5-d7            ; 00A7E
         movea.l (a7)+,a0                        ; 00A86
         move.b  $4(a0),d0                       ; 00A88
         andi.b  #$c0,d0                         ; 00A8C
@@ -884,7 +884,7 @@ l_026_00AA8:
         movem.l d5-d7,(CameraX).l               ; 00AA8
         bra.w   l_026_00E96                     ; 00AB0
 l_026_00AB4:
-        movem.l (dat_071_00626).l,d5-d7         ; 00AB4
+        movem.l (FlyByPoint).l,d5-d7            ; 00AB4
         movem.l (CameraX).l,d0-d2               ; 00ABC
         sub.l   d0,d5                           ; 00AC4
         move.l  d5,d0                           ; 00AC6
@@ -990,7 +990,7 @@ l_026_00C06:
         move.b  #$3,(CameraSequence).l          ; 00C06
         move.b  #$8,(dat_071_00186).l           ; 00C0E
         jsr     (sub_004_00254).l               ; 00C16
-        movem.l d0-d2,(dat_071_00626).l         ; 00C1C
+        movem.l d0-d2,(FlyByPoint).l            ; 00C1C
         rts                                     ; 00C24
 sub_026_00C26:
         moveq   #$e,d4                          ; 00C26
@@ -1046,7 +1046,7 @@ l_026_00CBE:
         asr.l   #$2,d3                          ; 00CDC
         sub.l   d3,d1                           ; 00CDE
 l_026_00CE0:
-        movem.l d0-d2,(dat_071_00626).l         ; 00CE0
+        movem.l d0-d2,(FlyByPoint).l            ; 00CE0
         rts                                     ; 00CE8
 l_026_00CEA:
         movem.l d3-d6,-(a7)                     ; 00CEA
@@ -1086,7 +1086,7 @@ l_026_00CEA:
         asr.l   #$1,d0                          ; 00D54
         asr.l   #$1,d1                          ; 00D56
         asr.l   #$1,d2                          ; 00D58
-        movem.l d0-d2,(dat_071_00626).l         ; 00D5A
+        movem.l d0-d2,(FlyByPoint).l            ; 00D5A
         movem.l (a7)+,d3-d6                     ; 00D62
         bra.b   l_026_00DE6                     ; 00D66
 l_026_00D68:
@@ -1098,7 +1098,7 @@ sub_026_00D70:
 sub_026_00D7A:
         movem.l (PlayerX).l,d0-d2               ; 00D7A
 l_026_00D82:
-        movem.l d0-d2,(dat_071_00626).l         ; 00D82
+        movem.l d0-d2,(FlyByPoint).l            ; 00D82
         rts                                     ; 00D8A
 l_026_00D8C:
         movem.l d3-d7,-(a7)                     ; 00D8C
@@ -1128,7 +1128,7 @@ l_026_00DD2:
         moveq   #$6,d3                          ; 00DD2
 l_026_00DD4:
         jsr     (sub_004_00316).l               ; 00DD4
-        movem.l d0-d2,(dat_071_00626).l         ; 00DDA
+        movem.l d0-d2,(FlyByPoint).l            ; 00DDA
         movem.l (a7)+,d3-d7                     ; 00DE2
 l_026_00DE6:
         cmpi.l  #$240,d3                        ; 00DE6

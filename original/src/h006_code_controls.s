@@ -21,7 +21,7 @@ RedrawPanel:
 RedrawInstruments:
         moveq   #$3,d4                          ; 00008
         move.b  d4,(PanelRedraw).l              ; 0000A
-        move.b  d4,(dat_071_00206).l            ; 00010
+        move.b  d4,(PanelBlitCount).l           ; 00010
         move.b  d4,(dat_071_00209).l            ; 00016
         move.b  d4,(dat_071_0020A).l            ; 0001C
         move.b  d4,(dat_071_0020E).l            ; 00022
@@ -30,10 +30,10 @@ RedrawInstruments:
         move.b  d4,(dat_071_00211).l            ; 00034
         move.b  d4,(dat_071_0020B).l            ; 0003A
         move.b  d4,(dat_071_0020D).l            ; 00040
-        move.b  d4,(dat_071_00213).l            ; 00046
+        move.b  d4,(StoresRedraw).l             ; 00046
         move.b  d4,(dat_071_00214).l            ; 0004C
         move.b  d4,(dat_071_00215).l            ; 00052
-        move.b  d4,(dat_071_0020C).l            ; 00058
+        move.b  d4,(TargetReadoutRedraw).l      ; 00058
         tst.b   (ShakeKind).l                   ; 0005E
         bne.b   l_006_00072                     ; 00064
         clr.w   (ViewY).l                       ; 00066
@@ -46,7 +46,7 @@ l_006_00072:
 ; dat_071_0020D.
 ;-------------------------------------------------------------------------------
 StartGunSound:
-        bset    #$7,(dat_071_001AD).l           ; 00074
+        bset    #$7,(GroundDetail).l            ; 00074
         move.w  #$80,(RadarScale).l             ; 0007C
         move.b  #$3,(dat_071_0020D).l           ; 00084
         rts                                     ; 0008C
@@ -132,7 +132,7 @@ ResetPlayerAircraft:
         move.l  #$61a800,(PlayerFuel).l         ; 0015E
         move.b  #$24,(PlayerMissiles).l         ; 00168
         move.w  #$1f4,(Player_60).l             ; 00170
-        move.b  #$3,(dat_071_00213).l           ; 00178
+        move.b  #$3,(StoresRedraw).l            ; 00178
         move.b  #$3,(dat_071_00214).l           ; 00180
         move.b  #$10,(dat_071_0021C).l          ; 00188
         move.b  #$10,(dat_071_0021D).l          ; 00190

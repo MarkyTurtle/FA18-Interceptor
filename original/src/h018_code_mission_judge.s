@@ -33,7 +33,7 @@ JudgeMission:
         jsr     (sub_017_00430).l               ; 00048
         btst    #$6,(dat_071_0029D).l           ; 0004E
         beq.b   l_018_000C4                     ; 00056
-        tst.b   (dat_071_00160).l               ; 00058
+        tst.b   (DemoActive).l                  ; 00058
         bne.b   l_018_000C4                     ; 0005E
         move.b  (GameMode).l,d0                 ; 00060
         cmpi.b  #$2,d0                          ; 00066

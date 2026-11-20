@@ -18,9 +18,9 @@ l_022_00000:
 ; pointers go back to the start.
 ;-------------------------------------------------------------------------------
 RecordFrame:
-        tst.b   (dat_071_00160).l               ; 00002
+        tst.b   (DemoActive).l                  ; 00002
         beq.b   l_022_00000                     ; 00008
-        move.w  (dat_071_0029C).l,d0            ; 0000A
+        move.w  (StatusBits).l,d0               ; 0000A
         andi.w  #$40,d0                         ; 00010
         beq.b   l_022_00000                     ; 00014
         move.b  (RecordMode).l,d1               ; 00016
@@ -165,7 +165,7 @@ l_022_001D6:
         bset    #$4,$3(a1)                      ; 001E4
         bra.b   l_022_00208                     ; 001EA
 l_022_001EC:
-        move.w  (dat_071_0029C).l,d0            ; 001EC
+        move.w  (StatusBits).l,d0               ; 001EC
         andi.w  #$40,d0                         ; 001F2
         beq.w   l_022_0031E                     ; 001F6
         tst.w   (CurrentObject).l               ; 001FA
@@ -293,7 +293,7 @@ l_022_00392:
         beq.b   l_022_003CC                     ; 003A2
         bra.w   l_022_00816                     ; 003A4
 l_022_003A8:
-        move.w  (dat_071_0029C).l,d0            ; 003A8
+        move.w  (StatusBits).l,d0               ; 003A8
         andi.w  #$40,d0                         ; 003AE
         bne.b   l_022_003BC                     ; 003B2
         moveq   #$0,d5                          ; 003B4
@@ -572,7 +572,7 @@ l_022_0069A:
         bgt.w   l_022_00816                     ; 006CE
         bset    #$1,$20(a1)                     ; 006D2
         move.w  #$9014,d1                       ; 006D8
-        ori.w   #$100,(dat_071_0029C).l         ; 006DC
+        ori.w   #$100,(StatusBits).l            ; 006DC
         bra.b   l_022_006F8                     ; 006E4
 l_022_006E6:
         move.w  #$d00b,d1                       ; 006E6

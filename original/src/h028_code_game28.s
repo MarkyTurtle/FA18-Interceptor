@@ -235,7 +235,7 @@ l_028_00BC6:
         movem.w d0-d3,(FillPattern).l           ; 00BCA
         move.l  (ViewOffsetY8).l,d0             ; 00BD2
         neg.l   d0                              ; 00BD8
-        tst.b   (dat_071_001AD).l               ; 00BDA
+        tst.b   (GroundDetail).l                ; 00BDA
         bne.b   l_028_00C0C                     ; 00BE0
         cmpi.l  #$7fff0,d0                      ; 00BE2
         bgt.b   l_028_00C0C                     ; 00BE8
@@ -360,7 +360,7 @@ l_028_00D6C:
 l_028_00D72:
         lea.l   dat_028_00ADC(pc),a0            ; 00D72
 l_028_00D76:
-        move.b  (dat_071_00220).l,d3            ; 00D76
+        move.b  (ViewPlace).l,d3                ; 00D76
         ext.w   d3                              ; 00D7C
         add.w   d3,d3                           ; 00D7E
         add.w   d3,d3                           ; 00D80
@@ -385,7 +385,7 @@ l_028_00DAA:
         lea.l   dat_028_008DC(pc),a0            ; 00DAA
         lea.l   dat_028_005DC(pc),a1            ; 00DAE
         lea.l   dat_028_001DC(pc),a2            ; 00DB2
-        move.b  (dat_071_00220).l,d3            ; 00DB6
+        move.b  (ViewPlace).l,d3                ; 00DB6
         ext.w   d3                              ; 00DBC
         asl.w   #$4,d3                          ; 00DBE
         move.w  d3,d4                           ; 00DC0
@@ -543,7 +543,7 @@ l_028_00F88:
         lea.l   dat_028_00EF8(pc),a2            ; 00F88
         add.w   d3,d3                           ; 00F8C
         move.w  (a2,d3.w),d6                    ; 00F8E
-        tst.b   (dat_071_001AD).l               ; 00F92
+        tst.b   (GroundDetail).l                ; 00F92
         bne.b   l_028_00FBA                     ; 00F98
         move.l  #$8000,d7                       ; 00F9A
         cmpi.w  #$2,(RadarScale).l              ; 00FA0
@@ -638,7 +638,7 @@ l_028_01066:
 l_028_0107E:
         lea.l   (dat_072_03C02).l,a5            ; 0107E
         move.w  d1,(a5)+                        ; 01084
-        lea.l   (dat_071_005A8).l,a0            ; 01086
+        lea.l   (ViewMatrix).l,a0               ; 01086
         movem.w -$8(a6),d6/a2/a4                ; 0108C
         move.w  -$20(a6),d3                     ; 01092
 l_028_01096:
@@ -697,7 +697,7 @@ TurnToViewOffset:
         move.w  d0,d6                           ; 010FE
         add.w   d5,d2                           ; 01100
         add.w   d6,d4                           ; 01102
-        lea.l   (dat_071_005A8).l,a1            ; 01104
+        lea.l   (ViewMatrix).l,a1               ; 01104
         move.w  d2,d5                           ; 0110A
         move.w  d3,d6                           ; 0110C
         move.w  d4,d7                           ; 0110E

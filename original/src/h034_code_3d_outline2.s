@@ -55,7 +55,7 @@ l_034_0005A:
         ble.w   l_034_00284                     ; 00074
         bsr.w   sub_034_00302                   ; 00078
         beq.w   l_034_0022E                     ; 0007C
-        tst.w   (dat_071_0049A).l               ; 00080
+        tst.w   (ClipSwitch).l                  ; 00080
         bge.b   l_034_000DC                     ; 00086
         neg.w   d2                              ; 00088
         cmp.w   d2,d6                           ; 0008A
@@ -77,7 +77,7 @@ l_034_000A4:
         ble.w   l_034_00284                     ; 000BA
         bsr.w   sub_034_00378                   ; 000BE
         beq.w   l_034_00272                     ; 000C2
-        tst.w   (dat_071_0049A).l               ; 000C6
+        tst.w   (ClipSwitch).l                  ; 000C6
         bge.b   l_034_000DC                     ; 000CC
         neg.w   d2                              ; 000CE
         cmp.w   d2,d6                           ; 000D0
@@ -98,7 +98,7 @@ l_034_000DC:
         ble.w   l_034_00284                     ; 000F6
         bsr.w   sub_034_0046A                   ; 000FA
         beq.b   l_034_00172                     ; 000FE
-        tst.w   (dat_071_0049A).l               ; 00100
+        tst.w   (ClipSwitch).l                  ; 00100
         bge.w   l_034_00284                     ; 00106
         cmp.w   d5,d4                           ; 0010A
         blt.w   l_034_00284                     ; 0010C
@@ -120,7 +120,7 @@ l_034_00130:
         ble.w   l_034_00284                     ; 00140
         bsr.w   sub_034_003F4                   ; 00144
         beq.b   l_034_00120                     ; 00148
-        tst.w   (dat_071_0049A).l               ; 0014A
+        tst.w   (ClipSwitch).l                  ; 0014A
         bge.w   l_034_00284                     ; 00150
         move.w  d4,d6                           ; 00154
         neg.w   d6                              ; 00156
@@ -145,7 +145,7 @@ l_034_00182:
         ble.w   l_034_00284                     ; 00190
         bsr.w   sub_034_003F4                   ; 00194
         beq.b   l_034_00120                     ; 00198
-        tst.w   (dat_071_0049A).l               ; 0019A
+        tst.w   (ClipSwitch).l                  ; 0019A
         bge.b   l_034_001F4                     ; 001A0
         neg.w   d2                              ; 001A2
         cmp.w   d2,d6                           ; 001A4
@@ -167,7 +167,7 @@ l_034_001BE:
         ble.w   l_034_00284                     ; 001D4
         bsr.w   sub_034_0046A                   ; 001D8
         beq.b   l_034_00172                     ; 001DC
-        tst.w   (dat_071_0049A).l               ; 001DE
+        tst.w   (ClipSwitch).l                  ; 001DE
         bge.b   l_034_001F4                     ; 001E4
         neg.w   d2                              ; 001E6
         cmp.w   d2,d6                           ; 001E8
@@ -188,7 +188,7 @@ l_034_001F4:
         ble.b   l_034_00284                     ; 0020E
         bsr.w   sub_034_00378                   ; 00210
         beq.b   l_034_00272                     ; 00214
-        tst.w   (dat_071_0049A).l               ; 00216
+        tst.w   (ClipSwitch).l                  ; 00216
         bge.b   l_034_00284                     ; 0021C
         cmp.w   d5,d3                           ; 0021E
         blt.b   l_034_00284                     ; 00220
@@ -210,7 +210,7 @@ l_034_0023C:
         ble.b   l_034_00284                     ; 0024A
         bsr.w   sub_034_00302                   ; 0024C
         beq.b   l_034_0022E                     ; 00250
-        tst.w   (dat_071_0049A).l               ; 00252
+        tst.w   (ClipSwitch).l                  ; 00252
         bge.b   l_034_00284                     ; 00258
         move.w  d3,d6                           ; 0025A
         neg.w   d6                              ; 0025C
