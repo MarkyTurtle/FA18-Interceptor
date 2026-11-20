@@ -452,7 +452,8 @@ dat_071_0018D:
 dat_071_0018E:
 	dc.b	$00
 	dc.b	$00
-dat_071_00190:
+; ShakeKind - The view shake running (ShakeView): 1-3 picks the sequence; 0 none.
+ShakeKind:
 	dc.b	$00
 dat_071_00191:
 	dc.b	$00
@@ -765,7 +766,9 @@ dat_071_00239:
 	dc.b	$00
 dat_071_0023A:
 	dc.b	$00
-dat_071_0023B:
+; HeightBand - How high the view is (0-3, SetHeightBand): decides how much of the ground and
+; scenery is drawn (the ground dots, the shadow, the shapes' operations).
+HeightBand:
 	dc.b	$00
 dat_071_0023C:
 	dc.b	$00
@@ -824,9 +827,12 @@ dat_071_0025C:
 	dc.b	$00
 dat_071_0025D:
 	dc.b	$00
-dat_071_0025E:
+; WarningTicks - The warning beat of this frame (WarningTicker): bits for every 8th, 4th and
+; 2nd frame.
+WarningTicks:
 	dc.b	$00
-dat_071_0025F:
+; ShakeStep - How far through its sequence the view shake is (ShakeView).
+ShakeStep:
 	dc.b	$00
 dat_071_00260:
 	dc.b	$00

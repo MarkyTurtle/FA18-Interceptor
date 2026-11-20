@@ -4,7 +4,11 @@
 ; files; the keyboard, joystick, timer and mouse; loading and playing the sounds.
 ; Included by ../f18_main.s.
 
-sub_000_04392:
+;-------------------------------------------------------------------------------
+; CheckViewObjectGone - When the object the view follows (dat_071_002AC) no longer exists (+$00
+; bit 6), returns the view to the player's aircraft and asks for everything to be redrawn.
+;-------------------------------------------------------------------------------
+CheckViewObjectGone:
         tst.w   (dat_071_002AC).l               ; 04392
         beq.b   l_000_043F0                     ; 04398
         move.w  (dat_071_002AC).l,d0            ; 0439A
@@ -30,7 +34,13 @@ sub_000_04392:
         jsr     (sub_005_00E6E).l               ; 043EA
 l_000_043F0:
         rts                                     ; 043F0
-sub_000_043F2:
+
+;-------------------------------------------------------------------------------
+; SetHeightBand - Sets HeightBand from the view's height (/8): 0 up to $64, 1 to $12C, 2 to
+; $C80, and 3 between $258 and $C4E (asking for the scenery to be rebuilt, RedrawFlags $0B,
+; when it changes); dat_071_0023C while between $1C2 and $C80. More after (not worked out).
+;-------------------------------------------------------------------------------
+SetHeightBand:
         link.w  a6,#$fffa                       ; 043F2
         tst.b   (OutsideView).l                 ; 043F6
         beq.b   l_000_04410                     ; 043FC
@@ -60,7 +70,7 @@ l_000_04428:
         move.b  (RedrawFlags).l,d0              ; 0444C
         ori.b   #$b,d0                          ; 04452
         move.b  d0,(RedrawFlags).l              ; 04456
-        move.b  #$3,(dat_071_0023B).l           ; 0445C
+        move.b  #$3,(HeightBand).l              ; 0445C
         bra.b   l_000_044DE                     ; 04464
 l_000_04466:
         tst.b   (dat_071_00156).l               ; 04466
@@ -84,18 +94,18 @@ l_000_0449E:
         bge.b   l_000_044D8                     ; 044AC
         cmpi.w  #$12c,d0                        ; 044AE
         ble.b   l_000_044BE                     ; 044B2
-        move.b  #$2,(dat_071_0023B).l           ; 044B4
+        move.b  #$2,(HeightBand).l              ; 044B4
         bra.b   l_000_044DE                     ; 044BC
 l_000_044BE:
         cmpi.w  #$64,-$2(a6)                    ; 044BE
         ble.b   l_000_044D0                     ; 044C4
-        move.b  #$1,(dat_071_0023B).l           ; 044C6
+        move.b  #$1,(HeightBand).l              ; 044C6
         bra.b   l_000_044DE                     ; 044CE
 l_000_044D0:
-        clr.b   (dat_071_0023B).l               ; 044D0
+        clr.b   (HeightBand).l                  ; 044D0
         bra.b   l_000_044DE                     ; 044D6
 l_000_044D8:
-        clr.b   (dat_071_0023B).l               ; 044D8
+        clr.b   (HeightBand).l                  ; 044D8
 l_000_044DE:
         move.w  (dat_071_0029A).l,d0            ; 044DE
         andi.w  #$fffd,d0                       ; 044E4
@@ -3024,7 +3034,7 @@ l_000_06812:
         bne.b   l_000_06868                     ; 06832
         ori.w   #$4000,d0                       ; 06834
         move.w  d0,(dat_071_002A2).l            ; 06838
-        move.b  #$3,(dat_071_00190).l           ; 0683E
+        move.b  #$3,(ShakeKind).l               ; 0683E
         move.b  #$fa,(dat_071_00280).l          ; 06846
         move.b  #$2,(dat_071_00167).l           ; 0684E
         bra.b   l_000_06868                     ; 06856
@@ -3610,7 +3620,7 @@ l_000_06F30:
         moveq   #$0,d0                          ; 06F74
         move.b  d0,(dat_071_0016F).l            ; 06F76
         moveq   #$1,d0                          ; 06F7C
-        move.b  d0,(dat_071_00190).l            ; 06F7E
+        move.b  d0,(ShakeKind).l                ; 06F7E
         cmpi.w  #$240,-$4(a6)                   ; 06F84
         blt.b   l_000_06FCE                     ; 06F8A
         move.b  (dat_071_0026A).l,d0            ; 06F8C
@@ -3674,7 +3684,7 @@ l_000_07056:
         btst    #$1,d0                          ; 07066
         bne.b   l_000_070BC                     ; 0706A
         moveq   #$4,d0                          ; 0706C
-        move.b  d0,(dat_071_00190).l            ; 0706E
+        move.b  d0,(ShakeKind).l                ; 0706E
         move.w  (dat_071_0029A).l,d0            ; 07074
         btst    #$8,d0                          ; 0707A
         beq.b   l_000_070AC                     ; 0707E
@@ -3706,7 +3716,7 @@ l_000_070DA:
         move.w  (dat_071_002A2).l,d0            ; 070DA
         btst    #$1,d0                          ; 070E0
         beq.w   l_000_07178                     ; 070E4
-        move.b  #$3,(dat_071_00190).l           ; 070E8
+        move.b  #$3,(ShakeKind).l               ; 070E8
         bset    #$1,(dat_071_00526).l           ; 070F0
         andi.w  #$fffd,d0                       ; 070F8
         move.w  d0,(dat_071_002A2).l            ; 070FC
@@ -3769,7 +3779,7 @@ l_000_071AE:
         beq.b   l_000_071DC                     ; 071CC
         andi.b  #$f7,d0                         ; 071CE
         move.b  d0,(a0)                         ; 071D2
-        move.b  #$4,(dat_071_00190).l           ; 071D4
+        move.b  #$4,(ShakeKind).l               ; 071D4
 l_000_071DC:
         tst.w   -$24(a6)                        ; 071DC
         bne.b   l_000_0724E                     ; 071E0

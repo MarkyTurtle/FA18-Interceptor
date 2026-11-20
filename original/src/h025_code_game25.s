@@ -1,12 +1,18 @@
 ; F/A-18 Interceptor - hunk 25 (code)
-; Game logic not yet identified (called by GameFrame; plots points).
+; DrawGroundDots: dots on the ground round the viewer when low, to judge height and speed by.
 ; Included by ../f18_main.s.
 
 ;===============================================================================
 ; Hunk 25: CODE, $D48 bytes
 ;===============================================================================
 	CODE_HUNK	h025
-sub_025_00000:
+
+;-------------------------------------------------------------------------------
+; DrawGroundDots - Stage $90: when low enough (the limit by HeightBand), dots in colour 3
+; scattered on the ground round the viewer (patterns from dat_025_00754 and on), so that height
+; and speed can be judged over plain ground.
+;-------------------------------------------------------------------------------
+DrawGroundDots:
         link.w  a6,#$ffdc                       ; 00000
         move.w  #$4,d0                          ; 00004
         move.w  #$0,d1                          ; 00008
@@ -14,7 +20,7 @@ sub_025_00000:
         move.w  #$ffff,d3                       ; 0000E
         movem.w d0-d3,(dat_071_000B6).l         ; 00012
         move.w  #$3,(DrawColour).l              ; 0001A
-        move.b  (dat_071_0023B).l,d3            ; 00022
+        move.b  (HeightBand).l,d3               ; 00022
         beq.b   l_025_0003C                     ; 00028
         move.l  #$fffff280,d2                   ; 0002A
         subq.b  #$1,d3                          ; 00030

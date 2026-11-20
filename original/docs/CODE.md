@@ -49,7 +49,7 @@ before each. Some parts run only every 2nd, 4th, 8th, 16th or 32nd frame (`Frame
 | 10 | `DrawModel`: drawing a 3D model (levels of detail, vertices, the plane-test drawing list) |
 | 13, 19, 35 | The shapes' operations (`ShapeOps`: point, line, `ShapePolygon`...), `ClipFillPolygon`, `ProjectPoint` |
 | 38-40 | The radar, the instruments' readouts, the target readout, the text printer, the head-up display |
-| 7, 9, 11, 12, 14, 15, 23-25, 28, 29, 31 | The rest of the game: terrain, scenery, the special shapes - being worked out |
+| 7, 9, 11, 23, 24, 29, 31 | The rest of the game: terrain, scenery, the special shapes - being worked out |
 | 20 | Number and text output, the flight log page (`ShowFlightLog`, `ShowLogDate`), `ChecksumPlanes`; the text pages (`SetTextPage`); the security check (`MakeSecurityCode`, `CheckSecurityAnswer`) |
 | 35, 36 | Drawing: the projection, `Plot` and its variants, `DrawLine` (blitter line mode), the copper lists (double-buffered display), `ClearSkyGround`, `FillPolygonPlane`, `DrawAttitudeIndicator` |
 | 37 | Blitter copies: the title picture and the instrument panel onto the screen |
@@ -57,6 +57,8 @@ before each. Some parts run only every 2nd, 4th, 8th, 16th or 32nd frame (`Frame
 | 59-68 | Data tables (some partly mistaken for code by the first trace) |
 | 21 | The palettes: the in-flight palette's 16 fade levels, the yellow flash |
 | 28 | The bay's water areas (`DrawWaterAreas`) and more |
+| 12-15 | The shapes' operations (`ShapeOps`), the flat ground shapes (`DrawGroundShape`) |
+| 25 | `DrawGroundDots` |
 | 62 | Data in chip RAM (graphics) |
 | 63 | Tables: `SineTable` (a quarter wave in tenths of a degree, 2.14) and others |
 | 64 | The menu and briefing texts: the six missions (F1 VISUAL CONFIRMATION, F2 EMERGENCY DEFENSE, F3 INTERCEPT STOLEN AIRCRAFT, F4 SEARCH AND RESCUE, F5 INTERCEPT INCOMING CRUISE MISSILE, F6 CARRIER SUB MISSION), the flight log page, the training texts; all addressed as numbered text pages (`TextPageTable`) |

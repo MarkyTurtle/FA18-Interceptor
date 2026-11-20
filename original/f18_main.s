@@ -324,7 +324,8 @@
 ; Hunk 24: Game logic not yet identified (objects and the flight log; used by hunks 22, 23).
 	include	"src/h024_code_game24.s"
 
-; Hunk 25: Game logic not yet identified (called by GameFrame; plots points).
+; Hunk 25: DrawGroundDots: dots on the ground round the viewer when low, to judge height and
+;         speed by.
 	include	"src/h025_code_game25.s"
 
 ; Hunk 26: Setting up a mode (SetupMode: the mode's objects from hunk 27's table) and the

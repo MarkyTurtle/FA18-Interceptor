@@ -129,7 +129,7 @@ l_004_001EC:
         bsr.w   sub_004_003AE                   ; 001F2
         jsr     (BuildSceneryBits).l            ; 001F6
         jsr     (UpdateViewCell).l              ; 001FC
-        jsr     (sub_008_00598).l               ; 00202
+        jsr     (UpdateScenery).l               ; 00202
         rts                                     ; 00208
 sub_004_0020A:
         lea.l   (dat_071_00160).l,a0            ; 0020A

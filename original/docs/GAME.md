@@ -71,20 +71,20 @@ stages (`?` = not worked out yet):
 
 | Stage | Routines | What |
 |---|---|---|
-| (first) | `ReadControls`, `RunGameState`, `sub_000_03C94` | the joystick, buttons and keys; **the game's state** (below) and the flight log's time |
+| (first) | `ReadControls`, `RunGameState`, `WarningTicker` | the joystick, buttons and keys; **the game's state** (below); the warnings' 8-frame beat |
 | `$08` | `sub_000_041E8` | ? (the view, the gun sound, the instruments) |
 | `$10` | `UpdateViewCell` (which calls `UpdateAllObjects`) | **the objects**: every object's update - computer pilots, the player's controls or the replay, engine, attitude, flight, missiles; the flight recording - and which map cell the view is in |
-| `$20` | `SetupCamera`, `sub_008_00286`, `sub_020_00738`, `sub_000_043F2`, `sub_008_00598` | the camera, and ? (the view's position and scenery) |
-| `$60` | `sub_020_007EA`, `sub_020_00AB4`, `DrawSkyAndGround` | ?, and **the sky and the ground** (below) |
+| `$20` | `SetupCamera`, `SetCockpitEye`, `SetViewOctant`, `SetHeightBand`, `UpdateScenery` | **the camera**: the pilot's eye in the aircraft, the compass eighth faced, how high the view is (`HeightBand`), and the scenery lists rebuilt when needed |
+| `$60` | `ShakeView`, `ClearRadarList`, `DrawSkyAndGround` | the view shaken (`ShakeKind`), the radar's list emptied, and **the sky and the ground** (below) |
 | `$68` | `DrawWaterAreas` | the bay's water |
 | `$70` | `DrawSun` | the sun (probably) |
-| `$78`, `$80` | `sub_008_0084C`, `sub_008_0085E` | ? (the scenery list) |
-| `$90` | `sub_025_00000` | ? (points: the ground or the sky) |
+| `$78`, `$80` | `DrawFarScenery0`, `DrawFarScenery1` | the far scenery, from the two coarse maps |
+| `$90` | `DrawGroundDots` | dots on the ground when low, to judge height and speed by |
 | `$A0`-`$B0` | `sub_023_00000`, `DrawObjects`, `sub_000_072DC` | **the 3D view's objects and scenery** |
-| `$C0` | `sub_000_03D4C`, `CockpitSounds` | ? (uses the custom chips), the cockpit's sounds |
-| `$D0` | `DrawPanel`, `sub_037_002F6`, `DrawRadar`, `sub_040_00064`, `DrawStatusLights`, `sub_037_008B8`, hunk 39 (several, some every 4th / 8th / 16th frame) | **the cockpit**: the instrument panel and the instruments |
+| `$C0` | `UpdateWarnings`, `CockpitSounds` | the warning sounds (on `WarningTicks`), the cockpit's sounds |
+| `$D0` | `DrawPanel`, `sub_037_002F6`, `DrawRadar`, `DrawHUD`, `DrawStatusLights`, `sub_037_008B8`, hunk 39 (several, some every 4th / 8th / 16th frame) | **the cockpit**: the instrument panel and the instruments |
 | `$1A0` | `sub_036_00BAA`, hunks 37 and 39 | ? (the head-up display) |
-| `$1D0`, `$1D4` | hunk 39, `sub_000_04392`, `sub_029_001A4`, `sub_020_00562` (the time: `ReadTime`), and every 8 / 16 / 32 frames more | ? (the outside views; the clock) |
+| `$1D0`, `$1D4` | hunk 39, `CheckViewObjectGone`, `sub_029_001A4`, `sub_020_00562` (the time: `ReadTime`), and every 8 / 16 / 32 frames more | ? (the outside views; the clock) |
 | `$210`-`$220` | `sub_036_0000C`, `sub_039_00276`, `PrintText` (the flight log page, `SaveConfig`) | the menus and pages |
 
 ## Input

@@ -55,7 +55,7 @@ l_010_0004C:
         move.l  d0,(ShapeNow).l                 ; 0005C
         tst.b   (dat_071_00205).l               ; 00062
         bne.w   DrawSceneryPlain                ; 00068
-        move.b  (dat_071_0023B).l,d1            ; 0006C
+        move.b  (HeightBand).l,d1               ; 0006C
         beq.b   l_010_00094                     ; 00072
         cmpi.b  #$3,d1                          ; 00074
         bge.w   DrawSceneryPlain                ; 00078

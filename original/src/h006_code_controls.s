@@ -34,7 +34,7 @@ RedrawInstruments:
         move.b  d4,(dat_071_00214).l            ; 0004C
         move.b  d4,(dat_071_00215).l            ; 00052
         move.b  d4,(dat_071_0020C).l            ; 00058
-        tst.b   (dat_071_00190).l               ; 0005E
+        tst.b   (ShakeKind).l                   ; 0005E
         bne.b   l_006_00072                     ; 00064
         clr.w   (ViewY).l                       ; 00066
         clr.l   (dat_071_002E8).l               ; 0006C

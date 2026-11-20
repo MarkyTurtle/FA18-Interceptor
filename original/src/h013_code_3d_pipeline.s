@@ -522,12 +522,12 @@ l_013_0050C:
         blt.b   l_013_004BA                     ; 00512
         tst.b   (OutsideView).l                 ; 00514
         bne.b   l_013_00574                     ; 0051A
-        cmpi.b  #$3,(dat_071_0023B).l           ; 0051C
+        cmpi.b  #$3,(HeightBand).l              ; 0051C
         bge.b   l_013_00574                     ; 00524
         move.w  (CurrentObject).l,d7            ; 00526
         cmp.w   (dat_071_002AC).l,d7            ; 0052C
         bne.b   l_013_00548                     ; 00532
-        tst.b   (dat_071_0023B).l               ; 00534
+        tst.b   (HeightBand).l                  ; 00534
         beq.b   l_013_00544                     ; 0053A
         move.l  #$ffffe000,d2                   ; 0053C
         bra.b   l_013_00570                     ; 00542
@@ -541,7 +541,7 @@ l_013_00548:
         bge.b   l_013_00574                     ; 00556
         cmpi.b  #$14,$62(a4)                    ; 00558
         beq.b   l_013_00574                     ; 0055E
-        cmpi.b  #$1,(dat_071_0023B).l           ; 00560
+        cmpi.b  #$1,(HeightBand).l              ; 00560
         ble.b   l_013_00544                     ; 00568
         move.l  #$fff60000,d2                   ; 0056A
 l_013_00570:

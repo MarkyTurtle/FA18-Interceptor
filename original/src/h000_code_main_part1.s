@@ -1453,7 +1453,7 @@ GameFrame:
         move.w  (FrameCount).l,-$2(a6)          ; 01128
         bsr.w   ReadControls                    ; 01130
         jsr     (RunGameState).l                ; 01134
-        jsr     (sub_000_03C94).l               ; 0113A
+        jsr     (WarningTicker).l               ; 0113A
         tst.b   (dat_071_00165).l               ; 01140
         beq.w   l_000_014C0                     ; 01146
         move.w  #$8,(FrameStage).l              ; 0114A
@@ -1464,12 +1464,12 @@ GameFrame:
         move.w  #$20,(FrameStage).l             ; 0116C
         jsr     (sub_022_000B4).l               ; 01174
         jsr     (SetupCamera).l                 ; 0117A
-        jsr     (sub_008_00286).l               ; 01180
-        jsr     (sub_020_00738).l               ; 01186
-        jsr     (sub_000_043F2).l               ; 0118C
-        jsr     (sub_008_00598).l               ; 01192
+        jsr     (SetCockpitEye).l               ; 01180
+        jsr     (SetViewOctant).l               ; 01186
+        jsr     (SetHeightBand).l               ; 0118C
+        jsr     (UpdateScenery).l               ; 01192
         move.w  #$60,(FrameStage).l             ; 01198
-        jsr     (sub_020_007EA).l               ; 011A0
+        jsr     (ShakeView).l                   ; 011A0
         jsr     (ClearRadarList).l              ; 011A6
         jsr     (DrawSkyAndGround).l            ; 011AC
         move.w  #$68,(FrameStage).l             ; 011B2
@@ -1486,11 +1486,11 @@ l_000_011D2:
         cmpi.l  #$f8000000,(dat_071_00436).l    ; 011E0
         ble.w   l_000_01274                     ; 011EA
         move.w  #$78,(FrameStage).l             ; 011EE
-        jsr     (sub_008_0084C).l               ; 011F6
+        jsr     (DrawFarScenery0).l             ; 011F6
         move.w  #$80,(FrameStage).l             ; 011FC
-        jsr     (sub_008_0085E).l               ; 01204
+        jsr     (DrawFarScenery1).l             ; 01204
         move.w  #$90,(FrameStage).l             ; 0120A
-        jsr     (sub_025_00000).l               ; 01212
+        jsr     (DrawGroundDots).l              ; 01212
         move.w  #$a0,(FrameStage).l             ; 01218
         tst.b   (dat_071_0017D).l               ; 01220
         beq.b   l_000_01230                     ; 01226
@@ -1512,7 +1512,7 @@ l_000_01258:
         jsr     (sub_000_072DC).l               ; 0126E
 l_000_01274:
         move.w  #$c0,(FrameStage).l             ; 01274
-        jsr     (sub_000_03D4C).l               ; 0127C
+        jsr     (UpdateWarnings).l              ; 0127C
         jsr     (CockpitSounds).l               ; 01282
         move.w  #$d0,(FrameStage).l             ; 01288
         move.b  (OutsideView).l,d0              ; 01290
@@ -1625,7 +1625,7 @@ l_000_013F8:
         jsr     (TargetReadout).l               ; 01426
 l_000_0142C:
         move.w  #$1d4,(FrameStage).l            ; 0142C
-        jsr     (sub_000_04392).l               ; 01434
+        jsr     (CheckViewObjectGone).l         ; 01434
         jsr     (sub_039_0064A).l               ; 0143A
         jsr     (sub_029_001A4).l               ; 01440
         jsr     (sub_020_00562).l               ; 01446
@@ -2685,7 +2685,7 @@ l_000_022B2:
         bne.b   l_000_022C4                     ; 022BA
         move.b  #$11,(PlayerAircraftType).l     ; 022BC
 l_000_022C4:
-        jsr     (sub_008_00598).l               ; 022C4
+        jsr     (UpdateScenery).l               ; 022C4
 l_000_022CA:
         unlk    a6                              ; 022CA
         rts                                     ; 022CC
@@ -4727,34 +4727,40 @@ l_000_03C8E:
         unlk    a6                              ; 03C8E
         rts                                     ; 03C90
 	dc.b	$00,$00
-sub_000_03C94:
+
+;-------------------------------------------------------------------------------
+; WarningTicker - Counts an 8-frame cycle (dat_071_00260) and sets WarningTicks for it ($86 at
+; its start, 6 half way, 4 at the quarters, 0 otherwise): the beat of the warning lights and
+; sounds (sub_000_03D4C).
+;-------------------------------------------------------------------------------
+WarningTicker:
         move.b  (dat_071_00260).l,d0            ; 03C94
         subq.b  #$1,d0                          ; 03C9A
         move.b  d0,(dat_071_00260).l            ; 03C9C
         tst.b   d0                              ; 03CA2
         bgt.b   l_000_03CB8                     ; 03CA4
         move.b  #$8,(dat_071_00260).l           ; 03CA6
-        move.b  #$86,(dat_071_0025E).l          ; 03CAE
+        move.b  #$86,(WarningTicks).l           ; 03CAE
         bra.b   l_000_03CFE                     ; 03CB6
 l_000_03CB8:
         move.b  (dat_071_00260).l,d0            ; 03CB8
         subq.b  #$4,d0                          ; 03CBE
         bne.b   l_000_03CCC                     ; 03CC0
-        move.b  #$6,(dat_071_0025E).l           ; 03CC2
+        move.b  #$6,(WarningTicks).l            ; 03CC2
         bra.b   l_000_03CFE                     ; 03CCA
 l_000_03CCC:
         move.b  (dat_071_00260).l,d0            ; 03CCC
         andi.b  #$3,d0                          ; 03CD2
         subq.b  #$2,d0                          ; 03CD6
         bne.b   l_000_03CE4                     ; 03CD8
-        move.b  #$4,(dat_071_0025E).l           ; 03CDA
+        move.b  #$4,(WarningTicks).l            ; 03CDA
         bra.b   l_000_03CFE                     ; 03CE2
 l_000_03CE4:
         move.b  (dat_071_00260).l,d0            ; 03CE4
         cmpi.b  #$8,d0                          ; 03CEA
         ble.b   l_000_03CFE                     ; 03CEE
         move.b  #$8,(dat_071_00260).l           ; 03CF0
-        clr.b   (dat_071_0025E).l               ; 03CF8
+        clr.b   (WarningTicks).l                ; 03CF8
 l_000_03CFE:
         rts                                     ; 03CFE
 sub_000_03D00:
@@ -4779,7 +4785,14 @@ l_000_03D38:
 l_000_03D48:
         unlk    a6                              ; 03D48
         rts                                     ; 03D4A
-sub_000_03D4C:
+
+;-------------------------------------------------------------------------------
+; UpdateWarnings - Stage $C0: picks the warning to sound (dat_071_004B0, a sound word with
+; flags) from what is wrong - by priority, special cases first (dat_071_00298 bit 15,
+; dat_071_002A6 bit 5), then the warnings (WarningFlags) and the status lights (StatusLights
+; bits 4, 5...) - and plays it on the beat of WarningTicks (not worked out in detail).
+;-------------------------------------------------------------------------------
+UpdateWarnings:
         link.w  a6,#$fff4                       ; 03D4C
         clr.b   -$8(a6)                         ; 03D50
         move.w  (dat_071_004B0).l,d0            ; 03D54
@@ -4952,7 +4965,7 @@ l_000_03FD4:
 l_000_03FE8:
         move.b  #$2,-$7(a6)                     ; 03FE8
 l_000_03FEE:
-        move.b  (dat_071_0025E).l,d0            ; 03FEE
+        move.b  (WarningTicks).l,d0             ; 03FEE
         and.b   -$7(a6),d0                      ; 03FF4
         tst.b   d0                              ; 03FF8
         beq.w   l_000_041B6                     ; 03FFA
@@ -5031,7 +5044,7 @@ l_000_0413A:
 l_000_04144:
         move.w  (dat_071_004B0).l,(dat_071_004AE).l ; 04144
 l_000_0414E:
-        move.b  (dat_071_0025E).l,d0            ; 0414E
+        move.b  (WarningTicks).l,d0             ; 0414E
         btst    #$1,d0                          ; 04154
         beq.b   l_000_041B6                     ; 04158
         move.b  (dat_071_00262).l,d0            ; 0415A
@@ -5064,7 +5077,7 @@ l_000_041B6:
         move.b  d0,(dat_071_00230).l            ; 041D0
         move.b  #$2,(dat_071_00231).l           ; 041D6
 l_000_041DE:
-        clr.b   (dat_071_0025E).l               ; 041DE
+        clr.b   (WarningTicks).l                ; 041DE
         unlk    a6                              ; 041E4
         rts                                     ; 041E6
 sub_000_041E8:

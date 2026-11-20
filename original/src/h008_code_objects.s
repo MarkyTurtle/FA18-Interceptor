@@ -247,7 +247,13 @@ l_008_00278:
         move.w  d0,(dat_071_0036E).l            ; 00278
         jsr     (Nop).l                         ; 0027E
         rts                                     ; 00284
-sub_008_00286:
+
+;-------------------------------------------------------------------------------
+; SetCockpitEye - In the cockpit (not OutsideView): the pilot's eye, a point fixed in the
+; viewed aircraft turned by its matrix (+$92): (0, 5, $14) in the F/A-18 ($11), (0, 4, $12) in
+; the others, (0, 1, -5) under a parachute ($30); the camera is placed there.
+;-------------------------------------------------------------------------------
+SetCockpitEye:
         tst.b   (OutsideView).l                 ; 00286
         bne.w   l_008_00344                     ; 0028C
         lea.l   (ObjectTable).l,a2              ; 00290
@@ -506,7 +512,13 @@ l_008_0058C:
         rts                                     ; 00594
 l_008_00596:
         rts                                     ; 00596
-sub_008_00598:
+
+;-------------------------------------------------------------------------------
+; UpdateScenery - Stage $20: when RedrawFlags asks (bit 0 the coarse map, bit 1 the second map,
+; bit 3 the detailed one) rebuilds the scenery lists for the view's block (BuildSceneryList);
+; then sub_009_00740 and sub_009_00958, and every other frame CheckSeaView or CheckViewTable2.
+;-------------------------------------------------------------------------------
+UpdateScenery:
         cmpi.l  #$f8000000,(dat_071_00436).l    ; 00598
         blt.b   l_008_00596                     ; 005A2
         movem.l d0-d5/a0,-(a7)                  ; 005A4
@@ -674,11 +686,21 @@ sub_008_007BA:
         or.b    d7,$1c1(a0)                     ; 00842
         or.b    d7,$1e1(a0)                     ; 00846
         rts                                     ; 0084A
-sub_008_0084C:
+
+;-------------------------------------------------------------------------------
+; DrawFarScenery0 - Stage $78: draws the far scenery list built from the first map
+; (FarSceneryList0).
+;-------------------------------------------------------------------------------
+DrawFarScenery0:
         clr.b   (SceneryMapOne).l               ; 0084C
         move.w  (dat_071_0037C).l,(dat_071_0037A).l ; 00852
         bra.b   l_008_00870                     ; 0085C
-sub_008_0085E:
+
+;-------------------------------------------------------------------------------
+; DrawFarScenery1 - Stage $80: draws the far scenery list built from the second map
+; (FarSceneryList1).
+;-------------------------------------------------------------------------------
+DrawFarScenery1:
         move.b  #$1,(SceneryMapOne).l           ; 0085E
         move.w  (dat_071_0037E).l,(dat_071_0037A).l ; 00866
 l_008_00870:

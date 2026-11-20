@@ -610,7 +610,12 @@ l_020_00722:
         move.l  (TimeSeconds).l,(dat_071_004CA).l ; 00722
         move.l  (TimeMicros).l,(dat_071_004CE).l ; 0072C
         rts                                     ; 00736
-sub_020_00738:
+
+;-------------------------------------------------------------------------------
+; SetViewOctant - Sets ViewOctant (0-7): the eighth of the compass the view faces
+; (dat_071_0045C in the cockpit, dat_071_00466 outside), for the scenery order.
+;-------------------------------------------------------------------------------
+SetViewOctant:
         tst.b   (OutsideView).l                 ; 00738
         beq.b   l_020_00748                     ; 0073E
         move.w  (dat_071_00466).l,d0            ; 00740
@@ -683,11 +688,17 @@ dat_020_007C2:
         dc.l    dat_020_007B9                   ; 007DA
         dc.l    dat_020_007BB                   ; 007DE
 l_020_007E2:
-        clr.b   (dat_071_00190).l               ; 007E2
+        clr.b   (ShakeKind).l                   ; 007E2
 l_020_007E8:
         rts                                     ; 007E8
-sub_020_007EA:
-        move.b  (dat_071_00190).l,d0            ; 007EA
+
+;-------------------------------------------------------------------------------
+; ShakeView - Stage $60: while ShakeKind (1-3) is set, moves the view up and down (ViewY, ClipY
+; and the digits' offset) by the next of that kind's offsets (dat_020_007C2), ShakeStep
+; counting; at the end puts it back and redraws the instruments.
+;-------------------------------------------------------------------------------
+ShakeView:
+        move.b  (ShakeKind).l,d0                ; 007EA
         beq.b   l_020_007E8                     ; 007F0
         move.w  (dat_071_00356).l,d1            ; 007F2
         bge.b   l_020_007FC                     ; 007F8
@@ -701,20 +712,20 @@ l_020_007FC:
         asl.w   #$3,d0                          ; 0080A
         movea.l (a0,d0.w),a1                    ; 0080C
         move.b  (a1),d1                         ; 00810
-        cmp.b   (dat_071_0025F).l,d1            ; 00812
+        cmp.b   (ShakeStep).l,d1                ; 00812
         ble.b   l_020_00874                     ; 00818
         move.w  (dat_071_0029C).l,d2            ; 0081A
         andi.w  #$400,d2                        ; 00820
         bne.b   l_020_00834                     ; 00824
-        clr.b   (dat_071_0025F).l               ; 00826
+        clr.b   (ShakeStep).l                   ; 00826
         ori.w   #$400,(dat_071_0029C).l         ; 0082C
 l_020_00834:
         addq.w  #$4,d0                          ; 00834
         movea.l (a0,d0.w),a1                    ; 00836
-        move.b  (dat_071_0025F).l,d2            ; 0083A
+        move.b  (ShakeStep).l,d2                ; 0083A
         ext.w   d2                              ; 00840
         move.b  (a1,d2.w),d0                    ; 00842
-        addq.b  #$1,(dat_071_0025F).l           ; 00846
+        addq.b  #$1,(ShakeStep).l               ; 00846
         ext.w   d0                              ; 0084C
         move.w  d0,d1                           ; 0084E
         addi.w  #$90,d1                         ; 00850
@@ -729,8 +740,8 @@ l_020_00834:
         move.l  d0,(dat_071_002E8).l            ; 0086C
         bra.b   l_020_00896                     ; 00872
 l_020_00874:
-        clr.b   (dat_071_00190).l               ; 00874
-        clr.b   (dat_071_0025F).l               ; 0087A
+        clr.b   (ShakeKind).l                   ; 00874
+        clr.b   (ShakeStep).l                   ; 0087A
         andi.w  #$fbff,(dat_071_0029C).l        ; 00880
         clr.l   (dat_071_002E8).l               ; 00888
         move.w  #$90,(ClipY).l                  ; 0088E
