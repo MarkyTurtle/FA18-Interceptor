@@ -213,7 +213,7 @@ l_025_00248:
         cmpa.l  #dat_072_0300E,a1               ; 00258
         blt.w   l_025_001CC                     ; 0025E
         move.l  a3,-(a7)                        ; 00262
-        jsr     (sub_036_00AB8).l               ; 00264
+        jsr     (FillPolygon).l                 ; 00264
         movea.l (a7)+,a3                        ; 0026A
 l_025_0026C:
         subq.w  #$1,-$8(a6)                     ; 0026C

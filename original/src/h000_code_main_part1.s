@@ -665,7 +665,7 @@ SetupGameDisplay:
         movea.l $14(a2),a1                      ; 0087A
         move.l  a1,$14(a0)                      ; 0087E
         move.l  a1,(dat_071_000AE).l            ; 00882
-        jsr     (sub_036_0004E).l               ; 00888
+        jsr     (SetupBufferPlanes).l           ; 00888
         move.l  #$10002,-(a7)                   ; 0088E
         move.l  #$1f40,-(a7)                    ; 00894
         jsr     (_AllocMem).l                   ; 0089A
@@ -1593,7 +1593,7 @@ l_000_01392:
         jsr     (DrawFuelGauge).l               ; 01392
 l_000_01398:
         move.w  #$1a0,(FrameStage).l            ; 01398
-        jsr     (sub_036_00BAA).l               ; 013A0
+        jsr     (DrawPanelLamp).l               ; 013A0
         jsr     (sub_039_00FA8).l               ; 013A6
         jsr     (DrawStores).l                  ; 013AC
         jsr     (ShowGridZ).l                   ; 013B2
@@ -1647,7 +1647,7 @@ l_000_01474:
         andi.w  #$1f,d0                         ; 01478
         subq.w  #$8,d0                          ; 0147C
         bne.b   l_000_01488                     ; 0147E
-        jsr     (sub_036_000F2).l               ; 01480
+        jsr     (ClearBothBuffers).l            ; 01480
         bra.b   l_000_014A6                     ; 01486
 l_000_01488:
         move.b  (CameraSequence).l,d0           ; 01488
@@ -1678,7 +1678,7 @@ l_000_014D0:
         tst.b   (FlightScreen).l                ; 014DE
         beq.b   l_000_01502                     ; 014E4
         move.w  #$210,(FrameStage).l            ; 014E6
-        jsr     (sub_036_0000C).l               ; 014EE
+        jsr     (DrawBufferMark).l              ; 014EE
         move.w  #$218,(FrameStage).l            ; 014F4
         jsr     (ShowDebugNumbers).l            ; 014FC
 l_000_01502:

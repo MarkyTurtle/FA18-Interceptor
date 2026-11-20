@@ -844,7 +844,7 @@ l_000_08110:
         move.l  $10(a1),$10(a0)                 ; 0815C
         movea.l (GameBitMap1).l,a1              ; 08162
         move.l  $14(a1),$14(a0)                 ; 08168
-        jsr     (sub_036_0004E).l               ; 0816E
+        jsr     (SetupBufferPlanes).l           ; 0816E
         moveq   #$20,d0                         ; 08174
         move.l  d0,-(a7)                        ; 08176
         jsr     (_GetColorMap).l                ; 08178

@@ -3877,7 +3877,7 @@ UpdateBullets:
         move.b  d0,-$3(a6)                      ; 072E2
         move.b  d0,-$1(a6)                      ; 072E6
         move.b  d0,-$2(a6)                      ; 072EA
-        jsr     (sub_036_00000).l               ; 072EE
+        jsr     (SolidPattern).l                ; 072EE
         move.l  #Player_7D,-$8(a6)              ; 072F4
         move.l  #Player_3B,-$c(a6)              ; 072FC
         movea.l -$c(a6),a0                      ; 07304

@@ -530,7 +530,7 @@ l_031_006CE:
         jsr     (sub_035_00550).l               ; 006E4
         bra.b   l_031_006A4                     ; 006EA
 l_031_006EC:
-        jsr     (sub_036_00AB8).l               ; 006EC
+        jsr     (FillPolygon).l                 ; 006EC
         bra.b   l_031_006A4                     ; 006F2
 l_031_006F4:
         movem.w (dat_072_03002).l,d0-d3         ; 006F4

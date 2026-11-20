@@ -815,7 +815,7 @@ l_019_006C8:
         move.w  d2,(a0)+                        ; 006D0
         move.w  d5,(a0)+                        ; 006D2
         dbra    d7,l_019_0069A                  ; 006D4
-        jsr     (sub_036_00AB8).l               ; 006D8
+        jsr     (FillPolygon).l                 ; 006D8
         addq.w  #$1,(dat_071_00B52).l           ; 006DE
         unlk    a6                              ; 006E4
         moveq   #$1,d0                          ; 006E6

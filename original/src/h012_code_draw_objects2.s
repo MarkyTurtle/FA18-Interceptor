@@ -387,7 +387,7 @@ l_012_003BC:
         rts                                     ; 003BE
 
 ;-------------------------------------------------------------------------------
-; CheckSeaView - sets SeaView when the view looks over the sea (SeaViewTable, by
+; CheckSeaView - Sets SeaView when the view looks over the sea (SeaViewTable, by
 ; LookupViewTable). Run every other frame.
 ;-------------------------------------------------------------------------------
 CheckSeaView:

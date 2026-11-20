@@ -7,10 +7,20 @@
 ; Hunk 36: CODE, $1224 bytes
 ;===============================================================================
 	CODE_HUNK	h036
-sub_036_00000:
+
+;-------------------------------------------------------------------------------
+; SolidPattern - Sets FillPattern to solid.
+;-------------------------------------------------------------------------------
+SolidPattern:
         move.l  #$fffff,(FillPattern).l         ; 00000
         rts                                     ; 0000A
-sub_036_0000C:
+
+;-------------------------------------------------------------------------------
+; DrawBufferMark - Draws a short line in colour 13 at the top left corner (0,0)-(8,9) or the
+; other way, by which buffer is shown: a marker of the double buffering (sub_036_00038 the
+; other).
+;-------------------------------------------------------------------------------
+DrawBufferMark:
         move.l  #$fffff,(FillPattern).l         ; 0000C
         move.w  #$d,(DrawColour).l              ; 00016
         tst.w   (DisplayBuffer).l               ; 0001E
@@ -20,7 +30,11 @@ sub_036_0000C:
         move.w  #$8,d2                          ; 0002E
         move.w  #$9,d3                          ; 00032
         bra.b   l_036_00048                     ; 00036
-sub_036_00038:
+
+;-------------------------------------------------------------------------------
+; DrawBufferMark2 - The other line of DrawBufferMark ((8,0)-(0,9)).
+;-------------------------------------------------------------------------------
+DrawBufferMark2:
         move.w  #$8,d0                          ; 00038
         move.w  #$0,d1                          ; 0003C
         move.w  #$0,d2                          ; 00040
@@ -29,7 +43,12 @@ l_036_00048:
         bsr.w   DrawLine                        ; 00048
 l_036_0004C:
         rts                                     ; 0004C
-sub_036_0004E:
+
+;-------------------------------------------------------------------------------
+; SetupBufferPlanes - Fills BufferPlanes (and dat_071_0005E) with the two display buffers'
+; plane addresses, in the order the drawing uses (plane 3 first).
+;-------------------------------------------------------------------------------
+SetupBufferPlanes:
         lea.l   (BufferPlanes).l,a0             ; 0004E
         move.l  (dat_071_0009A).l,(a0)+         ; 00054
         move.l  (dat_071_00096).l,(a0)+         ; 0005A
@@ -67,12 +86,21 @@ l_036_000E4:
         move.l  a0,(DrawPlanes).l               ; 000E4
         move.l  a1,(dat_071_0008A).l            ; 000EA
         rts                                     ; 000F0
-sub_036_000F2:
+
+;-------------------------------------------------------------------------------
+; ClearBothBuffers - Clears the first rows of both display buffers' planes (ClearPlanesRows on
+; each half of BufferPlanes).
+;-------------------------------------------------------------------------------
+ClearBothBuffers:
         lea.l   (BufferPlanes).l,a1             ; 000F2
-        bsr.w   sub_036_00106                   ; 000F8
+        bsr.w   ClearPlanesRows                 ; 000F8
         lea.l   (BufferPlanes).l,a1             ; 000FC
         adda.w  #$10,a1                         ; 00102
-sub_036_00106:
+
+;-------------------------------------------------------------------------------
+; ClearPlanesRows - Clears a block of the four planes listed at a1 with movem.
+;-------------------------------------------------------------------------------
+ClearPlanesRows:
         movem.l (a1),a0-a3                      ; 00106
         moveq   #$0,d0                          ; 0010A
         move.l  d0,d1                           ; 0010C
@@ -274,22 +302,22 @@ PixelMasks:
 ; PlotColourWriters - The 16 colour writers for one pixel: each sets or clears the pixel in
 ; planes 0-3 for its colour.
 PlotColourWriters:
-        dc.l    sub_036_00396                   ; 002F6
-        dc.l    sub_036_003AA                   ; 002FA
-        dc.l    sub_036_003B4                   ; 002FE
-        dc.l    sub_036_003BE                   ; 00302
-        dc.l    sub_036_003C8                   ; 00306
-        dc.l    sub_036_003D2                   ; 0030A
-        dc.l    sub_036_003DC                   ; 0030E
-        dc.l    sub_036_003E6                   ; 00312
-        dc.l    sub_036_003F0                   ; 00316
-        dc.l    sub_036_003FA                   ; 0031A
-        dc.l    sub_036_00404                   ; 0031E
-        dc.l    sub_036_0040E                   ; 00322
-        dc.l    sub_036_00418                   ; 00326
-        dc.l    sub_036_00422                   ; 0032A
-        dc.l    sub_036_0042C                   ; 0032E
-        dc.l    sub_036_00436                   ; 00332
+        dc.l    ColourWriter0                   ; 002F6
+        dc.l    ColourWriter1                   ; 002FA
+        dc.l    ColourWriter2                   ; 002FE
+        dc.l    ColourWriter3                   ; 00302
+        dc.l    ColourWriter4                   ; 00306
+        dc.l    ColourWriter5                   ; 0030A
+        dc.l    ColourWriter6                   ; 0030E
+        dc.l    ColourWriter7                   ; 00312
+        dc.l    ColourWriter8                   ; 00316
+        dc.l    ColourWriter9                   ; 0031A
+        dc.l    ColourWriter10                  ; 0031E
+        dc.l    ColourWriter11                  ; 00322
+        dc.l    ColourWriter12                  ; 00326
+        dc.l    ColourWriter13                  ; 0032A
+        dc.l    ColourWriter14                  ; 0032E
+        dc.l    ColourWriter15                  ; 00332
 
 ;-------------------------------------------------------------------------------
 ; PixelPairMasks - The 2-pixel masks ($C000, $6000 ... $0003) - data, though the first trace
@@ -303,125 +331,129 @@ PixelPairMasks:
 	dc.b	$00,$18,$00,$0C,$00,$06,$00,$03
 ; BigColourWriters - The 16 colour writers for a big point.
 BigColourWriters:
-        dc.l    sub_036_00440                   ; 00356
-        dc.l    sub_036_0045A                   ; 0035A
-        dc.l    sub_036_00474                   ; 0035E
-        dc.l    sub_036_0048E                   ; 00362
-        dc.l    sub_036_004A8                   ; 00366
-        dc.l    sub_036_004C2                   ; 0036A
-        dc.l    sub_036_004DC                   ; 0036E
-        dc.l    sub_036_004F6                   ; 00372
-        dc.l    sub_036_00510                   ; 00376
-        dc.l    sub_036_0052A                   ; 0037A
-        dc.l    sub_036_00544                   ; 0037E
-        dc.l    sub_036_0055E                   ; 00382
-        dc.l    sub_036_00578                   ; 00386
-        dc.l    sub_036_00592                   ; 0038A
-        dc.l    sub_036_005AC                   ; 0038E
-        dc.l    sub_036_005C6                   ; 00392
-sub_036_00396:
+        dc.l    BigColourWriter0                ; 00356
+        dc.l    BigColourWriter1                ; 0035A
+        dc.l    BigColourWriter2                ; 0035E
+        dc.l    BigColourWriter3                ; 00362
+        dc.l    BigColourWriter4                ; 00366
+        dc.l    BigColourWriter5                ; 0036A
+        dc.l    BigColourWriter6                ; 0036E
+        dc.l    BigColourWriter7                ; 00372
+        dc.l    BigColourWriter8                ; 00376
+        dc.l    BigColourWriter9                ; 0037A
+        dc.l    BigColourWriter10               ; 0037E
+        dc.l    BigColourWriter11               ; 00382
+        dc.l    BigColourWriter12               ; 00386
+        dc.l    BigColourWriter13               ; 0038A
+        dc.l    BigColourWriter14               ; 0038E
+        dc.l    BigColourWriter15               ; 00392
+ColourWriter0:
         and.w   d0,(a3)                         ; 00396
         and.w   d1,(a2)                         ; 00398
         and.w   d2,(a1)                         ; 0039A
         and.w   d3,(a0)                         ; 0039C
         rts                                     ; 0039E
-sub_036_003A0:
+
+;-------------------------------------------------------------------------------
+; XorWriter - The XOR writer for one pixel (DrawXor): flips the pixel in each plane.
+;-------------------------------------------------------------------------------
+XorWriter:
         eor.w   d4,(a3)                         ; 003A0
         eor.w   d5,(a2)                         ; 003A2
         eor.w   d6,(a1)                         ; 003A4
         eor.w   d7,(a0)                         ; 003A6
         rts                                     ; 003A8
-sub_036_003AA:
+ColourWriter1:
         or.w    d4,(a3)                         ; 003AA
         and.w   d1,(a2)                         ; 003AC
         and.w   d2,(a1)                         ; 003AE
         and.w   d3,(a0)                         ; 003B0
         rts                                     ; 003B2
-sub_036_003B4:
+ColourWriter2:
         and.w   d0,(a3)                         ; 003B4
         or.w    d5,(a2)                         ; 003B6
         and.w   d2,(a1)                         ; 003B8
         and.w   d3,(a0)                         ; 003BA
         rts                                     ; 003BC
-sub_036_003BE:
+ColourWriter3:
         or.w    d4,(a3)                         ; 003BE
         or.w    d5,(a2)                         ; 003C0
         and.w   d2,(a1)                         ; 003C2
         and.w   d3,(a0)                         ; 003C4
         rts                                     ; 003C6
-sub_036_003C8:
+ColourWriter4:
         and.w   d0,(a3)                         ; 003C8
         and.w   d1,(a2)                         ; 003CA
         or.w    d6,(a1)                         ; 003CC
         and.w   d3,(a0)                         ; 003CE
         rts                                     ; 003D0
-sub_036_003D2:
+ColourWriter5:
         or.w    d4,(a3)                         ; 003D2
         and.w   d1,(a2)                         ; 003D4
         or.w    d6,(a1)                         ; 003D6
         and.w   d3,(a0)                         ; 003D8
         rts                                     ; 003DA
-sub_036_003DC:
+ColourWriter6:
         and.w   d0,(a3)                         ; 003DC
         or.w    d5,(a2)                         ; 003DE
         or.w    d6,(a1)                         ; 003E0
         and.w   d3,(a0)                         ; 003E2
         rts                                     ; 003E4
-sub_036_003E6:
+ColourWriter7:
         or.w    d4,(a3)                         ; 003E6
         or.w    d5,(a2)                         ; 003E8
         or.w    d6,(a1)                         ; 003EA
         and.w   d3,(a0)                         ; 003EC
         rts                                     ; 003EE
-sub_036_003F0:
+ColourWriter8:
         and.w   d0,(a3)                         ; 003F0
         and.w   d1,(a2)                         ; 003F2
         and.w   d2,(a1)                         ; 003F4
         or.w    d7,(a0)                         ; 003F6
         rts                                     ; 003F8
-sub_036_003FA:
+ColourWriter9:
         or.w    d4,(a3)                         ; 003FA
         and.w   d1,(a2)                         ; 003FC
         and.w   d2,(a1)                         ; 003FE
         or.w    d7,(a0)                         ; 00400
         rts                                     ; 00402
-sub_036_00404:
+ColourWriter10:
         and.w   d0,(a3)                         ; 00404
         or.w    d5,(a2)                         ; 00406
         and.w   d2,(a1)                         ; 00408
         or.w    d7,(a0)                         ; 0040A
         rts                                     ; 0040C
-sub_036_0040E:
+ColourWriter11:
         or.w    d4,(a3)                         ; 0040E
         or.w    d5,(a2)                         ; 00410
         and.w   d2,(a1)                         ; 00412
         or.w    d7,(a0)                         ; 00414
         rts                                     ; 00416
-sub_036_00418:
+ColourWriter12:
         and.w   d0,(a3)                         ; 00418
         and.w   d1,(a2)                         ; 0041A
         or.w    d6,(a1)                         ; 0041C
         or.w    d7,(a0)                         ; 0041E
         rts                                     ; 00420
-sub_036_00422:
+ColourWriter13:
         or.w    d4,(a3)                         ; 00422
         and.w   d1,(a2)                         ; 00424
         or.w    d6,(a1)                         ; 00426
         or.w    d7,(a0)                         ; 00428
         rts                                     ; 0042A
-sub_036_0042C:
+ColourWriter14:
         and.w   d0,(a3)                         ; 0042C
         or.w    d5,(a2)                         ; 0042E
         or.w    d6,(a1)                         ; 00430
         or.w    d7,(a0)                         ; 00432
         rts                                     ; 00434
-sub_036_00436:
+ColourWriter15:
         or.w    d4,(a3)                         ; 00436
         or.w    d5,(a2)                         ; 00438
         or.w    d6,(a1)                         ; 0043A
         or.w    d7,(a0)                         ; 0043C
         rts                                     ; 0043E
-sub_036_00440:
+BigColourWriter0:
         and.w   d0,(a3)                         ; 00440
         and.w   d0,$28(a3)                      ; 00442
         and.w   d1,(a2)                         ; 00446
@@ -431,7 +463,7 @@ sub_036_00440:
         and.w   d3,(a0)                         ; 00452
         and.w   d3,$28(a0)                      ; 00454
         rts                                     ; 00458
-sub_036_0045A:
+BigColourWriter1:
         or.w    d4,(a3)                         ; 0045A
         or.w    d4,$28(a3)                      ; 0045C
         and.w   d1,(a2)                         ; 00460
@@ -441,7 +473,7 @@ sub_036_0045A:
         and.w   d3,(a0)                         ; 0046C
         and.w   d3,$28(a0)                      ; 0046E
         rts                                     ; 00472
-sub_036_00474:
+BigColourWriter2:
         and.w   d0,(a3)                         ; 00474
         and.w   d0,$28(a3)                      ; 00476
         or.w    d5,(a2)                         ; 0047A
@@ -451,7 +483,7 @@ sub_036_00474:
         and.w   d3,(a0)                         ; 00486
         and.w   d3,$28(a0)                      ; 00488
         rts                                     ; 0048C
-sub_036_0048E:
+BigColourWriter3:
         or.w    d4,(a3)                         ; 0048E
         or.w    d4,$28(a3)                      ; 00490
         or.w    d5,(a2)                         ; 00494
@@ -461,7 +493,7 @@ sub_036_0048E:
         and.w   d3,(a0)                         ; 004A0
         and.w   d3,$28(a0)                      ; 004A2
         rts                                     ; 004A6
-sub_036_004A8:
+BigColourWriter4:
         and.w   d0,(a3)                         ; 004A8
         and.w   d0,$28(a3)                      ; 004AA
         and.w   d1,(a2)                         ; 004AE
@@ -471,7 +503,7 @@ sub_036_004A8:
         and.w   d3,(a0)                         ; 004BA
         and.w   d3,$28(a0)                      ; 004BC
         rts                                     ; 004C0
-sub_036_004C2:
+BigColourWriter5:
         or.w    d4,(a3)                         ; 004C2
         or.w    d4,$28(a3)                      ; 004C4
         and.w   d1,(a2)                         ; 004C8
@@ -481,7 +513,7 @@ sub_036_004C2:
         and.w   d3,(a0)                         ; 004D4
         and.w   d3,$28(a0)                      ; 004D6
         rts                                     ; 004DA
-sub_036_004DC:
+BigColourWriter6:
         and.w   d0,(a3)                         ; 004DC
         and.w   d0,$28(a3)                      ; 004DE
         or.w    d5,(a2)                         ; 004E2
@@ -491,7 +523,7 @@ sub_036_004DC:
         and.w   d3,(a0)                         ; 004EE
         and.w   d3,$28(a0)                      ; 004F0
         rts                                     ; 004F4
-sub_036_004F6:
+BigColourWriter7:
         or.w    d4,(a3)                         ; 004F6
         or.w    d4,$28(a3)                      ; 004F8
         or.w    d5,(a2)                         ; 004FC
@@ -501,7 +533,7 @@ sub_036_004F6:
         and.w   d3,(a0)                         ; 00508
         and.w   d3,$28(a0)                      ; 0050A
         rts                                     ; 0050E
-sub_036_00510:
+BigColourWriter8:
         and.w   d0,(a3)                         ; 00510
         and.w   d0,$28(a3)                      ; 00512
         and.w   d1,(a2)                         ; 00516
@@ -511,7 +543,7 @@ sub_036_00510:
         or.w    d7,(a0)                         ; 00522
         or.w    d7,$28(a0)                      ; 00524
         rts                                     ; 00528
-sub_036_0052A:
+BigColourWriter9:
         or.w    d4,(a3)                         ; 0052A
         or.w    d4,$28(a3)                      ; 0052C
         and.w   d1,(a2)                         ; 00530
@@ -521,7 +553,7 @@ sub_036_0052A:
         or.w    d7,(a0)                         ; 0053C
         or.w    d7,$28(a0)                      ; 0053E
         rts                                     ; 00542
-sub_036_00544:
+BigColourWriter10:
         and.w   d0,(a3)                         ; 00544
         and.w   d0,$28(a3)                      ; 00546
         or.w    d5,(a2)                         ; 0054A
@@ -531,7 +563,7 @@ sub_036_00544:
         or.w    d7,(a0)                         ; 00556
         or.w    d7,$28(a0)                      ; 00558
         rts                                     ; 0055C
-sub_036_0055E:
+BigColourWriter11:
         or.w    d4,(a3)                         ; 0055E
         or.w    d4,$28(a3)                      ; 00560
         or.w    d5,(a2)                         ; 00564
@@ -541,7 +573,7 @@ sub_036_0055E:
         or.w    d7,(a0)                         ; 00570
         or.w    d7,$28(a0)                      ; 00572
         rts                                     ; 00576
-sub_036_00578:
+BigColourWriter12:
         and.w   d0,(a3)                         ; 00578
         and.w   d0,$28(a3)                      ; 0057A
         and.w   d1,(a2)                         ; 0057E
@@ -551,7 +583,7 @@ sub_036_00578:
         or.w    d7,(a0)                         ; 0058A
         or.w    d7,$28(a0)                      ; 0058C
         rts                                     ; 00590
-sub_036_00592:
+BigColourWriter13:
         or.w    d4,(a3)                         ; 00592
         or.w    d4,$28(a3)                      ; 00594
         and.w   d1,(a2)                         ; 00598
@@ -561,7 +593,7 @@ sub_036_00592:
         or.w    d7,(a0)                         ; 005A4
         or.w    d7,$28(a0)                      ; 005A6
         rts                                     ; 005AA
-sub_036_005AC:
+BigColourWriter14:
         and.w   d0,(a3)                         ; 005AC
         and.w   d0,$28(a3)                      ; 005AE
         or.w    d5,(a2)                         ; 005B2
@@ -571,7 +603,7 @@ sub_036_005AC:
         or.w    d7,(a0)                         ; 005BE
         or.w    d7,$28(a0)                      ; 005C0
         rts                                     ; 005C4
-sub_036_005C6:
+BigColourWriter15:
         or.w    d4,(a3)                         ; 005C6
         or.w    d4,$28(a3)                      ; 005C8
         or.w    d5,(a2)                         ; 005CC
@@ -893,7 +925,7 @@ l_036_008EC:
         rts                                     ; 008FA
 
 ;-------------------------------------------------------------------------------
-; ClearSkyGround - clears the 3D view (ClipY lines) by blitter to the ground
+; ClearSkyGround - Clears the 3D view (ClipY lines) by blitter to the ground
 ; colour - plane 2 set, planes 0 and 3 clear, plane 1 set when SeaView: colour 4 (green land)
 ; or 6 (sea) - then fills the sky polygon (MakeSkyPolygon) into plane 0, making it colour 5
 ; (the sky). Over the sea it also clears plane 1 under the sky (FillPolygonPlane,
@@ -1035,7 +1067,13 @@ l_036_00AAC:
         rts                                     ; 00AB4
 l_036_00AB6:
         rts                                     ; 00AB6
-sub_036_00AB8:
+
+;-------------------------------------------------------------------------------
+; FillPolygon - Fills the polygon at dat_072_03000 in DrawColour: the edges and the area fill
+; into one plane (FillPolygonPlane), then each plane of the colour set or cleared from it (or a
+; patterned fill, sub_036_00F7C). The 2D fill under ClipFillPolygon.
+;-------------------------------------------------------------------------------
+FillPolygon:
         nop                                     ; 00AB8
         move.w  #$8400,(CUSTOM+DMACON).l        ; 00ABA
         bsr.w   FillPolygonPlane                ; 00AC2
@@ -1044,7 +1082,7 @@ sub_036_00AB8:
         blt.b   l_036_00AE0                     ; 00ACE
         move.w  (dat_071_000BC).l,d5            ; 00AD0
         beq.b   l_036_00AE0                     ; 00AD6
-        bsr.w   sub_036_00F7C                   ; 00AD8
+        bsr.w   FillPatterned                   ; 00AD8
         bra.w   l_036_00B9A                     ; 00ADC
 l_036_00AE0:
         btst    #$0,(DrawMask).l                ; 00AE0
@@ -1108,12 +1146,17 @@ l_036_00B90:
 l_036_00B96:
         bsr.w   PlaneOpUnderFill                ; 00B96
 l_036_00B9A:
-        bsr.w   sub_036_01022                   ; 00B9A
+        bsr.w   ClearFillPlane                  ; 00B9A
         move.w  #$400,(CUSTOM+DMACON).l         ; 00B9E
         rts                                     ; 00BA6
 l_036_00BA8:
         rts                                     ; 00BA8
-sub_036_00BAA:
+
+;-------------------------------------------------------------------------------
+; DrawPanelLamp - Blits one of the panel's lamps (at $1990, 2 words wide) on or off by the
+; warning state; only when its place is on the screen.
+;-------------------------------------------------------------------------------
+DrawPanelLamp:
         move.w  #$c,d7                          ; 00BAA
         sub.w   (ViewShift).l,d7                ; 00BAE
         blt.b   l_036_00BA8                     ; 00BB4
@@ -1218,7 +1261,7 @@ l_036_00D0A:
         rts                                     ; 00D0A
 
 ;-------------------------------------------------------------------------------
-; DrawAttitudeIndicator - draws the panel's attitude indicator - the sky
+; DrawAttitudeIndicator - Draws the panel's attitude indicator - the sky
 ; polygon kept by ClearSkyGround (PanelSkyPolygon), scaled into the instrument's box (x *
 ; 24/256 + $C1, y * 31/256 + $A2) and filled into plane 2.
 ;-------------------------------------------------------------------------------
@@ -1243,19 +1286,24 @@ l_036_00D20:
         add.w   (ViewY).l,d0                    ; 00D40
         move.w  d0,(a4)+                        ; 00D46
         dbra    d7,l_036_00D20                  ; 00D48
-        bsr.w   sub_036_00D60                   ; 00D4C
+        bsr.w   FillPolygonPanel                ; 00D4C
         bne.b   l_036_00D0A                     ; 00D50
         moveq   #$4,d0                          ; 00D52
         moveq   #$1,d3                          ; 00D54
-        bsr.w   sub_036_0106A                   ; 00D56
-        bsr.w   sub_036_01022                   ; 00D5A
+        bsr.w   FillPanelPlane                  ; 00D56
+        bsr.w   ClearFillPlane                  ; 00D5A
         rts                                     ; 00D5E
-sub_036_00D60:
+
+;-------------------------------------------------------------------------------
+; FillPolygonPanel - FillPolygonPlane with the bottom limit at row $C7, for the attitude
+; indicator.
+;-------------------------------------------------------------------------------
+FillPolygonPanel:
         movea.w #$c7,a4                         ; 00D60
         bra.b   l_036_00D6C                     ; 00D64
 
 ;-------------------------------------------------------------------------------
-; FillPolygonPlane - fills the polygon at dat_072_03000 (clipped to ClipY
+; FillPolygonPlane - Fills the polygon at dat_072_03000 (clipped to ClipY
 ; lines) into the one plane at dat_071_000B2 by blitter: finds its bounding box, draws its
 ; edges (sub_036_0111A) and area-fills the box in place (BLTCON1 $0A, descending inclusive
 ; fill). A polygon only a pixel or two across is plotted or drawn as a line instead. d0 = 0
@@ -1401,7 +1449,7 @@ l_036_00E8C:
         movem.w (a2),d0-d3                      ; 00E8C
         addq.w  #$4,a2                          ; 00E90
         move.w  a4,-(a7)                        ; 00E92
-        bsr.w   sub_036_0111A                   ; 00E94
+        bsr.w   DrawFillEdges                   ; 00E94
         movea.w (a7)+,a4                        ; 00E98
         subq.w  #$1,(a3)                        ; 00E9A
         bgt.b   l_036_00E8C                     ; 00E9C
@@ -1409,7 +1457,7 @@ l_036_00E8C:
         move.w  (a2),d1                         ; 00EA0
         movem.w (dat_072_03002).l,d2-d3         ; 00EA2
         move.w  a4,-(a7)                        ; 00EAA
-        bsr.w   sub_036_0111A                   ; 00EAC
+        bsr.w   DrawFillEdges                   ; 00EAC
         movea.w (a7)+,a4                        ; 00EB0
         movem.w (dat_071_0034C).l,d1/d3         ; 00EB2
         asr.w   #$4,d3                          ; 00EBA
@@ -1483,7 +1531,11 @@ l_036_00F50:
         move.w  d7,BLTSIZE(a0)                  ; 00F74
         moveq   #$0,d0                          ; 00F78
         rts                                     ; 00F7A
-sub_036_00F7C:
+
+;-------------------------------------------------------------------------------
+; FillPatterned - The patterned form of FillPolygon's plane pass (the pattern of FillPattern).
+;-------------------------------------------------------------------------------
+FillPatterned:
         movea.l (DrawPlanes).l,a2               ; 00F7C
         move.l  $4(a2),d2                       ; 00F82
         move.l  (a2),d3                         ; 00F86
@@ -1537,7 +1589,12 @@ l_036_0100E:
         beq.b   l_036_01044                     ; 01018
         move.w  #$dfc,BLTCON0(a0)               ; 0101A
         bra.b   l_036_01052                     ; 01020
-sub_036_01022:
+
+;-------------------------------------------------------------------------------
+; ClearFillPlane - Clears the box FillPolygonPlane used in its work plane (BLTCON0 $D0C) after
+; a fill.
+;-------------------------------------------------------------------------------
+ClearFillPlane:
         move.w  (dat_071_0033E).l,d0            ; 01022
         move.l  (dat_071_00330).l,d2            ; 01028
         move.l  d2,d1                           ; 0102E
@@ -1560,7 +1617,12 @@ l_036_01052:
         move.l  d1,BLTDPTH(a0)                  ; 01060
         move.w  d0,BLTSIZE(a0)                  ; 01064
         rts                                     ; 01068
-sub_036_0106A:
+
+;-------------------------------------------------------------------------------
+; FillPanelPlane - The attitude indicator's plane pass: combines the filled sky with the
+; instrument's mask (dat_062_00154) into the plane.
+;-------------------------------------------------------------------------------
+FillPanelPlane:
         movea.l (DrawPlanes).l,a2               ; 0106A
         move.l  (a2,d0.w),d2                    ; 01070
         move.w  (dat_071_0033E).l,d0            ; 01074
@@ -1613,7 +1675,12 @@ l_036_010FA:
         move.l  d1,BLTDPTH(a0)                  ; 01110
         move.w  d0,BLTSIZE(a0)                  ; 01114
         rts                                     ; 01118
-sub_036_0111A:
+
+;-------------------------------------------------------------------------------
+; DrawFillEdges - Draws a polygon's edges for the blitter's area fill (one pixel per row, the
+; fill's way), clipped to the rows up to a4.
+;-------------------------------------------------------------------------------
+DrawFillEdges:
         cmp.w   d1,d3                           ; 0111A
         beq.b   l_036_01144                     ; 0111C
         bls.b   l_036_01146                     ; 0111E

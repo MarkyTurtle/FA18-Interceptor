@@ -34,7 +34,7 @@ MakeSkyPolygonPanel:
         bra.b   l_033_00038                     ; 00030
 
 ;-------------------------------------------------------------------------------
-; MakeSkyPolygon - turns the view's four corner directions (dat_033_00000) by
+; MakeSkyPolygon - Turns the view's four corner directions (dat_033_00000) by
 ; the view matrix (dat_071_005A8), finds where the horizon cuts the view's edges (hunk 34), and
 ; builds the polygon of the view above the horizon - the sky - at dat_072_03000 from the two
 ; horizon points (PutEdge) and the corners on the sky's side. Returns d0 = 0 (dat_071_0026E
