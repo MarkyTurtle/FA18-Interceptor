@@ -11,10 +11,10 @@ l_022_00000:
         rts                                     ; 00000
 
 ;-------------------------------------------------------------------------------
-; RecordFrame - Records one frame of the flight while recording is on (dat_071_00160, and bit 6
-; of dat_071_0029C): the player's control byte (PlayerControls) into RecordBuffer, and the two
-; words of key / button events waiting (dat_071_00366, dat_071_00368) into RecordControls. When
-; RecordBuffer is full the recording stops (RecordMode = 4, dat_071_0017E = 1) and both
+; RecordFrame - Records one frame of the flight while recording is on (DemoActive, and bit 6
+; of StatusBits): the player's control byte (PlayerControls) into RecordBuffer, and the two
+; words of key / button events waiting (FrameEvents1, FrameEvents2) into RecordControls. When
+; RecordBuffer is full the recording stops (RecordMode = 4, WorldFrozen = 1) and both
 ; pointers go back to the start.
 ;-------------------------------------------------------------------------------
 RecordFrame:
@@ -91,9 +91,9 @@ l_022_000FC:
 ;-------------------------------------------------------------------------------
 ; UpdateObject - Updates one object (a1) for the frame: its destroyed / crashed states (flags
 ; in +$00, the timer +$4C), the computer pilot for objects other than the player
-; (sub_030_0089A, while bit 6 of dat_071_0029C is set), the player's controls or replay
+; (ComputerPilot, while bit 6 of StatusBits is set), the player's controls or replay
 ; (PlayerFrameControls), and for the player the warnings from its attitude and sink rate
-; (dat_071_00524, the message dat_071_004B0)...
+; (SoundRequests, the message CurrentWarning)...
 ;-------------------------------------------------------------------------------
 UpdateObject:
         moveq   #$0,d0                          ; 000FE
@@ -114,7 +114,7 @@ l_022_0012C:
         andi.w  #$1f,d0                         ; 00132
         cmp.w   (CurrentObject).l,d0            ; 00136
         bne.b   l_022_00144                     ; 0013C
-        jsr     (sub_026_00708).l               ; 0013E
+        jsr     (KeepInZone).l                  ; 0013E
 l_022_00144:
         move.w  $0(a1),d0                       ; 00144
         move.w  d0,d1                           ; 00148

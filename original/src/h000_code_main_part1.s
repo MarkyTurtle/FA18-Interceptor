@@ -633,8 +633,8 @@ l_000_00804:
 ;-------------------------------------------------------------------------------
 ; SetupGameDisplay - Gives the title picture's planes to the game display: frees the display's
 ; own first plane buffer and points the game BitMap's four planes at the picture's (also kept
-; in dat_071_000A2-000AE), makes the copper lists (sub_036_0004E), and allocates two $1F40-byte
-; chip buffers.
+; in dat_071_000A2-000AE), makes the copper lists (SetupBufferPlanes), and allocates two
+; $1F40-byte chip buffers.
 ;-------------------------------------------------------------------------------
 SetupGameDisplay:
         movem.l a2,-(a7)                        ; 00806
@@ -1594,13 +1594,13 @@ l_000_01392:
 l_000_01398:
         move.w  #$1a0,(FrameStage).l            ; 01398
         jsr     (DrawPanelLamp).l               ; 013A0
-        jsr     (sub_039_00FA8).l               ; 013A6
+        jsr     (ShowMissilesLeft).l            ; 013A6
         jsr     (DrawStores).l                  ; 013AC
         jsr     (ShowGridZ).l                   ; 013B2
         jsr     (ShowGridX).l                   ; 013B8
         jsr     (ShowRadarRange).l              ; 013BE
         jsr     (sub_037_00674).l               ; 013C4
-        jsr     (sub_039_00164).l               ; 013CA
+        jsr     (ShowWeaponRange).l             ; 013CA
         jsr     (TargetReadout).l               ; 013D0
         jsr     (sub_037_0049C).l               ; 013D6
         move.b  (PanelRedraw).l,d0              ; 013DC
@@ -1626,7 +1626,7 @@ l_000_013F8:
 l_000_0142C:
         move.w  #$1d4,(FrameStage).l            ; 0142C
         jsr     (CheckViewObjectGone).l         ; 01434
-        jsr     (sub_039_0064A).l               ; 0143A
+        jsr     (EmptyReadout).l                ; 0143A
         jsr     (DrawMapMarkers).l              ; 01440
         jsr     (sub_020_00562).l               ; 01446
         move.w  -$2(a6),d0                      ; 0144C
@@ -2631,7 +2631,7 @@ l_000_02174:
 l_000_02190:
         move.w  #$a7,(ClipY).l                  ; 02190
         move.b  #$ff,(CameraFollows).l          ; 02198
-        jsr     (sub_026_00D70).l               ; 021A0
+        jsr     (FlyByPointObject4).l           ; 021A0
         moveq   #$0,d0                          ; 021A6
         move.b  d0,(MapView).l                  ; 021A8
         moveq   #$1,d0                          ; 021AE
@@ -2654,10 +2654,10 @@ l_000_02202:
         move.b  #$1,(AircraftLeft).l            ; 02202
         move.w  #$a7,(ClipY).l                  ; 0220A
         move.b  #$ff,(CameraFollows).l          ; 02212
-        move.b  #$3,(dat_071_00186).l           ; 0221A
+        move.b  #$3,(CameraShotStep).l          ; 0221A
         move.b  #$2,(StartPoint).l              ; 02222
         bsr.w   PlaceAircraft                   ; 0222A
-        jsr     (sub_026_00D7A).l               ; 0222E
+        jsr     (FlyByPointPlayer).l            ; 0222E
         jsr     (CameraAtRunway2).l             ; 02234
         jsr     (SetupMode).l                   ; 0223A
         clr.b   (MapView).l                     ; 02240
@@ -3499,7 +3499,7 @@ StateToCockpit:
         bsr.b   PlaceAircraft                   ; 02C80
         jsr     (PointAheadOfView).l            ; 02C82
         moveq   #$0,d0                          ; 02C88
-        move.b  d0,(dat_071_00186).l            ; 02C8A
+        move.b  d0,(CameraShotStep).l           ; 02C8A
         move.b  #$6,(CameraSequence).l          ; 02C90
         move.b  d0,(KeyMode).l                  ; 02C98
         move.b  (GameMode).l,d0                 ; 02C9E
@@ -3526,7 +3526,7 @@ l_000_02CDE:
         rts                                     ; 02CDE
 
 ;-------------------------------------------------------------------------------
-; PlaceAircraft - Places the objects for the flight (sub_004_003AE) and updates them.
+; PlaceAircraft - Places the objects for the flight (ResetRecording) and updates them.
 ;-------------------------------------------------------------------------------
 PlaceAircraft:
         jsr     (ResetRecording).l              ; 02CE0
@@ -4735,7 +4735,7 @@ l_000_03C8E:
 ;-------------------------------------------------------------------------------
 ; WarningTicker - Counts an 8-frame cycle (dat_071_00260) and sets WarningTicks for it ($86 at
 ; its start, 6 half way, 4 at the quarters, 0 otherwise): the beat of the warning lights and
-; sounds (sub_000_03D4C).
+; sounds (UpdateWarnings).
 ;-------------------------------------------------------------------------------
 WarningTicker:
         move.b  (dat_071_00260).l,d0            ; 03C94
@@ -4796,7 +4796,7 @@ l_000_03D48:
         rts                                     ; 03D4A
 
 ;-------------------------------------------------------------------------------
-; UpdateWarnings - Stage $C0: picks the warning to sound (dat_071_004B0, a sound word with
+; UpdateWarnings - Stage $C0: picks the warning to sound (CurrentWarning, a sound word with
 ; flags) from what is wrong - by priority, special cases first (dat_071_00298 bit 15,
 ; dat_071_002A6 bit 5), then the warnings (WarningFlags) and the status lights (StatusLights
 ; bits 4, 5...) - and plays it on the beat of WarningTicks (not worked out in detail).
@@ -5094,7 +5094,7 @@ l_000_041DE:
 ; SwitchView - Stage $08: when GunFlags bit 1 asks (the view key), switches between the cockpit
 ; and the outside view (OutsideView from dat_071_00203): going outside shifts what is drawn in
 ; the cockpit's place off the screen (ViewShift 50, ViewX 800), coming back puts it at 0; then
-; the gun sound is restarted, everything redrawn and ClipY set ($A7, or $B3 when dat_071_0017D
+; the gun sound is restarted, everything redrawn and ClipY set ($A7, or $B3 when MapView
 ; is set). Under a parachute (+$62 $30) the view is always outside. Outside, GunFlags bit 4
 ; flips dat_071_0017C; in camera sequence 6 below height $24000 the view's bottom returns to
 ; $A7.

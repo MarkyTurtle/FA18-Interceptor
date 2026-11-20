@@ -89,7 +89,7 @@ DrawGunCross:
 ; (+$18 / 1024 x 5, or the radar altimeter dat_071_00028 while dat_071_00174 is set, at most
 ; 99,999) with FT at the right, the speed (+$6E / 12) with KT at the left. The F-16 ($10,
 ; ViewObject +$62) shows moving tapes instead, with tick marks every 5 and numbers every 10
-; (sub_040_00D5C) and a pointer at the middle (HUDTapePointer).
+; (HUDTapeTicks) and a pointer at the middle (HUDTapePointer).
 ;-------------------------------------------------------------------------------
 HUDAltitude:
         move.w  #$d,(DrawColour).l              ; 00118
@@ -125,7 +125,7 @@ l_040_0015A:
         move.w  #$18,d0                         ; 00188
         swap    d0                              ; 0018C
         move.w  d6,d0                           ; 0018E
-        jsr     (sub_039_011A4).l               ; 00190
+        jsr     (PrintNumberHUD0).l             ; 00190
         move.w  #$ca,d0                         ; 00196
         lea.l   (sub_040_001C0).l,a2            ; 0019A
         lea.l   $2(a2),a0                       ; 001A0
@@ -134,7 +134,7 @@ l_040_0015A:
         move.w  #$1a,d0                         ; 001AC
         swap    d0                              ; 001B0
         move.w  #$1,d0                          ; 001B2
-        jsr     (sub_039_011B4).l               ; 001B6
+        jsr     (PrintTextHUD).l                ; 001B6
         bra.w   HUDSpeed                        ; 001BC
 sub_040_001C0:
         not.w   (a4)                            ; 001C0
@@ -285,7 +285,7 @@ l_040_0037C:
         move.w  #$a,d0                          ; 003B2
         swap    d0                              ; 003B6
         move.w  d6,d0                           ; 003B8
-        jsr     (sub_039_011A4).l               ; 003BA
+        jsr     (PrintNumberHUD0).l             ; 003BA
         move.w  #$71,d0                         ; 003C0
         lea.l   (dat_040_003EA).l,a2            ; 003C4
         lea.l   $2(a2),a0                       ; 003CA
@@ -294,7 +294,7 @@ l_040_0037C:
         move.w  #$c,d0                          ; 003D6
         swap    d0                              ; 003DA
         move.w  #$1,d0                          ; 003DC
-        jsr     (sub_039_011B4).l               ; 003E0
+        jsr     (PrintTextHUD).l                ; 003E0
         bra.w   HUDHeading                      ; 003E6
 dat_040_003EA:
 	dc.b	$4B,$54
@@ -407,7 +407,7 @@ l_040_00522:
 
 ;-------------------------------------------------------------------------------
 ; HUDHeading - The heading scale across the top: a mark at the centre (159, 63), the heading's
-; tens as numbers every 10 degrees (sub_040_007BE gives their places; HUDDigits3), and the
+; tens as numbers every 10 degrees (HeadingLabelPlaces gives their places; HUDDigits3), and the
 ; scale's ticks (HUDHeadingTicks).
 ;-------------------------------------------------------------------------------
 HUDHeading:
@@ -617,7 +617,7 @@ l_040_008DE:
 ; pipper (a circle, DrawHUDShape, from dat_040_016F4) where the bullets will be (GunPipperPos,
 ; from ComputeGunPipper), on the locked target or at (159, 91) without one; and on a target the
 ; range bar (DrawRangeArc: the target's range +$4A x $4C / $8CA0) and its closure
-; (sub_039_00416). With the gun selected (+$63 $1x), the target within 8 pixels of the pipper
+; (ShowClosure). With the gun selected (+$63 $1x), the target within 8 pixels of the pipper
 ; and closer than $900, it gives the shoot cue: ShootCue set, sound 4 and SHOOT (ShowShootCue).
 ;-------------------------------------------------------------------------------
 DrawGunSight:
@@ -924,7 +924,7 @@ l_040_00CFA:
         rts                                     ; 00CFA
 
 ;-------------------------------------------------------------------------------
-; HUDDigits3 - Draws the three digits at dat_071_001CA+3 (sub_039_011A6) at the place given in
+; HUDDigits3 - Draws the three digits at TextBuffer+3 (PrintNumberHUD) at the place given in
 ; a1: the heading labels.
 ;-------------------------------------------------------------------------------
 HUDDigits3:
@@ -938,7 +938,7 @@ HUDDigits3:
         bra.b   l_040_00D4A                     ; 00D16
 
 ;-------------------------------------------------------------------------------
-; HUDDigits2 - Draws two digits (sub_039_011A6) with the places in dat_040_0000C.
+; HUDDigits2 - Draws two digits (PrintNumberHUD) with the places in dat_040_0000C.
 ;-------------------------------------------------------------------------------
 HUDDigits2:
         moveq   #$0,d4                          ; 00D18
@@ -951,7 +951,7 @@ HUDDigits2:
         bra.b   l_040_00D4A                     ; 00D30
 
 ;-------------------------------------------------------------------------------
-; HUDDigits2Alt - Draws two digits (sub_039_011A6) with the places in dat_040_00000, for the
+; HUDDigits2Alt - Draws two digits (PrintNumberHUD) with the places in dat_040_00000, for the
 ; F-16's altitude tape.
 ;-------------------------------------------------------------------------------
 HUDDigits2Alt:
@@ -967,13 +967,13 @@ l_040_00D4A:
         movea.l d5,a4                           ; 00D4C
         swap    d0                              ; 00D4E
         move.w  d6,d0                           ; 00D50
-        jsr     (sub_039_011A6).l               ; 00D52
+        jsr     (PrintNumberHUD).l              ; 00D52
         rts                                     ; 00D58
 l_040_00D5A:
         rts                                     ; 00D5A
 
 ;-------------------------------------------------------------------------------
-; HUDTapeTicks - A tape's tick marks (every 3 lines from dat_071_0035C, longer every fifth), at
+; HUDTapeTicks - A tape's tick marks (every 3 lines from HUDTapeOffset, longer every fifth), at
 ; x d0, offset d1.
 ;-------------------------------------------------------------------------------
 HUDTapeTicks:
@@ -1036,7 +1036,7 @@ l_040_00E0A:
         rts                                     ; 00E0C
 
 ;-------------------------------------------------------------------------------
-; HUDHeadingTicks - The heading scale's tick marks, every 10 pixels from dat_071_0035C, longer
+; HUDHeadingTicks - The heading scale's tick marks, every 10 pixels from HUDTapeOffset, longer
 ; at the labelled ones.
 ;-------------------------------------------------------------------------------
 HUDHeadingTicks:
@@ -1224,7 +1224,7 @@ l_040_01076:
 
 ;-------------------------------------------------------------------------------
 ; DrawTargetBox - The head-up display's target box: with a weapon selected and a target on the
-; screen (dat_071_00306) the box (dat_071_00312) moves towards it a few pixels a frame (faster
+; screen (TargetScreenPos) the box (TargetBoxPos) moves towards it a few pixels a frame (faster
 ; with WarningFlags bit 14), then is drawn with DrawLine; apparently the seeker's lock.
 ;-------------------------------------------------------------------------------
 DrawTargetBox:

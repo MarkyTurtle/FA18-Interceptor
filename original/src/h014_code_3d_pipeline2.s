@@ -8,7 +8,7 @@
 	CODE_HUNK	h014
 
 ;-------------------------------------------------------------------------------
-; ShapeQuadList - Ops $44 and $48: a list of four-sided faces in colour 12 (dat_071_000B6
+; ShapeQuadList - Ops $44 and $48: a list of four-sided faces in colour 12 (FillPattern
 ; pattern 8,8,0,0), ended by a negative word.
 ;-------------------------------------------------------------------------------
 ShapeQuadList:
@@ -201,7 +201,7 @@ l_014_001FE:
 
 ;-------------------------------------------------------------------------------
 ; ShapeLineListFromAbove - Op $12C: ShapeLineList drawn only when the shape is seen from well
-; above (dat_071_00448 below -$C0); otherwise the list is skipped.
+; above (ViewOffsetY8 below -$C0); otherwise the list is skipped.
 ;-------------------------------------------------------------------------------
 ShapeLineListFromAbove:
         cmpi.l  #$ffffff40,(ViewOffsetY8).l     ; 0023C
@@ -488,7 +488,7 @@ l_014_00536:
 
 ;-------------------------------------------------------------------------------
 ; ShapeRunwaySide - Op $1C: a polygon chosen by which side of a line on the ground (from the
-; scenery record, dat_071_00402) the viewer is: used, with ops $20-$28, by the runway shapes
+; scenery record, CurrentShape) the viewer is: used, with ops $20-$28, by the runway shapes
 ; (32-36), in colours 1 and 10.
 ;-------------------------------------------------------------------------------
 ShapeRunwaySide:

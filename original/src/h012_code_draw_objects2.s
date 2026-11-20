@@ -13,8 +13,8 @@ l_012_00000:
 ;-------------------------------------------------------------------------------
 ; DrawGroundShape - The draw routine of the flat ground shapes (most of hunks 69 and 70: the
 ; city's ground, parks and hills, and the roads): only while the shape is at most $380000 below
-; the camera (dat_071_00436). Picks a level of detail by distance (dat_071_00510, scaled by
-; RadarScale unless dat_071_001AD is set), then turns its vertices - x and z only, all at the
+; the camera (ViewOffsetY). Picks a level of detail by distance (dat_071_00510, scaled by
+; RadarScale unless GroundDetail is set), then turns its vertices - x and z only, all at the
 ; shape's height - by the view matrix into VertexBuffer, and runs its face list through
 ; ShapeOps (with further vertex groups, sub_012_0020E, as DrawModel's TransformMoreVertices).
 ;-------------------------------------------------------------------------------
@@ -418,7 +418,7 @@ l_012_003F6:
 ; LookupViewTable - LookupViewTable(a0 = table): d0 = 1 if the view is listed: the table lists,
 ; by ViewBlockZ then ViewBlockX (each a list of values ending -1, then offsets), entries of a
 ; height bound (a flag word, 0 = below, then a long against the camera height) followed by
-; lists of dat_071_00220 values, each followed by the ViewOctants that count.
+; lists of ViewPlace values, each followed by the ViewOctants that count.
 ;-------------------------------------------------------------------------------
 LookupViewTable:
         move.w  (ViewBlockX).l,d0               ; 00400

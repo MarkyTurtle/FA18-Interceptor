@@ -71,8 +71,8 @@ l_037_000A2:
         rts                                     ; 000A2
 
 ;-------------------------------------------------------------------------------
-; DrawPanel - While dat_071_00206 counts down: blits the instrument panel picture (pix/inst5)
-; into the display at row 145 (55 rows, fewer if dat_071_002A8 is set), four planes.
+; DrawPanel - While PanelBlitCount counts down: blits the instrument panel picture (pix/inst5)
+; into the display at row 145 (55 rows, fewer if ViewY is set), four planes.
 ;-------------------------------------------------------------------------------
 DrawPanel:
         tst.b   (PanelBlitCount).l              ; 000A4
@@ -833,7 +833,7 @@ l_037_009E8:
 
 ;-------------------------------------------------------------------------------
 ; CompassPosition - From the viewed object's heading (+$68): the heading in tens
-; (dat_071_00370) and the compass strip's position (dat_071_00294, 0-$5F, wrapping).
+; (dat_071_00370) and the compass strip's position (CompassPos, 0-$5F, wrapping).
 ;-------------------------------------------------------------------------------
 CompassPosition:
         lea.l   (ObjectTable).l,a0              ; 009EA

@@ -22,7 +22,7 @@ each named routine does; routines still called `sub_HHH_OOOOO` are not worked ou
 4. loads the panel and front pictures (pix/inst5, pix/frnt5);
 5. `RunGame`: the input devices (`InitInput`: keyboard, joystick, mouse interrupt, timer, the
    input handler), the flight log, the flight recording; then for ever:
-   `sub_036_000C8`, `OwnBlitter`, **`GameFrame`**, `DisownBlitter`, `ShowDisplay`.
+   `SelectDrawBuffer`, `OwnBlitter`, **`GameFrame`**, `DisownBlitter`, `ShowDisplay`.
 
 `GameFrame` (hunk 0) runs one frame: `ReadControls` (joystick, buttons, every key through
 `HandleKey`), then the simulation and drawing modules in a fixed order, setting `FrameStage`
@@ -63,7 +63,7 @@ before each. Some parts run only every 2nd, 4th, 8th, 16th or 32nd frame (`Frame
 | 63 | Tables: `SineTable` (a quarter wave in tenths of a degree, 2.14) and others |
 | 64 | The menu and briefing texts: the six missions (F1 VISUAL CONFIRMATION, F2 EMERGENCY DEFENSE, F3 INTERCEPT STOLEN AIRCRAFT, F4 SEARCH AND RESCUE, F5 INTERCEPT INCOMING CRUISE MISSILE, F6 CARRIER SUB MISSION), the flight log page, the training texts; all addressed as numbered text pages (`TextPageTable`) |
 | 67 | `StartPoints` (the free flight's starting locations) and other tables |
-| 71-73 | The game's variables (zeros in the file): `ObjectTable` (512-byte records, from `dat_071_00B54`), `FrameStage`, `FrameCount`, the mouse position... |
+| 71-73 | The game's variables (zeros in the file): `ObjectTable` (512-byte records, from `ObjectTable`), `FrameStage`, `FrameCount`, the mouse position... |
 | 74-77 | The sound driver: the four audio channels' descriptors (`AudioChannels`), DMA and interrupt control, audio.device (`InitSound`, `CloseSound`) |
 | 78-83 | Sound loading (`LoadSound`, `CopySound`, `SoundTable`) and its arithmetic |
 | 96-167 | The Lattice C library (stdio, low-level I/O, memory, 32-bit multiply/divide, IEEE floating point) |

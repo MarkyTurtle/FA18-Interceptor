@@ -74,7 +74,7 @@ disk is a DOS disk and not write-protected (`CheckDisk`).
 | Offset | Size | | In this file |
 |---|---|---|---|
 | `+$00` | word | qualified for missions (1 after a successful carrier landing in QUALIFICATION) | 1 |
-| `+$02` | word | a setting the game keeps in `dat_071_00277` (`GetLogSetting`) | 2 |
+| `+$02` | word | a setting the game keeps in `Difficulty` (`GetLogSetting`) | 2 |
 | `+$04` | word | tours of duty: 0 makes the game ask for a callsign; counted at each start-up | 1 |
 | `+$06`, `+$07` | byte | the last mission completed (`GameMode` 3-8 = F1-F6) and its count before then | 5 (F3), 0 |
 | `+$08` | long | accumulated flight time, in seconds; also sets the briefing's date: one day per hour flown from September 1st, 1994 (`ShowLogDate`) | 1,163 |

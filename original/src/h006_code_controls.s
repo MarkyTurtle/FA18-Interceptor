@@ -14,9 +14,9 @@ RedrawPanel:
         move.w  #$90,(ClipY).l                  ; 00000
 
 ;-------------------------------------------------------------------------------
-; RedrawInstruments - Sets every instrument's redraw counter to 3 (dat_071_00206 the panel,
-; dat_071_00207 ... dat_071_00215), so each is drawn into both display buffers; and ViewY = 0
-; unless dat_071_00190 is set.
+; RedrawInstruments - Sets every instrument's redraw counter to 3 (PanelBlitCount the panel,
+; PanelRedraw ... dat_071_00215), so each is drawn into both display buffers; and ViewY = 0
+; unless ShakeKind is set.
 ;-------------------------------------------------------------------------------
 RedrawInstruments:
         moveq   #$3,d4                          ; 00008
@@ -28,7 +28,7 @@ RedrawInstruments:
         move.b  d4,(dat_071_0020F).l            ; 00028
         move.b  d4,(dat_071_00210).l            ; 0002E
         move.b  d4,(dat_071_00211).l            ; 00034
-        move.b  d4,(dat_071_0020B).l            ; 0003A
+        move.b  d4,(WeaponRangeRedraw).l        ; 0003A
         move.b  d4,(dat_071_0020D).l            ; 00040
         move.b  d4,(StoresRedraw).l             ; 00046
         move.b  d4,(dat_071_00214).l            ; 0004C
@@ -42,7 +42,7 @@ l_006_00072:
         rts                                     ; 00072
 
 ;-------------------------------------------------------------------------------
-; StartGunSound - Sets bit 7 of dat_071_001AD, dat_071_00412 = $80, and the instrument counter
+; StartGunSound - Sets bit 7 of GroundDetail, RadarScale = $80, and the instrument counter
 ; dat_071_0020D.
 ;-------------------------------------------------------------------------------
 StartGunSound:
@@ -55,7 +55,7 @@ StartGunSound:
 ; FirePressed - The fire button went down: queues the fire event (bit 2 of JoyEvents); with the
 ; gun selected (the player's weapon byte, ObjectTable+$63, high nibble $10) turns the gun on
 ; (bit 3 of GunFlags), with another weapon asks for a launch (LaunchRequest). In practice
-; maneuvers (GameMode $7D) it does something else (bit 3 of dat_071_01356).
+; maneuvers (GameMode $7D) it does something else (bit 3 of Object4_02).
 ;-------------------------------------------------------------------------------
 FirePressed:
         move.b  (Player_7C).l,d4                ; 0008E

@@ -10,7 +10,7 @@
 
 ;-------------------------------------------------------------------------------
 ; UpdateAllObjects - Updates every object for the frame: the small objects' timers count down;
-; every 16 frames sub_026_00276; each object's per-frame flag (+$02 bit 0) is cleared; then for
+; every 16 frames CheckZones; each object's per-frame flag (+$02 bit 0) is cleared; then for
 ; each of the 16 objects in turn (unrolled): its timer (+$4C), sub_017_005A8, UpdateMissile,
 ; sub_017_01862 and UpdateObject.
 ;-------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ l_017_0004E:
         andi.w  #$f,d0                          ; 00054
         cmpi.w  #$3,d0                          ; 00058
         bne.b   l_017_00064                     ; 0005C
-        jsr     (sub_026_00276).l               ; 0005E
+        jsr     (CheckZones).l                  ; 0005E
 l_017_00064:
         lea.l   (ObjectTable).l,a0              ; 00064
         move.w  #$fffe,d0                       ; 0006A
@@ -427,7 +427,7 @@ l_017_005BE:
         bne.b   l_017_005E4                     ; 005CA
         move.b  #$1,(dat_071_00258).l           ; 005CC
         moveq   #$8,d0                          ; 005D4
-        jsr     (sub_039_0186E).l               ; 005D6
+        jsr     (BeepPitch).l                   ; 005D6
         bra.b   l_017_005E4                     ; 005DC
 l_017_005DE:
         clr.b   (dat_071_00258).l               ; 005DE
@@ -716,7 +716,7 @@ dat_017_009A2:
 ; view, ViewChoice, in the low byte; the outside view's distance in the next), then a long that
 ; is either a recording of control bytes (a pointer: the practice) or, with bit 31 set, the
 ; instructor's first state: take-off and climb ($23), then the 7 manoeuvres cycled by
-; dat_071_00169 - aileron roll ($0B), break turn ($27), inside loop ($0E), split-S ($11),
+; TrainingStep - aileron roll ($0B), break turn ($27), inside loop ($0E), split-S ($11),
 ; vertical half-loop ($14), barrel roll ($17), inverted flight ($1A).
 TrainingSequence:
 	dc.b	$00,$00,$01,$03,$80,$00,$00,$23,$00,$00,$01,$03,$80,$00,$00,$0B
@@ -800,7 +800,7 @@ PlayerLaunch:
 ; The missile starts as a copy of the launcher's record (its first $A4 bytes); its type (+$62)
 ; is 1 for an AIM-120 AMRAAM (weapon $30), 0 for an AIM-9L Sidewinder; the player's launches
 ; are counted in the flight log (+$3E AMRAAMs, +$42 Sidewinders fired). It is placed at its
-; pylon (dat_017_00DA6, turned by the launcher's orientation +$92) and given the launcher's
+; pylon (PylonOffsets, turned by the launcher's orientation +$92) and given the launcher's
 ; velocity plus a push along its nose.
 ;-------------------------------------------------------------------------------
 LaunchMissile:
@@ -1780,7 +1780,7 @@ l_017_0166C:
 l_017_01686:
         move.b  $5d(a1),d0                      ; 01686
         ble.b   l_017_016A2                     ; 0168A
-        lea.l   (dat_027_00140).l,a3            ; 0168C
+        lea.l   (Zones).l,a3                    ; 0168C
         subq.b  #$1,d0                          ; 01692
         ext.w   d0                              ; 01694
         asl.w   #$2,d0                          ; 01696
@@ -1946,7 +1946,7 @@ sub_017_01862:
         bne.b   l_017_01894                     ; 0187A
         move.b  #$1,(dat_071_00216).l           ; 0187C
         moveq   #$4,d0                          ; 01884
-        jsr     (sub_039_0186E).l               ; 01886
+        jsr     (BeepPitch).l                   ; 01886
         bra.b   l_017_01894                     ; 0188C
 l_017_0188E:
         clr.b   (dat_071_00216).l               ; 0188E

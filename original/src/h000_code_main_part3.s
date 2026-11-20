@@ -599,7 +599,7 @@ l_000_07D3E:
 ; allocates the display buffers, frees the sprites, notes the free chip RAM, opens the input
 ; devices (InitInput), allocates the config buffer (78 bytes) and the flight recording's
 ; buffers and loads the demo recording (LoadDemoRecording), fades the palette in, makes the
-; display, then loops for ever: sub_036_000C8, OwnBlitter, GameFrame, DisownBlitter,
+; display, then loops for ever: SelectDrawBuffer, OwnBlitter, GameFrame, DisownBlitter,
 ; ShowDisplay.
 ;-------------------------------------------------------------------------------
 RunGame:
@@ -921,8 +921,8 @@ MakeDisplay:
 
 ;-------------------------------------------------------------------------------
 ; ShowDisplay - Waits for the bottom of the ViewPort and loads the View with the copper list of
-; the buffer to show (dat_071_0003C); flashes the palette (dat_021_00040 / the game palette)
-; while dat_071_00269 counts down, or once when dat_071_00274 is set.
+; the buffer to show (DisplayBuffer); flashes the palette (dat_021_00040 / the game palette)
+; while dat_071_00269 counts down, or once when PaletteLoadCount is set.
 ;-------------------------------------------------------------------------------
 ShowDisplay:
         link.w  a6,#$fffe                       ; 0827C
@@ -1150,7 +1150,7 @@ l_000_08548:
         rts                                     ; 08554
 
 ;-------------------------------------------------------------------------------
-; ClearConfig - Clears the config buffer (39 words) and marks it changed (dat_071_00195).
+; ClearConfig - Clears the config buffer (39 words) and marks it changed (ConfigChanged).
 ;-------------------------------------------------------------------------------
 ClearConfig:
         link.w  a6,#$fffa                       ; 08556
@@ -1884,7 +1884,7 @@ OpenTimer:
         rts                                     ; 08E52
 
 ;-------------------------------------------------------------------------------
-; ReadTime - TR_GETSYSTIME: the system time into dat_071_004C2 (seconds) and dat_071_004C6
+; ReadTime - TR_GETSYSTIME: the system time into TimeSeconds (seconds) and TimeMicros
 ; (microseconds).
 ;-------------------------------------------------------------------------------
 ReadTime:
@@ -2007,7 +2007,7 @@ l_000_08FBC:
 
 ;-------------------------------------------------------------------------------
 ; ReadJoystick - Takes the joystick's event if there is one: fire button down ($68,
-; IECODE_LBUTTON) -> sub_006_0008E, up ($E8) -> sub_006_000E4; queues the request again; then
+; IECODE_LBUTTON) -> FirePressed, up ($E8) -> FireReleased; queues the request again; then
 ; reads the stick itself (ReadStick).
 ;-------------------------------------------------------------------------------
 ReadJoystick:
@@ -3307,7 +3307,7 @@ l_000_0A03E:
         rts                                     ; 0A040
 
 ;-------------------------------------------------------------------------------
-; PlayEffect - Plays a sampled sound effect on its channel (dat_081_00010) with the period,
+; PlayEffect - Plays a sampled sound effect on its channel (EffectSound) with the period,
 ; volume and length given on the stack (into dat_086_00004 and on): stops what the channel was
 ; playing first. Used by the cockpit sounds, the ejection and the menu beep.
 ;-------------------------------------------------------------------------------

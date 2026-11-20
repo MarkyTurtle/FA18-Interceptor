@@ -11,7 +11,7 @@ import drawmodel as dm, render
 
 g = dm.g
 OUT = []
-for name in ('sub_019_00018', 'sub_035_001DA', 'PlotPoint3D'):   # let the game draw these itself
+for name in ('sub_019_00018', 'ClipDrawLine3D', 'PlotPoint3D'):   # let the game draw these itself
     g.hooks.pop(g[name], None)
 
 
@@ -40,17 +40,17 @@ def cap_point(size):
     return f
 
 
-g.hook('sub_036_00AB8', cap_fill)
+g.hook('FillPolygon', cap_fill)
 g.hook('DrawLine', cap_line)
 g.hook('Plot', cap_point(1))
 g.hook('Plot2', cap_point(2))
 g.hook('PlotBig', cap_point(2))
 
-SETUP = ('BuildSceneryBits', 'ResetGame', 'SetupMode', 'sub_004_00268', 'sub_004_00392')
+SETUP = ('BuildSceneryBits', 'ResetGame', 'SetupMode', 'CameraAtStart', 'ResetViewAndRecording')
 FRAME = ('UpdateViewCell', 'SetupCamera', 'SetCockpitEye', 'SetViewOctant', 'SetHeightBand',
          'UpdateScenery', 'ShakeView', 'ClearRadarList', 'DrawSkyAndGround', 'DrawWaterAreas',
-         'DrawSun', 'DrawFarScenery0', 'DrawFarScenery1', 'DrawGroundDots', 'sub_023_00000',
-         'DrawObjects', 'sub_000_072DC')
+         'DrawSun', 'DrawFarScenery0', 'DrawFarScenery1', 'DrawGroundDots', 'BulletInFront',
+         'DrawObjects', 'UpdateBullets')
 
 
 SKY = {}

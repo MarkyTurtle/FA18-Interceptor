@@ -5,8 +5,9 @@
 ; Included by ../f18_main.s.
 
 ;-------------------------------------------------------------------------------
-; CheckViewObjectGone - When the object the view follows (dat_071_002AC) no longer exists (+$00
-; bit 6), returns the view to the player's aircraft and asks for everything to be redrawn.
+; CheckViewObjectGone - When the object the view follows (ViewObjectIndex) no longer exists
+; (+$00 bit 6), returns the view to the player's aircraft and asks for everything to be
+; redrawn.
 ;-------------------------------------------------------------------------------
 CheckViewObjectGone:
         tst.w   (ViewObjectIndex).l             ; 04392
@@ -569,7 +570,7 @@ l_000_04A84:
 
 ;-------------------------------------------------------------------------------
 ; CockpitSounds - The cockpit's sounds for the frame: each request bit of SoundRequests
-; (warnings and events, set by the rest of the game) starts its tone (sub_000_0A042, nine
+; (warnings and events, set by the rest of the game) starts its tone (PlayEffect, nine
 ; parameters each) and the requests are cleared; the engine's sound follows the throttle (+$2B,
 ; 0-120)...
 ;-------------------------------------------------------------------------------
@@ -2263,8 +2264,8 @@ l_000_05ED2:
 ; (+$2B, 0-120) by a step that grows while the bit is held (+$39's low nibble, up to 8,
 ; halved); at 120 a held throttle-up sets flag $2000 and a further one flag $8 (probably the
 ; afterburner); throttle-down clears them. For the player the mouse's vertical movement
-; (dat_071_0014C - MouseY) is read too. The speed (+$6C) then changes towards what the throttle
-; gives (through Decay); ClimbDivePhysics; and the speed flown (+$6E) = +$6C + +$78.
+; (ThrottleMouseY - MouseY) is read too. The speed (+$6C) then changes towards what the
+; throttle gives (through Decay); ClimbDivePhysics; and the speed flown (+$6E) = +$6C + +$78.
 ;-------------------------------------------------------------------------------
 EngineAndSpeed:
         link.w  a6,#$ffce                       ; 05ED4
@@ -3294,7 +3295,7 @@ l_000_06AF6:
         rts                                     ; 06B0C
 
 ;-------------------------------------------------------------------------------
-; FlyAircraft - The flight model for one aircraft (CurrentObject; dat_002_00008 = its record):
+; FlyAircraft - The flight model for one aircraft (CurrentObject; CockpitObject = its record):
 ; the nose's direction is the third column of its +$92 matrix (M13, M23, M33, into
 ; dat_071_00470-00474); ScaleToLength makes it a velocity of the aircraft's speed (+$6E) along
 ; the nose (dat_071_0041C-00420); each part of the velocity then moves part of the way there

@@ -29,7 +29,9 @@ Routes:
 	dc.b	$00,$4C,$28,$00,$38,$00,$10,$00,$00,$4D,$00,$4B,$28,$00,$28,$00
 	dc.b	$10,$00,$00,$4E,$00,$44,$38,$00,$38,$00,$10,$00,$00,$4E,$00,$44
 	dc.b	$28,$00,$38,$00,$10,$00,$00,$58,$00,$44,$28,$00,$38,$00,$10,$00
-dat_027_00140:
+; Zones - The map's eight zones: pointers to each zone's record (a rectangle of map cells x1,
+; x2, z1, z2, then its objects), ended by -1.
+Zones:
         dc.l    dat_027_00152                   ; 00140
         dc.l    dat_027_00186                   ; 00144
         dc.l    dat_027_001A6                   ; 00148

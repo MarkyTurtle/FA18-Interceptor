@@ -11,7 +11,7 @@ l_010_00000:
         rts                                     ; 00002
 
 ;-------------------------------------------------------------------------------
-; DrawSceneryNear - DrawScenery only while dat_071_00436 (the object's height against the
+; DrawSceneryNear - DrawScenery only while ViewOffsetY (the object's height against the
 ; camera) is under $FFD80000.
 ;-------------------------------------------------------------------------------
 DrawSceneryNear:

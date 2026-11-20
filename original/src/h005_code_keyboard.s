@@ -96,7 +96,7 @@ l_005_0015A:
 ;-------------------------------------------------------------------------------
 ; HandleKey - HandleKey(code): the keyboard commands. Takes a raw key code from GetKey
 ; (releases have $80 added) and, depending on what the game is doing (its modes in
-; OutsideView, CameraSequence, dat_071_0021B, GameMode...), goes to the key's command:
+; OutsideView, CameraSequence, RecordMode, GameMode...), goes to the key's command:
 ; the Key_ labels below are named by the key that leads there (Amiga raw key codes: $40 Space,
 ; $4C-$4F the cursor keys, $50-$59 F1-F10, $0F-$3F the numeric keypad...).
 ;-------------------------------------------------------------------------------
@@ -432,7 +432,7 @@ l_005_005EA:
 l_005_005EE:
         andi.b  #$f0,$63(a0)                    ; 005EE
         or.b    d4,$63(a0)                      ; 005F4
-        move.b  #$3,(dat_071_0020B).l           ; 005F8
+        move.b  #$3,(WeaponRangeRedraw).l       ; 005F8
         bra.w   l_005_01624                     ; 00600
 Key_Space:
         tst.b   d6                              ; 00604
@@ -716,7 +716,7 @@ Key_UpUp_DownUp:
 
 ;-------------------------------------------------------------------------------
 ; StickDown - The stick (or cursor down) pushed down: PitchInput = $20 (and into the player's
-; control bits, ObjectTable+$65, when dat_071_0017D or dat_071_00184 is set).
+; control bits, ObjectTable+$65, when MapView or CameraFollows is set).
 ;-------------------------------------------------------------------------------
 StickDown:
         moveq   #$20,d2                         ; 008F4

@@ -167,7 +167,7 @@ dat_002_02964:
 dat_002_02968:
         ds.b    $4                              ; 02968
 ; ConfigBuffer - The pilot's flight log (df0:config, 78 bytes; disk/FILES.md has its fields):
-; +$02 copied to dat_071_00277, +$08 the accumulated flight time in seconds, +$36 missions
+; +$02 copied to Difficulty, +$08 the accumulated flight time in seconds, +$36 missions
 ; started, +$38 missions completed, +$3A/+$3C cannon rounds fired/hits, +$3E/+$40 AMRAAMs
 ; fired/hits, +$42/+$44 Sidewinders fired/hits, +$46 crashes, +$48 hits from missiles.
 ConfigBuffer:

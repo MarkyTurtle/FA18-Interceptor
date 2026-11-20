@@ -162,7 +162,7 @@ dat_031_001BE:
 
 ;-------------------------------------------------------------------------------
 ; TurnToView - Turns a point relative to the camera (d3, d4, d5) by the view matrix
-; (dat_071_005A8): the result in d6, d2, d5.
+; (ViewMatrix): the result in d6, d2, d5.
 ;-------------------------------------------------------------------------------
 TurnToView:
         lea.l   (ViewMatrix).l,a0               ; 001E2

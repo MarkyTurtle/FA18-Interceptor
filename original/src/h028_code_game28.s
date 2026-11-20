@@ -689,7 +689,7 @@ l_028_010F8:
 
 ;-------------------------------------------------------------------------------
 ; TurnToViewOffset - Turns a point (d2-d4 plus the offset packed in d0) by the view matrix
-; (dat_071_005A8) into (a5)+.
+; (ViewMatrix) into (a5)+.
 ;-------------------------------------------------------------------------------
 TurnToViewOffset:
         move.l  d0,d5                           ; 010FA

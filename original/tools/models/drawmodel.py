@@ -9,7 +9,7 @@ OUT = []
 
 
 def cap_poly(gm):
-    pb = gm['dat_072_03C00'] if 'dat_072_03C00' in gm.sym else gm['PolygonBuffer']
+    pb = gm['PolygonBuffer'] if 'PolygonBuffer' in gm.sym else gm['PolygonBuffer']
     shift = gm.w(pb); n = gm.w(pb + 2)
     pts = [(gm.w(pb + 4 + i * 6), gm.w(pb + 6 + i * 6), gm.w(pb + 8 + i * 6)) for i in range(n)]
     OUT.append(('poly', gm.uw(gm['DrawColour']), [tuple(c << shift for c in p) for p in pts]))
@@ -31,7 +31,7 @@ def cap_point(gm):
 
 
 g.hook('sub_019_00018', cap_poly)   # ClipFillPolygon's second entry, used by most operations
-g.hook('sub_035_001DA', cap_line)
+g.hook('ClipDrawLine3D', cap_line)
 g.hook('PlotPoint3D', cap_point)
 for nm in ('Nop',):
     g.hook(nm, lambda gm: 0)
@@ -66,33 +66,33 @@ def draw(entry, yaw=0.6, pitch=0.35, roll=0.0, dist=0x40000, lod=16, obj=1, mode
         for j in range(3):
             g.setw(rec + 0x92 + (i * 3 + j) * 2, 0x4000 if i == j else 0)
             g.setw(rec + 0x80 + (i * 3 + j) * 2, 0x4000 if i == j else 0)
-    cam = g['dat_071_005A8']                  # ...and the camera turned round it instead
+    cam = g['ViewMatrix']                  # ...and the camera turned round it instead
     for i in range(3):
         for j in range(3):
             g.setw(cam + (i * 3 + j) * 2, int(round(m[i][j] * 256)))
     # the object's position relative to the camera: R^T (0, 0, dist), so it ends up ahead
     px, py, pz = (int(round(m[2][k] * dist)) for k in range(3))
-    g.setl(g['dat_071_00432'], px); g.setl(g['dat_071_00436'], py); g.setl(g['dat_071_0043A'], pz)
-    for v in ('dat_071_00500', 'dat_071_00504', 'dat_071_00508', 'dat_071_0050C'):
+    g.setl(g['ViewOffsetX'], px); g.setl(g['ViewOffsetY'], py); g.setl(g['ViewOffsetZ'], pz)
+    for v in ('ObjectViewPosL', 'dat_071_00504', 'dat_071_00508', 'dat_071_0050C'):
         if v in g.sym: g.setl(g[v], 0)
     g.setl(g['dat_071_0050C'], py)            # the height offset the drawing uses
     if shift is None:                         # as the game: DistanceScale by the distance
         shift = g.b(g['DistanceScale'] + min(dist >> 13, 0xEF))
-    g.setw(g['dat_071_00488'], shift)
+    g.setw(g['DistanceShift'], shift)
     g.setw(g['dat_071_00510'], lod)
-    g.setb(g['dat_071_001AD'], 1)
+    g.setb(g['GroundDetail'], 1)
     g.setb(g['dat_071_0023C'], 1)
-    g.setb(g['dat_071_0022B'], 0x10)
+    g.setb(g['ObjectDrawFlags'], 0x10)
     g.setw(g['CurrentObject'], obj)
     g.setw(g['CurrentObjectOffset'], obj * 512)
     g.setw(g['ViewObject'], 0)
     g.setl(g['ShapeNow'], now)
     g.setl(g['ShapeNext'], nxt)
     # the camera's position against the object, /256: the plane tests of the drawing lists use it
-    g.setw(g['dat_071_00442'], px >> 8); g.setw(g['dat_071_00442'] + 2, py >> 8); g.setw(g['dat_071_00446'], pz >> 8)
-    g.setl(g['dat_071_00448'], py >> 8)
+    g.setw(g['ViewOffsetX8'], px >> 8); g.setw(g['ViewOffsetX8'] + 2, py >> 8); g.setw(g['ViewOffsetZ8'], pz >> 8)
+    g.setl(g['ViewOffsetY8'], py >> 8)
     for k in range(3):
-        g.setw(g['dat_071_004FA'] + 2 * k, 0)
+        g.setw(g['ObjectViewPos'] + 2 * k, 0)
     if routine == g['DrawModel']:
         routine = g['DrawSceneryPlain']     # the same, without the own-aircraft checks
     g.call(routine, {UC_M68K_REG_A0: mbase})

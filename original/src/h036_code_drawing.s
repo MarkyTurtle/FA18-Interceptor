@@ -17,7 +17,7 @@ SolidPattern:
 
 ;-------------------------------------------------------------------------------
 ; DrawBufferMark - Draws a short line in colour 13 at the top left corner (0,0)-(8,9) or the
-; other way, by which buffer is shown: a marker of the double buffering (sub_036_00038 the
+; other way, by which buffer is shown: a marker of the double buffering (DrawBufferMark2 the
 ; other).
 ;-------------------------------------------------------------------------------
 DrawBufferMark:
@@ -185,7 +185,7 @@ Plot2InView:
         add.w   (ViewY).l,d1                    ; 001B8
 
 ;-------------------------------------------------------------------------------
-; PlotBig - A big point (2 pixels wide, the colour writers of dat_036_00356), keeping d0/d1.
+; PlotBig - A big point (2 pixels wide, the colour writers of BigColourWriters), keeping d0/d1.
 ;-------------------------------------------------------------------------------
 PlotBig:
         move.w  d0,-(a7)                        ; 001BE
@@ -1071,7 +1071,7 @@ l_036_00AB6:
 ;-------------------------------------------------------------------------------
 ; FillPolygon - Fills the polygon at dat_072_03000 in DrawColour: the edges and the area fill
 ; into one plane (FillPolygonPlane), then each plane of the colour set or cleared from it (or a
-; patterned fill, sub_036_00F7C). The 2D fill under ClipFillPolygon.
+; patterned fill, FillPatterned). The 2D fill under ClipFillPolygon.
 ;-------------------------------------------------------------------------------
 FillPolygon:
         nop                                     ; 00AB8
@@ -1305,7 +1305,7 @@ FillPolygonPanel:
 ;-------------------------------------------------------------------------------
 ; FillPolygonPlane - Fills the polygon at dat_072_03000 (clipped to ClipY
 ; lines) into the one plane at dat_071_000B2 by blitter: finds its bounding box, draws its
-; edges (sub_036_0111A) and area-fills the box in place (BLTCON1 $0A, descending inclusive
+; edges (DrawFillEdges) and area-fills the box in place (BLTCON1 $0A, descending inclusive
 ; fill). A polygon only a pixel or two across is plotted or drawn as a line instead. d0 = 0
 ; when the plane was filled (the box kept for PlaneOpUnderFill), 1 otherwise.
 ;-------------------------------------------------------------------------------

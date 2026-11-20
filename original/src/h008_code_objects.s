@@ -393,7 +393,7 @@ l_008_003EE:
         bra.w   l_008_00526                     ; 0044A
 l_008_0044E:
         move.w  d5,-(a7)                        ; 0044E
-        jsr     (sub_026_00922).l               ; 00450
+        jsr     (UpdateCamera).l                ; 00450
         move.w  (a7)+,d5                        ; 00456
         lea.l   (ObjectTable).l,a3              ; 00458
         bsr.w   sub_008_0052E                   ; 0045E

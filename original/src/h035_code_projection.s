@@ -28,7 +28,7 @@ ProjectPoint:
         bra.b   l_035_0003A                     ; 00022
 
 ;-------------------------------------------------------------------------------
-; PlotPoint3D - Projects a point as ProjectPoint, at the drawing's scale (dat_071_00488), and
+; PlotPoint3D - Projects a point as ProjectPoint, at the drawing's scale (DistanceShift), and
 ; plots it.
 ;-------------------------------------------------------------------------------
 PlotPoint3D:
@@ -229,7 +229,7 @@ l_035_001D4:
 
 ;-------------------------------------------------------------------------------
 ; ClipDrawLine3D - Draws the 3D line whose two turned end points are at dat_072_04202 (x, y, z
-; words each): clips it against the view's four edge planes and the near plane (dat_071_0049A),
+; words each): clips it against the view's four edge planes and the near plane (ClipSwitch),
 ; projects it and draws it (DrawLine). Used by all the shapes' line operations.
 ;-------------------------------------------------------------------------------
 ClipDrawLine3D:

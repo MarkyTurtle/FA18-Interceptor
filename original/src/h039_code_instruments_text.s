@@ -51,10 +51,15 @@ dat_039_00138:
 dat_039_0014C:
 	dc.b	$00,$00,$80,$00,$00,$00,$C0,$00,$00,$02,$20,$00,$00,$02,$60,$00
 	dc.b	$00,$02,$C0,$00,$00,$04,$00,$00
-sub_039_00164:
-        tst.b   (dat_071_0020B).l               ; 00164
+
+;-------------------------------------------------------------------------------
+; ShowWeaponRange - The selected weapon's range on the panel (2, 10 or 40 by the weapon: +$63
+; low nibble 9, $B or other), while WeaponRangeRedraw counts down.
+;-------------------------------------------------------------------------------
+ShowWeaponRange:
+        tst.b   (WeaponRangeRedraw).l           ; 00164
         ble.b   l_039_001C8                     ; 0016A
-        subq.b  #$1,(dat_071_0020B).l           ; 0016C
+        subq.b  #$1,(WeaponRangeRedraw).l       ; 0016C
         lea.l   (ObjectTable).l,a1              ; 00172
         adda.w  (ViewObject).l,a1               ; 00178
         move.b  $63(a1),d0                      ; 0017E
@@ -274,7 +279,7 @@ l_039_003EC:
         move.w  #$a,d0                          ; 00408
         swap    d0                              ; 0040C
         move.w  d6,d0                           ; 0040E
-        bsr.w   sub_039_011A4                   ; 00410
+        bsr.w   PrintNumberHUD0                 ; 00410
         rts                                     ; 00414
 
 ;-------------------------------------------------------------------------------
@@ -304,7 +309,7 @@ l_039_00434:
         swap    d0                              ; 00458
         move.w  d6,d0                           ; 0045A
         moveq   #$1,d4                          ; 0045C
-        bsr.w   sub_039_011A6                   ; 0045E
+        bsr.w   PrintNumberHUD                  ; 0045E
         rts                                     ; 00462
 
 ;-------------------------------------------------------------------------------
@@ -335,7 +340,7 @@ l_039_004A6:
         move.w  #$a,d0                          ; 004B8
         swap    d0                              ; 004BC
         move.w  #$0,d0                          ; 004BE
-        jsr     (sub_039_011B4).l               ; 004C2
+        jsr     (PrintTextHUD).l                ; 004C2
         move.w  #$64,d0                         ; 004C8
         move.w  #$7d,d1                         ; 004CC
         jsr     (PlotInView).l                  ; 004D0
@@ -384,7 +389,7 @@ l_039_0053A:
         move.w  d7,d2                           ; 00552
         swap    d0                              ; 00554
         move.w  d6,d0                           ; 00556
-        bsr.w   sub_039_011A4                   ; 00558
+        bsr.w   PrintNumberHUD0                 ; 00558
         rts                                     ; 0055C
 dat_039_0055E:
 	dc.b	$47
@@ -416,7 +421,7 @@ l_039_00590:
         swap    d0                              ; 005A0
         move.w  #$5,d0                          ; 005A2
         move.w  #$d,(DrawColour).l              ; 005A6
-        bsr.w   sub_039_011B4                   ; 005AE
+        bsr.w   PrintTextHUD                    ; 005AE
         rts                                     ; 005B2
 l_039_005B4:
         rts                                     ; 005B4
@@ -455,14 +460,18 @@ ShowHeadingText:
         move.w  #$fca,d6                        ; 00628
         move.w  #$0,d5                          ; 0062C
         movem.l d0/d2/a0-a2/a4-a5,-(a7)         ; 00630
-        bsr.w   sub_039_00E26                   ; 00634
+        bsr.w   PanelDigitsOne                  ; 00634
         movem.l (a7)+,d0/d2/a0-a2/a4-a5         ; 00638
         move.w  #$f3a,d6                        ; 0063C
         move.w  #$c,d5                          ; 00640
-        bsr.w   sub_039_00E26                   ; 00644
+        bsr.w   PanelDigitsOne                  ; 00644
 l_039_00648:
         rts                                     ; 00648
-sub_039_0064A:
+
+;-------------------------------------------------------------------------------
+; EmptyReadout - Does nothing (an instrument with no readout).
+;-------------------------------------------------------------------------------
+EmptyReadout:
         rts                                     ; 0064A
 
 ;-------------------------------------------------------------------------------
@@ -523,11 +532,11 @@ l_039_006EA:
         move.b  #$54,$5(a2)                     ; 006F6
         move.b  #$53,$6(a2)                     ; 006FC
         movem.l d0/a0-a2/a4-a5,-(a7)            ; 00702
-        bsr.w   sub_039_00E1A                   ; 00706
+        bsr.w   PanelDigitsD0                   ; 00706
         movem.l (a7)+,d0/a0-a2/a4-a5            ; 0070A
         move.w  #$f3a,d6                        ; 0070E
         move.w  #$c,d5                          ; 00712
-        bra.w   sub_039_00E1A                   ; 00716
+        bra.w   PanelDigitsD0                   ; 00716
 
 ;-------------------------------------------------------------------------------
 ; ShowAltitude - The altitude readout from the height (+$18), at most 99,999 (or dat_071_0002C
@@ -606,11 +615,11 @@ l_039_00800:
         move.b  #$46,$6(a2)                     ; 00806
         move.b  #$54,$7(a2)                     ; 0080C
         movem.l d0/a0-a2/a4-a5,-(a7)            ; 00812
-        bsr.w   sub_039_00E1A                   ; 00816
+        bsr.w   PanelDigitsD0                   ; 00816
         movem.l (a7)+,d0/a0-a2/a4-a5            ; 0081A
         move.w  #$f3a,d6                        ; 0081E
         move.w  #$c,d5                          ; 00822
-        bra.w   sub_039_00E1A                   ; 00826
+        bra.w   PanelDigitsD0                   ; 00826
 
 ;-------------------------------------------------------------------------------
 ; ShowFuel - The fuel readout: the viewed aircraft's fuel (+$72) / 256, five digits.
@@ -996,19 +1005,19 @@ l_039_00CA6:
         subq.b  #$1,d3                          ; 00CDE
         beq.b   l_039_00D06                     ; 00CE0
         move.w  #$c,d5                          ; 00CE2
-        bsr.w   sub_039_00D62                   ; 00CE6
+        bsr.w   DrawPanelCharsIfShown           ; 00CE6
         move.w  #$4,d5                          ; 00CEA
         move.w  #$0,d3                          ; 00CEE
         bra.b   l_039_00D16                     ; 00CF2
 l_039_00CF4:
         move.w  #$0,d5                          ; 00CF4
-        bsr.w   sub_039_00D62                   ; 00CF8
+        bsr.w   DrawPanelCharsIfShown           ; 00CF8
         move.w  #$c,d5                          ; 00CFC
         move.w  #$4,d3                          ; 00D00
         bra.b   l_039_00D16                     ; 00D04
 l_039_00D06:
         move.w  #$4,d5                          ; 00D06
-        bsr.w   sub_039_00D62                   ; 00D0A
+        bsr.w   DrawPanelCharsIfShown           ; 00D0A
         move.w  #$c,d5                          ; 00D0E
         move.w  #$0,d3                          ; 00D12
 l_039_00D16:
@@ -1030,10 +1039,15 @@ l_039_00D3E:
         move.w  #$f0a,d6                        ; 00D4E
         swap    d6                              ; 00D52
         movem.l d0/d3/d6-d7/a1-a2/a4-a5,-(a7)   ; 00D54
-        bsr.w   sub_039_00D62                   ; 00D58
+        bsr.w   DrawPanelCharsIfShown           ; 00D58
         movem.l (a7)+,d0/d3/d6-d7/a1-a2/a4-a5   ; 00D5C
         move.w  d3,d5                           ; 00D60
-sub_039_00D62:
+
+;-------------------------------------------------------------------------------
+; DrawPanelCharsIfShown - DrawPanelChars, in the cockpit, or outside while dat_071_00163 is
+; set.
+;-------------------------------------------------------------------------------
+DrawPanelCharsIfShown:
         tst.b   (OutsideView).l                 ; 00D62
         beq.w   DrawPanelChars                  ; 00D68
         tst.b   (dat_071_00163).l               ; 00D6C
@@ -1111,13 +1125,21 @@ Text707:
 Text767:
 	dc.b	' 767  '
 	dc.b	$00
-sub_039_00E1A:
+
+;-------------------------------------------------------------------------------
+; PanelDigitsD0 - DrawPanelDigits with the count in d0 and no offset.
+;-------------------------------------------------------------------------------
+PanelDigitsD0:
         swap    d6                              ; 00E1A
         move.w  #$0,d6                          ; 00E1C
         moveq   #$0,d7                          ; 00E20
         move.w  d0,d2                           ; 00E22
         bra.b   l_039_00E50                     ; 00E24
-sub_039_00E26:
+
+;-------------------------------------------------------------------------------
+; PanelDigitsOne - DrawPanelDigits for one digit.
+;-------------------------------------------------------------------------------
+PanelDigitsOne:
         swap    d6                              ; 00E26
         move.w  #$0,d6                          ; 00E28
         moveq   #$0,d7                          ; 00E2C
@@ -1207,7 +1229,7 @@ l_039_00EA6:
         bne.b   l_039_00EF6                     ; 00EE4
         move.l  d1,-(a7)                        ; 00EE6
         move.l  d5,d1                           ; 00EE8
-        bsr.w   sub_039_00F06                   ; 00EEA
+        bsr.w   DrawPanelChar                   ; 00EEA
         move.l  (a7)+,d1                        ; 00EEE
 l_039_00EF0:
         dbra    d0,l_039_00EA6                  ; 00EF0
@@ -1216,7 +1238,11 @@ l_039_00EF6:
         move.w  #$46,(DebugCheckpoint).l        ; 00EF6
         jsr     (Nop).l                         ; 00EFE
         bra.b   l_039_00EF0                     ; 00F04
-sub_039_00F06:
+
+;-------------------------------------------------------------------------------
+; DrawPanelChar - Draws one character of the panel font into the planes (for DrawPanelChars).
+;-------------------------------------------------------------------------------
+DrawPanelChar:
         movem.l d0-d1/d6,-(a7)                  ; 00F06
         swap    d2                              ; 00F0A
         move.w  d3,d2                           ; 00F0C
@@ -1286,7 +1312,12 @@ l_039_00F9A:
         rts                                     ; 00FA4
 l_039_00FA6:
         rts                                     ; 00FA6
-sub_039_00FA8:
+
+;-------------------------------------------------------------------------------
+; ShowMissilesLeft - The number of missiles left (+$5F) by the weapon's type on the panel,
+; while dat_071_00214 counts down.
+;-------------------------------------------------------------------------------
+ShowMissilesLeft:
         tst.b   (dat_071_00214).l               ; 00FA8
         ble.b   l_039_00FA6                     ; 00FAE
         subq.b  #$1,(dat_071_00214).l           ; 00FB0
@@ -1396,7 +1427,11 @@ l_039_010DA:
         move.w  (ViewShift).l,d6                ; 01134
         move.l  (PanelShakeOffset).l,d7         ; 0113A
         bra.w   DrawPanelChars                  ; 01140
-sub_039_01144:
+
+;-------------------------------------------------------------------------------
+; DrawSmallNumber - Draws the number d2 (BinToBCD) with the panel's digits at the places in a1.
+;-------------------------------------------------------------------------------
+DrawSmallNumber:
         ext.l   d2                              ; 01144
         move.l  d2,(BCDIn).l                    ; 01146
         jsr     (BinToBCD).l                    ; 0114C
@@ -1428,21 +1463,44 @@ sub_039_01144:
         moveq   #$0,d7                          ; 01190
         moveq   #$1,d4                          ; 01192
         bra.b   l_039_011D0                     ; 01194
-sub_039_01196:
+
+;-------------------------------------------------------------------------------
+; PrintNumberShifted - PrintNumber (from its second step), moved with the view (ViewShift) and
+; the shaking.
+;-------------------------------------------------------------------------------
+PrintNumberShifted:
         move.w  (ViewShift).l,d6                ; 01196
         move.l  (PanelShakeOffset).l,d7         ; 0119C
         bra.b   l_039_011CC                     ; 011A2
-sub_039_011A4:
+
+;-------------------------------------------------------------------------------
+; PrintNumberHUD0 - PrintNumberHUD with d4 = 0.
+;-------------------------------------------------------------------------------
+PrintNumberHUD0:
         moveq   #$0,d4                          ; 011A4
-sub_039_011A6:
+
+;-------------------------------------------------------------------------------
+; PrintNumberHUD - PrintNumber on the head-up display: moved with the view (ViewShift) and the
+; shaking.
+;-------------------------------------------------------------------------------
+PrintNumberHUD:
         move.w  (ViewShift).l,d6                ; 011A6
         move.l  (PanelShakeOffset).l,d7         ; 011AC
         bra.b   l_039_011D0                     ; 011B2
-sub_039_011B4:
+
+;-------------------------------------------------------------------------------
+; PrintTextHUD - Draws the text at a2 (no number conversion) on the head-up display, moved with
+; the view and the shaking.
+;-------------------------------------------------------------------------------
+PrintTextHUD:
         move.w  (ViewShift).l,d6                ; 011B4
         move.l  (PanelShakeOffset).l,d7         ; 011BA
         bra.b   l_039_01200                     ; 011C0
-sub_039_011C2:
+
+;-------------------------------------------------------------------------------
+; PrintTextFixed - Draws the text at a2 without moving it with the view.
+;-------------------------------------------------------------------------------
+PrintTextFixed:
         moveq   #$0,d6                          ; 011C2
         moveq   #$0,d7                          ; 011C4
         bra.b   l_039_01200                     ; 011C6
@@ -1997,7 +2055,11 @@ l_039_0185E:
 TypeClick:
         moveq   #$1,d0                          ; 0186A
         bra.b   l_039_0189A                     ; 0186C
-sub_039_0186E:
+
+;-------------------------------------------------------------------------------
+; BeepPitch - A beep at the pitch in d0 (in the cockpit view only).
+;-------------------------------------------------------------------------------
+BeepPitch:
         tst.b   (OutsideView).l                 ; 0186E
         bne.b   l_039_018CC                     ; 01874
         movem.l d0-d7/a0-a4,-(a7)               ; 01876

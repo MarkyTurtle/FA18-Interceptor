@@ -275,7 +275,7 @@ ShapeLineAlt:
 
 ;-------------------------------------------------------------------------------
 ; ShapeLineFromAbove - Op $128: a line (as ShapeLine) drawn only when the shape is seen from
-; well above (dat_071_00448 below -$C0); otherwise its three words are skipped.
+; well above (ViewOffsetY8 below -$C0); otherwise its three words are skipped.
 ;-------------------------------------------------------------------------------
 ShapeLineFromAbove:
         cmpi.l  #$ffffff40,(ViewOffsetY8).l     ; 002BC
@@ -284,7 +284,7 @@ ShapeLineFromAbove:
         bra.b   l_013_00316                     ; 002CA
 
 ;-------------------------------------------------------------------------------
-; ShapeLine - Op $08, a line: two vertex offsets and a colour; drawn (sub_035_001DA) unless
+; ShapeLine - Op $08, a line: two vertex offsets and a colour; drawn (ClipDrawLine3D) unless
 ; both ends are behind the camera.
 ;-------------------------------------------------------------------------------
 ShapeLine:
@@ -349,7 +349,7 @@ l_013_0036E:
 ;-------------------------------------------------------------------------------
 ; ShapePolygon - A filled polygon: vertex offsets, the last with bit 15 set, then the colour
 ; word. With bit 15 set the face is drawn from either side; otherwise it is tested
-; (sub_010_00E4A) and drawn only from the front, unless bit 14 is set and a second colour word
+; (FacesCamera) and drawn only from the front, unless bit 14 is set and a second colour word
 ; follows for its back. A face not drawn, or with every vertex behind the camera, returns -1,
 ; which ends the rest of its face list in DrawModel; otherwise it is clipped and filled
 ; (ClipFillPolygon).
@@ -488,7 +488,7 @@ l_013_004BA:
 ;-------------------------------------------------------------------------------
 ; ShapeShadow - Op $10: the aircraft's shadow on the ground: in colour 0, its faces (offsets
 ; into the object's own vertices, ObjectTable +$A4) flattened onto the ground below it; only
-; while low enough (and, from the cockpit, depending on dat_071_0023B and which object it is).
+; while low enough (and, from the cockpit, depending on HeightBand and which object it is).
 ; Used by every aircraft model.
 ;-------------------------------------------------------------------------------
 ShapeShadow:
@@ -1087,8 +1087,8 @@ l_013_00B3E:
         rts                                     ; 00B40
 
 ;-------------------------------------------------------------------------------
-; ShapeSceneryTest - Op $7C: works on the scenery record (dat_071_00402) when the view is low
-; (dat_071_00448 above -$140) and dat_071_0023C is clear; used with the window grids (not
+; ShapeSceneryTest - Op $7C: works on the scenery record (CurrentShape) when the view is low
+; (ViewOffsetY8 above -$140) and dat_071_0023C is clear; used with the window grids (not
 ; worked out).
 ;-------------------------------------------------------------------------------
 ShapeSceneryTest:

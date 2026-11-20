@@ -10,7 +10,7 @@
 ;-------------------------------------------------------------------------------
 ; UpdateAttitude - Updates an object's attitude (a1) and calls SetAttitude: for an aircraft
 ; (type '0'-'9') the roll (+$6A) eases back towards level by $7D0 (25 degrees) a step, and the
-; pitch and heading come from sub_000_0454A (into dat_071_00490 / 00492); for the others from
+; pitch and heading come from VectorToAngles (into dat_071_00490 / 00492); for the others from
 ; the control bits (+$64, +$65) and the state (+$05).
 ;-------------------------------------------------------------------------------
 UpdateAttitude:
@@ -487,7 +487,8 @@ l_032_00546:
 ;-------------------------------------------------------------------------------
 ; SetAttitude - SetAttitude(a1 = an object, d4-d6 = its three attitude angles): stores the
 ; angles (+$66, +$68, +$6A), makes its matrix at +$80 from them (AnglesToMatrix), then the
-; matrix at +$92 from the negated angles ($7080 - each: the opposite rotation; sub_032_00568).
+; matrix at +$92 from the negated angles ($7080 - each: the opposite rotation;
+; SetInverseMatrix).
 ;-------------------------------------------------------------------------------
 SetAttitude:
         movem.w d4-d6,$66(a1)                   ; 0054C
@@ -530,7 +531,7 @@ l_032_00592:
 
 ;-------------------------------------------------------------------------------
 ; SetupCamera - The camera, once a frame: from the cockpit (sub_032_00710) or, in the outside
-; views (OutsideView), from a point near the viewed object (sub_032_005B2).
+; views (OutsideView), from a point near the viewed object (SetOutsideCamera).
 ;-------------------------------------------------------------------------------
 SetupCamera:
         tst.b   (OutsideView).l                 ; 00594
@@ -546,8 +547,8 @@ l_032_005A8:
 
 ;-------------------------------------------------------------------------------
 ; SetOutsideCamera - Places the camera outside, near the viewed object (ViewObject, or the
-; object in dat_071_00392 when it is a '0' type), at an offset turned by its orientation
-; (sub_004_00328).
+; object in EjectedPilot when it is a '0' type), at an offset turned by its orientation
+; (TurnByObject).
 ;-------------------------------------------------------------------------------
 SetOutsideCamera:
         tst.b   (CameraFollows).l               ; 005B2

@@ -26,8 +26,8 @@ l_033_00024:
         rts                                     ; 00028
 
 ;-------------------------------------------------------------------------------
-; MakeSkyPolygonPanel - MakeSkyPolygon with the second matrix (dat_071_005BA): the sky polygon
-; for the instrument panel's attitude indicator.
+; MakeSkyPolygonPanel - MakeSkyPolygon with the second matrix (PanelViewMatrix): the sky
+; polygon for the instrument panel's attitude indicator.
 ;-------------------------------------------------------------------------------
 MakeSkyPolygonPanel:
         lea.l   (PanelViewMatrix).l,a2          ; 0002A
@@ -35,7 +35,7 @@ MakeSkyPolygonPanel:
 
 ;-------------------------------------------------------------------------------
 ; MakeSkyPolygon - Turns the view's four corner directions (dat_033_00000) by
-; the view matrix (dat_071_005A8), finds where the horizon cuts the view's edges (hunk 34), and
+; the view matrix (ViewMatrix), finds where the horizon cuts the view's edges (hunk 34), and
 ; builds the polygon of the view above the horizon - the sky - at dat_072_03000 from the two
 ; horizon points (PutEdge) and the corners on the sky's side. Returns d0 = 0 (dat_071_0026E
 ; set) when there is sky to fill, 1 when there is none.
@@ -275,7 +275,7 @@ l_033_002F4:
 
 ;-------------------------------------------------------------------------------
 ; SkyFillsView - The sky polygon as the whole view (all four corners): used when no horizon
-; edge crosses the view and the view looks up (its pitch, dat_071_0045A or dat_071_00464
+; edge crosses the view and the view looks up (its pitch, dat_071_0045A or OutsideCamPitch
 ; outside, above $3840); otherwise no sky at all.
 ;-------------------------------------------------------------------------------
 SkyFillsView:

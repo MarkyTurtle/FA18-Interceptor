@@ -27,7 +27,7 @@ The first version of these pictures had faults, since corrected:
 * Shapes that reached behind the camera were drawn without clipping.
 * The pictures were mirrored.
 * Faces were missing from some shapes, such as Coit Tower's front. The drawing lists' plane
-  tests compare the camera's position against the shape (`dat_071_00442`-`00448`), and the tool
+  tests compare the camera's position against the shape (`ViewOffsetX8`-`00448`), and the tool
   had not set it.
 * The colours were taken from the instrument panel picture. Its palette has colours 9 and 11
   the other way round from the game's, which turned the dark green hills orange.

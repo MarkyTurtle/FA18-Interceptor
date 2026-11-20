@@ -389,7 +389,8 @@ dat_071_0016A:
 	dc.b	$00
 dat_071_0016C:
 	dc.b	$00
-dat_071_0016D:
+; ZonesEntered - One bit per zone (Zones) the player has entered.
+ZonesEntered:
 	dc.b	$00
 dat_071_0016E:
 	dc.b	$00
@@ -451,7 +452,8 @@ CameraFollows:
 ; the cockpit, the M and Enter keys), so that the camera and the scenery are set up again.
 NewView:
 	dc.b	$00
-dat_071_00186:
+; CameraShotStep - Which shot of the camera sequence is on (set by the CameraShots steps).
+CameraShotStep:
 	dc.b	$00
 dat_071_00187:
 	dc.b	$00
@@ -692,7 +694,8 @@ dat_071_00209:
 	dc.b	$00
 dat_071_0020A:
 	dc.b	$00
-dat_071_0020B:
+; WeaponRangeRedraw - Frames left to redraw the weapon's range (ShowWeaponRange).
+WeaponRangeRedraw:
 	dc.b	$00
 ; TargetReadoutRedraw - Frames left to redraw the target readout in full (set to 2 by the Y key
 ; and RedrawInstruments).
@@ -1304,7 +1307,7 @@ ClipY:
 	dc.b	$00
 ; ViewShift - How far the cockpit's drawing is moved, in 16-pixel words (ViewX = ViewShift x
 ; 16): 0 in the cockpit, 50 (off the screen) in the outside views; the digits drawn by
-; sub_039_011A6 move with it.
+; PrintNumberHUD move with it.
 ViewShift:
 	dc.b	$00
 	dc.b	$00

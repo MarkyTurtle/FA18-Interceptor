@@ -11,8 +11,8 @@ l_026_00000:
 
 ;-------------------------------------------------------------------------------
 ; SetupMode - Sets up the world for GameMode (StateFlightSetup, DemoSetup): the date
-; (ShowLogDate), then from the mode's entry in hunk 27's table (dat_027_001F2; the demo uses
-; the entry of mode 10) MissionTargets and the list of objects to place (dat_071_0010A).
+; (ShowLogDate), then from the mode's entry in hunk 27's table (ModeTable; the demo uses
+; the entry of mode 10) MissionTargets and the list of objects to place (ModeObjects).
 ;-------------------------------------------------------------------------------
 SetupMode:
         jsr     (ShowLogDate).l                 ; 00002
@@ -111,7 +111,7 @@ AimObject:
         lea.l   (Routes).l,a4                   ; 000F2
         adda.w  (a4,d1.w),a4                    ; 000F8
         movem.w (a4)+,d2-d6                     ; 000FC
-        bsr.w   sub_026_007F6                   ; 00100
+        bsr.w   SetDestination                  ; 00100
         move.b  #$ff,$38(a0)                    ; 00104
         swap    d2                              ; 0010A
         swap    d3                              ; 0010C
@@ -224,16 +224,22 @@ l_026_001CA:
         rts                                     ; 00272
 l_026_00274:
         rts                                     ; 00274
-sub_026_00276:
+
+;-------------------------------------------------------------------------------
+; CheckZones - Each frame (not in the demo): for the eight zones of the map (Zones: rectangles
+; of map cells), when the player is inside one, places its objects (PlaceZoneObjects) - the
+; first time noted in ZonesEntered.
+;-------------------------------------------------------------------------------
+CheckZones:
         tst.b   (DemoActive).l                  ; 00276
         bne.b   l_026_00274                     ; 0027C
-        lea.l   (dat_027_00140).l,a3            ; 0027E
+        lea.l   (Zones).l,a3                    ; 0027E
         moveq   #$0,d7                          ; 00284
 l_026_00286:
         tst.w   (a3)                            ; 00286
         blt.b   l_026_00274                     ; 00288
         movem.w (PlayerCellX).l,d5-d6           ; 0028A
-        btst    d7,(dat_071_0016D).l            ; 00292
+        btst    d7,(ZonesEntered).l             ; 00292
         bne.b   l_026_002BC                     ; 00298
         movea.l (a3),a2                         ; 0029A
         movem.w (a2)+,d1-d4                     ; 0029C
@@ -245,8 +251,8 @@ l_026_00286:
         blt.b   l_026_002D6                     ; 002AA
         cmp.w   d4,d6                           ; 002AC
         bgt.b   l_026_002D6                     ; 002AE
-        bset    d7,(dat_071_0016D).l            ; 002B0
-        bsr.w   sub_026_003F6                   ; 002B6
+        bset    d7,(ZonesEntered).l             ; 002B0
+        bsr.w   PlaceZoneObjects                ; 002B6
         bra.b   l_026_002D6                     ; 002BA
 l_026_002BC:
         movea.l (a3),a2                         ; 002BC
@@ -259,7 +265,7 @@ l_026_002BC:
         blt.b   l_026_002E2                     ; 002CC
         cmp.w   d4,d6                           ; 002CE
         bgt.b   l_026_002E2                     ; 002D0
-        bsr.w   sub_026_003F6                   ; 002D2
+        bsr.w   PlaceZoneObjects                ; 002D2
 l_026_002D6:
         addq.w  #$4,a3                          ; 002D6
         addq.w  #$1,d7                          ; 002D8
@@ -267,7 +273,7 @@ l_026_002D6:
         blt.b   l_026_00286                     ; 002DE
         rts                                     ; 002E0
 l_026_002E2:
-        bclr    d7,(dat_071_0016D).l            ; 002E2
+        bclr    d7,(ZonesEntered).l             ; 002E2
         move.w  (a2)+,d0                        ; 002E8
         subq.w  #$1,d0                          ; 002EA
         blt.b   l_026_002D6                     ; 002EC
@@ -303,7 +309,7 @@ l_026_0033C:
 l_026_00342:
         move.w  (a4)+,d6                        ; 00342
         ext.l   d6                              ; 00344
-        bsr.w   sub_026_007F6                   ; 00346
+        bsr.w   SetDestination                  ; 00346
         move.b  #$80,$38(a0)                    ; 0034A
         andi.w  #$fffe,$0(a0)                   ; 00350
         bra.w   l_026_003D6                     ; 00356
@@ -316,7 +322,7 @@ l_026_0035A:
         lea.l   (Routes).l,a4                   ; 00366
         adda.w  (a4,d6.w),a4                    ; 0036C
         movem.w (a4)+,d2-d6                     ; 00370
-        bsr.w   sub_026_007F6                   ; 00374
+        bsr.w   SetDestination                  ; 00374
         move.b  #$ff,$38(a0)                    ; 00378
         andi.w  #$fffe,$0(a0)                   ; 0037E
         bra.b   l_026_003CE                     ; 00384
@@ -354,7 +360,7 @@ PlaceObject:
         moveq   #$0,d0                          ; 003DE
         moveq   #-2,d7                          ; 003E0
         move.l  a2,-(a7)                        ; 003E2
-        bsr.w   sub_026_00414                   ; 003E4
+        bsr.w   PlaceObjectList                 ; 003E4
         movea.l (a7)+,a2                        ; 003E8
         tst.w   d7                              ; 003EA
         blt.b   l_026_003F2                     ; 003EC
@@ -363,7 +369,12 @@ l_026_003F2:
         rts                                     ; 003F2
 l_026_003F4:
         rts                                     ; 003F4
-sub_026_003F6:
+
+;-------------------------------------------------------------------------------
+; PlaceZoneObjects - Places a zone's objects (from its list, after the rectangle), in the
+; missions only (not free flight, the training demo or practice).
+;-------------------------------------------------------------------------------
+PlaceZoneObjects:
         move.b  (GameMode).l,d0                 ; 003F6
         cmpi.b  #$2,d0                          ; 003FC
         ble.b   l_026_003F4                     ; 00400
@@ -374,7 +385,12 @@ sub_026_003F6:
         move.w  (a2)+,d0                        ; 0040C
         subq.w  #$1,d0                          ; 0040E
         blt.w   l_026_006F2                     ; 00410
-sub_026_00414:
+
+;-------------------------------------------------------------------------------
+; PlaceObjectList - Places the objects of a list (each a ModelTable offset and its data;
+; entries for another GameMode skipped), as PlaceObject does for one.
+;-------------------------------------------------------------------------------
+PlaceObjectList:
         lea.l   (ModelTable).l,a1               ; 00414
         adda.w  (a2)+,a1                        ; 0041A
         swap    d0                              ; 0041C
@@ -562,7 +578,7 @@ l_026_0062E:
         move.b  #$ff,d1                         ; 0062E
         bra.b   l_026_0063E                     ; 00632
 l_026_00634:
-        bsr.w   sub_026_007F6                   ; 00634
+        bsr.w   SetDestination                  ; 00634
         lsr.w   #$8,d1                          ; 00638
         ori.b   #$80,d1                         ; 0063A
 l_026_0063E:
@@ -616,7 +632,7 @@ l_026_0067C:
 l_026_006EA:
         moveq   #-1,d7                          ; 006EA
 l_026_006EC:
-        dbra    d0,sub_026_00414                ; 006EC
+        dbra    d0,PlaceObjectList              ; 006EC
         rts                                     ; 006F0
 l_026_006F2:
         moveq   #-1,d7                          ; 006F2
@@ -627,7 +643,12 @@ l_026_006F6:
         rts                                     ; 00704
 l_026_00706:
         rts                                     ; 00706
-sub_026_00708:
+
+;-------------------------------------------------------------------------------
+; KeepInZone - For a computer aircraft (type $1x, not landing) that belongs to a zone (+$5D):
+; when it has left its zone's rectangle, it is turned back (a new destination, SetDestination).
+;-------------------------------------------------------------------------------
+KeepInZone:
         lea.l   (ObjectTable).l,a0              ; 00708
         move.w  (CurrentObject).l,d0            ; 0070E
         asl.w   #$8,d0                          ; 00714
@@ -649,7 +670,7 @@ sub_026_00708:
         add.w   d0,d0                           ; 00740
         move.w  $6(a0),d5                       ; 00742
         move.w  $8(a0),d6                       ; 00746
-        lea.l   (dat_027_00140).l,a3            ; 0074A
+        lea.l   (Zones).l,a3                    ; 0074A
         adda.w  d0,a3                           ; 00750
         movea.l (a3),a3                         ; 00752
         movem.w (a3)+,d1-d4                     ; 00754
@@ -705,30 +726,37 @@ l_026_007D8:
         move.b  #$5,$7a(a0)                     ; 007D8
 l_026_007DE:
         andi.w  #$fffe,$0(a0)                   ; 007DE
-        bsr.w   sub_026_007F6                   ; 007E4
+        bsr.w   SetDestination                  ; 007E4
         move.b  #$ff,$38(a0)                    ; 007E8
 l_026_007EE:
         rts                                     ; 007EE
 l_026_007F0:
         dbra    d0,l_026_007A6                  ; 007F0
         rts                                     ; 007F4
-sub_026_007F6:
+
+;-------------------------------------------------------------------------------
+; SetDestination - Sets an object's destination and its data (+$2C, +$2E, +$30, +$32 words,
+; +$34 long, from d2-d6).
+;-------------------------------------------------------------------------------
+SetDestination:
         move.w  d2,$2c(a0)                      ; 007F6
         move.w  d3,$2e(a0)                      ; 007FA
         move.w  d4,$30(a0)                      ; 007FE
         move.w  d5,$32(a0)                      ; 00802
         move.l  d6,$34(a0)                      ; 00806
         rts                                     ; 0080A
-dat_026_0080C:
-        dc.l    sub_026_00B06                   ; 0080C
-        dc.l    sub_026_00B38                   ; 00810
-        dc.l    sub_026_00B5C                   ; 00814
-        dc.l    sub_026_00B80                   ; 00818
-        dc.l    sub_026_00BBC                   ; 0081C
-        dc.l    sub_026_00BD4                   ; 00820
+; CameraShots - The camera sequence's steps (CameraSequence 0-8): each picks the outside
+; camera's zoom and next step by the distance (d3).
+CameraShots:
+        dc.l    CameraShot0                     ; 0080C
+        dc.l    CameraShot1                     ; 00810
+        dc.l    CameraShot2                     ; 00814
+        dc.l    CameraShot3                     ; 00818
+        dc.l    CameraShot4                     ; 0081C
+        dc.l    CameraShot5                     ; 00820
         dc.l    l_026_00E10                     ; 00824
-        dc.l    sub_026_00BDA                   ; 00828
-        dc.l    sub_026_00C26                   ; 0082C
+        dc.l    CameraShot7                     ; 00828
+        dc.l    CameraShot8                     ; 0082C
 dat_026_00830:
 	dc.b	$00,$00,$00,$03,$00,$0F,$FF,$F7,$00,$03,$00,$0E,$FF,$EF,$00,$03
 	dc.b	$00,$00,$FF,$F7,$00,$03,$FF,$F2,$00,$00,$00,$03,$FF,$F2,$00,$09
@@ -751,7 +779,12 @@ dat_026_008E4:
 	dc.b	$00,$01,$00,$12,$FF,$F4,$00,$00,$FF,$FA,$00,$0C
 l_026_00920:
         rts                                     ; 00920
-sub_026_00922:
+
+;-------------------------------------------------------------------------------
+; UpdateCamera - The outside camera each frame (not in the cockpit, not frozen): the map view's
+; camera, or the camera sequence's step (CameraShots) for the distance to the viewed object.
+;-------------------------------------------------------------------------------
+UpdateCamera:
         jsr     (sub_032_006EA).l               ; 00922
         tst.b   (OutsideView).l                 ; 00928
         beq.b   l_026_00920                     ; 0092E
@@ -916,13 +949,18 @@ l_026_00AEC:
 l_026_00AF0:
         move.l  d1,d3                           ; 00AF0
 l_026_00AF2:
-        move.b  (dat_071_00186).l,d0            ; 00AF2
+        move.b  (CameraShotStep).l,d0           ; 00AF2
         ext.w   d0                              ; 00AF8
         asl.w   #$2,d0                          ; 00AFA
-        lea.l   dat_026_0080C(pc),a0            ; 00AFC
+        lea.l   CameraShots(pc),a0              ; 00AFC
         movea.l (a0,d0.w),a0                    ; 00B00
         jmp     (a0)                            ; 00B04
-sub_026_00B06:
+
+;-------------------------------------------------------------------------------
+; CameraShot0 - Camera sequence step 0 (CameraShots): the zoom by the distance; close enough,
+; the camera follows and step 1.
+;-------------------------------------------------------------------------------
+CameraShot0:
         moveq   #$d,d4                          ; 00B06
         cmpi.l  #$1c00000,d3                    ; 00B08
         bgt.w   l_026_00DE6                     ; 00B0E
@@ -931,27 +969,39 @@ sub_026_00B06:
         moveq   #$b,d4                          ; 00B20
         cmpi.l  #$d00000,d3                     ; 00B22
         bgt.w   l_026_00DE6                     ; 00B28
-        move.b  #$1,(dat_071_00186).l           ; 00B2C
+        move.b  #$1,(CameraShotStep).l          ; 00B2C
         bra.w   l_026_00CEA                     ; 00B34
-sub_026_00B38:
+
+;-------------------------------------------------------------------------------
+; CameraShot1 - Camera sequence step 1 (CameraShots).
+;-------------------------------------------------------------------------------
+CameraShot1:
         moveq   #$b,d4                          ; 00B38
         cmpi.l  #$200000,d3                     ; 00B3A
         bgt.w   l_026_00DE6                     ; 00B40
         moveq   #$a,d4                          ; 00B44
         cmpi.l  #$60000,d3                      ; 00B46
         bgt.w   l_026_00DE6                     ; 00B4C
-        move.b  #$2,(dat_071_00186).l           ; 00B50
+        move.b  #$2,(CameraShotStep).l          ; 00B50
         bra.w   l_026_00CEA                     ; 00B58
-sub_026_00B5C:
+
+;-------------------------------------------------------------------------------
+; CameraShot2 - Camera sequence step 2 (CameraShots).
+;-------------------------------------------------------------------------------
+CameraShot2:
         moveq   #$9,d4                          ; 00B5C
         cmpi.l  #$60000,d3                      ; 00B5E
         bgt.w   l_026_00CEA                     ; 00B64
         moveq   #$7,d4                          ; 00B68
         cmpi.l  #$30000,d3                      ; 00B6A
         bgt.w   l_026_00CEA                     ; 00B70
-        move.b  #$3,(dat_071_00186).l           ; 00B74
+        move.b  #$3,(CameraShotStep).l          ; 00B74
         bra.w   l_026_00D68                     ; 00B7C
-sub_026_00B80:
+
+;-------------------------------------------------------------------------------
+; CameraShot3 - Camera sequence step 3 (CameraShots).
+;-------------------------------------------------------------------------------
+CameraShot3:
         moveq   #$7,d4                          ; 00B80
         cmpi.l  #$60000,d3                      ; 00B82
         bgt.w   l_026_00D68                     ; 00B88
@@ -964,18 +1014,30 @@ sub_026_00B80:
         moveq   #$3,d4                          ; 00BA4
         cmpi.l  #$8000,d3                       ; 00BA6
         bgt.w   l_026_00D68                     ; 00BAC
-        move.b  #$4,(dat_071_00186).l           ; 00BB0
+        move.b  #$4,(CameraShotStep).l          ; 00BB0
         bra.w   l_026_00D8C                     ; 00BB8
-sub_026_00BBC:
+
+;-------------------------------------------------------------------------------
+; CameraShot4 - Camera sequence step 4 (CameraShots).
+;-------------------------------------------------------------------------------
+CameraShot4:
         moveq   #$2,d4                          ; 00BBC
         cmpi.l  #$2800,d3                       ; 00BBE
         bgt.w   l_026_00DE6                     ; 00BC4
-        move.b  #$5,(dat_071_00186).l           ; 00BC8
+        move.b  #$5,(CameraShotStep).l          ; 00BC8
         bra.w   l_026_00DB2                     ; 00BD0
-sub_026_00BD4:
+
+;-------------------------------------------------------------------------------
+; CameraShot5 - Camera sequence step 5 (CameraShots): the zoom at 1.
+;-------------------------------------------------------------------------------
+CameraShot5:
         moveq   #$1,d4                          ; 00BD4
         bra.w   l_026_00DE6                     ; 00BD6
-sub_026_00BDA:
+
+;-------------------------------------------------------------------------------
+; CameraShot7 - Camera sequence step 7 (CameraShots).
+;-------------------------------------------------------------------------------
+CameraShot7:
         tst.b   (dat_071_0027F).l               ; 00BDA
         bgt.b   l_026_00C06                     ; 00BE0
         moveq   #$e,d4                          ; 00BE2
@@ -988,11 +1050,15 @@ sub_026_00BDA:
         bgt.w   l_026_00E28                     ; 00C02
 l_026_00C06:
         move.b  #$3,(CameraSequence).l          ; 00C06
-        move.b  #$8,(dat_071_00186).l           ; 00C0E
+        move.b  #$8,(CameraShotStep).l          ; 00C0E
         jsr     (BayCentre).l                   ; 00C16
         movem.l d0-d2,(FlyByPoint).l            ; 00C1C
         rts                                     ; 00C24
-sub_026_00C26:
+
+;-------------------------------------------------------------------------------
+; CameraShot8 - Camera sequence step 8 (CameraShots): to sequence 4 when close.
+;-------------------------------------------------------------------------------
+CameraShot8:
         moveq   #$e,d4                          ; 00C26
         cmpi.l  #$800000,d3                     ; 00C28
         bgt.w   l_026_00E28                     ; 00C2E
@@ -1009,7 +1075,7 @@ sub_026_00C26:
 FlyBySetup:
         move.b  #$1,(dat_071_0027F).l           ; 00C48
         clr.w   (dat_071_0038A).l               ; 00C50
-        move.b  #$7,(dat_071_00186).l           ; 00C56
+        move.b  #$7,(CameraShotStep).l          ; 00C56
         lea.l   (ObjectTable).l,a0              ; 00C5E
         movea.l (ModeObjects).l,a2              ; 00C64
 l_026_00C6A:
@@ -1090,12 +1156,20 @@ l_026_00CEA:
         movem.l (a7)+,d3-d6                     ; 00D62
         bra.b   l_026_00DE6                     ; 00D66
 l_026_00D68:
-        bsr.w   sub_026_00D7A                   ; 00D68
+        bsr.w   FlyByPointPlayer                ; 00D68
         bra.w   l_026_00DE6                     ; 00D6C
-sub_026_00D70:
+
+;-------------------------------------------------------------------------------
+; FlyByPointObject4 - FlyByPoint = object 4's position.
+;-------------------------------------------------------------------------------
+FlyByPointObject4:
         movem.l (Object4_14).l,d0-d2            ; 00D70
         bra.b   l_026_00D82                     ; 00D78
-sub_026_00D7A:
+
+;-------------------------------------------------------------------------------
+; FlyByPointPlayer - FlyByPoint = the player's position.
+;-------------------------------------------------------------------------------
+FlyByPointPlayer:
         movem.l (PlayerX).l,d0-d2               ; 00D7A
 l_026_00D82:
         movem.l d0-d2,(FlyByPoint).l            ; 00D82
@@ -1135,7 +1209,7 @@ l_026_00DE6:
         bgt.b   l_026_00E28                     ; 00DEC
         cmpi.b  #$6,(CameraSequence).l          ; 00DEE
         blt.b   l_026_00E26                     ; 00DF6
-        move.b  #$6,(dat_071_00186).l           ; 00DF8
+        move.b  #$6,(CameraShotStep).l          ; 00DF8
         move.b  #$5,(dat_071_00275).l           ; 00E00
         move.b  #$0,(CameraFollows).l           ; 00E08
 l_026_00E10:

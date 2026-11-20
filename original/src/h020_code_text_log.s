@@ -60,7 +60,7 @@ MonthNames:
 ;-------------------------------------------------------------------------------
 ; ShowLogDate - Puts the log's date into the briefing text (dat_064_01096: "DATE: SEPTEMBER 6,
 ; 1994"): one day for each hour of flight time (ConfigBuffer+$08 / 3600), from September 1st:
-; month = hours / 32 from the reversed month names at dat_020_00058, day = hours % 32 + 1 (at
+; month = hours / 32 from the reversed month names at MonthNames, day = hours % 32 + 1 (at
 ; most 30).
 ;-------------------------------------------------------------------------------
 ShowLogDate:
@@ -613,7 +613,7 @@ l_020_00722:
 
 ;-------------------------------------------------------------------------------
 ; SetViewOctant - Sets ViewOctant (0-7): the eighth of the compass the view faces
-; (dat_071_0045C in the cockpit, dat_071_00466 outside), for the scenery order.
+; (dat_071_0045C in the cockpit, OutsideCamHeading outside), for the scenery order.
 ;-------------------------------------------------------------------------------
 SetViewOctant:
         tst.b   (OutsideView).l                 ; 00738
@@ -824,7 +824,7 @@ l_020_00946:
 
 ;-------------------------------------------------------------------------------
 ; StartWarning - StartWarning(d0 = a sound word): makes it the warning or message now sounding
-; (CurrentWarning) and sets the flags that go with it (dat_071_0029C bit 0; dat_071_0029E bit
+; (CurrentWarning) and sets the flags that go with it (StatusBits bit 0; dat_071_0029E bit
 ; 13 for the $2000 kind, cleared for $40xx / $48xx). Used by the keys that answer with a voice
 ; or tone, the training and the objects.
 ;-------------------------------------------------------------------------------
@@ -861,7 +861,7 @@ ScaleToLengthD0:
 
 ;-------------------------------------------------------------------------------
 ; ScaleToLength - ScaleToLength(length, x, y, z): the vector (x, y, z) made length long (its
-; size from sub_008_016AC), into dat_071_0041C, 0041E, 00420.
+; size from VectorLength), into dat_071_0041C, 0041E, 00420.
 ;-------------------------------------------------------------------------------
 ScaleToLength:
         link.w  a6,#$fffc                       ; 009A4
@@ -1164,7 +1164,7 @@ sub_020_00C50:
 
 ;-------------------------------------------------------------------------------
 ; BinToBCD - Converts BCDIn (a long, up to 99,999,999) to BCD in BCDOut by subtracting powers
-; of ten (dat_020_00C8E).
+; of ten (PowersOfTen).
 ;-------------------------------------------------------------------------------
 BinToBCD:
         movem.l d5-d7/a6,-(a7)                  ; 00C58

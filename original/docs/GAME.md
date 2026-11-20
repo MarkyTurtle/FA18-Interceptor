@@ -80,12 +80,12 @@ stages (`?` = not worked out yet):
 | `$70` | `DrawSun` | the sun (probably) |
 | `$78`, `$80` | `DrawFarScenery0`, `DrawFarScenery1` | the far scenery, from the two coarse maps |
 | `$90` | `DrawGroundDots` | dots on the ground when low, to judge height and speed by |
-| `$A0`-`$B0` | `sub_023_00000`, `DrawObjects`, `sub_000_072DC` | **the 3D view's objects and scenery** |
+| `$A0`-`$B0` | `BulletInFront`, `DrawObjects`, `UpdateBullets` | **the 3D view's objects and scenery** |
 | `$C0` | `UpdateWarnings`, `CockpitSounds` | the warning sounds (on `WarningTicks`), the cockpit's sounds |
-| `$D0` | `DrawPanel`, `sub_037_002F6`, `DrawRadar`, `DrawHUD`, `DrawStatusLights`, `sub_037_008B8`, hunk 39 (several, some every 4th / 8th / 16th frame) | **the cockpit**: the instrument panel and the instruments |
-| `$1A0` | `sub_036_00BAA`, hunks 37 and 39 | ? (the head-up display) |
-| `$1D0`, `$1D4` | hunk 39, `CheckViewObjectGone`, `sub_029_001A4`, `sub_020_00562` (the time: `ReadTime`), and every 8 / 16 / 32 frames more | ? (the outside views; the clock) |
-| `$210`-`$220` | `sub_036_0000C`, `sub_039_00276`, `PrintText` (the flight log page, `SaveConfig`) | the menus and pages |
+| `$D0` | `DrawPanel`, `DrawPanelPiece`, `DrawRadar`, `DrawHUD`, `DrawStatusLights`, `DrawCompass`, hunk 39 (several, some every 4th / 8th / 16th frame) | **the cockpit**: the instrument panel and the instruments |
+| `$1A0` | `DrawPanelLamp`, hunks 37 and 39 | ? (the head-up display) |
+| `$1D0`, `$1D4` | hunk 39, `CheckViewObjectGone`, `DrawMapMarkers`, `sub_020_00562` (the time: `ReadTime`), and every 8 / 16 / 32 frames more | ? (the outside views; the clock) |
+| `$210`-`$220` | `DrawBufferMark`, `ShowDebugNumbers`, `PrintText` (the flight log page, `SaveConfig`) | the menus and pages |
 
 ## Input
 
@@ -206,7 +206,7 @@ Each frame `UpdateObject` (hunk 22) does one object's work:
   the stick sets how fast the aircraft rolls and pitches, not its angles. A computer aircraft
   has target rates (`+$50`-`+$54`) that its actual rates move about three quarters of the way to
   each frame, divided by its responsiveness (`+$26`). The roll eases back towards level (up to
-  `$50` a frame) and, when `dat_071_00154` is set, a stall check compares a minimum speed worked
+  `$50` a frame) and, when `FlightPhysics` is set, a stall check compares a minimum speed worked
   out from the pitch (and `+$22`) with the speed. Type `$3x` objects instead keep their pitch and
   heading along their direction of flight (`VectorToAngles`) while their roll eases level.
   `SetAttitude` makes the matrices from the angles;
@@ -516,7 +516,7 @@ The menu key sets `GameMode`, which then decides almost everything about the fli
 | F1-F6 | (the missions) | 3-8 | F1 always; F*n* once F*n*-1 has been completed |
 | Esc / Shift+Esc | | | restart the selection / back to the main menu |
 
-`StateFlightSetup` then sets up the world for the mode (hunk 26, `sub_026_00002`, from the mode's
+`StateFlightSetup` then sets up the world for the mode (hunk 26, `SetupMode`, from the mode's
 table in hunk 27), gives the player 3 aircraft (`AircraftLeft`) and starts the chain for the mode.
 
 ### A mission
@@ -676,9 +676,9 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
 * What each scenery shape is; the operations no shape uses; what `dat_071_002A2` bit `$2000` (a whole-sky
   view) and the second view table (`CheckViewTable2`) are for.
 * Some of the instruments (hunk 39) and the panel's blitter-drawn gauges (hunk 37); the
-  head-up display's target box in detail; the outside views' extra drawing (`sub_029_001A4`)
-  and stage `$1A0` (`sub_036_00BAA`); the particle records at `dat_071_00642` (hunk 23,
-  `sub_000_072DC`).
+  head-up display's target box in detail; the outside views' extra drawing (`DrawMapMarkers`)
+  and stage `$1A0` (`DrawPanelLamp`); the particle records at `Bullets` (hunk 23,
+  `UpdateBullets`).
 * The outside views' choices (`ViewChoice`, `CameraSequence`); what `GunFlags` bits 1, 3 and 4
   are besides the view switch.
 * The rest of the flight log's words, and which sound file is which effect.

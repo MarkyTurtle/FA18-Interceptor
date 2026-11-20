@@ -93,7 +93,7 @@ l_023_000C4:
 ;-------------------------------------------------------------------------------
 ; BulletHitTest - Whether a bullet (its number on the stack) hit an object or a scenery shape
 ; near it: the objects in its cell (within $800, or dat_071_00376) and the drawing list's
-; shapes. d0 = 1 for a hit (dat_071_00388 the object hit).
+; shapes. d0 = 1 for a hit (BulletHitObject the object hit).
 ;-------------------------------------------------------------------------------
 BulletHitTest:
         moveq   #$0,d0                          ; 000C6

@@ -231,7 +231,7 @@ SetCameraAt:
 
 ;-------------------------------------------------------------------------------
 ; PointAheadOfView - FlyByPoint = the point $E980 along the viewed object's axis
-; (sub_004_0032E): a place ahead of it.
+; (TurnByPlayer): a place ahead of it.
 ;-------------------------------------------------------------------------------
 PointAheadOfView:
         moveq   #$0,d3                          ; 002DA

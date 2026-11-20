@@ -137,7 +137,7 @@ l_029_00110:
         move.w  (dat_071_0032A).l,d1            ; 0017E
         moveq   #$0,d3                          ; 00184
         move.w  #$9,(DrawColour).l              ; 00186
-        jsr     (sub_039_01144).l               ; 0018E
+        jsr     (DrawSmallNumber).l             ; 0018E
 l_029_00194:
         movem.l (a7)+,a0/a4                     ; 00194
 l_029_00198:
@@ -210,7 +210,7 @@ l_029_00200:
         move.w  #$12c,d0                        ; 0027A
 l_029_0027E:
         move.w  #$2,(DrawColour).l              ; 0027E
-        jsr     (sub_039_01144).l               ; 00286
+        jsr     (DrawSmallNumber).l             ; 00286
 l_029_0028C:
         movem.l (a7)+,d0/a0                     ; 0028C
 l_029_00290:
@@ -267,7 +267,7 @@ l_029_0033C:
         moveq   #$0,d0                          ; 00340
 l_029_00342:
         move.w  #$2,(DrawColour).l              ; 00342
-        jsr     (sub_039_01144).l               ; 0034A
+        jsr     (DrawSmallNumber).l             ; 0034A
         movem.l (a7)+,d0/a0                     ; 00350
 l_029_00354:
         addi.w  #$230,-$4(a6)                   ; 00354

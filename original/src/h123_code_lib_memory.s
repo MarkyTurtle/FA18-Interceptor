@@ -9,7 +9,7 @@
 
 ;-------------------------------------------------------------------------------
 ; AllocMemTracked - Lattice getmem: AllocMem(size+12) and links the block into a list
-; (dat_125_00000) so XCEXIT can free everything; returns the memory after the 12-byte header
+; (_MemList) so XCEXIT can free everything; returns the memory after the 12-byte header
 ; (next, prev, size).
 ;-------------------------------------------------------------------------------
 AllocMemTracked:
