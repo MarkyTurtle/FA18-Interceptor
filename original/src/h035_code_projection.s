@@ -618,14 +618,14 @@ l_035_00548:
 
 ;-------------------------------------------------------------------------------
 ; DrawBlobRows - Draws a blob as rows of horizontal lines (its size d6), using the list at
-; dat_073_016A4.
+; BlobRowsBuffer.
 ;-------------------------------------------------------------------------------
 DrawBlobRows:
         move.w  d6,d5                           ; 00550
         subq.w  #$1,d5                          ; 00552
         blt.b   l_035_00548                     ; 00554
         link.w  a6,#$fff8                       ; 00556
-        movea.l (dat_073_016A4).l,a2            ; 0055A
+        movea.l (BlobRowsBuffer).l,a2           ; 0055A
         subq.w  #$1,d5                          ; 00560
         bge.b   l_035_00570                     ; 00562
         move.w  d6,(a2)+                        ; 00564
@@ -688,7 +688,7 @@ l_035_005D2:
         move.w  d3,$2(a2)                       ; 005DC
 l_035_005E0:
         move.w  d0,-$6(a6)                      ; 005E0
-        movea.l (dat_073_016A4).l,a4            ; 005E4
+        movea.l (BlobRowsBuffer).l,a4           ; 005E4
         move.w  (a4)+,d4                        ; 005EA
         move.w  d4,d6                           ; 005EC
         subq.w  #$1,d4                          ; 005EE

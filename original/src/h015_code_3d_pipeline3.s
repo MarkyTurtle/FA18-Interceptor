@@ -93,12 +93,12 @@ l_015_000B0:
         rts                                     ; 000B2
 
 ;-------------------------------------------------------------------------------
-; DrawObjectFlame - For the object dat_073_0165A: draws a blob behind it (the engine's flame or
+; DrawObjectFlame - For the object FlameObject: draws a blob behind it (the engine's flame or
 ; a missile's smoke), its size and colour changing.
 ;-------------------------------------------------------------------------------
 DrawObjectFlame:
         move.w  (CurrentObjectOffset).l,d0      ; 000B4
-        cmp.w   (dat_073_0165A).l,d0            ; 000BA
+        cmp.w   (FlameObject).l,d0              ; 000BA
         bne.b   l_015_000B0                     ; 000C0
         link.w  a6,#$ffd2                       ; 000C2
         move.w  #$ffff,-$26(a6)                 ; 000C6
@@ -106,14 +106,14 @@ DrawObjectFlame:
         lea.l   (ObjectTable).l,a1              ; 000D0
         adda.w  d0,a1                           ; 000D6
         clr.b   d0                              ; 000D8
-        cmpi.b  #$6,(dat_073_01658).l           ; 000DA
+        cmpi.b  #$6,(FlameStep).l               ; 000DA
         blt.b   l_015_000EA                     ; 000E2
-        move.b  (dat_073_01659).l,d0            ; 000E4
+        move.b  (FlameStep2).l,d0               ; 000E4
 l_015_000EA:
         move.b  d0,-$20(a6)                     ; 000EA
         move.b  $3d(a1),-$a(a6)                 ; 000EE
         ble.w   l_015_00394                     ; 000F4
-        cmpi.b  #$6,(dat_073_01658).l           ; 000F8
+        cmpi.b  #$6,(FlameStep).l               ; 000F8
         bge.b   l_015_00106                     ; 00100
         subq.b  #$1,-$a(a6)                     ; 00102
 l_015_00106:
@@ -138,15 +138,15 @@ l_015_00132:
         add.l   d1,d2                           ; 00140
         blt.b   l_015_00172                     ; 00142
         clr.w   -$22(a6)                        ; 00144
-        move.b  (dat_073_01659).l,d0            ; 00148
-        sub.b   (dat_073_01658).l,d0            ; 0014E
-        cmpi.b  #$6,(dat_073_01658).l           ; 00154
+        move.b  (FlameStep2).l,d0               ; 00148
+        sub.b   (FlameStep).l,d0                ; 0014E
+        cmpi.b  #$6,(FlameStep).l               ; 00154
         bge.b   l_015_00160                     ; 0015C
         subq.b  #$1,d0                          ; 0015E
 l_015_00160:
         add.b   $3d(a1),d0                      ; 00160
         bge.b   l_015_0016C                     ; 00164
-        add.b   (dat_073_01658).l,d0            ; 00166
+        add.b   (FlameStep).l,d0                ; 00166
 l_015_0016C:
         move.b  d0,-$20(a6)                     ; 0016C
         bra.b   l_015_00178                     ; 00170
@@ -162,7 +162,7 @@ l_015_00178:
         move.w  d0,d3                           ; 0018E
         add.w   d0,d0                           ; 00190
         add.w   d3,d0                           ; 00192
-        lea.l   (dat_073_0165C).l,a3            ; 00194
+        lea.l   (FlamePoints).l,a3              ; 00194
         adda.w  d0,a3                           ; 0019A
         movem.l (a3),d3-d5                      ; 0019C
         sub.l   (EyeX).l,d3                     ; 001A0
@@ -338,13 +338,13 @@ l_015_00352:
         blt.b   l_015_00376                     ; 00360
         subq.b  #$1,-$20(a6)                    ; 00362
         bge.b   l_015_0038C                     ; 00366
-        move.b  (dat_073_01658).l,d0            ; 00368
+        move.b  (FlameStep).l,d0                ; 00368
         subq.b  #$1,d0                          ; 0036E
         move.b  d0,-$20(a6)                     ; 00370
         bra.b   l_015_0038C                     ; 00374
 l_015_00376:
         addq.b  #$1,-$20(a6)                    ; 00376
-        move.b  (dat_073_01658).l,d0            ; 0037A
+        move.b  (FlameStep).l,d0                ; 0037A
         subq.b  #$1,d0                          ; 00380
         cmp.b   -$20(a6),d0                     ; 00382
         bge.b   l_015_0038C                     ; 00386

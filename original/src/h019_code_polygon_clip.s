@@ -34,9 +34,9 @@ ClipFillPolygonBuffer:
         blt.b   l_019_00004                     ; 0002E
         move.w  d0,-$4(a6)                      ; 00030
         lea.l   (dat_072_03600).l,a1            ; 00034
-        lea.l   (dat_073_001A2).l,a2            ; 0003A
-        lea.l   (dat_073_00198).l,a3            ; 00040
-        lea.l   (dat_073_000FC).l,a4            ; 00046
+        lea.l   (ClipWork3).l,a2                ; 0003A
+        lea.l   (ClipWork2).l,a3                ; 00040
+        lea.l   (ClipWork1).l,a4                ; 00046
         clr.l   (a4)                            ; 0004C
         clr.l   $4(a4)                          ; 0004E
         moveq   #$1,d0                          ; 00052

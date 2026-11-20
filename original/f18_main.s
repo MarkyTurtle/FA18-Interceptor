@@ -473,7 +473,7 @@
 ;         hunks 66, 5, 4, 28 and 29 (not worked out yet).
 	include	"src/h067_code_start_points.s"
 
-; Hunk 68: Data: a table used by hunk 28 (not worked out yet)
+; Hunk 68: Data: the bay's water areas (WaterMapCoarse, WaterMapFine), drawn by DrawWaterAreas.
 	include	"src/h068_code_table68.s"
 
 ; Hunk 69: Scenery shapes: ObjectDrawTable entries 20-26, 75, 76, 82-85.
@@ -548,7 +548,7 @@ h085_end:
 	dc.l	HUNK_END
 	endc
 
-; Hunk 86: Data used by the sound code in hunk 0 (not worked out yet)
+; Hunk 86: Data: the sound effects' parameter blocks (EffectParams, SweepParams, GunParams...).
 	include	"src/h086_code_sound_tables.s"
 
 ;===============================================================================

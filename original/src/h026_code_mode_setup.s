@@ -219,8 +219,8 @@ l_026_001CA:
         clr.b   $5(a1)                          ; 00258
         move.w  (CurrentObject).l,d0            ; 0025C
         move.b  d0,$5e(a1)                      ; 00262
-        clr.b   (dat_073_01658).l               ; 00266
-        clr.b   (dat_073_01659).l               ; 0026C
+        clr.b   (FlameStep).l                   ; 00266
+        clr.b   (FlameStep2).l                  ; 0026C
         rts                                     ; 00272
 l_026_00274:
         rts                                     ; 00274

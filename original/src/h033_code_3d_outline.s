@@ -96,13 +96,13 @@ l_033_000A0:
         adda.w  #$1a,a3                         ; 000A4
         subq.w  #$1,(a0)                        ; 000A8
         bgt.b   l_033_00050                     ; 000AA
-        lea.l   (dat_073_000DC).l,a4            ; 000AC
+        lea.l   (SkyPolygonCorners).l,a4        ; 000AC
         clr.l   (a4)+                           ; 000B2
         clr.l   (a4)+                           ; 000B4
         clr.l   (a4)+                           ; 000B6
         clr.l   (a4)                            ; 000B8
         jsr     (FindHorizonEdges).l            ; 000BA
-        lea.l   (dat_073_000DC).l,a1            ; 000C0
+        lea.l   (SkyPolygonCorners).l,a1        ; 000C0
         tst.w   $2(a1)                          ; 000C6
         beq.b   l_033_00106                     ; 000CA
         tst.w   $6(a1)                          ; 000CC

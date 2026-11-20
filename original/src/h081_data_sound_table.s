@@ -34,7 +34,7 @@ EngineSample2:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-; EffectSound - A sound made in memory for PlayEffect (its parameters at dat_086_00000).
+; EffectSound - A sound made in memory for PlayEffect (its parameters at EffectParams).
 EffectSound:
 	dc.b	$00
 	dc.b	$00
@@ -47,7 +47,7 @@ TireSample:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-; SweepSound - A sound made in memory for PlaySweep (its parameters at dat_086_00060).
+; SweepSound - A sound made in memory for PlaySweep (its parameters at SweepParams).
 SweepSound:
 	dc.b	$00
 	dc.b	$00
@@ -69,7 +69,7 @@ dat_081_00024:
 	dc.b	$00
 	dc.b	$00
 ; GunSoundCopy - A copy of a loaded sound used for the gun (PlayGunSound; parameters at
-; dat_086_000F8; SoundsLoaded bit 5).
+; GunParams; SoundsLoaded bit 5).
 GunSoundCopy:
 	dc.b	$00
 	dc.b	$00
@@ -82,7 +82,7 @@ GearSample:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-; EffectSound2 - A copy of a loaded sound for PlayEffect2 (parameters at dat_086_000B8).
+; EffectSound2 - A copy of a loaded sound for PlayEffect2 (parameters at Effect2Params).
 EffectSound2:
 	dc.b	$00
 	dc.b	$00

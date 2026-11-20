@@ -54,7 +54,7 @@ ResetGame:
         bsr.w   SetGameFlags                    ; 00072
         move.b  (DifficultySaved).l,(Difficulty).l ; 00076
         clr.w   (TrainingFrame).l               ; 00080
-        clr.w   (dat_073_01628).l               ; 00086
+        clr.w   (ResetWord).l                   ; 00086
         clr.l   (TextPages).l                   ; 0008C
         moveq   #-1,d0                          ; 00092
         move.b  d0,(RedrawFlags).l              ; 00094
@@ -88,7 +88,7 @@ l_004_000E4:
         move.w  #$140,(dat_071_00378).l         ; 000FE
         move.b  #$0,(StartPoint).l              ; 00106
         move.b  #$1,(MarkersOn).l               ; 0010E
-        move.w  #$800,(dat_073_0165A).l         ; 00116
+        move.w  #$800,(FlameObject).l           ; 00116
         bsr.w   BayCentre                       ; 0011E
         bsr.w   SetCameraAt                     ; 00122
         move.l  #$3000000,(MapViewHeight).l     ; 00126
@@ -111,7 +111,7 @@ l_004_000E4:
         move.w  #$fc,(dat_071_00410).l          ; 001A0
         move.w  #$80,(RadarScale).l             ; 001A8
         move.b  #$80,(GroundDetail).l           ; 001B0
-        lea.l   (dat_073_00058).l,a0            ; 001B8
+        lea.l   (ResetList).l,a0                ; 001B8
         moveq   #$15,d1                         ; 001BE
         clr.w   d0                              ; 001C0
 l_004_001C2:

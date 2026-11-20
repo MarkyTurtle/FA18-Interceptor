@@ -168,7 +168,7 @@ l_024_001AE:
         bset    #$1,$20(a0)                     ; 001D2
         cmpi.b  #$15,d1                         ; 001D8
         beq.w   l_024_00A1E                     ; 001DC
-        move.w  d0,(dat_073_0165A).l            ; 001E0
+        move.w  d0,(FlameObject).l              ; 001E0
         bset    #$4,$2(a0)                      ; 001E6
         move.b  #$1,$5(a0)                      ; 001EC
         bra.w   l_024_00A1E                     ; 001F2

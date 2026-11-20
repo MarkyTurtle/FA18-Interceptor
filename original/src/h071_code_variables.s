@@ -2278,9 +2278,9 @@ SceneryMatrix:
 ViewMatrix:
 	dc.b	$00
 	dc.b	$00
-; ViewMatrixRow2 - The view matrix's second row (ViewMatrix + 2 words... used by DrawGroundDots
-; and hunk 28).
-ViewMatrixRow2:
+; ViewMatrix01 - ViewMatrix01 - The view matrix's second word (ViewMatrix + 2), where
+; DrawGroundDots and hunk 28 start reading it.
+ViewMatrix01:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00

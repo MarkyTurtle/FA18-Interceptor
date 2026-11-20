@@ -6,57 +6,73 @@
 ; Hunk 73: CODE, $16A8 bytes
 ;===============================================================================
 	CODE_HUNK	h073
-dat_073_00000:
+; SmallListTemplate - A block of 11 longs copied to dat_073_0002C by sub_009_008BE (a list's
+; starting values).
+SmallListTemplate:
 	dcb.b	44,$00
-dat_073_0002C:
+; SmallList - The list sub_009_008BE builds (from SmallListTemplate).
+SmallList:
 	dcb.b	44,$00
-dat_073_00058:
+; ResetList - A list cleared by ResetGame.
+ResetList:
 	dcb.b	88,$00
-dat_073_000B0:
+; SmallListWork - sub_009_007F6's work area.
+SmallListWork:
 	dcb.b	44,$00
-dat_073_000DC:
+; SkyPolygonCorners - MakeSkyPolygon's corner flags and counts (with the words after it: the
+; horizon crossings counted by FindHorizonEdges).
+SkyPolygonCorners:
 	dc.b	$00
 	dc.b	$00
-dat_073_000DE:
+; HorizonCrossCount1 - A count of horizon crossings (FindHorizonEdges).
+HorizonCrossCount1:
 	dc.b	$00
 	dc.b	$00
-dat_073_000E0:
+; HorizonCrossCount2 - A count of horizon crossings (FindHorizonEdges).
+HorizonCrossCount2:
 	dc.b	$00
 	dc.b	$00
-dat_073_000E2:
+; HorizonCrossCount3 - A count of horizon crossings (FindHorizonEdges).
+HorizonCrossCount3:
 	dc.b	$00
 	dc.b	$00
-dat_073_000E4:
+; HorizonCross1 - A horizon crossing (FindHorizonEdges).
+HorizonCross1:
 	dc.b	$00
 	dc.b	$00
-dat_073_000E6:
+; HorizonCross2 - A horizon crossing (FindHorizonEdges).
+HorizonCross2:
 	dc.b	$00
 	dc.b	$00
-dat_073_000E8:
+; HorizonCross3 - A horizon crossing (FindHorizonEdges).
+HorizonCross3:
 	dc.b	$00
 	dc.b	$00
-dat_073_000EA:
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
+; HorizonCross4 - A horizon crossing (FindHorizonEdges).
+HorizonCross4:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_073_000FC:
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+; ClipWork1 - ClipFillPolygonBuffer's work areas (with ClipWork2, ClipWork3).
+ClipWork1:
 	dcb.b	156,$00
-dat_073_00198:
+; ClipWork2 - See ClipWork1.
+ClipWork2:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -67,9 +83,11 @@ dat_073_00198:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_073_001A2:
+; ClipWork3 - See ClipWork1.
+ClipWork3:
 	dcb.b	110,$00
-dat_073_00210:
+; DistanceCount - A count kept by DistanceScale (up to $46).
+DistanceCount:
 	dc.b	$00
 	dc.b	$00
 ; VisibleObjects - The objects to draw this frame: words (object numbers), ending with one <=
@@ -86,15 +104,19 @@ FarSceneryList1:
 ; y / z words, a long...), ending with $FFFF.
 SceneryList:
 	dcb.b	1680,$00
-dat_073_015E2:
+; DrawSortFirst - sub_009_00958's working words (with DrawSortLast, DrawSortIndex).
+DrawSortFirst:
 	dc.b	$00
 	dc.b	$00
-dat_073_015E4:
+; DrawSortLast - See DrawSortFirst.
+DrawSortLast:
 	dc.b	$00
 	dc.b	$00
-dat_073_015E6:
+; DrawSortIndex - See DrawSortFirst.
+DrawSortIndex:
 	dcb.b	66,$00
-dat_073_01628:
+; ResetWord - A word cleared by ResetGame.
+ResetWord:
 	dc.b	$00
 	dc.b	$00
 ; TrainingFrame - The frame reached in a manoeuvre's recorded control bytes.
@@ -157,21 +179,28 @@ InfoData:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_073_01654:
+; InfoDataPtr - Points at a loaded data block (RunGame).
+InfoDataPtr:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_073_01658:
+; FlameStep - The flame's animation step (0-6, sub_022_00AB6; DrawObjectFlame draws by it).
+FlameStep:
 	dc.b	$00
-dat_073_01659:
+; FlameStep2 - A second step of the flame's animation (0-5).
+FlameStep2:
 	dc.b	$00
-dat_073_0165A:
+; FlameObject - The object whose flame is drawn (DrawObjectFlame; FlyAircraft sets it to the
+; current object, $800 at the start).
+FlameObject:
 	dc.b	$00
 	dc.b	$00
-dat_073_0165C:
+; FlamePoints - The flame's points (DrawObjectFlame, sub_022_00AB6).
+FlamePoints:
 	dcb.b	72,$00
-dat_073_016A4:
+; BlobRowsBuffer - A chip buffer for DrawBlobRows (allocated by SetupGameDisplay).
+BlobRowsBuffer:
 	dc.b	$00,$00,$00,$00
 h073_end:
 	ifnd	HUNKEXE

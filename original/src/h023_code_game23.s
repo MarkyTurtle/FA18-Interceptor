@@ -512,7 +512,7 @@ l_023_00530:
         beq.w   l_023_00480                     ; 00588
         bset    #$1,$20(a1)                     ; 0058C
         swap    d7                              ; 00592
-        move.w  d7,(dat_073_0165A).l            ; 00594
+        move.w  d7,(FlameObject).l              ; 00594
         swap    d7                              ; 0059A
         bset    #$4,$2(a1)                      ; 0059C
         move.b  #$1,$5(a1)                      ; 005A2

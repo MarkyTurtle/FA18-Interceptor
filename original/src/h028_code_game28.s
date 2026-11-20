@@ -264,7 +264,7 @@ l_028_00C24:
 sub_028_00C34:
         move.w  #$1,-$3e(a6)                    ; 00C34
         clr.w   -$44(a6)                        ; 00C3A
-        move.l  #dat_068_001C4,-$34(a6)         ; 00C3E
+        move.l  #WaterMapFine,-$34(a6)          ; 00C3E
         move.w  #$8,-$40(a6)                    ; 00C46
         move.w  #$1f,-$30(a6)                   ; 00C4C
         move.w  #$1f,-$2e(a6)                   ; 00C52
@@ -272,7 +272,7 @@ sub_028_00C34:
 sub_028_00C5A:
         clr.w   -$3e(a6)                        ; 00C5A
         clr.w   -$44(a6)                        ; 00C5E
-        move.l  #dat_068_00000,-$34(a6)         ; 00C62
+        move.l  #WaterMapCoarse,-$34(a6)        ; 00C62
         move.w  #$c,-$40(a6)                    ; 00C6A
         move.w  #$7,-$30(a6)                    ; 00C70
         move.w  #$7,-$2e(a6)                    ; 00C76
@@ -604,7 +604,7 @@ l_028_0101C:
         swap    d2                              ; 0101C
 l_028_0101E:
         neg.w   d2                              ; 0101E
-        lea.l   (ViewMatrixRow2).l,a0           ; 01020
+        lea.l   (ViewMatrix01).l,a0             ; 01020
         move.w  d2,d1                           ; 01026
         move.w  d2,d3                           ; 01028
         muls.w  (a0),d1                         ; 0102A
@@ -743,7 +743,7 @@ sub_028_0115A:
         swap    d7                              ; 01178
         lsr.w   #$8,d6                          ; 0117A
         lsr.w   #$8,d7                          ; 0117C
-        lea.l   (dat_068_001C4).l,a3            ; 0117E
+        lea.l   (WaterMapFine).l,a3             ; 0117E
         add.w   d6,d6                           ; 01184
         lsl.w   #$6,d7                          ; 01186
         add.w   d7,d6                           ; 01188

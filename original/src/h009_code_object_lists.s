@@ -22,7 +22,7 @@ l_009_00020:
         clr.w   (a0)                            ; 00030
 l_009_00032:
         movea.l (a7)+,a0                        ; 00032
-        clr.w   (dat_073_00210).l               ; 00034
+        clr.w   (DistanceCount).l               ; 00034
         movea.l -$14(a6),a2                     ; 0003A
         lea.l   (dat_071_0039E).l,a5            ; 0003E
         clr.b   (dat_071_0022C).l               ; 00044
@@ -348,7 +348,7 @@ l_009_004C2:
         swap    d7                              ; 004CA
         move.w  d7,(dat_071_0038C).l            ; 004CC
         swap    d7                              ; 004D2
-        addq.w  #$1,(dat_073_00210).l           ; 004D4
+        addq.w  #$1,(DistanceCount).l           ; 004D4
         tst.b   (dat_071_00236).l               ; 004DA
         bne.b   l_009_00524                     ; 004E0
         lea.l   (dat_009_00536).l,a1            ; 004E2
@@ -369,12 +369,12 @@ l_009_00502:
 l_009_00510:
         move.w  (a1,d6.l),d6                    ; 00510
 l_009_00514:
-        cmp.w   (dat_073_00210).l,d6            ; 00514
+        cmp.w   (DistanceCount).l,d6            ; 00514
         bge.b   l_009_00524                     ; 0051A
         movea.l -$24(a6),a1                     ; 0051C
         addi.w  #$18,(a1)                       ; 00520
 l_009_00524:
-        cmpi.w  #$46,(dat_073_00210).l          ; 00524
+        cmpi.w  #$46,(DistanceCount).l          ; 00524
         blt.b   l_009_00532                     ; 0052C
         suba.w  #$18,a2                         ; 0052E
 l_009_00532:
@@ -579,7 +579,7 @@ l_009_0074E:
         adda.w  d0,a0                           ; 0076C
         tst.w   (a0)                            ; 0076E
         blt.w   l_009_008B8                     ; 00770
-        lea.l   (dat_073_00000).l,a3            ; 00774
+        lea.l   (SmallListTemplate).l,a3        ; 00774
         movea.l (a0)+,a1                        ; 0077A
         lea.l   (a1),a2                         ; 0077C
         move.w  (a0)+,d0                        ; 0077E
@@ -665,7 +665,7 @@ l_009_0086A:
         movem.l d0-d5,(a5)                      ; 0086E
         adda.w  #$18,a5                         ; 00872
         dbra    d6,l_009_0086A                  ; 00876
-        lea.l   (dat_073_000B0).l,a3            ; 0087A
+        lea.l   (SmallListWork).l,a3            ; 0087A
 l_009_00880:
         move.w  (a3)+,d4                        ; 00880
         asl.w   #$3,d4                          ; 00882
@@ -689,8 +689,8 @@ l_009_008B8:
         rts                                     ; 008BC
 sub_009_008BE:
         movem.l d0-d6/a0-a5,-(a7)               ; 008BE
-        lea.l   (dat_073_0002C).l,a5            ; 008C2
-        movem.l (dat_073_00000).l,d0-d6/a1-a4   ; 008C8
+        lea.l   (SmallList).l,a5                ; 008C2
+        movem.l (SmallListTemplate).l,d0-d6/a1-a4 ; 008C8
         movem.l d0-d6/a1-a4,(a5)                ; 008D0
         lea.l   $84(a5),a4                      ; 008D4
         move.w  d7,d1                           ; 008D8
@@ -788,7 +788,7 @@ l_009_009B0:
         suba.w  #$18,a1                         ; 009B4
         bra.b   l_009_0097A                     ; 009B8
 l_009_009BA:
-        move.w  d5,(dat_073_015E2).l            ; 009BA
+        move.w  d5,(DrawSortFirst).l            ; 009BA
         lea.l   (a1),a0                         ; 009C0
         bsr.w   sub_009_01052                   ; 009C2
         move.w  (ViewOffsetX8).l,d2             ; 009C6
@@ -854,8 +854,8 @@ l_009_00A54:
         adda.w  #$18,a1                         ; 00A54
 l_009_00A58:
         addq.w  #$1,d5                          ; 00A58
-        move.w  d5,(dat_073_015E4).l            ; 00A5A
-        move.w  #$ffff,(dat_073_015E6).l        ; 00A60
+        move.w  d5,(DrawSortLast).l             ; 00A5A
+        move.w  #$ffff,(DrawSortIndex).l        ; 00A60
         bra.b   l_009_00A6E                     ; 00A68
 l_009_00A6A:
         adda.w  #$18,a1                         ; 00A6A
@@ -1258,18 +1258,18 @@ l_009_00EE8:
 l_009_00EF0:
         ori.w   #$8000,$2(a1)                   ; 00EF0
 l_009_00EF6:
-        addq.w  #$1,(dat_073_015E6).l           ; 00EF6
+        addq.w  #$1,(DrawSortIndex).l           ; 00EF6
         bra.w   l_009_00A6A                     ; 00EFC
 l_009_00F00:
         unlk    a6                              ; 00F00
         rts                                     ; 00F02
 l_009_00F04:
-        move.w  (dat_073_015E6).l,d7            ; 00F04
+        move.w  (DrawSortIndex).l,d7            ; 00F04
         ble.b   l_009_00F00                     ; 00F0A
         move.w  d7,d6                           ; 00F0C
         lea.l   (SceneryList).l,a0              ; 00F0E
         lea.l   (VertexBuffer).l,a1             ; 00F14
-        move.w  (dat_073_015E4).l,d0            ; 00F1A
+        move.w  (DrawSortLast).l,d0             ; 00F1A
         blt.b   l_009_00F00                     ; 00F20
         asl.w   #$3,d0                          ; 00F22
         move.w  d0,d1                           ; 00F24
@@ -1300,8 +1300,8 @@ l_009_00F44:
 l_009_00F6C:
         adda.w  #$18,a3                         ; 00F6C
         dbra    d7,l_009_00F44                  ; 00F70
-        move.w  (dat_073_015E2).l,d0            ; 00F74
-        sub.w   (dat_073_015E4).l,d0            ; 00F7A
+        move.w  (DrawSortFirst).l,d0            ; 00F74
+        sub.w   (DrawSortLast).l,d0             ; 00F7A
         asl.w   #$3,d0                          ; 00F80
         move.w  d0,d1                           ; 00F82
         add.w   d0,d0                           ; 00F84

@@ -681,7 +681,7 @@ l_000_008BA:
         move.l  #$202,-(a7)                     ; 008C0
         jsr     (_AllocMem).l                   ; 008C6
         addq.l  #$8,a7                          ; 008CC
-        move.l  d0,(dat_073_016A4).l            ; 008CE
+        move.l  d0,(BlobRowsBuffer).l           ; 008CE
         movem.l (a7)+,a2                        ; 008D4
         rts                                     ; 008D8
 

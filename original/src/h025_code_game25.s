@@ -90,7 +90,7 @@ l_025_0010C:
         move.l  #dat_025_00D18,-$10(a6)         ; 00114
         move.l  #dat_025_00D30,-$14(a6)         ; 0011C
 l_025_00124:
-        lea.l   (ViewMatrixRow2).l,a0           ; 00124
+        lea.l   (ViewMatrix01).l,a0             ; 00124
         move.w  -$4(a6),d2                      ; 0012A
         move.w  d2,d1                           ; 0012E
         move.w  d2,d3                           ; 00130

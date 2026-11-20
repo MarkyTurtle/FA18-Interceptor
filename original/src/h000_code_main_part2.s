@@ -3676,7 +3676,7 @@ l_000_07008:
         move.w  (a0),d0                         ; 0701C
         ori.w   #$1000,d0                       ; 0701E
         move.w  d0,(a0)                         ; 07022
-        move.w  (CurrentObjectOffset).l,(dat_073_0165A).l ; 07024
+        move.w  (CurrentObjectOffset).l,(FlameObject).l ; 07024
 l_000_0702E:
         cmpi.w  #$180,-$4(a6)                   ; 0702E
         ble.b   l_000_07046                     ; 07034

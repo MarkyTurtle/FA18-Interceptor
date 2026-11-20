@@ -68,8 +68,8 @@ l_034_0005A:
         ble.b   l_034_000DC                     ; 0008C
         bsr.w   HorizonCrossBottom              ; 0008E
         bne.b   l_034_000DC                     ; 00092
-        addq.w  #$1,(dat_073_000E2).l           ; 00094
-        move.w  d0,(dat_073_000EA).l            ; 0009A
+        addq.w  #$1,(HorizonCrossCount3).l      ; 00094
+        move.w  d0,(HorizonCross4).l            ; 0009A
         bra.w   l_034_002A0                     ; 000A0
 l_034_000A4:
         move.w  d3,d6                           ; 000A4
@@ -114,8 +114,8 @@ l_034_000DC:
         bsr.w   HorizonCrossLeft                ; 00118
         bne.w   l_034_00284                     ; 0011C
 l_034_00120:
-        addq.w  #$1,(dat_073_000DC).l           ; 00120
-        move.w  d0,(dat_073_000E4).l            ; 00126
+        addq.w  #$1,(SkyPolygonCorners).l       ; 00120
+        move.w  d0,(HorizonCross1).l            ; 00126
         bra.w   l_034_002A0                     ; 0012C
 l_034_00130:
         cmp.w   d5,d4                           ; 00130
@@ -139,8 +139,8 @@ l_034_00130:
         bsr.w   HorizonCrossRight               ; 0016A
         bne.w   l_034_00284                     ; 0016E
 l_034_00172:
-        addq.w  #$1,(dat_073_000E0).l           ; 00172
-        move.w  d0,(dat_073_000E8).l            ; 00178
+        addq.w  #$1,(HorizonCrossCount2).l      ; 00172
+        move.w  d0,(HorizonCross3).l            ; 00178
         bra.w   l_034_002A0                     ; 0017E
 l_034_00182:
         cmp.w   d5,d4                           ; 00182
@@ -158,8 +158,8 @@ l_034_00182:
         ble.b   l_034_001F4                     ; 001A6
         bsr.w   HorizonCrossRight               ; 001A8
         bne.b   l_034_001F4                     ; 001AC
-        addq.w  #$1,(dat_073_000E0).l           ; 001AE
-        move.w  d0,(dat_073_000E8).l            ; 001B4
+        addq.w  #$1,(HorizonCrossCount2).l      ; 001AE
+        move.w  d0,(HorizonCross3).l            ; 001B4
         bra.w   l_034_002A0                     ; 001BA
 l_034_001BE:
         move.w  d4,d6                           ; 001BE
@@ -204,8 +204,8 @@ l_034_001F4:
         bsr.w   HorizonCrossTop                 ; 00228
         bne.b   l_034_00284                     ; 0022C
 l_034_0022E:
-        addq.w  #$1,(dat_073_000DE).l           ; 0022E
-        move.w  d0,(dat_073_000E6).l            ; 00234
+        addq.w  #$1,(HorizonCrossCount1).l      ; 0022E
+        move.w  d0,(HorizonCross2).l            ; 00234
         bra.b   l_034_002A0                     ; 0023A
 l_034_0023C:
         cmp.w   d5,d3                           ; 0023C
@@ -229,8 +229,8 @@ l_034_0023C:
         bsr.w   HorizonCrossBottom              ; 0026C
         bne.b   l_034_00284                     ; 00270
 l_034_00272:
-        addq.w  #$1,(dat_073_000E2).l           ; 00272
-        move.w  d0,(dat_073_000EA).l            ; 00278
+        addq.w  #$1,(HorizonCrossCount3).l      ; 00272
+        move.w  d0,(HorizonCross4).l            ; 00278
         bra.b   l_034_002A0                     ; 0027E
 l_034_00280:
         tst.w   d5                              ; 00280

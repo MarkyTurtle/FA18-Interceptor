@@ -637,7 +637,7 @@ l_022_0079C:
         beq.b   l_022_007F6                     ; 007A8
         cmpi.w  #$40,d0                         ; 007AA
         blt.b   l_022_007F6                     ; 007AE
-        move.w  (CurrentObjectOffset).l,(dat_073_0165A).l ; 007B0
+        move.w  (CurrentObjectOffset).l,(FlameObject).l ; 007B0
         bset    #$4,$2(a1)                      ; 007BA
         bset    #$1,$20(a1)                     ; 007C0
         move.b  #$1,$5(a1)                      ; 007C6
@@ -887,14 +887,14 @@ l_022_00AB4:
         rts                                     ; 00AB4
 sub_022_00AB6:
         move.w  (CurrentObjectOffset).l,d0      ; 00AB6
-        cmp.w   (dat_073_0165A).l,d0            ; 00ABC
+        cmp.w   (FlameObject).l,d0              ; 00ABC
         bne.b   l_022_00AB4                     ; 00AC2
         lea.l   (ObjectTable).l,a1              ; 00AC4
         adda.w  d0,a1                           ; 00ACA
         tst.b   (WorldFrozen).l                 ; 00ACC
         bne.b   l_022_00AB4                     ; 00AD2
-        lea.l   (dat_073_0165C).l,a0            ; 00AD4
-        move.b  (dat_073_01659).l,d0            ; 00ADA
+        lea.l   (FlamePoints).l,a0              ; 00AD4
+        move.b  (FlameStep2).l,d0               ; 00ADA
         ext.w   d0                              ; 00AE0
         add.w   d0,d0                           ; 00AE2
         add.w   d0,d0                           ; 00AE4
@@ -905,20 +905,20 @@ sub_022_00AB6:
         move.l  $14(a1),(a0)+                   ; 00AEE
         move.l  $18(a1),(a0)+                   ; 00AF2
         move.l  $1c(a1),(a0)+                   ; 00AF6
-        cmpi.b  #$5,(dat_073_01658).l           ; 00AFA
+        cmpi.b  #$5,(FlameStep).l               ; 00AFA
         bge.b   l_022_00B10                     ; 00B02
         move.l  $14(a1),(a0)+                   ; 00B04
         move.l  $18(a1),(a0)+                   ; 00B08
         move.l  $1c(a1),(a0)+                   ; 00B0C
 l_022_00B10:
-        addq.b  #$1,(dat_073_01659).l           ; 00B10
-        cmpi.b  #$5,(dat_073_01659).l           ; 00B16
+        addq.b  #$1,(FlameStep2).l              ; 00B10
+        cmpi.b  #$5,(FlameStep2).l              ; 00B16
         ble.b   l_022_00B26                     ; 00B1E
-        clr.b   (dat_073_01659).l               ; 00B20
+        clr.b   (FlameStep2).l                  ; 00B20
 l_022_00B26:
-        cmpi.b  #$6,(dat_073_01658).l           ; 00B26
+        cmpi.b  #$6,(FlameStep).l               ; 00B26
         bge.b   l_022_00B36                     ; 00B2E
-        addq.b  #$1,(dat_073_01658).l           ; 00B30
+        addq.b  #$1,(FlameStep).l               ; 00B30
 l_022_00B36:
         tst.w   $6e(a1)                         ; 00B36
         beq.b   l_022_00B44                     ; 00B3A
@@ -930,11 +930,11 @@ l_022_00B44:
         subq.b  #$1,d0                          ; 00B4A
         bgt.b   l_022_00B6E                     ; 00B4C
 l_022_00B4E:
-        clr.b   (dat_073_01658).l               ; 00B4E
-        clr.b   (dat_073_01659).l               ; 00B54
+        clr.b   (FlameStep).l                   ; 00B4E
+        clr.b   (FlameStep2).l                  ; 00B54
         bra.b   l_022_00B6E                     ; 00B5A
 l_022_00B5C:
-        move.b  (dat_073_01658).l,d0            ; 00B5C
+        move.b  (FlameStep).l,d0                ; 00B5C
         subq.b  #$1,d0                          ; 00B62
         cmpi.b  #$5,d0                          ; 00B64
         blt.b   l_022_00B6E                     ; 00B68
