@@ -6,7 +6,12 @@
 ; Hunk 14: CODE, $FDC bytes
 ;===============================================================================
 	CODE_HUNK	h014
-sub_014_00000:
+
+;-------------------------------------------------------------------------------
+; ShapeQuadList - Ops $44 and $48: a list of four-sided faces in colour 12 (dat_071_000B6
+; pattern 8,8,0,0), ended by a negative word.
+;-------------------------------------------------------------------------------
+ShapeQuadList:
         movem.l a1/a5,-(a7)                     ; 00000
         move.w  #$c,(DrawColour).l              ; 00004
         move.w  #$8,d0                          ; 0000C
@@ -123,7 +128,12 @@ l_014_00114:
         movem.l (a7)+,a1-a2/a5                  ; 00172
         move.w  -$7e(a6),d0                     ; 00176
         rts                                     ; 0017A
-sub_014_0017C:
+
+;-------------------------------------------------------------------------------
+; ShapeLineRun - Op $2C: a word (count << 8 | colour) and a vertex offset: that many lines,
+; each between the next two vertices in turn.
+;-------------------------------------------------------------------------------
+ShapeLineRun:
         move.w  (a2)+,d0                        ; 0017C
         move.w  d0,d1                           ; 0017E
         andi.w  #$3f,d1                         ; 00180
@@ -146,7 +156,12 @@ l_014_001A0:
         movem.l (a7)+,a1-a2/a5                  ; 001C0
         move.w  -$7e(a6),d0                     ; 001C4
         rts                                     ; 001C8
-sub_014_001CA:
+
+;-------------------------------------------------------------------------------
+; ShapeLineRunOffset - Op $30: as ShapeLineRun, each line moved by the difference between two
+; further vertices.
+;-------------------------------------------------------------------------------
+ShapeLineRunOffset:
         move.w  (a2)+,d0                        ; 001CA
         move.w  d0,d1                           ; 001CC
         andi.w  #$3f,d1                         ; 001CE
@@ -183,15 +198,25 @@ l_014_001FE:
         movem.l (a7)+,a1-a2/a5                  ; 00232
         move.w  -$7e(a6),d0                     ; 00236
         rts                                     ; 0023A
-sub_014_0023C:
+
+;-------------------------------------------------------------------------------
+; ShapeLineListFromAbove - Op $12C: ShapeLineList drawn only when the shape is seen from well
+; above (dat_071_00448 below -$C0); otherwise the list is skipped.
+;-------------------------------------------------------------------------------
+ShapeLineListFromAbove:
         cmpi.l  #$ffffff40,(dat_071_00448).l    ; 0023C
-        blt.b   l_014_00250                     ; 00246
+        blt.b   ShapeLineList                   ; 00246
 l_014_00248:
         tst.w   (a2)+                           ; 00248
         bge.b   l_014_00248                     ; 0024A
         moveq   #$0,d0                          ; 0024C
         rts                                     ; 0024E
-l_014_00250:
+
+;-------------------------------------------------------------------------------
+; ShapeLineList - Op $34: a colour, then pairs of vertex offsets (the last pair's second word
+; with bit 15 set): one line for each pair.
+;-------------------------------------------------------------------------------
+ShapeLineList:
         movem.l a1/a5,-(a7)                     ; 00250
         move.l  #$ffffffff,(dat_071_000B6).l    ; 00254
         move.w  (a2)+,(DrawColour).l            ; 0025E
@@ -227,7 +252,12 @@ l_014_002B2:
         movem.l (a7)+,a1/a5                     ; 002B2
         move.w  -$7e(a6),d0                     ; 002B6
         rts                                     ; 002BA
-sub_014_002BC:
+
+;-------------------------------------------------------------------------------
+; ShapeLineFan - Op $38: a colour, a vertex, then vertex offsets (the last with bit 15 set): a
+; line from the first vertex to each.
+;-------------------------------------------------------------------------------
+ShapeLineFan:
         movem.l a1/a5,-(a7)                     ; 002BC
         move.w  (a2)+,(DrawColour).l            ; 002C0
         move.w  (a2)+,d0                        ; 002C6
@@ -270,7 +300,12 @@ l_014_00334:
         movem.l (a7)+,a1/a5                     ; 00334
         move.w  -$7e(a6),d0                     ; 00338
         rts                                     ; 0033C
-sub_014_0033E:
+
+;-------------------------------------------------------------------------------
+; ShapeParallelogram3 - Op $3C: a colour and four vertex offsets: a four-sided polygon of three
+; of them and a fourth made from them (a parallelogram).
+;-------------------------------------------------------------------------------
+ShapeParallelogram3:
         move.w  (a2)+,(DrawColour).l            ; 0033E
         movem.w (a2)+,d0-d2/d7                  ; 00344
         lea.l   (VertexBuffer).l,a3             ; 00348
@@ -304,7 +339,12 @@ sub_014_0033E:
 l_014_003AE:
         moveq   #$0,d0                          ; 003AE
         rts                                     ; 003B0
-sub_014_003B2:
+
+;-------------------------------------------------------------------------------
+; ShapeParallelogram - Op $40: a colour, a corner vertex and two vertices giving an edge: a
+; parallelogram.
+;-------------------------------------------------------------------------------
+ShapeParallelogram:
         move.w  (a2)+,(DrawColour).l            ; 003B2
         move.w  (a2)+,d7                        ; 003B8
         lea.l   (VertexBuffer).l,a3             ; 003BA
@@ -347,7 +387,11 @@ sub_014_003B2:
 l_014_0042C:
         moveq   #$0,d0                          ; 0042C
         rts                                     ; 0042E
-sub_014_00430:
+
+;-------------------------------------------------------------------------------
+; ShapeRunwaySide3 - Op $24: as ShapeRunwaySide (another form).
+;-------------------------------------------------------------------------------
+ShapeRunwaySide3:
         move.w  (a2)+,(DrawColour).l            ; 00430
         lea.l   (VertexBuffer).l,a3             ; 00436
         adda.w  (a2)+,a3                        ; 0043C
@@ -382,7 +426,11 @@ sub_014_00430:
 l_014_0049C:
         moveq   #$0,d0                          ; 0049C
         rts                                     ; 0049E
-sub_014_004A0:
+
+;-------------------------------------------------------------------------------
+; ShapeRunwaySide4 - Op $28: as ShapeRunwaySide (another form).
+;-------------------------------------------------------------------------------
+ShapeRunwaySide4:
         move.w  (a2)+,(DrawColour).l            ; 004A0
         lea.l   (VertexBuffer).l,a3             ; 004A6
         adda.w  (a2)+,a3                        ; 004AC
@@ -437,7 +485,13 @@ l_014_00536:
         movem.l (a7)+,a1-a2/a5                  ; 00536
         moveq   #$0,d0                          ; 0053A
         rts                                     ; 0053C
-sub_014_0053E:
+
+;-------------------------------------------------------------------------------
+; ShapeRunwaySide - Op $1C: a polygon chosen by which side of a line on the ground (from the
+; scenery record, dat_071_00402) the viewer is: used, with ops $20-$28, by the runway shapes
+; (32-36), in colours 1 and 10.
+;-------------------------------------------------------------------------------
+ShapeRunwaySide:
         lea.l   (VertexBuffer).l,a3             ; 0053E
         lea.l   (dat_072_03C02).l,a0            ; 00544
         move.w  #$3,(a0)+                       ; 0054A
@@ -514,7 +568,11 @@ l_014_00622:
         movem.l (a7)+,a1-a2/a5                  ; 00622
         moveq   #$0,d0                          ; 00626
         rts                                     ; 00628
-sub_014_0062A:
+
+;-------------------------------------------------------------------------------
+; ShapeRunwaySide2 - Op $20: as ShapeRunwaySide (another form).
+;-------------------------------------------------------------------------------
+ShapeRunwaySide2:
         lea.l   (VertexBuffer).l,a3             ; 0062A
         lea.l   (dat_072_03C02).l,a0            ; 00630
         move.w  #$3,(a0)+                       ; 00636
@@ -641,7 +699,11 @@ l_014_00782:
         movem.l (a7)+,a1-a2/a5                  ; 00782
         moveq   #$0,d0                          ; 00786
         rts                                     ; 00788
-sub_014_0078A:
+
+;-------------------------------------------------------------------------------
+; ShapeMakeVertices3 - Op $A4: as ShapeMakeVertices (another form; shape 46).
+;-------------------------------------------------------------------------------
+ShapeMakeVertices3:
         lea.l   (VertexBuffer).l,a3             ; 0078A
         adda.w  (a2)+,a3                        ; 00790
         movem.w $6(a3),d0-d7/a4                 ; 00792
@@ -751,7 +813,12 @@ l_014_008B0:
         adda.w  d0,a2                           ; 008B0
         moveq   #$0,d0                          ; 008B2
         rts                                     ; 008B4
-sub_014_008B6:
+
+;-------------------------------------------------------------------------------
+; ShapeSkipDuringEjection - Op $108: skips 8 bytes while the ejection (+$7C low nibble) is at
+; steps 3-6.
+;-------------------------------------------------------------------------------
+ShapeSkipDuringEjection:
         lea.l   (ObjectTable).l,a3              ; 008B6
         adda.w  (CurrentObjectOffset).l,a3      ; 008BC
         moveq   #$0,d0                          ; 008C2
@@ -766,7 +833,11 @@ l_014_008DA:
         adda.w  d0,a2                           ; 008DA
         moveq   #$0,d0                          ; 008DC
         rts                                     ; 008DE
-sub_014_008E0:
+
+;-------------------------------------------------------------------------------
+; ShapeSkipUnlessFlag3 - Op $CC: a byte count: skipped unless the object's +$02 bit 3 is set.
+;-------------------------------------------------------------------------------
+ShapeSkipUnlessFlag3:
         move.w  (a2)+,d2                        ; 008E0
         lea.l   (ObjectTable).l,a3              ; 008E2
         adda.w  (CurrentObjectOffset).l,a3      ; 008E8
@@ -778,11 +849,20 @@ l_014_008FA:
         adda.w  d2,a2                           ; 008FA
         moveq   #$0,d0                          ; 008FC
         rts                                     ; 008FE
-sub_014_00900:
+
+;-------------------------------------------------------------------------------
+; ShapeSkipWord - Op $130: skips one word.
+;-------------------------------------------------------------------------------
+ShapeSkipWord:
         addq.w  #$2,a2                          ; 00900
         moveq   #$0,d0                          ; 00902
         rts                                     ; 00904
-sub_014_00906:
+
+;-------------------------------------------------------------------------------
+; ShapeSelectVariant - Op $134: skips (dat_071_00217 & $7F) x $12 bytes: picks one of several
+; variants.
+;-------------------------------------------------------------------------------
+ShapeSelectVariant:
         lea.l   (ObjectTable).l,a3              ; 00906
         adda.w  (CurrentObjectOffset).l,a3      ; 0090C
         move.b  (dat_071_00217).l,d1            ; 00912
@@ -795,7 +875,12 @@ sub_014_00906:
         adda.w  d1,a2                           ; 00926
         moveq   #$0,d0                          ; 00928
         rts                                     ; 0092A
-sub_014_0092C:
+
+;-------------------------------------------------------------------------------
+; ShapeSkipBeforeEjection - Op $D8: skips a word unless the ejection (+$7C bits 4-6) has
+; reached step 6.
+;-------------------------------------------------------------------------------
+ShapeSkipBeforeEjection:
         lea.l   (ObjectTable).l,a3              ; 0092C
         adda.w  (CurrentObjectOffset).l,a3      ; 00932
         move.b  $7c(a3),d1                      ; 00938
@@ -807,7 +892,12 @@ sub_014_0092C:
 l_014_0094A:
         moveq   #$0,d0                          ; 0094A
         rts                                     ; 0094C
-sub_014_0094E:
+
+;-------------------------------------------------------------------------------
+; MakeVerticesBetween - Op $D0: two vertex offsets and a base: new vertices along the edge
+; between them (F-16, F/A-18).
+;-------------------------------------------------------------------------------
+MakeVerticesBetween:
         lea.l   (VertexBuffer).l,a3             ; 0094E
         move.w  (a2)+,d0                        ; 00954
         move.w  (a2)+,d1                        ; 00956
@@ -846,7 +936,12 @@ sub_014_0094E:
         adda.w  d1,a2                           ; 009BA
         moveq   #$0,d0                          ; 009BC
         rts                                     ; 009BE
-sub_014_009C0:
+
+;-------------------------------------------------------------------------------
+; MakeVerticesMoved - Op $D4: a base and a vertex: copies of vertices moved by the difference
+; to that vertex (F-16, F/A-18).
+;-------------------------------------------------------------------------------
+MakeVerticesMoved:
         lea.l   (VertexBuffer).l,a3             ; 009C0
         move.l  a1,-(a7)                        ; 009C6
         lea.l   (a3),a1                         ; 009C8
@@ -939,7 +1034,11 @@ sub_014_009C0:
         movea.l (a7)+,a1                        ; 00AD2
         moveq   #$0,d0                          ; 00AD4
         rts                                     ; 00AD6
-sub_014_00AD8:
+
+;-------------------------------------------------------------------------------
+; MakeVerticesMiG - Op $AC: computes the MiG models' extra vertices (as MakeVerticesF16).
+;-------------------------------------------------------------------------------
+MakeVerticesMiG:
         lea.l   (ObjectTable).l,a3              ; 00AD8
         move.w  (CurrentObjectOffset).l,d0      ; 00ADE
         addi.w  #$a4,d0                         ; 00AE4
@@ -1056,7 +1155,12 @@ sub_014_00BEC:
         movem.w d0-d2,$24(a3)                   ; 00C1C
         moveq   #$0,d0                          ; 00C22
         rts                                     ; 00C24
-sub_014_00C26:
+
+;-------------------------------------------------------------------------------
+; MakeVerticesF16 - Op $A8: computes the F-16 model's extra vertices, both in the object's own
+; copy (ObjectTable +$A4) and in VertexBuffer.
+;-------------------------------------------------------------------------------
+MakeVerticesF16:
         lea.l   (ObjectTable).l,a3              ; 00C26
         move.w  (CurrentObjectOffset).l,d0      ; 00C2C
         addi.w  #$a4,d0                         ; 00C32
@@ -1263,7 +1367,11 @@ sub_014_00DA8:
         movem.w d0-d2,$78(a3)                   ; 00E8E
         moveq   #$0,d0                          ; 00E94
         rts                                     ; 00E96
-sub_014_00E98:
+
+;-------------------------------------------------------------------------------
+; MakeVerticesSidewinder - Ops $B4 and $BC: computes the Sidewinder model's extra vertices.
+;-------------------------------------------------------------------------------
+MakeVerticesSidewinder:
         lea.l   (VertexBuffer).l,a3             ; 00E98
         movem.w $6(a3),d0-d7/a4                 ; 00E9E
         add.w   d0,d3                           ; 00EA4
@@ -1325,7 +1433,11 @@ sub_014_00E98:
         movem.w d0-d2,$42(a3)                   ; 00F3A
         moveq   #$0,d0                          ; 00F40
         rts                                     ; 00F42
-sub_014_00F44:
+
+;-------------------------------------------------------------------------------
+; MakeVerticesCruise - Op $FC: computes the cruise missile model's extra vertices.
+;-------------------------------------------------------------------------------
+MakeVerticesCruise:
         lea.l   (ObjectTable).l,a3              ; 00F44
         move.w  (CurrentObjectOffset).l,d0      ; 00F4A
         addi.w  #$a4,d0                         ; 00F50

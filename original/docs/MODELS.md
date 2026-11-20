@@ -106,9 +106,17 @@ numbers (for example 64, 65).
 Some shapes are not shown:
 
 * Shapes 17-19 and 51, and a few others, draw nothing with the tool's settings.
-* The shapes drawn by hunk 12's own renderer (`DrawGroundShape`: 20-26, 82-85, 89, 90 and 93-116,
-  mostly hunk 70) are not captured yet. Their output does not go through the routines the tool
-  hooks.
+* Shapes 22 and 84 (ground shapes) draw nothing either.
+
+### The ground shapes
+
+The shapes drawn by hunk 12's renderer (`DrawGroundShape`: 20-26, 82-85, 89, 90 and 93-116) are
+flat: their vertices are only x and z, all at the shape's height, so they are shown from a low
+angle and from above. They are the land under the scenery - the city's grey blocks (colour 12)
+and the dark green parks and hills (colour 11), drawn on the ground before anything stands on
+it - and, as lines (colour 12), the roads and freeways (89-116). Seen on the bay's water:
+
+![The ground shapes](images/scenery_ground.png)
 
 ## In the game
 
@@ -156,7 +164,8 @@ Some places:
 pip install unicorn pillow
 cd tools/models
 python3 gallery.py models          # out/models.png
-python3 gallery2.py x              # out/scenery_a.png, out/scenery_b.png
+python3 gallery2.py x              # out/scenery_a.png, out/scenery_b.png, out/scenery_ground.png
+python3 opstats.py                 # which shape operations each model and shape uses
 python3 one.py m 0x50 2.5 0.45 out/fa18.png 0 480   # one model: m + ModelTable offset
 python3 one.py s 33 0.45 0.0 out/gg.png 0 480        # one scenery shape: s + entry
 python3 scene.py 3 "" "" out/carrier.png              # the game's frame at a start point

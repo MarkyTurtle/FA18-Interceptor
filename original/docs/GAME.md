@@ -169,8 +169,9 @@ pattern of cells around X 41-70, Z 44-70, and the free flight's starting locatio
 
 The items' shape numbers index `ObjectDrawTable` beyond the 16 objects: entries 17-117 are the
 scenery shapes, in hunks 42-50, 54-56, 69 and 70, drawn by `DrawScenery` (the same `DrawModel`)
-or, for most of hunks 69 and 70, by hunk 12's own renderer (`DrawGroundShape`; not worked out
-yet). Some are drawn only within a height of the camera.
+or, for most of hunks 69 and 70, by hunk 12's renderer (`DrawGroundShape`): flat shapes whose
+vertices are only x and z, all at the shape's height - the city's ground, the parks and hills,
+and the roads (pictures in MODELS.md). Some are drawn only within a height of the camera.
 
 Each time the view enters a new cell or turns into a new eighth of the compass (`ViewOctant`),
 `BuildSceneryList` goes through the cells around it in an order from hunk 65 chosen by the
@@ -415,7 +416,13 @@ out); `dat_021_00040` is the all-yellow palette flashed while `dat_071_00269` co
   bit set (bit 14 marks the last), followed by its operands: a point (vertex, colour), a line
   (two vertices, colour), a **filled polygon** (`ShapePolygon`: the vertices, the last marked
   with bit 15, then the colour - drawn from both sides if the colour has bit 15, from the back
-  only with a second colour), and some 25 special operations not worked out yet. Vertices are
+  only with a second colour), and some 60 more: lines in runs, fans and lists; parallelograms
+  from three corners; the runway's polygons, chosen by which side of them the viewer is; the
+  buildings' grids of windows; the aircraft's **shadow** (op `$10`, its faces flattened onto
+  the ground in colour 0); round blobs scaled by distance; operations that compute a model's
+  extra vertices (its moving parts); and ones that skip or pick part of the list - an animation
+  frame by `FrameCount`, the ejection's step, which side of a triangle faces the camera. The
+  `ShapeOps` header in hunk 13 groups them; `tools/models/opstats.py` lists their users. Vertices are
   byte offsets into `VertexBuffer`. A list can first transform more vertices
   (`TransformMoreVertices`), so the parts of a model not drawn are not transformed either.
 * **Projection** (`ProjectPoint`, hunk 35): x' = 160 + 160 x / z, y' = 90 + 90 y / z - a view
@@ -646,7 +653,7 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
 * How an enemy decides to attack (who sets `+$63` and the forward-cone bits `+$64`), and the
   object records' unknown fields in `ModeTable`.
 * The 3D pipeline's special shape operations (hunks 12-15) and the clipping (hunk 19).
-* What each scenery shape is; hunk 12's renderer; what `dat_071_002A2` bit `$2000` (a whole-sky
+* What each scenery shape is; the operations no shape uses; what `dat_071_002A2` bit `$2000` (a whole-sky
   view) and the second view table (`CheckViewTable2`) are for.
 * The head-up display and most instruments (hunks 39-40).
 * The views (`OutsideView`, `ViewChoice`, `CameraSequence`).

@@ -11,9 +11,12 @@ l_012_00000:
         rts                                     ; 00002
 
 ;-------------------------------------------------------------------------------
-; DrawGroundShape - The draw routine of most shapes of hunks 69 and 70, with hunk 12's own
-; renderer (not worked out yet; presumably shapes on the ground): only while dat_071_00436 is
-; at least $FFC80000; picks a level of detail by distance and draws.
+; DrawGroundShape - The draw routine of the flat ground shapes (most of hunks 69 and 70: the
+; city's ground, parks and hills, and the roads): only while the shape is at most $380000 below
+; the camera (dat_071_00436). Picks a level of detail by distance (dat_071_00510, scaled by
+; RadarScale unless dat_071_001AD is set), then turns its vertices - x and z only, all at the
+; shape's height - by the view matrix into VertexBuffer, and runs its face list through
+; ShapeOps (with further vertex groups, sub_012_0020E, as DrawModel's TransformMoreVertices).
 ;-------------------------------------------------------------------------------
 DrawGroundShape:
         cmpi.l  #$ffc80000,(dat_071_00436).l    ; 00004
@@ -256,7 +259,12 @@ l_012_0024C:
         subq.w  #$1,-$a(a6)                     ; 00292
         bgt.b   l_012_0024C                     ; 00296
         rts                                     ; 00298
-sub_012_0029A:
+
+;-------------------------------------------------------------------------------
+; ShapePolygonN - Op $60: a count and that many vertex offsets: a polygon drawn from either
+; side (the ground shapes' hills).
+;-------------------------------------------------------------------------------
+ShapePolygonN:
         move.w  (a2)+,d7                        ; 0029A
         lea.l   (PolygonBuffer).l,a0            ; 0029C
         move.w  #$0,(a0)+                       ; 002A2
@@ -291,7 +299,11 @@ l_012_002C8:
 l_012_002EE:
         moveq   #$0,d0                          ; 002EE
         rts                                     ; 002F0
-sub_012_002F2:
+
+;-------------------------------------------------------------------------------
+; ShapePolygonN2 - Op $64: as ShapePolygonN (another form).
+;-------------------------------------------------------------------------------
+ShapePolygonN2:
         move.w  (a2)+,d7                        ; 002F2
         lea.l   (PolygonBuffer).l,a0            ; 002F4
         move.w  #$0,(a0)+                       ; 002FA
@@ -322,7 +334,12 @@ l_012_0031A:
 l_012_0033A:
         moveq   #$0,d0                          ; 0033A
         rts                                     ; 0033C
-sub_012_0033E:
+
+;-------------------------------------------------------------------------------
+; ShapePolygonRun - Op $68: a count and a vertex offset: a polygon of that many consecutive
+; vertices.
+;-------------------------------------------------------------------------------
+ShapePolygonRun:
         move.w  (a2)+,d7                        ; 0033E
         lea.l   (PolygonBuffer).l,a0            ; 00340
         clr.w   (a0)+                           ; 00346

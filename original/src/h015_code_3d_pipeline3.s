@@ -6,7 +6,12 @@
 ; Hunk 15: CODE, $77C bytes
 ;===============================================================================
 	CODE_HUNK	h015
-sub_015_00000:
+
+;-------------------------------------------------------------------------------
+; ShapeBlob - Op $F8: a vertex, a colour and a size: a round blob, its radius the size over the
+; distance (at most $7F), plotted by sub_035_0002C.
+;-------------------------------------------------------------------------------
+ShapeBlob:
         lea.l   (VertexBuffer).l,a3             ; 00000
         adda.w  (a2)+,a3                        ; 00006
         move.w  (a2)+,(DrawColour).l            ; 00008
@@ -15,7 +20,11 @@ sub_015_00000:
         bsr.w   sub_015_00062                   ; 00014
         movem.l (a7)+,a1-a2/a5                  ; 00018
         rts                                     ; 0001C
-sub_015_0001E:
+
+;-------------------------------------------------------------------------------
+; ShapeBlobList - Op $11C: a list of ShapeBlob entries.
+;-------------------------------------------------------------------------------
+ShapeBlobList:
         movem.l a1/a5,-(a7)                     ; 0001E
         clr.w   -$7e(a6)                        ; 00022
         clr.w   -$6e(a6)                        ; 00026
@@ -337,7 +346,12 @@ l_015_00394:
         move.w  -$1e(a6),d0                     ; 00394
         unlk    a6                              ; 00398
         rts                                     ; 0039A
-sub_015_0039C:
+
+;-------------------------------------------------------------------------------
+; MakeVerticesFA18 - Ops $EC-$F4: computes the F/A-18 model's extra vertices (as
+; MakeVerticesF16).
+;-------------------------------------------------------------------------------
+MakeVerticesFA18:
         lea.l   (ObjectTable).l,a3              ; 0039C
         move.w  (CurrentObjectOffset).l,d0      ; 003A2
         addi.w  #$a4,d0                         ; 003A8
@@ -656,7 +670,11 @@ sub_015_006A0:
         movem.w d0-d2,$9c(a3)                   ; 00722
         moveq   #$0,d0                          ; 00728
         rts                                     ; 0072A
-sub_015_0072C:
+
+;-------------------------------------------------------------------------------
+; MakeVerticesPod - Op $104: computes the rescue pod model's extra vertices.
+;-------------------------------------------------------------------------------
+MakeVerticesPod:
         lea.l   (ObjectTable).l,a3              ; 0072C
         move.w  (CurrentObjectOffset).l,d0      ; 00732
         addi.w  #$a4,d0                         ; 00738

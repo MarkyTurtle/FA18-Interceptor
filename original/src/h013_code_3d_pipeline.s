@@ -9,87 +9,94 @@
 	CODE_HUNK	h013
 ; ShapeOps - The drawing operations of a shape's face lists (DrawModel): a word with the top
 ; bit set picks one by its low 14 bits (an offset into this table; bit 14 marks the list's
-; last). 0 nothing, 4 a point (ShapePoint: vertex, colour), 8 a line (vertex, vertex, colour),
-; $C a filled polygon (ShapePolygon), the rest special shapes not worked out yet.
+; last). Each takes its operands from the list (a2) and returns d0 < 0 to end the list. Kinds:
+; points and lines ($04, $08, $18, $2C-$38, $C0, $128, $12C), polygons ($0C, $3C-$48, $60-$68,
+; $78, $114, $DC), the runway's view-dependent polygons ($1C-$28), the buildings' window grids
+; ($4C-$58, $E4), the aircraft's shadow ($10), round blobs ($F8, $11C), operations that make
+; extra vertices ($88-$90, $A4-$BC, $D0, $D4, $EC-$F4, $FC, $104), and ones that skip or pick
+; part of the list (animation frames, ejection steps, which side faces the camera: $84, $C4,
+; $CC, $D8, $108-$124, $130, $134). tools/models/opstats.py lists which models and shapes use
+; each; those left unnamed ($14, $5C, $6C-$74, $80, $8C, $94-$A0, $B0, $C8, $E0, $100) are used
+; by none of them.
 ShapeOps:
         dc.l    ShapeNop                        ; 00000
         dc.l    ShapePoint                      ; 00004
-        dc.l    l_013_002CC                     ; 00008
+        dc.l    ShapeLine                       ; 00008
         dc.l    ShapePolygon                    ; 0000C
-        dc.l    sub_013_004BE                   ; 00010
+        dc.l    ShapeShadow                     ; 00010
         dc.l    sub_013_0096E                   ; 00014
-        dc.l    sub_013_009FC                   ; 00018
-        dc.l    sub_014_0053E                   ; 0001C
-        dc.l    sub_014_0062A                   ; 00020
-        dc.l    sub_014_00430                   ; 00024
-        dc.l    sub_014_004A0                   ; 00028
-        dc.l    sub_014_0017C                   ; 0002C
-        dc.l    sub_014_001CA                   ; 00030
-        dc.l    l_014_00250                     ; 00034
-        dc.l    sub_014_002BC                   ; 00038
-        dc.l    sub_014_0033E                   ; 0003C
-        dc.l    sub_014_003B2                   ; 00040
-        dc.l    sub_014_00000                   ; 00044
-        dc.l    sub_014_00000                   ; 00048
-        dc.l    sub_013_00C1C                   ; 0004C
-        dc.l    sub_013_00D6A                   ; 00050
-        dc.l    sub_013_00F50                   ; 00054
-        dc.l    sub_013_01080                   ; 00058
+        dc.l    ShapeLineRow                    ; 00018
+        dc.l    ShapeRunwaySide                 ; 0001C
+        dc.l    ShapeRunwaySide2                ; 00020
+        dc.l    ShapeRunwaySide3                ; 00024
+        dc.l    ShapeRunwaySide4                ; 00028
+        dc.l    ShapeLineRun                    ; 0002C
+        dc.l    ShapeLineRunOffset              ; 00030
+        dc.l    ShapeLineList                   ; 00034
+        dc.l    ShapeLineFan                    ; 00038
+        dc.l    ShapeParallelogram3             ; 0003C
+        dc.l    ShapeParallelogram              ; 00040
+        dc.l    ShapeQuadList                   ; 00044
+        dc.l    ShapeQuadList                   ; 00048
+        dc.l    ShapeLineGrid                   ; 0004C
+        dc.l    ShapePaneGrid                   ; 00050
+        dc.l    ShapePaneGrid2                  ; 00054
+        dc.l    ShapeLineGridColour             ; 00058
         dc.l    sub_014_00086                   ; 0005C
-        dc.l    sub_012_0029A                   ; 00060
-        dc.l    sub_012_002F2                   ; 00064
-        dc.l    sub_012_0033E                   ; 00068
+        dc.l    ShapePolygonN                   ; 00060
+        dc.l    ShapePolygonN2                  ; 00064
+        dc.l    ShapePolygonRun                 ; 00068
         dc.l    sub_013_01158                   ; 0006C
         dc.l    sub_015_00774                   ; 00070
         dc.l    sub_015_00778                   ; 00074
-        dc.l    sub_013_01166                   ; 00078
-        dc.l    sub_013_00B42                   ; 0007C
+        dc.l    ShapeParallelogramPat           ; 00078
+        dc.l    ShapeSceneryTest                ; 0007C
         dc.l    sub_013_00D58                   ; 00080
-        dc.l    sub_013_00B16                   ; 00084
-        dc.l    sub_013_011DC                   ; 00088
+        dc.l    ShapeCockpitFlag                ; 00084
+        dc.l    ShapeMakeVertices               ; 00088
         dc.l    sub_013_01228                   ; 0008C
-        dc.l    sub_013_01290                   ; 00090
+        dc.l    ShapeMakeVertices2              ; 00090
         dc.l    sub_013_012DC                   ; 00094
         dc.l    sub_014_00DA8                   ; 00098
         dc.l    sub_013_006E8                   ; 0009C
         dc.l    sub_013_008AA                   ; 000A0
-        dc.l    sub_014_0078A                   ; 000A4
-        dc.l    sub_014_00C26                   ; 000A8
-        dc.l    sub_014_00AD8                   ; 000AC
+        dc.l    ShapeMakeVertices3              ; 000A4
+        dc.l    MakeVerticesF16                 ; 000A8
+        dc.l    MakeVerticesMiG                 ; 000AC
         dc.l    sub_014_00BCE                   ; 000B0
-        dc.l    sub_014_00E98                   ; 000B4
+        dc.l    MakeVerticesSidewinder          ; 000B4
         dc.l    sub_014_00DA8                   ; 000B8
-        dc.l    sub_014_00E98                   ; 000BC
-        dc.l    sub_013_002B4                   ; 000C0
-        dc.l    sub_013_0025E                   ; 000C4
+        dc.l    MakeVerticesSidewinder          ; 000BC
+        dc.l    ShapeLineAlt                    ; 000C0
+        dc.l    ShapePointIfFront               ; 000C4
         dc.l    sub_014_00868                   ; 000C8
-        dc.l    sub_014_008E0                   ; 000CC
-        dc.l    sub_014_0094E                   ; 000D0
-        dc.l    sub_014_009C0                   ; 000D4
-        dc.l    sub_014_0092C                   ; 000D8
-        dc.l    sub_013_00418                   ; 000DC
+        dc.l    ShapeSkipUnlessFlag3            ; 000CC
+        dc.l    MakeVerticesBetween             ; 000D0
+        dc.l    MakeVerticesMoved               ; 000D4
+        dc.l    ShapeSkipBeforeEjection         ; 000D8
+        dc.l    ShapePolygonTable               ; 000DC
         dc.l    sub_015_0058C                   ; 000E0
-        dc.l    sub_013_00F3A                   ; 000E4
-        dc.l    sub_013_0015E                   ; 000E8
-        dc.l    sub_015_0039C                   ; 000EC
-        dc.l    sub_015_0039C                   ; 000F0
-        dc.l    sub_015_0039C                   ; 000F4
-        dc.l    sub_015_00000                   ; 000F8
-        dc.l    sub_014_00F44                   ; 000FC
+        dc.l    ShapePaneGridColour             ; 000E4
+        dc.l    ShapePointAlt                   ; 000E8
+        dc.l    MakeVerticesFA18                ; 000EC
+        dc.l    MakeVerticesFA18                ; 000F0
+        dc.l    MakeVerticesFA18                ; 000F4
+        dc.l    ShapeBlob                       ; 000F8
+        dc.l    MakeVerticesCruise              ; 000FC
         dc.l    sub_015_00684                   ; 00100
-        dc.l    sub_015_0072C                   ; 00104
-        dc.l    sub_014_008B6                   ; 00108
-        dc.l    sub_013_00222                   ; 0010C
-        dc.l    sub_013_0020A                   ; 00110
-        dc.l    sub_013_0031A                   ; 00114
-        dc.l    sub_013_00180                   ; 00118
-        dc.l    sub_015_0001E                   ; 0011C
-        dc.l    sub_013_001FC                   ; 00120
-        dc.l    sub_013_001EC                   ; 00124
-        dc.l    sub_013_002BC                   ; 00128
-        dc.l    sub_014_0023C                   ; 0012C
-        dc.l    sub_014_00900                   ; 00130
-        dc.l    sub_014_00906                   ; 00134
+        dc.l    MakeVerticesPod                 ; 00104
+        dc.l    ShapeSkipDuringEjection         ; 00108
+        dc.l    ShapeSkipIfBack                 ; 0010C
+        dc.l    ShapeAnimate52                  ; 00110
+        dc.l    ShapeParallelogramFront         ; 00114
+        dc.l    ShapeSmallObjectFrame           ; 00118
+        dc.l    ShapeBlobList                   ; 0011C
+        dc.l    ShapeAnimate18                  ; 00120
+        dc.l    ShapeSkipIfObject57             ; 00124
+        dc.l    ShapeLineFromAbove              ; 00128
+        dc.l    ShapeLineListFromAbove          ; 0012C
+        dc.l    ShapeSkipWord                   ; 00130
+        dc.l    ShapeSelectVariant              ; 00134
 
 ;-------------------------------------------------------------------------------
 ; ShapeNop - Draws nothing.
@@ -111,7 +118,11 @@ ShapePoint:
         jsr     (PlotPoint3D).l                 ; 00152
         movem.l (a7)+,a1-a2                     ; 00158
         rts                                     ; 0015C
-sub_013_0015E:
+
+;-------------------------------------------------------------------------------
+; ShapePointAlt - Op $E8: a point (as ShapePoint) plotted by sub_035_00034 instead.
+;-------------------------------------------------------------------------------
+ShapePointAlt:
         lea.l   (VertexBuffer).l,a3             ; 0015E
         adda.w  (a2)+,a3                        ; 00164
         movem.w (a3),d0-d2                      ; 00166
@@ -120,7 +131,12 @@ sub_013_0015E:
         jsr     (sub_035_00034).l               ; 00174
         movem.l (a7)+,a1-a2                     ; 0017A
         rts                                     ; 0017E
-sub_013_00180:
+
+;-------------------------------------------------------------------------------
+; ShapeSmallObjectFrame - Op $118: picks the part of the list for the small object's state
+; (SmallObjects +$04): used by shapes 17-19.
+;-------------------------------------------------------------------------------
+ShapeSmallObjectFrame:
         lea.l   (SmallObjects).l,a4             ; 00180
         move.w  (CurrentObject).l,d0            ; 00186
         asl.w   #$5,d0                          ; 0018C
@@ -162,19 +178,32 @@ l_013_001D0:
 l_013_001E8:
         moveq   #$0,d0                          ; 001E8
         rts                                     ; 001EA
-sub_013_001EC:
+
+;-------------------------------------------------------------------------------
+; ShapeSkipIfObject57 - Op $124: skips a word when the object is number $57.
+;-------------------------------------------------------------------------------
+ShapeSkipIfObject57:
         cmpi.w  #$57,(CurrentObject).l          ; 001EC
         bne.b   l_013_001F8                     ; 001F4
         addq.w  #$2,a2                          ; 001F6
 l_013_001F8:
         moveq   #$0,d0                          ; 001F8
         rts                                     ; 001FA
-sub_013_001FC:
+
+;-------------------------------------------------------------------------------
+; ShapeAnimate18 - Op $120: picks one of 16 frames of $12 bytes each by FrameCount.
+;-------------------------------------------------------------------------------
+ShapeAnimate18:
         moveq   #$12,d0                         ; 001FC
         move.w  (FrameCount).l,d1               ; 001FE
         andi.w  #$f,d1                          ; 00204
         bra.b   l_013_0021A                     ; 00208
-sub_013_0020A:
+
+;-------------------------------------------------------------------------------
+; ShapeAnimate52 - Op $110: picks one of 16 frames of $34 bytes each by FrameCount (animated
+; parts of the carrier and submarine models).
+;-------------------------------------------------------------------------------
+ShapeAnimate52:
         moveq   #$34,d0                         ; 0020A
         move.w  (FrameCount).l,d1               ; 0020C
         andi.w  #$f,d1                          ; 00212
@@ -185,7 +214,12 @@ l_013_0021A:
         dbra    d1,l_013_00218                  ; 0021A
         moveq   #$0,d0                          ; 0021E
         rts                                     ; 00220
-sub_013_00222:
+
+;-------------------------------------------------------------------------------
+; ShapeSkipIfBack - Op $10C: three vertex offsets and a word: if the triangle faces away from
+; the camera, skips the next $12 bytes.
+;-------------------------------------------------------------------------------
+ShapeSkipIfBack:
         lea.l   (dat_072_03C04).l,a0            ; 00222
         lea.l   (VertexBuffer).l,a3             ; 00228
         movem.w (a2)+,d0-d2                     ; 0022E
@@ -203,7 +237,12 @@ sub_013_00222:
 l_013_00258:
         adda.w  #$12,a2                         ; 00258
         rts                                     ; 0025C
-sub_013_0025E:
+
+;-------------------------------------------------------------------------------
+; ShapePointIfFront - Op $C4: three vertex offsets and a colour: plots the first vertex if the
+; triangle faces the camera.
+;-------------------------------------------------------------------------------
+ShapePointIfFront:
         lea.l   (dat_072_03C04).l,a0            ; 0025E
         lea.l   (VertexBuffer).l,a3             ; 00264
         movem.w (a2)+,d0-d2                     ; 0026A
@@ -226,15 +265,29 @@ sub_013_0025E:
 l_013_002B0:
         moveq   #$0,d0                          ; 002B0
         rts                                     ; 002B2
-sub_013_002B4:
+
+;-------------------------------------------------------------------------------
+; ShapeLineAlt - Op $C0: a line (as ShapeLine) drawn by sub_035_00100 instead.
+;-------------------------------------------------------------------------------
+ShapeLineAlt:
         lea.l   (sub_035_00100).l,a4            ; 002B4
         bra.b   l_013_002D2                     ; 002BA
-sub_013_002BC:
+
+;-------------------------------------------------------------------------------
+; ShapeLineFromAbove - Op $128: a line (as ShapeLine) drawn only when the shape is seen from
+; well above (dat_071_00448 below -$C0); otherwise its three words are skipped.
+;-------------------------------------------------------------------------------
+ShapeLineFromAbove:
         cmpi.l  #$ffffff40,(dat_071_00448).l    ; 002BC
-        blt.b   l_013_002CC                     ; 002C6
+        blt.b   ShapeLine                       ; 002C6
         addq.w  #$6,a2                          ; 002C8
         bra.b   l_013_00316                     ; 002CA
-l_013_002CC:
+
+;-------------------------------------------------------------------------------
+; ShapeLine - Op $08, a line: two vertex offsets and a colour; drawn (sub_035_001DA) unless
+; both ends are behind the camera.
+;-------------------------------------------------------------------------------
+ShapeLine:
         lea.l   (sub_035_001DA).l,a4            ; 002CC
 l_013_002D2:
         move.l  #$ffffffff,(dat_071_000B6).l    ; 002D2
@@ -258,7 +311,12 @@ l_013_002D2:
 l_013_00316:
         moveq   #$0,d0                          ; 00316
         rts                                     ; 00318
-sub_013_0031A:
+
+;-------------------------------------------------------------------------------
+; ShapeParallelogramFront - Op $114: three vertex offsets: a parallelogram (a fourth corner
+; made from them) tested for which side faces the camera, with ShapePolygon's colour words.
+;-------------------------------------------------------------------------------
+ShapeParallelogramFront:
         lea.l   (VertexBuffer).l,a3             ; 0031A
         lea.l   (PolygonBuffer).l,a0            ; 00320
         move.l  #$4,(a0)+                       ; 00326
@@ -361,7 +419,12 @@ l_013_0040E:
         movem.l (a7)+,a1/a5                     ; 0040E
         move.w  -$7e(a6),d0                     ; 00412
         rts                                     ; 00416
-sub_013_00418:
+
+;-------------------------------------------------------------------------------
+; ShapePolygonTable - Op $DC: a pointer to a table of faces, then offsets into it (ended by a
+; negative word): each a ShapePolygon-style face.
+;-------------------------------------------------------------------------------
+ShapePolygonTable:
         movem.l a1/a5,-(a7)                     ; 00418
         clr.w   -$7e(a6)                        ; 0041C
         clr.w   (PolygonBuffer).l               ; 00420
@@ -421,7 +484,14 @@ l_013_004B4:
 l_013_004BA:
         moveq   #-1,d0                          ; 004BA
         rts                                     ; 004BC
-sub_013_004BE:
+
+;-------------------------------------------------------------------------------
+; ShapeShadow - Op $10: the aircraft's shadow on the ground: in colour 0, its faces (offsets
+; into the object's own vertices, ObjectTable +$A4) flattened onto the ground below it; only
+; while low enough (and, from the cockpit, depending on dat_071_0023B and which object it is).
+; Used by every aircraft model.
+;-------------------------------------------------------------------------------
+ShapeShadow:
         move.l  (dat_071_00436).l,d0            ; 004BE
         lea.l   (ObjectTable).l,a4              ; 004C4
         adda.w  (CurrentObjectOffset).l,a4      ; 004CA
@@ -876,7 +946,12 @@ l_013_009F4:
         movem.l (a7)+,a1/a5                     ; 009F4
         moveq   #$1,d0                          ; 009F8
         rts                                     ; 009FA
-sub_013_009FC:
+
+;-------------------------------------------------------------------------------
+; ShapeLineRow - Op $18: a count and two vertices: vertices evenly spaced between the two (into
+; dat_072_02A00), joined by lines; used by the Golden Gate's shapes (91, 92).
+;-------------------------------------------------------------------------------
+ShapeLineRow:
         clr.w   -$7e(a6)                        ; 009FC
         lea.l   (VertexBuffer).l,a3             ; 00A00
         lea.l   (dat_072_02A00).l,a4            ; 00A06
@@ -990,7 +1065,12 @@ l_013_00AF0:
         movem.l (a7)+,a1-a2/a5                  ; 00B0C
         move.w  -$7e(a6),d0                     ; 00B10
         rts                                     ; 00B14
-sub_013_00B16:
+
+;-------------------------------------------------------------------------------
+; ShapeCockpitFlag - Op $84: sets the drawing's flag -$7A(a6) when the view is from the cockpit
+; and the viewed object's +$04 bit 6 is set (the carrier models).
+;-------------------------------------------------------------------------------
+ShapeCockpitFlag:
         tst.b   (OutsideView).l                 ; 00B16
         bne.b   l_013_00B3A                     ; 00B1C
         lea.l   (ObjectTable).l,a3              ; 00B1E
@@ -1005,7 +1085,13 @@ l_013_00B3A:
 l_013_00B3E:
         moveq   #$0,d0                          ; 00B3E
         rts                                     ; 00B40
-sub_013_00B42:
+
+;-------------------------------------------------------------------------------
+; ShapeSceneryTest - Op $7C: works on the scenery record (dat_071_00402) when the view is low
+; (dat_071_00448 above -$140) and dat_071_0023C is clear; used with the window grids (not
+; worked out).
+;-------------------------------------------------------------------------------
+ShapeSceneryTest:
         movea.l (dat_071_00402).l,a3            ; 00B42
         adda.w  #$a,a3                          ; 00B48
         adda.w  (a2)+,a3                        ; 00B4C
@@ -1067,7 +1153,12 @@ dat_013_00BEC:
 dat_013_00C04:
 	dc.b	$00,$00,$00,$10,$00,$20,$01,$80,$06,$00,$0C,$00,$0E,$00,$0F,$00
 	dc.b	$0F,$80,$10,$00,$14,$00,$1A,$00
-sub_013_00C1C:
+
+;-------------------------------------------------------------------------------
+; ShapeLineGrid - Op $4C: a colour and a vertex: a grid of lines across the face spanned by
+; three vertices (the counts in the next word) - the rows of windows on the buildings.
+;-------------------------------------------------------------------------------
+ShapeLineGrid:
         move.w  #$f,d0                          ; 00C1C
         move.w  #$ffff,d1                       ; 00C20
         clr.w   d2                              ; 00C24
@@ -1167,7 +1258,12 @@ sub_013_00D58:
         move.l  #$fffff,(dat_071_000B6).l       ; 00D58
         move.w  (a2)+,(DrawColour).l            ; 00D62
         bra.b   l_013_00D88                     ; 00D68
-sub_013_00D6A:
+
+;-------------------------------------------------------------------------------
+; ShapePaneGrid - Op $50: a grid of small panes (colour 13, pattern 2,0,2,0) across the face
+; spanned by three vertices - windows.
+;-------------------------------------------------------------------------------
+ShapePaneGrid:
         move.w  #$d,(DrawColour).l              ; 00D6A
         move.w  #$2,d0                          ; 00D72
         move.w  #$0,d1                          ; 00D76
@@ -1307,12 +1403,20 @@ l_013_00EBC:
         movem.l (a7)+,a1-a2/a5                  ; 00F30
         move.w  -$7e(a6),d0                     ; 00F34
         rts                                     ; 00F38
-sub_013_00F3A:
+
+;-------------------------------------------------------------------------------
+; ShapePaneGridColour - Op $E4: ShapePaneGrid2 in a given colour (solid pattern).
+;-------------------------------------------------------------------------------
+ShapePaneGridColour:
         movem.l a1/a5,-(a7)                     ; 00F3A
         move.l  #$fffff,(dat_071_000B6).l       ; 00F3E
         move.w  (a2)+,(DrawColour).l            ; 00F48
         bra.b   l_013_00F72                     ; 00F4E
-sub_013_00F50:
+
+;-------------------------------------------------------------------------------
+; ShapePaneGrid2 - Op $54: as ShapePaneGrid, the face given the other way round.
+;-------------------------------------------------------------------------------
+ShapePaneGrid2:
         movem.l a1/a5,-(a7)                     ; 00F50
         move.w  #$d,(DrawColour).l              ; 00F54
         move.w  #$2,d0                          ; 00F5C
@@ -1401,7 +1505,11 @@ l_013_00FE6:
         movem.l (a7)+,a1/a5                     ; 01076
         move.w  -$7e(a6),d0                     ; 0107A
         rts                                     ; 0107E
-sub_013_01080:
+
+;-------------------------------------------------------------------------------
+; ShapeLineGridColour - Op $58: as ShapeLineGrid, in a given colour.
+;-------------------------------------------------------------------------------
+ShapeLineGridColour:
         movem.l a1/a5,-(a7)                     ; 01080
         move.w  #$f,d0                          ; 01084
         move.w  #$ffff,d1                       ; 01088
@@ -1470,7 +1578,13 @@ sub_013_01158:
         move.w  #$0,d1                          ; 0115C
         move.w  #$2,d2                          ; 01160
         bra.b   l_013_01170                     ; 01164
-sub_013_01166:
+
+;-------------------------------------------------------------------------------
+; ShapeParallelogramPat - Op $78: a colour and a vertex: a parallelogram of three consecutive
+; vertices and a fourth made from them, filled with pattern 8,8,0,0 (the ground shapes'
+; patterned fields).
+;-------------------------------------------------------------------------------
+ShapeParallelogramPat:
         move.w  #$8,d0                          ; 01166
         move.w  #$8,d1                          ; 0116A
         clr.w   d2                              ; 0116E
@@ -1508,7 +1622,12 @@ l_013_011D4:
         movem.l (a7)+,a1-a2/a5                  ; 011D4
         moveq   #$0,d0                          ; 011D8
         rts                                     ; 011DA
-sub_013_011DC:
+
+;-------------------------------------------------------------------------------
+; ShapeMakeVertices - Op $88: a vertex offset and a shift: computes further vertices from the
+; ones after it (edge differences scaled by the shift) into VertexBuffer.
+;-------------------------------------------------------------------------------
+ShapeMakeVertices:
         lea.l   (VertexBuffer).l,a3             ; 011DC
         adda.w  (a2)+,a3                        ; 011E2
         movem.w $6(a3),d0-d7/a4                 ; 011E4
@@ -1581,7 +1700,12 @@ l_013_01230:
         movem.w d6-d7/a4,$12(a3)                ; 01286
         moveq   #$0,d0                          ; 0128C
         rts                                     ; 0128E
-sub_013_01290:
+
+;-------------------------------------------------------------------------------
+; ShapeMakeVertices2 - Op $90: as ShapeMakeVertices, from the vertices $C bytes on (Coit
+; Tower).
+;-------------------------------------------------------------------------------
+ShapeMakeVertices2:
         lea.l   (VertexBuffer).l,a3             ; 01290
         adda.w  (a2)+,a3                        ; 01296
         movem.w $c(a3),d0-d7/a4                 ; 01298
