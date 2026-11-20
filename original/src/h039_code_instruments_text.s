@@ -276,7 +276,11 @@ l_039_003EC:
         move.w  d6,d0                           ; 0040E
         bsr.w   sub_039_011A4                   ; 00410
         rts                                     ; 00414
-sub_039_00416:
+
+;-------------------------------------------------------------------------------
+; ShowClosure - Prints the closure rate (d0) beside the gun sight.
+;-------------------------------------------------------------------------------
+ShowClosure:
         move.w  #$d,(DrawColour).l              ; 00416
         lea.l   (dat_071_001CA).l,a2            ; 0041E
         tst.w   d0                              ; 00424
@@ -389,7 +393,11 @@ dat_039_0055F:
 dat_039_00565:
 	dc.b	' SHOOT'
 	dc.b	$00
-sub_039_0056C:
+
+;-------------------------------------------------------------------------------
+; ShowShootCue - Prints the shoot cue: IN RNG with a missile, SHOOT with the gun.
+;-------------------------------------------------------------------------------
+ShowShootCue:
         lea.l   (ObjectTable).l,a1              ; 0056C
         adda.w  (ViewObject).l,a1               ; 00572
         move.b  $63(a1),d0                      ; 00578

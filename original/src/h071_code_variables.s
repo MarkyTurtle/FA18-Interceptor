@@ -219,7 +219,9 @@ PrintLineStart:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_000E6:
+; GunPointNow - The gun's aim point ahead of the aircraft this frame (x, y, z longs,
+; ComputeGunPipper).
+GunPointNow:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -232,7 +234,8 @@ dat_071_000E6:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_000F2:
+; GunPointOld - The aim point of the frame before (ComputeGunPipper), the one shown.
+GunPointOld:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -909,7 +912,9 @@ ViewChoice:
 	dc.b	$00
 dat_071_00283:
 	dc.b	$00
-dat_071_00284:
+; ShootCue - The head-up display's shoot cue: 1 in range (IN RNG / SHOOT, sound 4), 2 closing
+; too fast; 0 none.
+ShootCue:
 	dc.b	$00
 dat_071_00285:
 	dc.b	$00
@@ -1108,13 +1113,15 @@ TargetScreenPos:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0030A:
+; SeekerPos - Where the missile seeker is on the screen (x, y).
+SeekerPos:
 	dc.b	$00
 	dc.b	$00
 dat_071_0030C:
 	dc.b	$00
 	dc.b	$00
-dat_071_0030E:
+; GunPipperPos - Where the gun pipper is on the screen (x, y); x <= 0 for none.
+GunPipperPos:
 	dc.b	$00
 	dc.b	$00
 dat_071_00310:
@@ -1710,10 +1717,13 @@ dat_071_00510:
 dat_071_00512:
 	dc.b	$00
 	dc.b	$00
-dat_071_00514:
+; TargetRangeLast - The locked target's range (+$4A) the last time it was measured, for
+; Closure.
+TargetRangeLast:
 	dc.b	$00
 	dc.b	$00
-dat_071_00516:
+; Closure - How fast the locked target's range changes (per measurement; negative closing).
+Closure:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00

@@ -1229,7 +1229,7 @@ l_005_00FD2:
         or.b    d4,(PlayerWeapon).l             ; 00FDA
         move.b  #$3,(dat_071_00213).l           ; 00FE0
         move.b  #$3,(dat_071_00214).l           ; 00FE8
-        clr.b   (dat_071_00284).l               ; 00FF0
+        clr.b   (ShootCue).l                    ; 00FF0
         bra.w   l_005_01624                     ; 00FF6
 Key_G:
         bset    #$0,(JoyEvents).l               ; 00FFA
@@ -1473,7 +1473,7 @@ l_005_012CC:
 ;-------------------------------------------------------------------------------
 ViewFollow:
         move.b  #$ff,(RedrawFlags).l            ; 012D0
-        move.w  #$ffff,(dat_071_0030A).l        ; 012D8
+        move.w  #$ffff,(SeekerPos).l            ; 012D8
         move.b  #$fe,(dat_071_00280).l          ; 012E0
         move.w  d1,(dat_071_002AC).l            ; 012E8
         asl.w   #$8,d1                          ; 012EE

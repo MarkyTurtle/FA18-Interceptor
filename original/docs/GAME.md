@@ -339,9 +339,27 @@ instruments are drawn over it each frame (stage `$D0`), several only every few f
 
   The F/A-18 and F-16 cockpits put some of them in different places. `ShowDebugNumbers` prints
   the mouse's position when a flag is set - apparently left from development.
-* **The head-up display** (hunk 40, `DrawHUD`), drawn only in the cockpit (`OutsideView` 0): the
-  gun cross at the centre (`DrawGunCross`), a target box that slides towards the target on the
-  screen (`DrawTargetBox`), the weapon and G readouts; its other symbols are not worked out yet.
+* **The head-up display** (hunk 40, `DrawHUD`), drawn only in the cockpit (`OutsideView` 0):
+  * fixed symbols (`DrawHUDFixed`): the boresight mark, two horizon bars and the outline of the
+    glass; the gun cross below the centre (`DrawGunCross`);
+  * while flying, the height, speed and heading (`HUDAltitude`, `HUDSpeed`, `HUDHeading`). The
+    two aircraft differ: the **F/A-18** shows the height (in feet: the height / 1024 x 5) and
+    the speed (knots: `+$6E` / 12) as numbers with FT and KT, the **F-16** as moving tapes either
+    side with a pointer. Both have a heading scale across the top, numbered every 10 degrees;
+  * the **target box** that slides towards the locked target (`DrawTargetBox`), the weapon and
+    the G load (hunk 39);
+  * with a missile selected, the **seeker** (`DrawMissileSeeker`): when it lies on the target
+    box it has the target (the lock tone), and within the missile's range - `$1800` for the
+    Sidewinder, `$2700` for the AMRAAM - the cue **IN RNG** (`ShootCue`), or a warning when
+    closing too fast (`Closure`);
+  * with the gun, the **gun sight** (`DrawGunSight`): a pipper where the bullets will be,
+    computed from a point ahead of the aircraft kept two frames so that it lags in a turn
+    (`ComputeGunPipper`), a range bar and the closure rate, and **SHOOT** when the target is
+    within 8 pixels of the pipper and closer than `$900`.
+
+  `tools/models/hud.py` draws it in the emulator:
+
+  ![The head-up display: the F/A-18 (above) and the F-16 (below)](images/hud.png)
 
 `OutsideView` is set for the outside views (the keypad chooses the view, `ViewChoice`): then the
 view fills more of the screen and the heading, speed and height are written over it instead.
@@ -655,6 +673,6 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
 * The 3D pipeline's special shape operations (hunks 12-15) and the clipping (hunk 19).
 * What each scenery shape is; the operations no shape uses; what `dat_071_002A2` bit `$2000` (a whole-sky
   view) and the second view table (`CheckViewTable2`) are for.
-* The head-up display and most instruments (hunks 39-40).
+* Some of the instruments (hunk 39), and the head-up display's target box in detail.
 * The views (`OutsideView`, `ViewChoice`, `CameraSequence`).
 * The rest of the flight log's words, and which sound file is which effect.

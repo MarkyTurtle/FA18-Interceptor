@@ -283,7 +283,7 @@ sub_017_00430:
 l_017_00450:
         move.w  #$ffff,(LockedTarget).l         ; 00450
         clr.b   (dat_071_00238).l               ; 00458
-        move.w  #$ffff,(dat_071_0030A).l        ; 0045E
+        move.w  #$ffff,(SeekerPos).l            ; 0045E
 l_017_00466:
         rts                                     ; 00466
 

@@ -701,7 +701,7 @@ l_022_00894:
         cmpi.b  #$0,d0                          ; 008A4
         bne.b   l_022_008B6                     ; 008A8
         bset    #$5,$20(a1)                     ; 008AA
-        clr.b   (dat_071_00284).l               ; 008B0
+        clr.b   (ShootCue).l                    ; 008B0
 l_022_008B6:
         bra.w   l_022_00816                     ; 008B6
 sub_022_008BA:

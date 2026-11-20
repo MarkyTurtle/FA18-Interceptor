@@ -166,6 +166,7 @@ cd tools/models
 python3 gallery.py models          # out/models.png
 python3 gallery2.py x              # out/scenery_a.png, out/scenery_b.png, out/scenery_ground.png
 python3 opstats.py                 # which shape operations each model and shape uses
+python3 hud.py                     # out/hud_fa18.png, out/hud_f16.png: the head-up display
 python3 one.py m 0x50 2.5 0.45 out/fa18.png 0 480   # one model: m + ModelTable offset
 python3 one.py s 33 0.45 0.0 out/gg.png 0 480        # one scenery shape: s + entry
 python3 scene.py 3 "" "" out/carrier.png              # the game's frame at a start point

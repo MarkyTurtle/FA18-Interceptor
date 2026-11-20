@@ -379,8 +379,9 @@
 ;         (TargetReadout) and the text printer (PrintText: the menus, briefings and typed input).
 	include	"src/h039_code_instruments_text.s"
 
-; Hunk 40: The head-up display (DrawHUD: the gun cross, the target box and other symbols; most
-;         not worked out yet).
+; Hunk 40: The head-up display (DrawHUD): the fixed symbols, the height, speed and heading
+;         (numbers on the F/A-18, tapes on the F-16), the gun sight, the missile seeker, the
+;         target box.
 	include	"src/h040_code_hud.s"
 
 ; Hunk 41: The F/A-18's 3D model (ModelTable $50).
