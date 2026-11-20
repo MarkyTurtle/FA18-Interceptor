@@ -83,7 +83,7 @@ l_037_000E2:
         addi.w  #$14,d6                         ; 000E4
         movea.w #$1,a5                          ; 000E8
         move.w  #$0,d7                          ; 000EC
-        add.l   (dat_071_002E8).l,d1            ; 000F0
+        add.l   (PanelShakeOffset).l,d1         ; 000F0
         bsr.w   sub_037_00A22                   ; 000F6
         blt.w   l_037_00148                     ; 000FA
         add.w   d7,d5                           ; 000FE
@@ -209,7 +209,7 @@ sub_037_00258:
         andi.w  #$7fff,d2                       ; 0025E
         lsr.w   #$8,d2                          ; 00262
         lsr.w   #$2,d2                          ; 00264
-        tst.b   (dat_071_00207).l               ; 00266
+        tst.b   (PanelRedraw).l                 ; 00266
         bgt.b   l_037_00280                     ; 0026C
         cmp.w   (dat_071_00374).l,d2            ; 0026E
         beq.b   l_037_00256                     ; 00274
@@ -281,7 +281,7 @@ sub_037_00340:
         andi.b  #$f0,d1                         ; 0035E
         cmpi.b  #$0,d1                          ; 00362
         beq.b   l_037_0033E                     ; 00366
-        move.l  #$fffff,(dat_071_000B6).l       ; 00368
+        move.l  #$fffff,(FillPattern).l         ; 00368
         move.w  #$44,d0                         ; 00372
         add.w   (ViewX).l,d0                    ; 00376
         blt.b   l_037_003E2                     ; 0037C
@@ -387,7 +387,7 @@ sub_037_0049C:
         move.w  d0,d2                           ; 004C6
         addi.w  #$9,d2                          ; 004C8
         move.w  d1,d3                           ; 004CC
-        move.l  #$fffff,(dat_071_000B6).l       ; 004CE
+        move.l  #$fffff,(FillPattern).l         ; 004CE
         lea.l   (ObjectTable).l,a2              ; 004D8
         adda.w  (ViewObject).l,a2               ; 004DE
         btst    #$3,$3(a2)                      ; 004E4
@@ -407,7 +407,7 @@ l_037_00504:
         move.w  #$1c3,d6                        ; 0051C
         movea.w #$23,a5                         ; 00520
         move.w  #$0,d7                          ; 00524
-        add.l   (dat_071_002E8).l,d1            ; 00528
+        add.l   (PanelShakeOffset).l,d1         ; 00528
         bsr.w   sub_037_00A22                   ; 0052E
         blt.b   l_037_005B0                     ; 00532
         move.w  #$30a,d2                        ; 00534
@@ -431,7 +431,7 @@ l_037_00560:
         move.w  #$1c2,d6                        ; 00578
         movea.w #$25,a5                         ; 0057C
         move.w  #$12,d7                         ; 00580
-        add.l   (dat_071_002E8).l,d1            ; 00584
+        add.l   (PanelShakeOffset).l,d1         ; 00584
         bsr.w   sub_037_00A22                   ; 0058A
         blt.b   l_037_005B0                     ; 0058E
         move.w  #$30a,d2                        ; 00590
@@ -454,7 +454,7 @@ l_037_005B0:
         move.w  #$202,d6                        ; 005C8
         movea.w #$25,a5                         ; 005CC
         move.w  #$0,d7                          ; 005D0
-        add.l   (dat_071_002E8).l,d1            ; 005D4
+        add.l   (PanelShakeOffset).l,d1         ; 005D4
         bsr.w   sub_037_00A22                   ; 005DA
         blt.b   l_037_005AE                     ; 005DE
         move.w  #$30a,d2                        ; 005E0
@@ -509,7 +509,7 @@ sub_037_00674:
         move.w  #$202,d6                        ; 0067E
         movea.w #$25,a5                         ; 00682
         move.w  #$0,d7                          ; 00686
-        add.l   (dat_071_002E8).l,d1            ; 0068A
+        add.l   (PanelShakeOffset).l,d1         ; 0068A
         bsr.w   sub_037_00A22                   ; 00690
         blt.b   l_037_006BE                     ; 00694
         move.w  #$30a,d2                        ; 00696
@@ -544,7 +544,7 @@ l_037_006BE:
         move.w  #$1c2,d6                        ; 00702
         movea.w #$25,a5                         ; 00706
         movea.l (DrawPlanes).l,a2               ; 0070A
-        add.l   (dat_071_002E8).l,d1            ; 00710
+        add.l   (PanelShakeOffset).l,d1         ; 00710
         bsr.w   sub_037_00A22                   ; 00716
         blt.w   l_037_00672                     ; 0071A
         add.w   d7,d5                           ; 0071E
@@ -595,7 +595,7 @@ l_037_006BE:
         bge.b   l_037_007E8                     ; 007C2
         add.w   (ViewY).l,d1                    ; 007C4
         add.w   (ViewY).l,d3                    ; 007CA
-        move.l  #$fffff,(dat_071_000B6).l       ; 007D0
+        move.l  #$fffff,(FillPattern).l         ; 007D0
         move.w  #$0,(DrawColour).l              ; 007DA
         jsr     (DrawLine199).l                 ; 007E2
 l_037_007E8:
@@ -603,7 +603,7 @@ l_037_007E8:
 sub_037_007EA:
         movea.l #$0,a0                          ; 007EA
         movea.l (DrawPlanes).l,a2               ; 007F0
-        add.l   (dat_071_002E8).l,d1            ; 007F6
+        add.l   (PanelShakeOffset).l,d1         ; 007F6
         bsr.w   sub_037_00A22                   ; 007FC
         blt.w   l_037_008B0                     ; 00800
         add.w   d7,d5                           ; 00804
@@ -674,7 +674,7 @@ l_037_008B6:
 sub_037_008B8:
         bsr.w   sub_037_009EA                   ; 008B8
         move.w  (dat_071_00294).l,d0            ; 008BC
-        tst.b   (dat_071_00207).l               ; 008C2
+        tst.b   (PanelRedraw).l                 ; 008C2
         bgt.b   l_037_008F2                     ; 008C8
         move.w  (dat_071_00372).l,d2            ; 008CA
         blt.b   l_037_008E2                     ; 008D0
@@ -699,7 +699,7 @@ l_037_00900:
         movea.w #$23,a5                         ; 00916
         move.w  #$1c3,d3                        ; 0091A
         move.w  #$c,d7                          ; 0091E
-        add.l   (dat_071_002E8).l,d1            ; 00922
+        add.l   (PanelShakeOffset).l,d1         ; 00922
         bsr.w   sub_037_00A22                   ; 00928
         blt.b   l_037_008B6                     ; 0092C
         add.w   d7,d5                           ; 0092E
@@ -744,7 +744,7 @@ l_037_00956:
         move.l  d1,BLTCPTH(a0)                  ; 009A8
         move.l  d1,BLTDPTH(a0)                  ; 009AC
         move.w  d3,BLTSIZE(a0)                  ; 009B0
-        move.l  #$fffff,(dat_071_000B6).l       ; 009B4
+        move.l  #$fffff,(FillPattern).l         ; 009B4
         move.w  #$d0,d0                         ; 009BE
         add.w   (ViewX).l,d0                    ; 009C2
         blt.b   l_037_009E8                     ; 009C8

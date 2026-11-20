@@ -32,9 +32,9 @@ sub_004_0002C:
         move.w  #$fffc,$2a(a0)                  ; 00032
         clr.b   (dat_071_00274).l               ; 00038
         clr.b   (dat_071_001A5).l               ; 0003E
-        move.b  #$f,(dat_071_00270).l           ; 00044
-        move.b  #$f,(dat_071_00271).l           ; 0004C
-        move.b  #$1,(dat_071_0027D).l           ; 00054
+        move.b  #$f,(FadeLevel).l               ; 00044
+        move.b  #$f,(FadeTarget).l              ; 0004C
+        move.b  #$1,(KeyMode).l                 ; 00054
         move.b  #$1,(dat_071_001A4).l           ; 0005C
         move.b  #$11,(PlayerAircraftType).l     ; 00064
         rts                                     ; 0006C
@@ -113,7 +113,7 @@ l_004_001C2:
         addq.w  #$1,d0                          ; 001C4
         dbra    d1,l_004_001C2                  ; 001C6
         moveq   #$30,d1                         ; 001CA
-        lea.l   (dat_071_001CA).l,a0            ; 001CC
+        lea.l   (TextBuffer).l,a0               ; 001CC
         move.l  #QuitRequest,d0                 ; 001D2
         sub.l   a0,d0                           ; 001D8
         subq.w  #$1,d0                          ; 001DA
@@ -133,7 +133,7 @@ l_004_001EC:
         rts                                     ; 00208
 sub_004_0020A:
         lea.l   (dat_071_00160).l,a0            ; 0020A
-        move.l  #dat_071_00195,d0               ; 00210
+        move.l  #ConfigChanged,d0               ; 00210
         sub.l   a0,d0                           ; 00216
         subq.w  #$1,d0                          ; 00218
 l_004_0021A:
@@ -253,8 +253,8 @@ l_004_0033E:
 sub_004_00392:
         clr.b   (OutsideView).l                 ; 00392
         clr.b   (dat_071_00176).l               ; 00398
-        move.b  #$1,(dat_071_00185).l           ; 0039E
-        move.b  #$1,(dat_071_00184).l           ; 003A6
+        move.b  #$1,(NewView).l                 ; 0039E
+        move.b  #$1,(CameraFollows).l           ; 003A6
 sub_004_003AE:
         move.l  (RecordBuffer).l,(RecordPointer).l ; 003AE
         move.l  (RecordControls).l,(RecordControlsPointer).l ; 003B8
@@ -273,7 +273,7 @@ sub_004_003E8:
         asl.w   #$3,d0                          ; 00406
         move.w  d0,(MouseY).l                   ; 00408
         move.w  d0,(dat_071_0014C).l            ; 0040E
-        move.b  #$fe,(dat_071_00280).l          ; 00414
+        move.b  #$fe,(EngineSoundRequest).l     ; 00414
         lea.l   (ModelTable).l,a0               ; 0041C
         move.b  (PlayerAircraftType).l,d1       ; 00422
         cmpi.b  #$10,d1                         ; 00428
@@ -378,9 +378,9 @@ l_004_004EA:
         move.l  d1,$1c(a1)                      ; 0059A
         neg.l   d3                              ; 0059E
         neg.l   d4                              ; 005A0
-        move.l  d3,(dat_071_00432).l            ; 005A2
-        move.l  d4,(dat_071_0043A).l            ; 005A8
-        move.l  #$fffff8f8,(dat_071_00436).l    ; 005AE
+        move.l  d3,(ViewOffsetX).l              ; 005A2
+        move.l  d4,(ViewOffsetZ).l              ; 005A8
+        move.l  #$fffff8f8,(ViewOffsetY).l      ; 005AE
         neg.l   d3                              ; 005B8
         neg.l   d4                              ; 005BA
         asr.l   #$8,d3                          ; 005BC
@@ -414,7 +414,7 @@ l_004_005FE:
         movea.l $10(a4,d1.w),a4                 ; 00612
         move.l  $2(a4),d0                       ; 00616
         blt.b   l_004_0062C                     ; 0061A
-        move.w  #$28,(dat_071_0036E).l          ; 0061C
+        move.w  #$28,(DebugCheckpoint).l        ; 0061C
         jsr     (Nop).l                         ; 00624
         clr.l   d0                              ; 0062A
 l_004_0062C:
@@ -500,7 +500,7 @@ sub_004_00708:
         andi.w  #$7fff,$0(a1)                   ; 00740
         clr.l   (WarningFlags).l                ; 00746
         clr.l   (SoundRequests).l               ; 0074C
-        clr.w   (dat_071_004B0).l               ; 00752
+        clr.w   (CurrentWarning).l              ; 00752
         clr.w   (dat_071_004AE).l               ; 00758
         move.w  #$ffff,(dat_071_004B4).l        ; 0075E
         rts                                     ; 00766

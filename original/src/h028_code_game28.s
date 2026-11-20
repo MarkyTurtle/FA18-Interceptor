@@ -232,8 +232,8 @@ l_028_00BBE:
 l_028_00BC6:
         clr.w   d2                              ; 00BC6
         clr.w   d3                              ; 00BC8
-        movem.w d0-d3,(dat_071_000B6).l         ; 00BCA
-        move.l  (dat_071_00448).l,d0            ; 00BD2
+        movem.w d0-d3,(FillPattern).l           ; 00BCA
+        move.l  (ViewOffsetY8).l,d0             ; 00BD2
         neg.l   d0                              ; 00BD8
         tst.b   (dat_071_001AD).l               ; 00BDA
         bne.b   l_028_00C0C                     ; 00BE0
@@ -432,7 +432,7 @@ l_028_00E1E:
         clr.b   -$24(a6)                        ; 00E26
         tst.w   -$3e(a6)                        ; 00E2A
         beq.b   l_028_00E80                     ; 00E2E
-        tst.b   (dat_071_0017D).l               ; 00E30
+        tst.b   (MapView).l                     ; 00E30
         bne.b   l_028_00E80                     ; 00E36
         cmpi.w  #$4,d2                          ; 00E38
         bne.b   l_028_00E6A                     ; 00E3C
@@ -491,7 +491,7 @@ l_028_00ECA:
         bne.b   l_028_00F1C                     ; 00EE0
         bra.w   l_028_00E00                     ; 00EE2
 l_028_00EE6:
-        move.w  #$40,(dat_071_0036E).l          ; 00EE6
+        move.w  #$40,(DebugCheckpoint).l        ; 00EE6
         jsr     (Nop).l                         ; 00EEE
         bra.w   l_028_00E00                     ; 00EF4
 dat_028_00EF8:
@@ -632,7 +632,7 @@ l_028_01046:
 l_028_01066:
         cmpi.w  #$12,d1                         ; 01066
         ble.b   l_028_0107E                     ; 0106A
-        move.w  #$20,(dat_071_0036E).l          ; 0106C
+        move.w  #$20,(DebugCheckpoint).l        ; 0106C
         jsr     (Nop).l                         ; 01074
         bra.w   l_028_010F0                     ; 0107A
 l_028_0107E:
@@ -722,7 +722,7 @@ sub_028_010FA:
         move.w  d4,(a5)+                        ; 0113E
         rts                                     ; 01140
 l_028_01142:
-        move.w  #$41,(dat_071_0036E).l          ; 01142
+        move.w  #$41,(DebugCheckpoint).l        ; 01142
         jsr     (Nop).l                         ; 0114A
 l_028_01150:
         bclr    #$1,$4(a1)                      ; 01150

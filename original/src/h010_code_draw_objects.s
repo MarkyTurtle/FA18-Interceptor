@@ -15,7 +15,7 @@ l_010_00000:
 ; camera) is under $FFD80000.
 ;-------------------------------------------------------------------------------
 DrawSceneryNear:
-        cmpi.l  #$ffd80000,(dat_071_00436).l    ; 00004
+        cmpi.l  #$ffd80000,(ViewOffsetY).l      ; 00004
         bge.b   l_010_00000                     ; 0000E
 
 ;-------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ DrawModel:
         move.w  (CurrentObjectOffset).l,d0      ; 00028
         cmp.w   (ViewObject).l,d0               ; 0002E
         bne.w   DrawSceneryPlain                ; 00034
-        move.b  (dat_071_00177).l,d0            ; 00038
+        move.b  (ViewZoom).l,d0                 ; 00038
         cmpi.b  #$3,d0                          ; 0003E
         blt.b   l_010_0004C                     ; 00042
         cmpi.b  #$9,d0                          ; 00044
@@ -59,8 +59,8 @@ l_010_0004C:
         beq.b   l_010_00094                     ; 00072
         cmpi.b  #$3,d1                          ; 00074
         bge.w   DrawSceneryPlain                ; 00078
-        move.l  (dat_071_00448).l,d3            ; 0007C
-        move.w  (dat_071_00488).l,d5            ; 00082
+        move.l  (ViewOffsetY8).l,d3             ; 0007C
+        move.w  (DistanceShift).l,d5            ; 00082
         asr.l   d5,d3                           ; 00088
         cmpi.l  #$ffffffe0,d3                   ; 0008A
         bge.w   DrawSceneryPlain                ; 00090
@@ -113,7 +113,7 @@ l_010_00108:
         move.w  d1,-$28(a6)                     ; 00108
         movea.l (ShapeNow).l,a2                 ; 0010C
         move.l  a0,-$2c(a6)                     ; 00112
-        move.w  (dat_071_00488).l,d3            ; 00116
+        move.w  (DistanceShift).l,d3            ; 00116
 l_010_0011C:
         move.w  (a2)+,d0                        ; 0011C
         blt.b   l_010_0014C                     ; 0011E
@@ -198,8 +198,8 @@ l_010_001C2:
         asr.b   #$4,d6                          ; 001EC
         andi.w  #$f,d6                          ; 001EE
         andi.w  #$f,d7                          ; 001F2
-        movem.l (dat_071_00432).l,d0-d2         ; 001F6
-        move.w  (dat_071_00488).l,d3            ; 001FE
+        movem.l (ViewOffsetX).l,d0-d2           ; 001F6
+        move.w  (DistanceShift).l,d3            ; 001FE
         beq.b   l_010_0020C                     ; 00204
         asr.l   d3,d0                           ; 00206
         asr.l   d3,d1                           ; 00208
@@ -222,7 +222,7 @@ l_010_0020C:
         clr.w   d2                              ; 00238
         bra.b   l_010_00256                     ; 0023A
 l_010_0023C:
-        move.w  (dat_071_00488).l,d3            ; 0023C
+        move.w  (DistanceShift).l,d3            ; 0023C
         asr.w   d3,d4                           ; 00242
         cmp.w   -$96(a6),d4                     ; 00244
         bge.b   l_010_00252                     ; 00248
@@ -235,11 +235,11 @@ l_010_00252:
         move.w  d7,d2                           ; 00254
 l_010_00256:
         move.w  d2,-$6(a6)                      ; 00256
-        add.w   (dat_071_00488).l,d3            ; 0025A
+        add.w   (DistanceShift).l,d3            ; 0025A
         move.w  d3,-$8(a6)                      ; 00260
         move.b  (a1)+,d6                        ; 00264
         move.b  d6,-$64(a6)                     ; 00266
-        cmpi.l  #$fffffec0,(dat_071_00448).l    ; 0026A
+        cmpi.l  #$fffffec0,(ViewOffsetY8).l     ; 0026A
         ble.w   l_010_002AE                     ; 00274
         tst.b   (dat_071_0023C).l               ; 00278
         bne.w   l_010_002AE                     ; 0027E
@@ -274,7 +274,7 @@ l_010_002AE:
         bne.b   l_010_00338                     ; 002F4
         move.w  -$28(a6),d0                     ; 002F6
         ext.l   d0                              ; 002FA
-        move.w  (dat_071_00488).l,d2            ; 002FC
+        move.w  (DistanceShift).l,d2            ; 002FC
         asl.l   d2,d0                           ; 00302
         asr.l   #$1,d0                          ; 00304
         tst.w   d0                              ; 00306
@@ -530,7 +530,7 @@ l_010_00542:
 l_010_00598:
         bra.w   l_010_004E4                     ; 00598
 l_010_0059C:
-        move.w  #$17,(dat_071_0036E).l          ; 0059C
+        move.w  #$17,(DebugCheckpoint).l        ; 0059C
         jsr     (Nop).l                         ; 005A4
         bra.b   l_010_0059C                     ; 005AA
 l_010_005AC:
@@ -579,7 +579,7 @@ l_010_0060C:
         moveq   #$0,d0                          ; 0060E
         rts                                     ; 00610
 l_010_00612:
-        cmpi.l  #$ffffffe0,(dat_071_00448).l    ; 00612
+        cmpi.l  #$ffffffe0,(ViewOffsetY8).l     ; 00612
         blt.b   l_010_0063C                     ; 0061C
         andi.w  #$4,d7                          ; 0061E
         beq.b   l_010_0062A                     ; 00622
@@ -588,7 +588,7 @@ l_010_00612:
 l_010_0062A:
         move.w  #$60,d7                         ; 0062A
 l_010_0062E:
-        move.w  (dat_071_00488).l,d6            ; 0062E
+        move.w  (DistanceShift).l,d6            ; 0062E
         asr.w   d6,d7                           ; 00634
         cmp.w   -$28(a6),d7                     ; 00636
         blt.b   l_010_0060C                     ; 0063A
@@ -973,7 +973,7 @@ l_010_009B4:
         movea.l -$72(a6),a3                     ; 009B8
         bra.w   l_010_00852                     ; 009BC
 l_010_009C0:
-        move.l  #$fffff,(dat_071_000B6).l       ; 009C0
+        move.l  #$fffff,(FillPattern).l         ; 009C0
         clr.l   (dat_071_000BA).l               ; 009CA
         movea.l (ShapeNow).l,a5                 ; 009D0
         clr.w   -$66(a6)                        ; 009D6
@@ -1136,8 +1136,8 @@ l_010_00B42:
         beq.b   l_010_00B94                     ; 00B90
         moveq   #$2,d4                          ; 00B92
 l_010_00B94:
-        move.w  (dat_071_00488).l,d7            ; 00B94
-        jsr     (sub_031_003E2).l               ; 00B9A
+        move.w  (DistanceShift).l,d7            ; 00B94
+        jsr     (DrawPuff).l                    ; 00B9A
 l_010_00BA0:
         jsr     (sub_015_000B4).l               ; 00BA0
         move.w  -$7c(a6),d0                     ; 00BA6
@@ -1152,7 +1152,7 @@ l_010_00BB4:
 l_010_00BB8:
         move.w  (a2)+,d0                        ; 00BB8
         blt.b   l_010_00BB4                     ; 00BBA
-        move.w  (dat_071_00488).l,d1            ; 00BBC
+        move.w  (DistanceShift).l,d1            ; 00BBC
         asr.w   d1,d0                           ; 00BC2
         cmp.w   -$28(a6),d0                     ; 00BC4
         blt.b   l_010_00BB4                     ; 00BC8
@@ -1166,7 +1166,7 @@ l_010_00BD2:
         bge.b   l_010_00C16                     ; 00BDA
         cmpi.w  #$ffff,d0                       ; 00BDC
         bne.b   l_010_00BF0                     ; 00BE0
-        move.w  d0,(dat_071_0036E).l            ; 00BE2
+        move.w  d0,(DebugCheckpoint).l          ; 00BE2
         jsr     (Nop).l                         ; 00BE8
         bra.b   l_010_00BB4                     ; 00BEE
 l_010_00BF0:
@@ -1185,7 +1185,7 @@ l_010_00BFC:
 l_010_00C16:
         cmpi.w  #$7fff,d0                       ; 00C16
         beq.b   l_010_00C2E                     ; 00C1A
-        move.w  (dat_071_00488).l,d1            ; 00C1C
+        move.w  (DistanceShift).l,d1            ; 00C1C
         asr.w   d1,d0                           ; 00C22
         cmp.w   -$28(a6),d0                     ; 00C24
         blt.b   l_010_00BB8                     ; 00C28
@@ -1442,11 +1442,11 @@ sub_010_00E54:
 ; normal dotted with the camera's offset from the point.
 ;-------------------------------------------------------------------------------
 PlaneFacesCamera:
-        move.w  (dat_071_00488).l,d7            ; 00E64
+        move.w  (DistanceShift).l,d7            ; 00E64
         asr.w   d7,d0                           ; 00E6A
         asr.w   d7,d1                           ; 00E6C
         asr.w   d7,d2                           ; 00E6E
-        add.w   (dat_071_004FA).l,d0            ; 00E70
+        add.w   (ObjectViewPos).l,d0            ; 00E70
         add.w   (dat_071_004FE).l,d2            ; 00E76
         sub.w   -$26(a6),d0                     ; 00E7C
         sub.w   -$24(a6),d1                     ; 00E80
@@ -1531,10 +1531,10 @@ AxisPlaneTest:
         andi.w  #$f,d5                          ; 00F26
         move.w  $e(a0,d0.w),d2                  ; 00F2A
         asr.w   d5,d2                           ; 00F2E
-        move.w  (dat_071_00446).l,d7            ; 00F30
+        move.w  (ViewOffsetZ8).l,d7             ; 00F30
         neg.w   d7                              ; 00F36
         move.w  (dat_071_004FE).l,d6            ; 00F38
-        move.w  (dat_071_00488).l,d5            ; 00F3E
+        move.w  (DistanceShift).l,d5            ; 00F3E
         asl.w   d5,d6                           ; 00F44
         add.w   d6,d2                           ; 00F46
         cmp.w   d2,d7                           ; 00F48
@@ -1544,10 +1544,10 @@ l_010_00F4C:
         andi.w  #$f,d5                          ; 00F50
         move.w  $a(a0,d0.w),d2                  ; 00F54
         asr.w   d5,d2                           ; 00F58
-        move.w  (dat_071_00442).l,d7            ; 00F5A
+        move.w  (ViewOffsetX8).l,d7             ; 00F5A
         neg.w   d7                              ; 00F60
-        move.w  (dat_071_004FA).l,d6            ; 00F62
-        move.w  (dat_071_00488).l,d5            ; 00F68
+        move.w  (ObjectViewPos).l,d6            ; 00F62
+        move.w  (DistanceShift).l,d5            ; 00F68
         asl.w   d5,d6                           ; 00F6E
         add.w   d6,d2                           ; 00F70
         cmp.w   d2,d7                           ; 00F72
@@ -1557,7 +1557,7 @@ l_010_00F76:
         andi.w  #$f,d5                          ; 00F7A
         move.w  $c(a0,d0.w),d2                  ; 00F7E
         asr.w   d5,d2                           ; 00F82
-        move.l  (dat_071_00448).l,d7            ; 00F84
+        move.l  (ViewOffsetY8).l,d7             ; 00F84
         neg.l   d7                              ; 00F8A
         ext.l   d2                              ; 00F8C
         cmp.l   d2,d7                           ; 00F8E

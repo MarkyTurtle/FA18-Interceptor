@@ -309,7 +309,7 @@ l_020_002CC:
         cmpi.b  #$5,d1                          ; 0036C
         blt.b   l_020_0039C                     ; 00370
         addq.w  #$2,a3                          ; 00372
-        lea.l   (dat_071_004FA).l,a2            ; 00374
+        lea.l   (ObjectViewPos).l,a2            ; 00374
         move.l  #$a,-$4(a2)                     ; 0037A
         addi.b  #$0,d1                          ; 00382
         abcd.b  -(a2),-(a3)                     ; 00386
@@ -737,13 +737,13 @@ l_020_00834:
         add.w   d0,d0                           ; 00866
         add.w   d1,d0                           ; 00868
         ext.l   d0                              ; 0086A
-        move.l  d0,(dat_071_002E8).l            ; 0086C
+        move.l  d0,(PanelShakeOffset).l         ; 0086C
         bra.b   l_020_00896                     ; 00872
 l_020_00874:
         clr.b   (ShakeKind).l                   ; 00874
         clr.b   (ShakeStep).l                   ; 0087A
         andi.w  #$fbff,(dat_071_0029C).l        ; 00880
-        clr.l   (dat_071_002E8).l               ; 00888
+        clr.l   (PanelShakeOffset).l            ; 00888
         move.w  #$90,(ClipY).l                  ; 0088E
 l_020_00896:
         jsr     (RedrawInstruments).l           ; 00896
@@ -823,7 +823,7 @@ l_020_00946:
         rts                                     ; 00952
 sub_020_00954:
         move.w  d1,-(a7)                        ; 00954
-        move.w  d0,(dat_071_004B0).l            ; 00956
+        move.w  d0,(CurrentWarning).l           ; 00956
         ori.w   #$1,(dat_071_0029C).l           ; 0095C
         andi.w  #$ff00,d0                       ; 00964
         move.w  d0,d1                           ; 00968
@@ -920,7 +920,7 @@ l_020_00A24:
         clr.w   d7                              ; 00A28
         bra.b   l_020_00A12                     ; 00A2A
 l_020_00A2C:
-        move.w  #$15,(dat_071_0036E).l          ; 00A2C
+        move.w  #$15,(DebugCheckpoint).l        ; 00A2C
         jsr     (Nop).l                         ; 00A34
         bra.b   l_020_00A2C                     ; 00A3A
 sub_020_00A3C:
@@ -1033,9 +1033,9 @@ AddRadarObject:
 sub_020_00B18:
         tst.b   (OutsideView).l                 ; 00B18
         beq.w   l_020_00BCE                     ; 00B1E
-        tst.b   (dat_071_0017D).l               ; 00B22
+        tst.b   (MapView).l                     ; 00B22
         bne.w   l_020_00BCE                     ; 00B28
-        tst.b   (dat_071_00184).l               ; 00B2C
+        tst.b   (CameraFollows).l               ; 00B2C
         bne.w   l_020_00BCE                     ; 00B32
         tst.b   (CameraSequence).l              ; 00B36
         bne.w   l_020_00BCE                     ; 00B3C

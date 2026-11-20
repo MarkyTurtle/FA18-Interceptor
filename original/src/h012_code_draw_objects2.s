@@ -19,7 +19,7 @@ l_012_00000:
 ; ShapeOps (with further vertex groups, sub_012_0020E, as DrawModel's TransformMoreVertices).
 ;-------------------------------------------------------------------------------
 DrawGroundShape:
-        cmpi.l  #$ffc80000,(dat_071_00436).l    ; 00004
+        cmpi.l  #$ffc80000,(ViewOffsetY).l      ; 00004
         blt.b   l_012_00000                     ; 0000E
         bra.b   l_012_0001E                     ; 00010
 
@@ -27,11 +27,11 @@ DrawGroundShape:
 ; DrawGroundShapeFar - As DrawGroundShape, to $FF800000.
 ;-------------------------------------------------------------------------------
 DrawGroundShapeFar:
-        cmpi.l  #$ff800000,(dat_071_00436).l    ; 00012
+        cmpi.l  #$ff800000,(ViewOffsetY).l      ; 00012
         blt.b   l_012_00000                     ; 0001C
 l_012_0001E:
         link.w  a6,#$ff68                       ; 0001E
-        move.l  #$fffff,(dat_071_000B6).l       ; 00022
+        move.l  #$fffff,(FillPattern).l         ; 00022
         move.w  (dat_071_00510).l,d2            ; 0002C
         move.w  d2,-$96(a6)                     ; 00032
         tst.b   (dat_071_001AD).l               ; 00036
@@ -48,7 +48,7 @@ l_012_00054:
         movea.l (ShapeNow).l,a2                 ; 00054
         move.w  (a2)+,d0                        ; 0005A
         blt.b   l_012_0007A                     ; 0005C
-        move.w  (dat_071_00488).l,d1            ; 0005E
+        move.w  (DistanceShift).l,d1            ; 0005E
         asr.w   d1,d0                           ; 00064
         cmp.w   d2,d0                           ; 00066
         bge.b   l_012_00078                     ; 00068
@@ -66,10 +66,10 @@ l_012_0007A:
         movea.l (a2)+,a1                        ; 00080
         move.l  a1,(dat_071_00402).l            ; 00082
         move.l  a2,(ShapeNow).l                 ; 00088
-        move.w  (dat_071_00442).l,d0            ; 0008E
-        move.l  (dat_071_00436).l,d1            ; 00094
+        move.w  (ViewOffsetX8).l,d0             ; 0008E
+        move.l  (ViewOffsetY).l,d1              ; 00094
         asr.l   #$8,d1                          ; 0009A
-        move.w  (dat_071_00446).l,d2            ; 0009C
+        move.w  (ViewOffsetZ8).l,d2             ; 0009C
         move.b  (dat_071_0022B).l,d7            ; 000A2
         andi.b  #$f,d7                          ; 000A8
         ext.w   d7                              ; 000AC
@@ -84,7 +84,7 @@ l_012_000BA:
         lea.l   (VertexBuffer).l,a3             ; 000C6
         lea.l   (dat_071_005A8).l,a2            ; 000CC
         lea.l   (a2),a4                         ; 000D2
-        move.w  (dat_071_004FA).l,d0            ; 000D4
+        move.w  (ObjectViewPos).l,d0            ; 000D4
         move.w  (dat_071_004FE).l,d1            ; 000DA
         add.w   -$86(a6),d0                     ; 000E0
         add.w   -$82(a6),d1                     ; 000E4
@@ -171,7 +171,7 @@ l_012_001A6:
 l_012_001AC:
         move.w  (a2)+,d0                        ; 001AC
         blt.b   l_012_0019E                     ; 001AE
-        move.w  (dat_071_00488).l,d1            ; 001B0
+        move.w  (DistanceShift).l,d1            ; 001B0
         asr.w   d1,d0                           ; 001B6
         cmp.w   -$28(a6),d0                     ; 001B8
         blt.b   l_012_0019E                     ; 001BC
@@ -179,7 +179,7 @@ l_012_001AC:
 l_012_001C0:
         cmpi.w  #$7fff,d0                       ; 001C0
         beq.b   l_012_001DA                     ; 001C4
-        move.w  (dat_071_00488).l,d1            ; 001C6
+        move.w  (DistanceShift).l,d1            ; 001C6
         asr.w   d1,d0                           ; 001CC
         cmp.w   -$28(a6),d0                     ; 001CE
         blt.b   l_012_001AC                     ; 001D2
@@ -220,7 +220,7 @@ sub_012_0020E:
         lea.l   (a0),a4                         ; 00230
         move.w  -$86(a6),d0                     ; 00232
         move.w  -$82(a6),d1                     ; 00236
-        add.w   (dat_071_004FA).l,d0            ; 0023A
+        add.w   (ObjectViewPos).l,d0            ; 0023A
         add.w   (dat_071_004FE).l,d1            ; 00240
         movem.w -$78(a6),d3/d6                  ; 00246
 l_012_0024C:
@@ -374,13 +374,13 @@ l_012_00388:
         move.w  #$3,d1                          ; 00390
         move.w  #$3,d2                          ; 00394
 l_012_00398:
-        movem.w d1-d2,(dat_071_000B6).l         ; 00398
+        movem.w d1-d2,(FillPattern).l           ; 00398
         move.l  a2,-(a7)                        ; 003A0
         jsr     (ClipFillPolygon).l             ; 003A2
         movea.l (a7)+,a2                        ; 003A8
         move.w  #$f,d1                          ; 003AA
         move.w  #$ffff,d2                       ; 003AE
-        movem.w d1-d2,(dat_071_000B6).l         ; 003B2
+        movem.w d1-d2,(FillPattern).l           ; 003B2
         rts                                     ; 003BA
 l_012_003BC:
         moveq   #$0,d0                          ; 003BC
@@ -448,7 +448,7 @@ l_012_00432:
         bge.b   l_012_00432                     ; 00434
         move.w  (a0,d3.w),d3                    ; 00436
         lea.l   (a1,d3.w),a0                    ; 0043A
-        move.l  (dat_071_00448).l,d4            ; 0043E
+        move.l  (ViewOffsetY8).l,d4             ; 0043E
         neg.l   d4                              ; 00444
 l_012_00446:
         tst.w   (a0)                            ; 00446

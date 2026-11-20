@@ -51,7 +51,7 @@ l_033_00038:
         move.w  #$4,(a0)                        ; 0004C
 l_033_00050:
         move.w  (a1)+,d2                        ; 00050
-        move.l  (dat_071_00436).l,d3            ; 00052
+        move.l  (ViewOffsetY).l,d3              ; 00052
         swap    d3                              ; 00058
         asr.w   #$2,d3                          ; 0005A
         move.w  (a1)+,d4                        ; 0005C
@@ -296,7 +296,7 @@ l_033_00348:
         bgt.b   l_033_00350                     ; 0034C
         bra.b   l_033_00374                     ; 0034E
 l_033_00350:
-        move.w  #$1,(dat_071_000B6).l           ; 00350
+        move.w  #$1,(FillPattern).l             ; 00350
         move.w  #$1,(DrawXor).l                 ; 00358
         clr.l   (dat_071_000BA).l               ; 00360
         move.b  #$1,(dat_071_0026E).l           ; 00366

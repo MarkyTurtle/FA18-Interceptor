@@ -120,13 +120,13 @@ JudgeF2:
         btst    #$6,(Object10_01).l             ; 00138
         bne.b   l_018_000F2                     ; 00140
 l_018_00142:
-        tst.b   (dat_071_0017E).l               ; 00142
+        tst.b   (WorldFrozen).l                 ; 00142
         bne.b   l_018_00152                     ; 00148
-        move.b  #$5,(dat_071_0017E).l           ; 0014A
+        move.b  #$5,(WorldFrozen).l             ; 0014A
 l_018_00152:
-        subq.b  #$1,(dat_071_0017E).l           ; 00152
+        subq.b  #$1,(WorldFrozen).l             ; 00152
         beq.b   l_018_001D8                     ; 00158
-        cmpi.b  #$1,(dat_071_0017E).l           ; 0015A
+        cmpi.b  #$1,(WorldFrozen).l             ; 0015A
         bgt.w   l_018_00204                     ; 00162
         btst    #$7,(dat_071_0018E).l           ; 00166
         bne.w   l_018_00204                     ; 0016E
@@ -136,9 +136,9 @@ l_018_00152:
         btst    #$6,$1(a1)                      ; 0018E
         beq.w   l_018_00204                     ; 00194
         move.b  #$7,(ViewChoice).l              ; 00198
-        move.b  #$1,(dat_071_00185).l           ; 001A0
-        move.b  #$1,(dat_071_00184).l           ; 001A8
-        clr.b   (dat_071_0017D).l               ; 001B0
+        move.b  #$1,(NewView).l                 ; 001A0
+        move.b  #$1,(CameraFollows).l           ; 001A8
+        clr.b   (MapView).l                     ; 001B0
         tst.b   (OutsideView).l                 ; 001B6
         bne.b   l_018_00204                     ; 001BC
         move.w  $68(a1),(dat_071_002FA).l       ; 001BE
@@ -249,11 +249,11 @@ l_018_00306:
         move.b  (MissionTargets).l,d0           ; 00306
         cmp.b   (MissionTargetsDone).l,d0       ; 0030C
         bgt.b   l_018_0035C                     ; 00312
-        tst.b   (dat_071_0017E).l               ; 00314
+        tst.b   (WorldFrozen).l                 ; 00314
         bne.b   l_018_00324                     ; 0031A
-        move.b  #$2,(dat_071_0017E).l           ; 0031C
+        move.b  #$2,(WorldFrozen).l             ; 0031C
 l_018_00324:
-        subq.b  #$1,(dat_071_0017E).l           ; 00324
+        subq.b  #$1,(WorldFrozen).l             ; 00324
         bne.b   l_018_0035C                     ; 0032A
         cmpi.b  #$3,(QuitRequest).l             ; 0032C
         beq.b   l_018_0035C                     ; 00334
@@ -351,13 +351,13 @@ JudgeF5:
         btst    #$7,$1(a1)                      ; 0043A
         bne.b   l_018_0040E                     ; 00440
 l_018_00442:
-        tst.b   (dat_071_0017E).l               ; 00442
+        tst.b   (WorldFrozen).l                 ; 00442
         bne.b   l_018_00452                     ; 00448
-        move.b  #$2,(dat_071_0017E).l           ; 0044A
+        move.b  #$2,(WorldFrozen).l             ; 0044A
 l_018_00452:
-        subq.b  #$1,(dat_071_0017E).l           ; 00452
+        subq.b  #$1,(WorldFrozen).l             ; 00452
         beq.b   l_018_004D8                     ; 00458
-        cmpi.b  #$1,(dat_071_0017E).l           ; 0045A
+        cmpi.b  #$1,(WorldFrozen).l             ; 0045A
         bgt.w   l_018_0051C                     ; 00462
         btst    #$7,(dat_071_0018E).l           ; 00466
         bne.w   l_018_0051C                     ; 0046E
@@ -367,9 +367,9 @@ l_018_00452:
         btst    #$6,$1(a1)                      ; 0048E
         beq.w   l_018_0051C                     ; 00494
         move.b  #$7,(ViewChoice).l              ; 00498
-        move.b  #$1,(dat_071_00185).l           ; 004A0
-        move.b  #$1,(dat_071_00184).l           ; 004A8
-        clr.b   (dat_071_0017D).l               ; 004B0
+        move.b  #$1,(NewView).l                 ; 004A0
+        move.b  #$1,(CameraFollows).l           ; 004A8
+        clr.b   (MapView).l                     ; 004B0
         tst.b   (OutsideView).l                 ; 004B6
         bne.b   l_018_0051C                     ; 004BC
         move.w  $68(a1),(dat_071_002FA).l       ; 004BE
@@ -449,11 +449,11 @@ CheckMissionTargets:
         move.b  (MissionTargets).l,d0           ; 0059E
         cmp.b   (MissionTargetsDone).l,d0       ; 005A4
         bgt.b   l_018_00592                     ; 005AA
-        tst.b   (dat_071_0017E).l               ; 005AC
+        tst.b   (WorldFrozen).l                 ; 005AC
         bne.b   l_018_005BC                     ; 005B2
-        move.b  #$2,(dat_071_0017E).l           ; 005B4
+        move.b  #$2,(WorldFrozen).l             ; 005B4
 l_018_005BC:
-        subq.b  #$1,(dat_071_0017E).l           ; 005BC
+        subq.b  #$1,(WorldFrozen).l             ; 005BC
         bne.b   l_018_005F4                     ; 005C2
         cmpi.b  #$3,(QuitRequest).l             ; 005C4
         beq.b   l_018_005F4                     ; 005CC
@@ -462,7 +462,7 @@ l_018_005D6:
         move.w  d0,(DebriefDelay).l             ; 005D6
         move.b  #$3,(QuitRequest).l             ; 005DC
         move.b  #$4,(QuitDelay).l               ; 005E4
-        move.b  #$1,(dat_071_0027D).l           ; 005EC
+        move.b  #$1,(KeyMode).l                 ; 005EC
 l_018_005F4:
         rts                                     ; 005F4
 l_018_005F6:

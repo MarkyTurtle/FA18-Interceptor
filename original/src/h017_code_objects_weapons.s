@@ -16,7 +16,7 @@
 ;-------------------------------------------------------------------------------
 UpdateAllObjects:
         move.l  d5,-(a7)                        ; 00000
-        tst.b   (dat_071_0017E).l               ; 00002
+        tst.b   (WorldFrozen).l                 ; 00002
         bne.b   l_017_0004E                     ; 00008
         lea.l   (SmallObjects_04).l,a0          ; 0000A
         subq.w  #$1,(a0)                        ; 00010
@@ -59,7 +59,7 @@ l_017_00064:
         and.w   d0,$1802(a0)                    ; 0009E
         and.w   d0,$1a02(a0)                    ; 000A2
         and.w   d0,$1c02(a0)                    ; 000A6
-        tst.b   (dat_071_0017E).l               ; 000AA
+        tst.b   (WorldFrozen).l                 ; 000AA
         bne.b   l_017_000CE                     ; 000B0
         tst.b   (dat_071_0021F).l               ; 000B2
         ble.b   l_017_000C0                     ; 000B8
@@ -74,7 +74,7 @@ l_017_000CE:
         clr.w   (CurrentObjectOffset).l         ; 000D8
         lea.l   (ObjectTable).l,a1              ; 000DE
         lea.l   (Object4).l,a2                  ; 000E4
-        tst.b   (dat_071_0017E).l               ; 000EA
+        tst.b   (WorldFrozen).l                 ; 000EA
         bne.b   l_017_000F6                     ; 000F0
         subq.w  #$1,$4c(a1)                     ; 000F2
 l_017_000F6:
@@ -496,7 +496,7 @@ l_017_0064E:
 l_017_006C0:
         tst.b   (dat_071_0016C).l               ; 006C0
         blt.b   l_017_00728                     ; 006C6
-        tst.b   (dat_071_0017E).l               ; 006C8
+        tst.b   (WorldFrozen).l                 ; 006C8
         bne.b   l_017_00728                     ; 006CE
         beq.w   l_017_00756                     ; 006D0
         move.b  (TrainingStep).l,d0             ; 006D4
@@ -540,7 +540,7 @@ TrainingPilot:
         bset    #$0,$2(a1)                      ; 0074A
         clr.w   (TrainingFrame).l               ; 00750
 l_017_00756:
-        tst.b   (dat_071_0017E).l               ; 00756
+        tst.b   (WorldFrozen).l                 ; 00756
         bne.w   l_017_008CA                     ; 0075C
         btst    #$0,$2(a1)                      ; 00760
         beq.w   l_017_008CA                     ; 00766
@@ -571,7 +571,7 @@ l_017_007B8:
         cmpi.b  #$2,(GameMode).l                ; 007CA
         bne.b   l_017_007FA                     ; 007D2
         move.b  #$60,$2b(a1)                    ; 007D4
-        move.b  #$fe,(dat_071_00280).l          ; 007DA
+        move.b  #$fe,(EngineSoundRequest).l     ; 007DA
         move.l  $4(a3,d0.w),d0                  ; 007E2
         beq.w   l_017_008CA                     ; 007E6
         blt.w   l_017_0081C                     ; 007EA
@@ -673,7 +673,7 @@ l_017_0092A:
         ext.w   d0                              ; 0092A
         move.w  d0,d1                           ; 0092C
         move.w  (CurrentObject).l,d0            ; 0092E
-        cmp.w   (dat_071_002AC).l,d0            ; 00934
+        cmp.w   (ViewObjectIndex).l,d0          ; 00934
         bne.b   l_017_0094E                     ; 0093A
         asl.w   #$3,d0                          ; 0093C
         lea.l   (TrainingSequence).l,a5         ; 0093E
@@ -842,7 +842,7 @@ l_017_00B54:
         cmp.w   (ViewObject).l,d0               ; 00B60
         bne.b   l_017_00B78                     ; 00B66
         move.b  #$8,(dat_071_00167).l           ; 00B68
-        move.b  #$fb,(dat_071_00280).l          ; 00B70
+        move.b  #$fb,(EngineSoundRequest).l     ; 00B70
 l_017_00B78:
         lea.l   (a2),a4                         ; 00B78
         lea.l   (a1),a5                         ; 00B7A
@@ -861,7 +861,7 @@ l_017_00B7E:
         cmpa.l  #ObjectTable,a2                 ; 00BA6
         bne.b   l_017_00BDA                     ; 00BAC
         addq.w  #$1,$3e(a0)                     ; 00BAE
-        move.b  #$1,(dat_071_00195).l           ; 00BB2
+        move.b  #$1,(ConfigChanged).l           ; 00BB2
         bra.b   l_017_00BDA                     ; 00BBA
 l_017_00BBC:
         move.b  #$0,$62(a1)                     ; 00BBC
@@ -869,7 +869,7 @@ l_017_00BBC:
         cmpa.l  #ObjectTable,a2                 ; 00BC6
         bne.b   l_017_00BDA                     ; 00BCC
         addq.w  #$1,$42(a0)                     ; 00BCE
-        move.b  #$1,(dat_071_00195).l           ; 00BD2
+        move.b  #$1,(ConfigChanged).l           ; 00BD2
 l_017_00BDA:
         lea.l   (ModelTable).l,a4               ; 00BDA
         adda.w  d0,a4                           ; 00BE0
@@ -1033,7 +1033,7 @@ l_017_00DFA:
 ; and must not be drawn.
 ;-------------------------------------------------------------------------------
 StepObject:
-        tst.b   (dat_071_0017E).l               ; 00DFE
+        tst.b   (WorldFrozen).l                 ; 00DFE
         bne.b   l_017_00DFA                     ; 00E04
         move.b  $62(a1),d0                      ; 00E06
         andi.b  #$f0,d0                         ; 00E0A
@@ -1220,7 +1220,7 @@ l_017_01018:
 ; towards $3000 ($240 a frame); at 12 it is spent (flag $400 in +$00)...
 ;-------------------------------------------------------------------------------
 UpdateMissile:
-        tst.b   (dat_071_0017E).l               ; 01026
+        tst.b   (WorldFrozen).l                 ; 01026
         bne.w   l_017_010FA                     ; 0102C
         cmpi.b  #$8,$5(a1)                      ; 01030
         bne.w   l_017_010BC                     ; 01036
@@ -1244,7 +1244,7 @@ l_017_0106E:
         adda.w  #$a,a4                          ; 0106E
         tst.w   (a4)                            ; 01072
         bge.b   l_017_0105C                     ; 01074
-        move.w  #$35,(dat_071_0036E).l          ; 01076
+        move.w  #$35,(DebugCheckpoint).l        ; 01076
         jsr     (Nop).l                         ; 0107E
         bra.b   l_017_010BC                     ; 01084
 l_017_01086:
@@ -1289,7 +1289,7 @@ l_017_010FE:
         rts                                     ; 01100
 l_017_01102:
         move.b  (dat_071_00158).l,d1            ; 01102
-        or.b    (dat_071_0017E).l,d1            ; 01108
+        or.b    (WorldFrozen).l,d1              ; 01108
         bne.b   l_017_010FE                     ; 0110E
         move.w  $0(a1),d1                       ; 01110
         andi.w  #$400,d1                        ; 01114
@@ -1362,10 +1362,10 @@ l_017_011D0:
         blt.b   l_017_0121E                     ; 011EC
 l_017_011EE:
         movem.l d0-d2,-(a7)                     ; 011EE
-        tst.b   (dat_071_00185).l               ; 011F2
+        tst.b   (NewView).l                     ; 011F2
         beq.b   l_017_0121A                     ; 011F8
         move.w  (CurrentObject).l,d1            ; 011FA
-        cmp.w   (dat_071_002AC).l,d1            ; 01200
+        cmp.w   (ViewObjectIndex).l,d1          ; 01200
         beq.b   l_017_0121A                     ; 01206
         jsr     (ViewFollow).l                  ; 01208
         clr.b   (dat_071_001A9).l               ; 0120E
@@ -1460,7 +1460,7 @@ l_017_012CA:
         btst    #$6,$1(a1)                      ; 012CA
         beq.b   l_017_012C8                     ; 012D0
         move.b  (dat_071_00158).l,d1            ; 012D2
-        or.b    (dat_071_0017E).l,d1            ; 012D8
+        or.b    (WorldFrozen).l,d1              ; 012D8
         bne.b   l_017_012E6                     ; 012DE
         subq.w  #$1,$4c(a1)                     ; 012E0
         ble.b   l_017_012B8                     ; 012E4
@@ -1788,7 +1788,7 @@ l_017_01686:
         adda.w  #$a,a3                          ; 0169C
         bra.b   l_017_0166C                     ; 016A0
 l_017_016A2:
-        move.w  #$34,(dat_071_0036E).l          ; 016A2
+        move.w  #$34,(DebugCheckpoint).l        ; 016A2
         jsr     (Nop).l                         ; 016AA
         bra.b   l_017_01654                     ; 016B0
 l_017_016B2:
@@ -1883,7 +1883,7 @@ l_017_017B6:
         moveq   #$1,d0                          ; 017D4
         rts                                     ; 017D6
 l_017_017D8:
-        lea.l   (dat_071_00642).l,a3            ; 017D8
+        lea.l   (Bullets).l,a3                  ; 017D8
         subq.b  #$1,d1                          ; 017DE
         ext.w   d1                              ; 017E0
         asl.w   #$6,d1                          ; 017E2

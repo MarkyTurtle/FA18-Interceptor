@@ -13,7 +13,7 @@ sub_029_00002:
         bne.b   l_029_00000                     ; 0000A
         cmpi.b  #$5,(CameraSequence).l          ; 0000C
         blt.b   l_029_00000                     ; 00014
-        cmpi.l  #$fe800000,(dat_071_00436).l    ; 00016
+        cmpi.l  #$fe800000,(ViewOffsetY).l      ; 00016
         bge.b   l_029_00000                     ; 00020
         addq.b  #$1,(dat_071_00253).l           ; 00022
         tst.b   (OutsideView).l                 ; 00028
@@ -26,13 +26,13 @@ l_029_00038:
         lea.l   $14(a4,d2.w),a4                 ; 00044
 l_029_00048:
         lea.l   (StartPoints).l,a0              ; 00048
-        move.w  #$0,(dat_071_0037A).l           ; 0004E
+        move.w  #$0,(LoopIndex).l               ; 0004E
 l_029_00056:
         cmpi.b  #$5,(CameraSequence).l          ; 00056
         ble.b   l_029_000A0                     ; 0005E
-        tst.b   (dat_071_0017E).l               ; 00060
+        tst.b   (WorldFrozen).l                 ; 00060
         bne.b   l_029_000A0                     ; 00066
-        move.w  (dat_071_0037A).l,d0            ; 00068
+        move.w  (LoopIndex).l,d0                ; 00068
         cmp.b   (StartPoint).l,d0               ; 0006E
         beq.b   l_029_00080                     ; 00074
         cmpi.b  #$6,(CameraSequence).l          ; 00076
@@ -130,7 +130,7 @@ l_029_00110:
         movem.l a0/a4,-(a7)                     ; 0015C
         move.w  #$2,(DrawColour).l              ; 00160
         jsr     (sub_035_00038).l               ; 00168
-        move.w  (dat_071_0037A).l,d2            ; 0016E
+        move.w  (LoopIndex).l,d2                ; 0016E
         addq.w  #$1,d2                          ; 00174
         move.w  (dat_071_00328).l,d0            ; 00176
         blt.b   l_029_00194                     ; 0017C
@@ -141,17 +141,22 @@ l_029_00110:
 l_029_00194:
         movem.l (a7)+,a0/a4                     ; 00194
 l_029_00198:
-        addq.w  #$1,(dat_071_0037A).l           ; 00198
+        addq.w  #$1,(LoopIndex).l               ; 00198
         bra.w   l_029_00056                     ; 0019E
 l_029_001A2:
         rts                                     ; 001A2
-sub_029_001A4:
-        tst.b   (dat_071_0017D).l               ; 001A4
+
+;-------------------------------------------------------------------------------
+; DrawMapMarkers - In the map view (MapView) from outside: marks drawn in colour 8 at the
+; aircraft's place (not worked out in detail).
+;-------------------------------------------------------------------------------
+DrawMapMarkers:
+        tst.b   (MapView).l                     ; 001A4
         ble.b   l_029_001A2                     ; 001AA
         tst.b   (OutsideView).l                 ; 001AC
         beq.b   l_029_001A2                     ; 001B2
         link.w  a6,#$fff6                       ; 001B4
-        move.l  #$fffff,(dat_071_000B6).l       ; 001B8
+        move.l  #$fffff,(FillPattern).l         ; 001B8
         move.w  #$8,(DrawColour).l              ; 001C2
         movem.l (CameraX).l,d0-d2               ; 001CA
         exg.l   d1,d2                           ; 001D2
@@ -396,7 +401,7 @@ l_029_005C8:
 l_029_005F8:
         move.b  #$1,(dat_071_0027F).l           ; 005F8
 l_029_00600:
-        tst.b   (dat_071_00185).l               ; 00600
+        tst.b   (NewView).l                     ; 00600
         bne.w   l_029_0068E                     ; 00606
         move.w  (FrameCount).l,d7               ; 0060A
         move.b  (dat_071_00227).l,d6            ; 00610
@@ -472,7 +477,7 @@ l_029_006B0:
         asl.b   #$4,d6                          ; 006C0
         or.b    d6,d7                           ; 006C2
         move.b  d7,$70(a0)                      ; 006C4
-        tst.b   (dat_071_00185).l               ; 006C8
+        tst.b   (NewView).l                     ; 006C8
         beq.b   l_029_0072E                     ; 006CE
         btst    #$0,(dat_071_002AB).l           ; 006D0
         beq.b   l_029_0072E                     ; 006D8

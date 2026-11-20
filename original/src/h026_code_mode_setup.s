@@ -622,7 +622,7 @@ l_026_006F2:
         moveq   #-1,d7                          ; 006F2
         rts                                     ; 006F4
 l_026_006F6:
-        move.w  #$1e,(dat_071_0036E).l          ; 006F6
+        move.w  #$1e,(DebugCheckpoint).l        ; 006F6
         jsr     (Nop).l                         ; 006FE
         rts                                     ; 00704
 l_026_00706:
@@ -755,11 +755,11 @@ sub_026_00922:
         jsr     (sub_032_006EA).l               ; 00922
         tst.b   (OutsideView).l                 ; 00928
         beq.b   l_026_00920                     ; 0092E
-        tst.b   (dat_071_00185).l               ; 00930
+        tst.b   (NewView).l                     ; 00930
         beq.b   l_026_00920                     ; 00936
-        tst.b   (dat_071_0017E).l               ; 00938
+        tst.b   (WorldFrozen).l                 ; 00938
         bne.b   l_026_00920                     ; 0093E
-        tst.b   (dat_071_0017D).l               ; 00940
+        tst.b   (MapView).l                     ; 00940
         beq.b   l_026_0096E                     ; 00946
         tst.b   (CameraSequence).l              ; 00948
         bne.b   l_026_0096E                     ; 0094E
@@ -926,8 +926,8 @@ sub_026_00B06:
         moveq   #$d,d4                          ; 00B06
         cmpi.l  #$1c00000,d3                    ; 00B08
         bgt.w   l_026_00DE6                     ; 00B0E
-        move.b  #$1,(dat_071_00184).l           ; 00B12
-        clr.b   (dat_071_0017D).l               ; 00B1A
+        move.b  #$1,(CameraFollows).l           ; 00B12
+        clr.b   (MapView).l                     ; 00B1A
         moveq   #$b,d4                          ; 00B20
         cmpi.l  #$d00000,d3                     ; 00B22
         bgt.w   l_026_00DE6                     ; 00B28
@@ -1032,7 +1032,7 @@ l_026_00C6A:
 l_026_00CA0:
         tst.w   (dat_071_0038A).l               ; 00CA0
         bne.b   l_026_00CBE                     ; 00CA6
-        move.w  #$3e,(dat_071_0036E).l          ; 00CA8
+        move.w  #$3e,(DebugCheckpoint).l        ; 00CA8
         jsr     (Nop).l                         ; 00CB0
         jsr     (sub_004_00254).l               ; 00CB6
         bra.b   l_026_00CE0                     ; 00CBC
@@ -1137,7 +1137,7 @@ l_026_00DE6:
         blt.b   l_026_00E26                     ; 00DF6
         move.b  #$6,(dat_071_00186).l           ; 00DF8
         move.b  #$5,(dat_071_00275).l           ; 00E00
-        move.b  #$0,(dat_071_00184).l           ; 00E08
+        move.b  #$0,(CameraFollows).l           ; 00E08
 l_026_00E10:
         subq.b  #$1,(dat_071_00275).l           ; 00E10
         bgt.b   l_026_00E26                     ; 00E16

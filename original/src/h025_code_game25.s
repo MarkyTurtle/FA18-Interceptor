@@ -18,7 +18,7 @@ DrawGroundDots:
         move.w  #$0,d1                          ; 00008
         clr.w   d2                              ; 0000C
         move.w  #$ffff,d3                       ; 0000E
-        movem.w d0-d3,(dat_071_000B6).l         ; 00012
+        movem.w d0-d3,(FillPattern).l           ; 00012
         move.w  #$3,(DrawColour).l              ; 0001A
         move.b  (HeightBand).l,d3               ; 00022
         beq.b   l_025_0003C                     ; 00028
@@ -30,7 +30,7 @@ DrawGroundDots:
 l_025_0003C:
         move.l  #$fffff800,d2                   ; 0003C
 l_025_00042:
-        move.l  (dat_071_00448).l,d1            ; 00042
+        move.l  (ViewOffsetY8).l,d1             ; 00042
         cmp.l   d2,d1                           ; 00048
         blt.w   l_025_00274                     ; 0004A
         move.b  #$1,(dat_071_00172).l           ; 0004E
@@ -39,8 +39,8 @@ l_025_00042:
         bge.b   l_025_00066                     ; 00060
         addq.w  #$1,-$22(a6)                    ; 00062
 l_025_00066:
-        move.w  (dat_071_00442).l,d0            ; 00066
-        move.w  (dat_071_00446).l,d2            ; 0006C
+        move.w  (ViewOffsetX8).l,d0             ; 00066
+        move.w  (ViewOffsetZ8).l,d2             ; 0006C
         movem.w d0-d2,-$6(a6)                   ; 00072
         move.w  #$fe00,d1                       ; 00078
         move.w  #$ff80,d3                       ; 0007C

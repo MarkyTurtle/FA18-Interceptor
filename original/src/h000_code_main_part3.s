@@ -4,19 +4,24 @@
 ; files; the keyboard, joystick, timer and mouse; loading and playing the sounds.
 ; Included by ../f18_main.s.
 
-sub_000_0754C:
+;-------------------------------------------------------------------------------
+; MoveBullet - Moves one bullet (its number on the stack): tests whether it hit something
+; (BulletHitTest) or the ground (BulletHitGround), adds its velocity and the aircraft's, then
+; draws it - the hit (DrawBulletHit), the smoke (DrawBulletSmoke) or the tracer (DrawBullet).
+;-------------------------------------------------------------------------------
+MoveBullet:
         link.w  a6,#$ffee                       ; 0754C
         movem.l a2,-(a7)                        ; 07550
-        movea.l (dat_002_0000C).l,a0            ; 07554
+        movea.l (CurrentBullet).l,a0            ; 07554
         adda.w  #$26,a0                         ; 0755A
-        movea.l (dat_002_0000C).l,a1            ; 0755E
+        movea.l (CurrentBullet).l,a1            ; 0755E
         move.w  $28(a1),d0                      ; 07564
         move.l  a0,-$4(a6)                      ; 07568
         tst.w   d0                              ; 0756C
         ble.w   l_000_0778C                     ; 0756E
         move.l  a1,-$a(a6)                      ; 07572
         addq.l  #$4,a1                          ; 07576
-        movea.l (dat_002_0000C).l,a2            ; 07578
+        movea.l (CurrentBullet).l,a2            ; 07578
         addq.l  #$8,a2                          ; 0757E
         move.w  (a0),d0                         ; 07580
         move.l  a1,-$e(a6)                      ; 07582
@@ -26,7 +31,7 @@ sub_000_0754C:
         move.w  $a(a6),d0                       ; 07592
         ext.l   d0                              ; 07596
         move.l  d0,-(a7)                        ; 07598
-        jsr     (sub_023_000C6).l               ; 0759A
+        jsr     (BulletHitTest).l               ; 0759A
         addq.l  #$4,a7                          ; 075A0
         tst.l   d0                              ; 075A2
         beq.b   l_000_075C6                     ; 075A4
@@ -35,7 +40,7 @@ sub_000_0754C:
         andi.w  #$fff7,d0                       ; 075AC
         ori.w   #$12,d0                         ; 075B0
         move.w  d0,(a0)                         ; 075B4
-        movea.l (dat_002_0000C).l,a0            ; 075B6
+        movea.l (CurrentBullet).l,a0            ; 075B6
         move.w  #$2,$28(a0)                     ; 075BC
         bra.w   l_000_07734                     ; 075C2
 l_000_075C6:
@@ -47,9 +52,9 @@ l_000_075C6:
         andi.w  #$ffe7,d0                       ; 075D4
         ori.w   #$2,d0                          ; 075D8
         move.w  d0,(a0)                         ; 075DC
-        movea.l (dat_002_0000C).l,a0            ; 075DE
+        movea.l (CurrentBullet).l,a0            ; 075DE
         move.w  #$2,$28(a0)                     ; 075E4
-        movea.l (dat_002_0000C).l,a0            ; 075EA
+        movea.l (CurrentBullet).l,a0            ; 075EA
         move.l  $10(a0),d0                      ; 075F0
         asr.l   #$8,d0                          ; 075F4
         move.w  d0,(dat_071_004A0).l            ; 075F6
@@ -58,7 +63,7 @@ l_000_075C6:
         move.w  $a(a6),d0                       ; 07602
         ext.l   d0                              ; 07606
         move.l  d0,-(a7)                        ; 07608
-        jsr     (sub_023_0068A).l               ; 0760A
+        jsr     (BulletHitGround).l             ; 0760A
         addq.l  #$4,a7                          ; 07610
         tst.l   d0                              ; 07612
         beq.w   l_000_07734                     ; 07614
@@ -71,10 +76,10 @@ l_000_07628:
         movea.l -$a(a6),a0                      ; 07628
         tst.l   (a0)                            ; 0762C
         bpl.b   l_000_0765C                     ; 0762E
-        movea.l (dat_002_0000C).l,a0            ; 07630
+        movea.l (CurrentBullet).l,a0            ; 07630
         move.w  $30(a0),d0                      ; 07636
         subq.w  #$1,d0                          ; 0763A
-        movea.l (dat_002_0000C).l,a0            ; 0763C
+        movea.l (CurrentBullet).l,a0            ; 0763C
         move.w  d0,$30(a0)                      ; 07642
         tst.w   d0                              ; 07646
         bpl.b   l_000_07650                     ; 07648
@@ -87,10 +92,10 @@ l_000_0765C:
         movea.l -$a(a6),a0                      ; 0765C
         cmpi.l  #$400000,(a0)                   ; 07660
         blt.b   l_000_07692                     ; 07666
-        movea.l (dat_002_0000C).l,a0            ; 07668
+        movea.l (CurrentBullet).l,a0            ; 07668
         move.w  $30(a0),d0                      ; 0766E
         addq.w  #$1,d0                          ; 07672
-        movea.l (dat_002_0000C).l,a0            ; 07674
+        movea.l (CurrentBullet).l,a0            ; 07674
         move.w  d0,$30(a0)                      ; 0767A
         cmpi.w  #$7f,d0                         ; 0767E
         ble.b   l_000_07688                     ; 07682
@@ -102,10 +107,10 @@ l_000_07692:
         movea.l -$12(a6),a0                     ; 07692
         tst.l   (a0)                            ; 07696
         bpl.b   l_000_076C6                     ; 07698
-        movea.l (dat_002_0000C).l,a0            ; 0769A
+        movea.l (CurrentBullet).l,a0            ; 0769A
         move.w  $32(a0),d0                      ; 076A0
         subq.w  #$1,d0                          ; 076A4
-        movea.l (dat_002_0000C).l,a0            ; 076A6
+        movea.l (CurrentBullet).l,a0            ; 076A6
         move.w  d0,$32(a0)                      ; 076AC
         tst.w   d0                              ; 076B0
         bpl.b   l_000_076BA                     ; 076B2
@@ -118,10 +123,10 @@ l_000_076C6:
         movea.l -$12(a6),a0                     ; 076C6
         cmpi.l  #$400000,(a0)                   ; 076CA
         blt.b   l_000_07734                     ; 076D0
-        movea.l (dat_002_0000C).l,a0            ; 076D2
+        movea.l (CurrentBullet).l,a0            ; 076D2
         move.w  $32(a0),d0                      ; 076D8
         addq.w  #$1,d0                          ; 076DC
-        movea.l (dat_002_0000C).l,a0            ; 076DE
+        movea.l (CurrentBullet).l,a0            ; 076DE
         move.w  d0,$32(a0)                      ; 076E4
         cmpi.w  #$7f,d0                         ; 076E8
         ble.b   l_000_076F2                     ; 076EC
@@ -156,7 +161,7 @@ l_000_07734:
         move.w  $a(a6),d0                       ; 07742
         ext.l   d0                              ; 07746
         move.l  d0,-(a7)                        ; 07748
-        jsr     (sub_031_000F4).l               ; 0774A
+        jsr     (DrawBulletHit).l               ; 0774A
         addq.l  #$4,a7                          ; 07750
         bra.b   l_000_077D0                     ; 07752
 l_000_07754:
@@ -167,14 +172,14 @@ l_000_07754:
         move.w  $a(a6),d0                       ; 07760
         ext.l   d0                              ; 07764
         move.l  d0,-(a7)                        ; 07766
-        jsr     (sub_031_00088).l               ; 07768
+        jsr     (DrawBulletSmoke).l             ; 07768
         addq.l  #$4,a7                          ; 0776E
         bra.b   l_000_077D0                     ; 07770
 l_000_07772:
         move.w  $a(a6),d0                       ; 07772
         ext.l   d0                              ; 07776
         move.l  d0,-(a7)                        ; 07778
-        jsr     (sub_031_00000).l               ; 0777A
+        jsr     (DrawBullet).l                  ; 0777A
         addq.l  #$4,a7                          ; 07780
         move.w  (dat_071_00486).l,-$6(a6)       ; 07782
         bra.b   l_000_077D0                     ; 0778A
@@ -209,7 +214,7 @@ l_000_077D0:
 sub_000_077D8:
         link.w  a6,#$fff6                       ; 077D8
         movem.l d2-d5,-(a7)                     ; 077DC
-        movea.l (dat_002_0000C).l,a0            ; 077E0
+        movea.l (CurrentBullet).l,a0            ; 077E0
         adda.w  #$26,a0                         ; 077E6
         move.w  (a0),d0                         ; 077EA
         move.l  a0,-$a(a6)                      ; 077EC
@@ -217,7 +222,7 @@ sub_000_077D8:
         beq.b   l_000_07814                     ; 077F4
         moveq   #$0,d0                          ; 077F6
         move.w  #$fff8,-$4(a6)                  ; 077F8
-        movea.l (dat_002_0000C).l,a0            ; 077FE
+        movea.l (CurrentBullet).l,a0            ; 077FE
         move.w  #$1e,$28(a0)                    ; 07804
         move.w  d0,-$6(a6)                      ; 0780A
         move.w  d0,-$2(a6)                      ; 0780E
@@ -230,7 +235,7 @@ l_000_07814:
         clr.w   -$2(a6)                         ; 07820
         move.w  #$fff8,-$4(a6)                  ; 07824
         move.w  #$ffc8,-$6(a6)                  ; 0782A
-        movea.l (dat_002_0000C).l,a0            ; 07830
+        movea.l (CurrentBullet).l,a0            ; 07830
         move.w  #$3c,$28(a0)                    ; 07836
         bra.b   l_000_0787A                     ; 0783C
 l_000_0783E:
@@ -247,7 +252,7 @@ l_000_0785C:
         move.w  #$1,-$4(a6)                     ; 07862
         move.w  #$18,-$6(a6)                    ; 07868
 l_000_0786E:
-        movea.l (dat_002_0000C).l,a0            ; 0786E
+        movea.l (CurrentBullet).l,a0            ; 0786E
         move.w  #$14,$28(a0)                    ; 07874
 l_000_0787A:
         move.w  (PlayerM11).l,d0                ; 0787A
@@ -283,25 +288,25 @@ l_000_0787A:
         add.l   d4,d1                           ; 078E8
         asr.l   #$6,d1                          ; 078EA
         move.l  d1,(dat_071_0042A).l            ; 078EC
-        movea.l (dat_002_0000C).l,a0            ; 078F2
+        movea.l (CurrentBullet).l,a0            ; 078F2
         move.w  (PlayerCellX).l,$30(a0)         ; 078F8
-        movea.l (dat_002_0000C).l,a0            ; 07900
+        movea.l (CurrentBullet).l,a0            ; 07900
         move.w  (PlayerCellZ).l,$32(a0)         ; 07906
         move.l  (PlayerX).l,d0                  ; 0790E
         andi.l  #$3fffff,d0                     ; 07914
         move.l  (dat_071_00422).l,d1            ; 0791A
         add.l   d0,d1                           ; 07920
-        movea.l (dat_002_0000C).l,a0            ; 07922
+        movea.l (CurrentBullet).l,a0            ; 07922
         move.l  d1,(a0)                         ; 07928
         move.l  (dat_071_00426).l,d0            ; 0792A
         add.l   (PlayerY).l,d0                  ; 07930
-        movea.l (dat_002_0000C).l,a0            ; 07936
+        movea.l (CurrentBullet).l,a0            ; 07936
         move.l  d0,$4(a0)                       ; 0793C
         move.l  (PlayerZ).l,d0                  ; 07940
         andi.l  #$3fffff,d0                     ; 07946
         move.l  (dat_071_0042A).l,d1            ; 0794C
         add.l   d0,d1                           ; 07952
-        movea.l (dat_002_0000C).l,a0            ; 07954
+        movea.l (CurrentBullet).l,a0            ; 07954
         move.l  d1,$8(a0)                       ; 0795A
         movea.l -$a(a6),a0                      ; 0795E
         move.w  (a0),d0                         ; 07962
@@ -372,37 +377,37 @@ sub_000_07A28:
         asl.l   d1,d0                           ; 07A3A
         movea.l d0,a0                           ; 07A3C
         adda.l  #ObjectTable,a0                 ; 07A3E
-        move.l  a0,(dat_002_00008).l            ; 07A44
-        movea.l (dat_002_0000C).l,a1            ; 07A4A
+        move.l  a0,(CockpitObject).l            ; 07A44
+        movea.l (CurrentBullet).l,a1            ; 07A4A
         move.w  $6(a0),$30(a1)                  ; 07A50
-        movea.l (dat_002_00008).l,a0            ; 07A56
-        movea.l (dat_002_0000C).l,a1            ; 07A5C
+        movea.l (CockpitObject).l,a0            ; 07A56
+        movea.l (CurrentBullet).l,a1            ; 07A5C
         move.w  $8(a0),$32(a1)                  ; 07A62
-        movea.l (dat_002_00008).l,a0            ; 07A68
+        movea.l (CockpitObject).l,a0            ; 07A68
         move.l  $14(a0),d0                      ; 07A6E
         andi.l  #$3fffff,d0                     ; 07A72
-        movea.l (dat_002_0000C).l,a0            ; 07A78
+        movea.l (CurrentBullet).l,a0            ; 07A78
         move.l  d0,(a0)                         ; 07A7E
-        movea.l (dat_002_00008).l,a0            ; 07A80
-        movea.l (dat_002_0000C).l,a1            ; 07A86
+        movea.l (CockpitObject).l,a0            ; 07A80
+        movea.l (CurrentBullet).l,a1            ; 07A86
         move.l  $18(a0),$4(a1)                  ; 07A8C
-        movea.l (dat_002_00008).l,a0            ; 07A92
+        movea.l (CockpitObject).l,a0            ; 07A92
         move.l  $1c(a0),d0                      ; 07A98
         andi.l  #$3fffff,d0                     ; 07A9C
-        movea.l (dat_002_0000C).l,a0            ; 07AA2
+        movea.l (CurrentBullet).l,a0            ; 07AA2
         move.l  d0,$8(a0)                       ; 07AA8
         move.w  #$14,$28(a0)                    ; 07AAC
-        movea.l (dat_002_00008).l,a0            ; 07AB2
+        movea.l (CockpitObject).l,a0            ; 07AB2
         move.w  $96(a0),d0                      ; 07AB8
         ext.l   d0                              ; 07ABC
         asl.l   #$4,d0                          ; 07ABE
         move.l  d0,(dat_071_00422).l            ; 07AC0
-        movea.l (dat_002_00008).l,a0            ; 07AC6
+        movea.l (CockpitObject).l,a0            ; 07AC6
         move.w  $9c(a0),d0                      ; 07ACC
         ext.l   d0                              ; 07AD0
         asl.l   #$4,d0                          ; 07AD2
         move.l  d0,(dat_071_00426).l            ; 07AD4
-        movea.l (dat_002_00008).l,a0            ; 07ADA
+        movea.l (CockpitObject).l,a0            ; 07ADA
         move.w  $a2(a0),d0                      ; 07AE0
         ext.l   d0                              ; 07AE4
         asl.l   #$4,d0                          ; 07AE6
@@ -445,7 +450,7 @@ l_000_07B42:
         adda.l  #ObjectTable,a0                 ; 07B50
         move.w  $6c(a0),d0                      ; 07B56
         asr.w   #$6,d0                          ; 07B5A
-        movea.l (dat_002_0000C).l,a0            ; 07B5C
+        movea.l (CurrentBullet).l,a0            ; 07B5C
         move.w  $26(a0),d1                      ; 07B62
         move.w  d0,-$6(a6)                      ; 07B66
         btst    #$c,d1                          ; 07B6A
@@ -453,7 +458,7 @@ l_000_07B42:
         move.w  #$d,-$2(a6)                     ; 07B70
         bra.b   l_000_07BA0                     ; 07B76
 l_000_07B78:
-        movea.l (dat_002_0000C).l,a0            ; 07B78
+        movea.l (CurrentBullet).l,a0            ; 07B78
         move.w  $26(a0),d0                      ; 07B7E
         btst    #$d,d0                          ; 07B82
         beq.b   l_000_07B90                     ; 07B86
@@ -469,7 +474,7 @@ l_000_07BA0:
         andi.l  #$3fffff,d0                     ; 07BA6
         move.l  (dat_071_00422).l,d1            ; 07BAC
         add.l   d0,d1                           ; 07BB2
-        movea.l (dat_002_0000C).l,a0            ; 07BB4
+        movea.l (CurrentBullet).l,a0            ; 07BB4
         sub.l   (a0),d1                         ; 07BBA
         move.l  (dat_071_00426).l,d0            ; 07BBC
         add.l   (PlayerY).l,d0                  ; 07BC2
@@ -523,31 +528,31 @@ sub_000_07C24:
         ext.l   d0                              ; 07C5C
         move.l  d0,$8(a7)                       ; 07C5E
         asl.l   #$3,d0                          ; 07C62
-        movea.l (dat_002_0000C).l,a0            ; 07C64
+        movea.l (CurrentBullet).l,a0            ; 07C64
         move.l  d0,$c(a0)                       ; 07C6A
         move.w  (dat_071_0041E).l,d1            ; 07C6E
         ext.l   d1                              ; 07C74
         move.l  d1,$c(a7)                       ; 07C76
         asl.l   #$3,d1                          ; 07C7A
-        movea.l (dat_002_0000C).l,a0            ; 07C7C
+        movea.l (CurrentBullet).l,a0            ; 07C7C
         move.l  d1,$10(a0)                      ; 07C82
         move.w  (dat_071_00420).l,d0            ; 07C86
         ext.l   d0                              ; 07C8C
         move.l  d0,$10(a7)                      ; 07C8E
         asl.l   #$3,d0                          ; 07C92
-        movea.l (dat_002_0000C).l,a0            ; 07C94
+        movea.l (CurrentBullet).l,a0            ; 07C94
         move.l  d0,$14(a0)                      ; 07C9A
         move.l  $8(a7),d1                       ; 07C9E
-        movea.l (dat_002_0000C).l,a0            ; 07CA2
+        movea.l (CurrentBullet).l,a0            ; 07CA2
         move.l  d1,$18(a0)                      ; 07CA8
         move.l  $c(a7),d0                       ; 07CAC
-        movea.l (dat_002_0000C).l,a0            ; 07CB0
+        movea.l (CurrentBullet).l,a0            ; 07CB0
         move.l  d0,$1c(a0)                      ; 07CB6
         move.l  $10(a7),d1                      ; 07CBA
-        movea.l (dat_002_0000C).l,a0            ; 07CBE
+        movea.l (CurrentBullet).l,a0            ; 07CBE
         move.l  d1,$20(a0)                      ; 07CC4
         clr.w   $24(a0)                         ; 07CC8
-        movea.l (dat_002_0000C).l,a0            ; 07CCC
+        movea.l (CurrentBullet).l,a0            ; 07CCC
         move.w  $26(a0),d0                      ; 07CD2
         andi.w  #$3000,d0                       ; 07CD6
         tst.w   d0                              ; 07CDA
@@ -555,22 +560,22 @@ sub_000_07C24:
         move.l  (PlayerVelX).l,d0               ; 07CDE
         add.l   d0,$c(a0)                       ; 07CE4
         move.l  (PlayerVelY).l,d0               ; 07CE8
-        movea.l (dat_002_0000C).l,a0            ; 07CEE
+        movea.l (CurrentBullet).l,a0            ; 07CEE
         add.l   d0,$10(a0)                      ; 07CF4
         move.l  (PlayerVelZ).l,d0               ; 07CF8
-        movea.l (dat_002_0000C).l,a0            ; 07CFE
+        movea.l (CurrentBullet).l,a0            ; 07CFE
         add.l   d0,$14(a0)                      ; 07D04
         move.l  (PlayerVelX).l,d0               ; 07D08
         asr.l   #$3,d0                          ; 07D0E
-        movea.l (dat_002_0000C).l,a0            ; 07D10
+        movea.l (CurrentBullet).l,a0            ; 07D10
         add.l   d0,$18(a0)                      ; 07D16
         move.l  (PlayerVelY).l,d0               ; 07D1A
         asr.l   #$3,d0                          ; 07D20
-        movea.l (dat_002_0000C).l,a0            ; 07D22
+        movea.l (CurrentBullet).l,a0            ; 07D22
         add.l   d0,$1c(a0)                      ; 07D28
         move.l  (PlayerVelZ).l,d0               ; 07D2C
         asr.l   #$3,d0                          ; 07D32
-        movea.l (dat_002_0000C).l,a0            ; 07D34
+        movea.l (CurrentBullet).l,a0            ; 07D34
         add.l   d0,$20(a0)                      ; 07D3A
 l_000_07D3E:
         movem.l (a7)+,d2-d3                     ; 07D3E
@@ -622,7 +627,7 @@ l_000_07DC6:
         clr.l   -(a7)                           ; 07DC6
         jsr     (_FreeSprite).l                 ; 07DC8
         addq.l  #$4,a7                          ; 07DCE
-        btst    #$7,(dat_071_0052B).l           ; 07DD0
+        btst    #$7,(SoundsLoaded).l            ; 07DD0
         beq.b   l_000_07DE8                     ; 07DD8
         move.l  #$80000,-(a7)                   ; 07DDA
         jsr     (BusyWait).l                    ; 07DE0
@@ -1149,7 +1154,7 @@ l_000_08566:
         addq.w  #$1,-$2(a6)                     ; 08578
         bra.b   l_000_08566                     ; 0857C
 l_000_0857E:
-        move.b  #$1,(dat_071_00195).l           ; 0857E
+        move.b  #$1,(ConfigChanged).l           ; 0857E
         unlk    a6                              ; 08586
         rts                                     ; 08588
 
@@ -1163,7 +1168,7 @@ SaveConfig:
         tst.w   d0                              ; 08594
         bne.w   l_000_0865E                     ; 08596
         jsr     (_DisownBlitter).l              ; 0859A
-        clr.b   (dat_071_00195).l               ; 085A0
+        clr.b   (ConfigChanged).l               ; 085A0
         jsr     (CheckDisk).l                   ; 085A6
         move.w  d0,(LogDiskStatus).l            ; 085AC
         tst.w   d0                              ; 085B2
@@ -2320,8 +2325,8 @@ l_000_0940A:
         move.w  (dat_071_00144).l,d0            ; 09420
         addq.w  #$1,d0                          ; 09426
         move.w  d0,(dat_071_00144).l            ; 09428
-        move.b  (dat_071_00270).l,d0            ; 0942E
-        move.b  (dat_071_00271).l,d1            ; 09434
+        move.b  (FadeLevel).l,d0                ; 0942E
+        move.b  (FadeTarget).l,d1               ; 09434
         cmp.b   d1,d0                           ; 0943A
         beq.w   l_000_09574                     ; 0943C
         move.b  (dat_071_00273).l,d2            ; 09440
@@ -2332,17 +2337,17 @@ l_000_0940A:
         cmp.b   d1,d0                           ; 09454
         ble.b   l_000_0946A                     ; 09456
         subq.b  #$1,d0                          ; 09458
-        move.b  d0,(dat_071_00270).l            ; 0945A
+        move.b  d0,(FadeLevel).l                ; 0945A
         move.b  #$1,(dat_071_00273).l           ; 09460
         bra.b   l_000_09480                     ; 09468
 l_000_0946A:
-        move.b  (dat_071_00270).l,d0            ; 0946A
+        move.b  (FadeLevel).l,d0                ; 0946A
         addq.b  #$1,d0                          ; 09470
-        move.b  d0,(dat_071_00270).l            ; 09472
+        move.b  d0,(FadeLevel).l                ; 09472
         move.b  #$2,(dat_071_00273).l           ; 09478
 l_000_09480:
         lea.l   (dat_021_00080).l,a0            ; 09480
-        move.b  (dat_071_00270).l,d0            ; 09486
+        move.b  (FadeLevel).l,d0                ; 09486
         ext.w   d0                              ; 0948C
         ext.l   d0                              ; 0948E
         moveq   #$f,d1                          ; 09490
@@ -2390,8 +2395,8 @@ l_000_09480:
         movea.l d0,a0                           ; 09520
         adda.l  #dat_002_000BA,a0               ; 09522
         move.l  (a0),(dat_002_0002A).l          ; 09528
-        move.b  (dat_071_00270).l,d0            ; 0952E
-        move.b  (dat_071_00271).l,d1            ; 09534
+        move.b  (FadeLevel).l,d0                ; 0952E
+        move.b  (FadeTarget).l,d1               ; 09534
         cmp.b   d1,d0                           ; 0953A
         bne.b   l_000_09596                     ; 0953C
         move.l  (dat_071_00030).l,-$14(a6)      ; 0953E
@@ -2740,7 +2745,7 @@ l_000_098B4:
         move.l  (dat_081_00044).l,$20(a0)       ; 09980
         movea.l (dat_081_00088).l,a0            ; 09988
         move.l  (dat_081_00048).l,$20(a0)       ; 0998E
-        bset    #$7,(dat_071_0052B).l           ; 09996
+        bset    #$7,(SoundsLoaded).l            ; 09996
         bra.b   l_000_099C2                     ; 0999E
 l_000_099A0:
         moveq   #$d,d0                          ; 099A0
@@ -2806,7 +2811,7 @@ l_000_09A0C:
         subi.l  #$370,d0                        ; 09A4C
         ori.l   #$80000000,d0                   ; 09A52
         move.l  d0,$4(a0)                       ; 09A58
-        bset    #$1,(dat_071_0052B).l           ; 09A5C
+        bset    #$1,(SoundsLoaded).l            ; 09A5C
 l_000_09A64:
         moveq   #$4,d0                          ; 09A64
         move.l  d0,-(a7)                        ; 09A66
@@ -2851,7 +2856,7 @@ l_000_09AE6:
         addq.l  #$8,a7                          ; 09AF6
         tst.l   d0                              ; 09AF8
         beq.b   l_000_09B04                     ; 09AFA
-        bset    #$2,(dat_071_0052B).l           ; 09AFC
+        bset    #$2,(SoundsLoaded).l            ; 09AFC
 l_000_09B04:
         tst.l   (dat_081_00018).l               ; 09B04
         beq.b   l_000_09B3E                     ; 09B0A
@@ -2866,7 +2871,7 @@ l_000_09B04:
         movea.l (dat_081_00028).l,a0            ; 09B20
         move.l  #dat_086_000F8,$30(a0)          ; 09B26
         move.l  #$960000,$8(a0)                 ; 09B2E
-        bset    #$5,(dat_071_0052B).l           ; 09B36
+        bset    #$5,(SoundsLoaded).l            ; 09B36
 l_000_09B3E:
         moveq   #$b,d0                          ; 09B3E
         move.l  d0,-(a7)                        ; 09B40
@@ -2878,7 +2883,7 @@ l_000_09B3E:
         moveq   #-1,d0                          ; 09B54
         movea.l (dat_081_0002C).l,a0            ; 09B56
         move.l  d0,$10(a0)                      ; 09B5C
-        bset    #$6,(dat_071_0052B).l           ; 09B60
+        bset    #$6,(SoundsLoaded).l            ; 09B60
 l_000_09B68:
         tst.l   (dat_081_00008).l               ; 09B68
         beq.b   l_000_09B9A                     ; 09B6E
@@ -2913,7 +2918,7 @@ l_000_09B9A:
         movea.l (dat_081_00004).l,a0            ; 09BCC
         move.l  d0,$10(a0)                      ; 09BD2
         move.l  #$800015cc,$4(a0)               ; 09BD6
-        bset    #$0,(dat_071_0052B).l           ; 09BDE
+        bset    #$0,(SoundsLoaded).l            ; 09BDE
 l_000_09BE6:
         moveq   #$8,d0                          ; 09BE6
         move.l  d0,-(a7)                        ; 09BE8
@@ -2942,7 +2947,7 @@ l_000_09BE6:
         subi.l  #$792,d0                        ; 09C3C
         ori.l   #$80000000,d0                   ; 09C42
         move.l  d0,$4(a0)                       ; 09C48
-        bset    #$4,(dat_071_0052B).l           ; 09C4C
+        bset    #$4,(SoundsLoaded).l            ; 09C4C
 l_000_09C54:
         unlk    a6                              ; 09C54
         rts                                     ; 09C56
@@ -3007,7 +3012,7 @@ sub_000_09CE6:
         move.b  (dat_071_001A7).l,d0            ; 09CEA
         tst.b   d0                              ; 09CF0
         bne.w   l_000_09D76                     ; 09CF2
-        btst    #$7,(dat_071_0052B).l           ; 09CF6
+        btst    #$7,(SoundsLoaded).l            ; 09CF6
         beq.b   l_000_09D36                     ; 09CFE
         jsr     (sub_000_015F6).l               ; 09D00
         moveq   #$3f,d0                         ; 09D06
@@ -3072,7 +3077,7 @@ l_000_09DAE:
         rts                                     ; 09DB0
 sub_000_09DB2:
         link.w  a6,#$0                          ; 09DB2
-        btst    #$0,(dat_071_0052B).l           ; 09DB6
+        btst    #$0,(SoundsLoaded).l            ; 09DB6
         beq.b   l_000_09E32                     ; 09DBE
         tst.l   (dat_081_00004).l               ; 09DC0
         beq.b   l_000_09E42                     ; 09DC6
@@ -3119,7 +3124,7 @@ l_000_09E42:
         rts                                     ; 09E44
 sub_000_09E46:
         link.w  a6,#$0                          ; 09E46
-        btst    #$1,(dat_071_0052B).l           ; 09E4A
+        btst    #$1,(SoundsLoaded).l            ; 09E4A
         beq.b   l_000_09EBA                     ; 09E52
         tst.l   (dat_081_0000C).l               ; 09E54
         beq.b   l_000_09EBA                     ; 09E5A
@@ -3157,7 +3162,7 @@ l_000_09EBA:
         rts                                     ; 09EBC
 sub_000_09EBE:
         link.w  a6,#$0                          ; 09EBE
-        btst    #$0,(dat_071_0052B).l           ; 09EC2
+        btst    #$0,(SoundsLoaded).l            ; 09EC2
         beq.b   l_000_09EE0                     ; 09ECA
         move.l  $10(a6),-(a7)                   ; 09ECC
         move.l  $c(a6),-(a7)                    ; 09ED0
@@ -3179,7 +3184,7 @@ l_000_09EF6:
 sub_000_09EFA:
         link.w  a6,#$0                          ; 09EFA
         movem.l d2,-(a7)                        ; 09EFE
-        btst    #$1,(dat_071_0052B).l           ; 09F02
+        btst    #$1,(SoundsLoaded).l            ; 09F02
         beq.w   l_000_09F92                     ; 09F0A
         tst.l   (dat_074_00014).l               ; 09F0E
         beq.b   l_000_09F92                     ; 09F14
@@ -3219,7 +3224,7 @@ l_000_09F92:
         rts                                     ; 09F98
 sub_000_09F9A:
         link.w  a6,#$fffc                       ; 09F9A
-        btst    #$4,(dat_071_0052B).l           ; 09F9E
+        btst    #$4,(SoundsLoaded).l            ; 09F9E
         beq.w   l_000_0A02C                     ; 09FA6
         tst.l   (dat_081_00024).l               ; 09FAA
         beq.w   l_000_0A03E                     ; 09FB0
@@ -3356,14 +3361,14 @@ sub_000_0A0DC:
         lea.l   $c(a7),a7                       ; 0A172
         bra.b   l_000_0A188                     ; 0A176
 l_000_0A178:
-        move.b  #$fa,(dat_071_00280).l          ; 0A178
+        move.b  #$fa,(EngineSoundRequest).l     ; 0A178
         move.b  #$2,(dat_071_00167).l           ; 0A180
 l_000_0A188:
         unlk    a6                              ; 0A188
         rts                                     ; 0A18A
 sub_000_0A18C:
         link.w  a6,#$0                          ; 0A18C
-        btst    #$2,(dat_071_0052B).l           ; 0A190
+        btst    #$2,(SoundsLoaded).l            ; 0A190
         beq.b   l_000_0A1E2                     ; 0A198
         move.w  (CurrentObjectOffset).l,d0      ; 0A19A
         move.w  (ViewObject).l,d1               ; 0A1A0
@@ -3388,7 +3393,7 @@ l_000_0A1E2:
         rts                                     ; 0A1E4
 sub_000_0A1E6:
         link.w  a6,#$0                          ; 0A1E6
-        btst    #$6,(dat_071_0052B).l           ; 0A1EA
+        btst    #$6,(SoundsLoaded).l            ; 0A1EA
         beq.b   l_000_0A248                     ; 0A1F2
         move.w  (CurrentObjectOffset).l,d0      ; 0A1F4
         move.w  (ViewObject).l,d1               ; 0A1FA

@@ -278,7 +278,7 @@ ShapeLineAlt:
 ; well above (dat_071_00448 below -$C0); otherwise its three words are skipped.
 ;-------------------------------------------------------------------------------
 ShapeLineFromAbove:
-        cmpi.l  #$ffffff40,(dat_071_00448).l    ; 002BC
+        cmpi.l  #$ffffff40,(ViewOffsetY8).l     ; 002BC
         blt.b   ShapeLine                       ; 002C6
         addq.w  #$6,a2                          ; 002C8
         bra.b   l_013_00316                     ; 002CA
@@ -290,7 +290,7 @@ ShapeLineFromAbove:
 ShapeLine:
         lea.l   (sub_035_001DA).l,a4            ; 002CC
 l_013_002D2:
-        move.l  #$ffffffff,(dat_071_000B6).l    ; 002D2
+        move.l  #$ffffffff,(FillPattern).l      ; 002D2
         lea.l   (dat_072_04202).l,a0            ; 002DC
         lea.l   (VertexBuffer).l,a3             ; 002E2
         move.w  (a2)+,d1                        ; 002E8
@@ -492,7 +492,7 @@ l_013_004BA:
 ; Used by every aircraft model.
 ;-------------------------------------------------------------------------------
 ShapeShadow:
-        move.l  (dat_071_00436).l,d0            ; 004BE
+        move.l  (ViewOffsetY).l,d0              ; 004BE
         lea.l   (ObjectTable).l,a4              ; 004C4
         adda.w  (CurrentObjectOffset).l,a4      ; 004CA
         move.b  $4(a4),d3                       ; 004D0
@@ -511,7 +511,7 @@ l_013_004E2:
         cmp.l   d7,d0                           ; 004F2
         bge.b   l_013_00544                     ; 004F4
         sub.l   d7,d0                           ; 004F6
-        move.w  (dat_071_00488).l,d3            ; 004F8
+        move.w  (DistanceShift).l,d3            ; 004F8
         asr.l   d3,d0                           ; 004FE
         move.l  d0,-$90(a6)                     ; 00500
         bra.b   l_013_0050C                     ; 00504
@@ -525,7 +525,7 @@ l_013_0050C:
         cmpi.b  #$3,(HeightBand).l              ; 0051C
         bge.b   l_013_00574                     ; 00524
         move.w  (CurrentObject).l,d7            ; 00526
-        cmp.w   (dat_071_002AC).l,d7            ; 0052C
+        cmp.w   (ViewObjectIndex).l,d7          ; 0052C
         bne.b   l_013_00548                     ; 00532
         tst.b   (HeightBand).l                  ; 00534
         beq.b   l_013_00544                     ; 0053A
@@ -555,7 +555,7 @@ l_013_00574:
         cmp.l   $18(a4),d0                      ; 0057E
         blt.w   l_013_0060A                     ; 00582
         adda.w  #$a4,a4                         ; 00586
-        move.w  (dat_071_00488).l,-$2(a6)       ; 0058A
+        move.w  (DistanceShift).l,-$2(a6)       ; 0058A
         move.l  d0,d2                           ; 00592
         neg.l   d0                              ; 00594
         swap    d0                              ; 00596
@@ -701,13 +701,13 @@ sub_013_006E8:
         movem.l a1-a2/a5,-(a7)                  ; 00712
         lea.l   (PolygonBuffer).l,a0            ; 00716
         move.l  #$4,(a0)+                       ; 0071C
-        move.w  (dat_071_00442).l,d6            ; 00722
-        move.w  (dat_071_00446).l,d7            ; 00728
+        move.w  (ViewOffsetX8).l,d6             ; 00722
+        move.w  (ViewOffsetZ8).l,d7             ; 00728
         neg.w   d6                              ; 0072E
         neg.w   d7                              ; 00730
-        move.w  (dat_071_004FA).l,d2            ; 00732
+        move.w  (ObjectViewPos).l,d2            ; 00732
         move.w  (dat_071_004FE).l,d3            ; 00738
-        move.w  (dat_071_00488).l,d5            ; 0073E
+        move.w  (DistanceShift).l,d5            ; 0073E
         asl.w   d5,d2                           ; 00744
         asl.w   d5,d3                           ; 00746
         sub.w   d2,d6                           ; 00748
@@ -841,13 +841,13 @@ sub_013_008AA:
         bgt.b   l_013_008A6                     ; 008CA
         lea.l   (PolygonBuffer).l,a0            ; 008CC
         move.l  #$3,(a0)+                       ; 008D2
-        move.w  (dat_071_00442).l,d6            ; 008D8
-        move.w  (dat_071_00446).l,d7            ; 008DE
+        move.w  (ViewOffsetX8).l,d6             ; 008D8
+        move.w  (ViewOffsetZ8).l,d7             ; 008DE
         neg.w   d6                              ; 008E4
         neg.w   d7                              ; 008E6
-        move.w  (dat_071_004FA).l,d2            ; 008E8
+        move.w  (ObjectViewPos).l,d2            ; 008E8
         move.w  (dat_071_004FE).l,d3            ; 008EE
-        move.w  (dat_071_00488).l,d5            ; 008F4
+        move.w  (DistanceShift).l,d5            ; 008F4
         asl.w   d5,d2                           ; 008FA
         asl.w   d5,d3                           ; 008FC
         sub.w   d2,d6                           ; 008FE
@@ -1095,7 +1095,7 @@ ShapeSceneryTest:
         movea.l (dat_071_00402).l,a3            ; 00B42
         adda.w  #$a,a3                          ; 00B48
         adda.w  (a2)+,a3                        ; 00B4C
-        cmpi.l  #$fffffec0,(dat_071_00448).l    ; 00B4E
+        cmpi.l  #$fffffec0,(ViewOffsetY8).l     ; 00B4E
         ble.b   l_013_00B3E                     ; 00B58
         tst.b   (dat_071_0023C).l               ; 00B5A
         bne.b   l_013_00B3E                     ; 00B60
@@ -1111,7 +1111,7 @@ sub_013_00B62:
         jsr     (sub_020_0099A).l               ; 00B74
         movem.w d5-d7,-(a7)                     ; 00B7A
         move.w  -$26(a6),d5                     ; 00B7E
-        sub.w   (dat_071_004FA).l,d5            ; 00B82
+        sub.w   (ObjectViewPos).l,d5            ; 00B82
         clr.w   d6                              ; 00B88
         move.w  -$22(a6),d7                     ; 00B8A
         sub.w   (dat_071_004FE).l,d7            ; 00B8E
@@ -1128,7 +1128,7 @@ sub_013_00B62:
 l_013_00BB0:
         asr.l   #$4,d2                          ; 00BB0
         lea.l   (dat_013_00BEC).l,a3            ; 00BB2
-        cmpi.l  #$ffffff80,(dat_071_00448).l    ; 00BB8
+        cmpi.l  #$ffffff80,(ViewOffsetY8).l     ; 00BB8
         bgt.b   l_013_00BCA                     ; 00BC2
         lea.l   (dat_013_00C04).l,a3            ; 00BC4
 l_013_00BCA:
@@ -1163,7 +1163,7 @@ ShapeLineGrid:
         move.w  #$ffff,d1                       ; 00C20
         clr.w   d2                              ; 00C24
         clr.w   d3                              ; 00C26
-        movem.w d0-d3,(dat_071_000B6).l         ; 00C28
+        movem.w d0-d3,(FillPattern).l           ; 00C28
         move.w  (a2)+,(DrawColour).l            ; 00C30
         clr.w   -$7e(a6)                        ; 00C36
         lea.l   (VertexBuffer).l,a3             ; 00C3A
@@ -1255,7 +1255,7 @@ l_013_00D0C:
         move.w  -$7e(a6),d0                     ; 00D52
         rts                                     ; 00D56
 sub_013_00D58:
-        move.l  #$fffff,(dat_071_000B6).l       ; 00D58
+        move.l  #$fffff,(FillPattern).l         ; 00D58
         move.w  (a2)+,(DrawColour).l            ; 00D62
         bra.b   l_013_00D88                     ; 00D68
 
@@ -1269,7 +1269,7 @@ ShapePaneGrid:
         move.w  #$0,d1                          ; 00D76
         move.w  #$2,d2                          ; 00D7A
         clr.w   d3                              ; 00D7E
-        movem.w d0-d3,(dat_071_000B6).l         ; 00D80
+        movem.w d0-d3,(FillPattern).l           ; 00D80
 l_013_00D88:
         lea.l   (VertexBuffer).l,a3             ; 00D88
         adda.w  (a2)+,a3                        ; 00D8E
@@ -1409,7 +1409,7 @@ l_013_00EBC:
 ;-------------------------------------------------------------------------------
 ShapePaneGridColour:
         movem.l a1/a5,-(a7)                     ; 00F3A
-        move.l  #$fffff,(dat_071_000B6).l       ; 00F3E
+        move.l  #$fffff,(FillPattern).l         ; 00F3E
         move.w  (a2)+,(DrawColour).l            ; 00F48
         bra.b   l_013_00F72                     ; 00F4E
 
@@ -1423,7 +1423,7 @@ ShapePaneGrid2:
         move.w  #$0,d1                          ; 00F60
         move.w  #$2,d2                          ; 00F64
         clr.w   d3                              ; 00F68
-        movem.w d0-d3,(dat_071_000B6).l         ; 00F6A
+        movem.w d0-d3,(FillPattern).l           ; 00F6A
 l_013_00F72:
         lea.l   (VertexBuffer).l,a3             ; 00F72
         adda.w  (a2)+,a3                        ; 00F78
@@ -1515,7 +1515,7 @@ ShapeLineGridColour:
         move.w  #$ffff,d1                       ; 01088
         clr.w   d2                              ; 0108C
         clr.w   d3                              ; 0108E
-        movem.w d0-d3,(dat_071_000B6).l         ; 01090
+        movem.w d0-d3,(FillPattern).l           ; 01090
         move.w  (a2)+,(DrawColour).l            ; 01098
         lea.l   (VertexBuffer).l,a3             ; 0109E
         adda.w  (a2)+,a3                        ; 010A4
@@ -1590,7 +1590,7 @@ ShapeParallelogramPat:
         clr.w   d2                              ; 0116E
 l_013_01170:
         clr.w   d3                              ; 01170
-        movem.w d0-d3,(dat_071_000B6).l         ; 01172
+        movem.w d0-d3,(FillPattern).l           ; 01172
         move.w  (a2)+,(DrawColour).l            ; 0117A
         lea.l   (VertexBuffer).l,a3             ; 01180
         adda.w  (a2)+,a3                        ; 01186

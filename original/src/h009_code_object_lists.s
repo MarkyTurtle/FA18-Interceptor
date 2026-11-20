@@ -7,11 +7,11 @@
 ;===============================================================================
 	CODE_HUNK	h009
 l_009_00000:
-        move.w  #$11,(dat_071_0036E).l          ; 00000
+        move.w  #$11,(DebugCheckpoint).l        ; 00000
         jsr     (Nop).l                         ; 00008
         bra.b   l_009_00000                     ; 0000E
 l_009_00010:
-        move.w  #$12,(dat_071_0036E).l          ; 00010
+        move.w  #$12,(DebugCheckpoint).l        ; 00010
         jsr     (Nop).l                         ; 00018
         bra.b   l_009_00010                     ; 0001E
 l_009_00020:
@@ -173,7 +173,7 @@ l_009_00200:
         clr.w   (dat_071_000C2).l               ; 00200
         bra.b   l_009_00224                     ; 00206
 l_009_00208:
-        move.w  #$26,(dat_071_0036E).l          ; 00208
+        move.w  #$26,(DebugCheckpoint).l        ; 00208
         jsr     (Nop).l                         ; 00210
         bra.b   l_009_00208                     ; 00216
 l_009_00218:
@@ -224,7 +224,7 @@ l_009_002A0:
         ext.l   d0                              ; 002A8
         add.l   d0,d7                           ; 002AA
 l_009_002AC:
-        move.w  (dat_071_00442).l,d0            ; 002AC
+        move.w  (ViewOffsetX8).l,d0             ; 002AC
         ext.l   d0                              ; 002B2
         add.l   d0,d7                           ; 002B4
         bge.b   l_009_002BA                     ; 002B6
@@ -242,7 +242,7 @@ l_009_002D2:
         ext.l   d0                              ; 002DA
         add.l   d0,d6                           ; 002DC
 l_009_002DE:
-        move.w  (dat_071_00446).l,d0            ; 002DE
+        move.w  (ViewOffsetZ8).l,d0             ; 002DE
         ext.l   d0                              ; 002E4
         add.l   d0,d6                           ; 002E6
         bge.b   l_009_002EC                     ; 002E8
@@ -250,14 +250,14 @@ l_009_002DE:
 l_009_002EC:
         asr.l   #$8,d6                          ; 002EC
         asr.l   #$4,d6                          ; 002EE
-        move.l  (dat_071_00448).l,d0            ; 002F0
+        move.l  (ViewOffsetY8).l,d0             ; 002F0
         btst    #$6,(dat_071_0022A).l           ; 002F6
         bne.b   l_009_0030A                     ; 002FE
         btst    #$4,(dat_071_0022A).l           ; 00300
         beq.b   l_009_00316                     ; 00308
 l_009_0030A:
         move.l  $10(a1),d0                      ; 0030A
-        add.l   (dat_071_00448).l,d0            ; 0030E
+        add.l   (ViewOffsetY8).l,d0             ; 0030E
         bge.b   l_009_00318                     ; 00314
 l_009_00316:
         neg.l   d0                              ; 00316
@@ -279,7 +279,7 @@ l_009_00330:
         lsr.w   #$1,d7                          ; 00330
         cmpi.w  #$ef,d7                         ; 00332
         ble.b   l_009_0034A                     ; 00336
-        move.w  #$f,(dat_071_0036E).l           ; 00338
+        move.w  #$f,(DebugCheckpoint).l         ; 00338
         jsr     (Nop).l                         ; 00340
         move.w  #$ef,d7                         ; 00346
 l_009_0034A:
@@ -352,7 +352,7 @@ l_009_004C2:
         tst.b   (dat_071_00236).l               ; 004DA
         bne.b   l_009_00524                     ; 004E0
         lea.l   (dat_009_00536).l,a1            ; 004E2
-        move.l  (dat_071_00448).l,d6            ; 004E8
+        move.l  (ViewOffsetY8).l,d6             ; 004E8
         neg.l   d6                              ; 004EE
         asr.l   #$8,d6                          ; 004F0
         asr.l   #$3,d6                          ; 004F2
@@ -408,7 +408,7 @@ l_009_00584:
         beq.w   l_009_006F8                     ; 005A0
         bra.b   l_009_005B6                     ; 005A4
 l_009_005A6:
-        move.w  #$10,(dat_071_0036E).l          ; 005A6
+        move.w  #$10,(DebugCheckpoint).l        ; 005A6
         jsr     (Nop).l                         ; 005AE
         bra.b   l_009_005A6                     ; 005B4
 l_009_005B6:
@@ -595,7 +595,7 @@ l_009_00792:
         move.w  (a1)+,d1                        ; 00792
         move.w  d1,d2                           ; 00794
         andi.w  #$f,d2                          ; 00796
-        move.w  d2,(dat_071_00488).l            ; 0079A
+        move.w  d2,(DistanceShift).l            ; 0079A
         btst    #$6,d1                          ; 007A0
         beq.b   l_009_007B2                     ; 007A4
         move.w  #$7fff,d1                       ; 007A6
@@ -609,7 +609,7 @@ l_009_007B2:
         move.w  d3,d1                           ; 007BE
         bra.w   l_009_0084E                     ; 007C0
 l_009_007C4:
-        move.w  #$37,(dat_071_0036E).l          ; 007C4
+        move.w  #$37,(DebugCheckpoint).l        ; 007C4
         jsr     (Nop).l                         ; 007CC
         bra.b   l_009_007C4                     ; 007D2
 l_009_007D4:
@@ -642,13 +642,13 @@ l_009_00804:
         move.l  $10(a0),d3                      ; 00822
         move.l  d3,d1                           ; 00826
         asr.l   d6,d3                           ; 00828
-        add.l   (dat_071_00448).l,d1            ; 0082A
+        add.l   (ViewOffsetY8).l,d1             ; 0082A
         asr.l   d6,d1                           ; 00830
         move.l  d1,(dat_071_0050C).l            ; 00832
         move.b  #$1,(dat_071_0028B).l           ; 00838
 l_009_00840:
         jsr     (sub_008_01652).l               ; 00840
-        move.w  (dat_071_00488).l,d2            ; 00846
+        move.w  (DistanceShift).l,d2            ; 00846
         asl.w   d2,d1                           ; 0084C
 l_009_0084E:
         move.w  d1,(a3)+                        ; 0084E
@@ -741,7 +741,7 @@ l_009_00938:
         movem.w (a7)+,d0-d4                     ; 0093E
         rts                                     ; 00942
 l_009_00944:
-        move.w  #$14,(dat_071_0036E).l          ; 00944
+        move.w  #$14,(DebugCheckpoint).l        ; 00944
         jsr     (Nop).l                         ; 0094C
         bra.b   l_009_00944                     ; 00952
 l_009_00954:
@@ -791,8 +791,8 @@ l_009_009BA:
         move.w  d5,(dat_073_015E2).l            ; 009BA
         lea.l   (a1),a0                         ; 009C0
         bsr.w   sub_009_01052                   ; 009C2
-        move.w  (dat_071_00442).l,d2            ; 009C6
-        move.w  (dat_071_00446).l,d4            ; 009CC
+        move.w  (ViewOffsetX8).l,d2             ; 009C6
+        move.w  (ViewOffsetZ8).l,d4             ; 009CC
         neg.w   d2                              ; 009D2
         neg.w   d4                              ; 009D4
         ext.l   d2                              ; 009D6
@@ -951,7 +951,7 @@ l_009_00B56:
         lsr.w   #$3,d1                          ; 00B60
         lea.l   (ObjectTable).l,a2              ; 00B62
         add.l   $10(a2,d1.w),d0                 ; 00B68
-        move.l  (dat_071_00448).l,d1            ; 00B6C
+        move.l  (ViewOffsetY8).l,d1             ; 00B6C
         neg.l   d1                              ; 00B72
         cmp.l   d0,d1                           ; 00B74
         bgt.w   l_009_00EF0                     ; 00B76
@@ -976,7 +976,7 @@ l_009_00B7E:
         move.l  $2(a4),d0                       ; 00BBA
         move.l  d0,-$16(a6)                     ; 00BBE
         blt.b   l_009_00BD6                     ; 00BC2
-        move.w  #$22,(dat_071_0036E).l          ; 00BC4
+        move.w  #$22,(DebugCheckpoint).l        ; 00BC4
         jsr     (Nop).l                         ; 00BCC
         bra.w   l_009_00EF0                     ; 00BD2
 l_009_00BD6:
@@ -986,7 +986,7 @@ l_009_00BD6:
         add.w   d1,d1                           ; 00BE0
         lea.l   (ObjectTable).l,a2              ; 00BE2
         add.l   $10(a2,d1.w),d0                 ; 00BE8
-        move.l  (dat_071_00448).l,d1            ; 00BEC
+        move.l  (ViewOffsetY8).l,d1             ; 00BEC
         neg.l   d1                              ; 00BF2
         cmp.l   d0,d1                           ; 00BF4
         bgt.w   l_009_00EF0                     ; 00BF6
@@ -1026,7 +1026,7 @@ l_009_00C1C:
         ext.l   d2                              ; 00C50
         ext.l   d4                              ; 00C52
         sub.l   -$c(a6),d2                      ; 00C54
-        move.l  (dat_071_00448).l,d3            ; 00C58
+        move.l  (ViewOffsetY8).l,d3             ; 00C58
         sub.l   -$10(a6),d4                     ; 00C5E
         neg.l   d2                              ; 00C62
         neg.l   d3                              ; 00C64
@@ -1057,7 +1057,7 @@ l_009_00C8A:
         movea.l (a4)+,a4                        ; 00CA8
         move.w  (a4),d0                         ; 00CAA
         addi.w  #$a4,d0                         ; 00CAC
-        move.l  (dat_071_00448).l,d1            ; 00CB0
+        move.l  (ViewOffsetY8).l,d1             ; 00CB0
         neg.l   d1                              ; 00CB6
         move.b  $7d(a2),d3                      ; 00CB8
         andi.w  #$f,d3                          ; 00CBC
@@ -1102,9 +1102,9 @@ l_009_00CF4:
         add.w   $c(a2),d2                       ; 00D2A
         add.l   $10(a2),d3                      ; 00D2E
         add.w   $e(a2),d4                       ; 00D32
-        add.w   (dat_071_00442).l,d2            ; 00D36
-        add.l   (dat_071_00448).l,d3            ; 00D3C
-        add.w   (dat_071_00446).l,d4            ; 00D42
+        add.w   (ViewOffsetX8).l,d2             ; 00D36
+        add.l   (ViewOffsetY8).l,d3             ; 00D3C
+        add.w   (ViewOffsetZ8).l,d4             ; 00D42
         neg.w   d2                              ; 00D48
         neg.w   d3                              ; 00D4A
         neg.w   d4                              ; 00D4C
@@ -1195,7 +1195,7 @@ l_009_00D78:
         ext.l   d2                              ; 00E36
         ext.l   d4                              ; 00E38
         sub.l   -$c(a6),d2                      ; 00E3A
-        add.l   (dat_071_00448).l,d3            ; 00E3E
+        add.l   (ViewOffsetY8).l,d3             ; 00E3E
         sub.l   -$10(a6),d4                     ; 00E44
         neg.l   d2                              ; 00E48
         neg.l   d3                              ; 00E4A

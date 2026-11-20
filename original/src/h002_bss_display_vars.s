@@ -15,9 +15,11 @@ _IntuitionBase:
 ; state's routine here (the State labels, hunk 0).
 GameState:
         ds.b    $4                              ; 00004
-dat_002_00008:
+; CockpitObject - Points at the viewed object's record (ObjectTable) while CockpitSounds runs.
+CockpitObject:
         ds.b    $4                              ; 00008
-dat_002_0000C:
+; CurrentBullet - Points at the bullet (Bullets) being moved or fired.
+CurrentBullet:
         ds.b    $4                              ; 0000C
 ; GameView - The game's View.
 GameView:

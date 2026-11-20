@@ -28,7 +28,7 @@ RecordFrame:
         cmpi.b  #$1,d1                          ; 0001E
         bne.b   l_022_00000                     ; 00022
 l_022_00024:
-        tst.b   (dat_071_0017E).l               ; 00024
+        tst.b   (WorldFrozen).l                 ; 00024
         bne.b   l_022_00000                     ; 0002A
         cmpi.b  #$1,(RecordMode).l              ; 0002C
         bne.b   l_022_00046                     ; 00034
@@ -42,7 +42,7 @@ l_022_00046:
         cmp.l   a0,d0                           ; 00058
         bgt.b   l_022_00082                     ; 0005A
         move.b  #$4,(RecordMode).l              ; 0005C
-        move.b  #$1,(dat_071_0017E).l           ; 00064
+        move.b  #$1,(WorldFrozen).l             ; 00064
         move.l  (RecordBuffer).l,(RecordPointer).l ; 0006C
         move.l  (RecordControls).l,(RecordControlsPointer).l ; 00076
         rts                                     ; 00080
@@ -102,7 +102,7 @@ UpdateObject:
         or.b    (dat_071_00158).l,d0            ; 00108
         bne.b   l_022_000BA                     ; 0010E
 l_022_00110:
-        or.b    (dat_071_0017E).l,d0            ; 00110
+        or.b    (WorldFrozen).l,d0              ; 00110
         bne.b   l_022_000FC                     ; 00116
         tst.w   (CurrentObject).l               ; 00118
         bne.b   l_022_0012C                     ; 0011E
@@ -190,7 +190,7 @@ l_022_00208:
 l_022_00240:
         btst    #$7,$3(a1)                      ; 00240
         bne.b   l_022_002BA                     ; 00246
-        cmpi.w  #$9c06,(dat_071_004B0).l        ; 00248
+        cmpi.w  #$9c06,(CurrentWarning).l       ; 00248
         beq.b   l_022_002BA                     ; 00250
         ori.l   #$80,(SoundRequests).l          ; 00252
         move.w  #$9c06,d0                       ; 0025C
@@ -215,7 +215,7 @@ l_022_00288:
         asl.l   #$6,d0                          ; 00292
         cmp.l   $18(a1),d0                      ; 00294
         blt.b   l_022_002BA                     ; 00298
-        cmpi.w  #$d02a,(dat_071_004B0).l        ; 0029A
+        cmpi.w  #$d02a,(CurrentWarning).l       ; 0029A
         beq.b   l_022_002BA                     ; 002A2
         ori.l   #$40,(SoundRequests).l          ; 002A4
         move.w  #$d02a,d0                       ; 002AE
@@ -224,13 +224,13 @@ l_022_002B2:
         bra.b   l_022_0031E                     ; 002B8
 l_022_002BA:
         move.w  (CurrentObject).l,d0            ; 002BA
-        cmp.w   (dat_071_002AC).l,d0            ; 002C0
+        cmp.w   (ViewObjectIndex).l,d0          ; 002C0
         bne.b   l_022_002F6                     ; 002C6
         tst.b   (OutsideView).l                 ; 002C8
         bne.b   l_022_002F6                     ; 002CE
         btst    #$0,$3(a1)                      ; 002D0
         beq.b   l_022_002F6                     ; 002D6
-        cmpi.w  #$d00a,(dat_071_004B0).l        ; 002D8
+        cmpi.w  #$d00a,(CurrentWarning).l       ; 002D8
         beq.b   l_022_002F6                     ; 002E0
         move.w  #$d00a,d0                       ; 002E2
         jsr     (sub_020_00954).l               ; 002E6
@@ -592,7 +592,7 @@ l_022_00710:
         bne.b   l_022_00736                     ; 0071A
         movea.l (ConfigBuffer).l,a0             ; 0071C
         addq.w  #$1,$46(a0)                     ; 00722
-        move.b  #$1,(dat_071_00195).l           ; 00726
+        move.b  #$1,(ConfigChanged).l           ; 00726
         move.b  #$4,(MissionResult).l           ; 0072E
 l_022_00736:
         tst.b   (OutsideView).l                 ; 00736
@@ -607,7 +607,7 @@ l_022_0074E:
         beq.b   l_022_00772                     ; 00754
         cmpi.w  #$f,$4c(a1)                     ; 00756
         ble.w   l_022_00816                     ; 0075C
-        move.w  #$3a,(dat_071_0036E).l          ; 00760
+        move.w  #$3a,(DebugCheckpoint).l        ; 00760
         jsr     (Nop).l                         ; 00768
         bra.w   l_022_00816                     ; 0076E
 l_022_00772:
@@ -883,7 +883,7 @@ sub_022_00AB6:
         bne.b   l_022_00AB4                     ; 00AC2
         lea.l   (ObjectTable).l,a1              ; 00AC4
         adda.w  d0,a1                           ; 00ACA
-        tst.b   (dat_071_0017E).l               ; 00ACC
+        tst.b   (WorldFrozen).l                 ; 00ACC
         bne.b   l_022_00AB4                     ; 00AD2
         lea.l   (dat_073_0165C).l,a0            ; 00AD4
         move.b  (dat_073_01659).l,d0            ; 00ADA

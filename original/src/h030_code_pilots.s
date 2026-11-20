@@ -679,7 +679,7 @@ PilotLevel:
         bge.b   l_030_0085A                     ; 0083E
         cmp.l   $18(a1),d4                      ; 00840
         blt.w   l_030_0112E                     ; 00844
-        move.w  #$3c,(dat_071_0036E).l          ; 00848
+        move.w  #$3c,(DebugCheckpoint).l        ; 00848
         jsr     (Nop).l                         ; 00850
         bra.w   l_030_00986                     ; 00856
 l_030_0085A:
@@ -723,7 +723,7 @@ ComputerPilot:
         andi.w  #$80,d0                         ; 008B6
         beq.b   l_030_00892                     ; 008BA
         move.b  (dat_071_0017F).l,d0            ; 008BC
-        or.b    (dat_071_0017E).l,d0            ; 008C2
+        or.b    (WorldFrozen).l,d0              ; 008C2
         bne.b   l_030_00896                     ; 008C8
 l_030_008CA:
         move.b  $5(a1),d0                       ; 008CA

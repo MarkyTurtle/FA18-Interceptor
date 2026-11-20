@@ -6,11 +6,16 @@
 ; Hunk 31: CODE, $75C bytes
 ;===============================================================================
 	CODE_HUNK	h031
-sub_031_00000:
+
+;-------------------------------------------------------------------------------
+; DrawBullet - Draws a bullet (its number on the stack) as an orange point (colour 9) at its
+; place relative to the camera.
+;-------------------------------------------------------------------------------
+DrawBullet:
         link.w  a6,#$ffc2                       ; 00000
         move.l  $8(a6),d0                       ; 00004
         asl.w   #$6,d0                          ; 00008
-        lea.l   (dat_071_00642).l,a3            ; 0000A
+        lea.l   (Bullets).l,a3                  ; 0000A
         adda.w  d0,a3                           ; 00010
         move.w  #$9,(DrawColour).l              ; 00012
 l_031_0001A:
@@ -27,15 +32,15 @@ l_031_0001A:
         move.l  $0(a3),d4                       ; 0003A
         asr.l   #$8,d4                          ; 0003E
         add.w   d4,d3                           ; 00040
-        add.w   (dat_071_00442).l,d3            ; 00042
+        add.w   (ViewOffsetX8).l,d3             ; 00042
         move.l  $8(a3),d4                       ; 00048
         asr.l   #$8,d4                          ; 0004C
         add.w   d4,d5                           ; 0004E
-        add.w   (dat_071_00446).l,d5            ; 00050
+        add.w   (ViewOffsetZ8).l,d5             ; 00050
         move.l  $4(a3),d4                       ; 00056
-        add.l   (dat_071_00436).l,d4            ; 0005A
+        add.l   (ViewOffsetY).l,d4              ; 0005A
         asr.l   #$8,d4                          ; 00060
-        bsr.w   sub_031_001E2                   ; 00062
+        bsr.w   TurnToView                      ; 00062
         move.w  d6,d0                           ; 00066
         move.w  d2,d1                           ; 00068
         move.w  d5,d2                           ; 0006A
@@ -49,11 +54,16 @@ l_031_0007E:
 l_031_00084:
         unlk    a6                              ; 00084
         rts                                     ; 00086
-sub_031_00088:
+
+;-------------------------------------------------------------------------------
+; DrawBulletSmoke - Draws a bullet's smoke: a grey puff (colour 13) growing as its timer (+$28)
+; runs down from $3A, at most 12 (DrawPuff).
+;-------------------------------------------------------------------------------
+DrawBulletSmoke:
         link.w  a6,#$ffc2                       ; 00088
         move.l  $8(a6),d0                       ; 0008C
         asl.w   #$6,d0                          ; 00090
-        lea.l   (dat_071_00642).l,a3            ; 00092
+        lea.l   (Bullets).l,a3                  ; 00092
         adda.w  d0,a3                           ; 00098
         move.w  #$d,(DrawColour).l              ; 0009A
         cmpi.w  #$3a,$28(a3)                    ; 000A2
@@ -83,12 +93,17 @@ l_031_000EA:
         moveq   #$0,d4                          ; 000EA
         moveq   #$0,d7                          ; 000EC
         unlk    a6                              ; 000EE
-        bra.w   sub_031_003E2                   ; 000F0
-sub_031_000F4:
+        bra.w   DrawPuff                        ; 000F0
+
+;-------------------------------------------------------------------------------
+; DrawBulletHit - Draws a bullet's hit: three small orange 3D crosses (dat_031_001BE) round
+; where it struck.
+;-------------------------------------------------------------------------------
+DrawBulletHit:
         link.w  a6,#$ffc2                       ; 000F4
         move.l  $8(a6),d0                       ; 000F8
         asl.w   #$6,d0                          ; 000FC
-        lea.l   (dat_071_00642).l,a3            ; 000FE
+        lea.l   (Bullets).l,a3                  ; 000FE
         adda.w  d0,a3                           ; 00104
         move.w  $30(a3),d3                      ; 00106
         sub.w   (ViewCellX).l,d3                ; 0010A
@@ -103,17 +118,17 @@ sub_031_000F4:
         move.l  $0(a3),d4                       ; 00126
         asr.l   #$8,d4                          ; 0012A
         add.w   d4,d3                           ; 0012C
-        add.w   (dat_071_00442).l,d3            ; 0012E
+        add.w   (ViewOffsetX8).l,d3             ; 0012E
         move.l  $8(a3),d4                       ; 00134
         asr.l   #$8,d4                          ; 00138
         add.w   d4,d5                           ; 0013A
-        add.w   (dat_071_00446).l,d5            ; 0013C
+        add.w   (ViewOffsetZ8).l,d5             ; 0013C
         move.l  $4(a3),d4                       ; 00142
-        add.l   (dat_071_00436).l,d4            ; 00146
+        add.l   (ViewOffsetY).l,d4              ; 00146
         asr.l   #$8,d4                          ; 0014C
         movem.w d3-d5,-$8(a6)                   ; 0014E
         move.w  #$3,-$a(a6)                     ; 00154
-        move.w  #$f,(dat_071_000B6).l           ; 0015A
+        move.w  #$f,(FillPattern).l             ; 0015A
         move.w  #$ffff,(DrawXor).l              ; 00162
         clr.l   (dat_071_000BA).l               ; 0016A
         move.w  #$9,(DrawColour).l              ; 00170
@@ -127,7 +142,7 @@ l_031_0018C:
         add.w   a4,d3                           ; 00190
         add.w   a5,d4                           ; 00192
         add.w   -$4(a6),d5                      ; 00194
-        bsr.w   sub_031_001E2                   ; 00198
+        bsr.w   TurnToView                      ; 00198
         move.w  d6,(a1)+                        ; 0019C
         move.w  d2,(a1)+                        ; 0019E
         move.w  d5,(a1)+                        ; 001A0
@@ -144,7 +159,12 @@ dat_031_001BE:
 	dc.b	$FF,$FD,$00,$03,$FF,$FD,$00,$03,$FF,$FD,$00,$03,$00,$02,$00,$01
 	dc.b	$FF,$FE,$FF,$FE,$FF,$FF,$00,$02,$FF,$FD,$FF,$FD,$FF,$FD,$00,$03
 	dc.b	$00,$03,$00,$03
-sub_031_001E2:
+
+;-------------------------------------------------------------------------------
+; TurnToView - Turns a point relative to the camera (d3, d4, d5) by the view matrix
+; (dat_071_005A8): the result in d6, d2, d5.
+;-------------------------------------------------------------------------------
+TurnToView:
         lea.l   (dat_071_005A8).l,a0            ; 001E2
         movem.w (a0)+,d0-d2                     ; 001E8
         muls.w  d3,d0                           ; 001EC
@@ -235,12 +255,18 @@ dat_031_0039E:
 	dc.b	$00,$00
 l_031_003E0:
         rts                                     ; 003E0
-sub_031_003E2:
-        move.w  #$f,(dat_071_000B6).l           ; 003E2
+
+;-------------------------------------------------------------------------------
+; DrawPuff - Draws a round puff of smoke or fire at a point (d0-d2) of size d3 and kind d4,
+; scaled by distance (at most $7F); only within $8000 of the camera's height. Also used by
+; DrawModel.
+;-------------------------------------------------------------------------------
+DrawPuff:
+        move.w  #$f,(FillPattern).l             ; 003E2
         move.w  #$ffff,(DrawXor).l              ; 003EA
         clr.l   (dat_071_000BA).l               ; 003F2
         move.l  d1,d5                           ; 003F8
-        add.l   (dat_071_00448).l,d5            ; 003FA
+        add.l   (ViewOffsetY8).l,d5             ; 003FA
         bge.b   l_031_00404                     ; 00400
         neg.l   d5                              ; 00402
 l_031_00404:
@@ -269,9 +295,9 @@ l_031_00440:
         move.w  d6,d7                           ; 00442
         swap    d7                              ; 00444
 l_031_00446:
-        add.l   (dat_071_00448).l,d1            ; 00446
-        move.w  (dat_071_00442).l,d5            ; 0044C
-        move.w  (dat_071_00446).l,d6            ; 00452
+        add.l   (ViewOffsetY8).l,d1             ; 00446
+        move.w  (ViewOffsetX8).l,d5             ; 0044C
+        move.w  (ViewOffsetZ8).l,d6             ; 00452
         ext.l   d5                              ; 00458
         ext.l   d6                              ; 0045A
         add.l   d5,d0                           ; 0045C
@@ -511,7 +537,7 @@ l_031_006F4:
         jsr     (DrawLine).l                    ; 006FC
         bra.b   l_031_006A4                     ; 00702
 sub_031_00704:
-        movem.w (dat_071_00442).l,d3-d5         ; 00704
+        movem.w (ViewOffsetX8).l,d3-d5          ; 00704
         moveq   #$0,d7                          ; 0070C
         add.l   d3,d0                           ; 0070E
         bge.b   l_031_00714                     ; 00710

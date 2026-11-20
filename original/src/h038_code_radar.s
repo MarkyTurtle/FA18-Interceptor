@@ -16,7 +16,7 @@ l_038_00000:
 ; +$20 bit 2).
 ;-------------------------------------------------------------------------------
 DrawStatusLights:
-        move.l  #$fffff,(dat_071_000B6).l       ; 00002
+        move.l  #$fffff,(FillPattern).l         ; 00002
         btst    #$2,(StatusLights).l            ; 0000C
         bne.b   l_038_0001C                     ; 00014
         move.w  #$3,d2                          ; 00016
@@ -91,14 +91,14 @@ l_038_000FC:
 ; (DrawRadarLines) and the blips (DrawRadarBlips), spread over frames.
 ;-------------------------------------------------------------------------------
 DrawRadar:
-        move.l  #$fffff,(dat_071_000B6).l       ; 000FE
+        move.l  #$fffff,(FillPattern).l         ; 000FE
         move.l  #$16b8,d1                       ; 00108
         movea.w #$4,a4                          ; 0010E
         move.w  #$8,d7                          ; 00112
-        add.l   (dat_071_002E8).l,d1            ; 00116
+        add.l   (PanelShakeOffset).l,d1         ; 00116
         jsr     (sub_037_00A22).l               ; 0011C
         blt.b   l_038_000FC                     ; 00122
-        cmpi.b  #$1,(dat_071_00207).l           ; 00124
+        cmpi.b  #$1,(PanelRedraw).l             ; 00124
         bgt.b   l_038_00148                     ; 0012C
         beq.b   l_038_00158                     ; 0012E
         move.w  (FrameCount).l,d0               ; 00130
@@ -345,7 +345,7 @@ l_038_0044C:
 l_038_00456:
         move.b  $38(a1),d1                      ; 00456
         andi.w  #$7f,d1                         ; 0045A
-        cmp.w   (dat_071_002AC).l,d1            ; 0045E
+        cmp.w   (ViewObjectIndex).l,d1          ; 0045E
         bne.b   l_038_00488                     ; 00464
         cmpi.b  #$0,$62(a1)                     ; 00466
         bne.b   l_038_00478                     ; 0046C
@@ -396,7 +396,7 @@ l_038_004BE:
         addi.w  #$a7,d1                         ; 00500
         btst    #$4,d3                          ; 00504
         beq.w   l_038_005E6                     ; 00508
-        move.l  (dat_071_00448).l,d5            ; 0050C
+        move.l  (ViewOffsetY8).l,d5             ; 0050C
         move.w  d3,d4                           ; 00512
         andi.w  #$ff00,d4                       ; 00514
         add.w   d4,d4                           ; 00518
@@ -540,11 +540,11 @@ l_038_006BC:
         ori.l   #$800,(SoundRequests).l         ; 006BC
         bra.b   l_038_006DE                     ; 006C6
 l_038_006C8:
-        move.w  (dat_071_004B0).l,d1            ; 006C8
+        move.w  (CurrentWarning).l,d1           ; 006C8
         andi.w  #$ff,d1                         ; 006CE
         cmpi.w  #$800e,d1                       ; 006D2
         bne.b   l_038_006DE                     ; 006D6
-        clr.w   (dat_071_004B0).l               ; 006D8
+        clr.w   (CurrentWarning).l              ; 006D8
 l_038_006DE:
         move.b  d0,(StatusLights).l             ; 006DE
         tst.b   (dat_071_00189).l               ; 006E4
@@ -563,7 +563,7 @@ l_038_00704:
         addi.w  #$10,d0                         ; 00716
         cmpi.w  #$460,d0                        ; 0071A
         blt.b   l_038_00704                     ; 0071E
-        move.w  #$30,(dat_071_0036E).l          ; 00720
+        move.w  #$30,(DebugCheckpoint).l        ; 00720
         jsr     (Nop).l                         ; 00728
         moveq   #$0,d0                          ; 0072E
         bra.b   l_038_00736                     ; 00730

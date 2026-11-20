@@ -6,10 +6,15 @@
 ; Hunk 23: CODE, $8C4 bytes
 ;===============================================================================
 	CODE_HUNK	h023
-sub_023_00000:
+
+;-------------------------------------------------------------------------------
+; BulletInFront - d0 = 1 if a bullet in flight (from the cockpit, only one the player fired) is
+; nearer the camera than the object that fired it, so it must be drawn after it.
+;-------------------------------------------------------------------------------
+BulletInFront:
         moveq   #$13,d0                         ; 00000
 l_023_00002:
-        lea.l   (dat_071_00642).l,a0            ; 00002
+        lea.l   (Bullets).l,a0                  ; 00002
         move.w  d0,d1                           ; 00008
         asl.w   #$6,d1                          ; 0000A
         adda.w  d1,a0                           ; 0000C
@@ -84,15 +89,21 @@ l_023_000AC:
         rts                                     ; 000C2
 l_023_000C4:
         rts                                     ; 000C4
-sub_023_000C6:
+
+;-------------------------------------------------------------------------------
+; BulletHitTest - Whether a bullet (its number on the stack) hit an object or a scenery shape
+; near it: the objects in its cell (within $800, or dat_071_00376) and the drawing list's
+; shapes. d0 = 1 for a hit (dat_071_00388 the object hit).
+;-------------------------------------------------------------------------------
+BulletHitTest:
         moveq   #$0,d0                          ; 000C6
         move.b  (dat_071_0018D).l,d1            ; 000C8
-        or.b    (dat_071_0017E).l,d1            ; 000CE
+        or.b    (WorldFrozen).l,d1              ; 000CE
         bne.b   l_023_000C4                     ; 000D4
         link.w  a6,#$ffa4                       ; 000D6
         move.l  $8(a6),d0                       ; 000DA
         asl.w   #$6,d0                          ; 000DE
-        lea.l   (dat_071_00642).l,a3            ; 000E0
+        lea.l   (Bullets).l,a3                  ; 000E0
         adda.w  d0,a3                           ; 000E6
         movem.l $c(a3),d0-d2                    ; 000E8
         asr.l   #$8,d0                          ; 000EE
@@ -381,7 +392,7 @@ l_023_00434:
         bra.w   l_023_0067A                     ; 00434
 sub_023_00438:
         move.l  $4(a3),d3                       ; 00438
-        blt.w   sub_023_0068A                   ; 0043C
+        blt.w   BulletHitGround                 ; 0043C
         move.w  (dat_071_00B4E).l,d0            ; 00440
         beq.b   l_023_0045C                     ; 00446
         subq.w  #$1,d0                          ; 00448
@@ -587,11 +598,16 @@ sub_023_00680:
         swap    d5                              ; 00680
         move.l  $4(a3),d3                       ; 00682
         bge.w   l_023_002E8                     ; 00686
-sub_023_0068A:
+
+;-------------------------------------------------------------------------------
+; BulletHitGround - What a bullet that reached the ground hit there; d0 = 1 when something
+; counts.
+;-------------------------------------------------------------------------------
+BulletHitGround:
         link.w  a6,#$0                          ; 0068A
         move.l  $8(a6),d0                       ; 0068E
         asl.w   #$6,d0                          ; 00692
-        lea.l   (dat_071_00642).l,a3            ; 00694
+        lea.l   (Bullets).l,a3                  ; 00694
         adda.w  d0,a3                           ; 0069A
         movem.l $c(a3),d0-d2                    ; 0069C
         asr.l   #$8,d1                          ; 006A2

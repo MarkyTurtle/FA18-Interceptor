@@ -74,7 +74,7 @@ l_039_0019C:
         move.l  d0,(BCDIn).l                    ; 0019C
         jsr     (BinToBCD).l                    ; 001A2
         lea.l   dat_039_0008C(pc),a1            ; 001A8
-        lea.l   (dat_071_001CA).l,a2            ; 001AC
+        lea.l   (TextBuffer).l,a2               ; 001AC
         lea.l   $3(a2),a0                       ; 001B2
         lea.l   $1cd2.w,a4                      ; 001B6
         lea.l   $12.w,a5                        ; 001BA
@@ -121,13 +121,13 @@ l_039_0022A:
         movem.w d0/d5-d6,-(a7)                  ; 0022A
         move.w  #$f6,d0                         ; 0022E
         move.w  #$bc,d1                         ; 00232
-        move.l  #$fffff,(dat_071_000B6).l       ; 00236
+        move.l  #$fffff,(FillPattern).l         ; 00236
         jsr     (PlotInView).l                  ; 00240
         movem.w (a7)+,d0/d5-d6                  ; 00246
         move.l  d0,(BCDIn).l                    ; 0024A
         jsr     (BinToBCD).l                    ; 00250
         lea.l   dat_039_0011C(pc),a1            ; 00256
-        lea.l   (dat_071_001CA).l,a2            ; 0025A
+        lea.l   (TextBuffer).l,a2               ; 0025A
         lea.l   $2(a2),a0                       ; 00260
         lea.l   $1cde.w,a4                      ; 00264
         lea.l   $1e.w,a5                        ; 00268
@@ -192,7 +192,7 @@ l_039_002F4:
 ; otherwise the value, remembered with bit 15 set.
 ;-------------------------------------------------------------------------------
 ValueChanged:
-        tst.b   (dat_071_00207).l               ; 00320
+        tst.b   (PanelRedraw).l                 ; 00320
         bgt.b   l_039_00354                     ; 00326
         move.w  (a1),d2                         ; 00328
         blt.b   l_039_00348                     ; 0032A
@@ -200,7 +200,7 @@ ValueChanged:
         beq.b   l_039_00344                     ; 0032E
         btst    #$0,(dat_071_002AB).l           ; 00330
         bne.b   l_039_00344                     ; 00338
-        tst.b   (dat_071_0017E).l               ; 0033A
+        tst.b   (WorldFrozen).l                 ; 0033A
         bne.b   l_039_00348                     ; 00340
         bra.b   l_039_00354                     ; 00342
 l_039_00344:
@@ -229,7 +229,7 @@ ShowWeapon:
         move.w  #$d,(DrawColour).l              ; 00360
         lea.l   (ObjectTable).l,a1              ; 00368
         adda.w  (ViewObject).l,a1               ; 0036E
-        lea.l   (dat_071_001CA).l,a2            ; 00374
+        lea.l   (TextBuffer).l,a2               ; 00374
         moveq   #$0,d0                          ; 0037A
         move.b  $63(a1),d2                      ; 0037C
         andi.b  #$f0,d2                         ; 00380
@@ -282,7 +282,7 @@ l_039_003EC:
 ;-------------------------------------------------------------------------------
 ShowClosure:
         move.w  #$d,(DrawColour).l              ; 00416
-        lea.l   (dat_071_001CA).l,a2            ; 0041E
+        lea.l   (TextBuffer).l,a2               ; 0041E
         tst.w   d0                              ; 00424
         bge.b   l_039_00430                     ; 00426
         neg.w   d0                              ; 00428
@@ -317,7 +317,7 @@ ShowGLoad:
         lea.l   (ObjectTable).l,a4              ; 00464
         adda.w  (ViewObject).l,a4               ; 0046A
         move.w  #$d,(DrawColour).l              ; 00470
-        move.l  #$fffff,(dat_071_000B6).l       ; 00478
+        move.l  #$fffff,(FillPattern).l         ; 00478
         cmpi.b  #$11,$62(a4)                    ; 00482
         beq.b   l_039_004A6                     ; 00488
         move.w  #$72,d0                         ; 0048A
@@ -343,7 +343,7 @@ l_039_004A6:
         move.w  #$a,d2                          ; 004DA
         lea.l   dat_039_0000C(pc),a1            ; 004DE
 l_039_004E2:
-        lea.l   (dat_071_001CA).l,a2            ; 004E2
+        lea.l   (TextBuffer).l,a2               ; 004E2
         lea.l   (ObjectTable).l,a0              ; 004E8
         adda.w  (ViewObject).l,a0               ; 004EE
         move.w  $56(a0),d0                      ; 004F4
@@ -443,7 +443,7 @@ ShowHeadingText:
         move.l  d0,(BCDIn).l                    ; 005F2
         jsr     (BinToBCD).l                    ; 005F8
         lea.l   dat_039_00074(pc),a1            ; 005FE
-        lea.l   (dat_071_001CA).l,a2            ; 00602
+        lea.l   (TextBuffer).l,a2               ; 00602
         lea.l   $6(a2),a0                       ; 00608
         move.b  #$48,(a2)                       ; 0060C
         move.b  #$44,$1(a2)                     ; 00610
@@ -560,7 +560,7 @@ l_039_00754:
         beq.b   l_039_00790                     ; 0076C
         bra.b   l_039_007A6                     ; 0076E
 l_039_00770:
-        tst.b   (dat_071_00207).l               ; 00770
+        tst.b   (PanelRedraw).l                 ; 00770
         bgt.b   l_039_007A6                     ; 00776
         move.l  (AltitudeShown).l,d2            ; 00778
         blt.b   l_039_00792                     ; 0077E
@@ -661,7 +661,7 @@ l_039_008A4:
         jsr     (BinToBCD).l                    ; 008AC
         moveq   #$2,d0                          ; 008B2
         lea.l   dat_039_0008C(pc),a1            ; 008B4
-        lea.l   (dat_071_001CA).l,a2            ; 008B8
+        lea.l   (TextBuffer).l,a2               ; 008B8
         lea.l   $3(a2),a0                       ; 008BE
         lea.l   $1b76.w,a4                      ; 008C2
         lea.l   $1e.w,a5                        ; 008C6
@@ -698,7 +698,7 @@ l_039_00918:
 l_039_0092E:
         moveq   #$3,d0                          ; 0092E
         lea.l   dat_039_00138(pc),a1            ; 00930
-        lea.l   (dat_071_001CA).l,a2            ; 00934
+        lea.l   (TextBuffer).l,a2               ; 00934
         lea.l   $4(a2),a0                       ; 0093A
         lea.l   $1c44.w,a4                      ; 0093E
         lea.l   $24.w,a5                        ; 00942
@@ -740,7 +740,7 @@ l_039_009A6:
 l_039_009BC:
         moveq   #$3,d0                          ; 009BC
         lea.l   dat_039_00124(pc),a1            ; 009BE
-        lea.l   (dat_071_001CA).l,a2            ; 009C2
+        lea.l   (TextBuffer).l,a2               ; 009C2
         lea.l   $4(a2),a0                       ; 009C8
         lea.l   $1d84.w,a4                      ; 009CC
         lea.l   $24.w,a5                        ; 009D0
@@ -987,7 +987,7 @@ l_039_00CA6:
         move.w  #$fca,d6                        ; 00CBA
         swap    d6                              ; 00CBE
         move.w  (ViewShift).l,d6                ; 00CC0
-        move.l  (dat_071_002E8).l,d7            ; 00CC6
+        move.l  (PanelShakeOffset).l,d7         ; 00CC6
         movem.l d0/d6-d7/a1-a2/a4-a5,-(a7)      ; 00CCC
         move.b  (dat_071_00232).l,d3            ; 00CD0
         rol.b   #$2,d3                          ; 00CD6
@@ -1137,7 +1137,7 @@ l_039_00E3C:
 l_039_00E40:
         swap    d6                              ; 00E40
         move.w  (ViewShift).l,d6                ; 00E42
-        move.l  (dat_071_002E8).l,d7            ; 00E48
+        move.l  (PanelShakeOffset).l,d7         ; 00E48
         move.w  d0,d2                           ; 00E4E
 l_039_00E50:
         moveq   #$0,d4                          ; 00E50
@@ -1208,7 +1208,7 @@ l_039_00EF0:
         dbra    d0,l_039_00EA6                  ; 00EF0
         rts                                     ; 00EF4
 l_039_00EF6:
-        move.w  #$46,(dat_071_0036E).l          ; 00EF6
+        move.w  #$46,(DebugCheckpoint).l        ; 00EF6
         jsr     (Nop).l                         ; 00EFE
         bra.b   l_039_00EF0                     ; 00F04
 sub_039_00F06:
@@ -1289,7 +1289,7 @@ sub_039_00FA8:
         adda.w  (ViewObject).l,a1               ; 00FBC
         moveq   #$0,d0                          ; 00FC2
         move.b  $5f(a1),d0                      ; 00FC4
-        lea.l   (dat_071_001CA).l,a2            ; 00FC8
+        lea.l   (TextBuffer).l,a2               ; 00FC8
         move.b  $63(a1),d2                      ; 00FCE
         andi.b  #$f0,d2                         ; 00FD2
         beq.w   l_039_010DA                     ; 00FD6
@@ -1338,10 +1338,10 @@ l_039_01048:
         moveq   #$2,d0                          ; 0106E
         swap    d6                              ; 01070
         move.w  (ViewShift).l,d6                ; 01072
-        move.l  (dat_071_002E8).l,d7            ; 01078
+        move.l  (PanelShakeOffset).l,d7         ; 01078
         bsr.w   sub_039_00E94                   ; 0107E
         move.w  (a7)+,d0                        ; 01082
-        lea.l   (dat_071_001CA).l,a2            ; 01084
+        lea.l   (TextBuffer).l,a2               ; 01084
         tst.w   d0                              ; 0108A
         ble.b   l_039_010A0                     ; 0108C
         move.b  #$41,(a2)                       ; 0108E
@@ -1362,7 +1362,7 @@ l_039_010B0:
         swap    d6                              ; 010C6
         moveq   #$2,d0                          ; 010C8
         move.w  (ViewShift).l,d6                ; 010CA
-        move.l  (dat_071_002E8).l,d7            ; 010D0
+        move.l  (PanelShakeOffset).l,d7         ; 010D0
         bra.w   sub_039_00E94                   ; 010D6
 l_039_010DA:
         move.b  #$20,(a2)                       ; 010DA
@@ -1376,10 +1376,10 @@ l_039_010DA:
         move.w  #$fca,d6                        ; 010FC
         swap    d6                              ; 01100
         move.w  (ViewShift).l,d6                ; 01102
-        move.l  (dat_071_002E8).l,d7            ; 01108
+        move.l  (PanelShakeOffset).l,d7         ; 01108
         moveq   #$2,d0                          ; 0110E
         bsr.w   sub_039_00E94                   ; 01110
-        lea.l   (dat_071_001CA).l,a2            ; 01114
+        lea.l   (TextBuffer).l,a2               ; 01114
         lea.l   dat_039_0001C(pc),a1            ; 0111A
         move.w  d7,d2                           ; 0111E
         lea.l   $1b86.w,a4                      ; 01120
@@ -1389,14 +1389,14 @@ l_039_010DA:
         move.w  #$fca,d6                        ; 0112E
         swap    d6                              ; 01132
         move.w  (ViewShift).l,d6                ; 01134
-        move.l  (dat_071_002E8).l,d7            ; 0113A
+        move.l  (PanelShakeOffset).l,d7         ; 0113A
         bra.w   sub_039_00E94                   ; 01140
 sub_039_01144:
         ext.l   d2                              ; 01144
         move.l  d2,(BCDIn).l                    ; 01146
         jsr     (BinToBCD).l                    ; 0114C
         lea.l   dat_039_0008C(pc),a1            ; 01152
-        lea.l   (dat_071_001CA).l,a2            ; 01156
+        lea.l   (TextBuffer).l,a2               ; 01156
         move.w  d3,d2                           ; 0115C
         lea.l   $1(a2,d2.w),a0                  ; 0115E
         move.w  d0,d3                           ; 01162
@@ -1425,17 +1425,17 @@ sub_039_01144:
         bra.b   l_039_011D0                     ; 01194
 sub_039_01196:
         move.w  (ViewShift).l,d6                ; 01196
-        move.l  (dat_071_002E8).l,d7            ; 0119C
+        move.l  (PanelShakeOffset).l,d7         ; 0119C
         bra.b   l_039_011CC                     ; 011A2
 sub_039_011A4:
         moveq   #$0,d4                          ; 011A4
 sub_039_011A6:
         move.w  (ViewShift).l,d6                ; 011A6
-        move.l  (dat_071_002E8).l,d7            ; 011AC
+        move.l  (PanelShakeOffset).l,d7         ; 011AC
         bra.b   l_039_011D0                     ; 011B2
 sub_039_011B4:
         move.w  (ViewShift).l,d6                ; 011B4
-        move.l  (dat_071_002E8).l,d7            ; 011BA
+        move.l  (PanelShakeOffset).l,d7         ; 011BA
         bra.b   l_039_01200                     ; 011C0
 sub_039_011C2:
         moveq   #$0,d6                          ; 011C2

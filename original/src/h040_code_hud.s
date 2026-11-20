@@ -33,7 +33,7 @@ l_040_00062:
 ; the height, speed and heading, and the gun sight.
 ;-------------------------------------------------------------------------------
 DrawHUD:
-        move.l  #$fffff,(dat_071_000B6).l       ; 00064
+        move.l  #$fffff,(FillPattern).l         ; 00064
         tst.b   (OutsideView).l                 ; 0006E
         bne.b   l_040_0005C                     ; 00074
         bsr.w   DrawGunCross                    ; 00076
@@ -113,7 +113,7 @@ l_040_0014A:
 l_040_0015A:
         cmpi.b  #$10,$62(a0)                    ; 0015A
         beq.w   l_040_001C2                     ; 00160
-        lea.l   (dat_071_001CA).l,a2            ; 00164
+        lea.l   (TextBuffer).l,a2               ; 00164
         lea.l   $6(a2),a0                       ; 0016A
         moveq   #$5,d6                          ; 0016E
         moveq   #$5,d7                          ; 00170
@@ -213,7 +213,7 @@ l_040_002AC:
         move.l  (a7)+,d5                        ; 002CC
         move.l  d5,-(a7)                        ; 002CE
         lea.l   (dat_071_004F6).l,a1            ; 002D0
-        lea.l   (dat_071_004FA).l,a2            ; 002D6
+        lea.l   (ObjectViewPos).l,a2            ; 002D6
         addi.w  #$0,d0                          ; 002DC
         abcd.b  -(a2),-(a1)                     ; 002E0
         abcd.b  -(a2),-(a1)                     ; 002E2
@@ -240,7 +240,7 @@ l_040_002FA:
         move.l  (a7)+,d5                        ; 00326
         move.l  d5,-(a7)                        ; 00328
         lea.l   (dat_071_004F6).l,a1            ; 0032A
-        lea.l   (dat_071_004FA).l,a2            ; 00330
+        lea.l   (ObjectViewPos).l,a2            ; 00330
         addi.w  #$0,d0                          ; 00336
 	dc.b	$83,$0A,$83,$0A  sbcd -(a2),-(a1),#$830a
 	dc.b	$83,$0A,$61,$00  sbcd -(a2),-(a1),#$6100
@@ -270,7 +270,7 @@ HUDSpeed:
 l_040_0037C:
         cmpi.b  #$10,$62(a0)                    ; 0037C
         beq.w   l_040_003EC                     ; 00382
-        lea.l   (dat_071_001CA).l,a2            ; 00386
+        lea.l   (TextBuffer).l,a2               ; 00386
         lea.l   $4(a2),a0                       ; 0038C
         moveq   #$3,d6                          ; 00390
         moveq   #$3,d7                          ; 00392
@@ -354,7 +354,7 @@ l_040_004B4:
         cmpi.l  #$af0,d5                        ; 004BA
         blt.b   l_040_004E2                     ; 004C0
         lea.l   (dat_071_004F6).l,a1            ; 004C2
-        lea.l   (dat_071_004FA).l,a2            ; 004C8
+        lea.l   (ObjectViewPos).l,a2            ; 004C8
         addi.w  #$0,d0                          ; 004CE
         abcd.b  -(a2),-(a1)                     ; 004D2
         abcd.b  -(a2),-(a1)                     ; 004D4
@@ -373,7 +373,7 @@ l_040_004EA:
         cmpi.l  #$1130,d5                       ; 004FA
         bgt.b   l_040_00522                     ; 00500
         lea.l   (dat_071_004F6).l,a1            ; 00502
-        lea.l   (dat_071_004FA).l,a2            ; 00508
+        lea.l   (ObjectViewPos).l,a2            ; 00508
         addi.w  #$0,d0                          ; 0050E
 	dc.b	$83,$0A,$83,$0A  sbcd -(a2),-(a1),#$830a
 	dc.b	$83,$0A,$2F,$05  sbcd -(a2),-(a1),#$2f05
@@ -471,7 +471,7 @@ l_040_00664:
         cmpi.w  #$b0,d1                         ; 00668
         bgt.b   l_040_006A8                     ; 0066C
         lea.l   (dat_071_004F6).l,a1            ; 0066E
-        lea.l   (dat_071_004FA).l,a2            ; 00674
+        lea.l   (ObjectViewPos).l,a2            ; 00674
         addi.w  #$0,d0                          ; 0067A
         abcd.b  -(a2),-(a1)                     ; 0067E
         abcd.b  -(a2),-(a1)                     ; 00680
@@ -497,7 +497,7 @@ l_040_006C2:
         cmpi.w  #$ff50,d1                       ; 006C6
         blt.b   l_040_006F4                     ; 006CA
         lea.l   (dat_071_004F6).l,a1            ; 006CC
-        lea.l   (dat_071_004FA).l,a2            ; 006D2
+        lea.l   (ObjectViewPos).l,a2            ; 006D2
         addi.w  #$0,d0                          ; 006D8
 	dc.b	$83,$0A,$83,$0A  sbcd -(a2),-(a1),#$830a
 	dc.b	$83,$0A,$43,$F9  sbcd -(a2),-(a1),#$43f9
@@ -703,7 +703,7 @@ l_040_009C0:
         move.w  $4a(a0),d0                      ; 00A30
         cmpi.w  #$7f00,d0                       ; 00A34
         bgt.b   l_040_00A6C                     ; 00A38
-        tst.b   (dat_071_0017E).l               ; 00A3A
+        tst.b   (WorldFrozen).l                 ; 00A3A
         bne.b   l_040_00A4A                     ; 00A40
         bclr    #$0,$4(a0)                      ; 00A42
         bne.b   l_040_00A52                     ; 00A48
@@ -718,7 +718,7 @@ l_040_00A52:
 l_040_00A66:
         jsr     (ShowClosure).l                 ; 00A66
 l_040_00A6C:
-        tst.b   (dat_071_0017E).l               ; 00A6C
+        tst.b   (WorldFrozen).l                 ; 00A6C
         bne.b   l_040_00A78                     ; 00A72
         bsr.w   ComputeGunPipper                ; 00A74
 l_040_00A78:
@@ -933,7 +933,7 @@ HUDDigits3:
         move.l  #$858,d5                        ; 00D02
         moveq   #$1,d6                          ; 00D08
         moveq   #$2,d7                          ; 00D0A
-        lea.l   (dat_071_001CA).l,a2            ; 00D0C
+        lea.l   (TextBuffer).l,a2               ; 00D0C
         lea.l   $3(a2),a0                       ; 00D12
         bra.b   l_040_00D4A                     ; 00D16
 
@@ -946,7 +946,7 @@ HUDDigits2:
         move.w  #$a,d0                          ; 00D1E
         moveq   #$2,d6                          ; 00D22
         moveq   #$2,d7                          ; 00D24
-        lea.l   (dat_071_001CA).l,a2            ; 00D26
+        lea.l   (TextBuffer).l,a2               ; 00D26
         lea.l   $3(a2),a0                       ; 00D2C
         bra.b   l_040_00D4A                     ; 00D30
 
@@ -960,7 +960,7 @@ HUDDigits2Alt:
         move.w  #$1a,d0                         ; 00D38
         moveq   #$2,d6                          ; 00D3C
         moveq   #$2,d7                          ; 00D3E
-        lea.l   (dat_071_001CA).l,a2            ; 00D40
+        lea.l   (TextBuffer).l,a2               ; 00D40
         lea.l   $3(a2),a0                       ; 00D46
 l_040_00D4A:
         move.w  d7,d2                           ; 00D4A
@@ -1116,7 +1116,7 @@ l_040_00EE8:
 ; ($10-$12), the glass's outline (five lines from dat_040_01308, colours from dat_040_01320).
 ;-------------------------------------------------------------------------------
 DrawHUDFixed:
-        move.l  #$fffff,(dat_071_000B6).l       ; 00EEE
+        move.l  #$fffff,(FillPattern).l         ; 00EEE
         move.w  #$a,(DrawColour).l              ; 00EF8
         move.w  #$9f,d0                         ; 00F00
         move.w  #$47,d1                         ; 00F04
@@ -1181,13 +1181,13 @@ l_040_00FC6:
         cmpi.b  #$12,d0                         ; 00FE2
         bne.w   l_040_01076                     ; 00FE6
 l_040_00FEA:
-        clr.w   (dat_071_0037A).l               ; 00FEA
+        clr.w   (LoopIndex).l                   ; 00FEA
 l_040_00FF0:
         lea.l   (dat_040_01308).l,a0            ; 00FF0
-        adda.w  (dat_071_0037A).l,a0            ; 00FF6
+        adda.w  (LoopIndex).l,a0                ; 00FF6
         movem.w (a0),d0-d3                      ; 00FFC
         lea.l   (dat_040_01320).l,a0            ; 01000
-        adda.w  (dat_071_0037A).l,a0            ; 01006
+        adda.w  (LoopIndex).l,a0                ; 01006
         move.w  (a0),(DrawColour).l             ; 0100C
         add.w   (ViewX).l,d0                    ; 01012
         bge.b   l_040_01026                     ; 01018
@@ -1216,8 +1216,8 @@ l_040_01052:
         add.w   (ViewY).l,d3                    ; 01058
         jsr     (DrawLine).l                    ; 0105E
 l_040_01064:
-        addq.w  #$4,(dat_071_0037A).l           ; 01064
-        cmpi.w  #$14,(dat_071_0037A).l          ; 0106A
+        addq.w  #$4,(LoopIndex).l               ; 01064
+        cmpi.w  #$14,(LoopIndex).l              ; 0106A
         blt.w   l_040_00FF0                     ; 01072
 l_040_01076:
         rts                                     ; 01076
@@ -1228,11 +1228,11 @@ l_040_01076:
 ; with WarningFlags bit 14), then is drawn with DrawLine; apparently the seeker's lock.
 ;-------------------------------------------------------------------------------
 DrawTargetBox:
-        clr.w   (dat_071_0037A).l               ; 01078
+        clr.w   (LoopIndex).l                   ; 01078
         move.w  #$a,(DrawColour).l              ; 0107E
 l_040_01086:
         movem.w (TargetScreenPos).l,d0-d1       ; 01086
-        tst.b   (dat_071_0017E).l               ; 0108E
+        tst.b   (WorldFrozen).l                 ; 0108E
         bne.w   l_040_011BC                     ; 01094
         movem.w (TargetBoxPos).l,d2-d3          ; 01098
         moveq   #$0,d5                          ; 010A0
@@ -1376,7 +1376,7 @@ l_040_011DC:
         move.w  d1,d3                           ; 011EE
         ble.w   l_040_012E6                     ; 011F0
         lea.l   (dat_040_01334).l,a0            ; 011F4
-        adda.w  (dat_071_0037A).l,a0            ; 011FA
+        adda.w  (LoopIndex).l,a0                ; 011FA
         add.w   (a0),d0                         ; 01200
         bge.b   l_040_01206                     ; 01202
         clr.w   d0                              ; 01204
@@ -1459,8 +1459,8 @@ l_040_012B6:
 l_040_012BC:
         jsr     (DrawLine).l                    ; 012BC
 l_040_012C2:
-        addq.w  #$4,(dat_071_0037A).l           ; 012C2
-        cmpi.w  #$10,(dat_071_0037A).l          ; 012C8
+        addq.w  #$4,(LoopIndex).l               ; 012C2
+        cmpi.w  #$10,(LoopIndex).l              ; 012C8
         blt.w   l_040_01086                     ; 012D0
         move.l  (TargetScreenPos).l,(SeekerPos).l ; 012D4
         move.w  #$ffff,(TargetScreenPos).l      ; 012DE

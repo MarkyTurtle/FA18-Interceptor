@@ -152,7 +152,10 @@ dat_071_000B2:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_000B6:
+; FillPattern - The drawing's pattern: four words for the polygon fills (sub_036), set by each
+; shape operation; $000FFFFF (with the next long 0) is solid, others give the patterned fills
+; (windows, fields).
+FillPattern:
 	dc.b	$00
 ; DrawMask - Which planes drawing changes (bit n = plane n).
 DrawMask:
@@ -358,7 +361,9 @@ MenuOption:
 dat_071_00163:
 	dc.b	$00
 	dc.b	$00
-dat_071_00165:
+; FlightScreen - Set while the screen shows the flight (the 3D view and the cockpit), so
+; GameFrame runs its drawing stages; clear for the text screens.
+FlightScreen:
 	dc.b	$00
 dat_071_00166:
 	dc.b	$00
@@ -399,7 +404,9 @@ dat_071_00175:
 	dc.b	$00
 dat_071_00176:
 	dc.b	$00
-dat_071_00177:
+; ViewZoom - The outside camera's distance step (0-$0B: the keypad's 4 and 6, KP1 sets it),
+; cleared when the view changes; DrawModel draws more detail when it is 3 or less.
+ViewZoom:
 	dc.b	$00
 dat_071_00178:
 	dc.b	$00
@@ -410,9 +417,14 @@ dat_071_0017B:
 	dc.b	$00
 dat_071_0017C:
 	dc.b	$00
-dat_071_0017D:
+; MapView - Set while the map view is on (the M key): the camera fixed above the middle of the
+; bay looking straight down, at the height kept in dat_071_00034; the view's bottom is then
+; ClipY $B3. -1 at startup.
+MapView:
 	dc.b	$00
-dat_071_0017E:
+; WorldFrozen - Set while the world stands still (before and between flights, the demo's start,
+; the debriefing): FrameCount does not advance, the objects and the bullets are not moved.
+WorldFrozen:
 	dc.b	$00
 dat_071_0017F:
 	dc.b	$00
@@ -424,9 +436,13 @@ dat_071_00182:
 	dc.b	$00
 dat_071_00183:
 	dc.b	$00
-dat_071_00184:
+; CameraFollows - The outside camera follows the viewed object (set by the keypad's Enter, the
+; fly-bys and the judges); cleared for the map view (SetOutsideCamera).
+CameraFollows:
 	dc.b	$00
-dat_071_00185:
+; NewView - Set when the view is changed (a new camera position: the fly-by, the start point,
+; the cockpit, the M and Enter keys), so that the camera and the scenery are set up again.
+NewView:
 	dc.b	$00
 dat_071_00186:
 	dc.b	$00
@@ -461,7 +477,9 @@ dat_071_00191:
 dat_071_00193:
 	dc.b	$00
 	dc.b	$00
-dat_071_00195:
+; ConfigChanged - Set when the flight log (ConfigBuffer) has changed and must be saved
+; (SaveConfig clears it).
+ConfigChanged:
 	dc.b	$00
 ; TextPageIndex - Which page of TextPages is being shown (times 2).
 TextPageIndex:
@@ -557,7 +575,9 @@ KeyBufferOut:
 ; KeyBufferCount - Keys waiting in KeyBuffer.
 KeyBufferCount:
 	dc.b	$00
-dat_071_001CA:
+; TextBuffer - A small buffer where numbers are turned into digits (BinToBCD) before they are
+; printed or drawn.
+TextBuffer:
 	dc.b	$00
 dat_071_001CB:
 	dc.b	$00
@@ -650,7 +670,9 @@ dat_071_00205:
 	dc.b	$00
 dat_071_00206:
 	dc.b	$00
-dat_071_00207:
+; PanelRedraw - While above 0 every readout of the panel is drawn each frame (otherwise each
+; only every fourth frame, in turn); RedrawInstruments sets it and GameFrame counts it down.
+PanelRedraw:
 	dc.b	$00
 dat_071_00208:
 	dc.b	$00
@@ -867,9 +889,13 @@ dat_071_0026E:
 	dc.b	$00
 dat_071_0026F:
 	dc.b	$00
-dat_071_00270:
+; FadeLevel - The palette's brightness now (0-15; 15 is the full in-flight palette,
+; dat_021_00080 row 0), stepped towards FadeTarget by MouseInterrupt.
+FadeLevel:
 	dc.b	$00
-dat_071_00271:
+; FadeTarget - The brightness the palette is fading to (FadeLevel); the states set it and wait
+; until FadeLevel reaches it.
+FadeTarget:
 	dc.b	$00
 	dc.b	$00
 dat_071_00273:
@@ -901,7 +927,9 @@ MissionTargetsDone:
 ; CodeResult - The security code's result: > 0 right, < 0 wrong.
 CodeResult:
 	dc.b	$00
-dat_071_0027D:
+; KeyMode - How the keys are read: 0 flying (the controls), 1 on the text screens, 2 typing the
+; security code.
+KeyMode:
 	dc.b	$00
 ; CameraSequence - The camera's opening move: 2 the mission fly-by, 3 when it ends, 4 at the
 ; aircraft, 5 choosing the start, 6 into the cockpit, 0 done.
@@ -909,7 +937,9 @@ CameraSequence:
 	dc.b	$00
 dat_071_0027F:
 	dc.b	$00
-dat_071_00280:
+; EngineSoundRequest - Which engine or cockpit sound to start next ($FE, $FD, $FC, $FA, $FB...:
+; set by the flight and the weapons, taken by CockpitSounds; $FF from the view keys).
+EngineSoundRequest:
 	dc.b	$00
 dat_071_00281:
 	dc.b	$00
@@ -990,7 +1020,9 @@ FrameCount:
 	dc.b	$00
 dat_071_002AB:
 	dc.b	$00
-dat_071_002AC:
+; ViewObjectIndex - The number of the object the view follows (0 the player; ViewObject is this
+; x $200).
+ViewObjectIndex:
 	dc.b	$00
 	dc.b	$00
 ; ViewObject - The offset (number << 9) of the object the view is from (normally the player,
@@ -1071,7 +1103,9 @@ MissionStartTime:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_002E8:
+; PanelShakeOffset - The byte offset added to the instrument panel's blits and digits while the
+; view shakes (ShakeView); 0 otherwise.
+PanelShakeOffset:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1273,11 +1307,15 @@ JoyEvents:
 	dc.b	$00
 dat_071_0036B:
 	dc.b	$00
-dat_071_0036C:
+; ViewKeys - The view keys pressed since the last frame (bits: 0 M, 1-2 Enter, 3 KP5, 4 KP8, 5
+; KP9, 6 KP6, 7 KP3), passed on each frame by ReadControls (FrameEvents2).
+ViewKeys:
 	dc.b	$00
 dat_071_0036D:
 	dc.b	$00
-dat_071_0036E:
+; DebugCheckpoint - A number written just before many calls to Nop: where the program last was,
+; left from debugging (nothing reads it).
+DebugCheckpoint:
 	dc.b	$00
 	dc.b	$00
 dat_071_00370:
@@ -1295,7 +1333,9 @@ dat_071_00376:
 dat_071_00378:
 	dc.b	$00
 	dc.b	$00
-dat_071_0037A:
+; LoopIndex - A loop counter shared by several drawing loops (the far scenery lists,
+; DrawObjects, DrawHUDFixed, DrawTargetBox, sub_029_00002).
+LoopIndex:
 	dc.b	$00
 	dc.b	$00
 dat_071_0037C:
@@ -1425,17 +1465,23 @@ dat_071_0042E:
 dat_071_00430:
 	dc.b	$00
 	dc.b	$00
-dat_071_00432:
+; ViewOffsetX - Minus the camera's x within its map cell (with ViewOffsetY, ViewOffsetZ, set by
+; SetCockpitEye / SetOutsideCamera): added to a position in the same cell to make it relative
+; to the camera.
+ViewOffsetX:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00436:
+; ViewOffsetY - Minus the camera's height: added to a height to make it relative to the camera
+; (so a shape on the ground is drawn only while this is above -$380000).
+ViewOffsetY:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0043A:
+; ViewOffsetZ - Minus the camera's z within its map cell (see ViewOffsetX).
+ViewOffsetZ:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1445,20 +1491,27 @@ dat_071_0043E:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00442:
+; ViewOffsetX8 - ViewOffsetX / 256, a word (with ViewOffsetY8 and ViewOffsetZ8): the camera
+; offset at the scale the drawing works in.
+ViewOffsetX8:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00446:
+; ViewOffsetZ8 - ViewOffsetZ / 256, a word.
+ViewOffsetZ8:
 	dc.b	$00
 	dc.b	$00
-dat_071_00448:
+; ViewOffsetY8 - ViewOffsetY / 256, a long: an object's height relative to the camera is its
+; height / 256 plus this, so the tests 'below -$C0' mean the camera is well above it.
+ViewOffsetY8:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0044C:
+; EyeX - The camera's position in the world (x, then EyeY and EyeZ: the full 32-bit positions,
+; cell included).
+EyeX:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1533,7 +1586,9 @@ dat_071_00474:
 dat_071_00486:
 	dc.b	$00
 	dc.b	$00
-dat_071_00488:
+; DistanceShift - How far the object being drawn is scaled down by its distance (a shift, from
+; DistanceScale): its vertices are shifted right by it so that far objects stay within range.
+DistanceShift:
 	dc.b	$00
 	dc.b	$00
 dat_071_0048A:
@@ -1588,7 +1643,9 @@ StateTimer:
 dat_071_004AE:
 	dc.b	$00
 	dc.b	$00
-dat_071_004B0:
+; CurrentWarning - The warning sound now chosen (UpdateWarnings): a sound word, its low byte
+; the sound, the high bits flags; 0 none.
+CurrentWarning:
 	dc.b	$00
 	dc.b	$00
 dat_071_004B2:
@@ -1692,7 +1749,9 @@ dat_071_004F6:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_004FA:
+; ObjectViewPos - The position of the object being drawn relative to the camera, in words (x,
+; then y and z at +2, +4: /256 scale); also a scratch area for some HUD and radar routines.
+ObjectViewPos:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1766,7 +1825,9 @@ dat_071_00528:
 ; SoundFlags - Sound flags (bit 2: text201 loaded).
 SoundFlags:
 	dc.b	$00
-dat_071_0052B:
+; SoundsLoaded - Which sounds were loaded (bits, set by LoadEngineSounds; bit 7 the music
+; samples, LoadMusicSamples): the sound routines play only those loaded.
+SoundsLoaded:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2079,7 +2140,11 @@ dat_071_00626:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00642:
+; Bullets - The gun's bullets: 20 records of 64 bytes. +$00 the position (x, y, z longs within
+; its map cell), +$0C the previous position, +$26 flags (bit 0 in flight; 1 hit the ground, 4
+; hit something, $1000 / $2000 how it is drawn at the end), +$28 a timer, +$2E the object that
+; fired it, +$30 / +$32 its map cell (x, z).
+Bullets:
 	dcb.b	1280,$00
 dat_071_00B42:
 	dc.b	$00

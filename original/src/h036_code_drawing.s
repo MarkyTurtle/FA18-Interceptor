@@ -8,10 +8,10 @@
 ;===============================================================================
 	CODE_HUNK	h036
 sub_036_00000:
-        move.l  #$fffff,(dat_071_000B6).l       ; 00000
+        move.l  #$fffff,(FillPattern).l         ; 00000
         rts                                     ; 0000A
 sub_036_0000C:
-        move.l  #$fffff,(dat_071_000B6).l       ; 0000C
+        move.l  #$fffff,(FillPattern).l         ; 0000C
         move.w  #$d,(DrawColour).l              ; 00016
         tst.w   (DisplayBuffer).l               ; 0001E
         beq.b   l_036_0004C                     ; 00024
@@ -1128,7 +1128,7 @@ sub_036_00BAA:
         move.w  #$542,d6                        ; 00BD6
         movea.w #$25,a5                         ; 00BDA
         move.w  #$c,d7                          ; 00BDE
-        add.l   (dat_071_002E8).l,d1            ; 00BE2
+        add.l   (PanelShakeOffset).l,d1         ; 00BE2
         jsr     (sub_037_00A22).l               ; 00BE8
         blt.b   l_036_00BA8                     ; 00BEE
         tst.w   d5                              ; 00BF0
@@ -1175,7 +1175,7 @@ l_036_00C3E:
         move.l  d4,BLTDPTH(a0)                  ; 00C6C
         move.w  d6,BLTSIZE(a0)                  ; 00C70
         bsr.w   DrawAttitudeIndicator           ; 00C74
-        move.l  #$7ffff,(dat_071_000B6).l       ; 00C78
+        move.l  #$7ffff,(FillPattern).l         ; 00C78
         move.w  #$cc,d0                         ; 00C82
         add.w   (ViewX).l,d0                    ; 00C86
         move.w  #$ac,d1                         ; 00C8C
@@ -1353,13 +1353,13 @@ l_036_00E08:
         cmpi.w  #$1,d6                          ; 00E08
         ble.b   l_036_00E34                     ; 00E0C
 l_036_00E0E:
-        move.l  (dat_071_000B6).l,-(a7)         ; 00E0E
+        move.l  (FillPattern).l,-(a7)           ; 00E0E
         tst.b   (dat_071_00172).l               ; 00E14
         bne.b   l_036_00E26                     ; 00E1A
-        move.l  #$fffff,(dat_071_000B6).l       ; 00E1C
+        move.l  #$fffff,(FillPattern).l         ; 00E1C
 l_036_00E26:
         bsr.w   DrawLine                        ; 00E26
-        move.l  (a7)+,(dat_071_000B6).l         ; 00E2A
+        move.l  (a7)+,(FillPattern).l           ; 00E2A
         moveq   #$1,d0                          ; 00E30
         rts                                     ; 00E32
 l_036_00E34:

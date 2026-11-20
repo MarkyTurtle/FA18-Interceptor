@@ -18,7 +18,7 @@ ShapeQuadList:
         move.w  #$8,d1                          ; 00010
         clr.w   d2                              ; 00014
         clr.w   d3                              ; 00016
-        movem.w d0-d3,(dat_071_000B6).l         ; 00018
+        movem.w d0-d3,(FillPattern).l           ; 00018
         clr.w   -$7e(a6)                        ; 00020
         move.l  #$4,(PolygonBuffer).l           ; 00024
 l_014_0002E:
@@ -58,7 +58,7 @@ sub_014_00086:
         move.w  #$0,d1                          ; 0008A
         move.w  #$2,d2                          ; 0008E
         clr.w   d3                              ; 00092
-        movem.w d0-d3,(dat_071_000B6).l         ; 00094
+        movem.w d0-d3,(FillPattern).l           ; 00094
         lea.l   (VertexBuffer).l,a3             ; 0009C
         adda.w  (a2)+,a3                        ; 000A2
         move.w  (a2)+,-$38(a6)                  ; 000A4
@@ -204,7 +204,7 @@ l_014_001FE:
 ; above (dat_071_00448 below -$C0); otherwise the list is skipped.
 ;-------------------------------------------------------------------------------
 ShapeLineListFromAbove:
-        cmpi.l  #$ffffff40,(dat_071_00448).l    ; 0023C
+        cmpi.l  #$ffffff40,(ViewOffsetY8).l     ; 0023C
         blt.b   ShapeLineList                   ; 00246
 l_014_00248:
         tst.w   (a2)+                           ; 00248
@@ -218,7 +218,7 @@ l_014_00248:
 ;-------------------------------------------------------------------------------
 ShapeLineList:
         movem.l a1/a5,-(a7)                     ; 00250
-        move.l  #$ffffffff,(dat_071_000B6).l    ; 00254
+        move.l  #$ffffffff,(FillPattern).l      ; 00254
         move.w  (a2)+,(DrawColour).l            ; 0025E
         clr.w   -$7e(a6)                        ; 00264
         clr.w   -$6e(a6)                        ; 00268
@@ -395,7 +395,7 @@ ShapeRunwaySide3:
         move.w  (a2)+,(DrawColour).l            ; 00430
         lea.l   (VertexBuffer).l,a3             ; 00436
         adda.w  (a2)+,a3                        ; 0043C
-        cmpi.l  #$ffffff80,(dat_071_00448).l    ; 0043E
+        cmpi.l  #$ffffff80,(ViewOffsetY8).l     ; 0043E
         blt.b   l_014_0049C                     ; 00448
         lea.l   (PolygonBuffer).l,a0            ; 0044A
         clr.w   (a0)+                           ; 00450
@@ -434,7 +434,7 @@ ShapeRunwaySide4:
         move.w  (a2)+,(DrawColour).l            ; 004A0
         lea.l   (VertexBuffer).l,a3             ; 004A6
         adda.w  (a2)+,a3                        ; 004AC
-        cmpi.l  #$ffffff80,(dat_071_00448).l    ; 004AE
+        cmpi.l  #$ffffff80,(ViewOffsetY8).l     ; 004AE
         blt.b   l_014_0049C                     ; 004B8
         movem.l a1-a2/a5,-(a7)                  ; 004BA
         lea.l   (PolygonBuffer).l,a0            ; 004BE
@@ -511,13 +511,13 @@ ShapeRunwaySide:
         andi.w  #$f,d7                          ; 0057C
         asr.w   d7,d3                           ; 00580
         asr.w   d7,d4                           ; 00582
-        add.w   (dat_071_004FA).l,d3            ; 00584
+        add.w   (ObjectViewPos).l,d3            ; 00584
         add.w   (dat_071_004FE).l,d4            ; 0058A
-        move.w  (dat_071_00488).l,d7            ; 00590
+        move.w  (DistanceShift).l,d7            ; 00590
         asl.w   d7,d3                           ; 00596
         asl.w   d7,d4                           ; 00598
-        add.w   (dat_071_00442).l,d3            ; 0059A
-        add.w   (dat_071_00446).l,d4            ; 005A0
+        add.w   (ViewOffsetX8).l,d3             ; 0059A
+        add.w   (ViewOffsetZ8).l,d4             ; 005A0
         muls.w  d1,d3                           ; 005A6
         muls.w  d2,d4                           ; 005A8
         move.w  (a2)+,d0                        ; 005AA
@@ -599,13 +599,13 @@ ShapeRunwaySide2:
         andi.w  #$f,d7                          ; 0067A
         asr.w   d7,d3                           ; 0067E
         asr.w   d7,d4                           ; 00680
-        add.w   (dat_071_004FA).l,d3            ; 00682
+        add.w   (ObjectViewPos).l,d3            ; 00682
         add.w   (dat_071_004FE).l,d4            ; 00688
-        move.w  (dat_071_00488).l,d7            ; 0068E
+        move.w  (DistanceShift).l,d7            ; 0068E
         asl.w   d7,d3                           ; 00694
         asl.w   d7,d4                           ; 00696
-        add.w   (dat_071_00442).l,d3            ; 00698
-        add.w   (dat_071_00446).l,d4            ; 0069E
+        add.w   (ViewOffsetX8).l,d3             ; 00698
+        add.w   (ViewOffsetZ8).l,d4             ; 0069E
         muls.w  d1,d3                           ; 006A4
         muls.w  d2,d4                           ; 006A6
         add.l   d3,d4                           ; 006A8

@@ -9,7 +9,7 @@
 l_019_00000:
         bra.w   l_019_00704                     ; 00000
 l_019_00004:
-        move.w  #$1f,(dat_071_0036E).l          ; 00004
+        move.w  #$1f,(DebugCheckpoint).l        ; 00004
         jsr     (Nop).l                         ; 0000C
         bra.w   l_019_00718                     ; 00012
 
@@ -137,7 +137,7 @@ l_019_00120:
         moveq   #$1,d0                          ; 00120
         bra.w   l_019_00054                     ; 00122
 l_019_00126:
-        move.w  #$1,(dat_071_0036E).l           ; 00126
+        move.w  #$1,(DebugCheckpoint).l         ; 00126
         jsr     (Nop).l                         ; 0012E
         bra.w   l_019_00054                     ; 00134
 sub_019_00138:
@@ -246,7 +246,7 @@ l_019_0020E:
         movem.w (a7)+,d0-d2                     ; 00210
         rts                                     ; 00214
 l_019_00216:
-        move.w  #$3,(dat_071_0036E).l           ; 00216
+        move.w  #$3,(DebugCheckpoint).l         ; 00216
         jsr     (Nop).l                         ; 0021E
         movem.w (a7)+,d0-d2                     ; 00224
         rts                                     ; 00228
@@ -348,7 +348,7 @@ l_019_002F2:
         movem.w (a7)+,d0-d2                     ; 002F4
         rts                                     ; 002F8
 l_019_002FA:
-        move.w  #$4,(dat_071_0036E).l           ; 002FA
+        move.w  #$4,(DebugCheckpoint).l         ; 002FA
         jsr     (Nop).l                         ; 00302
         movem.w (a7)+,d0-d2                     ; 00308
         rts                                     ; 0030C
@@ -466,7 +466,7 @@ l_019_003F0:
         movem.w (a7)+,d0-d2                     ; 003F2
         rts                                     ; 003F6
 l_019_003F8:
-        move.w  #$5,(dat_071_0036E).l           ; 003F8
+        move.w  #$5,(DebugCheckpoint).l         ; 003F8
         jsr     (Nop).l                         ; 00400
         movem.w (a7)+,d0-d2                     ; 00406
         rts                                     ; 0040A
@@ -480,7 +480,7 @@ l_019_0040C:
         ble.w   l_019_004A0                     ; 0041E
         bra.b   l_019_0043C                     ; 00422
 l_019_00424:
-        move.w  #$6,(dat_071_0036E).l           ; 00424
+        move.w  #$6,(DebugCheckpoint).l         ; 00424
         jsr     (Nop).l                         ; 0042C
         bra.w   l_019_00704                     ; 00432
 l_019_00436:
@@ -556,7 +556,7 @@ l_019_004A0:
         ble.w   l_019_00540                     ; 004B8
         bra.b   l_019_004D6                     ; 004BC
 l_019_004BE:
-        move.w  #$7,(dat_071_0036E).l           ; 004BE
+        move.w  #$7,(DebugCheckpoint).l         ; 004BE
         jsr     (Nop).l                         ; 004C6
         bra.w   l_019_00704                     ; 004CC
 l_019_004D0:
@@ -633,7 +633,7 @@ l_019_00540:
         ble.w   l_019_005D6                     ; 00554
         bra.b   l_019_00572                     ; 00558
 l_019_0055A:
-        move.w  #$8,(dat_071_0036E).l           ; 0055A
+        move.w  #$8,(DebugCheckpoint).l         ; 0055A
         jsr     (Nop).l                         ; 00562
         bra.w   l_019_00704                     ; 00568
 l_019_0056C:
@@ -709,7 +709,7 @@ l_019_005D6:
         ble.w   l_019_00676                     ; 005EE
         bra.b   l_019_0060C                     ; 005F2
 l_019_005F4:
-        move.w  #$9,(dat_071_0036E).l           ; 005F4
+        move.w  #$9,(DebugCheckpoint).l         ; 005F4
         jsr     (Nop).l                         ; 005FC
         bra.w   l_019_00704                     ; 00602
 l_019_00606:
@@ -838,7 +838,7 @@ l_019_006FE:
         bra.b   l_019_006C8                     ; 00702
 l_019_00704:
         addq.w  #$1,(dat_071_002BC).l           ; 00704
-        move.w  #$a,(dat_071_0036E).l           ; 0070A
+        move.w  #$a,(DebugCheckpoint).l         ; 0070A
         jsr     (Nop).l                         ; 00712
 l_019_00718:
         clr.w   d7                              ; 00718

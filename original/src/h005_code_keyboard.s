@@ -8,7 +8,7 @@
 ;===============================================================================
 	CODE_HUNK	h005
 l_005_00000:
-        move.w  #$33,(dat_071_0036E).l          ; 00000
+        move.w  #$33,(DebugCheckpoint).l        ; 00000
         jsr     (Nop).l                         ; 00008
         rts                                     ; 0000E
 sub_005_00010:
@@ -117,7 +117,7 @@ l_005_0017A:
         beq.w   l_005_00420                     ; 00190
         tst.b   (LogDiskCheck).l                ; 00194
         bne.w   l_005_00420                     ; 0019A
-        tst.b   (dat_071_0027D).l               ; 0019E
+        tst.b   (KeyMode).l                     ; 0019E
         bne.w   l_005_00420                     ; 001A4
         tst.b   (AircraftChosen).l              ; 001A8
         bne.w   l_005_0038A                     ; 001AE
@@ -304,7 +304,7 @@ l_005_00418:
         cmpi.b  #$19,d0                         ; 00418
         beq.w   Key_P                           ; 0041C
 l_005_00420:
-        cmpi.b  #$2,(dat_071_0027D).l           ; 00420
+        cmpi.b  #$2,(KeyMode).l                 ; 00420
         bne.b   l_005_00432                     ; 00428
         cmpi.b  #$43,d0                         ; 0042A
         beq.w   Key_KPEnter                     ; 0042E
@@ -375,7 +375,7 @@ Key_E:
         bne.b   l_005_00516                     ; 00510
         bra.w   l_005_01624                     ; 00512
 l_005_00516:
-        tst.b   (dat_071_0017E).l               ; 00516
+        tst.b   (WorldFrozen).l                 ; 00516
         bne.w   l_005_01624                     ; 0051C
         move.b  #$8,(dat_071_00212).l           ; 00520
         lea.l   (dat_071_0017B).l,a0            ; 00528
@@ -400,7 +400,7 @@ l_005_00568:
         add.w   d3,d3                           ; 00574
         add.w   d3,d1                           ; 00576
         ext.l   d1                              ; 00578
-        move.l  d1,(dat_071_002E8).l            ; 0057A
+        move.l  d1,(PanelShakeOffset).l         ; 0057A
         move.b  #$0,(dat_071_00179).l           ; 00580
         bra.w   sub_005_00E6E                   ; 00588
 Key_T:
@@ -409,7 +409,7 @@ Key_T:
         move.b  #$1,(dat_071_00189).l           ; 0059A
         bra.w   l_005_01624                     ; 005A2
 	dc.b	$41,$F9
-        dc.l    dat_071_00184                   ; 005A8
+        dc.l    CameraFollows                   ; 005A8
 	dc.b	$60,$00,$10,$4E
 Key_R:
         jsr     (sub_039_01886).l               ; 005B0
@@ -523,7 +523,7 @@ l_005_00728:
         move.b  $7c(a1),d0                      ; 00728
         andi.b  #$f,d0                          ; 0072C
         bne.w   l_005_007F6                     ; 00730
-        tst.b   (dat_071_0017E).l               ; 00734
+        tst.b   (WorldFrozen).l                 ; 00734
         bne.b   l_005_007B4                     ; 0073A
         move.b  (dat_071_00240).l,d0            ; 0073C
         beq.b   l_005_007B4                     ; 00742
@@ -736,9 +736,9 @@ StickPitchCentre:
         moveq   #$0,d2                          ; 008FC
 l_005_008FE:
         move.b  d2,(PitchInput).l               ; 008FE
-        tst.b   (dat_071_0017D).l               ; 00904
+        tst.b   (MapView).l                     ; 00904
         bne.b   l_005_00914                     ; 0090A
-        tst.b   (dat_071_00184).l               ; 0090C
+        tst.b   (CameraFollows).l               ; 0090C
         beq.b   l_005_00926                     ; 00912
 l_005_00914:
         move.b  (PlayerControls).l,d1           ; 00914
@@ -778,9 +778,9 @@ StickRollCentre:
         moveq   #$0,d2                          ; 00948
 l_005_0094A:
         move.b  d2,(RollInput).l                ; 0094A
-        tst.b   (dat_071_0017D).l               ; 00950
+        tst.b   (MapView).l                     ; 00950
         bne.b   l_005_00962                     ; 00956
-        tst.b   (dat_071_00184).l               ; 00958
+        tst.b   (CameraFollows).l               ; 00958
         beq.w   l_005_00974                     ; 0095E
 l_005_00962:
         move.b  (PlayerControls).l,d1           ; 00962
@@ -852,15 +852,15 @@ Key_KPEnter:
 l_005_00A54:
         tst.b   d6                              ; 00A54
         bne.b   l_005_00AAA                     ; 00A56
-        bset    #$1,(dat_071_0036C).l           ; 00A58
+        bset    #$1,(ViewKeys).l                ; 00A58
         tst.b   d5                              ; 00A60
         bne.b   l_005_00A6C                     ; 00A62
         move.b  #$4,(ViewChoice).l              ; 00A64
 l_005_00A6C:
-        move.b  #$1,(dat_071_00185).l           ; 00A6C
+        move.b  #$1,(NewView).l                 ; 00A6C
 l_005_00A74:
-        move.b  #$1,(dat_071_00184).l           ; 00A74
-        clr.b   (dat_071_0017D).l               ; 00A7C
+        move.b  #$1,(CameraFollows).l           ; 00A74
+        clr.b   (MapView).l                     ; 00A7C
 l_005_00A82:
         lea.l   (ObjectTable).l,a0              ; 00A82
         move.w  (ViewObject).l,d4               ; 00A88
@@ -869,7 +869,7 @@ l_005_00A82:
         move.b  #$ff,(dat_071_00203).l          ; 00A9E
         bra.w   l_005_01624                     ; 00AA6
 l_005_00AAA:
-        bset    #$2,(dat_071_0036C).l           ; 00AAA
+        bset    #$2,(ViewKeys).l                ; 00AAA
         move.b  #$ff,(dat_071_00176).l          ; 00AB2
         lea.l   (StartPoints).l,a0              ; 00ABA
         move.b  (StartPoint).l,d0               ; 00AC0
@@ -922,7 +922,7 @@ l_005_00B0A:
         move.l  d3,d1                           ; 00B42
 l_005_00B44:
         jsr     (sub_004_002A2).l               ; 00B44
-        clr.b   (dat_071_00185).l               ; 00B4A
+        clr.b   (NewView).l                     ; 00B4A
         tst.b   (OutsideView).l                 ; 00B50
         beq.w   l_005_00A74                     ; 00B56
         clr.b   (dat_071_00176).l               ; 00B5A
@@ -931,7 +931,7 @@ l_005_00B64:
         moveq   #$0,d4                          ; 00B64
         bra.b   l_005_00BB4                     ; 00B66
 Key_KP9:
-        bset    #$5,(dat_071_0036C).l           ; 00B68
+        bset    #$5,(ViewKeys).l                ; 00B68
         tst.b   (OutsideView).l                 ; 00B70
         beq.w   sub_005_00CEE                   ; 00B76
         moveq   #$1,d4                          ; 00B7A
@@ -940,7 +940,7 @@ l_005_00B7E:
         moveq   #$2,d4                          ; 00B7E
         bra.b   l_005_00BB4                     ; 00B80
 Key_KP3:
-        bset    #$7,(dat_071_0036C).l           ; 00B82
+        bset    #$7,(ViewKeys).l                ; 00B82
         moveq   #$3,d4                          ; 00B8A
         bra.b   l_005_00BB4                     ; 00B8C
 sub_005_00B8E:
@@ -965,9 +965,9 @@ Key_KPDot:
 l_005_00BB4:
         move.b  d4,(ViewChoice).l               ; 00BB4
         move.b  #$ff,(RedrawFlags).l            ; 00BBA
-        tst.b   (dat_071_00280).l               ; 00BC2
+        tst.b   (EngineSoundRequest).l          ; 00BC2
         bne.w   l_005_01624                     ; 00BC8
-        move.b  #$ff,(dat_071_00280).l          ; 00BCC
+        move.b  #$ff,(EngineSoundRequest).l     ; 00BCC
         bra.w   l_005_01624                     ; 00BD4
 l_005_00BD8:
         tst.b   (OutsideView).l                 ; 00BD8
@@ -975,15 +975,15 @@ l_005_00BD8:
 Key_KP5:
         move.b  (OutsideView).l,d4              ; 00BE0
         bne.b   l_005_00B9E                     ; 00BE6
-        bset    #$3,(dat_071_0036C).l           ; 00BE8
+        bset    #$3,(ViewKeys).l                ; 00BE8
         bra.b   l_005_00C6C                     ; 00BF0
 l_005_00BF2:
         move.b  (OutsideView).l,d4              ; 00BF2
         beq.w   l_005_01624                     ; 00BF8
         tst.b   (CameraSequence).l              ; 00BFC
         bne.w   l_005_01624                     ; 00C02
-        bset    #$3,(dat_071_0036C).l           ; 00C06
-        tst.b   (dat_071_0017D).l               ; 00C0E
+        bset    #$3,(ViewKeys).l                ; 00C06
+        tst.b   (MapView).l                     ; 00C0E
         beq.b   l_005_00C42                     ; 00C14
         move.l  (CameraY).l,d1                  ; 00C16
         subi.l  #$2000000,d1                    ; 00C1C
@@ -1001,9 +1001,9 @@ l_005_00C42:
 l_005_00C48:
         move.b  d4,(OutsideView).l              ; 00C48
         move.b  #$ff,(RedrawFlags).l            ; 00C4E
-        tst.b   (dat_071_00280).l               ; 00C56
+        tst.b   (EngineSoundRequest).l          ; 00C56
         bne.w   l_005_01624                     ; 00C5C
-        move.b  #$ff,(dat_071_00280).l          ; 00C60
+        move.b  #$ff,(EngineSoundRequest).l     ; 00C60
         bra.w   l_005_01624                     ; 00C68
 l_005_00C6C:
         move.b  #$ff,(dat_071_00261).l          ; 00C6C
@@ -1014,7 +1014,7 @@ l_005_00C78:
         beq.w   l_005_01624                     ; 00C86
         tst.b   (CameraSequence).l              ; 00C8A
         bne.w   l_005_01624                     ; 00C90
-        tst.b   (dat_071_0017D).l               ; 00C94
+        tst.b   (MapView).l                     ; 00C94
         beq.b   l_005_00CC8                     ; 00C9A
         move.l  (CameraY).l,d1                  ; 00C9C
         addi.l  #$2000000,d1                    ; 00CA2
@@ -1036,7 +1036,7 @@ l_005_00CDA:
         moveq   #$1,d4                          ; 00CDA
         bra.w   l_005_00C48                     ; 00CDC
 Key_KP8:
-        bset    #$4,(dat_071_0036C).l           ; 00CE0
+        bset    #$4,(ViewKeys).l                ; 00CE0
         tst.b   d5                              ; 00CE8
         bne.w   l_005_00B64                     ; 00CEA
 sub_005_00CEE:
@@ -1055,22 +1055,22 @@ Key_KP4:
         tst.b   d5                              ; 00D20
         bne.w   l_005_00B96                     ; 00D22
         move.b  #$0,(dat_071_00178).l           ; 00D26
-        subq.b  #$1,(dat_071_00177).l           ; 00D2E
+        subq.b  #$1,(ViewZoom).l                ; 00D2E
         blt.b   l_005_00D44                     ; 00D34
         beq.b   sub_005_00CEE                   ; 00D36
-        cmpi.b  #$b,(dat_071_00177).l           ; 00D38
+        cmpi.b  #$b,(ViewZoom).l                ; 00D38
         bge.b   sub_005_00CEE                   ; 00D40
         bra.b   l_005_00DC2                     ; 00D42
 l_005_00D44:
         moveq   #$b,d7                          ; 00D44
         bra.b   l_005_00DB4                     ; 00D46
 Key_KP6:
-        bset    #$6,(dat_071_0036C).l           ; 00D48
+        bset    #$6,(ViewKeys).l                ; 00D48
         tst.b   d5                              ; 00D50
         bne.w   l_005_00B7E                     ; 00D52
         move.b  #$0,(dat_071_00178).l           ; 00D56
-        addq.b  #$1,(dat_071_00177).l           ; 00D5E
-        cmpi.b  #$b,(dat_071_00177).l           ; 00D64
+        addq.b  #$1,(ViewZoom).l                ; 00D5E
+        cmpi.b  #$b,(ViewZoom).l                ; 00D64
         ble.b   l_005_00DC2                     ; 00D6C
         bra.w   sub_005_00CEE                   ; 00D6E
 Key_KP7:
@@ -1089,7 +1089,7 @@ Key_KP1:
         move.b  #$0,(dat_071_00178).l           ; 00DA4
         move.b  #$ff,(RedrawFlags).l            ; 00DAC
 l_005_00DB4:
-        move.b  d7,(dat_071_00177).l            ; 00DB4
+        move.b  d7,(ViewZoom).l                 ; 00DB4
         move.b  #$3,(dat_071_00206).l           ; 00DBA
 l_005_00DC2:
         jsr     (StartGunSound).l               ; 00DC2
@@ -1103,7 +1103,7 @@ l_005_00DC2:
         andi.b  #$f0,d4                         ; 00DF8
         cmpi.b  #$30,d4                         ; 00DFC
         beq.w   l_005_01624                     ; 00E00
-        move.b  (dat_071_00177).l,d4            ; 00E04
+        move.b  (ViewZoom).l,d4                 ; 00E04
         cmpi.b  #$3,d4                          ; 00E0A
         blt.b   l_005_00E4C                     ; 00E0E
         cmpi.b  #$9,d4                          ; 00E10
@@ -1126,7 +1126,7 @@ l_005_00E30:
         bra.w   l_005_01624                     ; 00E48
 l_005_00E4C:
         lea.l   (dat_005_00EBC).l,a0            ; 00E4C
-        move.b  (dat_071_00177).l,d4            ; 00E52
+        move.b  (ViewZoom).l,d4                 ; 00E52
         ext.w   d4                              ; 00E58
         move.b  (a0,d4.w),d4                    ; 00E5A
         ext.w   d4                              ; 00E5E
@@ -1135,7 +1135,7 @@ l_005_00E4C:
         move.w  d4,(ViewX).l                    ; 00E68
 sub_005_00E6E:
         jsr     (RedrawInstruments).l           ; 00E6E
-        move.b  (dat_071_00177).l,d4            ; 00E74
+        move.b  (ViewZoom).l,d4                 ; 00E74
         cmpi.b  #$3,d4                          ; 00E7A
         blt.b   l_005_00E8C                     ; 00E7E
         cmpi.b  #$9,d4                          ; 00E80
@@ -1161,7 +1161,7 @@ Key_RBracket:
         moveq   #$20,d3                         ; 00ECA
         tst.b   d5                              ; 00ECC
         beq.b   l_005_00EDA                     ; 00ECE
-        tst.b   (dat_071_00185).l               ; 00ED0
+        tst.b   (NewView).l                     ; 00ED0
         bne.w   l_005_00BF2                     ; 00ED6
 l_005_00EDA:
         cmp.w   (RadarScale).l,d3               ; 00EDA
@@ -1171,7 +1171,7 @@ l_005_00EDA:
 Key_LBracket:
         tst.b   d5                              ; 00EEA
         beq.b   l_005_00EF8                     ; 00EEC
-        tst.b   (dat_071_00185).l               ; 00EEE
+        tst.b   (NewView).l                     ; 00EEE
         bne.w   l_005_00C78                     ; 00EF4
 l_005_00EF8:
         cmpi.w  #$80,(RadarScale).l             ; 00EF8
@@ -1305,7 +1305,7 @@ l_005_010D6:
         addi.w  #$b,d4                          ; 010DA
         bra.w   l_005_012C2                     ; 010DE
 l_005_010E2:
-        tst.b   (dat_071_0017E).l               ; 010E2
+        tst.b   (WorldFrozen).l                 ; 010E2
         bne.w   l_005_01624                     ; 010E8
         move.w  d0,d4                           ; 010EC
         subi.w  #$4f,d4                         ; 010EE
@@ -1445,9 +1445,9 @@ l_005_01276:
         move.b  d4,(StartPoint).l               ; 01276
         tst.b   (CameraSequence).l              ; 0127C
         blt.w   l_005_01624                     ; 01282
-        tst.b   (dat_071_0027D).l               ; 01286
+        tst.b   (KeyMode).l                     ; 01286
         bne.w   l_005_01624                     ; 0128C
-        lea.l   (dat_071_00185).l,a0            ; 01290
+        lea.l   (NewView).l,a0                  ; 01290
         bra.w   sub_005_015FC                   ; 01296
 sub_005_0129A:
         move.b  #$ff,(KeyPressed).l             ; 0129A
@@ -1474,8 +1474,8 @@ l_005_012CC:
 ViewFollow:
         move.b  #$ff,(RedrawFlags).l            ; 012D0
         move.w  #$ffff,(SeekerPos).l            ; 012D8
-        move.b  #$fe,(dat_071_00280).l          ; 012E0
-        move.w  d1,(dat_071_002AC).l            ; 012E8
+        move.b  #$fe,(EngineSoundRequest).l     ; 012E0
+        move.w  d1,(ViewObjectIndex).l          ; 012E8
         asl.w   #$8,d1                          ; 012EE
         add.w   d1,d1                           ; 012F0
         move.w  d1,(ViewObject).l               ; 012F2
@@ -1494,7 +1494,7 @@ l_005_0131C:
         bne.w   sub_005_00CEE                   ; 01336
         move.w  #$32,(ViewShift).l              ; 0133A
         move.w  #$320,(ViewX).l                 ; 01342
-        clr.b   (dat_071_00177).l               ; 0134A
+        clr.b   (ViewZoom).l                    ; 0134A
         bsr.w   sub_005_00E6E                   ; 01350
         move.w  #$a7,(ClipY).l                  ; 01354
         bra.w   l_005_01624                     ; 0135C
@@ -1504,8 +1504,8 @@ l_005_0131C:
 Key_M:
         tst.b   (CameraSequence).l              ; 01374
         bne.w   l_005_01624                     ; 0137A
-        bset    #$0,(dat_071_0036C).l           ; 0137E
-        tst.b   (dat_071_0017D).l               ; 01386
+        bset    #$0,(ViewKeys).l                ; 0137E
+        tst.b   (MapView).l                     ; 01386
         beq.b   l_005_0139C                     ; 0138C
         move.l  (CameraY).l,(dat_071_00034).l   ; 0138E
         bra.w   l_005_00A6C                     ; 01398
@@ -1532,9 +1532,9 @@ l_005_0139C:
         clr.l   (dat_071_00622).l               ; 013FA
         move.w  #$1c20,(dat_071_00464).l        ; 01400
         clr.w   (dat_071_00466).l               ; 01408
-        clr.b   (dat_071_00184).l               ; 0140E
-        move.b  #$1,(dat_071_00185).l           ; 01414
-        move.b  #$1,(dat_071_0017D).l           ; 0141C
+        clr.b   (CameraFollows).l               ; 0140E
+        move.b  #$1,(NewView).l                 ; 01414
+        move.b  #$1,(MapView).l                 ; 0141C
         tst.b   (OutsideView).l                 ; 01424
         beq.w   l_005_00A82                     ; 0142A
         move.w  #$b3,(ClipY).l                  ; 0142E
@@ -1549,10 +1549,10 @@ l_005_01452:
 Key_P:
         tst.b   (CameraSequence).l              ; 01456
         blt.w   l_005_01624                     ; 0145C
-        tst.b   (dat_071_0017E).l               ; 01460
+        tst.b   (WorldFrozen).l                 ; 01460
         beq.b   l_005_0147A                     ; 01466
-        move.b  #$fe,(dat_071_00280).l          ; 01468
-        lea.l   (dat_071_0017E).l,a0            ; 01470
+        move.b  #$fe,(EngineSoundRequest).l     ; 01468
+        lea.l   (WorldFrozen).l,a0              ; 01470
         bra.w   sub_005_015FC                   ; 01476
 l_005_0147A:
         move.w  d0,-(a7)                        ; 0147A
@@ -1571,10 +1571,10 @@ l_005_0147A:
         move.b  d3,(a0)+                        ; 014A4
         move.b  d3,(a0)+                        ; 014A6
 l_005_014A8:
-        move.b  #$ff,(dat_071_0017E).l          ; 014A8
+        move.b  #$ff,(WorldFrozen).l            ; 014A8
         bra.w   l_005_01624                     ; 014B0
 sub_005_014B4:
-        move.b  #$1,(dat_071_0017E).l           ; 014B4
+        move.b  #$1,(WorldFrozen).l             ; 014B4
         andi.w  #$fff8,(FrameCount).l           ; 014BC
         bra.w   l_005_01624                     ; 014C4
 Key_F:

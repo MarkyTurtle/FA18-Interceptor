@@ -20,7 +20,7 @@ UpdateAttitude:
         bne.w   l_032_0008E                     ; 0000C
         tst.w   $4c(a1)                         ; 00010
         ble.b   l_032_00084                     ; 00014
-        tst.b   (dat_071_0017E).l               ; 00016
+        tst.b   (WorldFrozen).l                 ; 00016
         bne.b   l_032_00084                     ; 0001C
         movem.l $3e(a1),d2-d4                   ; 0001E
         move.l  #$7d0,d5                        ; 00024
@@ -63,7 +63,7 @@ l_032_0008E:
         move.w  d0,d4                           ; 00092
         tst.w   (CurrentObject).l               ; 00094
         bne.b   l_032_000AA                     ; 0009A
-        tst.b   (dat_071_0017E).l               ; 0009C
+        tst.b   (WorldFrozen).l                 ; 0009C
         beq.w   l_032_001F4                     ; 000A2
         bra.w   l_032_002F4                     ; 000A6
 l_032_000AA:
@@ -254,7 +254,7 @@ l_032_00294:
         move.w  d4,$5a(a1)                      ; 002BA
 l_032_002BE:
         move.b  (dat_071_0017F).l,d7            ; 002BE
-        or.b    (dat_071_0017E).l,d7            ; 002C4
+        or.b    (WorldFrozen).l,d7              ; 002C4
         bne.w   l_032_00228                     ; 002CA
         move.b  $62(a1),d3                      ; 002CE
         andi.b  #$f0,d3                         ; 002D2
@@ -550,7 +550,7 @@ l_032_005A8:
 ; (sub_004_00328).
 ;-------------------------------------------------------------------------------
 SetOutsideCamera:
-        tst.b   (dat_071_00184).l               ; 005B2
+        tst.b   (CameraFollows).l               ; 005B2
         beq.b   l_032_005A8                     ; 005B8
         lea.l   (ObjectTable).l,a1              ; 005BA
         move.w  (ViewObject).l,d2               ; 005C0
@@ -586,7 +586,7 @@ l_032_00608:
         sub.l   (CameraX).l,d2                  ; 00614
         sub.l   (CameraY).l,d3                  ; 0061A
         sub.l   (CameraZ).l,d4                  ; 00620
-        tst.b   (dat_071_00184).l               ; 00626
+        tst.b   (CameraFollows).l               ; 00626
         blt.b   l_032_0065A                     ; 0062C
         tst.b   (CameraSequence).l              ; 0062E
         beq.b   l_032_0063E                     ; 00634
@@ -605,13 +605,13 @@ l_032_0065A:
 l_032_0065E:
         move.l  #$7d0,d5                        ; 0065E
 l_032_00664:
-        tst.b   (dat_071_0017E).l               ; 00664
+        tst.b   (WorldFrozen).l                 ; 00664
         bne.b   l_032_006A8                     ; 0066A
         move.w  (dat_071_00464).l,d0            ; 0066C
         move.w  (dat_071_00466).l,d1            ; 00672
         ext.l   d0                              ; 00678
         ext.l   d1                              ; 0067A
-        tst.b   (dat_071_00185).l               ; 0067C
+        tst.b   (NewView).l                     ; 0067C
         bne.b   l_032_00686                     ; 00682
         moveq   #-1,d5                          ; 00684
 l_032_00686:
@@ -666,7 +666,7 @@ l_032_00752:
         moveq   #$0,d4                          ; 00756
         move.b  $62(a0),d3                      ; 00758
         andi.b  #$f0,d3                         ; 0075C
-        move.b  (dat_071_00177).l,d1            ; 00760
+        move.b  (ViewZoom).l,d1                 ; 00760
         beq.b   l_032_0077E                     ; 00766
         cmpi.b  #$b,d1                          ; 00768
         ble.w   l_032_0083A                     ; 0076C

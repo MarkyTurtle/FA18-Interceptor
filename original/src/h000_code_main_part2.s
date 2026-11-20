@@ -9,9 +9,9 @@
 ; bit 6), returns the view to the player's aircraft and asks for everything to be redrawn.
 ;-------------------------------------------------------------------------------
 CheckViewObjectGone:
-        tst.w   (dat_071_002AC).l               ; 04392
+        tst.w   (ViewObjectIndex).l             ; 04392
         beq.b   l_000_043F0                     ; 04398
-        move.w  (dat_071_002AC).l,d0            ; 0439A
+        move.w  (ViewObjectIndex).l,d0          ; 0439A
         moveq   #$9,d1                          ; 043A0
         ext.l   d0                              ; 043A2
         asl.l   d1,d0                           ; 043A4
@@ -21,13 +21,13 @@ CheckViewObjectGone:
         btst    #$6,d0                          ; 043B0
         bne.b   l_000_043F0                     ; 043B4
         moveq   #$0,d0                          ; 043B6
-        move.w  d0,(dat_071_002AC).l            ; 043B8
+        move.w  d0,(ViewObjectIndex).l          ; 043B8
         move.w  d0,(ViewObject).l               ; 043BE
         move.b  #$ff,(RedrawFlags).l            ; 043C4
         move.b  (OutsideView).l,d0              ; 043CC
         tst.b   d0                              ; 043D2
         bne.b   l_000_043F0                     ; 043D4
-        clr.b   (dat_071_00177).l               ; 043D6
+        clr.b   (ViewZoom).l                    ; 043D6
         moveq   #$0,d0                          ; 043DC
         move.w  d0,(ViewShift).l                ; 043DE
         move.w  d0,(ViewX).l                    ; 043E4
@@ -576,34 +576,34 @@ l_000_04A84:
 CockpitSounds:
         link.w  a6,#$ffe2                       ; 04AA0
         movem.l d2,-(a7)                        ; 04AA4
-        move.w  (dat_071_002AC).l,d0            ; 04AA8
+        move.w  (ViewObjectIndex).l,d0          ; 04AA8
         moveq   #$9,d1                          ; 04AAE
         ext.l   d0                              ; 04AB0
         asl.l   d1,d0                           ; 04AB2
         movea.l d0,a0                           ; 04AB4
         adda.l  #ObjectTable,a0                 ; 04AB6
         move.l  a0,d0                           ; 04ABC
-        move.l  d0,(dat_002_00008).l            ; 04ABE
-        move.b  (dat_071_00280).l,-$11(a6)      ; 04AC4
+        move.l  d0,(CockpitObject).l            ; 04ABE
+        move.b  (EngineSoundRequest).l,-$11(a6) ; 04AC4
         movea.l d0,a0                           ; 04ACC
         addq.l  #$2,a0                          ; 04ACE
         move.b  (CameraSequence).l,d0           ; 04AD0
         move.l  a0,-$10(a6)                     ; 04AD6
         tst.b   d0                              ; 04ADA
         bne.w   l_000_052BE                     ; 04ADC
-        move.b  (dat_071_0017D).l,d0            ; 04AE0
-        move.b  (dat_071_0017E).l,d1            ; 04AE6
+        move.b  (MapView).l,d0                  ; 04AE0
+        move.b  (WorldFrozen).l,d1              ; 04AE6
         or.b    d1,d0                           ; 04AEC
         tst.b   d0                              ; 04AEE
         bne.w   l_000_052BE                     ; 04AF0
-        tst.b   (dat_071_00165).l               ; 04AF4
+        tst.b   (FlightScreen).l                ; 04AF4
         beq.w   l_000_052BE                     ; 04AFA
         move.b  (dat_071_00255).l,d0            ; 04AFE
         tst.b   d0                              ; 04B04
         bpl.b   l_000_04B44                     ; 04B06
         tst.b   (OutsideView).l                 ; 04B08
         beq.b   l_000_04B26                     ; 04B0E
-        tst.b   (dat_071_00185).l               ; 04B10
+        tst.b   (NewView).l                     ; 04B10
         beq.b   l_000_04B32                     ; 04B16
         moveq   #$5,d0                          ; 04B18
         move.l  d0,-(a7)                        ; 04B1A
@@ -653,7 +653,7 @@ l_000_04B5A:
         lea.l   $24(a7),a7                      ; 04BA6
         bra.w   l_000_04DCE                     ; 04BAA
 l_000_04BAE:
-        movea.l (dat_002_00008).l,a0            ; 04BAE
+        movea.l (CockpitObject).l,a0            ; 04BAE
         move.b  $7c(a0),d0                      ; 04BB4
         andi.b  #$f,d0                          ; 04BB8
         tst.b   d0                              ; 04BBC
@@ -881,7 +881,7 @@ l_000_04E40:
         tst.b   d0                              ; 04E50
         bne.w   l_000_0528A                     ; 04E52
 l_000_04E56:
-        movea.l (dat_002_00008).l,a0            ; 04E56
+        movea.l (CockpitObject).l,a0            ; 04E56
         move.b  $62(a0),d0                      ; 04E5C
         andi.b  #$f0,d0                         ; 04E60
         cmpi.b  #$30,d0                         ; 04E64
@@ -902,7 +902,7 @@ l_000_04E7E:
         move.w  d0,-$4(a6)                      ; 04E92
         tst.w   d0                              ; 04E96
         beq.w   l_000_05262                     ; 04E98
-        movea.l (dat_002_00008).l,a0            ; 04E9C
+        movea.l (CockpitObject).l,a0            ; 04E9C
         move.w  $5a(a0),d0                      ; 04EA2
         asr.w   #$4,d0                          ; 04EA6
         move.w  d0,-$c(a6)                      ; 04EA8
@@ -910,7 +910,7 @@ l_000_04E7E:
         bpl.b   l_000_04EB4                     ; 04EAE
         neg.w   -$c(a6)                         ; 04EB0
 l_000_04EB4:
-        movea.l (dat_002_00008).l,a0            ; 04EB4
+        movea.l (CockpitObject).l,a0            ; 04EB4
         move.w  $56(a0),d0                      ; 04EBA
         asr.w   #$4,d0                          ; 04EBE
         move.w  d0,-$a(a6)                      ; 04EC0
@@ -921,7 +921,7 @@ l_000_04ECC:
         move.w  -$c(a6),d0                      ; 04ECC
         cmp.w   -$a(a6),d0                      ; 04ED0
         bge.b   l_000_04EE6                     ; 04ED4
-        movea.l (dat_002_00008).l,a0            ; 04ED6
+        movea.l (CockpitObject).l,a0            ; 04ED6
         move.w  $56(a0),d1                      ; 04EDC
         asr.w   #$4,d1                          ; 04EE0
         add.w   d1,-$c(a6)                      ; 04EE2
@@ -949,7 +949,7 @@ l_000_04F14:
         move.w  -$4(a6),d0                      ; 04F2A
         asr.w   #$2,d0                          ; 04F2E
         sub.w   d0,-$4(a6)                      ; 04F30
-        move.b  (dat_071_00185).l,d0            ; 04F34
+        move.b  (NewView).l,d0                  ; 04F34
         tst.b   d0                              ; 04F3A
         bne.b   l_000_04F70                     ; 04F3C
         tst.w   (dat_071_00512).l               ; 04F3E
@@ -1157,7 +1157,7 @@ l_000_0518E:
 l_000_051B0:
         tst.b   (dat_071_00167).l               ; 051B0
         beq.b   l_000_051FE                     ; 051B6
-        btst    #$0,(dat_071_0052B).l           ; 051B8
+        btst    #$0,(SoundsLoaded).l            ; 051B8
         beq.b   l_000_051E0                     ; 051C0
         move.w  -$a(a6),d0                      ; 051C2
         ext.l   d0                              ; 051C6
@@ -1185,7 +1185,7 @@ l_000_051FE:
         move.w  (a0),d0                         ; 05202
         btst    #$3,d0                          ; 05204
         beq.b   l_000_05214                     ; 05208
-        btst    #$0,(dat_071_0052B).l           ; 0520A
+        btst    #$0,(SoundsLoaded).l            ; 0520A
         bne.b   l_000_05234                     ; 05212
 l_000_05214:
         move.w  -$a(a6),d0                      ; 05214
@@ -1230,7 +1230,7 @@ l_000_05274:
         jsr     (sub_000_09F9A).l               ; 0527C
         addq.l  #$4,a7                          ; 05282
 l_000_05284:
-        clr.b   (dat_071_00280).l               ; 05284
+        clr.b   (EngineSoundRequest).l          ; 05284
 l_000_0528A:
         move.b  (dat_071_00167).l,d0            ; 0528A
         tst.b   d0                              ; 05290
@@ -1246,7 +1246,7 @@ l_000_0528A:
         move.w  (a0),d0                         ; 052AE
         btst    #$3,d0                          ; 052B0
         bne.b   l_000_052BE                     ; 052B4
-        move.b  #$fe,(dat_071_00280).l          ; 052B6
+        move.b  #$fe,(EngineSoundRequest).l     ; 052B6
 l_000_052BE:
         movem.l (a7)+,d2                        ; 052BE
         unlk    a6                              ; 052C2
@@ -1306,7 +1306,7 @@ l_000_05354:
         beq.w   l_000_054A8                     ; 0535A
         tst.w   $a(a6)                          ; 0535E
         beq.w   l_000_054DC                     ; 05362
-        tst.b   (dat_071_00185).l               ; 05366
+        tst.b   (NewView).l                     ; 05366
         beq.w   l_000_0544E                     ; 0536C
         move.b  (ViewChoice).l,d0               ; 05370
         ext.w   d0                              ; 05376
@@ -1363,7 +1363,7 @@ l_000_0544E:
         ble.b   l_000_05480                     ; 05478
         move.w  #$54,$a(a6)                     ; 0547A
 l_000_05480:
-        movea.l (dat_002_00008).l,a0            ; 05480
+        movea.l (CockpitObject).l,a0            ; 05480
         move.w  $2(a0),d0                       ; 05486
         btst    #$3,d0                          ; 0548A
         bne.b   l_000_0549A                     ; 0548E
@@ -1384,7 +1384,7 @@ l_000_054A8:
         move.w  d0,$a(a6)                       ; 054BA
         bra.b   l_000_054DC                     ; 054BE
 l_000_054C0:
-        movea.l (dat_002_00008).l,a0            ; 054C0
+        movea.l (CockpitObject).l,a0            ; 054C0
         move.w  $2(a0),d0                       ; 054C6
         btst    #$7,d0                          ; 054CA
         beq.b   l_000_054DC                     ; 054CE
@@ -1409,7 +1409,7 @@ sub_000_054E6:
         rts                                     ; 05500
 sub_000_05502:
         link.w  a6,#$fffe                       ; 05502
-        movea.l (dat_002_00008).l,a0            ; 05506
+        movea.l (CockpitObject).l,a0            ; 05506
         move.b  $62(a0),d0                      ; 0550C
         andi.b  #$f0,d0                         ; 05510
         cmpi.b  #$30,d0                         ; 05514
@@ -1417,7 +1417,7 @@ sub_000_05502:
         move.w  #$10,-$2(a6)                    ; 0551A
         bra.b   l_000_05570                     ; 05520
 l_000_05522:
-        movea.l (dat_002_00008).l,a0            ; 05522
+        movea.l (CockpitObject).l,a0            ; 05522
         move.w  $6e(a0),d0                      ; 05528
         move.w  d0,-$2(a6)                      ; 0552C
         tst.w   d0                              ; 05530
@@ -1467,13 +1467,13 @@ FlightControls:
         asl.l   d1,d0                           ; 05592
         movea.l d0,a0                           ; 05594
         adda.l  #ObjectTable,a0                 ; 05596
-        move.l  a0,(dat_002_00008).l            ; 0559C
+        move.l  a0,(CockpitObject).l            ; 0559C
         addq.l  #$2,a0                          ; 055A2
-        movea.l (dat_002_00008).l,a1            ; 055A4
+        movea.l (CockpitObject).l,a1            ; 055A4
         adda.w  #$56,a1                         ; 055AA
-        movea.l (dat_002_00008).l,a2            ; 055AE
+        movea.l (CockpitObject).l,a2            ; 055AE
         adda.w  #$58,a2                         ; 055B4
-        movea.l (dat_002_00008).l,a3            ; 055B8
+        movea.l (CockpitObject).l,a3            ; 055B8
         adda.w  #$5a,a3                         ; 055BE
         move.l  a0,-$a(a6)                      ; 055C2
         move.l  a1,-$e(a6)                      ; 055C6
@@ -1537,7 +1537,7 @@ l_000_0568A:
 l_000_056BA:
         andi.l  #$ffffffbc,(WarningFlags).l     ; 056BA
 l_000_056C4:
-        movea.l (dat_002_00008).l,a0            ; 056C4
+        movea.l (CockpitObject).l,a0            ; 056C4
         move.b  $28(a0),d0                      ; 056CA
         ext.w   d0                              ; 056CE
         move.b  $29(a0),d1                      ; 056D0
@@ -1587,7 +1587,7 @@ l_000_05738:
         addq.l  #$4,a7                          ; 05752
         bra.w   l_000_0586E                     ; 05754
 l_000_05758:
-        movea.l (dat_002_00008).l,a0            ; 05758
+        movea.l (CockpitObject).l,a0            ; 05758
         move.b  $20(a0),d0                      ; 0575E
         btst    #$0,d0                          ; 05762
         beq.b   l_000_05788                     ; 05766
@@ -1603,7 +1603,7 @@ l_000_05758:
         addq.l  #$4,a7                          ; 05782
         bra.w   l_000_0586E                     ; 05784
 l_000_05788:
-        movea.l (dat_002_00008).l,a0            ; 05788
+        movea.l (CockpitObject).l,a0            ; 05788
         move.w  $6c(a0),d0                      ; 0578E
         cmpi.w  #$300,d0                        ; 05792
         ble.b   l_000_057F0                     ; 05796
@@ -1671,7 +1671,7 @@ l_000_05836:
         movea.l -$e(a6),a0                      ; 05836
         tst.w   (a0)                            ; 0583A
         beq.b   l_000_0586E                     ; 0583C
-        movea.l (dat_002_00008).l,a1            ; 0583E
+        movea.l (CockpitObject).l,a1            ; 0583E
         move.w  $26(a1),d0                      ; 05844
         tst.w   d0                              ; 05848
         bne.b   l_000_0586E                     ; 0584A
@@ -1712,7 +1712,7 @@ l_000_05894:
         adda.l  d0,a0                           ; 058A0
         move.w  (a0),(dat_071_00530).l          ; 058A2
 l_000_058A8:
-        movea.l (dat_002_00008).l,a0            ; 058A8
+        movea.l (CockpitObject).l,a0            ; 058A8
         move.b  $4(a0),d0                       ; 058AE
         btst    #$1,d0                          ; 058B2
         bne.b   l_000_058D0                     ; 058B6
@@ -1818,7 +1818,7 @@ l_000_059AE:
         addq.l  #$4,a7                          ; 059CA
         bra.w   l_000_05AE8                     ; 059CC
 l_000_059D0:
-        movea.l (dat_002_00008).l,a0            ; 059D0
+        movea.l (CockpitObject).l,a0            ; 059D0
         move.w  $6e(a0),-$1e(a6)                ; 059D6
         move.w  $6a(a0),-$20(a6)                ; 059DC
         move.b  $4(a0),d0                       ; 059E2
@@ -1996,9 +1996,9 @@ l_000_05BDA:
         rts                                     ; 05BDC
 sub_000_05BDE:
         link.w  a6,#$fff2                       ; 05BDE
-        movea.l (dat_002_00008).l,a0            ; 05BE2
+        movea.l (CockpitObject).l,a0            ; 05BE2
         adda.w  #$66,a0                         ; 05BE8
-        movea.l (dat_002_00008).l,a1            ; 05BEC
+        movea.l (CockpitObject).l,a1            ; 05BEC
         adda.w  #$56,a1                         ; 05BF2
         move.w  (a0),d0                         ; 05BF6
         move.l  a0,-$6(a6)                      ; 05BF8
@@ -2007,12 +2007,12 @@ sub_000_05BDE:
         ble.w   l_000_05CA6                     ; 05C02
         cmpi.w  #$190,d0                        ; 05C06
         bge.b   l_000_05C54                     ; 05C0A
-        movea.l (dat_002_00008).l,a0            ; 05C0C
+        movea.l (CockpitObject).l,a0            ; 05C0C
         move.w  $2(a0),d0                       ; 05C12
         btst    #$6,d0                          ; 05C16
         bne.b   l_000_05C4C                     ; 05C1A
         ori.w   #$40,d0                         ; 05C1C
-        movea.l (dat_002_00008).l,a0            ; 05C20
+        movea.l (CockpitObject).l,a0            ; 05C20
         move.w  d0,$2(a0)                       ; 05C26
         move.w  (a0),d0                         ; 05C2A
         andi.w  #$1600,d0                       ; 05C2C
@@ -2030,7 +2030,7 @@ l_000_05C4C:
         clr.w   (a0)                            ; 05C50
         bra.b   l_000_05CA6                     ; 05C52
 l_000_05C54:
-        movea.l (dat_002_00008).l,a0            ; 05C54
+        movea.l (CockpitObject).l,a0            ; 05C54
         move.w  $6c(a0),d0                      ; 05C5A
         cmpi.w  #$6c0,d0                        ; 05C5E
         bge.b   l_000_05C6A                     ; 05C62
@@ -2062,9 +2062,9 @@ l_000_05CA6:
         rts                                     ; 05CA8
 sub_000_05CAA:
         link.w  a6,#$fff8                       ; 05CAA
-        movea.l (dat_002_00008).l,a0            ; 05CAE
+        movea.l (CockpitObject).l,a0            ; 05CAE
         adda.w  #$6a,a0                         ; 05CB4
-        movea.l (dat_002_00008).l,a1            ; 05CB8
+        movea.l (CockpitObject).l,a1            ; 05CB8
         adda.w  #$5a,a1                         ; 05CBE
         move.l  a0,-$4(a6)                      ; 05CC2
         move.l  a1,-$8(a6)                      ; 05CC6
@@ -2087,7 +2087,7 @@ l_000_05CEC:
         rts                                     ; 05CEE
 sub_000_05CF0:
         link.w  a6,#$fffa                       ; 05CF0
-        movea.l (dat_002_00008).l,a0            ; 05CF4
+        movea.l (CockpitObject).l,a0            ; 05CF4
         move.w  $2(a0),d0                       ; 05CFA
         btst    #$7,d0                          ; 05CFE
         bne.b   l_000_05D12                     ; 05D02
@@ -2097,7 +2097,7 @@ sub_000_05CF0:
         tst.w   $a(a6)                          ; 05D0C
         ble.b   l_000_05D56                     ; 05D10
 l_000_05D12:
-        movea.l (dat_002_00008).l,a0            ; 05D12
+        movea.l (CockpitObject).l,a0            ; 05D12
         move.b  $20(a0),d0                      ; 05D18
         btst    #$2,d0                          ; 05D1C
         beq.b   l_000_05D2C                     ; 05D20
@@ -2105,7 +2105,7 @@ l_000_05D12:
         asr.w   #$1,d0                          ; 05D26
         move.w  d0,$a(a6)                       ; 05D28
 l_000_05D2C:
-        movea.l (dat_002_00008).l,a0            ; 05D2C
+        movea.l (CockpitObject).l,a0            ; 05D2C
         adda.w  #$56,a0                         ; 05D32
         move.w  (a0),d0                         ; 05D36
         move.w  d0,$0(a7)                       ; 05D38
@@ -2128,7 +2128,7 @@ sub_000_05D5A:
         move.w  $a(a6),d1                       ; 05D64
         asr.w   #$3,d1                          ; 05D68
         add.w   d1,d0                           ; 05D6A
-        movea.l (dat_002_00008).l,a0            ; 05D6C
+        movea.l (CockpitObject).l,a0            ; 05D6C
         move.b  $20(a0),d1                      ; 05D72
         move.w  d0,$a(a6)                       ; 05D76
         btst    #$2,d1                          ; 05D7A
@@ -2136,7 +2136,7 @@ sub_000_05D5A:
         asr.w   #$1,d0                          ; 05D80
         move.w  d0,$a(a6)                       ; 05D82
 l_000_05D86:
-        movea.l (dat_002_00008).l,a0            ; 05D86
+        movea.l (CockpitObject).l,a0            ; 05D86
         adda.w  #$58,a0                         ; 05D8C
         move.w  (a0),d0                         ; 05D90
         move.w  d0,$0(a7)                       ; 05D92
@@ -2158,7 +2158,7 @@ sub_000_05DB4:
         move.w  $a(a6),d1                       ; 05DBE
         asr.w   #$3,d1                          ; 05DC2
         add.w   d1,d0                           ; 05DC4
-        movea.l (dat_002_00008).l,a0            ; 05DC6
+        movea.l (CockpitObject).l,a0            ; 05DC6
         move.b  $20(a0),d1                      ; 05DCC
         move.w  d0,$a(a6)                       ; 05DD0
         btst    #$2,d1                          ; 05DD4
@@ -2166,7 +2166,7 @@ sub_000_05DB4:
         asr.w   #$1,d0                          ; 05DDA
         move.w  d0,$a(a6)                       ; 05DDC
 l_000_05DE0:
-        movea.l (dat_002_00008).l,a0            ; 05DE0
+        movea.l (CockpitObject).l,a0            ; 05DE0
         move.b  $62(a0),d0                      ; 05DE6
         cmpi.b  #$14,d0                         ; 05DEA
         bne.b   l_000_05DF8                     ; 05DEE
@@ -2175,7 +2175,7 @@ l_000_05DE0:
 l_000_05DF8:
         move.w  #$1,-$6(a6)                     ; 05DF8
 l_000_05DFE:
-        movea.l (dat_002_00008).l,a0            ; 05DFE
+        movea.l (CockpitObject).l,a0            ; 05DFE
         adda.w  #$5a,a0                         ; 05E04
         move.w  (a0),d0                         ; 05E08
         move.w  d0,$0(a7)                       ; 05E0A
@@ -2193,7 +2193,7 @@ l_000_05DFE:
         rts                                     ; 05E2C
 sub_000_05E2E:
         link.w  a6,#$fffe                       ; 05E2E
-        movea.l (dat_002_00008).l,a0            ; 05E32
+        movea.l (CockpitObject).l,a0            ; 05E32
         move.w  $6c(a0),d0                      ; 05E38
         asr.w   #$7,d0                          ; 05E3C
         movea.l $8(a6),a0                       ; 05E3E
@@ -2268,7 +2268,7 @@ EngineAndSpeed:
         movea.l d0,a0                           ; 05EEC
         adda.l  #ObjectTable,a0                 ; 05EEE
         move.l  a0,d0                           ; 05EF4
-        move.l  d0,(dat_002_00008).l            ; 05EF6
+        move.l  d0,(CockpitObject).l            ; 05EF6
         movea.l d0,a0                           ; 05EFC
         move.l  a0,-$2c(a6)                     ; 05EFE
         addq.l  #$2,a0                          ; 05F02
@@ -2343,11 +2343,11 @@ l_000_05FC2:
         move.b  (a0),d0                         ; 05FD4
         tst.b   d0                              ; 05FD6
         bne.b   l_000_05FF0                     ; 05FD8
-        move.w  (dat_071_002AC).l,d0            ; 05FDA
+        move.w  (ViewObjectIndex).l,d0          ; 05FDA
         move.w  -$32(a6),d1                     ; 05FE0
         cmp.w   d0,d1                           ; 05FE4
         bne.b   l_000_05FF0                     ; 05FE6
-        move.b  #$fe,(dat_071_00280).l          ; 05FE8
+        move.b  #$fe,(EngineSoundRequest).l     ; 05FE8
 l_000_05FF0:
         movea.l -$8(a6),a0                      ; 05FF0
         move.b  (a0),d0                         ; 05FF4
@@ -2377,11 +2377,11 @@ l_000_05FF0:
         ori.w   #$8,d0                          ; 0603A
         move.w  d0,(a0)                         ; 0603E
         move.b  #$2,(dat_071_0020E).l           ; 06040
-        move.w  (dat_071_002AC).l,d0            ; 06048
+        move.w  (ViewObjectIndex).l,d0          ; 06048
         move.w  -$32(a6),d1                     ; 0604E
         cmp.w   d0,d1                           ; 06052
         bne.b   l_000_0608C                     ; 06054
-        move.b  #$fd,(dat_071_00280).l          ; 06056
+        move.b  #$fd,(EngineSoundRequest).l     ; 06056
         move.b  #$6,(dat_071_00167).l           ; 0605E
         bra.b   l_000_0608C                     ; 06066
 l_000_06068:
@@ -2419,11 +2419,11 @@ l_000_06098:
         subq.b  #$1,d0                          ; 060C6
         move.b  d0,(a0)                         ; 060C8
         move.b  #$2,(dat_071_0020E).l           ; 060CA
-        move.w  (dat_071_002AC).l,d0            ; 060D2
+        move.w  (ViewObjectIndex).l,d0          ; 060D2
         move.w  -$32(a6),d1                     ; 060D8
         cmp.w   d0,d1                           ; 060DC
         bne.b   l_000_06158                     ; 060DE
-        move.b  #$fc,(dat_071_00280).l          ; 060E0
+        move.b  #$fc,(EngineSoundRequest).l     ; 060E0
         bra.b   l_000_06158                     ; 060E8
 l_000_060EA:
         movea.l -$4(a6),a0                      ; 060EA
@@ -2541,10 +2541,10 @@ l_000_06230:
         move.b  (a0),d0                         ; 0623C
         tst.b   d0                              ; 0623E
         bne.b   l_000_06254                     ; 06240
-        move.w  (dat_071_002AC).l,d0            ; 06242
+        move.w  (ViewObjectIndex).l,d0          ; 06242
         tst.w   d0                              ; 06248
         bne.b   l_000_06254                     ; 0624A
-        move.b  #$fe,(dat_071_00280).l          ; 0624C
+        move.b  #$fe,(EngineSoundRequest).l     ; 0624C
 l_000_06254:
         move.w  (MouseY).l,d0                   ; 06254
         ext.l   d0                              ; 0625A
@@ -2599,7 +2599,7 @@ l_000_062CC:
         btst    #$3,d0                          ; 062F4
         beq.w   l_000_06750                     ; 062F8
 l_000_062FC:
-        movea.l (dat_002_00008).l,a0            ; 062FC
+        movea.l (CockpitObject).l,a0            ; 062FC
         tst.l   $72(a0)                         ; 06302
         beq.w   l_000_06750                     ; 06306
         movea.l -$30(a6),a0                     ; 0630A
@@ -2609,7 +2609,7 @@ l_000_062FC:
         move.w  #$600,d0                        ; 06318
         move.w  d0,-$26(a6)                     ; 0631C
         ext.l   d0                              ; 06320
-        movea.l (dat_002_00008).l,a0            ; 06322
+        movea.l (CockpitObject).l,a0            ; 06322
         sub.l   d0,$72(a0)                      ; 06328
         move.w  #$3a98,d0                       ; 0632C
         sub.w   -$1a(a6),d0                     ; 06330
@@ -2618,7 +2618,7 @@ l_000_062FC:
         ble.b   l_000_06344                     ; 0633C
         move.w  #$4650,-$16(a6)                 ; 0633E
 l_000_06344:
-        movea.l (dat_002_00008).l,a0            ; 06344
+        movea.l (CockpitObject).l,a0            ; 06344
         move.b  $7c(a0),d0                      ; 0634A
         andi.b  #$70,d0                         ; 0634E
         tst.b   d0                              ; 06352
@@ -2659,7 +2659,7 @@ l_000_063B8:
         move.l  d0,-(a7)                        ; 063BA
         bsr.w   sub_000_069C6                   ; 063BC
         addq.l  #$4,a7                          ; 063C0
-        movea.l (dat_002_00008).l,a0            ; 063C2
+        movea.l (CockpitObject).l,a0            ; 063C2
         move.w  $26(a0),d0                      ; 063C8
         add.w   d0,-$18(a6)                     ; 063CC
         bra.w   l_000_06812                     ; 063D0
@@ -2685,7 +2685,7 @@ l_000_06406:
         asr.w   d0,d1                           ; 0640C
         move.w  d1,-$26(a6)                     ; 0640E
         ext.l   d1                              ; 06412
-        movea.l (dat_002_00008).l,a0            ; 06414
+        movea.l (CockpitObject).l,a0            ; 06414
         sub.l   d1,$72(a0)                      ; 0641A
         tst.w   -$24(a6)                        ; 0641E
         bmi.w   l_000_06650                     ; 06422
@@ -2727,7 +2727,7 @@ l_000_0647C:
         asr.w   #$2,d0                          ; 06494
         sub.w   d0,-$16(a6)                     ; 06496
 l_000_0649A:
-        movea.l (dat_002_00008).l,a0            ; 0649A
+        movea.l (CockpitObject).l,a0            ; 0649A
         move.b  $7c(a0),d0                      ; 064A0
         andi.b  #$70,d0                         ; 064A4
         tst.b   d0                              ; 064A8
@@ -2868,7 +2868,7 @@ l_000_06628:
         addq.l  #$4,a7                          ; 06634
         tst.w   -$22(a6)                        ; 06636
         beq.w   l_000_06812                     ; 0663A
-        movea.l (dat_002_00008).l,a0            ; 0663E
+        movea.l (CockpitObject).l,a0            ; 0663E
         move.w  $26(a0),d0                      ; 06644
         add.w   d0,-$18(a6)                     ; 06648
         bra.w   l_000_06812                     ; 0664C
@@ -2950,7 +2950,7 @@ l_000_06728:
         addq.l  #$4,a7                          ; 06734
         tst.w   -$22(a6)                        ; 06736
         beq.w   l_000_06812                     ; 0673A
-        movea.l (dat_002_00008).l,a0            ; 0673E
+        movea.l (CockpitObject).l,a0            ; 0673E
         move.w  $26(a0),d0                      ; 06744
         add.w   d0,-$18(a6)                     ; 06748
         bra.w   l_000_06812                     ; 0674C
@@ -3035,7 +3035,7 @@ l_000_06812:
         ori.w   #$4000,d0                       ; 06834
         move.w  d0,(dat_071_002A2).l            ; 06838
         move.b  #$3,(ShakeKind).l               ; 0683E
-        move.b  #$fa,(dat_071_00280).l          ; 06846
+        move.b  #$fa,(EngineSoundRequest).l     ; 06846
         move.b  #$2,(dat_071_00167).l           ; 0684E
         bra.b   l_000_06868                     ; 06856
 l_000_06858:
@@ -3083,7 +3083,7 @@ l_000_068CC:
         move.w  (a0),d0                         ; 068D0
         btst    #$7,d0                          ; 068D2
         beq.b   l_000_068FE                     ; 068D6
-        movea.l (dat_002_00008).l,a0            ; 068D8
+        movea.l (CockpitObject).l,a0            ; 068D8
         move.b  $7c(a0),d0                      ; 068DE
         btst    #$7,d0                          ; 068E2
         beq.b   l_000_068FE                     ; 068E6
@@ -3159,26 +3159,26 @@ l_000_06990:
         move.w  d0,(a0)                         ; 0699A
 l_000_0699C:
         jsr     (ClimbDivePhysics).l            ; 0699C
-        movea.l (dat_002_00008).l,a0            ; 069A2
+        movea.l (CockpitObject).l,a0            ; 069A2
         move.w  $78(a0),d0                      ; 069A8
         movea.l -$20(a6),a0                     ; 069AC
         move.w  (a0),d1                         ; 069B0
         add.w   d1,d0                           ; 069B2
-        movea.l (dat_002_00008).l,a0            ; 069B4
+        movea.l (CockpitObject).l,a0            ; 069B4
         move.w  d0,$6e(a0)                      ; 069BA
         movem.l (a7)+,d2/a2-a5                  ; 069BE
         unlk    a6                              ; 069C2
         rts                                     ; 069C4
 sub_000_069C6:
         link.w  a6,#$fffe                       ; 069C6
-        movea.l (dat_002_00008).l,a0            ; 069CA
+        movea.l (CockpitObject).l,a0            ; 069CA
         move.w  $26(a0),d0                      ; 069D0
         move.w  d0,$0(a7)                       ; 069D4
         sub.w   $a(a6),d0                       ; 069D8
         asr.w   #$3,d0                          ; 069DC
         move.w  $0(a7),d1                       ; 069DE
         sub.w   d0,d1                           ; 069E2
-        movea.l (dat_002_00008).l,a0            ; 069E4
+        movea.l (CockpitObject).l,a0            ; 069E4
         move.w  d1,$26(a0)                      ; 069EA
         unlk    a6                              ; 069EE
         rts                                     ; 069F0
@@ -3217,7 +3217,7 @@ l_000_06A2E:
 sub_000_06A32:
         link.w  a6,#$fff6                       ; 06A32
         movem.l d2,-(a7)                        ; 06A36
-        movea.l (dat_002_00008).l,a0            ; 06A3A
+        movea.l (CockpitObject).l,a0            ; 06A3A
         move.w  $66(a0),d0                      ; 06A40
         move.w  d0,-$2(a6)                      ; 06A44
         cmpi.w  #$3840,d0                       ; 06A48
@@ -3226,7 +3226,7 @@ sub_000_06A32:
 l_000_06A54:
         move.w  -$2(a6),d0                      ; 06A54
         asr.w   #$1,d0                          ; 06A58
-        movea.l (dat_002_00008).l,a0            ; 06A5A
+        movea.l (CockpitObject).l,a0            ; 06A5A
         move.w  $6a(a0),d1                      ; 06A60
         move.w  d0,-$2(a6)                      ; 06A64
         move.w  d1,-$4(a6)                      ; 06A68
@@ -3245,7 +3245,7 @@ l_000_06A7C:
 l_000_06A90:
         move.w  -$4(a6),d0                      ; 06A90
         asr.w   #$3,d0                          ; 06A94
-        movea.l (dat_002_00008).l,a0            ; 06A96
+        movea.l (CockpitObject).l,a0            ; 06A96
         move.w  $56(a0),d1                      ; 06A9C
         move.w  d0,-$4(a6)                      ; 06AA0
         move.w  d1,-$6(a6)                      ; 06AA4
@@ -3258,7 +3258,7 @@ l_000_06AB0:
         add.w   -$4(a6),d0                      ; 06AB6
         sub.w   -$2(a6),d0                      ; 06ABA
         move.l  (dat_071_000CA).l,d1            ; 06ABE
-        movea.l (dat_002_00008).l,a0            ; 06AC4
+        movea.l (CockpitObject).l,a0            ; 06AC4
         sub.l   $18(a0),d1                      ; 06ACA
         move.w  $2(a0),d2                       ; 06ACE
         move.w  d0,-$6(a6)                      ; 06AD2
@@ -3305,7 +3305,7 @@ FlyAircraft:
         movea.l d0,a0                           ; 06B26
         adda.l  #ObjectTable,a0                 ; 06B28
         move.l  a0,d0                           ; 06B2E
-        move.l  d0,(dat_002_00008).l            ; 06B30
+        move.l  d0,(CockpitObject).l            ; 06B30
         movea.l d0,a0                           ; 06B36
         move.l  a0,-$28(a6)                     ; 06B38
         addq.l  #$2,a0                          ; 06B3C
@@ -3347,7 +3347,7 @@ FlyAircraft:
         move.w  (a0),d0                         ; 06BCA
         btst    #$7,d0                          ; 06BCC
         bne.b   l_000_06C42                     ; 06BD0
-        movea.l (dat_002_00008).l,a0            ; 06BD2
+        movea.l (CockpitObject).l,a0            ; 06BD2
         move.l  $3e(a0),d0                      ; 06BD8
         asr.l   #$2,d0                          ; 06BDC
         move.l  $46(a0),d1                      ; 06BDE
@@ -3384,7 +3384,7 @@ l_000_06C0E:
         addq.l  #$8,a7                          ; 06C3C
         move.w  d0,-$6(a6)                      ; 06C3E
 l_000_06C42:
-        movea.l (dat_002_00008).l,a0            ; 06C42
+        movea.l (CockpitObject).l,a0            ; 06C42
         move.l  $42(a0),d0                      ; 06C48
         asr.l   #$2,d0                          ; 06C4C
         move.w  d0,-$a(a6)                      ; 06C4E
@@ -3407,7 +3407,7 @@ l_000_06C66:
         move.w  d0,-$4(a6)                      ; 06C82
         btst    #$0,d1                          ; 06C86
         bne.b   l_000_06C9A                     ; 06C8A
-        movea.l (dat_002_00008).l,a0            ; 06C8C
+        movea.l (CockpitObject).l,a0            ; 06C8C
         move.w  $76(a0),d1                      ; 06C92
         add.w   d1,-$4(a6)                      ; 06C96
 l_000_06C9A:
@@ -3444,17 +3444,17 @@ l_000_06C9A:
 l_000_06D00:
         move.l  -$10(a6),d0                     ; 06D00
         neg.l   d0                              ; 06D04
-        movea.l (dat_002_00008).l,a0            ; 06D06
+        movea.l (CockpitObject).l,a0            ; 06D06
         move.l  d0,$3e(a0)                      ; 06D0C
         move.l  -$14(a6),d0                     ; 06D10
         neg.l   d0                              ; 06D14
-        movea.l (dat_002_00008).l,a0            ; 06D16
+        movea.l (CockpitObject).l,a0            ; 06D16
         move.l  d0,$42(a0)                      ; 06D1C
         move.l  -$18(a6),d0                     ; 06D20
         neg.l   d0                              ; 06D24
-        movea.l (dat_002_00008).l,a0            ; 06D26
+        movea.l (CockpitObject).l,a0            ; 06D26
         move.l  d0,$46(a0)                      ; 06D2C
-        tst.b   (dat_071_0017E).l               ; 06D30
+        tst.b   (WorldFrozen).l                 ; 06D30
         beq.b   l_000_06D42                     ; 06D36
         moveq   #$0,d0                          ; 06D38
         move.l  d0,-$1c(a6)                     ; 06D3A
@@ -3480,7 +3480,7 @@ l_000_06D6E:
         andi.b  #$c0,d0                         ; 06D74
         tst.b   d0                              ; 06D78
         beq.w   l_000_06E1A                     ; 06D7A
-        movea.l (dat_002_00008).l,a0            ; 06D7E
+        movea.l (CockpitObject).l,a0            ; 06D7E
         move.b  $7c(a0),d0                      ; 06D84
         andi.b  #$70,d0                         ; 06D88
         tst.b   d0                              ; 06D8C
@@ -3498,7 +3498,7 @@ l_000_06D6E:
         move.l  #$a8c,-$20(a6)                  ; 06DB6
         bra.w   l_000_06E6E                     ; 06DBE
 l_000_06DC2:
-        movea.l (dat_002_00008).l,a0            ; 06DC2
+        movea.l (CockpitObject).l,a0            ; 06DC2
         move.w  $4e(a0),d0                      ; 06DC8
         ext.l   d0                              ; 06DCC
         asl.l   #$8,d0                          ; 06DCE
@@ -3509,7 +3509,7 @@ l_000_06DC2:
         move.l  #$708,-$20(a6)                  ; 06DE4
         bra.w   l_000_06E6E                     ; 06DEC
 l_000_06DF0:
-        movea.l (dat_002_00008).l,a0            ; 06DF0
+        movea.l (CockpitObject).l,a0            ; 06DF0
         move.w  $4e(a0),d0                      ; 06DF6
         ext.l   d0                              ; 06DFA
         asl.l   #$8,d0                          ; 06DFC
@@ -3520,7 +3520,7 @@ l_000_06DF0:
         move.l  #$2ee,-$20(a6)                  ; 06E10
         bra.b   l_000_06E6E                     ; 06E18
 l_000_06E1A:
-        movea.l (dat_002_00008).l,a0            ; 06E1A
+        movea.l (CockpitObject).l,a0            ; 06E1A
         move.b  $62(a0),d0                      ; 06E20
         andi.b  #$f0,d0                         ; 06E24
         tst.b   d0                              ; 06E28
@@ -3528,7 +3528,7 @@ l_000_06E1A:
         move.l  #$fffffe00,-$20(a6)             ; 06E2C
         bra.b   l_000_06E6E                     ; 06E34
 l_000_06E36:
-        movea.l (dat_002_00008).l,a0            ; 06E36
+        movea.l (CockpitObject).l,a0            ; 06E36
         move.b  $7c(a0),d0                      ; 06E3C
         andi.b  #$70,d0                         ; 06E40
         tst.b   d0                              ; 06E44
@@ -3544,10 +3544,10 @@ l_000_06E5C:
 l_000_06E66:
         move.l  #$2ee,-$20(a6)                  ; 06E66
 l_000_06E6E:
-        movea.l (dat_002_00008).l,a0            ; 06E6E
+        movea.l (CockpitObject).l,a0            ; 06E6E
         move.l  $18(a0),d0                      ; 06E74
         sub.l   -$14(a6),d0                     ; 06E78
-        movea.l (dat_002_00008).l,a0            ; 06E7C
+        movea.l (CockpitObject).l,a0            ; 06E7C
         move.l  d0,$18(a0)                      ; 06E82
         move.l  -$20(a6),d1                     ; 06E86
         cmp.l   d1,d0                           ; 06E8A
@@ -3556,12 +3556,12 @@ l_000_06E6E:
         move.b  (a0),d0                         ; 06E94
         andi.b  #$fb,d0                         ; 06E96
         move.b  d0,(a0)                         ; 06E9A
-        movea.l (dat_002_00008).l,a0            ; 06E9C
+        movea.l (CockpitObject).l,a0            ; 06E9C
         move.b  $62(a0),d0                      ; 06EA2
         andi.b  #$f0,d0                         ; 06EA6
         tst.b   d0                              ; 06EAA
         beq.b   l_000_06EB8                     ; 06EAC
-        movea.l (dat_002_00008).l,a0            ; 06EAE
+        movea.l (CockpitObject).l,a0            ; 06EAE
         move.l  d1,$18(a0)                      ; 06EB4
 l_000_06EB8:
         movea.l -$30(a6),a0                     ; 06EB8
@@ -3573,7 +3573,7 @@ l_000_06EB8:
         move.w  (a0),d0                         ; 06ECA
         btst    #$7,d0                          ; 06ECC
         beq.b   l_000_06EE4                     ; 06ED0
-        movea.l (dat_002_00008).l,a0            ; 06ED2
+        movea.l (CockpitObject).l,a0            ; 06ED2
         move.w  $4c(a0),d0                      ; 06ED8
         andi.w  #$7,d0                          ; 06EDC
         tst.w   d0                              ; 06EE0
@@ -3584,7 +3584,7 @@ l_000_06EE4:
         move.b  (a0),d0                         ; 06EEE
         btst    #$1,d0                          ; 06EF0
         beq.b   l_000_06F30                     ; 06EF4
-        movea.l (dat_002_00008).l,a0            ; 06EF6
+        movea.l (CockpitObject).l,a0            ; 06EF6
         move.b  $7c(a0),d0                      ; 06EFC
         move.b  d0,$14(a7)                      ; 06F00
         andi.b  #$70,d0                         ; 06F04
@@ -3592,7 +3592,7 @@ l_000_06EE4:
         bne.b   l_000_06F30                     ; 06F0A
         move.b  $14(a7),d0                      ; 06F0C
         ori.b   #$80,d0                         ; 06F10
-        movea.l (dat_002_00008).l,a0            ; 06F14
+        movea.l (CockpitObject).l,a0            ; 06F14
         move.b  d0,$7c(a0)                      ; 06F1A
         tst.w   -$24(a6)                        ; 06F1E
         bne.b   l_000_06F30                     ; 06F22
@@ -3613,7 +3613,7 @@ l_000_06F30:
         bne.w   l_000_07056                     ; 06F50
         ori.w   #$80,d0                         ; 06F54
         move.w  d0,(a0)                         ; 06F58
-        movea.l (dat_002_00008).l,a0            ; 06F5A
+        movea.l (CockpitObject).l,a0            ; 06F5A
         clr.w   $26(a0)                         ; 06F60
         jsr     (ReadTime).l                    ; 06F64
         move.l  (TimeSeconds).l,(dat_071_002DC).l ; 06F6A
@@ -3635,25 +3635,25 @@ l_000_06F30:
         addq.w  #$1,d0                          ; 06FAE
         movea.l (ConfigBuffer).l,a0             ; 06FB0
         move.w  d0,$46(a0)                      ; 06FB6
-        move.b  #$1,(dat_071_00195).l           ; 06FBA
+        move.b  #$1,(ConfigChanged).l           ; 06FBA
         move.b  #$4,(MissionResult).l           ; 06FC2
         bra.w   l_000_07178                     ; 06FCA
 l_000_06FCE:
         tst.w   (Player_6E).l                   ; 06FCE
         beq.w   l_000_07178                     ; 06FD4
         move.w  (Player_6E).l,(Player_6C).l     ; 06FD8
-        move.b  #$fe,(dat_071_00280).l          ; 06FE2
+        move.b  #$fe,(EngineSoundRequest).l     ; 06FE2
         movea.l -$30(a6),a0                     ; 06FEA
         move.b  (a0),d0                         ; 06FEE
         btst    #$1,d0                          ; 06FF0
         bne.b   l_000_07008                     ; 06FF4
-        movea.l (dat_002_00008).l,a0            ; 06FF6
+        movea.l (CockpitObject).l,a0            ; 06FF6
         move.b  $7c(a0),d0                      ; 06FFC
         andi.b  #$70,d0                         ; 07000
         tst.b   d0                              ; 07004
         beq.b   l_000_0702E                     ; 07006
 l_000_07008:
-        movea.l (dat_002_00008).l,a0            ; 07008
+        movea.l (CockpitObject).l,a0            ; 07008
         move.w  $6e(a0),d0                      ; 0700E
         cmpi.w  #$3c0,d0                        ; 07012
         blt.b   l_000_0702E                     ; 07016
@@ -3757,7 +3757,7 @@ l_000_07180:
         ori.w   #$80,d0                         ; 07186
         move.w  d0,(a0)                         ; 0718A
 l_000_0718C:
-        movea.l (dat_002_00008).l,a0            ; 0718C
+        movea.l (CockpitObject).l,a0            ; 0718C
         move.w  $6e(a0),d0                      ; 07192
         cmpi.w  #$3c0,d0                        ; 07196
         bge.w   l_000_07280                     ; 0719A
@@ -3790,10 +3790,10 @@ l_000_071DC:
         move.l  d1,(dat_071_002DC).l            ; 071F6
         add.l   d1,(dat_071_002E0).l            ; 071FC
         clr.l   (dat_071_002DC).l               ; 07202
-        movea.l (dat_002_00008).l,a0            ; 07208
+        movea.l (CockpitObject).l,a0            ; 07208
         move.b  $21(a0),d0                      ; 0720E
         ori.b   #$1,d0                          ; 07212
-        movea.l (dat_002_00008).l,a0            ; 07216
+        movea.l (CockpitObject).l,a0            ; 07216
         move.b  d0,$21(a0)                      ; 0721C
         movea.l -$2c(a6),a0                     ; 07220
         move.w  (a0),d0                         ; 07224
@@ -3816,11 +3816,11 @@ l_000_07254:
         bra.b   l_000_07280                     ; 07260
 l_000_07262:
         move.l  (dat_071_000CA).l,d0            ; 07262
-        movea.l (dat_002_00008).l,a0            ; 07268
+        movea.l (CockpitObject).l,a0            ; 07268
         move.l  $18(a0),d1                      ; 0726E
         cmp.l   d0,d1                           ; 07272
         ble.b   l_000_07280                     ; 07274
-        movea.l (dat_002_00008).l,a0            ; 07276
+        movea.l (CockpitObject).l,a0            ; 07276
         move.l  d0,$18(a0)                      ; 0727C
 l_000_07280:
         movem.l (a7)+,d2-d4/a2-a3               ; 07280
@@ -3860,7 +3860,13 @@ l_000_072CA:
         ext.l   d0                              ; 072D6
         unlk    a6                              ; 072D8
         rts                                     ; 072DA
-sub_000_072DC:
+
+;-------------------------------------------------------------------------------
+; UpdateBullets - The gun, each frame unless WorldFrozen: fires a bullet while the trigger is
+; held (GunFlags bit 3) and rounds are left, counting them in the flight log (+$3A), and moves
+; every bullet (MoveBullet); also the gun's sound.
+;-------------------------------------------------------------------------------
+UpdateBullets:
         link.w  a6,#$ffea                       ; 072DC
         moveq   #$0,d0                          ; 072E0
         move.b  d0,-$3(a6)                      ; 072E2
@@ -3881,20 +3887,20 @@ l_000_07312:
         ext.l   d0                              ; 0731E
         asl.l   #$6,d0                          ; 07320
         movea.l d0,a0                           ; 07322
-        adda.l  #dat_071_00642,a0               ; 07324
-        move.l  a0,(dat_002_0000C).l            ; 0732A
+        adda.l  #Bullets,a0                     ; 07324
+        move.l  a0,(CurrentBullet).l            ; 0732A
         tst.b   (dat_071_0018D).l               ; 07330
         bne.b   l_000_07350                     ; 07336
-        tst.b   (dat_071_0017E).l               ; 07338
+        tst.b   (WorldFrozen).l                 ; 07338
         bne.b   l_000_07350                     ; 0733E
         move.w  $28(a0),d0                      ; 07340
         subq.w  #$1,d0                          ; 07344
-        movea.l (dat_002_0000C).l,a0            ; 07346
+        movea.l (CurrentBullet).l,a0            ; 07346
         move.w  d0,$28(a0)                      ; 0734C
 l_000_07350:
-        movea.l (dat_002_0000C).l,a0            ; 07350
+        movea.l (CurrentBullet).l,a0            ; 07350
         adda.w  #$26,a0                         ; 07356
-        move.b  (dat_071_0017E).l,d0            ; 0735A
+        move.b  (WorldFrozen).l,d0              ; 0735A
         move.l  a0,-$14(a6)                     ; 07360
         tst.b   d0                              ; 07364
         bne.b   l_000_07374                     ; 07366
@@ -3935,15 +3941,15 @@ l_000_0737E:
         addq.w  #$3,d1                          ; 073E2
         movea.l (ConfigBuffer).l,a0             ; 073E4
         move.w  d1,$3a(a0)                      ; 073EA
-        move.b  #$1,(dat_071_00195).l           ; 073EE
+        move.b  #$1,(ConfigChanged).l           ; 073EE
         movea.l -$14(a6),a0                     ; 073F6
         move.w  #$401,(a0)                      ; 073FA
-        movea.l (dat_002_0000C).l,a0            ; 073FE
+        movea.l (CurrentBullet).l,a0            ; 073FE
         clr.w   $2e(a0)                         ; 07404
         move.b  d0,-$d(a6)                      ; 07408
         tst.b   (dat_071_0025B).l               ; 0740C
         beq.b   l_000_07476                     ; 07412
-        move.b  (dat_071_0017D).l,d0            ; 07414
+        move.b  (MapView).l,d0                  ; 07414
         tst.b   d0                              ; 0741A
         bne.b   l_000_0742E                     ; 0741C
         moveq   #$30,d0                         ; 0741E
@@ -3978,10 +3984,10 @@ l_000_0746E:
         clr.b   (dat_071_0025B).l               ; 0746E
         bra.b   l_000_074EE                     ; 07474
 l_000_07476:
-        move.b  (dat_071_0017D).l,d0            ; 07476
+        move.b  (MapView).l,d0                  ; 07476
         tst.b   d0                              ; 0747C
         bne.b   l_000_074C6                     ; 0747E
-        btst    #$5,(dat_071_0052B).l           ; 07480
+        btst    #$5,(SoundsLoaded).l            ; 07480
         beq.b   l_000_074B6                     ; 07488
         tst.b   (OutsideView).l                 ; 0748A
         beq.b   l_000_074A4                     ; 07490
@@ -4039,7 +4045,7 @@ l_000_0750C:
         move.w  -$10(a6),d0                     ; 07518
         ext.l   d0                              ; 0751C
         move.l  d0,-(a7)                        ; 0751E
-        bsr.b   sub_000_0754C                   ; 07520
+        bsr.b   MoveBullet                      ; 07520
         addq.l  #$4,a7                          ; 07522
 l_000_07524:
         addq.w  #$2,-$10(a6)                    ; 07524

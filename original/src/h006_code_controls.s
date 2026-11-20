@@ -20,7 +20,7 @@ RedrawPanel:
 ;-------------------------------------------------------------------------------
 RedrawInstruments:
         moveq   #$3,d4                          ; 00008
-        move.b  d4,(dat_071_00207).l            ; 0000A
+        move.b  d4,(PanelRedraw).l              ; 0000A
         move.b  d4,(dat_071_00206).l            ; 00010
         move.b  d4,(dat_071_00209).l            ; 00016
         move.b  d4,(dat_071_0020A).l            ; 0001C
@@ -37,7 +37,7 @@ RedrawInstruments:
         tst.b   (ShakeKind).l                   ; 0005E
         bne.b   l_006_00072                     ; 00064
         clr.w   (ViewY).l                       ; 00066
-        clr.l   (dat_071_002E8).l               ; 0006C
+        clr.l   (PanelShakeOffset).l            ; 0006C
 l_006_00072:
         rts                                     ; 00072
 
