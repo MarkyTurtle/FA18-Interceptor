@@ -29,8 +29,8 @@ l_040_00062:
 
 ;-------------------------------------------------------------------------------
 ; DrawHUD - The head-up display, in the cockpit only (not OutsideView): the gun cross, the
-; pitch ladder and the other symbols (hunk 40), the weapon, and while flying the G meter and
-; more.
+; fixed symbols, the target box, the missile seeker and the weapon; while flying, the G load,
+; the height, speed and heading, and the gun sight.
 ;-------------------------------------------------------------------------------
 DrawHUD:
         move.l  #$fffff,(dat_071_000B6).l       ; 00064

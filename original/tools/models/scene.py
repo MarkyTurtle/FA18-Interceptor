@@ -47,9 +47,9 @@ g.hook('Plot2', cap_point(2))
 g.hook('PlotBig', cap_point(2))
 
 SETUP = ('BuildSceneryBits', 'ResetGame', 'SetupMode', 'sub_004_00268', 'sub_004_00392')
-FRAME = ('UpdateViewCell', 'SetupCamera', 'sub_008_00286', 'sub_020_00738', 'sub_000_043F2',
-         'sub_008_00598', 'sub_020_007EA', 'ClearRadarList', 'DrawSkyAndGround', 'DrawWaterAreas',
-         'DrawSun', 'sub_008_0084C', 'sub_008_0085E', 'sub_025_00000', 'sub_023_00000',
+FRAME = ('UpdateViewCell', 'SetupCamera', 'SetCockpitEye', 'SetViewOctant', 'SetHeightBand',
+         'UpdateScenery', 'ShakeView', 'ClearRadarList', 'DrawSkyAndGround', 'DrawWaterAreas',
+         'DrawSun', 'DrawFarScenery0', 'DrawFarScenery1', 'DrawGroundDots', 'sub_023_00000',
          'DrawObjects', 'sub_000_072DC')
 
 

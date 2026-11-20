@@ -359,7 +359,8 @@ instruments are drawn over it each frame (stage `$D0`), several only every few f
 
   `tools/models/hud.py` draws it in the emulator:
 
-  ![The head-up display: the F/A-18 (above) and the F-16 (below)](images/hud.png)
+  ![The head-up display: the F/A-18 and the F-16 (above); a target locked with the gun - the
+  pipper, its range bar and the closure - and with a Sidewinder, in range (below)](images/hud.png)
 
 `OutsideView` is set for the outside views (the keypad chooses the view, `ViewChoice`): then the
 view fills more of the screen and the heading, speed and height are written over it instead.
