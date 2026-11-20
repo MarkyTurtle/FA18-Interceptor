@@ -607,13 +607,13 @@ CockpitSounds:
         beq.b   l_000_04B32                     ; 04B16
         moveq   #$5,d0                          ; 04B18
         move.l  d0,-(a7)                        ; 04B1A
-        jsr     (sub_000_0A1E6).l               ; 04B1C
+        jsr     (PlayGearSound).l               ; 04B1C
         addq.l  #$4,a7                          ; 04B22
         bra.b   l_000_04B32                     ; 04B24
 l_000_04B26:
         moveq   #$a,d0                          ; 04B26
         move.l  d0,-(a7)                        ; 04B28
-        jsr     (sub_000_0A1E6).l               ; 04B2A
+        jsr     (PlayGearSound).l               ; 04B2A
         addq.l  #$4,a7                          ; 04B30
 l_000_04B32:
         move.b  (dat_071_00255).l,d0            ; 04B32
@@ -624,7 +624,7 @@ l_000_04B44:
         move.b  (dat_071_00255).l,d0            ; 04B44
         subq.b  #$1,d0                          ; 04B4A
         bne.b   l_000_04B5A                     ; 04B4C
-        jsr     (sub_000_0A24C).l               ; 04B4E
+        jsr     (StopChannel2).l                ; 04B4E
         clr.b   (dat_071_00255).l               ; 04B54
 l_000_04B5A:
         tst.l   (SoundRequests).l               ; 04B5A
@@ -1081,7 +1081,7 @@ l_000_05096:
         ext.l   d0                              ; 050C8
         move.l  d0,-(a7)                        ; 050CA
         move.l  d1,-(a7)                        ; 050CC
-        jsr     (sub_000_09DB2).l               ; 050CE
+        jsr     (PlayCatapultSound).l           ; 050CE
         addq.l  #$8,a7                          ; 050D4
         bra.w   l_000_05284                     ; 050D6
 l_000_050DA:
@@ -1119,7 +1119,7 @@ l_000_05124:
         ext.l   d1                              ; 0513C
         move.l  d1,-(a7)                        ; 0513E
         move.l  d0,-(a7)                        ; 05140
-        jsr     (sub_000_09DB2).l               ; 05142
+        jsr     (PlayCatapultSound).l           ; 05142
         addq.l  #$8,a7                          ; 05148
         bra.w   l_000_05284                     ; 0514A
 l_000_0514E:
@@ -1220,14 +1220,14 @@ l_000_05262:
         bsr.w   sub_000_05502                   ; 05262
         ext.l   d0                              ; 05266
         move.l  d0,-(a7)                        ; 05268
-        jsr     (sub_000_09F9A).l               ; 0526A
+        jsr     (PlayWindSound).l               ; 0526A
         addq.l  #$4,a7                          ; 05270
         bra.b   l_000_05284                     ; 05272
 l_000_05274:
         bsr.w   sub_000_05502                   ; 05274
         ext.l   d0                              ; 05278
         move.l  d0,-(a7)                        ; 0527A
-        jsr     (sub_000_09F9A).l               ; 0527C
+        jsr     (PlayWindSound).l               ; 0527C
         addq.l  #$4,a7                          ; 05282
 l_000_05284:
         clr.b   (EngineSoundRequest).l          ; 05284
@@ -1258,7 +1258,7 @@ sub_000_052C6:
         move.w  $e(a6),d0                       ; 052D4
         ext.l   d0                              ; 052D8
         move.l  d0,-(a7)                        ; 052DA
-        jsr     (sub_000_0A258).l               ; 052DC
+        jsr     (PlayEffect2).l                 ; 052DC
         addq.l  #$4,a7                          ; 052E2
         clr.b   (dat_071_00167).l               ; 052E4
         bra.b   l_000_0530A                     ; 052EA
@@ -1396,7 +1396,11 @@ l_000_054DC:
         ext.l   d0                              ; 054E0
         unlk    a6                              ; 054E2
         rts                                     ; 054E4
-sub_000_054E6:
+
+;-------------------------------------------------------------------------------
+; FiveEighths - Returns the word argument x 5/8 (x/2 + x/8).
+;-------------------------------------------------------------------------------
+FiveEighths:
         link.w  a6,#$0                          ; 054E6
         move.w  $a(a6),d0                       ; 054EA
         asr.w   #$1,d0                          ; 054EE
@@ -2028,7 +2032,7 @@ sub_000_05BDE:
         bne.b   l_000_05C4C                     ; 05C3E
         moveq   #$f,d0                          ; 05C40
         move.l  d0,-(a7)                        ; 05C42
-        jsr     (sub_000_0A18C).l               ; 05C44
+        jsr     (PlayTireSound).l               ; 05C44
         addq.l  #$4,a7                          ; 05C4A
 l_000_05C4C:
         movea.l -$a(a6),a0                      ; 05C4C
@@ -3672,13 +3676,13 @@ l_000_0702E:
         ble.b   l_000_07046                     ; 07034
         moveq   #$28,d0                         ; 07036
         move.l  d0,-(a7)                        ; 07038
-        jsr     (sub_000_0A18C).l               ; 0703A
+        jsr     (PlayTireSound).l               ; 0703A
         addq.l  #$4,a7                          ; 07040
         bra.w   l_000_07178                     ; 07042
 l_000_07046:
         moveq   #$1e,d0                         ; 07046
         move.l  d0,-(a7)                        ; 07048
-        jsr     (sub_000_0A18C).l               ; 0704A
+        jsr     (PlayTireSound).l               ; 0704A
         addq.l  #$4,a7                          ; 07050
         bra.w   l_000_07178                     ; 07052
 l_000_07056:
@@ -4000,7 +4004,7 @@ l_000_07476:
         move.l  d0,-(a7)                        ; 07494
         moveq   #$6,d0                          ; 07496
         move.l  d0,-(a7)                        ; 07498
-        jsr     (sub_000_0A2F0).l               ; 0749A
+        jsr     (PlayGunSound).l                ; 0749A
         addq.l  #$8,a7                          ; 074A0
         bra.b   l_000_074C6                     ; 074A2
 l_000_074A4:
@@ -4008,7 +4012,7 @@ l_000_074A4:
         move.l  d0,-(a7)                        ; 074A6
         moveq   #$6,d0                          ; 074A8
         move.l  d0,-(a7)                        ; 074AA
-        jsr     (sub_000_0A2F0).l               ; 074AC
+        jsr     (PlayGunSound).l                ; 074AC
         addq.l  #$8,a7                          ; 074B2
         bra.b   l_000_074C6                     ; 074B4
 l_000_074B6:
@@ -4033,7 +4037,7 @@ l_000_074EE:
         move.w  -$10(a6),d0                     ; 074EE
         ext.l   d0                              ; 074F2
         move.l  d0,-(a7)                        ; 074F4
-        bsr.w   sub_000_077D8                   ; 074F6
+        bsr.w   BulletHitEffects                ; 074F6
         addq.l  #$4,a7                          ; 074FA
         bra.b   l_000_0750C                     ; 074FC
 l_000_074FE:

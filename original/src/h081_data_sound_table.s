@@ -15,32 +15,40 @@ SoundTable:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00004:
+; CatapultSample - The sound loaded from text/textcpt (probably the catapult; SoundsLoaded bit
+; 0), played by PlayCatapultSound.
+CatapultSample:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00008:
+; EngineSample - The engine sound loaded from text/textegn (SoundsLoaded bit 1).
+EngineSample:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_0000C:
+; EngineSample2 - The second engine sound, from text/textegn2.
+EngineSample2:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00010:
+; EffectSound - A sound made in memory for PlayEffect (its parameters at dat_086_00000).
+EffectSound:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00014:
+; TireSample - The sound loaded from text/texttre (probably the tyres' screech on landing;
+; SoundsLoaded bit 2), played by PlayTireSound.
+TireSample:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00018:
+; SweepSound - A sound made in memory for PlaySweep (its parameters at dat_086_00060).
+SweepSound:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -49,7 +57,8 @@ dat_081_00018:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00020:
+; WindSample - The wind's sound, from text/textwnd (SoundsLoaded bit 4), with WindSample2.
+WindSample:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -59,17 +68,22 @@ dat_081_00024:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00028:
+; GunSoundCopy - A copy of a loaded sound used for the gun (PlayGunSound; parameters at
+; dat_086_000F8; SoundsLoaded bit 5).
+GunSoundCopy:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_0002C:
+; GearSample - The sound loaded from text/textger (probably the landing gear; SoundsLoaded bit
+; 6), played by PlayGearSound.
+GearSample:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00030:
+; EffectSound2 - A copy of a loaded sound for PlayEffect2 (parameters at dat_086_000B8).
+EffectSound2:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00

@@ -194,7 +194,7 @@ l_026_001CA:
         moveq   #$0,d3                          ; 001FE
         moveq   #$0,d4                          ; 00200
         move.w  #$48,d5                         ; 00202
-        jsr     (sub_004_002F0).l               ; 00206
+        jsr     (TurnByPanelMatrix).l           ; 00206
         lea.l   (ObjectTable).l,a1              ; 0020C
         adda.w  (CurrentObjectOffset).l,a1      ; 00212
         move.b  #$10,$62(a1)                    ; 00218
@@ -858,10 +858,10 @@ l_026_00A50:
         cmpi.b  #$4,d0                          ; 00A62
         beq.b   l_026_00A70                     ; 00A66
 l_026_00A68:
-        jsr     (sub_004_002F0).l               ; 00A68
+        jsr     (TurnByPanelMatrix).l           ; 00A68
         bra.b   l_026_00A76                     ; 00A6E
 l_026_00A70:
-        jsr     (sub_004_00316).l               ; 00A70
+        jsr     (TurnByViewObject).l            ; 00A70
 l_026_00A76:
         movem.l d0-d2,(FlyByPoint).l            ; 00A76
         movem.l (FlyByPoint).l,d5-d7            ; 00A7E
@@ -989,7 +989,7 @@ sub_026_00BDA:
 l_026_00C06:
         move.b  #$3,(CameraSequence).l          ; 00C06
         move.b  #$8,(dat_071_00186).l           ; 00C0E
-        jsr     (sub_004_00254).l               ; 00C16
+        jsr     (BayCentre).l                   ; 00C16
         movem.l d0-d2,(FlyByPoint).l            ; 00C1C
         rts                                     ; 00C24
 sub_026_00C26:
@@ -1034,7 +1034,7 @@ l_026_00CA0:
         bne.b   l_026_00CBE                     ; 00CA6
         move.w  #$3e,(DebugCheckpoint).l        ; 00CA8
         jsr     (Nop).l                         ; 00CB0
-        jsr     (sub_004_00254).l               ; 00CB6
+        jsr     (BayCentre).l                   ; 00CB6
         bra.b   l_026_00CE0                     ; 00CBC
 l_026_00CBE:
         move.w  (dat_071_0038A).l,d3            ; 00CBE
@@ -1127,7 +1127,7 @@ l_026_00DB2:
 l_026_00DD2:
         moveq   #$6,d3                          ; 00DD2
 l_026_00DD4:
-        jsr     (sub_004_00316).l               ; 00DD4
+        jsr     (TurnByViewObject).l            ; 00DD4
         movem.l d0-d2,(FlyByPoint).l            ; 00DDA
         movem.l (a7)+,d3-d7                     ; 00DE2
 l_026_00DE6:

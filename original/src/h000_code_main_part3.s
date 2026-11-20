@@ -211,7 +211,12 @@ l_000_077D0:
         movem.l (a7)+,a2                        ; 077D0
         unlk    a6                              ; 077D4
         rts                                     ; 077D6
-sub_000_077D8:
+
+;-------------------------------------------------------------------------------
+; BulletHitEffects - What follows a bullet's hit (CurrentBullet): sets its timer and flags for
+; the hit's drawing and the damage (sub_000_07AFE).
+;-------------------------------------------------------------------------------
+BulletHitEffects:
         link.w  a6,#$fff6                       ; 077D8
         movem.l d2-d5,-(a7)                     ; 077DC
         movea.l (CurrentBullet).l,a0            ; 077E0
@@ -368,7 +373,13 @@ l_000_079B6:
         movem.l (a7)+,d2-d5                     ; 07A20
         unlk    a6                              ; 07A24
         rts                                     ; 07A26
-sub_000_07A28:
+
+;-------------------------------------------------------------------------------
+; BulletHitsObject - A bullet hit an object (the number on the stack): notes it
+; (BulletHitObject), moves the bullet into the object's cell and applies the hit
+; (sub_000_07AFE).
+;-------------------------------------------------------------------------------
+BulletHitsObject:
         link.w  a6,#$0                          ; 07A28
         move.w  $e(a6),d0                       ; 07A2C
         move.w  d0,(BulletHitObject).l          ; 07A30
@@ -2691,7 +2702,7 @@ l_000_0986C:
         adda.l  #SoundTable,a0                  ; 0989A
         movea.l (a0),a1                         ; 098A0
         movea.l d0,a0                           ; 098A2
-        adda.l  #dat_081_00008,a0               ; 098A4
+        adda.l  #EngineSample,a0                ; 098A4
         move.l  (a0),$20(a1)                    ; 098AA
         addq.l  #$1,-$4(a6)                     ; 098AE
         bra.b   l_000_0986C                     ; 098B2
@@ -2801,9 +2812,9 @@ l_000_09A0C:
         tst.l   d0                              ; 09A22
         beq.b   l_000_09A64                     ; 09A24
         moveq   #-1,d0                          ; 09A26
-        movea.l (dat_081_00008).l,a0            ; 09A28
+        movea.l (EngineSample).l,a0             ; 09A28
         move.l  d0,$10(a0)                      ; 09A2E
-        movea.l (dat_081_0000C).l,a0            ; 09A32
+        movea.l (EngineSample2).l,a0            ; 09A32
         move.l  d0,$10(a0)                      ; 09A38
         addi.l  #$370,(a0)                      ; 09A3C
         move.l  $4(a0),d0                       ; 09A42
@@ -2821,12 +2832,12 @@ l_000_09A64:
         addq.l  #$8,a7                          ; 09A72
         tst.l   d0                              ; 09A74
         beq.b   l_000_09AA0                     ; 09A76
-        movea.l (dat_081_00010).l,a0            ; 09A78
+        movea.l (EffectSound).l,a0              ; 09A78
         move.l  $4(a0),-(a7)                    ; 09A7E
         move.l  (a0),-(a7)                      ; 09A82
         jsr     (sub_083_001C8).l               ; 09A84
         addq.l  #$8,a7                          ; 09A8A
-        movea.l (dat_081_00010).l,a0            ; 09A8C
+        movea.l (EffectSound).l,a0              ; 09A8C
         move.l  #dat_086_00000,$30(a0)          ; 09A92
         moveq   #-1,d0                          ; 09A9A
         move.l  d0,$10(a0)                      ; 09A9C
@@ -2838,12 +2849,12 @@ l_000_09AA0:
         addq.l  #$8,a7                          ; 09AB0
         tst.l   d0                              ; 09AB2
         beq.b   l_000_09AE6                     ; 09AB4
-        movea.l (dat_081_00018).l,a0            ; 09AB6
+        movea.l (SweepSound).l,a0               ; 09AB6
         move.l  $4(a0),-(a7)                    ; 09ABC
         move.l  (a0),-(a7)                      ; 09AC0
         jsr     (sub_083_002A6).l               ; 09AC2
         addq.l  #$8,a7                          ; 09AC8
-        movea.l (dat_081_00018).l,a0            ; 09ACA
+        movea.l (SweepSound).l,a0               ; 09ACA
         moveq   #-1,d0                          ; 09AD0
         move.l  d0,$10(a0)                      ; 09AD2
         move.l  #dat_086_00060,$30(a0)          ; 09AD6
@@ -2858,7 +2869,7 @@ l_000_09AE6:
         beq.b   l_000_09B04                     ; 09AFA
         bset    #$2,(SoundsLoaded).l            ; 09AFC
 l_000_09B04:
-        tst.l   (dat_081_00018).l               ; 09B04
+        tst.l   (SweepSound).l                  ; 09B04
         beq.b   l_000_09B3E                     ; 09B0A
         moveq   #$a,d0                          ; 09B0C
         move.l  d0,-(a7)                        ; 09B0E
@@ -2868,7 +2879,7 @@ l_000_09B04:
         addq.l  #$8,a7                          ; 09B1A
         tst.l   d0                              ; 09B1C
         beq.b   l_000_09B3E                     ; 09B1E
-        movea.l (dat_081_00028).l,a0            ; 09B20
+        movea.l (GunSoundCopy).l,a0             ; 09B20
         move.l  #dat_086_000F8,$30(a0)          ; 09B26
         move.l  #$960000,$8(a0)                 ; 09B2E
         bset    #$5,(SoundsLoaded).l            ; 09B36
@@ -2881,11 +2892,11 @@ l_000_09B3E:
         tst.l   d0                              ; 09B50
         beq.b   l_000_09B68                     ; 09B52
         moveq   #-1,d0                          ; 09B54
-        movea.l (dat_081_0002C).l,a0            ; 09B56
+        movea.l (GearSample).l,a0               ; 09B56
         move.l  d0,$10(a0)                      ; 09B5C
         bset    #$6,(SoundsLoaded).l            ; 09B60
 l_000_09B68:
-        tst.l   (dat_081_00008).l               ; 09B68
+        tst.l   (EngineSample).l                ; 09B68
         beq.b   l_000_09B9A                     ; 09B6E
         moveq   #$c,d0                          ; 09B70
         move.l  d0,-(a7)                        ; 09B72
@@ -2895,7 +2906,7 @@ l_000_09B68:
         addq.l  #$8,a7                          ; 09B7E
         tst.l   d0                              ; 09B80
         beq.b   l_000_09B9A                     ; 09B82
-        movea.l (dat_081_00030).l,a0            ; 09B84
+        movea.l (EffectSound2).l,a0             ; 09B84
         move.l  #dat_086_000B8,$30(a0)          ; 09B8A
         bset    #$1,(SoundFlags).l              ; 09B92
 l_000_09B9A:
@@ -2915,7 +2926,7 @@ l_000_09B9A:
         moveq   #-1,d0                          ; 09BC0
         movea.l (SoundTable).l,a0               ; 09BC2
         move.l  d0,$10(a0)                      ; 09BC8
-        movea.l (dat_081_00004).l,a0            ; 09BCC
+        movea.l (CatapultSample).l,a0           ; 09BCC
         move.l  d0,$10(a0)                      ; 09BD2
         move.l  #$800015cc,$4(a0)               ; 09BD6
         bset    #$0,(SoundsLoaded).l            ; 09BDE
@@ -2938,10 +2949,10 @@ l_000_09BE6:
         movea.l (dat_081_00024).l,a0            ; 09C10
         moveq   #-1,d0                          ; 09C16
         move.l  d0,$10(a0)                      ; 09C18
-        movea.l (dat_081_00020).l,a1            ; 09C1C
+        movea.l (WindSample).l,a1               ; 09C1C
         move.l  d0,$10(a1)                      ; 09C22
         addi.l  #$792,(a0)                      ; 09C26
-        movea.l (dat_081_0000C).l,a1            ; 09C2C
+        movea.l (EngineSample2).l,a1            ; 09C2C
         move.l  $4(a1),d0                       ; 09C32
         andi.l  #$7fffffff,d0                   ; 09C36
         subi.l  #$792,d0                        ; 09C3C
@@ -3007,14 +3018,19 @@ l_000_09CDE:
         movem.l (a7)+,d2                        ; 09CDE
         unlk    a6                              ; 09CE2
         rts                                     ; 09CE4
-sub_000_09CE6:
+
+;-------------------------------------------------------------------------------
+; PlayTitleMusic - Starts the title music (if the music samples were loaded, SoundsLoaded bit
+; 7), unless dat_071_001A7 says it is already playing.
+;-------------------------------------------------------------------------------
+PlayTitleMusic:
         link.w  a6,#$0                          ; 09CE6
         move.b  (dat_071_001A7).l,d0            ; 09CEA
         tst.b   d0                              ; 09CF0
         bne.w   l_000_09D76                     ; 09CF2
         btst    #$7,(SoundsLoaded).l            ; 09CF6
         beq.b   l_000_09D36                     ; 09CFE
-        jsr     (sub_000_015F6).l               ; 09D00
+        jsr     (StopAllSounds).l               ; 09D00
         moveq   #$3f,d0                         ; 09D06
         move.l  d0,-(a7)                        ; 09D08
         clr.l   -(a7)                           ; 09D0A
@@ -3051,7 +3067,7 @@ l_000_09D36:
         move.b  #$2,(dat_071_001A7).l           ; 09D66
         bra.b   l_000_09D76                     ; 09D6E
 l_000_09D70:
-        jsr     (sub_000_015F6).l               ; 09D70
+        jsr     (StopAllSounds).l               ; 09D70
 l_000_09D76:
         unlk    a6                              ; 09D76
         rts                                     ; 09D78
@@ -3075,13 +3091,17 @@ sub_000_09D7A:
 l_000_09DAE:
         unlk    a6                              ; 09DAE
         rts                                     ; 09DB0
-sub_000_09DB2:
+
+;-------------------------------------------------------------------------------
+; PlayCatapultSound - Plays CatapultSample (if loaded) on two channels.
+;-------------------------------------------------------------------------------
+PlayCatapultSound:
         link.w  a6,#$0                          ; 09DB2
         btst    #$0,(SoundsLoaded).l            ; 09DB6
         beq.b   l_000_09E32                     ; 09DBE
-        tst.l   (dat_081_00004).l               ; 09DC0
+        tst.l   (CatapultSample).l              ; 09DC0
         beq.b   l_000_09E42                     ; 09DC6
-        movea.l (dat_081_00004).l,a0            ; 09DC8
+        movea.l (CatapultSample).l,a0           ; 09DC8
         moveq   #$0,d0                          ; 09DCE
         move.l  d0,$1c(a0)                      ; 09DD0
         movea.l (SoundTable).l,a1               ; 09DD4
@@ -3131,10 +3151,10 @@ PlayEngineSound:
         link.w  a6,#$0                          ; 09E46
         btst    #$1,(SoundsLoaded).l            ; 09E4A
         beq.b   l_000_09EBA                     ; 09E52
-        tst.l   (dat_081_0000C).l               ; 09E54
+        tst.l   (EngineSample2).l               ; 09E54
         beq.b   l_000_09EBA                     ; 09E5A
-        movea.l (dat_081_00008).l,a0            ; 09E5C
-        movea.l (dat_081_0000C).l,a1            ; 09E62
+        movea.l (EngineSample).l,a0             ; 09E5C
+        movea.l (EngineSample2).l,a1            ; 09E62
         moveq   #$0,d0                          ; 09E68
         move.l  d0,$1c(a1)                      ; 09E6A
         move.l  d0,$1c(a0)                      ; 09E6E
@@ -3227,13 +3247,18 @@ l_000_09F92:
         movem.l (a7)+,d2                        ; 09F92
         unlk    a6                              ; 09F96
         rts                                     ; 09F98
-sub_000_09F9A:
+
+;-------------------------------------------------------------------------------
+; PlayWindSound - Plays the wind's sound (if loaded, SoundsLoaded bit 4) at a level from the
+; speed.
+;-------------------------------------------------------------------------------
+PlayWindSound:
         link.w  a6,#$fffc                       ; 09F9A
         btst    #$4,(SoundsLoaded).l            ; 09F9E
         beq.w   l_000_0A02C                     ; 09FA6
         tst.l   (dat_081_00024).l               ; 09FAA
         beq.w   l_000_0A03E                     ; 09FB0
-        movea.l (dat_081_00020).l,a0            ; 09FB4
+        movea.l (WindSample).l,a0               ; 09FB4
         moveq   #$6,d0                          ; 09FBA
         move.l  d0,-(a7)                        ; 09FBC
         move.l  a0,$4(a7)                       ; 09FBE
@@ -3288,7 +3313,7 @@ l_000_0A03E:
 ;-------------------------------------------------------------------------------
 PlayEffect:
         link.w  a6,#$0                          ; 0A042
-        tst.l   (dat_081_00010).l               ; 0A046
+        tst.l   (EffectSound).l                 ; 0A046
         beq.w   l_000_0A0D8                     ; 0A04C
         moveq   #$3,d0                          ; 0A050
         move.l  d0,-(a7)                        ; 0A052
@@ -3312,7 +3337,7 @@ PlayEffect:
         move.l  d1,(dat_086_00034).l            ; 0A09E
         move.l  $1c(a6),(dat_086_0003C).l       ; 0A0A4
         move.l  $28(a6),(dat_086_0004C).l       ; 0A0AC
-        movea.l (dat_081_00010).l,a0            ; 0A0B4
+        movea.l (EffectSound).l,a0              ; 0A0B4
         moveq   #$0,d0                          ; 0A0BA
         move.l  d0,$34(a0)                      ; 0A0BC
         moveq   #$1,d0                          ; 0A0C0
@@ -3337,7 +3362,7 @@ PlaySweep:
         link.w  a6,#$fffc                       ; 0A0DC
         btst    #$0,(SoundFlags).l              ; 0A0E0
         beq.w   l_000_0A178                     ; 0A0E8
-        tst.l   (dat_081_00018).l               ; 0A0EC
+        tst.l   (SweepSound).l                  ; 0A0EC
         beq.w   l_000_0A188                     ; 0A0F2
         moveq   #$2,d0                          ; 0A0F6
         move.l  d0,-(a7)                        ; 0A0F8
@@ -3353,7 +3378,7 @@ PlaySweep:
         jsr     (CXD33).l                       ; 0A116
         move.l  d0,(dat_086_0006C).l            ; 0A11C
         move.l  $c(a6),(dat_086_00074).l        ; 0A122
-        movea.l (dat_081_00018).l,a0            ; 0A12A
+        movea.l (SweepSound).l,a0               ; 0A12A
         clr.l   $34(a0)                         ; 0A130
         moveq   #$b,d0                          ; 0A134
         move.l  d0,-(a7)                        ; 0A136
@@ -3367,7 +3392,7 @@ PlaySweep:
         movea.l $0(a7),a0                       ; 0A150
         move.l  d0,$8(a0)                       ; 0A154
         moveq   #$1,d0                          ; 0A158
-        movea.l (dat_081_00018).l,a0            ; 0A15A
+        movea.l (SweepSound).l,a0               ; 0A15A
         move.l  d0,$2c(a0)                      ; 0A160
         clr.l   -(a7)                           ; 0A164
         moveq   #$2,d0                          ; 0A166
@@ -3383,7 +3408,12 @@ l_000_0A178:
 l_000_0A188:
         unlk    a6                              ; 0A188
         rts                                     ; 0A18A
-sub_000_0A18C:
+
+;-------------------------------------------------------------------------------
+; PlayTireSound - Plays TireSample (if loaded), only for the viewed object: on touching the
+; ground.
+;-------------------------------------------------------------------------------
+PlayTireSound:
         link.w  a6,#$0                          ; 0A18C
         btst    #$2,(SoundsLoaded).l            ; 0A190
         beq.b   l_000_0A1E2                     ; 0A198
@@ -3391,9 +3421,9 @@ sub_000_0A18C:
         move.w  (ViewObject).l,d1               ; 0A1A0
         cmp.w   d1,d0                           ; 0A1A6
         bne.b   l_000_0A1E2                     ; 0A1A8
-        tst.l   (dat_081_00014).l               ; 0A1AA
+        tst.l   (TireSample).l                  ; 0A1AA
         beq.b   l_000_0A1E2                     ; 0A1B0
-        movea.l (dat_081_00014).l,a0            ; 0A1B2
+        movea.l (TireSample).l,a0               ; 0A1B2
         move.l  #$1360000,$8(a0)                ; 0A1B8
         move.l  #$fffe0000,$18(a0)              ; 0A1C0
         moveq   #$1,d0                          ; 0A1C8
@@ -3408,7 +3438,11 @@ sub_000_0A18C:
 l_000_0A1E2:
         unlk    a6                              ; 0A1E2
         rts                                     ; 0A1E4
-sub_000_0A1E6:
+
+;-------------------------------------------------------------------------------
+; PlayGearSound - Plays GearSample (if loaded), only for the viewed object.
+;-------------------------------------------------------------------------------
+PlayGearSound:
         link.w  a6,#$0                          ; 0A1E6
         btst    #$6,(SoundsLoaded).l            ; 0A1EA
         beq.b   l_000_0A248                     ; 0A1F2
@@ -3416,13 +3450,13 @@ sub_000_0A1E6:
         move.w  (ViewObject).l,d1               ; 0A1FA
         cmp.w   d1,d0                           ; 0A200
         bne.b   l_000_0A248                     ; 0A202
-        tst.l   (dat_081_0002C).l               ; 0A204
+        tst.l   (GearSample).l                  ; 0A204
         beq.b   l_000_0A248                     ; 0A20A
         moveq   #$2,d0                          ; 0A20C
         move.l  d0,-(a7)                        ; 0A20E
         bsr.w   StopSound                       ; 0A210
         addq.l  #$4,a7                          ; 0A214
-        movea.l (dat_081_0002C).l,a0            ; 0A216
+        movea.l (GearSample).l,a0               ; 0A216
         moveq   #$0,d0                          ; 0A21C
         move.l  d0,$2c(a0)                      ; 0A21E
         move.l  #dat_086_00088,$30(a0)          ; 0A222
@@ -3439,17 +3473,26 @@ sub_000_0A1E6:
 l_000_0A248:
         unlk    a6                              ; 0A248
         rts                                     ; 0A24A
-sub_000_0A24C:
+
+;-------------------------------------------------------------------------------
+; StopChannel2 - Stops sound channel 2.
+;-------------------------------------------------------------------------------
+StopChannel2:
         moveq   #$2,d0                          ; 0A24C
         move.l  d0,-(a7)                        ; 0A24E
         bsr.w   StopSound                       ; 0A250
         addq.l  #$4,a7                          ; 0A254
         rts                                     ; 0A256
-sub_000_0A258:
+
+;-------------------------------------------------------------------------------
+; PlayEffect2 - Plays EffectSound2 on channel 2 at the period on the stack (if SoundFlags bit
+; 1).
+;-------------------------------------------------------------------------------
+PlayEffect2:
         link.w  a6,#$fffc                       ; 0A258
         btst    #$1,(SoundFlags).l              ; 0A25C
         beq.w   l_000_0A2EC                     ; 0A264
-        tst.l   (dat_081_00030).l               ; 0A268
+        tst.l   (EffectSound2).l                ; 0A268
         beq.b   l_000_0A2EC                     ; 0A26E
         moveq   #$2,d0                          ; 0A270
         move.l  d0,-(a7)                        ; 0A272
@@ -3467,7 +3510,7 @@ sub_000_0A258:
         moveq   #$3c,d1                         ; 0A294
         jsr     (CXD33).l                       ; 0A296
         move.l  d0,(dat_086_000DC).l            ; 0A29C
-        movea.l (dat_081_00030).l,a0            ; 0A2A2
+        movea.l (EffectSound2).l,a0             ; 0A2A2
         clr.l   $34(a0)                         ; 0A2A8
         moveq   #$3,d0                          ; 0A2AC
         move.l  d0,-(a7)                        ; 0A2AE
@@ -3480,7 +3523,7 @@ sub_000_0A258:
         movea.l $0(a7),a0                       ; 0A2C6
         move.l  d0,$8(a0)                       ; 0A2CA
         moveq   #$1,d0                          ; 0A2CE
-        movea.l (dat_081_00030).l,a0            ; 0A2D0
+        movea.l (EffectSound2).l,a0             ; 0A2D0
         move.l  d0,$2c(a0)                      ; 0A2D6
         clr.l   -(a7)                           ; 0A2DA
         moveq   #$2,d0                          ; 0A2DC
@@ -3492,15 +3535,19 @@ sub_000_0A258:
 l_000_0A2EC:
         unlk    a6                              ; 0A2EC
         rts                                     ; 0A2EE
-sub_000_0A2F0:
+
+;-------------------------------------------------------------------------------
+; PlayGunSound - Plays the gun's sound (GunSoundCopy) on channel 2.
+;-------------------------------------------------------------------------------
+PlayGunSound:
         link.w  a6,#$0                          ; 0A2F0
-        tst.l   (dat_081_00028).l               ; 0A2F4
+        tst.l   (GunSoundCopy).l                ; 0A2F4
         beq.b   l_000_0A346                     ; 0A2FA
         moveq   #$2,d0                          ; 0A2FC
         move.l  d0,-(a7)                        ; 0A2FE
         bsr.w   StopSound                       ; 0A300
         addq.l  #$4,a7                          ; 0A304
-        movea.l (dat_081_00028).l,a0            ; 0A306
+        movea.l (GunSoundCopy).l,a0             ; 0A306
         moveq   #$0,d0                          ; 0A30C
         move.l  d0,$2c(a0)                      ; 0A30E
         move.l  $8(a6),(dat_086_000FC).l        ; 0A312

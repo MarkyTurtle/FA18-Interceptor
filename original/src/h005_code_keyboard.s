@@ -895,7 +895,7 @@ l_005_00AF8:
         move.w  #$14,d4                         ; 00AFA
         move.w  #$ff96,d5                       ; 00AFE
 l_005_00B02:
-        jsr     (sub_004_00328).l               ; 00B02
+        jsr     (TurnByObject).l                ; 00B02
         bra.b   l_005_00B44                     ; 00B08
 l_005_00B0A:
         lea.l   (dat_067_00084).l,a0            ; 00B0A
@@ -921,7 +921,7 @@ l_005_00B0A:
         move.l  d1,d2                           ; 00B40
         move.l  d3,d1                           ; 00B42
 l_005_00B44:
-        jsr     (sub_004_002A2).l               ; 00B44
+        jsr     (SetCameraAt).l                 ; 00B44
         clr.b   (NewView).l                     ; 00B4A
         tst.b   (OutsideView).l                 ; 00B50
         beq.w   l_005_00A74                     ; 00B56
@@ -1511,7 +1511,7 @@ Key_M:
         bra.w   l_005_00A6C                     ; 01398
 l_005_0139C:
         move.w  d0,-(a7)                        ; 0139C
-        jsr     (sub_000_015F6).l               ; 0139E
+        jsr     (StopAllSounds).l               ; 0139E
         move.w  (a7)+,d0                        ; 013A4
         move.l  #$10c00000,d4                   ; 013A6
         move.l  (dat_071_00034).l,d1            ; 013AC
@@ -1556,7 +1556,7 @@ Key_P:
         bra.w   sub_005_015FC                   ; 01476
 l_005_0147A:
         move.w  d0,-(a7)                        ; 0147A
-        jsr     (sub_000_015F6).l               ; 0147C
+        jsr     (StopAllSounds).l               ; 0147C
         move.w  (a7)+,d0                        ; 01482
         tst.b   (RecordMode).l                  ; 01484
         bne.b   l_005_014A8                     ; 0148A

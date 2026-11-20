@@ -473,7 +473,7 @@ l_017_0064E:
         moveq   #$1,d4                          ; 00672
         move.w  #$ff9f,d5                       ; 00674
         exg.l   a1,a2                           ; 00678
-        jsr     (sub_004_00328).l               ; 0067A
+        jsr     (TurnByObject).l                ; 0067A
         exg.l   a1,a2                           ; 00680
         move.l  d0,$14(a1)                      ; 00682
         move.l  d1,$18(a1)                      ; 00686
@@ -1650,7 +1650,7 @@ l_017_014F0:
         move.w  #$ffdc,d5                       ; 014F4
 l_017_014F8:
         exg.l   a1,a3                           ; 014F8
-        jsr     (sub_004_00328).l               ; 014FA
+        jsr     (TurnByObject).l                ; 014FA
         exg.l   a1,a3                           ; 01500
         move.l  d0,d3                           ; 01502
         move.l  d2,d4                           ; 01504

@@ -27,7 +27,13 @@ PutDifficulty:
         ext.w   d0                              ; 00024
         move.w  d0,$2(a0)                       ; 00026
         rts                                     ; 0002A
-sub_004_0002C:
+
+;-------------------------------------------------------------------------------
+; InitGameValues - The values set once at the start: the palette at full brightness (FadeLevel,
+; FadeTarget 15), the keys in text mode (KeyMode 1), the F/A-18 as the aircraft
+; (PlayerAircraftType $11).
+;-------------------------------------------------------------------------------
+InitGameValues:
         lea.l   (FileSize).l,a0                 ; 0002C
         move.w  #$fffc,$2a(a0)                  ; 00032
         clr.b   (PaletteLoadCount).l            ; 00038
@@ -44,8 +50,8 @@ sub_004_0002C:
 ; the screen.
 ;-------------------------------------------------------------------------------
 ResetGame:
-        bsr.w   sub_004_0020A                   ; 0006E
-        bsr.w   sub_004_0023A                   ; 00072
+        bsr.w   ClearGameFlags                  ; 0006E
+        bsr.w   SetGameFlags                    ; 00072
         move.b  (DifficultySaved).l,(Difficulty).l ; 00076
         clr.w   (TrainingFrame).l               ; 00080
         clr.w   (dat_073_01628).l               ; 00086
@@ -77,14 +83,14 @@ l_004_000E4:
         dbra    d4,l_004_000E4                  ; 000E6
         adda.w  #$20,a0                         ; 000EA
         dbra    d0,l_004_000E0                  ; 000EE
-        bsr.w   sub_004_00768                   ; 000F2
+        bsr.w   ResetPlayerFlags                ; 000F2
         move.w  #$140,(dat_071_00376).l         ; 000F6
         move.w  #$140,(dat_071_00378).l         ; 000FE
         move.b  #$0,(StartPoint).l              ; 00106
         move.b  #$1,(dat_071_00227).l           ; 0010E
         move.w  #$800,(dat_073_0165A).l         ; 00116
-        bsr.w   sub_004_00254                   ; 0011E
-        bsr.w   sub_004_002A2                   ; 00122
+        bsr.w   BayCentre                       ; 0011E
+        bsr.w   SetCameraAt                     ; 00122
         move.l  #$3000000,(dat_071_00034).l     ; 00126
         clr.l   (dat_071_0061A).l               ; 00130
         clr.l   (dat_071_0061E).l               ; 00136
@@ -126,12 +132,17 @@ l_004_001DC:
 l_004_001EC:
         move.b  d1,(a0)+                        ; 001EC
         dbra    d0,l_004_001EC                  ; 001EE
-        bsr.w   sub_004_003AE                   ; 001F2
+        bsr.w   ResetRecording                  ; 001F2
         jsr     (BuildSceneryBits).l            ; 001F6
         jsr     (UpdateViewCell).l              ; 001FC
         jsr     (UpdateScenery).l               ; 00202
         rts                                     ; 00208
-sub_004_0020A:
+
+;-------------------------------------------------------------------------------
+; ClearGameFlags - Clears the variables from DemoActive to ConfigChanged, and from DebriefDelay
+; to LogDiskStatus (ResetGame).
+;-------------------------------------------------------------------------------
+ClearGameFlags:
         lea.l   (DemoActive).l,a0               ; 0020A
         move.l  #ConfigChanged,d0               ; 00210
         sub.l   a0,d0                           ; 00216
@@ -148,7 +159,11 @@ l_004_00232:
         clr.w   (a0)+                           ; 00232
         dbra    d0,l_004_00232                  ; 00234
         rts                                     ; 00238
-sub_004_0023A:
+
+;-------------------------------------------------------------------------------
+; SetGameFlags - Sets every byte from FlightPhysics to DemoActive to 1 (ResetGame).
+;-------------------------------------------------------------------------------
+SetGameFlags:
         lea.l   (FlightPhysics).l,a0            ; 0023A
         move.l  #DemoActive,d0                  ; 00240
         sub.l   a0,d0                           ; 00246
@@ -157,26 +172,50 @@ l_004_0024A:
         move.b  #$1,(a0)+                       ; 0024A
         dbra    d0,l_004_0024A                  ; 0024E
         rts                                     ; 00252
-sub_004_00254:
+
+;-------------------------------------------------------------------------------
+; BayCentre - d0-d2 = the middle of the bay ($10C00000, $5000000, $11400000): where the camera
+; starts and the map view looks from.
+;-------------------------------------------------------------------------------
+BayCentre:
         move.l  #$10c00000,d0                   ; 00254
         move.l  #$5000000,d1                    ; 0025A
         move.l  #$11400000,d2                   ; 00260
         rts                                     ; 00266
-sub_004_00268:
+
+;-------------------------------------------------------------------------------
+; CameraAtStart - Puts the camera at ($10800000, $3000000, $10C00000) (SetCameraAt).
+;-------------------------------------------------------------------------------
+CameraAtStart:
         move.l  #$10800000,d0                   ; 00268
         move.l  #$3000000,d1                    ; 0026E
         move.l  #$10c00000,d2                   ; 00274
-        bra.b   sub_004_002A2                   ; 0027A
-sub_004_0027C:
+        bra.b   SetCameraAt                     ; 0027A
+
+;-------------------------------------------------------------------------------
+; CameraAtRunway - Puts the camera low over one runway ($10546800, $5000, $10A36700)
+; (SetCameraAt).
+;-------------------------------------------------------------------------------
+CameraAtRunway:
         move.l  #$10546800,d0                   ; 0027C
         move.l  #$5000,d1                       ; 00282
         move.l  #$10a36700,d2                   ; 00288
-        bra.b   sub_004_002A2                   ; 0028E
-sub_004_00290:
+        bra.b   SetCameraAt                     ; 0028E
+
+;-------------------------------------------------------------------------------
+; CameraAtRunway2 - Puts the camera low over another place ($0F248000, $5000, $0FCCF000)
+; (SetCameraAt).
+;-------------------------------------------------------------------------------
+CameraAtRunway2:
         move.l  #$f248000,d0                    ; 00290
         move.l  #$5000,d1                       ; 00296
         move.l  #$fccf000,d2                    ; 0029C
-sub_004_002A2:
+
+;-------------------------------------------------------------------------------
+; SetCameraAt - Sets the camera's position (CameraX/Y/Z from d0-d2) and the negated offsets
+; within its cell at dat_071_00602.
+;-------------------------------------------------------------------------------
+SetCameraAt:
         move.l  d0,(CameraX).l                  ; 002A2
         move.l  d1,(CameraY).l                  ; 002A8
         move.l  d2,(CameraZ).l                  ; 002AE
@@ -189,14 +228,24 @@ sub_004_002A2:
         move.l  d1,(dat_071_00606).l            ; 002CC
         move.l  d2,(dat_071_0060A).l            ; 002D2
         rts                                     ; 002D8
-sub_004_002DA:
+
+;-------------------------------------------------------------------------------
+; PointAheadOfView - FlyByPoint = the point $E980 along the viewed object's axis
+; (sub_004_0032E): a place ahead of it.
+;-------------------------------------------------------------------------------
+PointAheadOfView:
         moveq   #$0,d3                          ; 002DA
         moveq   #$0,d4                          ; 002DC
         move.w  #$e980,d5                       ; 002DE
-        bsr.w   sub_004_0032E                   ; 002E2
+        bsr.w   TurnByPlayer                    ; 002E2
         movem.l d0-d2,(FlyByPoint).l            ; 002E6
         rts                                     ; 002EE
-sub_004_002F0:
+
+;-------------------------------------------------------------------------------
+; TurnByPanelMatrix - Turns (d3, d4, d5) by the viewed object's matrix (after sub_032_006EA),
+; into dat_071_005DE.
+;-------------------------------------------------------------------------------
+TurnByPanelMatrix:
         movem.l a1-a2,-(a7)                     ; 002F0
         movem.w d3-d5,-(a7)                     ; 002F4
         jsr     (sub_032_006EA).l               ; 002F8
@@ -205,15 +254,28 @@ sub_004_002F0:
         adda.w  (ViewObject).l,a1               ; 00308
         lea.l   (dat_071_005DE).l,a2            ; 0030E
         bra.b   l_004_0033E                     ; 00314
-sub_004_00316:
+
+;-------------------------------------------------------------------------------
+; TurnByViewObject - Turns (d3, d4, d5) by the viewed object's matrix (+$92) into world axes:
+; d0-d2.
+;-------------------------------------------------------------------------------
+TurnByViewObject:
         movem.l a1-a2,-(a7)                     ; 00316
         lea.l   (ObjectTable).l,a1              ; 0031A
         adda.w  (ViewObject).l,a1               ; 00320
         bra.b   l_004_00338                     ; 00326
-sub_004_00328:
+
+;-------------------------------------------------------------------------------
+; TurnByObject - Turns (d3, d4, d5) by the matrix of the object at a1 (+$92): d0-d2.
+;-------------------------------------------------------------------------------
+TurnByObject:
         movem.l a1-a2,-(a7)                     ; 00328
         bra.b   l_004_00338                     ; 0032C
-sub_004_0032E:
+
+;-------------------------------------------------------------------------------
+; TurnByPlayer - Turns (d3, d4, d5) by the player's matrix: d0-d2.
+;-------------------------------------------------------------------------------
+TurnByPlayer:
         movem.l a1-a2,-(a7)                     ; 0032E
         lea.l   (ObjectTable).l,a1              ; 00332
 l_004_00338:
@@ -250,12 +312,22 @@ l_004_0033E:
         add.l   $1c(a1),d2                      ; 00388
         movem.l (a7)+,a1-a2                     ; 0038C
         rts                                     ; 00390
-sub_004_00392:
+
+;-------------------------------------------------------------------------------
+; ResetViewAndRecording - Back to the cockpit view (a new view, the camera following), then
+; ResetRecording.
+;-------------------------------------------------------------------------------
+ResetViewAndRecording:
         clr.b   (OutsideView).l                 ; 00392
         clr.b   (dat_071_00176).l               ; 00398
         move.b  #$1,(NewView).l                 ; 0039E
         move.b  #$1,(CameraFollows).l           ; 003A6
-sub_004_003AE:
+
+;-------------------------------------------------------------------------------
+; ResetRecording - Points the flight recording's and the replay's pointers back to the start of
+; their buffers, then ResetPlayer.
+;-------------------------------------------------------------------------------
+ResetRecording:
         move.l  (RecordBuffer).l,(RecordPointer).l ; 003AE
         move.l  (RecordControls).l,(RecordControlsPointer).l ; 003B8
         move.l  (RecordBuffer).l,(ReplayPointer).l ; 003C2
@@ -263,10 +335,15 @@ sub_004_003AE:
         addq.l  #$4,(ReplayControlsPointer).l   ; 003D6
         clr.w   (dat_071_002FC).l               ; 003DC
         clr.w   (dat_071_00300).l               ; 003E2
-sub_004_003E8:
+
+;-------------------------------------------------------------------------------
+; ResetPlayer - A new aircraft for the player: everything redrawn, ResetPlayerFlags and
+; ResetPlayerMotion, the throttle and its mouse position at 9, the engine sound restarted.
+;-------------------------------------------------------------------------------
+ResetPlayer:
         move.b  #$ff,(RedrawFlags).l            ; 003E8
-        bsr.w   sub_004_00768                   ; 003F0
-        bsr.w   sub_004_00708                   ; 003F4
+        bsr.w   ResetPlayerFlags                ; 003F0
+        bsr.w   ResetPlayerMotion               ; 003F4
         clr.w   (EjectedPilot).l                ; 003F8
         moveq   #$9,d0                          ; 003FE
         move.b  d0,(Player_2B).l                ; 00400
@@ -434,7 +511,7 @@ l_004_0062C:
         move.w  #$b,d3                          ; 00668
         moveq   #$0,d4                          ; 0066C
         move.w  #$68,d5                         ; 0066E
-        bsr.w   sub_004_00328                   ; 00672
+        bsr.w   TurnByObject                    ; 00672
         lea.l   (ObjectTable).l,a1              ; 00676
         move.l  d0,$14(a1)                      ; 0067C
         move.l  d2,$1c(a1)                      ; 00680
@@ -483,7 +560,12 @@ l_004_0062C:
 l_004_00700:
         jsr     (SetAttitude).l                 ; 00700
         rts                                     ; 00706
-sub_004_00708:
+
+;-------------------------------------------------------------------------------
+; ResetPlayerMotion - Clears the player's speeds, forces, rates and the like (ObjectTable +$6C,
+; +$6E, +$78, +$3E-$49, +$50, +$56-$5B).
+;-------------------------------------------------------------------------------
+ResetPlayerMotion:
         lea.l   (ObjectTable).l,a1              ; 00708
         clr.w   $6c(a1)                         ; 0070E
         clr.w   $6e(a1)                         ; 00712
@@ -504,7 +586,12 @@ sub_004_00708:
         clr.w   (WarningPlaying).l              ; 00758
         move.w  #$ffff,(dat_071_004B4).l        ; 0075E
         rts                                     ; 00766
-sub_004_00768:
+
+;-------------------------------------------------------------------------------
+; ResetPlayerFlags - Resets the player's record: the weapons (+$63 $0D, ResetPlayerAircraft),
+; its flags (+$00 = $1148), +$7E $1400, and the flash and warning counters.
+;-------------------------------------------------------------------------------
+ResetPlayerFlags:
         lea.l   (ObjectTable).l,a0              ; 00768
         bclr    #$0,$21(a0)                     ; 0076E
         move.b  #$d,$63(a0)                     ; 00774

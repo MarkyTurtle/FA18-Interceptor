@@ -279,7 +279,7 @@ l_020_002CC:
         moveq   #$0,d3                          ; 002FA
         moveq   #$0,d4                          ; 002FC
         move.w  #$1f4,d5                        ; 002FE
-        jsr     (sub_004_00328).l               ; 00302
+        jsr     (TurnByObject).l                ; 00302
         move.l  d2,d4                           ; 00308
         move.l  d0,d2                           ; 0030A
         sub.l   (PlayerX).l,d2                  ; 0030C

@@ -579,7 +579,7 @@ l_032_00602:
         moveq   #$0,d4                          ; 00604
         moveq   #-4,d5                          ; 00606
 l_032_00608:
-        jsr     (sub_004_00328).l               ; 00608
+        jsr     (TurnByObject).l                ; 00608
         move.l  d2,d4                           ; 0060E
         move.l  d1,d3                           ; 00610
         move.l  d0,d2                           ; 00612

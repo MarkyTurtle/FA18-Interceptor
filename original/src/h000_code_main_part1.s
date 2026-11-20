@@ -441,7 +441,7 @@ l_000_00484:
         beq.b   l_000_00560                     ; 00550
         moveq   #$32,d0                         ; 00552
         move.l  d0,-(a7)                        ; 00554
-        jsr     (sub_000_09CE6).l               ; 00556
+        jsr     (PlayTitleMusic).l              ; 00556
         addq.l  #$4,a7                          ; 0055C
         bra.b   l_000_0056C                     ; 0055E
 l_000_00560:
@@ -1754,7 +1754,11 @@ l_000_015DA:
 l_000_015F2:
         unlk    a6                              ; 015F2
         rts                                     ; 015F4
-sub_000_015F6:
+
+;-------------------------------------------------------------------------------
+; StopAllSounds - Stops sound channels 0-3.
+;-------------------------------------------------------------------------------
+StopAllSounds:
         clr.l   -(a7)                           ; 015F6
         jsr     (StopSound).l                   ; 015F8
         addq.l  #$4,a7                          ; 015FE
@@ -1807,7 +1811,7 @@ InitInput:
         jsr     (InitMouse).l                   ; 01692
         addq.l  #$8,a7                          ; 01698
         clr.b   (RecordMode).l                  ; 0169A
-        jsr     (sub_004_0002C).l               ; 016A0
+        jsr     (InitGameValues).l              ; 016A0
         jsr     (GetDifficulty).l               ; 016A6
         lea.l   StateStartup(pc),a0             ; 016AC
         move.l  a0,(GameState).l                ; 016B0
@@ -2083,7 +2087,7 @@ l_000_01A32:
 l_000_01A60:
         moveq   #$32,d0                         ; 01A60
         move.l  d0,-(a7)                        ; 01A62
-        jsr     (sub_000_09CE6).l               ; 01A64
+        jsr     (PlayTitleMusic).l              ; 01A64
         addq.l  #$4,a7                          ; 01A6A
 l_000_01A6C:
         unlk    a6                              ; 01A6C
@@ -2137,7 +2141,7 @@ l_000_01AE0:
 ; otherwise the same choice is flown again (StateMenuChoice; a training demo becomes practice).
 ;-------------------------------------------------------------------------------
 StateRestart:
-        jsr     (sub_000_015F6).l               ; 01AE2
+        jsr     (StopAllSounds).l               ; 01AE2
         jsr     (ResetGame).l                   ; 01AE8
         move.b  (GameMode).l,d0                 ; 01AEE
         subq.b  #$2,d0                          ; 01AF4
@@ -2237,7 +2241,7 @@ DemoSetup:
         move.b  #$1,(DemoActive).l              ; 01C24
         jsr     (SetupMode).l                   ; 01C2C
         move.b  #$3,(GameMode).l                ; 01C32
-        jsr     (sub_004_00392).l               ; 01C3A
+        jsr     (ResetViewAndRecording).l       ; 01C3A
         bsr.w   ClearTextPages                  ; 01C40
         clr.b   (KeyMode).l                     ; 01C44
         move.b  #$1,(FlightScreen).l            ; 01C4A
@@ -2325,7 +2329,7 @@ StateMainMenu:
 l_000_01D64:
         moveq   #$f,d0                          ; 01D64
         move.l  d0,-(a7)                        ; 01D66
-        jsr     (sub_000_09CE6).l               ; 01D68
+        jsr     (PlayTitleMusic).l              ; 01D68
         addq.l  #$4,a7                          ; 01D6E
         move.b  #$1,(dat_071_001A7).l           ; 01D70
         jsr     (ClearScreen).l                 ; 01D78
@@ -2567,7 +2571,7 @@ l_000_0207E:
         beq.b   l_000_02096                     ; 02086
         moveq   #$8,d0                          ; 02088
         move.l  d0,-(a7)                        ; 0208A
-        jsr     (sub_000_09F9A).l               ; 0208C
+        jsr     (PlayWindSound).l               ; 0208C
         addq.l  #$4,a7                          ; 02092
         bra.b   l_000_020A8                     ; 02094
 l_000_02096:
@@ -2619,7 +2623,7 @@ l_000_0215E:
         move.l  a0,(GameState).l                ; 0216A
         bra.w   l_000_022B2                     ; 02170
 l_000_02174:
-        jsr     (sub_004_00268).l               ; 02174
+        jsr     (CameraAtStart).l               ; 02174
         move.b  #$5,(AircraftLeft).l            ; 0217A
         lea.l   StateFadeIn(pc),a0              ; 02182
         move.l  a0,(GameState).l                ; 02186
@@ -2654,7 +2658,7 @@ l_000_02202:
         move.b  #$2,(StartPoint).l              ; 02222
         bsr.w   PlaceAircraft                   ; 0222A
         jsr     (sub_026_00D7A).l               ; 0222E
-        jsr     (sub_004_00290).l               ; 02234
+        jsr     (CameraAtRunway2).l             ; 02234
         jsr     (SetupMode).l                   ; 0223A
         clr.b   (MapView).l                     ; 02240
         lea.l   StateTrainingFadeIn(pc),a0      ; 02246
@@ -2666,7 +2670,7 @@ l_000_02252:
         move.b  d0,(CameraSequence).l           ; 0225C
         move.b  d0,(MapView).l                  ; 02262
         jsr     (SetupMode).l                   ; 02268
-        jsr     (sub_004_00392).l               ; 0226E
+        jsr     (ResetViewAndRecording).l       ; 0226E
         bsr.w   ClearTextPages                  ; 02274
         moveq   #$1,d0                          ; 02278
         move.b  d0,(KeyMode).l                  ; 0227A
@@ -3493,7 +3497,7 @@ StateToCockpit:
         bpl.b   l_000_02CDE                     ; 02C76
         move.b  #$1,(NewView).l                 ; 02C78
         bsr.b   PlaceAircraft                   ; 02C80
-        jsr     (sub_004_002DA).l               ; 02C82
+        jsr     (PointAheadOfView).l            ; 02C82
         moveq   #$0,d0                          ; 02C88
         move.b  d0,(dat_071_00186).l            ; 02C8A
         move.b  #$6,(CameraSequence).l          ; 02C90
@@ -3507,7 +3511,7 @@ StateToCockpit:
         beq.b   l_000_02CC8                     ; 02CB8
         moveq   #$8,d0                          ; 02CBA
         move.l  d0,-(a7)                        ; 02CBC
-        jsr     (sub_000_09F9A).l               ; 02CBE
+        jsr     (PlayWindSound).l               ; 02CBE
         addq.l  #$4,a7                          ; 02CC4
         bra.b   l_000_02CD4                     ; 02CC6
 l_000_02CC8:
@@ -3525,7 +3529,7 @@ l_000_02CDE:
 ; PlaceAircraft - Places the objects for the flight (sub_004_003AE) and updates them.
 ;-------------------------------------------------------------------------------
 PlaceAircraft:
-        jsr     (sub_004_003AE).l               ; 02CE0
+        jsr     (ResetRecording).l              ; 02CE0
         move.w  (StatusBits).l,d0               ; 02CE6
         ori.w   #$800,d0                        ; 02CEC
         move.w  d0,(StatusBits).l               ; 02CF0
@@ -3720,7 +3724,7 @@ StateFlying:
         move.b  #$1,(dat_071_0026A).l           ; 02F8A
         clr.l   (PlayerVelY).l                  ; 02F92
         move.b  #$28,(dat_071_00269).l          ; 02F98
-        jsr     (sub_000_015F6).l               ; 02FA0
+        jsr     (StopAllSounds).l               ; 02FA0
         moveq   #$78,d0                         ; 02FA6
         move.l  d0,-(a7)                        ; 02FA8
         moveq   #$3f,d0                         ; 02FAA
@@ -3735,7 +3739,7 @@ l_000_02FC4:
         andi.w  #$fdff,d0                       ; 02FCA
         move.w  d0,(ObjectTable).l              ; 02FCE
         move.l  #$4021,-(a7)                    ; 02FD4
-        jsr     (sub_000_03D00).l               ; 02FDA
+        jsr     (StartWarningIfReady).l         ; 02FDA
         addq.l  #$4,a7                          ; 02FE0
         bra.w   l_000_03198                     ; 02FE2
 l_000_02FE6:
@@ -4451,7 +4455,7 @@ l_000_03902:
         move.w  d0,(StatusBits).l               ; 0390C
         andi.w  #$fffe,d0                       ; 03912
         move.w  d0,(StatusBits).l               ; 03916
-        jsr     (sub_004_003E8).l               ; 0391C
+        jsr     (ResetPlayer).l                 ; 0391C
         move.b  #$f,(FadeTarget).l              ; 03922
         moveq   #$0,d0                          ; 0392A
         move.b  d0,(dat_071_00259).l            ; 0392C
@@ -4489,7 +4493,7 @@ StateNewAircraft:
         bne.b   l_000_039A8                     ; 039A0
         jsr     (sub_005_00CEE).l               ; 039A2
 l_000_039A8:
-        jsr     (sub_004_003E8).l               ; 039A8
+        jsr     (ResetPlayer).l                 ; 039A8
         move.w  #$5,(StateTimer).l              ; 039AE
         lea.l   StateNewAircraftWait(pc),a0     ; 039B6
         move.l  a0,(GameState).l                ; 039BA
@@ -4763,7 +4767,12 @@ l_000_03CE4:
         clr.b   (WarningTicks).l                ; 03CF8
 l_000_03CFE:
         rts                                     ; 03CFE
-sub_000_03D00:
+
+;-------------------------------------------------------------------------------
+; StartWarningIfReady - StartWarning with the word on the stack, only while StatusBits bit 8 is
+; set.
+;-------------------------------------------------------------------------------
+StartWarningIfReady:
         link.w  a6,#$0                          ; 03D00
         move.w  (StatusBits).l,d0               ; 03D04
         btst    #$8,d0                          ; 03D0A
