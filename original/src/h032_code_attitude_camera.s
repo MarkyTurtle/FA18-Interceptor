@@ -631,7 +631,7 @@ l_032_006A8:
         move.w  (OutsideCamHeading).l,d4        ; 006C8
         lea.l   (PanelMatrixHeading).l,a1       ; 006CE
         bsr.w   HeadingMatrix                   ; 006D4
-        movem.w (Player_66).l,d0-d2             ; 006D8
+        movem.w (PlayerPitch).l,d0-d2           ; 006D8
         movem.l d0-d2,(OutsideCamPos).l         ; 006E0
         rts                                     ; 006E8
 

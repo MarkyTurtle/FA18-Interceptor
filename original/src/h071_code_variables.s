@@ -2614,7 +2614,7 @@ PolygonsDrawn:
 ;                                       +$01 b  bit 6 the object exists, bit 4 in a cell being drawn
 ;   +$03 b  bit 7   +$05 b  state (the computer pilot's: 1 pull up, 8 route...)   +$06 w  map cell X   +$08 w  map cell Z
 ;   +$0A b  sub-cell                    +$10 l
-;   +$14 l  position X (low 22 bits: inside the cell)   +$18 l  Y (height; negative is up)
+;   +$14 l  position X (low 22 bits: inside the cell)   +$18 l  Y (height; positive is up)
 ;   +$1C l  position Z (low 22 bits: inside the cell)   +$26 w  (a missile: $14 at launch)
 ;   +$22 w  (a weight-like term in the stall check)   +$26 w  responsiveness (at most 15)
 ;   +$2C w, +$2E w  the computer pilot's destination: map cell X, Z   +$30 w, +$32 w  in the cell
@@ -2622,20 +2622,25 @@ PolygonsDrawn:
 ;   +$28 b  pitch stick (-20..20)   +$29 b  rudder (-20..20)   +$2A b  roll stick (-60..60)
 ;   +$2B b  the throttle (0-120)   +$39 b  low nibble: the throttle's step   +$38 b  (copied to its missiles)
 ;   +$3E l  velocity X   +$42 l  velocity Y   +$46 l  velocity Z
-;   +$4C w  a timer (a missile: $96 / $C8 at launch)
+;   +$4A w  the range to its target (the locked target's for the player)
+;   +$4C w  a timer (a missile: $96 / $C8 at launch)   +$5D b  its zone (Zones), for KeepInZone
 ;   +$50 w, +$52 w, +$54 w  target rotation rates (computer aircraft)
 ;   +$56 w, +$58 w, +$5A w  rotation rates: the +$80 matrix turns by them each frame
 ;   +$5F b  missiles left: low nibble AMRAAMs, high nibble Sidewinders ($24 at the start)
-;   +$62 b  type (0 Sidewinder, 1 AMRAAM; $1x aircraft flown by rotation rates; $3x ...)   +$64 b  more control bits
-;   +$63 b  selected weapon (high nibble: $10 gun, $30 AMRAAM, else Sidewinder)
+;   +$60 w  cannon rounds left (500 at the start)
+;   +$62 b  type (0 Sidewinder, 1 AMRAAM; $1x aircraft flown by rotation rates - $10 F-16, $11
+;           F/A-18; $3x a parachute or pod)   +$64 b  more control bits
+;   +$63 b  selected weapon (high nibble: $10 gun, $20 Sidewinder, $30 AMRAAM; for a computer
+;           pilot $20 / $30 also mean attacking)
 ;   +$65 b  control bits: $80/$40 rudder (the , and . keys), $20/$10 pitch, $08/$04 roll, $02/$01 throttle
 ;   +$66 w  pitch   +$68 w  heading   +$6A w  roll  (1/80 degree; SetAttitude, UpdateAttitude)
 ;   +$80-$90 w  a 3 x 3 rotation matrix made from them (2.14)
 ;   +$6C w  speed   +$6E w  the speed flown (+$6C + +$78)   +$76 w  lift / sink (vertical velocity)
 ;   +$78 w  speed lost climbing / gained diving (ClimbDivePhysics)
 ;   +$7E w  ($1400 for a computer aircraft)   +$71 b   +$72 l  fuel (6,400,000 at the start)
-;   +$7C b  bit 7
+;   +$7C b  the ejection: low nibble its step (CheckEjection), bit 7 set by SetObjectBit7C
 ;   +$92-$A2 w  the opposite rotation (from the negated angles; rows at +$92, +$98, +$9E)
+;   +$A4    the object's own copy of its model's vertices (the vertex builders and the shadow)
 ObjectTable:
 	dc.b	$00
 	dc.b	$00
@@ -2669,7 +2674,7 @@ PlayerX:
 Player_16:
 	dc.b	$00
 	dc.b	$00
-; PlayerY - The player's height (ObjectTable+$18; negative is up).
+; PlayerY - The player's height (ObjectTable+$18; positive is up).
 PlayerY:
 	dc.b	$00
 	dc.b	$00
@@ -2693,7 +2698,8 @@ Player_20:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-Player_2B:
+; PlayerThrottle - The player's throttle (ObjectTable +$2B, 0-120).
+PlayerThrottle:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2744,7 +2750,8 @@ PlayerVelZ:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-Player_56:
+; PlayerPitchRate - The player's pitch rate (+$56).
+PlayerPitchRate:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2758,7 +2765,8 @@ Player_56:
 ; nibble Sidewinders.
 PlayerMissiles:
 	dc.b	$00
-Player_60:
+; PlayerRounds - The player's cannon rounds left (+$60, 500 at the start).
+PlayerRounds:
 	dc.b	$00
 	dc.b	$00
 PlayerType:
@@ -2771,17 +2779,20 @@ PlayerWeapon:
 ; PlayerControls - The player's control bits (ObjectTable+$65).
 PlayerControls:
 	dc.b	$00
-Player_66:
+; PlayerPitch - The player's pitch (+$66).
+PlayerPitch:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-Player_6C:
+; PlayerSpeed - The player's speed setting (+$6C).
+PlayerSpeed:
 	dc.b	$00
 	dc.b	$00
-Player_6E:
+; PlayerSpeedFlown - The player's speed flown (+$6E).
+PlayerSpeedFlown:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2799,7 +2810,8 @@ PlayerFuel:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-Player_7C:
+; PlayerEjection - The player's ejection state (+$7C: the low nibble the step, bits 4-6 more).
+PlayerEjection:
 	dc.b	$00
 Player_7D:
 	dc.b	$00

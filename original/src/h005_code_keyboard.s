@@ -137,7 +137,7 @@ l_005_0017A:
         bne.w   l_005_002C8                     ; 001DA
         cmpi.b  #$2,(GameMode).l                ; 001DE
         beq.w   l_005_002C8                     ; 001E6
-        move.b  (Player_7C).l,d4                ; 001EA
+        move.b  (PlayerEjection).l,d4           ; 001EA
         andi.b  #$f,d4                          ; 001F0
         bne.w   l_005_002C8                     ; 001F4
         cmpi.b  #$1,d1                          ; 001F8
@@ -385,7 +385,7 @@ l_005_00516:
         lea.l   (EjectKeyFlag).l,a0             ; 00528
         bsr.w   ToggleByte                      ; 0052E
         bset    #$5,(JoyEvents).l               ; 00532
-        ori.b   #$a,(Player_7C).l               ; 0053A
+        ori.b   #$a,(PlayerEjection).l          ; 0053A
         bra.w   l_005_01624                     ; 00542
 
 ;-------------------------------------------------------------------------------
@@ -1258,7 +1258,7 @@ l_005_00F90:
         bra.w   l_005_01624                     ; 00F9E
 l_005_00FA2:
         jsr     (KeyBeep).l                     ; 00FA2
-        move.b  (Player_7C).l,d4                ; 00FA8
+        move.b  (PlayerEjection).l,d4           ; 00FA8
         andi.b  #$f,d4                          ; 00FAE
         bne.w   l_005_01624                     ; 00FB2
         bset    #$4,(JoyEvents).l               ; 00FB6
@@ -1278,7 +1278,7 @@ Key_G:
         bset    #$0,(JoyEvents).l               ; 00FFA
         btst    #$7,(Player_03).l               ; 01002
         bne.b   l_005_0102E                     ; 0100A
-        bchg    #$7,(Player_7C).l               ; 0100C
+        bchg    #$7,(PlayerEjection).l          ; 0100C
         move.l  (GKeyValue).l,d4                ; 01014
         andi.l  #$40,d4                         ; 0101A
         beq.b   l_005_0102E                     ; 01020
@@ -1356,7 +1356,7 @@ l_005_010E2:
         bne.b   l_005_01120                     ; 010F6
         tst.b   (GearState).l                   ; 010F8
         bne.b   l_005_0110A                     ; 010FE
-        cmpi.b  #$c,(Player_2B).l               ; 01100
+        cmpi.b  #$c,(PlayerThrottle).l          ; 01100
         beq.b   l_005_01114                     ; 01108
 l_005_0110A:
         cmpi.b  #$c,(GearState).l               ; 0110A
@@ -1659,7 +1659,7 @@ l_005_0150A:
         btst    #$6,(Object3_01).l              ; 01530
         bne.b   l_005_01556                     ; 01538
 l_005_0153A:
-        ori.b   #$f,(Player_7C).l               ; 0153A
+        ori.b   #$f,(PlayerEjection).l          ; 0153A
         move.w  d0,-(a7)                        ; 01542
         moveq   #$30,d0                         ; 01544
         move.l  d0,-(a7)                        ; 01546

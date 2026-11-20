@@ -545,7 +545,7 @@ TrainingPilot:
         btst    #$0,$2(a1)                      ; 00734
         bne.b   l_017_00756                     ; 0073A
         clr.b   $5(a1)                          ; 0073C
-        tst.w   (Player_6E).l                   ; 00740
+        tst.w   (PlayerSpeedFlown).l            ; 00740
         beq.w   l_017_008CA                     ; 00746
         bset    #$0,$2(a1)                      ; 0074A
         clr.w   (TrainingFrame).l               ; 00750

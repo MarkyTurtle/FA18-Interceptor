@@ -58,7 +58,7 @@ StartGunSound:
 ; maneuvers (GameMode $7D) it does something else (bit 3 of Object4_02).
 ;-------------------------------------------------------------------------------
 FirePressed:
-        move.b  (Player_7C).l,d4                ; 0008E
+        move.b  (PlayerEjection).l,d4           ; 0008E
         andi.b  #$f,d4                          ; 00094
         bne.b   l_006_000B4                     ; 00098
         cmpi.b  #$7d,(GameMode).l               ; 0009A
@@ -141,7 +141,7 @@ RearmAircraft:
 ResetPlayerAircraft:
         move.l  #$61a800,(PlayerFuel).l         ; 0015E
         move.b  #$24,(PlayerMissiles).l         ; 00168
-        move.w  #$1f4,(Player_60).l             ; 00170
+        move.w  #$1f4,(PlayerRounds).l          ; 00170
         move.b  #$3,(StoresRedraw).l            ; 00178
         move.b  #$3,(MissilesLeftRedraw).l      ; 00180
         move.b  #$10,(ChaffLeft).l              ; 00188

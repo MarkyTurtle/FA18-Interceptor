@@ -1374,7 +1374,7 @@ l_040_011B0:
         move.w  d4,(TargetBoxPos).l             ; 011B0
         move.w  d2,(TargetBoxPosY).l            ; 011B6
 l_040_011BC:
-        tst.w   (Player_56).l                   ; 011BC
+        tst.w   (PlayerPitchRate).l             ; 011BC
         beq.b   l_040_011DC                     ; 011C2
         move.w  (Player_16).l,d2                ; 011C4
         andi.w  #$1c,d2                         ; 011CA

@@ -346,7 +346,7 @@ ResetPlayer:
         bsr.w   ResetPlayerMotion               ; 003F4
         clr.w   (EjectedPilot).l                ; 003F8
         moveq   #$9,d0                          ; 003FE
-        move.b  d0,(Player_2B).l                ; 00400
+        move.b  d0,(PlayerThrottle).l           ; 00400
         asl.w   #$3,d0                          ; 00406
         move.w  d0,(MouseY).l                   ; 00408
         move.w  d0,(ThrottleMouseY).l           ; 0040E

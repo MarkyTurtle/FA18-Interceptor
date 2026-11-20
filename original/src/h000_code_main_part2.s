@@ -2290,7 +2290,7 @@ MouseThrottle:
         move.w  (Player_02).l,d0                ; 05EA2
         btst    #$3,d0                          ; 05EA8
         bne.b   l_000_05EC4                     ; 05EAC
-        move.b  (Player_2B).l,d0                ; 05EAE
+        move.b  (PlayerThrottle).l,d0           ; 05EAE
         cmpi.b  #$78,d0                         ; 05EB4
         blt.b   l_000_05ECC                     ; 05EB8
         move.b  #$79,(GearState).l              ; 05EBA
@@ -3701,9 +3701,9 @@ l_000_06F30:
         move.b  #$4,(MissionResult).l           ; 06FC2
         bra.w   l_000_07178                     ; 06FCA
 l_000_06FCE:
-        tst.w   (Player_6E).l                   ; 06FCE
+        tst.w   (PlayerSpeedFlown).l            ; 06FCE
         beq.w   l_000_07178                     ; 06FD4
-        move.w  (Player_6E).l,(Player_6C).l     ; 06FD8
+        move.w  (PlayerSpeedFlown).l,(PlayerSpeed).l ; 06FD8
         move.b  #$fe,(EngineSoundRequest).l     ; 06FE2
         movea.l -$30(a6),a0                     ; 06FEA
         move.b  (a0),d0                         ; 06FEE
@@ -3739,7 +3739,7 @@ l_000_07046:
         addq.l  #$4,a7                          ; 07050
         bra.w   l_000_07178                     ; 07052
 l_000_07056:
-        move.w  (Player_6E).l,d0                ; 07056
+        move.w  (PlayerSpeedFlown).l,d0         ; 07056
         tst.w   d0                              ; 0705C
         bne.b   l_000_070DA                     ; 0705E
         move.w  (FlightBits2).l,d0              ; 07060
@@ -3984,7 +3984,7 @@ l_000_0737E:
         andi.b  #$f0,d0                         ; 0739A
         tst.b   d0                              ; 0739E
         beq.w   l_000_074FE                     ; 073A0
-        move.w  (Player_60).l,d0                ; 073A4
+        move.w  (PlayerRounds).l,d0             ; 073A4
         cmpi.w  #$1,d0                          ; 073AA
         blt.w   l_000_074FE                     ; 073AE
         addq.b  #$1,-$3(a6)                     ; 073B2
@@ -4076,12 +4076,12 @@ l_000_074B6:
         jsr     (PlaySweep).l                   ; 074BE
         addq.l  #$8,a7                          ; 074C4
 l_000_074C6:
-        move.w  (Player_60).l,d0                ; 074C6
+        move.w  (PlayerRounds).l,d0             ; 074C6
         subq.w  #$3,d0                          ; 074CC
-        move.w  d0,(Player_60).l                ; 074CE
+        move.w  d0,(PlayerRounds).l             ; 074CE
         tst.w   d0                              ; 074D4
         bpl.b   l_000_074DE                     ; 074D6
-        clr.w   (Player_60).l                   ; 074D8
+        clr.w   (PlayerRounds).l                ; 074D8
 l_000_074DE:
         move.b  #$3,(StoresRedraw).l            ; 074DE
         movea.l -$c(a6),a0                      ; 074E6

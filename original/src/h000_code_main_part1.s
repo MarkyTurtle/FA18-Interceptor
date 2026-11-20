@@ -3698,7 +3698,7 @@ StateFlying:
         move.w  (ObjectTable).l,d0              ; 02F0A
         btst    #$9,d0                          ; 02F10
         beq.w   l_000_02FE6                     ; 02F14
-        move.b  (Player_7C).l,d0                ; 02F18
+        move.b  (PlayerEjection).l,d0           ; 02F18
         andi.b  #$f,d0                          ; 02F1E
         tst.b   d0                              ; 02F22
         bne.w   l_000_02FE6                     ; 02F24
