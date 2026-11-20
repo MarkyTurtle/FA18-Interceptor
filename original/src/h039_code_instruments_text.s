@@ -7,30 +7,41 @@
 ; Hunk 39: CODE, $1950 bytes
 ;===============================================================================
 	CODE_HUNK	h039
-dat_039_00000:
+; GLoadDigitPlaces - The places of the G load's digits on the head-up display.
+GLoadDigitPlaces:
 	dc.b	$00,$00,$A0,$00,$00,$00,$E0,$00,$00,$02,$50,$00
-dat_039_0000C:
+; GLoadPointPlace - The place of the G load's decimal point.
+GLoadPointPlace:
 	dc.b	$00,$00,$C0,$00,$00,$02,$00,$00,$00,$02,$60,$00
-dat_039_00018:
+; GLetterPlace - The place of the letter G.
+GLetterPlace:
 	dc.b	$00,$02,$C0,$00
-dat_039_0001C:
+; MissilesLeftPlaces - The places of the missiles-left digits on the panel.
+MissilesLeftPlaces:
 	dc.b	$00,$00,$D0,$00,$00,$02,$10,$00,$00,$02,$50,$00
-dat_039_00028:
+; AltitudePanelPlaces - The places of the altitude readout's digits on the panel.
+AltitudePanelPlaces:
 	dc.b	$00,$00,$00,$00,$00,$00,$40,$00,$00,$00,$80,$00,$00,$00,$E0,$00
 	dc.b	$00,$02,$20,$00,$00,$02,$60,$00,$00,$02,$F0,$00,$00,$04,$30,$00
-dat_039_00048:
+; SpeedPanelPlaces - The places of the speed readout's digits on the panel.
+SpeedPanelPlaces:
 	dc.b	$00,$00,$20,$00,$00,$00,$80,$00,$00,$00,$C0,$00,$00,$02,$00,$00
-dat_039_00058:
+; SpeedPanelPlaces2 - More places for the speed readout.
+SpeedPanelPlaces2:
 	dc.b	$00,$00,$00,$00,$00,$00,$60,$00,$00,$00,$A0,$00,$00,$00,$E0,$00
 	dc.b	$00,$02,$70,$00,$00,$02,$B0,$00,$00,$02,$F0,$00
-dat_039_00074:
+; HeadingPanelPlaces - The places of the heading readout's digits.
+HeadingPanelPlaces:
 	dc.b	$00,$00,$40,$00,$00,$00,$80,$00,$00,$00,$C0,$00,$00,$02,$40,$00
 	dc.b	$00,$02,$80,$00,$00,$02,$C0,$00
-dat_039_0008C:
+; WeaponRangePlaces - The places of the weapon range's digits.
+WeaponRangePlaces:
 	dc.b	$00,$00,$00,$00,$00,$00,$40,$00
-dat_039_00094:
+; FuelPlaces - The places of the fuel readout's digits.
+FuelPlaces:
 	dc.b	$00,$00,$80,$00
-dat_039_00098:
+; WeaponPlaces - The places of the weapon's name on the head-up display.
+WeaponPlaces:
 	dc.b	$00,$00,$C0,$00,$00,$02,$00,$00,$00,$02,$40,$00,$00,$02,$80,$00
 	dc.b	$00,$02,$C0,$00,$00,$04,$00,$00,$00,$04,$40,$00,$00,$04,$80,$00
 	dc.b	$00,$04,$C0,$00,$00,$06,$00,$00,$00,$06,$40,$00,$00,$06,$80,$00
@@ -40,15 +51,19 @@ dat_039_00098:
 	dc.b	$00,$0C,$C0,$00,$00,$0E,$00,$00,$00,$0E,$40,$00,$00,$0E,$80,$00
 	dc.b	$00,$0E,$C0,$00,$00,$10,$00,$00,$00,$10,$40,$00,$00,$10,$80,$00
 	dc.b	$00,$10,$C0,$00
-dat_039_0011C:
+; RadarRangePlaces - The places of the radar range's digits.
+RadarRangePlaces:
 	dc.b	$00,$00,$20,$00,$00,$00,$80,$00
-dat_039_00124:
+; GridXPlaces - The places of the grid X readout's digits.
+GridXPlaces:
 	dc.b	$00,$00,$40,$00,$00,$00,$70,$00,$00,$00,$B0,$00,$00,$02,$10,$00
 	dc.b	$00,$02,$50,$00
-dat_039_00138:
+; GridZPlaces - The places of the grid Z readout's digits.
+GridZPlaces:
 	dc.b	$00,$00,$40,$00,$00,$00,$70,$00,$00,$00,$B0,$00,$00,$02,$10,$00
 	dc.b	$00,$02,$70,$00
-dat_039_0014C:
+; DebugNumberPlaces - The places of ShowDebugNumbers' digits.
+DebugNumberPlaces:
 	dc.b	$00,$00,$80,$00,$00,$00,$C0,$00,$00,$02,$20,$00,$00,$02,$60,$00
 	dc.b	$00,$02,$C0,$00,$00,$04,$00,$00
 
@@ -78,7 +93,7 @@ l_039_0019A:
 l_039_0019C:
         move.l  d0,(BCDIn).l                    ; 0019C
         jsr     (BinToBCD).l                    ; 001A2
-        lea.l   dat_039_0008C(pc),a1            ; 001A8
+        lea.l   WeaponRangePlaces(pc),a1        ; 001A8
         lea.l   (TextBuffer).l,a2               ; 001AC
         lea.l   $3(a2),a0                       ; 001B2
         lea.l   $1cd2.w,a4                      ; 001B6
@@ -131,7 +146,7 @@ l_039_0022A:
         movem.w (a7)+,d0/d5-d6                  ; 00246
         move.l  d0,(BCDIn).l                    ; 0024A
         jsr     (BinToBCD).l                    ; 00250
-        lea.l   dat_039_0011C(pc),a1            ; 00256
+        lea.l   RadarRangePlaces(pc),a1         ; 00256
         lea.l   (TextBuffer).l,a2               ; 0025A
         lea.l   $2(a2),a0                       ; 00260
         lea.l   $1cde.w,a4                      ; 00264
@@ -153,7 +168,7 @@ ShowDebugNumbers:
         move.l  d0,(BCDIn).l                    ; 00286
         jsr     (BinToBCD).l                    ; 0028C
         moveq   #$3,d0                          ; 00292
-        lea.l   dat_039_0014C(pc),a1            ; 00294
+        lea.l   DebugNumberPlaces(pc),a1        ; 00294
         lea.l   (TextBuffer1).l,a2              ; 00298
         lea.l   $4(a2),a0                       ; 0029E
         lea.l   $78.w,a4                        ; 002A2
@@ -169,7 +184,7 @@ l_039_002C0:
         move.l  d0,(BCDIn).l                    ; 002C2
         jsr     (BinToBCD).l                    ; 002C8
         moveq   #$3,d0                          ; 002CE
-        lea.l   dat_039_0014C(pc),a1            ; 002D0
+        lea.l   DebugNumberPlaces(pc),a1        ; 002D0
         lea.l   (TextBuffer1).l,a2              ; 002D4
         lea.l   $4(a2),a0                       ; 002DA
         lea.l   $7c.w,a4                        ; 002DE
@@ -183,7 +198,7 @@ l_039_002F4:
         move.l  d0,(BCDIn).l                    ; 002F6
         jsr     (BinToBCD).l                    ; 002FC
         moveq   #$3,d0                          ; 00302
-        lea.l   dat_039_0014C(pc),a1            ; 00304
+        lea.l   DebugNumberPlaces(pc),a1        ; 00304
         lea.l   (TextBuffer1).l,a2              ; 00308
         lea.l   $4(a2),a0                       ; 0030E
         lea.l   $80.w,a4                        ; 00312
@@ -273,7 +288,7 @@ l_039_003EC:
         move.b  #$20,$3(a2)                     ; 003EC
         move.l  d0,(BCDIn).l                    ; 003F2
         jsr     (BinToBCD).l                    ; 003F8
-        lea.l   dat_039_00098(pc),a1            ; 003FE
+        lea.l   WeaponPlaces(pc),a1             ; 003FE
         move.w  d7,d2                           ; 00402
         lea.l   $1432.w,a4                      ; 00404
         move.w  #$a,d0                          ; 00408
@@ -302,7 +317,7 @@ l_039_00434:
         ext.l   d0                              ; 0043C
         move.l  d0,(BCDIn).l                    ; 0043E
         jsr     (BinToBCD).l                    ; 00444
-        lea.l   dat_039_00098(pc),a1            ; 0044A
+        lea.l   WeaponPlaces(pc),a1             ; 0044A
         move.w  d7,d2                           ; 0044E
         lea.l   $134e.w,a4                      ; 00450
         move.w  #$16,d0                         ; 00454
@@ -330,12 +345,12 @@ ShowGLoad:
         jsr     (PlotInView).l                  ; 00492
         lea.l   $994.w,a4                       ; 00498
         move.w  #$c,d2                          ; 0049C
-        lea.l   dat_039_00000(pc),a1            ; 004A0
+        lea.l   GLoadDigitPlaces(pc),a1         ; 004A0
         bra.b   l_039_004E2                     ; 004A4
 l_039_004A6:
-        lea.l   (dat_039_0055E).l,a2            ; 004A6
+        lea.l   (TextG).l,a2                    ; 004A6
         lea.l   $1(a2),a0                       ; 004AC
-        lea.l   dat_039_00018(pc),a1            ; 004B0
+        lea.l   GLetterPlace(pc),a1             ; 004B0
         lea.l   $12f2.w,a4                      ; 004B4
         move.w  #$a,d0                          ; 004B8
         swap    d0                              ; 004BC
@@ -346,7 +361,7 @@ l_039_004A6:
         jsr     (PlotInView).l                  ; 004D0
         lea.l   $12f2.w,a4                      ; 004D6
         move.w  #$a,d2                          ; 004DA
-        lea.l   dat_039_0000C(pc),a1            ; 004DE
+        lea.l   GLoadPointPlace(pc),a1          ; 004DE
 l_039_004E2:
         lea.l   (TextBuffer).l,a2               ; 004E2
         lea.l   (ObjectTable).l,a0              ; 004E8
@@ -391,7 +406,8 @@ l_039_0053A:
         move.w  d6,d0                           ; 00556
         bsr.w   PrintNumberHUD0                 ; 00558
         rts                                     ; 0055C
-dat_039_0055E:
+; TextG - The text of the G load ('G').
+TextG:
 	dc.b	$47
 ; StrInRng - "IN RNG"
 StrInRng:
@@ -417,7 +433,7 @@ l_039_0058C:
         lea.l   StrShoot(pc),a2                 ; 0058C
 l_039_00590:
         lea.l   $6(a2),a0                       ; 00590
-        lea.l   dat_039_00098(pc),a1            ; 00594
+        lea.l   WeaponPlaces(pc),a1             ; 00594
         lea.l   $1440.w,a4                      ; 00598
         move.w  #$18,d0                         ; 0059C
         swap    d0                              ; 005A0
@@ -449,7 +465,7 @@ ShowHeadingText:
         ext.l   d0                              ; 005F0
         move.l  d0,(BCDIn).l                    ; 005F2
         jsr     (BinToBCD).l                    ; 005F8
-        lea.l   dat_039_00074(pc),a1            ; 005FE
+        lea.l   HeadingPanelPlaces(pc),a1       ; 005FE
         lea.l   (TextBuffer).l,a2               ; 00602
         lea.l   $6(a2),a0                       ; 00608
         move.b  #$48,(a2)                       ; 0060C
@@ -513,12 +529,12 @@ l_039_00694:
         lea.l   $4(a2),a0                       ; 006B0
         tst.b   (OutsideView).l                 ; 006B4
         beq.b   l_039_006CA                     ; 006BA
-        lea.l   dat_039_00058(pc),a1            ; 006BC
+        lea.l   SpeedPanelPlaces2(pc),a1        ; 006BC
         lea.l   $1cd2.w,a4                      ; 006C0
         lea.l   $12.w,a5                        ; 006C4
         bra.b   l_039_006D6                     ; 006C8
 l_039_006CA:
-        lea.l   dat_039_00048(pc),a1            ; 006CA
+        lea.l   SpeedPanelPlaces(pc),a1         ; 006CA
         lea.l   $1a0e.w,a4                      ; 006CE
         lea.l   $1e.w,a5                        ; 006D2
 l_039_006D6:
@@ -594,7 +610,7 @@ l_039_007B6:
         move.l  d0,(BCDIn).l                    ; 007B6
         jsr     (BinToBCD).l                    ; 007BC
         moveq   #$5,d0                          ; 007C2
-        lea.l   dat_039_00028(pc),a1            ; 007C4
+        lea.l   AltitudePanelPlaces(pc),a1      ; 007C4
         lea.l   (dat_071_001CE).l,a2            ; 007C8
         lea.l   $6(a2),a0                       ; 007CE
         tst.b   (OutsideView).l                 ; 007D2
@@ -640,7 +656,7 @@ l_039_0084A:
         move.l  d0,(BCDIn).l                    ; 0084C
         jsr     (BinToBCD).l                    ; 00852
         moveq   #$4,d0                          ; 00858
-        lea.l   dat_039_00094(pc),a1            ; 0085A
+        lea.l   FuelPlaces(pc),a1               ; 0085A
         lea.l   (TextBuffer1).l,a2              ; 0085E
         lea.l   $5(a2),a0                       ; 00864
         lea.l   $1ca4.w,a4                      ; 00868
@@ -671,7 +687,7 @@ l_039_008A4:
         move.l  d0,(BCDIn).l                    ; 008A6
         jsr     (BinToBCD).l                    ; 008AC
         moveq   #$2,d0                          ; 008B2
-        lea.l   dat_039_0008C(pc),a1            ; 008B4
+        lea.l   WeaponRangePlaces(pc),a1        ; 008B4
         lea.l   (TextBuffer).l,a2               ; 008B8
         lea.l   $3(a2),a0                       ; 008BE
         lea.l   $1b76.w,a4                      ; 008C2
@@ -708,7 +724,7 @@ l_039_00918:
         jsr     (BinToBCD).l                    ; 00928
 l_039_0092E:
         moveq   #$3,d0                          ; 0092E
-        lea.l   dat_039_00138(pc),a1            ; 00930
+        lea.l   GridZPlaces(pc),a1              ; 00930
         lea.l   (TextBuffer).l,a2               ; 00934
         lea.l   $4(a2),a0                       ; 0093A
         lea.l   $1c44.w,a4                      ; 0093E
@@ -750,7 +766,7 @@ l_039_009A6:
         jsr     (BinToBCD).l                    ; 009B6
 l_039_009BC:
         moveq   #$3,d0                          ; 009BC
-        lea.l   dat_039_00124(pc),a1            ; 009BE
+        lea.l   GridXPlaces(pc),a1              ; 009BE
         lea.l   (TextBuffer).l,a2               ; 009C2
         lea.l   $4(a2),a0                       ; 009C8
         lea.l   $1d84.w,a4                      ; 009CC
@@ -991,7 +1007,7 @@ l_039_00C96:
         subq.b  #$1,(TargetReadoutRedraw).l     ; 00CA0
 l_039_00CA6:
         lea.l   (TargetText).l,a2               ; 00CA6
-        lea.l   dat_039_00098(pc),a1            ; 00CAC
+        lea.l   WeaponPlaces(pc),a1             ; 00CAC
         lea.l   $1e0c.w,a4                      ; 00CB0
         lea.l   $c.w,a5                         ; 00CB4
         moveq   #$19,d0                         ; 00CB8
@@ -1342,7 +1358,7 @@ ShowMissilesLeft:
         lea.l   $5(a2),a0                       ; 00FF8
         moveq   #$4,d6                          ; 00FFC
         moveq   #$0,d7                          ; 00FFE
-        lea.l   dat_039_0001C(pc),a1            ; 01000
+        lea.l   MissilesLeftPlaces(pc),a1       ; 01000
         bra.b   l_039_01048                     ; 01004
 l_039_01006:
         move.b  #$20,(a2)                       ; 01006
@@ -1352,7 +1368,7 @@ l_039_01006:
         lea.l   $5(a2),a0                       ; 0101A
         moveq   #$4,d6                          ; 0101E
         moveq   #$0,d7                          ; 01020
-        lea.l   dat_039_0001C(pc),a1            ; 01022
+        lea.l   MissilesLeftPlaces(pc),a1       ; 01022
         bra.b   l_039_01048                     ; 01026
 l_039_01028:
         move.w  $60(a1),d0                      ; 01028
@@ -1362,7 +1378,7 @@ l_039_01028:
         lea.l   $7(a2),a0                       ; 0103C
         moveq   #$6,d6                          ; 01040
         moveq   #$2,d7                          ; 01042
-        lea.l   dat_039_0001C(pc),a1            ; 01044
+        lea.l   MissilesLeftPlaces(pc),a1       ; 01044
 l_039_01048:
         move.b  #$20,$3(a2)                     ; 01048
         move.b  #$20,$5(a2)                     ; 0104E
@@ -1391,7 +1407,7 @@ l_039_010A0:
         move.b  #$4e,$1(a2)                     ; 010A4
         move.b  #$4f,$2(a2)                     ; 010AA
 l_039_010B0:
-        lea.l   dat_039_0001C(pc),a1            ; 010B0
+        lea.l   MissilesLeftPlaces(pc),a1       ; 010B0
         move.w  d7,d2                           ; 010B4
         lea.l   $1b86.w,a4                      ; 010B6
         lea.l   $6.w,a5                         ; 010BA
@@ -1406,7 +1422,7 @@ l_039_010DA:
         move.b  #$20,(a2)                       ; 010DA
         move.b  #$20,$1(a2)                     ; 010DE
         move.b  #$20,$2(a2)                     ; 010E4
-        lea.l   dat_039_0001C(pc),a1            ; 010EA
+        lea.l   MissilesLeftPlaces(pc),a1       ; 010EA
         move.w  d7,d2                           ; 010EE
         lea.l   $1cc6.w,a4                      ; 010F0
         lea.l   $6.w,a5                         ; 010F4
@@ -1418,7 +1434,7 @@ l_039_010DA:
         moveq   #$2,d0                          ; 0110E
         bsr.w   DrawPanelChars                  ; 01110
         lea.l   (TextBuffer).l,a2               ; 01114
-        lea.l   dat_039_0001C(pc),a1            ; 0111A
+        lea.l   MissilesLeftPlaces(pc),a1       ; 0111A
         move.w  d7,d2                           ; 0111E
         lea.l   $1b86.w,a4                      ; 01120
         lea.l   $6.w,a5                         ; 01124
@@ -1437,7 +1453,7 @@ DrawSmallNumber:
         ext.l   d2                              ; 01144
         move.l  d2,(BCDIn).l                    ; 01146
         jsr     (BinToBCD).l                    ; 0114C
-        lea.l   dat_039_0008C(pc),a1            ; 01152
+        lea.l   WeaponRangePlaces(pc),a1        ; 01152
         lea.l   (TextBuffer).l,a2               ; 01156
         move.w  d3,d2                           ; 0115C
         lea.l   $1(a2,d2.w),a0                  ; 0115E

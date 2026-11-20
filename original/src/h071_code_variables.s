@@ -214,8 +214,8 @@ dat_071_000C6:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-; FlightValue - FlightValue - A long value that FlyAircraft and sub_000_06A32 use with the
-; cockpit object (not worked out).
+; FlightValue - A long value that FlyAircraft and sub_000_06A32 use with the cockpit object
+; (not worked out).
 FlightValue:
 	dc.b	$00
 	dc.b	$00
@@ -814,9 +814,9 @@ MissilesLeftRedraw:
 ; UpdateObject).
 PanelLampRedraw:
 	dc.b	$00
-; AfterburnerOn - AfterburnerOn - Set (with a beep) while the player's throttle setting (+$6C)
-; is $1200 or more and he has not ejected: probably the afterburner, whose lamp on the panel
-; blinks (sub_037_00674).
+; AfterburnerOn - Set (with a beep) while the player's throttle setting (+$6C) is $1200 or more
+; and he has not ejected: probably the afterburner, whose lamp on the panel blinks
+; (sub_037_00674).
 AfterburnerOn:
 	dc.b	$00
 ; ModelVariant - Which variant of the model to draw (ShapeSelectVariant; bit 7 flipped by the A
@@ -2278,8 +2278,8 @@ SceneryMatrix:
 ViewMatrix:
 	dc.b	$00
 	dc.b	$00
-; ViewMatrix01 - ViewMatrix01 - The view matrix's second word (ViewMatrix + 2), where
-; DrawGroundDots and hunk 28 start reading it.
+; ViewMatrix01 - The view matrix's second word (ViewMatrix + 2), where DrawGroundDots and hunk
+; 28 start reading it.
 ViewMatrix01:
 	dc.b	$00
 	dc.b	$00

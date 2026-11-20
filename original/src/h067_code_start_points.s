@@ -1,18 +1,19 @@
 ; F/A-18 Interceptor - hunk 67 (code)
-; Data: the free flight's starting locations (StartPoints) and other tables (not worked out yet).
+; Data: the free flight's starting locations (StartPoints), fixed camera points (ViewPoints),
+; StartPointPlaces, and more of the scenery maps' item lists (CellItemsB_*).
 ; Included by ../f18_main.s.
 
 ;===============================================================================
 ; Hunk 67: CODE, $2D0 bytes
 ;===============================================================================
 	CODE_HUNK	h067
-dat_067_00000:
+CellItemsB_00000:
 	dc.b	$02,$56,$06,$00,$01,$00,$06,$4A,$0C,$00,$04,$00,$FF,$FF
-dat_067_0000E:
+CellItemsB_0000E:
 	dc.b	$00,$2A,$08,$00,$08,$00,$0E,$4A,$0C,$00,$04,$00,$FF,$FF
-dat_067_0001C:
+CellItemsB_0001C:
 	dc.b	$0B,$56,$00,$50,$08,$80,$FF,$FF
-dat_067_00024:
+CellItemsB_00024:
 	dc.b	$0A,$57,$06,$00,$06,$00,$07,$2D,$05,$00,$00,$10,$FF,$FF
 ; StartPoints - The free flight's starting locations, 16 bytes each, ended by $FFFF: the map
 ; cell X, Z and the position in it; or, with bit 15 of the first word set, on that object (3
@@ -25,43 +26,47 @@ StartPoints:
 	dc.b	$80,$0E,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 	dc.b	$80,$0F,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 	dc.b	$FF,$FF
-dat_067_00084:
+; ViewPoints - Fixed camera points the keypad Enter key can put the camera at (16 bytes each:
+; map cell x, z, then the place in the cell; ended by -1).
+ViewPoints:
 	dc.b	$00,$41,$00,$42,$00,$02,$01,$D0,$05,$E0,$01,$00,$00,$00,$00,$00
 	dc.b	$00,$3F,$00,$44,$00,$0B,$01,$D0,$00,$70,$08,$80,$00,$00,$00,$00
 	dc.b	$00,$3C,$00,$3F,$00,$0A,$01,$D0,$05,$E0,$06,$00,$00,$00,$00,$00
 	dc.b	$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 	dc.b	$FF,$FF
-dat_067_000C6:
+; StartPointPlaces - Four places in the start points' cells (16 bytes each: a value, map cell
+; x, z, sub-cell, then offsets), used by hunk 28.
+StartPointPlaces:
 	dc.b	$02,$58,$00,$10,$00,$10,$00,$06,$03,$80,$0C,$80,$00,$00,$00,$00
 	dc.b	$04,$60,$00,$0F,$00,$11,$00,$0C,$02,$D0,$05,$F0,$00,$00,$00,$00
 	dc.b	$04,$74,$00,$0F,$00,$11,$00,$0C,$00,$40,$0A,$00,$00,$00,$00,$00
 	dc.b	$06,$2C,$00,$0F,$00,$0F,$00,$03,$0A,$80,$06,$00,$00,$00,$00,$00
 	dc.b	$FF,$FF,$FF,$FF
-dat_067_0010A:
+CellItemsB_0010A:
 	dc.b	$03,$4F,$0A,$80,$06,$00,$03,$4D,$0B,$38,$08,$A8,$03,$50,$0A,$9D
 	dc.b	$07,$00,$03,$50,$0A,$21,$05,$AC,$03,$51,$09,$90,$04,$1F,$03,$4E
 	dc.b	$0B,$2F,$07,$30,$03,$50,$0A,$94,$05,$88,$03,$51,$0A,$02,$03,$F8
 	dc.b	$FF,$FF
-dat_067_0013C:
+CellItemsB_0013C:
 	dc.b	$FF,$FF
-dat_067_0013E:
+CellItemsB_0013E:
 	dc.b	$08,$2D,$06,$00,$06,$00,$0F,$46,$05,$40,$08,$00,$FF,$FF
-dat_067_0014C:
+CellItemsB_0014C:
 	dc.b	$05,$2D,$08,$00,$08,$00,$05,$2D,$07,$00,$07,$40,$08,$4A,$0F,$00
 	dc.b	$01,$80,$08,$46,$08,$00,$08,$00,$FF,$FF
-dat_067_00166:
+CellItemsB_00166:
 	dc.b	$08,$58,$08,$00,$02,$00,$FF,$FF
-dat_067_0016E:
+CellItemsB_0016E:
 	dc.b	$0E,$58,$0E,$00,$04,$80,$FF,$FF
-dat_067_00176:
+CellItemsB_00176:
 	dc.b	$0D,$55,$00,$40,$05,$60,$FF,$FF
-dat_067_0017E:
+CellItemsB_0017E:
 	dc.b	$08,$2D,$06,$00,$06,$00,$0D,$2D,$02,$00,$01,$00,$FF,$FF
-dat_067_0018C:
+CellItemsB_0018C:
 	dc.b	$FF,$FF
-dat_067_0018E:
+CellItemsB_0018E:
 	dc.b	$0E,$31,$08,$00,$0E,$00,$FF,$FF
-dat_067_00196:
+CellItemsB_00196:
 	dc.b	$04,$46,$0E,$00,$06,$00,$05,$15,$0E,$00,$06,$00,$08,$15,$04,$00
 	dc.b	$0E,$00,$08,$52,$08,$00,$03,$00,$0C,$39,$00,$40,$0A,$00,$0C,$38
 	dc.b	$02,$D0,$05,$F0,$0C,$3B,$00,$70,$03,$F0,$0C,$43,$01,$F6,$05,$38
@@ -69,7 +74,7 @@ dat_067_00196:
 	dc.b	$0D,$4B,$0C,$45,$01,$C2,$0C,$99,$0C,$41,$01,$8C,$0B,$E8,$0C,$3D
 	dc.b	$01,$FB,$0A,$4C,$0C,$3C,$00,$DD,$0A,$B1,$0C,$44,$00,$97,$09,$CA
 	dc.b	$0D,$3E,$0F,$33,$09,$49,$0D,$3F,$0E,$F8,$0A,$00,$FF,$FF
-dat_067_00204:
+CellItemsB_00204:
 	dc.b	$06,$1E,$03,$80,$0C,$80,$06,$34,$04,$A0,$09,$E0,$06,$1F,$03,$D2
 	dc.b	$0B,$64,$06,$1F,$03,$27,$0C,$A6,$06,$1D,$02,$5E,$0E,$21,$06,$1C
 	dc.b	$04,$AA,$0A,$CE,$06,$1F,$03,$D8,$0C,$5A,$06,$36,$03,$0F,$0D,$D4
@@ -77,11 +82,11 @@ dat_067_00204:
 	dc.b	$0C,$E5,$06,$1B,$05,$38,$0D,$AD,$06,$32,$02,$40,$0B,$92,$06,$32
 	dc.b	$03,$86,$0C,$3F,$06,$32,$04,$C8,$0C,$EA,$06,$35,$06,$50,$0D,$BA
 	dc.b	$FF,$FF
-dat_067_00266:
+CellItemsB_00266:
 	dc.b	$08,$30,$09,$80,$09,$80,$08,$30,$05,$80,$06,$40,$08,$4A,$07,$80
 	dc.b	$07,$C0,$0D,$30,$0E,$00,$02,$00,$0F,$46,$05,$40,$08,$00,$0F,$22
 	dc.b	$08,$80,$03,$80,$FF,$FF
-dat_067_0028C:
+CellItemsB_0028C:
 	dc.b	$00,$2D,$02,$00,$00,$40,$00,$2D,$00,$40,$04,$00,$01,$2E,$08,$00
 	dc.b	$08,$00,$01,$2F,$0A,$00,$03,$00,$01,$2D,$01,$00,$08,$40,$02,$22
 	dc.b	$09,$60,$02,$A0,$02,$22,$03,$C0,$08,$40,$03,$22,$0E,$20,$0D,$E0

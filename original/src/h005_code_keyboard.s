@@ -919,7 +919,7 @@ l_005_00B02:
         jsr     (TurnByObject).l                ; 00B02
         bra.b   l_005_00B44                     ; 00B08
 l_005_00B0A:
-        lea.l   (dat_067_00084).l,a0            ; 00B0A
+        lea.l   (ViewPoints).l,a0               ; 00B0A
         adda.w  d1,a0                           ; 00B10
         movem.w (a0),d0-d5                      ; 00B12
         swap    d0                              ; 00B16

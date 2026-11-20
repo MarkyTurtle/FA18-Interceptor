@@ -8,19 +8,26 @@
 ; Hunk 40: CODE, $17EC bytes
 ;===============================================================================
 	CODE_HUNK	h040
-dat_040_00000:
+; AltTapeDigitPlaces - The places of the F-16 altitude tape's digits (byte offset and shift
+; pairs).
+AltTapeDigitPlaces:
 	dc.b	$00,$00,$70,$00,$00,$00,$B0,$00,$00,$02,$10,$00
-dat_040_0000C:
+; Digits2Places - The places of HUDDigits2's two digits.
+Digits2Places:
 	dc.b	$00,$00,$C0,$00,$00,$02,$00,$00,$00,$02,$40,$00
-dat_040_00018:
+; AltitudeDigitPlaces - The places of the F/A-18's height digits on the head-up display.
+AltitudeDigitPlaces:
 	dc.b	$00,$00,$C0,$00,$00,$02,$00,$00,$00,$02,$40,$00,$00,$02,$A0,$00
 	dc.b	$00,$02,$E0,$00,$00,$04,$20,$00,$00,$04,$60,$00
-dat_040_00034:
+; FtPlaces - The places of the letters FT.
+FtPlaces:
 	dc.b	$00,$00,$E0,$00,$00,$02,$20,$00
-dat_040_0003C:
+; SpeedDigitPlaces - The places of the speed's digits on the head-up display.
+SpeedDigitPlaces:
 	dc.b	$00,$00,$C0,$00,$00,$02,$20,$00,$00,$02,$60,$00,$00,$02,$A0,$00
 	dc.b	$00,$02,$E0,$00
-dat_040_00050:
+; KtPlaces - The places of the letters KT.
+KtPlaces:
 	dc.b	$00,$00,$60,$00,$00,$00,$A0,$00,$00,$00,$E0,$00
 l_040_0005C:
         clr.b   (ShootCue).l                    ; 0005C
@@ -119,7 +126,7 @@ l_040_0015A:
         moveq   #$5,d7                          ; 00170
         move.l  d0,(BCDIn).l                    ; 00172
         jsr     (BinToBCD).l                    ; 00178
-        lea.l   dat_040_00018(pc),a1            ; 0017E
+        lea.l   AltitudeDigitPlaces(pc),a1      ; 0017E
         move.w  d7,d2                           ; 00182
         lea.l   $d38.w,a4                       ; 00184
         move.w  #$18,d0                         ; 00188
@@ -129,7 +136,7 @@ l_040_0015A:
         move.w  #$ca,d0                         ; 00196
         lea.l   (sub_040_001C0).l,a2            ; 0019A
         lea.l   $2(a2),a0                       ; 001A0
-        lea.l   dat_040_00034(pc),a1            ; 001A4
+        lea.l   FtPlaces(pc),a1                 ; 001A4
         lea.l   $e52.w,a4                       ; 001A8
         move.w  #$1a,d0                         ; 001AC
         swap    d0                              ; 001B0
@@ -279,7 +286,7 @@ l_040_0037C:
         ext.l   d0                              ; 0039A
         move.l  d0,(BCDIn).l                    ; 0039C
         jsr     (BinToBCD).l                    ; 003A2
-        lea.l   dat_040_0003C(pc),a1            ; 003A8
+        lea.l   SpeedDigitPlaces(pc),a1         ; 003A8
         move.w  d7,d2                           ; 003AC
         lea.l   $d2a.w,a4                       ; 003AE
         move.w  #$a,d0                          ; 003B2
@@ -287,16 +294,17 @@ l_040_0037C:
         move.w  d6,d0                           ; 003B8
         jsr     (PrintNumberHUD0).l             ; 003BA
         move.w  #$71,d0                         ; 003C0
-        lea.l   (dat_040_003EA).l,a2            ; 003C4
+        lea.l   (SpeedTapeLabelPlaces).l,a2     ; 003C4
         lea.l   $2(a2),a0                       ; 003CA
-        lea.l   dat_040_00050(pc),a1            ; 003CE
+        lea.l   KtPlaces(pc),a1                 ; 003CE
         lea.l   $e44.w,a4                       ; 003D2
         move.w  #$c,d0                          ; 003D6
         swap    d0                              ; 003DA
         move.w  #$1,d0                          ; 003DC
         jsr     (PrintTextHUD).l                ; 003E0
         bra.w   HUDHeading                      ; 003E6
-dat_040_003EA:
+; SpeedTapeLabelPlaces - The places of the F-16 speed tape's numbers.
+SpeedTapeLabelPlaces:
 	dc.b	$4B,$54
 l_040_003EC:
         ext.l   d0                              ; 003EC
@@ -614,7 +622,7 @@ l_040_008DE:
 
 ;-------------------------------------------------------------------------------
 ; DrawGunSight - The gun sight, while RadarScale is $80 (as when the gun is selected): the
-; pipper (a circle, DrawHUDShape, from dat_040_016F4) where the bullets will be (GunPipperPos,
+; pipper (a circle, DrawHUDShape, from PipperCircle) where the bullets will be (GunPipperPos,
 ; from ComputeGunPipper), on the locked target or at (159, 91) without one; and on a target the
 ; range bar (DrawRangeArc: the target's range +$4A x $4C / $8CA0) and its closure
 ; (ShowClosure). With the gun selected (+$63 $1x), the target within 8 pixels of the pipper
@@ -683,7 +691,7 @@ l_040_009C0:
         ble.w   l_040_00A6C                     ; 009CA
         add.w   (ViewY).l,d1                    ; 009CE
         move.w  #$50,d2                         ; 009D4
-        lea.l   (dat_040_016F4).l,a0            ; 009D8
+        lea.l   (PipperCircle).l,a0             ; 009D8
         move.w  #$a,(DrawColour).l              ; 009DE
         bsr.w   DrawHUDShape                    ; 009E6
         tst.w   (LockedTarget).l                ; 009EA
@@ -696,7 +704,7 @@ l_040_009C0:
         move.l  a0,-(a7)                        ; 00A12
         mulu.w  #$4c,d2                         ; 00A14
         divu.w  #$8ca0,d2                       ; 00A18
-        lea.l   (dat_040_0171E).l,a0            ; 00A1C
+        lea.l   (RangeArcPoints).l,a0           ; 00A1C
         move.w  #$d,(DrawColour).l              ; 00A22
         bsr.w   DrawRangeArc                    ; 00A2A
         movea.l (a7)+,a0                        ; 00A2E
@@ -938,11 +946,11 @@ HUDDigits3:
         bra.b   l_040_00D4A                     ; 00D16
 
 ;-------------------------------------------------------------------------------
-; HUDDigits2 - Draws two digits (PrintNumberHUD) with the places in dat_040_0000C.
+; HUDDigits2 - Draws two digits (PrintNumberHUD) with the places in Digits2Places.
 ;-------------------------------------------------------------------------------
 HUDDigits2:
         moveq   #$0,d4                          ; 00D18
-        lea.l   dat_040_0000C(pc),a1            ; 00D1A
+        lea.l   Digits2Places(pc),a1            ; 00D1A
         move.w  #$a,d0                          ; 00D1E
         moveq   #$2,d6                          ; 00D22
         moveq   #$2,d7                          ; 00D24
@@ -951,12 +959,12 @@ HUDDigits2:
         bra.b   l_040_00D4A                     ; 00D30
 
 ;-------------------------------------------------------------------------------
-; HUDDigits2Alt - Draws two digits (PrintNumberHUD) with the places in dat_040_00000, for the
+; HUDDigits2Alt - Draws two digits (PrintNumberHUD) with the places in AltTapeDigitPlaces, for the
 ; F-16's altitude tape.
 ;-------------------------------------------------------------------------------
 HUDDigits2Alt:
         moveq   #$1,d4                          ; 00D32
-        lea.l   dat_040_00000(pc),a1            ; 00D34
+        lea.l   AltTapeDigitPlaces(pc),a1       ; 00D34
         move.w  #$1a,d0                         ; 00D38
         moveq   #$2,d6                          ; 00D3C
         moveq   #$2,d7                          ; 00D3E
@@ -1113,7 +1121,7 @@ l_040_00EE8:
 ;-------------------------------------------------------------------------------
 ; DrawHUDFixed - The head-up display's fixed symbols: the aircraft's boresight mark (159,
 ; 71-75) with its wings, the two horizon bars (141 and 173, line 90) and, for the aircraft
-; ($10-$12), the glass's outline (five lines from dat_040_01308, colours from dat_040_01320).
+; ($10-$12), the glass's outline (five lines from HUDOutline, colours from HUDOutlineColours).
 ;-------------------------------------------------------------------------------
 DrawHUDFixed:
         move.l  #$fffff,(FillPattern).l         ; 00EEE
@@ -1183,10 +1191,10 @@ l_040_00FC6:
 l_040_00FEA:
         clr.w   (LoopIndex).l                   ; 00FEA
 l_040_00FF0:
-        lea.l   (dat_040_01308).l,a0            ; 00FF0
+        lea.l   (HUDOutline).l,a0               ; 00FF0
         adda.w  (LoopIndex).l,a0                ; 00FF6
         movem.w (a0),d0-d3                      ; 00FFC
-        lea.l   (dat_040_01320).l,a0            ; 01000
+        lea.l   (HUDOutlineColours).l,a0        ; 01000
         adda.w  (LoopIndex).l,a0                ; 01006
         move.w  (a0),(DrawColour).l             ; 0100C
         add.w   (ViewX).l,d0                    ; 01012
@@ -1365,7 +1373,7 @@ l_040_011BC:
         beq.b   l_040_011DC                     ; 011C2
         move.w  (Player_16).l,d2                ; 011C4
         andi.w  #$1c,d2                         ; 011CA
-        lea.l   (dat_040_012E8).l,a0            ; 011CE
+        lea.l   (TargetBoxSides).l,a0           ; 011CE
         add.w   (a0,d2.w),d0                    ; 011D4
         add.w   $2(a0,d2.w),d1                  ; 011D8
 l_040_011DC:
@@ -1375,7 +1383,7 @@ l_040_011DC:
         ble.w   l_040_012E6                     ; 011EA
         move.w  d1,d3                           ; 011EE
         ble.w   l_040_012E6                     ; 011F0
-        lea.l   (dat_040_01334).l,a0            ; 011F4
+        lea.l   (TargetBoxShape).l,a0           ; 011F4
         adda.w  (LoopIndex).l,a0                ; 011FA
         add.w   (a0),d0                         ; 01200
         bge.b   l_040_01206                     ; 01202
@@ -1397,7 +1405,7 @@ l_040_01222:
         add.w   $6(a0),d3                       ; 01226
         add.w   (ViewY).l,d1                    ; 0122A
         add.w   (ViewY).l,d3                    ; 01230
-        move.w  (dat_040_01308).l,d4            ; 01236
+        move.w  (HUDOutline).l,d4               ; 01236
         addq.w  #$1,d4                          ; 0123C
         add.w   (ViewX).l,d4                    ; 0123E
         cmpi.w  #$13f,d4                        ; 01244
@@ -1415,7 +1423,7 @@ l_040_01258:
         bge.b   l_040_0125E                     ; 0125A
         move.w  d4,d2                           ; 0125C
 l_040_0125E:
-        move.w  (dat_040_01318).l,d4            ; 0125E
+        move.w  (HUDOutlineX4).l,d4             ; 0125E
         subq.w  #$1,d4                          ; 01264
         add.w   (ViewX).l,d4                    ; 01266
         blt.b   l_040_012C2                     ; 0126C
@@ -1432,7 +1440,7 @@ l_040_0127C:
         ble.b   l_040_01282                     ; 0127E
         move.w  d4,d2                           ; 01280
 l_040_01282:
-        move.w  (dat_040_0130E).l,d4            ; 01282
+        move.w  (HUDOutlineY1).l,d4             ; 01282
         add.w   (ViewY).l,d4                    ; 01288
         cmp.w   d4,d1                           ; 0128E
         bge.b   l_040_0129E                     ; 01290
@@ -1447,7 +1455,7 @@ l_040_0129E:
         bge.b   l_040_012A4                     ; 012A0
         move.w  d4,d3                           ; 012A2
 l_040_012A4:
-        move.w  (dat_040_0130A).l,d4            ; 012A4
+        move.w  (HUDOutlineY0).l,d4             ; 012A4
         add.w   (ViewY).l,d4                    ; 012AA
         cmp.w   d4,d1                           ; 012B0
         ble.b   l_040_012B6                     ; 012B2
@@ -1466,21 +1474,30 @@ l_040_012C2:
         move.w  #$ffff,(TargetScreenPos).l      ; 012DE
 l_040_012E6:
         rts                                     ; 012E6
-dat_040_012E8:
+; TargetBoxSides - The target box's four sides as offsets from its corner (DrawTargetBox draws
+; one per pass).
+TargetBoxSides:
 	dc.b	$00,$00,$00,$00,$00,$00,$00,$01,$00,$01,$00,$00,$00,$01,$00,$01
 	dc.b	$00,$00,$00,$00,$00,$00,$FF,$FF,$FF,$FF,$00,$00,$FF,$FF,$FF,$FF
-dat_040_01308:
+; HUDOutline - The head-up display glass's outline: its corner points (x, y words), joined by
+; lines in the colours of HUDOutlineColours.
+HUDOutline:
 	dc.b	$00,$55
-dat_040_0130A:
+; HUDOutlineY0 - A word inside HUDOutline that DrawTargetBox reads as a limit for the box.
+HUDOutlineY0:
 	dc.b	$00,$90,$00,$55
-dat_040_0130E:
+; HUDOutlineY1 - A word inside HUDOutline that DrawTargetBox reads as a limit for the box.
+HUDOutlineY1:
 	dc.b	$00,$2D,$00,$5D,$00,$24,$00,$E1,$00,$24
-dat_040_01318:
+; HUDOutlineX4 - A word inside HUDOutline that DrawTargetBox reads as a limit for the box.
+HUDOutlineX4:
 	dc.b	$00,$E9,$00,$2D,$00,$E9,$00,$90
-dat_040_01320:
+; HUDOutlineColours - The outline lines' colours.
+HUDOutlineColours:
 	dc.b	$00,$00,$00,$00,$00,$08,$00,$00,$00,$0A,$00,$00,$00,$08,$00,$00
 	dc.b	$00,$00,$00,$00
-dat_040_01334:
+; TargetBoxShape - The target box's corner offsets.
+TargetBoxShape:
 	dc.b	$FF,$F7,$00,$08,$FF,$F7,$FF,$F8,$00,$09,$FF,$F8,$00,$09,$00,$08
 	dc.b	$FF,$F7,$00,$08
 
@@ -1791,7 +1808,7 @@ l_040_01658:
 
 ;-------------------------------------------------------------------------------
 ; DrawSeekerSymbol - The seeker's symbol at (d0, d1): steady while searching (d4 = 0, the shape
-; dat_040_01778), flashing (three frames in four) with a target (d4 = 1); only inside the head-
+; SeekerShape), flashing (three frames in four) with a target (d4 = 1); only inside the head-
 ; up display.
 ;-------------------------------------------------------------------------------
 DrawSeekerSymbol:
@@ -1805,7 +1822,7 @@ DrawSeekerSymbol:
         ble.b   l_040_01658                     ; 0166E
         cmpi.w  #$8d,d1                         ; 01670
         bge.b   l_040_01658                     ; 01674
-        lea.l   (dat_040_01778).l,a0            ; 01676
+        lea.l   (SeekerShape).l,a0              ; 01676
         bra.b   l_040_016A8                     ; 0167C
 l_040_0167E:
         move.w  (FrameCount).l,d2               ; 0167E
@@ -1819,7 +1836,7 @@ l_040_0167E:
         ble.b   l_040_016F0                     ; 0169A
         cmpi.w  #$86,d1                         ; 0169C
         bge.b   l_040_016F0                     ; 016A0
-        lea.l   (dat_040_01792).l,a0            ; 016A2
+        lea.l   (SeekerShapeLocked).l,a0        ; 016A2
 l_040_016A8:
         add.w   (ViewX).l,d0                    ; 016A8
         cmpi.w  #$a,d0                          ; 016AE
@@ -1849,21 +1866,25 @@ l_040_016EE:
 l_040_016F0:
         rts                                     ; 016F0
 	dc.b	$FF,$FF
-dat_040_016F4:
+; PipperCircle - The gun pipper's circle: point offsets (byte pairs) round its centre.
+PipperCircle:
 	dc.b	$00,$0C,$01,$0C,$02,$0C,$03,$0C,$04,$0C,$05,$0B,$06,$0B,$07,$0B
 	dc.b	$08,$0A,$09,$0A,$0A,$09,$0B,$08,$0C,$07,$0D,$06,$0D,$05,$0E,$04
 	dc.b	$0E,$03,$0E,$02,$0E,$01,$0E,$00,$FF,$FF
-dat_040_0171E:
+; RangeArcPoints - The gun sight's range bar: the points of its arc, in order.
+RangeArcPoints:
 	dc.b	$00,$0B,$01,$0B,$02,$0B,$03,$0B,$04,$0B,$05,$0A,$06,$0A,$07,$0A
 	dc.b	$08,$09,$09,$09,$0A,$08,$0B,$07,$0C,$06,$0C,$05,$0D,$04,$0D,$03
 	dc.b	$0D,$02,$0D,$01,$0D,$00,$FF,$FF,$FF,$FF,$00,$0E,$01,$0E,$02,$0E
 	dc.b	$03,$0E,$04,$0E,$05,$0E,$06,$0D,$07,$0D,$08,$0D,$09,$0C,$0A,$0C
 	dc.b	$0B,$0B,$0C,$0A,$0D,$09,$0E,$08,$0F,$07,$0F,$06,$0F,$05,$10,$04
 	dc.b	$10,$03,$10,$02,$10,$01,$10,$00,$FF,$FF
-dat_040_01778:
+; SeekerShape - The missile seeker's symbol while searching (point offsets).
+SeekerShape:
 	dc.b	$00,$03,$01,$02,$02,$01,$03,$00,$02,$FF,$01,$FE,$00,$FD,$FF,$FE
 	dc.b	$FE,$FF,$FD,$00,$FE,$01,$FF,$02,$00,$00
-dat_040_01792:
+; SeekerShapeLocked - The seeker's symbol with a target.
+SeekerShapeLocked:
 	dc.b	$00,$09,$01,$08,$02,$07,$03,$06,$04,$05,$05,$04,$06,$03,$07,$02
 	dc.b	$08,$01,$09,$00,$0A,$00,$0A,$FF,$09,$FF,$08,$FE,$07,$FD,$06,$FC
 	dc.b	$05,$FB,$04,$FA,$03,$F9,$02,$F8,$01,$F7,$00,$F6,$FF,$F6,$FE,$F7

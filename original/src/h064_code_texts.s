@@ -59,7 +59,8 @@ TextGroups:
 	dc.b	$00,$0F,$FF,$1C,$08,$03,$95
 	dc.b	'DEFENSENET SECURITY CHECK'
 	dc.b	$00,$06,$FF,$48,$02
-dat_064_002B6:
+; TextEnterSecurityCountercode - "ENTER SECURITY COUNTERCODE:      -"
+TextEnterSecurityCountercode:
 	dc.b	$03,$96
 	dc.b	' ENTER SECURITY COUNTERCODE:      -'
 	dc.b	$00,$14,$FF,$48,$22,$03,$96
@@ -71,7 +72,8 @@ dat_064_002B6:
 	dc.b	$00,$05,$03,$97,$00,$00,$03,$97
 	dc.b	'     - REBOOT -'
 	dc.b	$00,$00,$FF
-dat_064_00340:
+; TextChecksumError - "CHECKSUM ERROR -"
+TextChecksumError:
 	dc.b	$2A,$0A,$03,$13
 	dc.b	'CHECKSUM ERROR -        '
 	dc.b	$00,$00,$FF,$40,$04,$03,$14
@@ -105,7 +107,8 @@ dat_064_00340:
 	dc.b	$00,$00,$03,$26,$00,$00,$03
 	dc.b	'&YOU ARE NOW OFFICIALLY ENLISTED'
 	dc.b	$00,$50,$FF,$24,$04
-dat_064_004E3:
+; TextWelcome - "&WELCOME"
+TextWelcome:
 	dc.b	$03
 	dc.b	'&WELCOME                                '
 	dc.b	$00,$00,$03,$26,$00,$00,$03
@@ -153,37 +156,45 @@ dat_064_004E3:
 	dc.b	$00,$04,$FF,$00,$02,$03,$B2
 	dc.b	'         FLIGHT LOG STATISTICS'
 	dc.b	$00,$04,$03,$92,$00,$00
-dat_064_00858:
+; TextMissionsStarted - "BTOTAL MISSIONS STARTED ............"
+TextMissionsStarted:
 	dc.b	$00
 	dc.b	'BTOTAL MISSIONS STARTED ............    '
 	dc.b	$00,$04
-dat_064_00883:
+; TextMissionsCompleted - "BMISSIONS SUCCESSFULLY COMPLETED ..."
+TextMissionsCompleted:
 	dc.b	$00
 	dc.b	'BMISSIONS SUCCESSFULLY COMPLETED ...    '
 	dc.b	$00,$04,$00,$92,$00,$00,$00,$12
 	dc.b	'                      FIRED    HITS'
 	dc.b	$00,$04
-dat_064_008D9:
+; TextM61CannonRounds - "M61     CANNON ROUNDS"
+TextM61CannonRounds:
 	dc.b	$00,$12
 	dc.b	'M61     CANNON ROUNDS               '
 	dc.b	$00,$04
-dat_064_00901:
+; TextAim120Amraams - "AIM-120 AMRAAMS"
+TextAim120Amraams:
 	dc.b	$00,$12
 	dc.b	'AIM-120 AMRAAMS                     '
 	dc.b	$00,$04
-dat_064_00929:
+; TextAim9lSidewinders - "AIM-9L  SIDEWINDERS"
+TextAim9lSidewinders:
 	dc.b	$00,$12
 	dc.b	'AIM-9L  SIDEWINDERS                 '
 	dc.b	$00,$04,$00,$92,$00,$00
-dat_064_00955:
+; TextFlightTime - "RACCUM. FLIGHT TIME         HRS,    MIN"
+TextFlightTime:
 	dc.b	$00
 	dc.b	'RACCUM. FLIGHT TIME         HRS,    MIN'
 	dc.b	$00,$04
-dat_064_0097F:
+; TextCrashes - "RCRASHES .............."
+TextCrashes:
 	dc.b	$00
 	dc.b	'RCRASHES ..............    '
 	dc.b	$00,$04
-dat_064_0099D:
+; TextHitsFromMissiles - "RHITS FROM MISSILES ..."
+TextHitsFromMissiles:
 	dc.b	$00
 	dc.b	'RHITS FROM MISSILES ...    '
 	dc.b	$00,$00,$00,$92,$00,$00,$00,$92,$00,$00,$00,$B2
@@ -279,7 +290,8 @@ dat_064_0099D:
 	dc.b	$00,$1E,$03,$95,$00,$00,$03,$95
 	dc.b	'LOCATION: SAN FRANCISCO'
 	dc.b	$00,$10
-dat_064_01096:
+; TextLogDate - "DATE:     SEPTEMBER  6, 1994"
+TextLogDate:
 	dc.b	$01,$95
 	dc.b	'DATE:     SEPTEMBER  6, 1994'
 	dc.b	$00,$10,$03,$95,$00,$00,$03,$95,$00,$00,$FF,$4A,$04,$03,$96
@@ -521,7 +533,8 @@ dat_064_01096:
 	dc.b	$00,$1E,$FF,$2B,$10,$03,$96
 	dc.b	'- PAUSED -'
 	dc.b	$00,$0A,$FF
-dat_064_0216E:
+; TextYourVectorForBogey - "YOUR VECTOR XXX FOR BOGEY"
+TextYourVectorForBogey:
 	dc.b	$1A,$08,$03,$96
 	dc.b	' YOUR VECTOR XXX FOR BOGEY'
 	dc.b	$00,$0F,$FF,$30,$0C,$03,$96

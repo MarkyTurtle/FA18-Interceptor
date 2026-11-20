@@ -1,6 +1,6 @@
 ; F/A-18 Interceptor - hunk 66 (code)
 ; Data: the three scenery maps (SceneryMap0-2: per map row, the cells with scenery and their
-; items).
+; items). The item lists are CellItemsA_* here and CellItemsB_* in hunk 67.
 ; Included by ../f18_main.s.
 
 ;===============================================================================
@@ -69,43 +69,43 @@ SceneryMap2:
 	dc.b	$04,$BE,$04,$BE,$04,$BE,$04,$BE,$04,$BE,$04,$BE,$04,$BE,$04,$BE
 	dc.b	$04,$BE,$04,$BE,$04,$BE,$04,$BE,$04,$BE,$04,$BE,$04,$BE,$04,$BE
 	dc.b	$00,$06,$00,$00,$00,$01,$00,$02
-        dc.l    dat_066_003B4                   ; 00308
-        dc.l    dat_066_003B4                   ; 0030C
-        dc.l    dat_066_003B4                   ; 00310
+        dc.l    CellItemsA_003B4                ; 00308
+        dc.l    CellItemsA_003B4                ; 0030C
+        dc.l    CellItemsA_003B4                ; 00310
 	dc.b	$FF,$FF,$00,$0A,$00,$07,$00,$09,$00,$0A,$00,$0C,$00,$0D
-        dc.l    dat_066_003B4                   ; 00322
-        dc.l    dat_066_006C0                   ; 00326
-        dc.l    dat_066_006C6                   ; 0032A
-        dc.l    dat_066_006C0                   ; 0032E
-        dc.l    dat_066_006C6                   ; 00332
-        dc.l    dat_066_006C0                   ; 00336
+        dc.l    CellItemsA_003B4                ; 00322
+        dc.l    CellItemsA_006C0                ; 00326
+        dc.l    CellItemsA_006C6                ; 0032A
+        dc.l    CellItemsA_006C0                ; 0032E
+        dc.l    CellItemsA_006C6                ; 00332
+        dc.l    CellItemsA_006C0                ; 00336
 	dc.b	$00,$0C,$00,$06,$00,$08,$00,$09,$00,$0B,$00,$0D,$00,$0F
-        dc.l    dat_066_003B4                   ; 00348
-        dc.l    dat_066_006C0                   ; 0034C
-        dc.l    dat_066_006C6                   ; 00350
-        dc.l    dat_066_006C0                   ; 00354
-        dc.l    dat_066_006C6                   ; 00358
-        dc.l    dat_066_006C0                   ; 0035C
-        dc.l    dat_066_006C6                   ; 00360
+        dc.l    CellItemsA_003B4                ; 00348
+        dc.l    CellItemsA_006C0                ; 0034C
+        dc.l    CellItemsA_006C6                ; 00350
+        dc.l    CellItemsA_006C0                ; 00354
+        dc.l    CellItemsA_006C6                ; 00358
+        dc.l    CellItemsA_006C0                ; 0035C
+        dc.l    CellItemsA_006C6                ; 00360
 	dc.b	$00,$06,$00,$0C,$00,$0E,$00,$0F
-        dc.l    dat_066_006C0                   ; 0036C
-        dc.l    dat_066_006C6                   ; 00370
-        dc.l    dat_067_0010A                   ; 00374
+        dc.l    CellItemsA_006C0                ; 0036C
+        dc.l    CellItemsA_006C6                ; 00370
+        dc.l    CellItemsB_0010A                ; 00374
 	dc.b	$00,$08,$00,$09,$00,$0D,$00,$0F,$00,$10
-        dc.l    dat_066_006C6                   ; 00382
-        dc.l    dat_066_006C0                   ; 00386
-        dc.l    dat_066_00476                   ; 0038A
-        dc.l    dat_067_00204                   ; 0038E
+        dc.l    CellItemsA_006C6                ; 00382
+        dc.l    CellItemsA_006C0                ; 00386
+        dc.l    CellItemsA_00476                ; 0038A
+        dc.l    CellItemsB_00204                ; 0038E
 	dc.b	$00,$0A,$00,$0A,$00,$0C,$00,$0F,$00,$10,$00,$12
-        dc.l    dat_066_006C0                   ; 0039E
-        dc.l    dat_066_006C6                   ; 003A2
-        dc.l    dat_067_00196                   ; 003A6
-        dc.l    dat_066_003B6                   ; 003AA
-        dc.l    dat_067_00176                   ; 003AE
+        dc.l    CellItemsA_006C0                ; 0039E
+        dc.l    CellItemsA_006C6                ; 003A2
+        dc.l    CellItemsB_00196                ; 003A6
+        dc.l    CellItemsA_003B6                ; 003AA
+        dc.l    CellItemsB_00176                ; 003AE
 	dc.b	$FF,$FF
-dat_066_003B4:
+CellItemsA_003B4:
 	dc.b	$FF,$FF
-dat_066_003B6:
+CellItemsA_003B6:
 	dc.b	$01,$15,$00,$00,$00,$00,$05,$20,$09,$80,$05,$80,$05,$21,$09,$80
 	dc.b	$02,$80,$05,$53,$08,$00,$08,$00,$06,$54,$08,$00,$08,$00,$06,$14
 	dc.b	$02,$00,$06,$00,$06,$33,$02,$00,$02,$40,$06,$48,$02,$00,$02,$40
@@ -115,129 +115,129 @@ dat_066_003B6:
 	dc.b	$0A,$75,$07,$80,$0B,$80,$0A,$22,$06,$58,$0C,$A8,$0A,$22,$04,$F0
 	dc.b	$0E,$10,$0A,$22,$03,$88,$0F,$78,$0D,$19,$08,$00,$08,$00,$0E,$1A
 	dc.b	$08,$00,$08,$00,$FF,$FF,$FF,$FF,$00,$04,$00,$0E,$00,$0F
-        dc.l    dat_066_00490                   ; 00444
-        dc.l    dat_066_0049E                   ; 00448
+        dc.l    CellItemsA_00490                ; 00444
+        dc.l    CellItemsA_0049E                ; 00448
 	dc.b	$00,$06,$00,$0E,$00,$0F,$00,$10
-        dc.l    dat_066_004B2                   ; 00454
-        dc.l    dat_066_004BA                   ; 00458
-        dc.l    dat_066_004F8                   ; 0045C
+        dc.l    CellItemsA_004B2                ; 00454
+        dc.l    CellItemsA_004BA                ; 00458
+        dc.l    CellItemsA_004F8                ; 0045C
 	dc.b	$00,$06,$00,$0F,$00,$10,$00,$12
-        dc.l    dat_066_00524                   ; 00468
-        dc.l    dat_066_00538                   ; 0046C
-        dc.l    dat_067_0016E                   ; 00470
+        dc.l    CellItemsA_00524                ; 00468
+        dc.l    CellItemsA_00538                ; 0046C
+        dc.l    CellItemsB_0016E                ; 00470
 	dc.b	$FF,$FF
-dat_066_00476:
+CellItemsA_00476:
 	dc.b	$04,$47,$00,$00,$07,$00,$04,$28,$03,$A0,$04,$00,$04,$27,$08,$B0
 	dc.b	$00,$90,$05,$29,$09,$C0,$07,$60,$FF,$FF
-dat_066_00490:
+CellItemsA_00490:
 	dc.b	$00,$6A,$08,$00,$08,$00,$04,$6B,$08,$00,$0C,$00,$FF,$FF
-dat_066_0049E:
+CellItemsA_0049E:
 	dc.b	$02,$5D,$08,$00,$08,$00,$03,$5E,$08,$00,$00,$00,$07,$5F,$04,$00
 	dc.b	$0F,$FF,$FF,$FF
-dat_066_004B2:
+CellItemsA_004B2:
 	dc.b	$0C,$69,$08,$00,$08,$00,$FF,$FF
-dat_066_004BA:
+CellItemsA_004BA:
 	dc.b	$02,$61,$08,$00,$08,$00,$02,$62,$04,$00,$00,$00,$05,$63,$00,$00
 	dc.b	$0C,$00,$06,$64,$0C,$00,$0C,$00,$06,$65,$00,$00,$0C,$00,$07,$66
 	dc.b	$0C,$00,$04,$00,$08,$59,$0C,$00,$08,$00,$0B,$67,$08,$00,$08,$00
 	dc.b	$0C,$68,$04,$00,$0C,$00,$0D,$60,$08,$00,$04,$00,$FF,$FF
-dat_066_004F8:
+CellItemsA_004F8:
 	dc.b	$02,$2A,$0E,$00,$0E,$00,$02,$70,$08,$00,$08,$00,$06,$71,$08,$00
 	dc.b	$08,$00,$06,$2C,$06,$F6,$0E,$9A,$06,$2B,$00,$C4,$0A,$C8,$07,$72
 	dc.b	$0C,$00,$04,$00,$0B,$5A,$08,$00,$08,$00,$FF,$FF
-dat_066_00524:
+CellItemsA_00524:
 	dc.b	$08,$6C,$08,$00,$08,$00,$09,$6D,$0C,$00,$04,$00,$0D,$6E,$08,$00
 	dc.b	$08,$00,$FF,$FF
-dat_066_00538:
+CellItemsA_00538:
 	dc.b	$05,$46,$0B,$00,$09,$00,$06,$46,$01,$50,$02,$00,$06,$4B,$09,$A0
 	dc.b	$00,$00,$07,$6F,$04,$00,$04,$00,$0A,$4C,$05,$88,$0A,$80,$0A,$73
 	dc.b	$08,$00,$04,$00,$0E,$74,$08,$00,$08,$00,$FF,$FF,$FF,$FF,$00,$0C
 	dc.b	$00,$29,$00,$2C,$00,$2F,$00,$32,$00,$35,$00,$38
-        dc.l    dat_066_006CC                   ; 00574
-        dc.l    dat_066_006CC                   ; 00578
-        dc.l    dat_066_006CC                   ; 0057C
-        dc.l    dat_066_006CC                   ; 00580
-        dc.l    dat_066_006CC                   ; 00584
-        dc.l    dat_066_006CC                   ; 00588
+        dc.l    CellItemsA_006CC                ; 00574
+        dc.l    CellItemsA_006CC                ; 00578
+        dc.l    CellItemsA_006CC                ; 0057C
+        dc.l    CellItemsA_006CC                ; 00580
+        dc.l    CellItemsA_006CC                ; 00584
+        dc.l    CellItemsA_006CC                ; 00588
 	dc.b	$00,$10,$00,$29,$00,$2C,$00,$2F,$00,$32,$00,$35,$00,$38,$00,$3B
 	dc.b	$00,$3E
-        dc.l    dat_066_006CC                   ; 0059E
-        dc.l    dat_066_006CC                   ; 005A2
-        dc.l    dat_066_006CC                   ; 005A6
-        dc.l    dat_066_006CC                   ; 005AA
-        dc.l    dat_066_006CC                   ; 005AE
-        dc.l    dat_066_006CC                   ; 005B2
-        dc.l    dat_066_006CC                   ; 005B6
-        dc.l    dat_066_006CC                   ; 005BA
-        dc.l    dat_066_006CC                   ; 005BE
+        dc.l    CellItemsA_006CC                ; 0059E
+        dc.l    CellItemsA_006CC                ; 005A2
+        dc.l    CellItemsA_006CC                ; 005A6
+        dc.l    CellItemsA_006CC                ; 005AA
+        dc.l    CellItemsA_006CC                ; 005AE
+        dc.l    CellItemsA_006CC                ; 005B2
+        dc.l    CellItemsA_006CC                ; 005B6
+        dc.l    CellItemsA_006CC                ; 005BA
+        dc.l    CellItemsA_006CC                ; 005BE
 	dc.b	$00,$0E,$00,$29,$00,$2C,$00,$2F,$00,$32,$00,$35,$00,$38,$00,$3B
-        dc.l    dat_066_006CC                   ; 005D2
-        dc.l    dat_066_006CC                   ; 005D6
-        dc.l    dat_066_006CC                   ; 005DA
-        dc.l    dat_066_006CC                   ; 005DE
-        dc.l    dat_066_006CC                   ; 005E2
-        dc.l    dat_066_006CC                   ; 005E6
-        dc.l    dat_066_006CC                   ; 005EA
+        dc.l    CellItemsA_006CC                ; 005D2
+        dc.l    CellItemsA_006CC                ; 005D6
+        dc.l    CellItemsA_006CC                ; 005DA
+        dc.l    CellItemsA_006CC                ; 005DE
+        dc.l    CellItemsA_006CC                ; 005E2
+        dc.l    CellItemsA_006CC                ; 005E6
+        dc.l    CellItemsA_006CC                ; 005EA
 	dc.b	$00,$04,$00,$3C,$00,$3D
-        dc.l    dat_067_00024                   ; 005F4
-        dc.l    dat_067_0017E                   ; 005F8
+        dc.l    CellItemsB_00024                ; 005F4
+        dc.l    CellItemsB_0017E                ; 005F8
 	dc.b	$FF,$FF,$00,$02,$00,$3F
-        dc.l    dat_066_006DA                   ; 00602
+        dc.l    CellItemsA_006DA                ; 00602
 	dc.b	$00,$04,$00,$3D,$00,$41
-        dc.l    dat_066_006FA                   ; 0060C
-        dc.l    dat_067_00000                   ; 00610
+        dc.l    CellItemsA_006FA                ; 0060C
+        dc.l    CellItemsB_00000                ; 00610
 	dc.b	$00,$04,$00,$41,$00,$42
-        dc.l    dat_067_0000E                   ; 0061A
-        dc.l    dat_067_0018C                   ; 0061E
+        dc.l    CellItemsB_0000E                ; 0061A
+        dc.l    CellItemsB_0018C                ; 0061E
 	dc.b	$00,$10,$00,$31,$00,$34,$00,$37,$00,$3A,$00,$3D,$00,$3F,$00,$42
 	dc.b	$00,$49
-        dc.l    dat_066_006CC                   ; 00634
-        dc.l    dat_066_006CC                   ; 00638
-        dc.l    dat_066_006CC                   ; 0063C
-        dc.l    dat_066_006CC                   ; 00640
-        dc.l    dat_066_006FA                   ; 00644
-        dc.l    dat_067_0001C                   ; 00648
-        dc.l    dat_066_006FA                   ; 0064C
-        dc.l    dat_067_00166                   ; 00650
+        dc.l    CellItemsA_006CC                ; 00634
+        dc.l    CellItemsA_006CC                ; 00638
+        dc.l    CellItemsA_006CC                ; 0063C
+        dc.l    CellItemsA_006CC                ; 00640
+        dc.l    CellItemsA_006FA                ; 00644
+        dc.l    CellItemsB_0001C                ; 00648
+        dc.l    CellItemsA_006FA                ; 0064C
+        dc.l    CellItemsB_00166                ; 00650
 	dc.b	$00,$10,$00,$31,$00,$34,$00,$37,$00,$3A,$00,$3F,$00,$40,$00,$41
 	dc.b	$00,$42
-        dc.l    dat_066_006CC                   ; 00666
-        dc.l    dat_066_006CC                   ; 0066A
-        dc.l    dat_066_006CC                   ; 0066E
-        dc.l    dat_066_006CC                   ; 00672
-        dc.l    dat_067_0013C                   ; 00676
-        dc.l    dat_066_00722                   ; 0067A
-        dc.l    dat_067_0028C                   ; 0067E
-        dc.l    dat_067_0018E                   ; 00682
+        dc.l    CellItemsA_006CC                ; 00666
+        dc.l    CellItemsA_006CC                ; 0066A
+        dc.l    CellItemsA_006CC                ; 0066E
+        dc.l    CellItemsA_006CC                ; 00672
+        dc.l    CellItemsB_0013C                ; 00676
+        dc.l    CellItemsA_00722                ; 0067A
+        dc.l    CellItemsB_0028C                ; 0067E
+        dc.l    CellItemsB_0018E                ; 00682
 	dc.b	$00,$12,$00,$31,$00,$34,$00,$37,$00,$3A,$00,$3E,$00,$3F,$00,$40
 	dc.b	$00,$41,$00,$42
-        dc.l    dat_066_006CC                   ; 0069A
-        dc.l    dat_066_006CC                   ; 0069E
-        dc.l    dat_066_006CC                   ; 006A2
-        dc.l    dat_066_006CC                   ; 006A6
-        dc.l    dat_067_0013E                   ; 006AA
-        dc.l    dat_067_0014C                   ; 006AE
-        dc.l    dat_066_00708                   ; 006B2
-        dc.l    dat_067_00266                   ; 006B6
-        dc.l    dat_066_00724                   ; 006BA
+        dc.l    CellItemsA_006CC                ; 0069A
+        dc.l    CellItemsA_006CC                ; 0069E
+        dc.l    CellItemsA_006CC                ; 006A2
+        dc.l    CellItemsA_006CC                ; 006A6
+        dc.l    CellItemsB_0013E                ; 006AA
+        dc.l    CellItemsB_0014C                ; 006AE
+        dc.l    CellItemsA_00708                ; 006B2
+        dc.l    CellItemsB_00266                ; 006B6
+        dc.l    CellItemsA_00724                ; 006BA
 	dc.b	$FF,$FF
-dat_066_006C0:
+CellItemsA_006C0:
 	dc.b	$08,$52,$08,$00,$03,$00
-dat_066_006C6:
+CellItemsA_006C6:
 	dc.b	$08,$15,$04,$00,$0E,$00
-dat_066_006CC:
+CellItemsA_006CC:
 	dc.b	$00,$2D,$08,$00,$08,$00,$0E,$4A,$08,$00,$08,$00,$FF,$FF
-dat_066_006DA:
+CellItemsA_006DA:
 	dc.b	$00,$2D,$0F,$00,$01,$00,$00,$2D,$0F,$00,$02,$80,$04,$5B,$0A,$20
 	dc.b	$09,$E0,$04,$5C,$0A,$20,$0B,$A0,$05,$2D,$0C,$00,$0E,$00,$FF,$FF
-dat_066_006FA:
+CellItemsA_006FA:
 	dc.b	$05,$2D,$08,$00,$08,$00,$05,$2D,$07,$00,$07,$40,$FF,$FF
-dat_066_00708:
+CellItemsA_00708:
 	dc.b	$08,$24,$06,$60,$00,$50,$08,$25,$00,$00,$02,$60,$09,$26,$0F,$60
 	dc.b	$02,$A0,$0C,$23,$0C,$00,$0E,$00,$FF,$FF
-dat_066_00722:
+CellItemsA_00722:
 	dc.b	$FF,$FF
-dat_066_00724:
+CellItemsA_00724:
 	dc.b	$05,$46,$0C,$00,$04,$00,$09,$20,$06,$00,$06,$00,$0D,$21,$06,$00
 	dc.b	$09,$C0,$FF,$FF
 h066_end:

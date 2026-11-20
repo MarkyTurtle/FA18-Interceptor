@@ -2039,7 +2039,7 @@ l_000_0199E:
         move.b  d0,(MarkersOn).l                ; 019AC
         move.w  #$3,(StateTimer).l              ; 019B2
         move.l  #StateTitle,(GameState).l       ; 019BA
-        lea.l   (dat_064_00340).l,a0            ; 019C4
+        lea.l   (TextChecksumError).l,a0        ; 019C4
         move.l  a0,-$e(a6)                      ; 019CA
         adda.w  #$15,a0                         ; 019CE
         clr.l   -$8(a6)                         ; 019D2
@@ -4317,7 +4317,7 @@ StateWelcome:
         bra.b   l_000_037E6                     ; 0376A
 l_000_0376C:
         move.w  #$2,(TextPages).l               ; 0376C
-        lea.l   (dat_064_004E3).l,a0            ; 03774
+        lea.l   (TextWelcome).l,a0              ; 03774
         move.l  a0,-$6(a6)                      ; 0377A
         adda.w  #$a,a0                          ; 0377E
         movea.l (ConfigBuffer).l,a1             ; 03782

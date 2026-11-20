@@ -963,7 +963,7 @@ l_028_01334:
         beq.w   l_028_01198                     ; 01340
         bset    #$1,$4(a1)                      ; 01344
 l_028_0134A:
-        lea.l   (dat_067_000C6).l,a0            ; 0134A
+        lea.l   (StartPointPlaces).l,a0         ; 0134A
         lea.l   (ObjectDrawTable).l,a3          ; 01350
         moveq   #$0,d0                          ; 01356
         bra.b   l_028_0135E                     ; 01358

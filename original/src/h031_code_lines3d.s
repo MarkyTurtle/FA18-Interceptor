@@ -189,65 +189,85 @@ TurnToView:
         asr.l   #$8,d5                          ; 00214
         move.w  d5,(dat_071_00486).l            ; 00216
         rts                                     ; 0021C
-dat_031_0021E:
-        dc.l    dat_031_0023E                   ; 0021E
-        dc.l    dat_031_00250                   ; 00222
-        dc.l    dat_031_00262                   ; 00226
-        dc.l    dat_031_00274                   ; 0022A
-        dc.l    dat_031_00286                   ; 0022E
-        dc.l    dat_031_00298                   ; 00232
-        dc.l    dat_031_002AA                   ; 00236
-        dc.l    dat_031_002BC                   ; 0023A
-dat_031_0023E:
+; PuffSegments - Eight pointers to the segments a puff's outline is built from
+; (PuffSegment0-7).
+PuffSegments:
+        dc.l    PuffSegment0                    ; 0021E
+        dc.l    PuffSegment1                    ; 00222
+        dc.l    PuffSegment2                    ; 00226
+        dc.l    PuffSegment3                    ; 0022A
+        dc.l    PuffSegment4                    ; 0022E
+        dc.l    PuffSegment5                    ; 00232
+        dc.l    PuffSegment6                    ; 00236
+        dc.l    PuffSegment7                    ; 0023A
+; PuffSegment0 - A segment of a puff's outline.
+PuffSegment0:
 	dc.b	$00,$0A,$00,$04,$00,$0C,$00,$0A,$FF,$FE,$FF,$F8,$FF,$F2,$FF,$FE
 	dc.b	$FF,$F8
-dat_031_00250:
+; PuffSegment1 - A segment of a puff's outline.
+PuffSegment1:
 	dc.b	$00,$0A,$FF,$FA,$00,$0A,$00,$0A,$00,$06,$FF,$FA,$FF,$F2,$00,$06
 	dc.b	$FF,$FA
-dat_031_00262:
+; PuffSegment2 - A segment of a puff's outline.
+PuffSegment2:
 	dc.b	$00,$0A,$FF,$F4,$00,$06,$00,$0A,$00,$08,$FF,$FE,$FF,$F2,$00,$08
 	dc.b	$FF,$FE
-dat_031_00274:
+; PuffSegment3 - A segment of a puff's outline.
+PuffSegment3:
 	dc.b	$00,$0A,$FF,$F4,$FF,$FC,$00,$0A,$00,$08,$00,$02,$FF,$F2,$00,$08
 	dc.b	$00,$02
-dat_031_00286:
+; PuffSegment4 - A segment of a puff's outline.
+PuffSegment4:
 	dc.b	$00,$0A,$FF,$F6,$FF,$F4,$00,$0A,$00,$04,$00,$08,$FF,$F2,$00,$04
 	dc.b	$00,$08
-dat_031_00298:
+; PuffSegment5 - A segment of a puff's outline.
+PuffSegment5:
 	dc.b	$00,$0A,$FF,$FC,$FF,$F4,$00,$0A,$00,$04,$00,$08,$FF,$F2,$00,$04
 	dc.b	$00,$08
-dat_031_002AA:
+; PuffSegment6 - A segment of a puff's outline.
+PuffSegment6:
 	dc.b	$00,$0A,$00,$08,$FF,$F8,$00,$0A,$FF,$F8,$00,$04,$FF,$F2,$FF,$F8
 	dc.b	$00,$04
-dat_031_002BC:
+; PuffSegment7 - A segment of a puff's outline.
+PuffSegment7:
 	dc.b	$00,$0A,$00,$0C,$00,$04,$00,$0A,$FF,$F8,$00,$00,$FF,$F2,$FF,$F8
 	dc.b	$00,$00
-dat_031_002CE:
+; PuffShape1 - A puff kind's outline (offset pairs).
+PuffShape1:
 	dc.b	$03,$12,$03,$00,$03,$12,$0C,$0C,$F4,$0C,$F4,$0C,$09,$00,$00,$06
 	dc.b	$FA,$06,$FA,$F4,$09,$EE,$FD,$FD,$F4,$0C,$F4,$FA,$00,$FA,$FA,$FA
 	dc.b	$FA,$00,$FD,$EE,$F4,$03,$09
-dat_031_002F5:
+; PuffShape5 - A puff kind's outline (offset pairs).
+PuffShape5:
 	dc.b	$06,$24,$06,$00,$06,$24,$18,$18,$E8,$18,$E8,$18,$12,$00,$00,$0C
 	dc.b	$F4,$0C,$F4,$E8,$12,$DC,$FA,$FA,$E8,$18,$E8,$F4,$00,$F4,$F4,$F4
 	dc.b	$F4,$00,$FA,$DC,$E8,$06,$12
-dat_031_0031C:
+; PuffShape4 - A puff kind's outline.
+PuffShape4:
 	dc.b	$09,$36,$09,$00,$09,$36,$24,$24,$DC,$24,$DC,$24,$1B,$00,$00,$12
 	dc.b	$EE,$12,$EE,$DC,$1B,$CA,$F7,$F7,$DC,$24,$DC,$EE,$00,$EE,$EE,$EE
 	dc.b	$EE,$00,$F7,$CA,$DC,$09,$1B
-dat_031_00343:
+; PuffShape3 - A puff kind's outline.
+PuffShape3:
 	dc.b	$00,$0C,$10,$0C,$0C,$FC,$F4,$0C,$FC,$10,$00,$0C,$00,$00,$F6,$F0
 	dc.b	$00,$0C,$00,$F4,$10,$0C,$F4,$FC,$F4,$F4,$FC,$00,$00,$00
-dat_031_00361:
+; PuffColours1 - A puff kind's colours.
+PuffColours1:
 	dc.b	$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09
-dat_031_0036D:
+; PuffColours2 - A puff kind's colours.
+PuffColours2:
 	dc.b	$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02
-dat_031_00379:
+; PuffColours3 - A puff kind's colours.
+PuffColours3:
 	dc.b	$0D,$0A,$0D,$0A,$0D,$0A,$0D,$0A,$0D,$0A,$0D,$0A
-dat_031_00385:
+; PuffColours4 - A puff kind's colours.
+PuffColours4:
 	dc.b	$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09
-dat_031_00391:
+; PuffColours5 - A puff kind's colours (a byte per ring, 0 ends).
+PuffColours5:
 	dc.b	$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$00
-dat_031_0039E:
+; PuffOffsets - The word offsets (0, 4 ... $1C, repeating) DrawPuffShape steps through.
+PuffOffsets:
 	dc.b	$00,$00,$00,$04,$00,$08,$00,$0C,$00,$10,$00,$14,$00,$18,$00,$1C
 	dc.b	$00,$00,$00,$04,$00,$08,$00,$0C,$00,$10,$00,$14,$00,$18,$00,$1C
 	dc.b	$00,$00,$00,$04,$00,$08,$00,$0C,$00,$10,$00,$14,$00,$18,$00,$1C
@@ -311,7 +331,7 @@ l_031_00446:
         move.w  d7,d6                           ; 00470
         swap    d7                              ; 00472
         movem.w d0-d4/d6-d7,-(a7)               ; 00474
-        bsr.w   sub_031_004CC                   ; 00478
+        bsr.w   DrawPuffShape                   ; 00478
         or.w    d0,-$2(a6)                      ; 0047C
         movem.w (a7)+,d0-d4/d6-d7               ; 00480
         cmpi.b  #$3,d4                          ; 00484
@@ -322,7 +342,7 @@ l_031_00446:
         moveq   #$0,d3                          ; 00490
 l_031_00492:
         movem.w d0-d4/d6-d7,-(a7)               ; 00492
-        bsr.w   sub_031_004CC                   ; 00496
+        bsr.w   DrawPuffShape                   ; 00496
         or.w    d0,-$2(a6)                      ; 0049A
         movem.w (a7)+,d0-d4/d6-d7               ; 0049E
         cmpi.b  #$4,d4                          ; 004A2
@@ -335,13 +355,19 @@ l_031_004B0:
         addi.w  #$14,d0                         ; 004B0
         addi.w  #$a,d1                          ; 004B4
         addi.w  #$14,d2                         ; 004B8
-        bsr.w   sub_031_004CC                   ; 004BC
+        bsr.w   DrawPuffShape                   ; 004BC
         or.w    d0,-$2(a6)                      ; 004C0
 l_031_004C4:
         move.w  -$2(a6),d0                      ; 004C4
         unlk    a6                              ; 004C8
         rts                                     ; 004CA
-sub_031_004CC:
+
+;-------------------------------------------------------------------------------
+; DrawPuffShape - Draws a puff (DrawPuff) of kind d4 at (d0-d2), size d3: each kind has its own
+; outline (a list of offsets) and colours (a byte per ring: 9 orange for fire, 13 grey for
+; smoke...), filled as small polygons round the centre.
+;-------------------------------------------------------------------------------
+DrawPuffShape:
         link.w  a6,#$ffc2                       ; 004CC
         move.b  d4,-$2e(a6)                     ; 004D0
         clr.w   -$1e(a6)                        ; 004D4
@@ -359,25 +385,25 @@ sub_031_004CC:
         ble.b   l_031_0052C                     ; 00502
         subq.b  #$1,d4                          ; 00504
         ble.b   l_031_0051A                     ; 00506
-        move.l  #dat_031_00391,-$34(a6)         ; 00508
-        move.l  #dat_031_002F5,-$38(a6)         ; 00510
+        move.l  #PuffColours5,-$34(a6)          ; 00508
+        move.l  #PuffShape5,-$38(a6)            ; 00510
         bra.b   l_031_00566                     ; 00518
 l_031_0051A:
-        move.l  #dat_031_00385,-$34(a6)         ; 0051A
-        move.l  #dat_031_0031C,-$38(a6)         ; 00522
+        move.l  #PuffColours4,-$34(a6)          ; 0051A
+        move.l  #PuffShape4,-$38(a6)            ; 00522
         bra.b   l_031_00566                     ; 0052A
 l_031_0052C:
-        move.l  #dat_031_00379,-$34(a6)         ; 0052C
-        move.l  #dat_031_00343,-$38(a6)         ; 00534
+        move.l  #PuffColours3,-$34(a6)          ; 0052C
+        move.l  #PuffShape3,-$38(a6)            ; 00534
         move.w  #$8,-$a(a6)                     ; 0053C
         bra.b   l_031_00566                     ; 00542
 l_031_00544:
-        move.l  #dat_031_0036D,-$34(a6)         ; 00544
-        move.l  #dat_031_002CE,-$38(a6)         ; 0054C
+        move.l  #PuffColours2,-$34(a6)          ; 00544
+        move.l  #PuffShape1,-$38(a6)            ; 0054C
         bra.b   l_031_00566                     ; 00554
 l_031_00556:
-        move.l  #dat_031_00361,-$34(a6)         ; 00556
-        move.l  #dat_031_002CE,-$38(a6)         ; 0055E
+        move.l  #PuffColours1,-$34(a6)          ; 00556
+        move.l  #PuffShape1,-$38(a6)            ; 0055E
 l_031_00566:
         movea.l -$38(a6),a4                     ; 00566
         move.w  -$a(a6),d4                      ; 0056A
@@ -398,7 +424,7 @@ l_031_00566:
         add.w   d5,d5                           ; 00590
         add.w   d4,d5                           ; 00592
         add.w   d4,d5                           ; 00594
-        lea.l   dat_031_0039E(pc),a3            ; 00596
+        lea.l   PuffOffsets(pc),a3              ; 00596
         move.w  (a3,d5.w),d3                    ; 0059A
         move.w  -$18(a6),d4                     ; 0059E
         asr.w   d4,d0                           ; 005A2
@@ -419,7 +445,7 @@ l_031_00566:
         moveq   #$d,d3                          ; 005D0
 l_031_005D2:
         move.w  d3,(DrawColour).l               ; 005D2
-        lea.l   dat_031_0021E(pc),a2            ; 005D8
+        lea.l   PuffSegments(pc),a2             ; 005D8
         movea.l (a2,d4.w),a2                    ; 005DC
         lea.l   (dat_072_03002).l,a1            ; 005E0
 l_031_005E6:

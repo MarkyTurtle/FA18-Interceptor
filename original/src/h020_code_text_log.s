@@ -58,7 +58,7 @@ MonthNames:
 	dc.b	'REBMETPES  REBOTCO REBMEVON REBMECED'
 
 ;-------------------------------------------------------------------------------
-; ShowLogDate - Puts the log's date into the briefing text (dat_064_01096: "DATE: SEPTEMBER 6,
+; ShowLogDate - Puts the log's date into the briefing text (TextLogDate: "DATE: SEPTEMBER 6,
 ; 1994"): one day for each hour of flight time (ConfigBuffer+$08 / 3600), from September 1st:
 ; month = hours / 32 from the reversed month names at MonthNames, day = hours % 32 + 1 (at
 ; most 30).
@@ -81,7 +81,7 @@ l_020_000A0:
         adda.w  d1,a0                           ; 000A0
         dbra    d0,l_020_000A0                  ; 000A2
 l_020_000A6:
-        lea.l   (dat_064_01096).l,a1            ; 000A6
+        lea.l   (TextLogDate).l,a1              ; 000A6
         adda.w  #$15,a1                         ; 000AC
         subq.w  #$1,d1                          ; 000B0
 l_020_000B2:
@@ -94,7 +94,7 @@ l_020_000B2:
         ble.b   l_020_000C8                     ; 000C4
         moveq   #$1e,d0                         ; 000C6
 l_020_000C8:
-        lea.l   (dat_064_01096).l,a0            ; 000C8
+        lea.l   (TextLogDate).l,a0              ; 000C8
         ext.l   d0                              ; 000CE
         moveq   #$15,d3                         ; 000D0
         moveq   #$2,d2                          ; 000D2
@@ -110,42 +110,42 @@ ShowFlightLog:
         moveq   #$0,d0                          ; 000DA
         movea.l (ConfigBuffer).l,a1             ; 000DC
         move.w  $36(a1),d0                      ; 000E2
-        lea.l   (dat_064_00858).l,a0            ; 000E6
+        lea.l   (TextMissionsStarted).l,a0      ; 000E6
         moveq   #$25,d3                         ; 000EC
         moveq   #$3,d2                          ; 000EE
         bsr.w   PutNumber                       ; 000F0
         move.w  $38(a1),d0                      ; 000F4
-        lea.l   (dat_064_00883).l,a0            ; 000F8
+        lea.l   (TextMissionsCompleted).l,a0    ; 000F8
         moveq   #$25,d3                         ; 000FE
         moveq   #$3,d2                          ; 00100
         bsr.w   PutNumber                       ; 00102
         move.w  $3a(a1),d0                      ; 00106
-        lea.l   (dat_064_008D9).l,a0            ; 0010A
+        lea.l   (TextM61CannonRounds).l,a0      ; 0010A
         moveq   #$17,d3                         ; 00110
         moveq   #$5,d2                          ; 00112
         bsr.w   PutNumber                       ; 00114
         move.w  $3c(a1),d0                      ; 00118
-        lea.l   (dat_064_008D9).l,a0            ; 0011C
+        lea.l   (TextM61CannonRounds).l,a0      ; 0011C
         moveq   #$20,d3                         ; 00122
         moveq   #$4,d2                          ; 00124
         bsr.w   PutNumber                       ; 00126
         move.w  $3e(a1),d0                      ; 0012A
-        lea.l   (dat_064_00901).l,a0            ; 0012E
+        lea.l   (TextAim120Amraams).l,a0        ; 0012E
         moveq   #$17,d3                         ; 00134
         moveq   #$5,d2                          ; 00136
         bsr.w   PutNumber                       ; 00138
         move.w  $40(a1),d0                      ; 0013C
-        lea.l   (dat_064_00901).l,a0            ; 00140
+        lea.l   (TextAim120Amraams).l,a0        ; 00140
         moveq   #$20,d3                         ; 00146
         moveq   #$4,d2                          ; 00148
         bsr.w   PutNumber                       ; 0014A
         move.w  $42(a1),d0                      ; 0014E
-        lea.l   (dat_064_00929).l,a0            ; 00152
+        lea.l   (TextAim9lSidewinders).l,a0     ; 00152
         moveq   #$17,d3                         ; 00158
         moveq   #$5,d2                          ; 0015A
         bsr.w   PutNumber                       ; 0015C
         move.w  $44(a1),d0                      ; 00160
-        lea.l   (dat_064_00929).l,a0            ; 00164
+        lea.l   (TextAim9lSidewinders).l,a0     ; 00164
         moveq   #$20,d3                         ; 0016A
         moveq   #$4,d2                          ; 0016C
         bsr.w   PutNumber                       ; 0016E
@@ -153,7 +153,7 @@ ShowFlightLog:
         divu.w  #$e10,d0                        ; 00176
         move.l  d0,-(a7)                        ; 0017A
         ext.l   d0                              ; 0017C
-        lea.l   (dat_064_00955).l,a0            ; 0017E
+        lea.l   (TextFlightTime).l,a0           ; 0017E
         moveq   #$17,d3                         ; 00184
         moveq   #$4,d2                          ; 00186
         bsr.w   PutNumber                       ; 00188
@@ -162,17 +162,17 @@ ShowFlightLog:
         ext.l   d0                              ; 00190
         divu.w  #$3c,d0                         ; 00192
         ext.l   d0                              ; 00196
-        lea.l   (dat_064_00955).l,a0            ; 00198
+        lea.l   (TextFlightTime).l,a0           ; 00198
         moveq   #$21,d3                         ; 0019E
         moveq   #$2,d2                          ; 001A0
         bsr.w   PutNumber                       ; 001A2
         move.w  $46(a1),d0                      ; 001A6
-        lea.l   (dat_064_0097F).l,a0            ; 001AA
+        lea.l   (TextCrashes).l,a0              ; 001AA
         moveq   #$17,d3                         ; 001B0
         moveq   #$4,d2                          ; 001B2
         bsr.w   PutNumber                       ; 001B4
         move.w  $48(a1),d0                      ; 001B8
-        lea.l   (dat_064_0099D).l,a0            ; 001BC
+        lea.l   (TextHitsFromMissiles).l,a0     ; 001BC
         moveq   #$17,d3                         ; 001C2
         moveq   #$4,d2                          ; 001C4
 
@@ -299,7 +299,7 @@ l_020_002CC:
         ext.l   d0                              ; 0033E
         move.l  d0,(BCDIn).l                    ; 00340
         bsr.w   BinToBCD                        ; 00346
-        lea.l   (dat_064_0216E).l,a1            ; 0034A
+        lea.l   (TextYourVectorForBogey).l,a1   ; 0034A
         adda.w  #$11,a1                         ; 00350
         move.l  (BCDOut).l,d0                   ; 00354
         move.b  d0,d1                           ; 0035A
@@ -368,7 +368,7 @@ MakeSecurityCode:
         move.b  d1,(InputLength).l              ; 00422
         lea.l   (SecurityCode).l,a1             ; 00428
         move.b  (CodeValue2Low).l,$1(a1)        ; 0042E
-        lea.l   (dat_064_002B6).l,a0            ; 00436
+        lea.l   (TextEnterSecurityCountercode).l,a0 ; 00436
         adda.w  #$1f,a0                         ; 0043C
         move.b  (a1)+,d1                        ; 00440
         bsr.w   PutHexDigit                     ; 00442
