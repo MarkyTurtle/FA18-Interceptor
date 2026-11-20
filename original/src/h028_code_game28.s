@@ -686,7 +686,12 @@ l_028_010F0:
         bra.w   l_028_00E00                     ; 010F4
 l_028_010F8:
         rts                                     ; 010F8
-sub_028_010FA:
+
+;-------------------------------------------------------------------------------
+; TurnToViewOffset - Turns a point (d2-d4 plus the offset packed in d0) by the view matrix
+; (dat_071_005A8) into (a5)+.
+;-------------------------------------------------------------------------------
+TurnToViewOffset:
         move.l  d0,d5                           ; 010FA
         swap    d5                              ; 010FC
         move.w  d0,d6                           ; 010FE

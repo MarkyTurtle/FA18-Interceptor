@@ -52,7 +52,7 @@ l_023_00062:
         asr.l   #$8,d2                          ; 00062
         asr.l   #$8,d3                          ; 00064
         asr.l   #$8,d4                          ; 00066
-        jsr     (sub_008_016AC).l               ; 00068
+        jsr     (VectorLength).l                ; 00068
         move.w  d1,-(a7)                        ; 0006E
         lea.l   (dat_071_00602).l,a2            ; 00070
         movem.l $0(a0),d2-d4                    ; 00076
@@ -81,7 +81,7 @@ l_023_000AC:
         asr.l   #$8,d2                          ; 000AC
         asr.l   #$8,d3                          ; 000AE
         asr.l   #$8,d4                          ; 000B0
-        jsr     (sub_008_016AC).l               ; 000B2
+        jsr     (VectorLength).l                ; 000B2
         move.w  (a7)+,d2                        ; 000B8
         cmp.w   d1,d2                           ; 000BA
         bgt.w   l_023_0001A                     ; 000BC
@@ -652,10 +652,10 @@ sub_023_006D8:
         adda.w  d0,a3                           ; 00704
         cmpi.b  #$20,$62(a3)                    ; 00706
         bne.b   l_023_00716                     ; 0070C
-        lea.l   (dat_052_00000).l,a4            ; 0070E
+        lea.l   (Carrier_00000).l,a4            ; 0070E
         bra.b   l_023_0071C                     ; 00714
 l_023_00716:
-        lea.l   (dat_053_00000).l,a4            ; 00716
+        lea.l   (Submarine_00000).l,a4          ; 00716
 l_023_0071C:
         movea.l (a4)+,a5                        ; 0071C
         move.w  $2(a5),d7                       ; 0071E
@@ -676,10 +676,10 @@ l_023_0073C:
 l_023_0074C:
         cmpi.b  #$20,$62(a3)                    ; 0074C
         bne.b   l_023_0075C                     ; 00752
-        lea.l   (dat_052_0007C).l,a4            ; 00754
+        lea.l   (Carrier_0007C).l,a4            ; 00754
         bra.b   l_023_00762                     ; 0075A
 l_023_0075C:
-        lea.l   (dat_053_00020).l,a4            ; 0075C
+        lea.l   (Submarine_00020).l,a4          ; 0075C
 l_023_00762:
         movea.l (a4)+,a5                        ; 00762
         move.w  $2(a5),d7                       ; 00764
@@ -722,7 +722,7 @@ sub_023_007A2:
         asl.w   #$8,d0                          ; 007C8
         add.w   d0,d0                           ; 007CA
         adda.w  d0,a0                           ; 007CC
-        lea.l   (dat_051_00744).l,a3            ; 007CE
+        lea.l   (Mig_00744).l,a3                ; 007CE
         move.b  $7b(a0),d0                      ; 007D4
         blt.w   l_023_008B8                     ; 007D8
         move.b  $7d(a0),d2                      ; 007DC

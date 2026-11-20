@@ -431,11 +431,11 @@ l_020_004C0:
 l_020_004CA:
         rts                                     ; 004CA
 sub_020_004CC:
-        lea.l   (dat_070_00000).l,a0            ; 004CC
+        lea.l   (Shape89_00000).l,a0            ; 004CC
 l_020_004D2:
         move.w  (a0)+,d0                        ; 004D2
         blt.b   l_020_004CA                     ; 004D4
-        lea.l   (dat_070_00000).l,a1            ; 004D6
+        lea.l   (Shape89_00000).l,a1            ; 004D6
         adda.w  d0,a1                           ; 004DC
 l_020_004DE:
         movem.w (a1),d4-d7                      ; 004DE
@@ -446,7 +446,7 @@ l_020_004DE:
         moveq   #$0,d5                          ; 004EC
         exg.l   d5,d6                           ; 004EE
         moveq   #$2e,d0                         ; 004F0
-        jsr     (sub_020_0099A).l               ; 004F2
+        jsr     (ScaleToLengthD0).l             ; 004F2
         move.w  d5,d6                           ; 004F8
         move.w  d7,d0                           ; 004FA
         muls.w  #$ffa8,d6                       ; 004FC
@@ -821,7 +821,14 @@ l_020_00946:
         move.w  d1,(dat_071_00538).l            ; 00948
         movem.l (a7)+,d0-d3                     ; 0094E
         rts                                     ; 00952
-sub_020_00954:
+
+;-------------------------------------------------------------------------------
+; StartWarning - StartWarning(d0 = a sound word): makes it the warning or message now sounding
+; (CurrentWarning) and sets the flags that go with it (dat_071_0029C bit 0; dat_071_0029E bit
+; 13 for the $2000 kind, cleared for $40xx / $48xx). Used by the keys that answer with a voice
+; or tone, the training and the objects.
+;-------------------------------------------------------------------------------
+StartWarning:
         move.w  d1,-(a7)                        ; 00954
         move.w  d0,(CurrentWarning).l           ; 00956
         ori.w   #$1,(dat_071_0029C).l           ; 0095C
@@ -842,7 +849,12 @@ l_020_0098E:
 l_020_00996:
         move.w  (a7)+,d1                        ; 00996
         rts                                     ; 00998
-sub_020_0099A:
+
+;-------------------------------------------------------------------------------
+; ScaleToLengthD0 - ScaleToLength with the length in d0 and the vector in d5-d7 (registers
+; instead of the stack).
+;-------------------------------------------------------------------------------
+ScaleToLengthD0:
         link.w  a6,#$fffc                       ; 0099A
         move.w  d0,-$2(a6)                      ; 0099E
         bra.b   l_020_009B4                     ; 009A2
@@ -873,7 +885,7 @@ l_020_009C8:
         bge.b   l_020_009CE                     ; 009CA
         neg.w   d4                              ; 009CC
 l_020_009CE:
-        jsr     (sub_008_016AC).l               ; 009CE
+        jsr     (VectorLength).l                ; 009CE
         beq.b   l_020_00A24                     ; 009D4
         moveq   #$8,d2                          ; 009D6
         ext.l   d0                              ; 009D8
@@ -943,7 +955,7 @@ l_020_00A5A:
         bge.b   l_020_00A60                     ; 00A5C
         neg.w   d4                              ; 00A5E
 l_020_00A60:
-        jsr     (sub_008_016AC).l               ; 00A60
+        jsr     (VectorLength).l                ; 00A60
         moveq   #$3,d2                          ; 00A66
         ext.l   d0                              ; 00A68
 l_020_00A6A:

@@ -148,7 +148,7 @@ l_014_001A0:
         movem.w (a3)+,d0-d5                     ; 001A0
         movem.w d0-d5,(dat_072_04202).l         ; 001A4
         move.l  a3,-(a7)                        ; 001AC
-        jsr     (sub_035_001DA).l               ; 001AE
+        jsr     (ClipDrawLine3D).l              ; 001AE
         or.w    d0,-$7e(a6)                     ; 001B4
         movea.l (a7)+,a3                        ; 001B8
         subq.w  #$1,-$30(a6)                    ; 001BA
@@ -189,7 +189,7 @@ l_014_001FE:
         movem.w d0-d5,(dat_072_04202).l         ; 0020E
         move.l  a3,-(a7)                        ; 00216
         movem.w d6-d7/a4,-(a7)                  ; 00218
-        jsr     (sub_035_001DA).l               ; 0021C
+        jsr     (ClipDrawLine3D).l              ; 0021C
         or.w    d0,-$7e(a6)                     ; 00222
         movem.w (a7)+,d6-d7/a4                  ; 00226
         movea.l (a7)+,a3                        ; 0022A
@@ -243,7 +243,7 @@ l_014_00280:
         blt.b   l_014_002B0                     ; 0029E
         move.w  (a4),(a0)                       ; 002A0
         move.l  a2,-(a7)                        ; 002A2
-        jsr     (sub_035_001DA).l               ; 002A4
+        jsr     (ClipDrawLine3D).l              ; 002A4
         or.w    d0,-$7e(a6)                     ; 002AA
         movea.l (a7)+,a2                        ; 002AE
 l_014_002B0:
@@ -291,7 +291,7 @@ l_014_002E0:
         movem.w d2-d4,$6(a0)                    ; 0031A
         move.l  a2,-(a7)                        ; 00320
         move.w  d0,-(a7)                        ; 00322
-        jsr     (sub_035_001DA).l               ; 00324
+        jsr     (ClipDrawLine3D).l              ; 00324
         or.w    d0,-$7e(a6)                     ; 0032A
         move.w  (a7)+,d0                        ; 0032E
         movea.l (a7)+,a2                        ; 00330

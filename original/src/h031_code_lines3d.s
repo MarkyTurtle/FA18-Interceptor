@@ -576,7 +576,7 @@ l_031_0074E:
         move.w  d2,d4                           ; 0074E
         move.w  d1,d3                           ; 00750
         move.w  d0,d2                           ; 00752
-        jsr     (sub_008_016AC).l               ; 00754
+        jsr     (VectorLength).l                ; 00754
         rts                                     ; 0075A
 h031_end:
 	ifnd	HUNKEXE				; the hunk's tables, as in the original file

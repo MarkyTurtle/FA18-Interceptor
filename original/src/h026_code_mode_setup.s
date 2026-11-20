@@ -1156,7 +1156,7 @@ l_026_00E28:
 l_026_00E3A:
         move.w  d4,-(a7)                        ; 00E3A
         move.w  #$200,d0                        ; 00E3C
-        jsr     (sub_020_0099A).l               ; 00E40
+        jsr     (ScaleToLengthD0).l             ; 00E40
         move.w  (a7)+,d4                        ; 00E46
         ext.l   d5                              ; 00E48
         ext.l   d6                              ; 00E4A

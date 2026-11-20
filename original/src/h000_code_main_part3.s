@@ -3117,12 +3117,17 @@ l_000_09E32:
         asr.l   #$2,d0                          ; 09E36
         move.l  d0,-(a7)                        ; 09E38
         move.l  $8(a6),-(a7)                    ; 09E3A
-        bsr.b   sub_000_09E46                   ; 09E3E
+        bsr.b   PlayEngineSound                 ; 09E3E
         addq.l  #$8,a7                          ; 09E40
 l_000_09E42:
         unlk    a6                              ; 09E42
         rts                                     ; 09E44
-sub_000_09E46:
+
+;-------------------------------------------------------------------------------
+; PlayEngineSound - Plays the engine sound (if loaded, SoundsLoaded bit 1) on two channels at
+; the period on the stack, the second slightly detuned, at the volume given.
+;-------------------------------------------------------------------------------
+PlayEngineSound:
         link.w  a6,#$0                          ; 09E46
         btst    #$1,(SoundsLoaded).l            ; 09E4A
         beq.b   l_000_09EBA                     ; 09E52
@@ -3275,7 +3280,13 @@ l_000_0A02C:
 l_000_0A03E:
         unlk    a6                              ; 0A03E
         rts                                     ; 0A040
-sub_000_0A042:
+
+;-------------------------------------------------------------------------------
+; PlayEffect - Plays a sampled sound effect on its channel (dat_081_00010) with the period,
+; volume and length given on the stack (into dat_086_00004 and on): stops what the channel was
+; playing first. Used by the cockpit sounds, the ejection and the menu beep.
+;-------------------------------------------------------------------------------
+PlayEffect:
         link.w  a6,#$0                          ; 0A042
         tst.l   (dat_081_00010).l               ; 0A046
         beq.w   l_000_0A0D8                     ; 0A04C
@@ -3316,7 +3327,13 @@ sub_000_0A042:
 l_000_0A0D8:
         unlk    a6                              ; 0A0D8
         rts                                     ; 0A0DA
-sub_000_0A0DC:
+
+;-------------------------------------------------------------------------------
+; PlaySweep - Plays sound 2 sliding in pitch (the start period and the change given on the
+; stack: dat_086_00064 and on): explosions, flares and the like (if sounds are on, SoundFlags
+; bit 0).
+;-------------------------------------------------------------------------------
+PlaySweep:
         link.w  a6,#$fffc                       ; 0A0DC
         btst    #$0,(SoundFlags).l              ; 0A0E0
         beq.w   l_000_0A178                     ; 0A0E8

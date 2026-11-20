@@ -1035,10 +1035,10 @@ l_039_00D3E:
         move.w  d3,d5                           ; 00D60
 sub_039_00D62:
         tst.b   (OutsideView).l                 ; 00D62
-        beq.w   sub_039_00E94                   ; 00D68
+        beq.w   DrawPanelChars                  ; 00D68
         tst.b   (dat_071_00163).l               ; 00D6C
         beq.b   l_039_00D78                     ; 00D72
-        bra.w   sub_039_00E94                   ; 00D74
+        bra.w   DrawPanelChars                  ; 00D74
 l_039_00D78:
         rts                                     ; 00D78
 
@@ -1155,20 +1155,25 @@ l_039_00E6A:
         lsr.l   #$4,d3                          ; 00E6C
         dbra    d2,l_039_00E58                  ; 00E6E
         tst.b   d4                              ; 00E72
-        bne.b   sub_039_00E94                   ; 00E74
+        bne.b   DrawPanelChars                  ; 00E74
         move.w  d0,d2                           ; 00E76
         subq.w  #$1,d2                          ; 00E78
 l_039_00E7A:
         cmpi.b  #$30,(a0)+                      ; 00E7A
-        bne.b   sub_039_00E94                   ; 00E7E
+        bne.b   DrawPanelChars                  ; 00E7E
         move.b  #$20,-$1(a0)                    ; 00E80
         dbra    d2,l_039_00E7A                  ; 00E86
-        bra.b   sub_039_00E94                   ; 00E8A
+        bra.b   DrawPanelChars                  ; 00E8A
 l_039_00E8C:
         swap    d6                              ; 00E8C
         move.w  #$0,d6                          ; 00E8E
         moveq   #$0,d7                          ; 00E92
-sub_039_00E94:
+
+;-------------------------------------------------------------------------------
+; DrawPanelChars - Draws a string's characters (a2) into the panel's planes with the panel
+; font, at the places given in a1 (byte offset and shift), skipping those off the screen.
+;-------------------------------------------------------------------------------
+DrawPanelChars:
         adda.l  d7,a4                           ; 00E94
         move.w  #$142,d7                        ; 00E96
         movea.l (DrawPlanes).l,a0               ; 00E9A
@@ -1339,7 +1344,7 @@ l_039_01048:
         swap    d6                              ; 01070
         move.w  (ViewShift).l,d6                ; 01072
         move.l  (PanelShakeOffset).l,d7         ; 01078
-        bsr.w   sub_039_00E94                   ; 0107E
+        bsr.w   DrawPanelChars                  ; 0107E
         move.w  (a7)+,d0                        ; 01082
         lea.l   (TextBuffer).l,a2               ; 01084
         tst.w   d0                              ; 0108A
@@ -1363,7 +1368,7 @@ l_039_010B0:
         moveq   #$2,d0                          ; 010C8
         move.w  (ViewShift).l,d6                ; 010CA
         move.l  (PanelShakeOffset).l,d7         ; 010D0
-        bra.w   sub_039_00E94                   ; 010D6
+        bra.w   DrawPanelChars                  ; 010D6
 l_039_010DA:
         move.b  #$20,(a2)                       ; 010DA
         move.b  #$20,$1(a2)                     ; 010DE
@@ -1378,7 +1383,7 @@ l_039_010DA:
         move.w  (ViewShift).l,d6                ; 01102
         move.l  (PanelShakeOffset).l,d7         ; 01108
         moveq   #$2,d0                          ; 0110E
-        bsr.w   sub_039_00E94                   ; 01110
+        bsr.w   DrawPanelChars                  ; 01110
         lea.l   (TextBuffer).l,a2               ; 01114
         lea.l   dat_039_0001C(pc),a1            ; 0111A
         move.w  d7,d2                           ; 0111E
@@ -1390,7 +1395,7 @@ l_039_010DA:
         swap    d6                              ; 01132
         move.w  (ViewShift).l,d6                ; 01134
         move.l  (PanelShakeOffset).l,d7         ; 0113A
-        bra.w   sub_039_00E94                   ; 01140
+        bra.w   DrawPanelChars                  ; 01140
 sub_039_01144:
         ext.l   d2                              ; 01144
         move.l  d2,(BCDIn).l                    ; 01146
@@ -2003,7 +2008,11 @@ l_039_01880:
         moveq   #$2,d0                          ; 01880
         moveq   #$2,d1                          ; 01882
         bra.b   l_039_0189A                     ; 01884
-sub_039_01886:
+
+;-------------------------------------------------------------------------------
+; KeyBeep - The beep of a key while flying: only in the cockpit view, then as MenuBeep.
+;-------------------------------------------------------------------------------
+KeyBeep:
         tst.b   (OutsideView).l                 ; 01886
         bne.b   l_039_018CC                     ; 0188C
 
@@ -2029,7 +2038,7 @@ l_039_018A6:
         move.l  d1,d4                           ; 018B6
         move.l  d2,d5                           ; 018B8
         movem.l d0-d7/a0,-(a7)                  ; 018BA
-        jsr     (sub_000_0A042).l               ; 018BE
+        jsr     (PlayEffect).l                  ; 018BE
         adda.w  #$24,a7                         ; 018C4
         movem.l (a7)+,d0-d7/a0-a4               ; 018C8
 l_039_018CC:

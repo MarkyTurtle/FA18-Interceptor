@@ -2574,7 +2574,7 @@ l_000_02096:
         moveq   #$8,d0                          ; 02096
         move.l  d0,-(a7)                        ; 02098
         move.l  #$300,-(a7)                     ; 0209A
-        jsr     (sub_000_09E46).l               ; 020A0
+        jsr     (PlayEngineSound).l             ; 020A0
         addq.l  #$8,a7                          ; 020A6
 l_000_020A8:
         move.w  #$b3,(ClipY).l                  ; 020A8
@@ -3513,7 +3513,7 @@ StateToCockpit:
 l_000_02CC8:
         moveq   #$8,d0                          ; 02CC8
         move.l  d0,-(a7)                        ; 02CCA
-        jsr     (sub_000_09E46).l               ; 02CCC
+        jsr     (PlayEngineSound).l             ; 02CCC
         addq.l  #$4,a7                          ; 02CD2
 l_000_02CD4:
         lea.l   StateReady(pc),a0               ; 02CD4
@@ -3725,7 +3725,7 @@ StateFlying:
         move.l  d0,-(a7)                        ; 02FA8
         moveq   #$3f,d0                         ; 02FAA
         move.l  d0,-(a7)                        ; 02FAC
-        jsr     (sub_000_0A0DC).l               ; 02FAE
+        jsr     (PlaySweep).l                   ; 02FAE
         addq.l  #$8,a7                          ; 02FB4
 l_000_02FB6:
         move.l  #StateCrashed,(GameState).l     ; 02FB6

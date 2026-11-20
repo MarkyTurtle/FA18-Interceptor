@@ -70,7 +70,7 @@ l_015_00086:
         move.w  d2,d4                           ; 00086
         move.w  d1,d3                           ; 00088
         move.w  d0,d2                           ; 0008A
-        jsr     (sub_008_016AC).l               ; 0008C
+        jsr     (VectorLength).l                ; 0008C
         move.w  d1,d7                           ; 00092
         movem.w (a7)+,d0-d2/d6                  ; 00094
         tst.w   d7                              ; 00098
@@ -218,7 +218,7 @@ l_015_00238:
         move.w  d2,d4                           ; 00240
         move.w  d1,d3                           ; 00242
         move.w  d0,d2                           ; 00244
-        jsr     (sub_008_016AC).l               ; 00246
+        jsr     (VectorLength).l                ; 00246
         movem.w (a7)+,d3-d6                     ; 0024C
         moveq   #$8,d0                          ; 00250
         sub.w   d7,d0                           ; 00252

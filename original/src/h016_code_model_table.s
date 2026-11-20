@@ -16,84 +16,84 @@
 ; submarine (object 15 of F6), $118 and $12C the airliners. Pictures of them: docs/MODELS.md.
 ModelTable:
         dc.l    DrawModel                       ; 00000
-        dc.l    dat_051_00A6C                   ; 00004
-        dc.l    dat_051_00A6C                   ; 00008
-        dc.l    dat_051_00A6A                   ; 0000C
+        dc.l    SidewinderModel                 ; 00004
+        dc.l    SidewinderModel                 ; 00008
+        dc.l    SidewinderInfo                  ; 0000C
 	dc.b	$00,$00,$00,$00
         dc.l    DrawModel                       ; 00014
-        dc.l    dat_051_00BA2                   ; 00018
-        dc.l    dat_051_00BA2                   ; 0001C
-        dc.l    dat_051_00BA0                   ; 00020
+        dc.l    AmraamModel                     ; 00018
+        dc.l    AmraamModel                     ; 0001C
+        dc.l    AmraamInfo                      ; 00020
 	dc.b	$00,$00,$00,$00
         dc.l    DrawAnimated                    ; 00028
-        dc.l    dat_058_00000                   ; 0002C
-        dc.l    dat_058_00000                   ; 00030
-        dc.l    dat_058_00000                   ; 00034
+        dc.l    ParachuteModel                  ; 0002C
+        dc.l    ParachuteModel                  ; 00030
+        dc.l    ParachuteModel                  ; 00034
 	dc.b	$00,$00,$00,$00
         dc.l    DrawAircraft                    ; 0003C
-        dc.l    dat_051_00008                   ; 00040
-        dc.l    dat_051_00008                   ; 00044
-        dc.l    dat_051_00000                   ; 00048
+        dc.l    F16Model                        ; 00040
+        dc.l    F16Model                        ; 00044
+        dc.l    F16Info                         ; 00048
 	dc.b	$00,$00,$00,$00
         dc.l    DrawAircraft                    ; 00050
-        dc.l    dat_041_00008                   ; 00054
-        dc.l    dat_041_00008                   ; 00058
-        dc.l    dat_041_00000                   ; 0005C
+        dc.l    FA18Model                       ; 00054
+        dc.l    FA18Model                       ; 00058
+        dc.l    FA18Info                        ; 0005C
 	dc.b	$00,$00,$00,$00
         dc.l    DrawAircraft                    ; 00064
-        dc.l    dat_057_00008                   ; 00068
-        dc.l    dat_057_00008                   ; 0006C
-        dc.l    dat_057_00000                   ; 00070
+        dc.l    AirlinerModel                   ; 00068
+        dc.l    AirlinerModel                   ; 0006C
+        dc.l    AirlinerInfo                    ; 00070
 	dc.b	$00,$00,$00,$00
         dc.l    DrawAircraft                    ; 00078
-        dc.l    dat_051_000AE                   ; 0007C
-        dc.l    dat_051_000AE                   ; 00080
-        dc.l    dat_051_000A6                   ; 00084
+        dc.l    MigModel                        ; 0007C
+        dc.l    MigModel                        ; 00080
+        dc.l    MigInfo                         ; 00084
 	dc.b	$00,$00,$00,$00
         dc.l    DrawAircraft                    ; 0008C
-        dc.l    dat_051_000AE                   ; 00090
-        dc.l    dat_051_000AE                   ; 00094
-        dc.l    dat_051_000A6                   ; 00098
+        dc.l    MigModel                        ; 00090
+        dc.l    MigModel                        ; 00094
+        dc.l    MigInfo                         ; 00098
 	dc.b	$00,$00,$00,$00
         dc.l    DrawAircraft                    ; 000A0
-        dc.l    dat_052_000DE                   ; 000A4
-        dc.l    dat_052_000DE                   ; 000A8
-        dc.l    dat_052_000DE                   ; 000AC
-        dc.l    dat_052_000A8                   ; 000B0
+        dc.l    CarrierModel                    ; 000A4
+        dc.l    CarrierModel                    ; 000A8
+        dc.l    CarrierModel                    ; 000AC
+        dc.l    CarrierModel2                   ; 000B0
         dc.l    DrawAircraft                    ; 000B4
-        dc.l    dat_052_000DE                   ; 000B8
-        dc.l    dat_052_000DE                   ; 000BC
-        dc.l    dat_052_000DE                   ; 000C0
-        dc.l    dat_052_000A8                   ; 000C4
+        dc.l    CarrierModel                    ; 000B8
+        dc.l    CarrierModel                    ; 000BC
+        dc.l    CarrierModel                    ; 000C0
+        dc.l    CarrierModel2                   ; 000C4
         dc.l    DrawAircraft                    ; 000C8
-        dc.l    dat_055_0062E                   ; 000CC
-        dc.l    dat_055_0062E                   ; 000D0
-        dc.l    dat_055_00626                   ; 000D4
+        dc.l    CruiseMissileModel              ; 000CC
+        dc.l    CruiseMissileModel              ; 000D0
+        dc.l    CruiseMissileInfo               ; 000D4
 	dc.b	$00,$00,$00,$00
         dc.l    DrawParachute                   ; 000DC
-        dc.l    dat_058_002A6                   ; 000E0
-        dc.l    dat_058_002A6                   ; 000E4
-        dc.l    dat_058_002A6                   ; 000E8
+        dc.l    RescuePodModel                  ; 000E0
+        dc.l    RescuePodModel                  ; 000E4
+        dc.l    RescuePodModel                  ; 000E8
 	dc.b	$00,$00,$00,$00
         dc.l    DrawAircraft                    ; 000F0
-        dc.l    dat_053_0006E                   ; 000F4
-        dc.l    dat_053_0006E                   ; 000F8
-        dc.l    dat_053_0006E                   ; 000FC
-        dc.l    dat_053_0004C                   ; 00100
+        dc.l    SubmarineModel                  ; 000F4
+        dc.l    SubmarineModel                  ; 000F8
+        dc.l    SubmarineModel                  ; 000FC
+        dc.l    SubmarineModel2                 ; 00100
         dc.l    DrawAnimated                    ; 00104
-        dc.l    dat_058_00000                   ; 00108
-        dc.l    dat_058_00000                   ; 0010C
-        dc.l    dat_058_00000                   ; 00110
+        dc.l    ParachuteModel                  ; 00108
+        dc.l    ParachuteModel                  ; 0010C
+        dc.l    ParachuteModel                  ; 00110
 	dc.b	$00,$00,$00,$00
         dc.l    DrawAircraft                    ; 00118
-        dc.l    dat_057_00008                   ; 0011C
-        dc.l    dat_057_00008                   ; 00120
-        dc.l    dat_057_00000                   ; 00124
+        dc.l    AirlinerModel                   ; 0011C
+        dc.l    AirlinerModel                   ; 00120
+        dc.l    AirlinerInfo                    ; 00124
 	dc.b	$00,$00,$00,$00
         dc.l    DrawAircraft                    ; 0012C
-        dc.l    dat_057_00008                   ; 00130
-        dc.l    dat_057_00008                   ; 00134
-        dc.l    dat_057_00000                   ; 00138
+        dc.l    AirlinerModel                   ; 00130
+        dc.l    AirlinerModel                   ; 00134
+        dc.l    AirlinerInfo                    ; 00138
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -111,509 +111,509 @@ ObjectDrawTable:
 dat_016_00144:
 	dcb.b	336,$00
         dc.l    DrawSceneryPlain                ; 00294
-        dc.l    dat_055_00000                   ; 00298
-        dc.l    dat_055_00000                   ; 0029C
-        dc.l    dat_055_00000                   ; 002A0
+        dc.l    Shape17                         ; 00298
+        dc.l    Shape17                         ; 0029C
+        dc.l    Shape17                         ; 002A0
 	dc.b	$00,$00,$00,$00
         dc.l    DrawSceneryPlain                ; 002A8
-        dc.l    dat_055_00008                   ; 002AC
-        dc.l    dat_055_00008                   ; 002B0
-        dc.l    dat_055_00008                   ; 002B4
+        dc.l    Shape18                         ; 002AC
+        dc.l    Shape18                         ; 002B0
+        dc.l    Shape18                         ; 002B4
 	dc.b	$00,$00,$00,$00
         dc.l    DrawSceneryPlain                ; 002BC
-        dc.l    dat_055_00016                   ; 002C0
-        dc.l    dat_055_00016                   ; 002C4
-        dc.l    dat_055_00016                   ; 002C8
+        dc.l    Shape19                         ; 002C0
+        dc.l    Shape19                         ; 002C4
+        dc.l    Shape19                         ; 002C8
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShape                 ; 002D0
-        dc.l    dat_069_000A2                   ; 002D4
-        dc.l    dat_069_000A2                   ; 002D8
-        dc.l    dat_069_000A2                   ; 002DC
+        dc.l    Shape20                         ; 002D4
+        dc.l    Shape20                         ; 002D8
+        dc.l    Shape20                         ; 002DC
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 002E4
-        dc.l    dat_069_000DC                   ; 002E8
-        dc.l    dat_069_000DC                   ; 002EC
-        dc.l    dat_069_000DC                   ; 002F0
+        dc.l    Shape21                         ; 002E8
+        dc.l    Shape21                         ; 002EC
+        dc.l    Shape21                         ; 002F0
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShape                 ; 002F8
-        dc.l    dat_069_000A0                   ; 002FC
-        dc.l    dat_069_000A0                   ; 00300
-        dc.l    dat_069_000A0                   ; 00304
+        dc.l    Shape22                         ; 002FC
+        dc.l    Shape22                         ; 00300
+        dc.l    Shape22                         ; 00304
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 0030C
-        dc.l    dat_069_0016E                   ; 00310
-        dc.l    dat_069_0016E                   ; 00314
-        dc.l    dat_069_0016E                   ; 00318
+        dc.l    Shape23                         ; 00310
+        dc.l    Shape23                         ; 00314
+        dc.l    Shape23                         ; 00318
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 00320
-        dc.l    dat_069_0027C                   ; 00324
-        dc.l    dat_069_0027C                   ; 00328
-        dc.l    dat_069_0027C                   ; 0032C
+        dc.l    Shape24                         ; 00324
+        dc.l    Shape24                         ; 00328
+        dc.l    Shape24                         ; 0032C
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 00334
-        dc.l    dat_069_00312                   ; 00338
-        dc.l    dat_069_00312                   ; 0033C
-        dc.l    dat_069_00312                   ; 00340
+        dc.l    Shape25                         ; 00338
+        dc.l    Shape25                         ; 0033C
+        dc.l    Shape25                         ; 00340
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 00348
-        dc.l    dat_069_0033C                   ; 0034C
-        dc.l    dat_069_0033C                   ; 00350
-        dc.l    dat_069_0033C                   ; 00354
+        dc.l    Shape26                         ; 0034C
+        dc.l    Shape26                         ; 00350
+        dc.l    Shape26                         ; 00354
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 0035C
-        dc.l    dat_045_00094                   ; 00360
-        dc.l    dat_045_00094                   ; 00364
-        dc.l    dat_045_00094                   ; 00368
+        dc.l    Shape27                         ; 00360
+        dc.l    Shape27                         ; 00364
+        dc.l    Shape27                         ; 00368
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00370
-        dc.l    dat_046_00000                   ; 00374
-        dc.l    dat_046_00000                   ; 00378
-        dc.l    dat_046_00000                   ; 0037C
+        dc.l    Shape28                         ; 00374
+        dc.l    Shape28                         ; 00378
+        dc.l    Shape28                         ; 0037C
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00384
-        dc.l    dat_050_0027C                   ; 00388
-        dc.l    dat_050_0027C                   ; 0038C
-        dc.l    dat_050_0027C                   ; 00390
+        dc.l    Shape29                         ; 00388
+        dc.l    Shape29                         ; 0038C
+        dc.l    Shape29                         ; 00390
 	dc.b	$00,$00,$00,$00
         dc.l    DrawSceneryPlain                ; 00398
-        dc.l    dat_045_00210                   ; 0039C
-        dc.l    dat_045_00210                   ; 003A0
-        dc.l    dat_045_00210                   ; 003A4
-        dc.l    dat_045_00290                   ; 003A8
+        dc.l    Shape30                         ; 0039C
+        dc.l    Shape30                         ; 003A0
+        dc.l    Shape30                         ; 003A4
+        dc.l    Shape30_00290                   ; 003A8
         dc.l    DrawScenery                     ; 003AC
-        dc.l    dat_045_00000                   ; 003B0
-        dc.l    dat_045_00000                   ; 003B4
-        dc.l    dat_045_00000                   ; 003B8
+        dc.l    Shape31                         ; 003B0
+        dc.l    Shape31                         ; 003B4
+        dc.l    Shape31                         ; 003B8
 	dc.b	$00,$00,$00,$00
         dc.l    DrawSceneryPlain                ; 003C0
-        dc.l    dat_042_00000                   ; 003C4
-        dc.l    dat_042_00000                   ; 003C8
-        dc.l    dat_042_00000                   ; 003CC
+        dc.l    Shape32                         ; 003C4
+        dc.l    Shape32                         ; 003C8
+        dc.l    Shape32                         ; 003CC
 	dc.b	$00,$00,$00,$00
         dc.l    DrawSceneryPlain                ; 003D4
-        dc.l    dat_042_00038                   ; 003D8
-        dc.l    dat_042_00038                   ; 003DC
-        dc.l    dat_042_00038                   ; 003E0
+        dc.l    Shape33                         ; 003D8
+        dc.l    Shape33                         ; 003DC
+        dc.l    Shape33                         ; 003E0
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 003E8
-        dc.l    dat_043_00036                   ; 003EC
-        dc.l    dat_043_00036                   ; 003F0
-        dc.l    dat_043_00036                   ; 003F4
+        dc.l    Shape34                         ; 003EC
+        dc.l    Shape34                         ; 003F0
+        dc.l    Shape34                         ; 003F4
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 003FC
-        dc.l    dat_044_00000                   ; 00400
-        dc.l    dat_044_00000                   ; 00404
-        dc.l    dat_044_00000                   ; 00408
+        dc.l    Shape35                         ; 00400
+        dc.l    Shape35                         ; 00404
+        dc.l    Shape35                         ; 00408
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00410
-        dc.l    dat_044_00442                   ; 00414
-        dc.l    dat_044_00442                   ; 00418
-        dc.l    dat_044_00442                   ; 0041C
+        dc.l    Shape36                         ; 00414
+        dc.l    Shape36                         ; 00418
+        dc.l    Shape36                         ; 0041C
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00424
-        dc.l    dat_043_004DE                   ; 00428
-        dc.l    dat_043_004DE                   ; 0042C
-        dc.l    dat_043_004DE                   ; 00430
+        dc.l    Shape37                         ; 00428
+        dc.l    Shape37                         ; 0042C
+        dc.l    Shape37                         ; 00430
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00438
-        dc.l    dat_043_006C8                   ; 0043C
-        dc.l    dat_043_006C8                   ; 00440
-        dc.l    dat_043_006C8                   ; 00444
+        dc.l    Shape38                         ; 0043C
+        dc.l    Shape38                         ; 00440
+        dc.l    Shape38                         ; 00444
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 0044C
-        dc.l    dat_042_00694                   ; 00450
-        dc.l    dat_042_00694                   ; 00454
-        dc.l    dat_042_00694                   ; 00458
+        dc.l    Shape39                         ; 00450
+        dc.l    Shape39                         ; 00454
+        dc.l    Shape39                         ; 00458
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00460
-        dc.l    dat_042_00820                   ; 00464
-        dc.l    dat_042_00820                   ; 00468
-        dc.l    dat_042_00820                   ; 0046C
+        dc.l    Shape40                         ; 00464
+        dc.l    Shape40                         ; 00468
+        dc.l    Shape40                         ; 0046C
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00474
-        dc.l    dat_042_00936                   ; 00478
-        dc.l    dat_042_00936                   ; 0047C
-        dc.l    dat_042_00936                   ; 00480
+        dc.l    Shape41                         ; 00478
+        dc.l    Shape41                         ; 0047C
+        dc.l    Shape41                         ; 00480
 	dc.b	$00,$00,$00,$00
         dc.l    DrawSceneryPlain                ; 00488
-        dc.l    dat_055_0052E                   ; 0048C
-        dc.l    dat_055_0052E                   ; 00490
-        dc.l    dat_055_0052E                   ; 00494
-        dc.l    dat_055_005C6                   ; 00498
+        dc.l    Shape42                         ; 0048C
+        dc.l    Shape42                         ; 00490
+        dc.l    Shape42                         ; 00494
+        dc.l    Shape42_005C6                   ; 00498
         dc.l    DrawScenery                     ; 0049C
-        dc.l    dat_047_00000                   ; 004A0
-        dc.l    dat_047_00000                   ; 004A4
-        dc.l    dat_047_00000                   ; 004A8
+        dc.l    Shape43                         ; 004A0
+        dc.l    Shape43                         ; 004A4
+        dc.l    Shape43                         ; 004A8
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 004B0
-        dc.l    dat_046_00164                   ; 004B4
-        dc.l    dat_046_00164                   ; 004B8
-        dc.l    dat_046_00164                   ; 004BC
+        dc.l    Shape44                         ; 004B4
+        dc.l    Shape44                         ; 004B8
+        dc.l    Shape44                         ; 004BC
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 004C4
-        dc.l    dat_054_00000                   ; 004C8
-        dc.l    dat_054_00000                   ; 004CC
-        dc.l    dat_054_00000                   ; 004D0
+        dc.l    Shape45                         ; 004C8
+        dc.l    Shape45                         ; 004CC
+        dc.l    Shape45                         ; 004D0
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 004D8
-        dc.l    dat_054_00518                   ; 004DC
-        dc.l    dat_054_00518                   ; 004E0
-        dc.l    dat_054_00518                   ; 004E4
+        dc.l    Shape46                         ; 004DC
+        dc.l    Shape46                         ; 004E0
+        dc.l    Shape46                         ; 004E4
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 004EC
-        dc.l    dat_054_007B2                   ; 004F0
-        dc.l    dat_054_007B2                   ; 004F4
-        dc.l    dat_054_007B2                   ; 004F8
+        dc.l    Shape47                         ; 004F0
+        dc.l    Shape47                         ; 004F4
+        dc.l    Shape47                         ; 004F8
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00500
-        dc.l    dat_056_0005E                   ; 00504
-        dc.l    dat_056_0005E                   ; 00508
-        dc.l    dat_056_0005E                   ; 0050C
+        dc.l    Shape48                         ; 00504
+        dc.l    Shape48                         ; 00508
+        dc.l    Shape48                         ; 0050C
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00514
-        dc.l    dat_042_00ABC                   ; 00518
-        dc.l    dat_042_00ABC                   ; 0051C
-        dc.l    dat_042_00ABC                   ; 00520
+        dc.l    Shape49                         ; 00518
+        dc.l    Shape49                         ; 0051C
+        dc.l    Shape49                         ; 00520
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00528
-        dc.l    dat_045_00080                   ; 0052C
-        dc.l    dat_045_00080                   ; 00530
-        dc.l    dat_045_00080                   ; 00534
+        dc.l    Shape50                         ; 0052C
+        dc.l    Shape50                         ; 00530
+        dc.l    Shape50                         ; 00534
 	dc.b	$00,$00,$00,$00
         dc.l    DrawSceneryNear                 ; 0053C
-        dc.l    dat_043_0000A                   ; 00540
-        dc.l    dat_043_0000A                   ; 00544
-        dc.l    dat_043_0000A                   ; 00548
+        dc.l    Shape51                         ; 00540
+        dc.l    Shape51                         ; 00544
+        dc.l    Shape51                         ; 00548
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00550
-        dc.l    dat_046_00026                   ; 00554
-        dc.l    dat_046_00026                   ; 00558
-        dc.l    dat_046_00026                   ; 0055C
+        dc.l    Shape52                         ; 00554
+        dc.l    Shape52                         ; 00558
+        dc.l    Shape52                         ; 0055C
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00564
-        dc.l    dat_046_0018A                   ; 00568
-        dc.l    dat_046_0018A                   ; 0056C
-        dc.l    dat_046_0018A                   ; 00570
+        dc.l    Shape53                         ; 00568
+        dc.l    Shape53                         ; 0056C
+        dc.l    Shape53                         ; 00570
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00578
-        dc.l    dat_050_002A8                   ; 0057C
-        dc.l    dat_050_002A8                   ; 00580
-        dc.l    dat_050_002A8                   ; 00584
+        dc.l    Shape54                         ; 0057C
+        dc.l    Shape54                         ; 00580
+        dc.l    Shape54                         ; 00584
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 0058C
-        dc.l    dat_047_0002C                   ; 00590
-        dc.l    dat_047_0002C                   ; 00594
-        dc.l    dat_047_0002C                   ; 00598
+        dc.l    Shape55                         ; 00590
+        dc.l    Shape55                         ; 00594
+        dc.l    Shape55                         ; 00598
 	dc.b	$00,$00,$00,$00
         dc.l    DrawSceneryPlain                ; 005A0
-        dc.l    dat_049_004C6                   ; 005A4
-        dc.l    dat_049_004C6                   ; 005A8
-        dc.l    dat_049_004C6                   ; 005AC
-        dc.l    dat_049_004F0                   ; 005B0
+        dc.l    Shape56                         ; 005A4
+        dc.l    Shape56                         ; 005A8
+        dc.l    Shape56                         ; 005AC
+        dc.l    Shape56_004F0                   ; 005B0
         dc.l    DrawSceneryPlain                ; 005B4
-        dc.l    dat_049_00516                   ; 005B8
-        dc.l    dat_049_00516                   ; 005BC
-        dc.l    dat_049_00516                   ; 005C0
-        dc.l    dat_049_0055A                   ; 005C4
+        dc.l    Shape57                         ; 005B8
+        dc.l    Shape57                         ; 005BC
+        dc.l    Shape57                         ; 005C0
+        dc.l    Shape57_0055A                   ; 005C4
         dc.l    DrawScenery                     ; 005C8
-        dc.l    dat_050_00158                   ; 005CC
-        dc.l    dat_050_00158                   ; 005D0
-        dc.l    dat_050_00158                   ; 005D4
+        dc.l    Shape58                         ; 005CC
+        dc.l    Shape58                         ; 005D0
+        dc.l    Shape58                         ; 005D4
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 005DC
-        dc.l    dat_050_00000                   ; 005E0
-        dc.l    dat_050_00000                   ; 005E4
-        dc.l    dat_050_00000                   ; 005E8
+        dc.l    Shape59                         ; 005E0
+        dc.l    Shape59                         ; 005E4
+        dc.l    Shape59                         ; 005E8
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 005F0
-        dc.l    dat_049_001BC                   ; 005F4
-        dc.l    dat_049_001BC                   ; 005F8
-        dc.l    dat_049_001BC                   ; 005FC
+        dc.l    Shape60                         ; 005F4
+        dc.l    Shape60                         ; 005F8
+        dc.l    Shape60                         ; 005FC
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00604
-        dc.l    dat_049_001E8                   ; 00608
-        dc.l    dat_049_001E8                   ; 0060C
-        dc.l    dat_049_001E8                   ; 00610
+        dc.l    Shape61                         ; 00608
+        dc.l    Shape61                         ; 0060C
+        dc.l    Shape61                         ; 00610
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00618
-        dc.l    dat_049_00000                   ; 0061C
-        dc.l    dat_049_00000                   ; 00620
-        dc.l    dat_049_00000                   ; 00624
+        dc.l    Shape62                         ; 0061C
+        dc.l    Shape62                         ; 00620
+        dc.l    Shape62                         ; 00624
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 0062C
-        dc.l    dat_049_0002C                   ; 00630
-        dc.l    dat_049_0002C                   ; 00634
-        dc.l    dat_049_0002C                   ; 00638
+        dc.l    Shape63                         ; 00630
+        dc.l    Shape63                         ; 00634
+        dc.l    Shape63                         ; 00638
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00640
-        dc.l    dat_049_00368                   ; 00644
-        dc.l    dat_049_00368                   ; 00648
-        dc.l    dat_049_00368                   ; 0064C
+        dc.l    Shape64                         ; 00644
+        dc.l    Shape64                         ; 00648
+        dc.l    Shape64                         ; 0064C
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00654
-        dc.l    dat_049_00404                   ; 00658
-        dc.l    dat_049_00404                   ; 0065C
-        dc.l    dat_049_00404                   ; 00660
+        dc.l    Shape65                         ; 00658
+        dc.l    Shape65                         ; 0065C
+        dc.l    Shape65                         ; 00660
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00668
-        dc.l    dat_045_00166                   ; 0066C
-        dc.l    dat_045_00166                   ; 00670
-        dc.l    dat_045_00166                   ; 00674
+        dc.l    Shape66                         ; 0066C
+        dc.l    Shape66                         ; 00670
+        dc.l    Shape66                         ; 00674
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 0067C
-        dc.l    dat_045_0017A                   ; 00680
-        dc.l    dat_045_0017A                   ; 00684
-        dc.l    dat_045_0017A                   ; 00688
+        dc.l    Shape67                         ; 00680
+        dc.l    Shape67                         ; 00684
+        dc.l    Shape67                         ; 00688
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00690
-        dc.l    dat_045_000E6                   ; 00694
-        dc.l    dat_045_000E6                   ; 00698
-        dc.l    dat_045_000E6                   ; 0069C
+        dc.l    Shape68                         ; 00694
+        dc.l    Shape68                         ; 00698
+        dc.l    Shape68                         ; 0069C
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 006A4
-        dc.l    dat_045_00126                   ; 006A8
-        dc.l    dat_045_00126                   ; 006AC
-        dc.l    dat_045_00126                   ; 006B0
+        dc.l    Shape69                         ; 006A8
+        dc.l    Shape69                         ; 006AC
+        dc.l    Shape69                         ; 006B0
 	dc.b	$00,$00,$00,$00
         dc.l    DrawSceneryPlain                ; 006B8
-        dc.l    dat_055_00380                   ; 006BC
-        dc.l    dat_055_00380                   ; 006C0
-        dc.l    dat_055_00380                   ; 006C4
-        dc.l    dat_055_004CE                   ; 006C8
+        dc.l    Shape70                         ; 006BC
+        dc.l    Shape70                         ; 006C0
+        dc.l    Shape70                         ; 006C4
+        dc.l    Shape88_004CE                   ; 006C8
         dc.l    DrawSceneryNear                 ; 006CC
-        dc.l    dat_042_00668                   ; 006D0
-        dc.l    dat_042_00668                   ; 006D4
-        dc.l    dat_042_00668                   ; 006D8
+        dc.l    Shape71                         ; 006D0
+        dc.l    Shape71                         ; 006D4
+        dc.l    Shape71                         ; 006D8
 	dc.b	$00,$00,$00,$00
         dc.l    DrawSceneryPlain                ; 006E0
-        dc.l    dat_043_00000                   ; 006E4
-        dc.l    dat_043_00000                   ; 006E8
-        dc.l    dat_043_00000                   ; 006EC
+        dc.l    Shape72                         ; 006E4
+        dc.l    Shape72                         ; 006E8
+        dc.l    Shape72                         ; 006EC
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 006F4
-        dc.l    dat_054_00022                   ; 006F8
-        dc.l    dat_054_00022                   ; 006FC
-        dc.l    dat_054_00022                   ; 00700
+        dc.l    Shape73                         ; 006F8
+        dc.l    Shape73                         ; 006FC
+        dc.l    Shape73                         ; 00700
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00708
-        dc.l    dat_054_000EA                   ; 0070C
-        dc.l    dat_054_000EA                   ; 00710
-        dc.l    dat_054_000EA                   ; 00714
+        dc.l    Shape74                         ; 0070C
+        dc.l    Shape74                         ; 00710
+        dc.l    Shape74                         ; 00714
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 0071C
-        dc.l    dat_069_00000                   ; 00720
-        dc.l    dat_069_00000                   ; 00724
-        dc.l    dat_069_00000                   ; 00728
+        dc.l    Shape75                         ; 00720
+        dc.l    Shape75                         ; 00724
+        dc.l    Shape75                         ; 00728
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00730
-        dc.l    dat_069_0005A                   ; 00734
-        dc.l    dat_069_0005A                   ; 00738
-        dc.l    dat_069_0005A                   ; 0073C
+        dc.l    Shape76                         ; 00734
+        dc.l    Shape76                         ; 00738
+        dc.l    Shape76                         ; 0073C
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00744
-        dc.l    dat_048_00000                   ; 00748
-        dc.l    dat_048_00000                   ; 0074C
-        dc.l    dat_048_00000                   ; 00750
+        dc.l    Shape77                         ; 00748
+        dc.l    Shape77                         ; 0074C
+        dc.l    Shape77                         ; 00750
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00758
-        dc.l    dat_048_0002C                   ; 0075C
-        dc.l    dat_048_0002C                   ; 00760
-        dc.l    dat_048_0002C                   ; 00764
+        dc.l    Shape78                         ; 0075C
+        dc.l    Shape78                         ; 00760
+        dc.l    Shape78                         ; 00764
 	dc.b	$00,$00,$00,$00
         dc.l    DrawSceneryPlain                ; 0076C
-        dc.l    dat_048_001E0                   ; 00770
-        dc.l    dat_048_001E0                   ; 00774
-        dc.l    dat_048_001E0                   ; 00778
-        dc.l    dat_048_0023C                   ; 0077C
+        dc.l    Shape79                         ; 00770
+        dc.l    Shape79                         ; 00774
+        dc.l    Shape79                         ; 00778
+        dc.l    Shape79_0023C                   ; 0077C
         dc.l    DrawScenery                     ; 00780
-        dc.l    dat_045_00040                   ; 00784
-        dc.l    dat_045_00040                   ; 00788
-        dc.l    dat_045_00040                   ; 0078C
+        dc.l    Shape80                         ; 00784
+        dc.l    Shape80                         ; 00788
+        dc.l    Shape80                         ; 0078C
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00794
-        dc.l    dat_047_001D4                   ; 00798
-        dc.l    dat_047_001D4                   ; 0079C
-        dc.l    dat_047_001D4                   ; 007A0
+        dc.l    Shape81                         ; 00798
+        dc.l    Shape81                         ; 0079C
+        dc.l    Shape81                         ; 007A0
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShape                 ; 007A8
-        dc.l    dat_069_00112                   ; 007AC
-        dc.l    dat_069_00112                   ; 007B0
-        dc.l    dat_069_00112                   ; 007B4
+        dc.l    Shape82                         ; 007AC
+        dc.l    Shape82                         ; 007B0
+        dc.l    Shape82                         ; 007B4
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 007BC
-        dc.l    dat_069_00232                   ; 007C0
-        dc.l    dat_069_00232                   ; 007C4
-        dc.l    dat_069_00232                   ; 007C8
+        dc.l    Shape83                         ; 007C0
+        dc.l    Shape83                         ; 007C4
+        dc.l    Shape83                         ; 007C8
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 007D0
-        dc.l    dat_069_002C6                   ; 007D4
-        dc.l    dat_069_002C6                   ; 007D8
-        dc.l    dat_069_002C6                   ; 007DC
+        dc.l    Shape84                         ; 007D4
+        dc.l    Shape84                         ; 007D8
+        dc.l    Shape84                         ; 007DC
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 007E4
-        dc.l    dat_069_00140                   ; 007E8
-        dc.l    dat_069_00140                   ; 007EC
-        dc.l    dat_069_00140                   ; 007F0
+        dc.l    Shape85                         ; 007E8
+        dc.l    Shape85                         ; 007EC
+        dc.l    Shape85                         ; 007F0
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 007F8
-        dc.l    dat_056_00270                   ; 007FC
-        dc.l    dat_056_00270                   ; 00800
-        dc.l    dat_056_00270                   ; 00804
+        dc.l    Shape86                         ; 007FC
+        dc.l    Shape86                         ; 00800
+        dc.l    Shape86                         ; 00804
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 0080C
-        dc.l    dat_056_00270                   ; 00810
-        dc.l    dat_056_00270                   ; 00814
-        dc.l    dat_056_00270                   ; 00818
+        dc.l    Shape86                         ; 00810
+        dc.l    Shape86                         ; 00814
+        dc.l    Shape86                         ; 00818
 	dc.b	$00,$00,$00,$00
         dc.l    DrawSceneryPlain                ; 00820
-        dc.l    dat_055_0042E                   ; 00824
-        dc.l    dat_055_0042E                   ; 00828
-        dc.l    dat_055_0042E                   ; 0082C
-        dc.l    dat_055_004CE                   ; 00830
+        dc.l    Shape88                         ; 00824
+        dc.l    Shape88                         ; 00828
+        dc.l    Shape88                         ; 0082C
+        dc.l    Shape88_004CE                   ; 00830
         dc.l    DrawGroundShapeFar              ; 00834
-        dc.l    dat_070_00036                   ; 00838
-        dc.l    dat_070_00036                   ; 0083C
-        dc.l    dat_070_00036                   ; 00840
+        dc.l    Shape89                         ; 00838
+        dc.l    Shape89                         ; 0083C
+        dc.l    Shape89                         ; 00840
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 00848
-        dc.l    dat_070_000F0                   ; 0084C
-        dc.l    dat_070_000F0                   ; 00850
-        dc.l    dat_070_000F0                   ; 00854
+        dc.l    Shape90                         ; 0084C
+        dc.l    Shape90                         ; 00850
+        dc.l    Shape90                         ; 00854
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 0085C
-        dc.l    dat_054_001B2                   ; 00860
-        dc.l    dat_054_001B2                   ; 00864
-        dc.l    dat_054_001B2                   ; 00868
+        dc.l    Shape91                         ; 00860
+        dc.l    Shape91                         ; 00864
+        dc.l    Shape91                         ; 00868
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00870
-        dc.l    dat_054_0026C                   ; 00874
-        dc.l    dat_054_0026C                   ; 00878
-        dc.l    dat_054_0026C                   ; 0087C
+        dc.l    Shape92                         ; 00874
+        dc.l    Shape92                         ; 00878
+        dc.l    Shape92                         ; 0087C
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 00884
-        dc.l    dat_070_001BA                   ; 00888
-        dc.l    dat_070_001BA                   ; 0088C
-        dc.l    dat_070_001BA                   ; 00890
+        dc.l    Shape93                         ; 00888
+        dc.l    Shape93                         ; 0088C
+        dc.l    Shape93                         ; 00890
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 00898
-        dc.l    dat_070_00224                   ; 0089C
-        dc.l    dat_070_00224                   ; 008A0
-        dc.l    dat_070_00224                   ; 008A4
+        dc.l    Shape94                         ; 0089C
+        dc.l    Shape94                         ; 008A0
+        dc.l    Shape94                         ; 008A4
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 008AC
-        dc.l    dat_070_0028E                   ; 008B0
-        dc.l    dat_070_0028E                   ; 008B4
-        dc.l    dat_070_0028E                   ; 008B8
+        dc.l    Shape95                         ; 008B0
+        dc.l    Shape95                         ; 008B4
+        dc.l    Shape95                         ; 008B8
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 008C0
-        dc.l    dat_070_00676                   ; 008C4
-        dc.l    dat_070_00676                   ; 008C8
-        dc.l    dat_070_00676                   ; 008CC
+        dc.l    Shape96                         ; 008C4
+        dc.l    Shape96                         ; 008C8
+        dc.l    Shape96                         ; 008CC
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 008D4
-        dc.l    dat_070_002F8                   ; 008D8
-        dc.l    dat_070_002F8                   ; 008DC
-        dc.l    dat_070_002F8                   ; 008E0
+        dc.l    Shape97                         ; 008D8
+        dc.l    Shape97                         ; 008DC
+        dc.l    Shape97                         ; 008E0
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 008E8
-        dc.l    dat_070_00390                   ; 008EC
-        dc.l    dat_070_00390                   ; 008F0
-        dc.l    dat_070_00390                   ; 008F4
+        dc.l    Shape98                         ; 008EC
+        dc.l    Shape98                         ; 008F0
+        dc.l    Shape98                         ; 008F4
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 008FC
-        dc.l    dat_070_003FA                   ; 00900
-        dc.l    dat_070_003FA                   ; 00904
-        dc.l    dat_070_003FA                   ; 00908
+        dc.l    Shape99                         ; 00900
+        dc.l    Shape99                         ; 00904
+        dc.l    Shape99                         ; 00908
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 00910
-        dc.l    dat_070_00464                   ; 00914
-        dc.l    dat_070_00464                   ; 00918
-        dc.l    dat_070_00464                   ; 0091C
+        dc.l    Shape100                        ; 00914
+        dc.l    Shape100                        ; 00918
+        dc.l    Shape100                        ; 0091C
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 00924
-        dc.l    dat_070_004CE                   ; 00928
-        dc.l    dat_070_004CE                   ; 0092C
-        dc.l    dat_070_004CE                   ; 00930
+        dc.l    Shape101                        ; 00928
+        dc.l    Shape101                        ; 0092C
+        dc.l    Shape101                        ; 00930
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 00938
-        dc.l    dat_070_00538                   ; 0093C
-        dc.l    dat_070_00538                   ; 00940
-        dc.l    dat_070_00538                   ; 00944
+        dc.l    Shape102                        ; 0093C
+        dc.l    Shape102                        ; 00940
+        dc.l    Shape102                        ; 00944
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 0094C
-        dc.l    dat_070_005A2                   ; 00950
-        dc.l    dat_070_005A2                   ; 00954
-        dc.l    dat_070_005A2                   ; 00958
+        dc.l    Shape103                        ; 00950
+        dc.l    Shape103                        ; 00954
+        dc.l    Shape103                        ; 00958
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 00960
-        dc.l    dat_070_0060C                   ; 00964
-        dc.l    dat_070_0060C                   ; 00968
-        dc.l    dat_070_0060C                   ; 0096C
+        dc.l    Shape104                        ; 00964
+        dc.l    Shape104                        ; 00968
+        dc.l    Shape104                        ; 0096C
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 00974
-        dc.l    dat_070_0070E                   ; 00978
-        dc.l    dat_070_0070E                   ; 0097C
-        dc.l    dat_070_0070E                   ; 00980
+        dc.l    Shape105                        ; 00978
+        dc.l    Shape105                        ; 0097C
+        dc.l    Shape105                        ; 00980
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 00988
-        dc.l    dat_070_007A6                   ; 0098C
-        dc.l    dat_070_007A6                   ; 00990
-        dc.l    dat_070_007A6                   ; 00994
+        dc.l    Shape106                        ; 0098C
+        dc.l    Shape106                        ; 00990
+        dc.l    Shape106                        ; 00994
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 0099C
-        dc.l    dat_070_00810                   ; 009A0
-        dc.l    dat_070_00810                   ; 009A4
-        dc.l    dat_070_00810                   ; 009A8
+        dc.l    Shape107                        ; 009A0
+        dc.l    Shape107                        ; 009A4
+        dc.l    Shape107                        ; 009A8
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 009B0
-        dc.l    dat_070_008A8                   ; 009B4
-        dc.l    dat_070_008A8                   ; 009B8
-        dc.l    dat_070_008A8                   ; 009BC
+        dc.l    Shape108                        ; 009B4
+        dc.l    Shape108                        ; 009B8
+        dc.l    Shape108                        ; 009BC
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 009C4
-        dc.l    dat_070_00912                   ; 009C8
-        dc.l    dat_070_00912                   ; 009CC
-        dc.l    dat_070_00912                   ; 009D0
+        dc.l    Shape109                        ; 009C8
+        dc.l    Shape109                        ; 009CC
+        dc.l    Shape109                        ; 009D0
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 009D8
-        dc.l    dat_070_0097C                   ; 009DC
-        dc.l    dat_070_0097C                   ; 009E0
-        dc.l    dat_070_0097C                   ; 009E4
+        dc.l    Shape110                        ; 009DC
+        dc.l    Shape110                        ; 009E0
+        dc.l    Shape110                        ; 009E4
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 009EC
-        dc.l    dat_070_00A14                   ; 009F0
-        dc.l    dat_070_00A14                   ; 009F4
-        dc.l    dat_070_00A14                   ; 009F8
+        dc.l    Shape111                        ; 009F0
+        dc.l    Shape111                        ; 009F4
+        dc.l    Shape111                        ; 009F8
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 00A00
-        dc.l    dat_070_00AAC                   ; 00A04
-        dc.l    dat_070_00AAC                   ; 00A08
-        dc.l    dat_070_00AAC                   ; 00A0C
+        dc.l    Shape112                        ; 00A04
+        dc.l    Shape112                        ; 00A08
+        dc.l    Shape112                        ; 00A0C
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 00A14
-        dc.l    dat_070_00B44                   ; 00A18
-        dc.l    dat_070_00B44                   ; 00A1C
-        dc.l    dat_070_00B44                   ; 00A20
+        dc.l    Shape113                        ; 00A18
+        dc.l    Shape113                        ; 00A1C
+        dc.l    Shape113                        ; 00A20
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 00A28
-        dc.l    dat_070_00BDC                   ; 00A2C
-        dc.l    dat_070_00BDC                   ; 00A30
-        dc.l    dat_070_00BDC                   ; 00A34
+        dc.l    Shape114                        ; 00A2C
+        dc.l    Shape114                        ; 00A30
+        dc.l    Shape114                        ; 00A34
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 00A3C
-        dc.l    dat_070_00C74                   ; 00A40
-        dc.l    dat_070_00C74                   ; 00A44
-        dc.l    dat_070_00C74                   ; 00A48
+        dc.l    Shape115                        ; 00A40
+        dc.l    Shape115                        ; 00A44
+        dc.l    Shape115                        ; 00A48
 	dc.b	$00,$00,$00,$00
         dc.l    DrawGroundShapeFar              ; 00A50
-        dc.l    dat_070_00D0C                   ; 00A54
-        dc.l    dat_070_00D0C                   ; 00A58
-        dc.l    dat_070_00D0C                   ; 00A5C
+        dc.l    Shape116                        ; 00A54
+        dc.l    Shape116                        ; 00A58
+        dc.l    Shape116                        ; 00A5C
 	dc.b	$00,$00,$00,$00
         dc.l    DrawScenery                     ; 00A64
-        dc.l    dat_056_00000                   ; 00A68
-        dc.l    dat_056_00000                   ; 00A6C
-        dc.l    dat_056_00000                   ; 00A70
+        dc.l    Shape117                        ; 00A68
+        dc.l    Shape117                        ; 00A6C
+        dc.l    Shape117                        ; 00A70
 	dc.b	$00,$00,$00,$00
 
 ;-------------------------------------------------------------------------------
@@ -654,7 +654,7 @@ l_016_00AD0:
 DrawAnimated:
         lea.l   (ObjectTable).l,a1              ; 00AD2
         adda.w  (CurrentObjectOffset).l,a1      ; 00AD8
-        lea.l   (dat_058_00000).l,a0            ; 00ADE
+        lea.l   (ParachuteModel).l,a0           ; 00ADE
         move.w  $4c(a1),d0                      ; 00AE4
         ble.b   l_016_00B28                     ; 00AE8
         cmpi.w  #$5,d0                          ; 00AEA
@@ -663,25 +663,25 @@ DrawAnimated:
         beq.b   l_016_00B12                     ; 00AF4
         cmpi.w  #$2,d0                          ; 00AF6
         beq.b   l_016_00B12                     ; 00AFA
-        move.l  #dat_058_00020,(ShapeNow).l     ; 00AFC
-        move.l  #dat_058_00020,(ShapeNext).l    ; 00B06
+        move.l  #Parachute_00020,(ShapeNow).l   ; 00AFC
+        move.l  #Parachute_00020,(ShapeNext).l  ; 00B06
         bra.b   l_016_00AB6                     ; 00B10
 l_016_00B12:
-        move.l  #dat_058_0002E,(ShapeNow).l     ; 00B12
-        move.l  #dat_058_0002E,(ShapeNext).l    ; 00B1C
+        move.l  #Parachute_0002E,(ShapeNow).l   ; 00B12
+        move.l  #Parachute_0002E,(ShapeNext).l  ; 00B1C
         bra.b   l_016_00AB6                     ; 00B26
 l_016_00B28:
         blt.b   l_016_00B42                     ; 00B28
-        move.l  #dat_058_00040,(ShapeNow).l     ; 00B2A
-        move.l  #dat_058_00040,(ShapeNext).l    ; 00B34
+        move.l  #Parachute_00040,(ShapeNow).l   ; 00B2A
+        move.l  #Parachute_00040,(ShapeNext).l  ; 00B34
         bra.w   l_016_00AB6                     ; 00B3E
 l_016_00B42:
-        move.l  #dat_058_0003C,(ShapeNow).l     ; 00B42
-        move.l  #dat_058_0003C,(ShapeNext).l    ; 00B4C
+        move.l  #Parachute_0003C,(ShapeNow).l   ; 00B42
+        move.l  #Parachute_0003C,(ShapeNext).l  ; 00B4C
         bra.w   l_016_00AB6                     ; 00B56
 l_016_00B5A:
-        move.l  #dat_058_00000,(ShapeNow).l     ; 00B5A
-        move.l  #dat_058_00000,(ShapeNext).l    ; 00B64
+        move.l  #ParachuteModel,(ShapeNow).l    ; 00B5A
+        move.l  #ParachuteModel,(ShapeNext).l   ; 00B64
         bra.w   l_016_00AB6                     ; 00B6E
 
 ;-------------------------------------------------------------------------------
@@ -691,7 +691,7 @@ l_016_00B5A:
 DrawParachute:
         lea.l   (ObjectTable).l,a1              ; 00B72
         adda.w  (CurrentObjectOffset).l,a1      ; 00B78
-        lea.l   (dat_058_002A6).l,a0            ; 00B7E
+        lea.l   (RescuePodModel).l,a0           ; 00B7E
         move.w  $4c(a1),d0                      ; 00B84
         ble.b   l_016_00BD4                     ; 00B88
         ori.b   #$1,$7c(a1)                     ; 00B8A
@@ -701,28 +701,28 @@ DrawParachute:
         beq.b   l_016_00BBC                     ; 00B9C
         cmpi.w  #$2,d0                          ; 00B9E
         beq.b   l_016_00BBC                     ; 00BA2
-        move.l  #dat_058_002C6,(ShapeNow).l     ; 00BA4
-        move.l  #dat_058_002C6,(ShapeNext).l    ; 00BAE
+        move.l  #RescuePod_002C6,(ShapeNow).l   ; 00BA4
+        move.l  #RescuePod_002C6,(ShapeNext).l  ; 00BAE
         bra.w   l_016_00AB6                     ; 00BB8
 l_016_00BBC:
-        move.l  #dat_058_002D4,(ShapeNow).l     ; 00BBC
-        move.l  #dat_058_002D4,(ShapeNext).l    ; 00BC6
+        move.l  #RescuePod_002D4,(ShapeNow).l   ; 00BBC
+        move.l  #RescuePod_002D4,(ShapeNext).l  ; 00BC6
         bra.w   l_016_00AB6                     ; 00BD0
 l_016_00BD4:
         blt.b   l_016_00BF8                     ; 00BD4
         move.b  $7c(a1),d0                      ; 00BD6
         andi.b  #$f,d0                          ; 00BDA
         beq.b   l_016_00BF8                     ; 00BDE
-        move.l  #dat_058_002A2,(ShapeNow).l     ; 00BE0
-        move.l  #dat_058_002A2,(ShapeNext).l    ; 00BEA
+        move.l  #Parachute_002A2,(ShapeNow).l   ; 00BE0
+        move.l  #Parachute_002A2,(ShapeNext).l  ; 00BEA
         bra.w   l_016_00AB6                     ; 00BF4
 l_016_00BF8:
-        move.l  #dat_058_002E2,(ShapeNow).l     ; 00BF8
-        move.l  #dat_058_002E2,(ShapeNext).l    ; 00C02
+        move.l  #RescuePod_002E2,(ShapeNow).l   ; 00BF8
+        move.l  #RescuePod_002E2,(ShapeNext).l  ; 00C02
         bra.w   l_016_00AB6                     ; 00C0C
 l_016_00C10:
-        move.l  #dat_058_002A6,(ShapeNow).l     ; 00C10
-        move.l  #dat_058_002A6,(ShapeNext).l    ; 00C1A
+        move.l  #RescuePodModel,(ShapeNow).l    ; 00C10
+        move.l  #RescuePodModel,(ShapeNext).l   ; 00C1A
         bra.w   l_016_00AB6                     ; 00C24
 sub_016_00C28:
         rts                                     ; 00C28

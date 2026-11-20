@@ -112,7 +112,7 @@ l_006_0012C:
 sub_006_00132:
         swap    d0                              ; 00132
         move.w  #$4005,d0                       ; 00134
-        jsr     (sub_020_00954).l               ; 00138
+        jsr     (StartWarning).l                ; 00138
         swap    d0                              ; 0013E
         cmpi.b  #$6,(GameMode).l                ; 00140
         bne.b   ResetPlayerAircraft             ; 00148

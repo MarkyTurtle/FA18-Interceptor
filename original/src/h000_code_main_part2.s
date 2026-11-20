@@ -649,7 +649,7 @@ l_000_04B5A:
         moveq   #$10,d0                         ; 04B96
         move.l  d0,-(a7)                        ; 04B98
         move.l  #$a0,-(a7)                      ; 04B9A
-        jsr     (sub_000_0A042).l               ; 04BA0
+        jsr     (PlayEffect).l                  ; 04BA0
         lea.l   $24(a7),a7                      ; 04BA6
         bra.w   l_000_04DCE                     ; 04BAA
 l_000_04BAE:
@@ -676,7 +676,7 @@ l_000_04BAE:
         moveq   #$a,d0                          ; 04BEA
         move.l  d0,-(a7)                        ; 04BEC
         move.l  #$144,-(a7)                     ; 04BEE
-        jsr     (sub_000_0A042).l               ; 04BF4
+        jsr     (PlayEffect).l                  ; 04BF4
         lea.l   $24(a7),a7                      ; 04BFA
         bra.w   l_000_04DCE                     ; 04BFE
 l_000_04C02:
@@ -698,7 +698,7 @@ l_000_04C02:
         move.l  d0,-(a7)                        ; 04C2A
         moveq   #$7c,d0                         ; 04C2C
         move.l  d0,-(a7)                        ; 04C2E
-        jsr     (sub_000_0A042).l               ; 04C30
+        jsr     (PlayEffect).l                  ; 04C30
         lea.l   $24(a7),a7                      ; 04C36
         move.b  #$3,(dat_071_0025A).l           ; 04C3A
         bra.w   l_000_04DCE                     ; 04C42
@@ -720,7 +720,7 @@ l_000_04C46:
         moveq   #$3,d0                          ; 04C6C
         move.l  d0,-(a7)                        ; 04C6E
         move.l  #$e5,-(a7)                      ; 04C70
-        jsr     (sub_000_0A042).l               ; 04C76
+        jsr     (PlayEffect).l                  ; 04C76
         lea.l   $24(a7),a7                      ; 04C7C
         bra.w   l_000_04DCE                     ; 04C80
 l_000_04C84:
@@ -741,7 +741,7 @@ l_000_04C84:
         moveq   #$4,d0                          ; 04CAA
         move.l  d0,-(a7)                        ; 04CAC
         move.l  #$c0,-(a7)                      ; 04CAE
-        jsr     (sub_000_0A042).l               ; 04CB4
+        jsr     (PlayEffect).l                  ; 04CB4
         lea.l   $24(a7),a7                      ; 04CBA
         bra.w   l_000_04DCE                     ; 04CBE
 l_000_04CC2:
@@ -764,7 +764,7 @@ l_000_04CC2:
         moveq   #$f,d0                          ; 04CEC
         move.l  d0,-(a7)                        ; 04CEE
         move.l  #$1f4,-(a7)                     ; 04CF0
-        jsr     (sub_000_0A042).l               ; 04CF6
+        jsr     (PlayEffect).l                  ; 04CF6
         lea.l   $24(a7),a7                      ; 04CFC
         bra.w   l_000_04DCE                     ; 04D00
 l_000_04D04:
@@ -784,7 +784,7 @@ l_000_04D04:
         moveq   #$a,d0                          ; 04D28
         move.l  d0,-(a7)                        ; 04D2A
         move.l  #$1f4,-(a7)                     ; 04D2C
-        jsr     (sub_000_0A042).l               ; 04D32
+        jsr     (PlayEffect).l                  ; 04D32
         lea.l   $24(a7),a7                      ; 04D38
         bra.w   l_000_04DCE                     ; 04D3C
 l_000_04D40:
@@ -805,7 +805,7 @@ l_000_04D40:
         moveq   #$8,d0                          ; 04D66
         move.l  d0,-(a7)                        ; 04D68
         move.l  #$190,-(a7)                     ; 04D6A
-        jsr     (sub_000_0A042).l               ; 04D70
+        jsr     (PlayEffect).l                  ; 04D70
         lea.l   $24(a7),a7                      ; 04D76
         bra.b   l_000_04DCE                     ; 04D7A
 l_000_04D7C:
@@ -826,7 +826,7 @@ l_000_04D7C:
         moveq   #$a,d0                          ; 04DA2
         move.l  d0,-(a7)                        ; 04DA4
         move.l  #$1f4,-(a7)                     ; 04DA6
-        jsr     (sub_000_0A042).l               ; 04DAC
+        jsr     (PlayEffect).l                  ; 04DAC
         lea.l   $24(a7),a7                      ; 04DB2
         bra.b   l_000_04DCE                     ; 04DB6
 l_000_04DB8:
@@ -856,7 +856,7 @@ l_000_04DD4:
         ext.l   d1                              ; 04E08
         move.l  d1,-(a7)                        ; 04E0A
         move.l  d0,-(a7)                        ; 04E0C
-        jsr     (sub_000_0A0DC).l               ; 04E0E
+        jsr     (PlaySweep).l                   ; 04E0E
         addq.l  #$8,a7                          ; 04E14
         bra.b   l_000_04E3A                     ; 04E16
 l_000_04E18:
@@ -869,7 +869,7 @@ l_000_04E18:
         ext.l   d1                              ; 04E2C
         move.l  d1,-(a7)                        ; 04E2E
         move.l  d0,-(a7)                        ; 04E30
-        jsr     (sub_000_0A0DC).l               ; 04E32
+        jsr     (PlaySweep).l                   ; 04E32
         addq.l  #$8,a7                          ; 04E38
 l_000_04E3A:
         clr.b   (dat_071_00188).l               ; 04E3A
@@ -984,7 +984,7 @@ l_000_04F70:
         ext.l   d0                              ; 04F9E
         move.l  d0,-(a7)                        ; 04FA0
         move.l  d1,-(a7)                        ; 04FA2
-        jsr     (sub_000_09E46).l               ; 04FA4
+        jsr     (PlayEngineSound).l             ; 04FA4
         addq.l  #$8,a7                          ; 04FAA
         bra.w   l_000_05284                     ; 04FAC
 l_000_04FB0:
@@ -997,7 +997,7 @@ l_000_04FB0:
         ext.l   d1                              ; 04FC8
         move.l  d1,-(a7)                        ; 04FCA
         move.l  d0,-(a7)                        ; 04FCC
-        jsr     (sub_000_09E46).l               ; 04FCE
+        jsr     (PlayEngineSound).l             ; 04FCE
         addq.l  #$8,a7                          ; 04FD4
         bra.w   l_000_05284                     ; 04FD6
 l_000_04FDA:
@@ -1010,7 +1010,7 @@ l_000_04FDA:
         ext.l   d1                              ; 04FF2
         move.l  d1,-(a7)                        ; 04FF4
         move.l  d0,-(a7)                        ; 04FF6
-        jsr     (sub_000_09E46).l               ; 04FF8
+        jsr     (PlayEngineSound).l             ; 04FF8
         addq.l  #$8,a7                          ; 04FFE
         bra.w   l_000_05284                     ; 05000
 l_000_05004:
@@ -1042,7 +1042,7 @@ l_000_05044:
         ext.l   d1                              ; 05054
         move.l  d1,-(a7)                        ; 05056
         move.l  d0,-(a7)                        ; 05058
-        jsr     (sub_000_09E46).l               ; 0505A
+        jsr     (PlayEngineSound).l             ; 0505A
         addq.l  #$8,a7                          ; 05060
         bra.w   l_000_05284                     ; 05062
 l_000_05066:
@@ -1092,7 +1092,7 @@ l_000_050DA:
         asr.l   #$2,d1                          ; 050E6
         move.l  d1,-(a7)                        ; 050E8
         move.l  d0,-(a7)                        ; 050EA
-        jsr     (sub_000_09E46).l               ; 050EC
+        jsr     (PlayEngineSound).l             ; 050EC
         addq.l  #$8,a7                          ; 050F2
         bra.w   l_000_05284                     ; 050F4
 l_000_050F8:
@@ -1106,7 +1106,7 @@ l_000_050F8:
         asr.l   #$1,d1                          ; 05112
         move.l  d1,-(a7)                        ; 05114
         move.l  d0,-(a7)                        ; 05116
-        jsr     (sub_000_09E46).l               ; 05118
+        jsr     (PlayEngineSound).l             ; 05118
         addq.l  #$8,a7                          ; 0511E
         bra.w   l_000_05284                     ; 05120
 l_000_05124:
@@ -1151,7 +1151,7 @@ l_000_0518E:
         ext.l   d1                              ; 0519E
         move.l  d1,-(a7)                        ; 051A0
         move.l  d0,-(a7)                        ; 051A2
-        jsr     (sub_000_09E46).l               ; 051A4
+        jsr     (PlayEngineSound).l             ; 051A4
         addq.l  #$8,a7                          ; 051AA
         bra.w   l_000_05284                     ; 051AC
 l_000_051B0:
@@ -1270,7 +1270,7 @@ l_000_052EC:
         ext.l   d1                              ; 052FC
         move.l  d1,-(a7)                        ; 052FE
         move.l  d0,-(a7)                        ; 05300
-        jsr     (sub_000_09E46).l               ; 05302
+        jsr     (PlayEngineSound).l             ; 05302
         addq.l  #$8,a7                          ; 05308
 l_000_0530A:
         unlk    a6                              ; 0530A
@@ -1680,14 +1680,14 @@ l_000_05836:
         moveq   #$2,d0                          ; 05852
         move.l  d0,-(a7)                        ; 05854
         move.l  a0,-(a7)                        ; 05856
-        bsr.w   sub_000_05B7A                   ; 05858
+        bsr.w   EaseToZero                      ; 05858
         addq.l  #$8,a7                          ; 0585C
         bra.b   l_000_0586E                     ; 0585E
 l_000_05860:
         moveq   #$1,d0                          ; 05860
         move.l  d0,-(a7)                        ; 05862
         move.l  -$e(a6),-(a7)                   ; 05864
-        bsr.w   sub_000_05B7A                   ; 05868
+        bsr.w   EaseToZero                      ; 05868
         addq.l  #$8,a7                          ; 0586C
 l_000_0586E:
         tst.w   -$1a(a6)                        ; 0586E
@@ -1728,7 +1728,7 @@ l_000_058D0:
         moveq   #$1,d0                          ; 058D0
         move.l  d0,-(a7)                        ; 058D2
         move.l  -$12(a6),-(a7)                  ; 058D4
-        bsr.w   sub_000_05B7A                   ; 058D8
+        bsr.w   EaseToZero                      ; 058D8
         addq.l  #$8,a7                          ; 058DC
         bra.b   l_000_05912                     ; 058DE
 l_000_058E0:
@@ -1748,7 +1748,7 @@ l_000_058F2:
         moveq   #$1,d0                          ; 05906
         move.l  d0,-(a7)                        ; 05908
         move.l  a0,-(a7)                        ; 0590A
-        bsr.w   sub_000_05B7A                   ; 0590C
+        bsr.w   EaseToZero                      ; 0590C
         addq.l  #$8,a7                          ; 05910
 l_000_05912:
         tst.w   -$1c(a6)                        ; 05912
@@ -1880,12 +1880,12 @@ l_000_05A84:
         moveq   #$1,d0                          ; 05A84
         move.l  d0,-(a7)                        ; 05A86
         move.l  -$12(a6),-(a7)                  ; 05A88
-        bsr.w   sub_000_05B7A                   ; 05A8C
+        bsr.w   EaseToZero                      ; 05A8C
         addq.l  #$8,a7                          ; 05A90
         moveq   #$1,d0                          ; 05A92
         move.l  d0,-(a7)                        ; 05A94
         move.l  -$16(a6),-(a7)                  ; 05A96
-        bsr.w   sub_000_05B7A                   ; 05A9A
+        bsr.w   EaseToZero                      ; 05A9A
         addq.l  #$8,a7                          ; 05A9E
         bra.b   l_000_05AE8                     ; 05AA0
 l_000_05AA2:
@@ -1908,7 +1908,7 @@ l_000_05AC8:
         moveq   #$1,d0                          ; 05AD0
         move.l  d0,-(a7)                        ; 05AD2
         move.l  a0,-(a7)                        ; 05AD4
-        bsr.w   sub_000_05B7A                   ; 05AD6
+        bsr.w   EaseToZero                      ; 05AD6
         addq.l  #$8,a7                          ; 05ADA
         bra.b   l_000_05AE8                     ; 05ADC
 l_000_05ADE:
@@ -1952,7 +1952,12 @@ l_000_05B72:
         movem.l (a7)+,d2-d3/a2-a3               ; 05B72
         unlk    a6                              ; 05B76
         rts                                     ; 05B78
-sub_000_05B7A:
+
+;-------------------------------------------------------------------------------
+; EaseToZero - Moves the word at a0 towards 0 by its value shifted right by the given amount
+; (at least 1 step), for the controls' return to centre.
+;-------------------------------------------------------------------------------
+EaseToZero:
         link.w  a6,#$fffe                       ; 05B7A
         movea.l $8(a6),a0                       ; 05B7E
         move.w  (a0),d0                         ; 05B82
@@ -3956,7 +3961,7 @@ l_000_0737E:
         move.l  d0,-(a7)                        ; 07420
         moveq   #$1c,d0                         ; 07422
         move.l  d0,-(a7)                        ; 07424
-        jsr     (sub_000_0A0DC).l               ; 07426
+        jsr     (PlaySweep).l                   ; 07426
         addq.l  #$8,a7                          ; 0742C
 l_000_0742E:
         move.b  (dat_071_0025B).l,d0            ; 0742E
@@ -4011,7 +4016,7 @@ l_000_074B6:
         move.l  d0,-(a7)                        ; 074B8
         moveq   #$1c,d0                         ; 074BA
         move.l  d0,-(a7)                        ; 074BC
-        jsr     (sub_000_0A0DC).l               ; 074BE
+        jsr     (PlaySweep).l                   ; 074BE
         addq.l  #$8,a7                          ; 074C4
 l_000_074C6:
         move.w  (Player_60).l,d0                ; 074C6

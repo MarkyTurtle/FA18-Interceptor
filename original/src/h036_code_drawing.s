@@ -1129,7 +1129,7 @@ sub_036_00BAA:
         movea.w #$25,a5                         ; 00BDA
         move.w  #$c,d7                          ; 00BDE
         add.l   (PanelShakeOffset).l,d1         ; 00BE2
-        jsr     (sub_037_00A22).l               ; 00BE8
+        jsr     (ClipPanelBlit).l               ; 00BE8
         blt.b   l_036_00BA8                     ; 00BEE
         tst.w   d5                              ; 00BF0
         beq.b   l_036_00BFA                     ; 00BF2

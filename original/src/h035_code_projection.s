@@ -226,7 +226,13 @@ l_035_001D4:
         unlk    a6                              ; 001D4
         moveq   #$0,d0                          ; 001D6
         rts                                     ; 001D8
-sub_035_001DA:
+
+;-------------------------------------------------------------------------------
+; ClipDrawLine3D - Draws the 3D line whose two turned end points are at dat_072_04202 (x, y, z
+; words each): clips it against the view's four edge planes and the near plane (dat_071_0049A),
+; projects it and draws it (DrawLine). Used by all the shapes' line operations.
+;-------------------------------------------------------------------------------
+ClipDrawLine3D:
         link.w  a6,#$fffc                       ; 001DA
         lea.l   (dat_072_04202).l,a1            ; 001DE
         lea.l   (dat_072_03000).l,a0            ; 001E4

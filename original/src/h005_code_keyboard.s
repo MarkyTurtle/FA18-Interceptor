@@ -404,7 +404,7 @@ l_005_00568:
         move.b  #$0,(dat_071_00179).l           ; 00580
         bra.w   sub_005_00E6E                   ; 00588
 Key_T:
-        jsr     (sub_039_01886).l               ; 0058C
+        jsr     (KeyBeep).l                     ; 0058C
         bset    #$7,(JoyEvents).l               ; 00592
         move.b  #$1,(dat_071_00189).l           ; 0059A
         bra.w   l_005_01624                     ; 005A2
@@ -412,7 +412,7 @@ Key_T:
         dc.l    CameraFollows                   ; 005A8
 	dc.b	$60,$00,$10,$4E
 Key_R:
-        jsr     (sub_039_01886).l               ; 005B0
+        jsr     (KeyBeep).l                     ; 005B0
         bset    #$6,(JoyEvents).l               ; 005B6
         lea.l   (ObjectTable).l,a0              ; 005BE
         adda.w  (ViewObject).l,a0               ; 005C4
@@ -821,7 +821,7 @@ l_005_009AA:
         bra.w   l_005_01624                     ; 009C0
 Key_Backslash_Backspace:
         bsr.w   sub_005_009EA                   ; 009C4
-        jsr     (sub_039_01886).l               ; 009C8
+        jsr     (KeyBeep).l                     ; 009C8
         bset    #$0,(dat_071_0036B).l           ; 009CE
         move.b  #$3,(dat_071_0020F).l           ; 009D6
         eori.w  #$800,(ObjectTable).l           ; 009DE
@@ -835,7 +835,7 @@ Key_A:
         bset    #$1,(JoyEvents).l               ; 009FE
         cmpi.b  #$11,(PlayerType).l             ; 00A06
         bne.w   l_005_01624                     ; 00A0E
-        jsr     (sub_039_01886).l               ; 00A12
+        jsr     (KeyBeep).l                     ; 00A12
         eori.w  #$8000,(Player_02).l            ; 00A18
         bchg    #$7,(dat_071_00217).l           ; 00A20
         move.b  #$3,(dat_071_00215).l           ; 00A28
@@ -844,7 +844,7 @@ Key_A:
         beq.b   l_005_00A40                     ; 00A3A
         move.w  #$4023,d0                       ; 00A3C
 l_005_00A40:
-        jsr     (sub_020_00954).l               ; 00A40
+        jsr     (StartWarning).l                ; 00A40
         swap    d0                              ; 00A46
         bra.w   l_005_01624                     ; 00A48
 Key_KPEnter:
@@ -1204,17 +1204,17 @@ Key_Return:
         tst.b   (dat_071_0016A).l               ; 00F76
         bge.b   l_005_00F90                     ; 00F7C
 l_005_00F7E:
-        jsr     (sub_039_01886).l               ; 00F7E
+        jsr     (KeyBeep).l                     ; 00F7E
         bset    #$3,(Player_02).l               ; 00F84
         bra.w   l_005_01624                     ; 00F8C
 l_005_00F90:
         swap    d0                              ; 00F90
         move.w  #$401f,d0                       ; 00F92
-        jsr     (sub_020_00954).l               ; 00F96
+        jsr     (StartWarning).l                ; 00F96
         swap    d0                              ; 00F9C
         bra.w   l_005_01624                     ; 00F9E
 l_005_00FA2:
-        jsr     (sub_039_01886).l               ; 00FA2
+        jsr     (KeyBeep).l                     ; 00FA2
         move.b  (Player_7C).l,d4                ; 00FA8
         andi.b  #$f,d4                          ; 00FAE
         bne.w   l_005_01624                     ; 00FB2
@@ -1242,7 +1242,7 @@ Key_G:
         move.b  #$83,(dat_071_00255).l          ; 01022
         bra.w   l_005_01624                     ; 0102A
 l_005_0102E:
-        jsr     (sub_039_01886).l               ; 0102E
+        jsr     (KeyBeep).l                     ; 0102E
         bra.w   l_005_01624                     ; 01034
 l_005_01038:
         cmpi.w  #$59,d0                         ; 01038
@@ -1542,7 +1542,7 @@ l_005_0139C:
 Key_S:
         cmpi.b  #$7d,(GameMode).l               ; 0143A
         bne.b   l_005_01452                     ; 01442
-        jsr     (sub_039_01886).l               ; 01444
+        jsr     (KeyBeep).l                     ; 01444
         eori.w  #$1000,(Object4_02).l           ; 0144A
 l_005_01452:
         bra.w   l_005_01624                     ; 01452
@@ -1592,7 +1592,7 @@ l_005_014F4:
         clr.b   (dat_071_0021D).l               ; 014F4
         move.w  #$4027,d0                       ; 014FA
 l_005_014FE:
-        jsr     (sub_020_00954).l               ; 014FE
+        jsr     (StartWarning).l                ; 014FE
         move.w  d4,d0                           ; 01504
         bra.w   l_005_01624                     ; 01506
 l_005_0150A:
@@ -1613,7 +1613,7 @@ l_005_0153A:
         move.l  d0,-(a7)                        ; 01546
         moveq   #$1c,d0                         ; 01548
         move.l  d0,-(a7)                        ; 0154A
-        jsr     (sub_000_0A0DC).l               ; 0154C
+        jsr     (PlaySweep).l                   ; 0154C
         addq.l  #$8,a7                          ; 01552
         move.w  (a7)+,d0                        ; 01554
 l_005_01556:
@@ -1631,7 +1631,7 @@ l_005_01582:
         clr.b   (dat_071_0021C).l               ; 01582
         move.w  #$4029,d0                       ; 01588
 l_005_0158C:
-        jsr     (sub_020_00954).l               ; 0158C
+        jsr     (StartWarning).l                ; 0158C
         move.w  d4,d0                           ; 01592
         bra.w   l_005_01624                     ; 01594
 	dc.b	$60,$00,$00,$8A
@@ -1649,7 +1649,7 @@ Key_J:
         lea.l   (dat_071_00180).l,a0            ; 015DA
         bset    #$3,(dat_071_0036B).l           ; 015E0
         move.b  #$3,(dat_071_00210).l           ; 015E8
-        jsr     (sub_039_01886).l               ; 015F0
+        jsr     (KeyBeep).l                     ; 015F0
         lea.l   (dat_071_00285).l,a0            ; 015F6
 sub_005_015FC:
         tst.b   (a0)                            ; 015FC

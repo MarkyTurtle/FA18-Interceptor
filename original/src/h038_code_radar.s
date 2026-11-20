@@ -96,7 +96,7 @@ DrawRadar:
         movea.w #$4,a4                          ; 0010E
         move.w  #$8,d7                          ; 00112
         add.l   (PanelShakeOffset).l,d1         ; 00116
-        jsr     (sub_037_00A22).l               ; 0011C
+        jsr     (ClipPanelBlit).l               ; 0011C
         blt.b   l_038_000FC                     ; 00122
         cmpi.b  #$1,(PanelRedraw).l             ; 00124
         bgt.b   l_038_00148                     ; 0012C

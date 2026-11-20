@@ -220,7 +220,7 @@ l_022_00288:
         ori.l   #$40,(SoundRequests).l          ; 002A4
         move.w  #$d02a,d0                       ; 002AE
 l_022_002B2:
-        jsr     (sub_020_00954).l               ; 002B2
+        jsr     (StartWarning).l                ; 002B2
         bra.b   l_022_0031E                     ; 002B8
 l_022_002BA:
         move.w  (CurrentObject).l,d0            ; 002BA
@@ -233,7 +233,7 @@ l_022_002BA:
         cmpi.w  #$d00a,(CurrentWarning).l       ; 002D8
         beq.b   l_022_002F6                     ; 002E0
         move.w  #$d00a,d0                       ; 002E2
-        jsr     (sub_020_00954).l               ; 002E6
+        jsr     (StartWarning).l                ; 002E6
         ori.l   #$80,(SoundRequests).l          ; 002EC
 l_022_002F6:
         btst    #$1,$20(a1)                     ; 002F6
@@ -554,7 +554,7 @@ l_022_0065E:
         move.l  a1,-(a7)                        ; 00682
         move.l  #$30,-(a7)                      ; 00684
         move.l  #$1c,-(a7)                      ; 0068A
-        jsr     (sub_000_0A0DC).l               ; 00690
+        jsr     (PlaySweep).l                   ; 00690
         addq.l  #$8,a7                          ; 00696
         movea.l (a7)+,a1                        ; 00698
 l_022_0069A:
@@ -582,7 +582,7 @@ l_022_006E6:
 l_022_006F8:
         swap    d0                              ; 006F8
         move.w  d1,d0                           ; 006FA
-        jsr     (sub_020_00954).l               ; 006FC
+        jsr     (StartWarning).l                ; 006FC
         swap    d0                              ; 00702
         move.b  #$1,(ShakeKind).l               ; 00704
         bra.w   l_022_00816                     ; 0070C

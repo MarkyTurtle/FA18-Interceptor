@@ -179,14 +179,14 @@ l_029_00200:
         move.w  -$4(a6),d2                      ; 00206
         move.w  -$2(a6),d3                      ; 0020A
         move.w  #$23e0,d4                       ; 0020E
-        jsr     (sub_028_010FA).l               ; 00212
+        jsr     (TurnToViewOffset).l            ; 00212
         move.w  -$4(a6),d2                      ; 00218
         move.w  -$2(a6),d3                      ; 0021C
         move.w  #$ef60,d4                       ; 00220
-        jsr     (sub_028_010FA).l               ; 00224
+        jsr     (TurnToViewOffset).l            ; 00224
         movem.l d0/a0,-(a7)                     ; 0022A
         move.w  #$8,(DrawColour).l              ; 0022E
-        jsr     (sub_035_001DA).l               ; 00236
+        jsr     (ClipDrawLine3D).l              ; 00236
         move.w  d0,d1                           ; 0023C
         movem.l (a7)+,d0/a0                     ; 0023E
         btst    #$0,-$7(a6)                     ; 00242
@@ -233,14 +233,14 @@ l_029_002C6:
         move.w  #$1440,d2                       ; 002CC
         move.w  -$2(a6),d3                      ; 002D0
         move.w  -$4(a6),d4                      ; 002D4
-        jsr     (sub_028_010FA).l               ; 002D8
+        jsr     (TurnToViewOffset).l            ; 002D8
         move.w  #$ea40,d2                       ; 002DE
         move.w  -$2(a6),d3                      ; 002E2
         move.w  -$4(a6),d4                      ; 002E6
-        jsr     (sub_028_010FA).l               ; 002EA
+        jsr     (TurnToViewOffset).l            ; 002EA
         movem.l d0/a0,-(a7)                     ; 002F0
         move.w  #$8,(DrawColour).l              ; 002F4
-        jsr     (sub_035_001DA).l               ; 002FC
+        jsr     (ClipDrawLine3D).l              ; 002FC
         move.w  d0,d1                           ; 00302
         movem.l (a7)+,d0/a0                     ; 00304
         btst    #$0,-$7(a6)                     ; 00308
@@ -298,7 +298,7 @@ l_029_00398:
         move.l  d0,-(a7)                        ; 003A8
         move.w  d6,-(a7)                        ; 003AA
         move.w  -$2(a6),d3                      ; 003AC
-        jsr     (sub_028_010FA).l               ; 003B0
+        jsr     (TurnToViewOffset).l            ; 003B0
         tst.w   (a7)                            ; 003B6
         beq.b   l_029_003FC                     ; 003B8
         move.w  #$3,(DrawColour).l              ; 003BA
@@ -377,7 +377,7 @@ sub_029_00592:
         swap    d2                              ; 005A2
         move.w  -$2(a6),d3                      ; 005A4
         swap    d4                              ; 005A8
-        jsr     (sub_028_010FA).l               ; 005AA
+        jsr     (TurnToViewOffset).l            ; 005AA
         movem.w (dat_072_04202).l,d0-d2         ; 005B0
         jsr     (ProjectPoint).l                ; 005B8
         bge.b   l_029_005C8                     ; 005BE

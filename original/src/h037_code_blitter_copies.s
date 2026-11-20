@@ -84,7 +84,7 @@ l_037_000E2:
         movea.w #$1,a5                          ; 000E8
         move.w  #$0,d7                          ; 000EC
         add.l   (PanelShakeOffset).l,d1         ; 000F0
-        bsr.w   sub_037_00A22                   ; 000F6
+        bsr.w   ClipPanelBlit                   ; 000F6
         blt.w   l_037_00148                     ; 000FA
         add.w   d7,d5                           ; 000FE
         add.w   d7,d7                           ; 00100
@@ -408,7 +408,7 @@ l_037_00504:
         movea.w #$23,a5                         ; 00520
         move.w  #$0,d7                          ; 00524
         add.l   (PanelShakeOffset).l,d1         ; 00528
-        bsr.w   sub_037_00A22                   ; 0052E
+        bsr.w   ClipPanelBlit                   ; 0052E
         blt.b   l_037_005B0                     ; 00532
         move.w  #$30a,d2                        ; 00534
         lea.l   (ObjectTable).l,a0              ; 00538
@@ -432,7 +432,7 @@ l_037_00560:
         movea.w #$25,a5                         ; 0057C
         move.w  #$12,d7                         ; 00580
         add.l   (PanelShakeOffset).l,d1         ; 00584
-        bsr.w   sub_037_00A22                   ; 0058A
+        bsr.w   ClipPanelBlit                   ; 0058A
         blt.b   l_037_005B0                     ; 0058E
         move.w  #$30a,d2                        ; 00590
         tst.b   (dat_071_00285).l               ; 00594
@@ -455,7 +455,7 @@ l_037_005B0:
         movea.w #$25,a5                         ; 005CC
         move.w  #$0,d7                          ; 005D0
         add.l   (PanelShakeOffset).l,d1         ; 005D4
-        bsr.w   sub_037_00A22                   ; 005DA
+        bsr.w   ClipPanelBlit                   ; 005DA
         blt.b   l_037_005AE                     ; 005DE
         move.w  #$30a,d2                        ; 005E0
         tst.b   (dat_071_0017B).l               ; 005E4
@@ -510,7 +510,7 @@ sub_037_00674:
         movea.w #$25,a5                         ; 00682
         move.w  #$0,d7                          ; 00686
         add.l   (PanelShakeOffset).l,d1         ; 0068A
-        bsr.w   sub_037_00A22                   ; 00690
+        bsr.w   ClipPanelBlit                   ; 00690
         blt.b   l_037_006BE                     ; 00694
         move.w  #$30a,d2                        ; 00696
         tst.b   (dat_071_00216).l               ; 0069A
@@ -545,7 +545,7 @@ l_037_006BE:
         movea.w #$25,a5                         ; 00706
         movea.l (DrawPlanes).l,a2               ; 0070A
         add.l   (PanelShakeOffset).l,d1         ; 00710
-        bsr.w   sub_037_00A22                   ; 00716
+        bsr.w   ClipPanelBlit                   ; 00716
         blt.w   l_037_00672                     ; 0071A
         add.w   d7,d5                           ; 0071E
         add.w   d7,d7                           ; 00720
@@ -604,7 +604,7 @@ sub_037_007EA:
         movea.l #$0,a0                          ; 007EA
         movea.l (DrawPlanes).l,a2               ; 007F0
         add.l   (PanelShakeOffset).l,d1         ; 007F6
-        bsr.w   sub_037_00A22                   ; 007FC
+        bsr.w   ClipPanelBlit                   ; 007FC
         blt.w   l_037_008B0                     ; 00800
         add.w   d7,d5                           ; 00804
         add.w   d7,d7                           ; 00806
@@ -700,7 +700,7 @@ l_037_00900:
         move.w  #$1c3,d3                        ; 0091A
         move.w  #$c,d7                          ; 0091E
         add.l   (PanelShakeOffset).l,d1         ; 00922
-        bsr.w   sub_037_00A22                   ; 00928
+        bsr.w   ClipPanelBlit                   ; 00928
         blt.b   l_037_008B6                     ; 0092C
         add.w   d7,d5                           ; 0092E
         add.l   $c(a2),d1                       ; 00930
@@ -775,7 +775,13 @@ sub_037_009EA:
 l_037_00A1A:
         move.w  d0,(dat_071_00294).l            ; 00A1A
         rts                                     ; 00A20
-sub_037_00A22:
+
+;-------------------------------------------------------------------------------
+; ClipPanelBlit - Moves a panel blit by ViewShift and clips it against the screen's width: d1
+; the start address, d7 the column, a4 the width in words; d5 = -1 when nothing is left to
+; draw.
+;-------------------------------------------------------------------------------
+ClipPanelBlit:
         move.w  (ViewShift).l,d5                ; 00A22
         add.w   d5,d7                           ; 00A28
         bge.b   l_037_00A40                     ; 00A2A

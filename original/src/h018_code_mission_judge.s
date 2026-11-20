@@ -14,7 +14,7 @@ sub_018_00000:
         cmp.w   (CurrentObjectOffset).l,d0      ; 0000E
         bne.b   l_018_00032                     ; 00014
         move.w  #$4016,d0                       ; 00016
-        jsr     (sub_020_00954).l               ; 0001A
+        jsr     (StartWarning).l                ; 0001A
         move.w  #$ffff,(LockedTarget).l         ; 00020
         andi.l  #$ffffbdff,(WarningFlags).l     ; 00028
 l_018_00032:

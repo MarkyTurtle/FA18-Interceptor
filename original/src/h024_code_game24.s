@@ -225,10 +225,10 @@ l_024_00282:
         lea.l   (a0,d0.w),a3                    ; 0028A
         cmpi.b  #$20,$62(a3)                    ; 0028E
         bne.b   l_024_0029E                     ; 00294
-        lea.l   (dat_052_00000).l,a4            ; 00296
+        lea.l   (Carrier_00000).l,a4            ; 00296
         bra.b   l_024_002A4                     ; 0029C
 l_024_0029E:
-        lea.l   (dat_053_00000).l,a4            ; 0029E
+        lea.l   (Submarine_00000).l,a4          ; 0029E
 l_024_002A4:
         movea.l (a4)+,a5                        ; 002A4
         move.w  (a5),d7                         ; 002A6
@@ -428,10 +428,10 @@ l_024_004FC:
         move.l  $10(a4),d3                      ; 00502
         cmpi.b  #$20,$62(a3)                    ; 00506
         bne.b   l_024_00516                     ; 0050C
-        lea.l   (dat_052_0007C).l,a4            ; 0050E
+        lea.l   (Carrier_0007C).l,a4            ; 0050E
         bra.b   l_024_0051C                     ; 00514
 l_024_00516:
-        lea.l   (dat_053_00020).l,a4            ; 00516
+        lea.l   (Submarine_00020).l,a4          ; 00516
 l_024_0051C:
         movea.l (a4)+,a5                        ; 0051C
         move.w  $2(a5),d7                       ; 0051E

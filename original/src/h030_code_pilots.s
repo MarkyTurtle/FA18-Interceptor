@@ -943,7 +943,7 @@ l_030_00B14:
         bra.b   l_030_00B14                     ; 00B24
 l_030_00B26:
         move.w  #$c0,d0                         ; 00B26
-        jsr     (sub_020_0099A).l               ; 00B2A
+        jsr     (ScaleToLengthD0).l             ; 00B2A
         cmpi.b  #$8,$5(a1)                      ; 00B30
         bne.b   l_030_00B7C                     ; 00B36
         move.l  #$c000,-$4(a6)                  ; 00B38

@@ -356,7 +356,7 @@ EjectSound:
         lea.l   dat_017_004F4(pc),a1            ; 00508
         movem.w (a1),d0-d7/a0                   ; 0050C
         movem.l d0-d7/a0,-(a7)                  ; 00510
-        jsr     (sub_000_0A042).l               ; 00514
+        jsr     (PlayEffect).l                  ; 00514
         adda.w  #$24,a7                         ; 0051A
         movea.l (a7)+,a1                        ; 0051E
         rts                                     ; 00520
@@ -454,7 +454,7 @@ l_017_00628:
         asl.w   #$3,d0                          ; 0062A
         lea.l   (dat_017_009A2).l,a5            ; 0062C
         move.w  (a5,d0.w),d0                    ; 00632
-        jsr     (sub_020_00954).l               ; 00636
+        jsr     (StartWarning).l                ; 00636
         move.b  #$fe,(dat_071_0016A).l          ; 0063C
         move.b  $63(a1),d1                      ; 00644
         lea.l   (a2),a4                         ; 00648
@@ -608,7 +608,7 @@ l_017_00852:
         asl.w   #$3,d0                          ; 00854
         lea.l   (dat_017_009A2).l,a5            ; 00856
         move.w  (a5,d0.w),d0                    ; 0085C
-        jsr     (sub_020_00954).l               ; 00860
+        jsr     (StartWarning).l                ; 00860
         bra.w   l_017_008CA                     ; 00866
 l_017_0086A:
         clr.b   (dat_071_0016A).l               ; 0086A
@@ -630,10 +630,10 @@ l_017_0089C:
         cmpi.w  #$1fd,(a4)                      ; 008A8
         blt.b   l_017_008CA                     ; 008AC
         move.w  #$1d,d0                         ; 008AE
-        jsr     (sub_020_00954).l               ; 008B2
+        jsr     (StartWarning).l                ; 008B2
         bra.b   l_017_008C4                     ; 008B8
 	dc.b	$30,$3C,$00,$1E,$4E,$B9
-        dc.l    sub_020_00954                   ; 008C0
+        dc.l    StartWarning                    ; 008C0
 l_017_008C4:
         bclr    #$0,$2(a1)                      ; 008C4
 l_017_008CA:
@@ -704,7 +704,7 @@ l_017_0098E:
         asl.w   #$3,d1                          ; 00994
         move.w  $2(a5,d1.w),d0                  ; 00996
 l_017_0099A:
-        jsr     (sub_020_00954).l               ; 0099A
+        jsr     (StartWarning).l                ; 0099A
         rts                                     ; 009A0
 dat_017_009A2:
 	dc.b	$00,$00,$00,$00,$00,$00,$00,$00,$00,$2E,$00,$17,$00,$00,$00,$00
@@ -1001,7 +1001,7 @@ l_017_00D3A:
         neg.w   d7                              ; 00D80
 l_017_00D82:
         move.w  #$3c0,d0                        ; 00D82
-        jsr     (sub_020_0099A).l               ; 00D86
+        jsr     (ScaleToLengthD0).l             ; 00D86
         movem.l $3e(a1),d0-d2                   ; 00D8C
         add.l   d0,d5                           ; 00D92
         add.l   d1,d6                           ; 00D94
@@ -1828,7 +1828,7 @@ CheckOnTail:
         asr.l   #$8,d6                          ; 01714
         asr.l   #$8,d7                          ; 01716
         move.w  #$c0,d0                         ; 01718
-        jsr     (sub_020_0099A).l               ; 0171C
+        jsr     (ScaleToLengthD0).l             ; 0171C
         muls.w  $96(a3),d5                      ; 01722
         muls.w  $9c(a3),d6                      ; 01726
         muls.w  $a2(a3),d7                      ; 0172A
@@ -2030,7 +2030,7 @@ l_017_0195E:
         bgt.b   l_017_019CC                     ; 0196A
         cmp.l   d0,d4                           ; 0196C
         bgt.b   l_017_019CC                     ; 0196E
-        jsr     (sub_008_016AC).l               ; 01970
+        jsr     (VectorLength).l                ; 01970
         move.w  d1,$4a(a1)                      ; 01976
         bset    #$0,$4(a1)                      ; 0197A
         cmpi.w  #$36c0,d1                       ; 01980

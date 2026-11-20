@@ -288,7 +288,7 @@ ShapeLineFromAbove:
 ; both ends are behind the camera.
 ;-------------------------------------------------------------------------------
 ShapeLine:
-        lea.l   (sub_035_001DA).l,a4            ; 002CC
+        lea.l   (ClipDrawLine3D).l,a4           ; 002CC
 l_013_002D2:
         move.l  #$ffffffff,(FillPattern).l      ; 002D2
         lea.l   (dat_072_04202).l,a0            ; 002DC
@@ -939,7 +939,7 @@ l_013_009C0:
         and.w   (a4),d6                         ; 009E4
         bne.b   l_013_009C0                     ; 009E6
         move.l  a2,-(a7)                        ; 009E8
-        jsr     (sub_035_001DA).l               ; 009EA
+        jsr     (ClipDrawLine3D).l              ; 009EA
         movea.l (a7)+,a2                        ; 009F0
         bra.b   l_013_009C0                     ; 009F2
 l_013_009F4:
@@ -1057,7 +1057,7 @@ l_013_00AEA:
 l_013_00AF0:
         movem.w d1-d6,(dat_072_04202).l         ; 00AF0
         move.l  a4,-(a7)                        ; 00AF8
-        jsr     (sub_035_001DA).l               ; 00AFA
+        jsr     (ClipDrawLine3D).l              ; 00AFA
         or.w    d0,-$7e(a6)                     ; 00B00
         movea.l (a7)+,a4                        ; 00B04
         subq.w  #$1,-$30(a6)                    ; 00B06
@@ -1108,7 +1108,7 @@ sub_013_00B62:
         neg.w   d7                              ; 00B6C
         clr.w   d6                              ; 00B6E
         move.w  #$100,d0                        ; 00B70
-        jsr     (sub_020_0099A).l               ; 00B74
+        jsr     (ScaleToLengthD0).l             ; 00B74
         movem.w d5-d7,-(a7)                     ; 00B7A
         move.w  -$26(a6),d5                     ; 00B7E
         sub.w   (ObjectViewPos).l,d5            ; 00B82
@@ -1116,7 +1116,7 @@ sub_013_00B62:
         move.w  -$22(a6),d7                     ; 00B8A
         sub.w   (dat_071_004FE).l,d7            ; 00B8E
         move.w  #$100,d0                        ; 00B94
-        jsr     (sub_020_0099A).l               ; 00B98
+        jsr     (ScaleToLengthD0).l             ; 00B98
         movem.w (a7)+,d0-d2                     ; 00B9E
         muls.w  d5,d0                           ; 00BA2
         muls.w  d6,d1                           ; 00BA4
@@ -1217,7 +1217,7 @@ l_013_00CAE:
         add.w   -$42(a6),d6                     ; 00CD2
         movem.w d1-d6,(dat_072_04202).l         ; 00CD6
         move.l  a3,-(a7)                        ; 00CDE
-        jsr     (sub_035_001DA).l               ; 00CE0
+        jsr     (ClipDrawLine3D).l              ; 00CE0
         or.w    d0,-$7e(a6)                     ; 00CE6
         movea.l (a7)+,a3                        ; 00CEA
         subq.w  #$1,-$38(a6)                    ; 00CEC
@@ -1247,7 +1247,7 @@ l_013_00D0C:
         sub.w   -$44(a6),d5                     ; 00D2E
         sub.w   -$42(a6),d6                     ; 00D32
         movem.w d1-d6,(dat_072_04202).l         ; 00D36
-        jsr     (sub_035_001DA).l               ; 00D3E
+        jsr     (ClipDrawLine3D).l              ; 00D3E
         or.w    d0,-$7e(a6)                     ; 00D44
         subq.w  #$1,-$3a(a6)                    ; 00D48
         bgt.b   l_013_00CFA                     ; 00D4C
@@ -1563,7 +1563,7 @@ l_013_010F4:
         add.w   d6,d3                           ; 01126
         movem.w d1-d3,(dat_072_04208).l         ; 01128
         movem.l a2-a3,-(a7)                     ; 01130
-        jsr     (sub_035_001DA).l               ; 01134
+        jsr     (ClipDrawLine3D).l              ; 01134
         or.w    d0,-$7e(a6)                     ; 0113A
         movem.l (a7)+,a2-a3                     ; 0113E
         subq.w  #$1,-$3a(a6)                    ; 01142

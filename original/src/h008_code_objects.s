@@ -38,7 +38,7 @@ l_008_00046:
 l_008_00060:
         asr.l   #$8,d4                          ; 00060
         movem.w d2-d4,-(a7)                     ; 00062
-        jsr     (sub_008_016AC).l               ; 00066
+        jsr     (VectorLength).l                ; 00066
         movem.w (a7)+,d2-d4                     ; 0006C
         move.w  d1,d5                           ; 00070
         subi.w  #$200,d1                        ; 00072
@@ -1788,7 +1788,12 @@ l_008_016A2:
         asr.l   #$4,d3                          ; 016A4
         asr.w   #$4,d4                          ; 016A6
         movem.l (a7)+,d5/d7                     ; 016A8
-sub_008_016AC:
+
+;-------------------------------------------------------------------------------
+; VectorLength - The approximate length of a vector (d2, d3, d4 - sizes, not signs) using the
+; ratio table dat_008_01710: d1.
+;-------------------------------------------------------------------------------
+VectorLength:
         movem.l d5/a0,-(a7)                     ; 016AC
         moveq   #$e,d5                          ; 016B0
         lea.l   (dat_008_01710).l,a0            ; 016B2
