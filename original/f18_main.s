@@ -431,8 +431,8 @@
 ; Hunk 57: The airliner's 3D model: Air Force One, the 707 and the 767 (ModelTable $64, $118, $12C).
 	include	"src/h057_code_model_airliner.s"
 
-; Hunk 58: Animated 3D models: a pilot under his parachute (ModelTable $28, $104) and a box, perhaps
-;         the rescue pod ($DC).
+; Hunk 58: Animated 3D models: a pilot under his parachute (ModelTable $28, $104) and the rescue pod, a
+;         box under a parachute ($DC).
 	include	"src/h058_code_models_animated.s"
 
 ; Hunk 59: Text: the head-up display's warning messages (STALL, LOW FUEL - CRITICAL...).
