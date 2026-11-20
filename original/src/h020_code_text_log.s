@@ -336,9 +336,9 @@ l_020_0039C:
 
 ;-------------------------------------------------------------------------------
 ; MakeSecurityCode - The security check's question: four random hex digits from the clock's
-; microseconds (SecurityCode, and dat_002_02972-02978), written into the "enter security
+; microseconds (SecurityCode, and CodeValue1-02978), written into the "enter security
 ; countercode" text; CodeCheck works out the answer, which is kept as octal digits in
-; SecurityAnswer (dat_002_0297A + 3 of them, the length the input takes: InputLength).
+; SecurityAnswer (CodeHashValue + 3 of them, the length the input takes: InputLength).
 ;-------------------------------------------------------------------------------
 MakeSecurityCode:
         jsr     (ReadTime).l                    ; 003C6
@@ -346,28 +346,28 @@ MakeSecurityCode:
         lea.l   (SecurityCode).l,a1             ; 003D2
         move.l  d0,d1                           ; 003D8
         andi.w  #$f,d0                          ; 003DA
-        move.w  d0,(dat_002_02972).l            ; 003DE
+        move.w  d0,(CodeValue1).l               ; 003DE
         move.b  d0,(a1)+                        ; 003E4
         asr.l   #$1,d1                          ; 003E6
         move.l  d1,d0                           ; 003E8
         andi.w  #$f,d0                          ; 003EA
-        move.w  d0,(dat_002_02974).l            ; 003EE
+        move.w  d0,(CodeValue2).l               ; 003EE
         move.b  d0,(a1)+                        ; 003F4
         asr.l   #$1,d1                          ; 003F6
         move.l  d1,d0                           ; 003F8
         andi.w  #$f,d0                          ; 003FA
-        move.w  d0,(dat_002_02976).l            ; 003FE
+        move.w  d0,(CodeValue4).l               ; 003FE
         move.b  d0,(a1)+                        ; 00404
         asr.l   #$1,d1                          ; 00406
         andi.w  #$f,d1                          ; 00408
-        move.w  d1,(dat_002_02978).l            ; 0040C
+        move.w  d1,(CodeValue3).l               ; 0040C
         move.b  d1,(a1)+                        ; 00412
         jsr     (CodeCheck).l                   ; 00414
-        move.w  (dat_002_0297A).l,d1            ; 0041A
+        move.w  (CodeHashValue).l,d1            ; 0041A
         addq.b  #$3,d1                          ; 00420
         move.b  d1,(InputLength).l              ; 00422
         lea.l   (SecurityCode).l,a1             ; 00428
-        move.b  (dat_002_02975).l,$1(a1)        ; 0042E
+        move.b  (CodeValue2Low).l,$1(a1)        ; 0042E
         lea.l   (dat_064_002B6).l,a0            ; 00436
         adda.w  #$1f,a0                         ; 0043C
         move.b  (a1)+,d1                        ; 00440
@@ -379,7 +379,7 @@ MakeSecurityCode:
         move.b  (a1)+,d1                        ; 00452
         bsr.w   PutHexDigit                     ; 00454
         lea.l   (SecurityAnswer).l,a0           ; 00458
-        move.w  (dat_002_0297A).l,d2            ; 0045E
+        move.w  (CodeHashValue).l,d2            ; 0045E
         addq.w  #$2,d2                          ; 00464
         move.w  d2,d3                           ; 00466
 l_020_00468:
@@ -414,7 +414,7 @@ l_020_0048E:
 CheckSecurityAnswer:
         lea.l   (SecurityInput).l,a0            ; 00496
         lea.l   (SecurityAnswer).l,a1           ; 0049C
-        move.w  (dat_002_0297A).l,d1            ; 004A2
+        move.w  (CodeHashValue).l,d1            ; 004A2
         addq.w  #$2,d1                          ; 004A8
 l_020_004AA:
         move.b  (a1)+,d0                        ; 004AA

@@ -16,7 +16,8 @@ l_012_00000:
 ; the camera (ViewOffsetY). Picks a level of detail by distance (dat_071_00510, scaled by
 ; RadarScale unless GroundDetail is set), then turns its vertices - x and z only, all at the
 ; shape's height - by the view matrix into VertexBuffer, and runs its face list through
-; ShapeOps (with further vertex groups, TransformGroundVertices, as DrawModel's TransformMoreVertices).
+; ShapeOps (with further vertex groups, TransformGroundVertices, as DrawModel's
+; TransformMoreVertices).
 ;-------------------------------------------------------------------------------
 DrawGroundShape:
         cmpi.l  #$ffc80000,(ViewOffsetY).l      ; 00004

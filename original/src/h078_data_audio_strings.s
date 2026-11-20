@@ -17,10 +17,12 @@ dat_078_0000A:
 ; AudioDeviceOpen - Non-zero once audio.device is open (no sound otherwise).
 AudioDeviceOpen:
 	dc.b	$00,$00,$00,$00
-dat_078_00012:
+; StrPortName - "abcdefg"
+StrPortName:
 	dc.b	'abcdefg'
 	dc.b	$00
-dat_078_0001A:
+; StrAudioDevice - "audio.device"
+StrAudioDevice:
 	dc.b	'audio.device'
 	dc.b	$00,$00
 h078_end:

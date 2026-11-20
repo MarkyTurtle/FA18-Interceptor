@@ -34,7 +34,7 @@ l_077_00030:
         movea.l (dat_079_00000).l,a0            ; 00038
         move.b  #$7f,$9(a0)                     ; 0003E
         clr.l   -(a7)                           ; 00044
-        pea.l   (dat_078_00012).l               ; 00046
+        pea.l   (StrPortName).l                 ; 00046
         jsr     (_CreatePort).l                 ; 0004C
         addq.l  #$8,a7                          ; 00052
         movea.l (dat_079_00000).l,a0            ; 00054
@@ -58,7 +58,7 @@ l_077_0006E:
         move.l  d0,-(a7)                        ; 00092
         move.l  (dat_079_00000).l,-(a7)         ; 00094
         move.l  d0,-(a7)                        ; 0009A
-        pea.l   (dat_078_0001A).l               ; 0009C
+        pea.l   (StrAudioDevice).l              ; 0009C
         jsr     (_OpenDevice).l                 ; 000A2
         lea.l   $10(a7),a7                      ; 000A8
         tst.l   d0                              ; 000AC

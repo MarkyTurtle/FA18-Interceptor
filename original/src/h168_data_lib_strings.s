@@ -11,7 +11,8 @@ s_ConsoleWindow:
 	dc.b	'con:10/10/320/80/'
 	dc.b	$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 	dc.b	$00,$00,$00,$00,$00,$00,$00
-dat_168_00028:
+; StrErrorNonTerminatedQuotedStri - "Error: non-terminated quoted string"
+StrErrorNonTerminatedQuotedStri:
 	dc.b	'Error: non-terminated quoted string'
 	dc.b	$0A,$00
 dat_168_0004D:

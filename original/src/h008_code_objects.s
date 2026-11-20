@@ -734,7 +734,7 @@ l_008_00870:
         bra.b   l_008_008AC                     ; 00894
 l_008_00896:
         asr.w   #$7,d0                          ; 00896
-        lea.l   (dat_065_00000).l,a2            ; 00898
+        lea.l   (DistanceCurve).l,a2            ; 00898
         move.b  (a2,d0.w),d0                    ; 0089E
         ext.w   d0                              ; 008A2
         asl.w   #$8,d0                          ; 008A4

@@ -61,7 +61,7 @@ l_167_00080:
         move.b  (a0),d0                         ; 00084
         tst.b   d0                              ; 00086
         bne.b   l_167_000AE                     ; 00088
-        pea.l   (dat_168_00028).l               ; 0008A
+        pea.l   (StrErrorNonTerminatedQuotedStri).l ; 0008A
         pea.l   (dat_143_00030).l               ; 00090
         jsr     (fprintf).l                     ; 00096
         addq.l  #$8,a7                          ; 0009C

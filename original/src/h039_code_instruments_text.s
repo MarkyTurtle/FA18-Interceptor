@@ -393,9 +393,11 @@ l_039_0053A:
         rts                                     ; 0055C
 dat_039_0055E:
 	dc.b	$47
-dat_039_0055F:
+; StrInRng - "IN RNG"
+StrInRng:
 	dc.b	'IN RNG'
-dat_039_00565:
+; StrShoot - " SHOOT"
+StrShoot:
 	dc.b	' SHOOT'
 	dc.b	$00
 
@@ -409,10 +411,10 @@ ShowShootCue:
         andi.b  #$f0,d0                         ; 0057C
         cmpi.b  #$10,d0                         ; 00580
         beq.b   l_039_0058C                     ; 00584
-        lea.l   dat_039_0055F(pc),a2            ; 00586
+        lea.l   StrInRng(pc),a2                 ; 00586
         bra.b   l_039_00590                     ; 0058A
 l_039_0058C:
-        lea.l   dat_039_00565(pc),a2            ; 0058C
+        lea.l   StrShoot(pc),a2                 ; 0058C
 l_039_00590:
         lea.l   $6(a2),a0                       ; 00590
         lea.l   dat_039_00098(pc),a1            ; 00594

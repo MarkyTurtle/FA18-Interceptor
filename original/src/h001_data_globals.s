@@ -79,63 +79,81 @@ _ProgramName:
 s_dos_library:
 	dc.b	'dos.library'
 	dc.b	$00
-dat_001_0005C:
+; StrGraphicsLibrary - "graphics.library"
+StrGraphicsLibrary:
 	dc.b	'graphics.library'
 	dc.b	$00
-dat_001_0006D:
+; StrPixSplsh - "df0:pix/splsh"
+StrPixSplsh:
 	dc.b	'df0:pix/splsh'
 	dc.b	$00
-dat_001_0007B:
+; StrPixInst5 - "df0:pix/inst5"
+StrPixInst5:
 	dc.b	'df0:pix/inst5'
 	dc.b	$00
-dat_001_00089:
+; StrPixFrnt5 - "df0:pix/frnt5"
+StrPixFrnt5:
 	dc.b	'df0:pix/frnt5'
 	dc.b	$00
-dat_001_00097:
+; StrIntuitionLibrary - "intuition.library"
+StrIntuitionLibrary:
 	dc.b	'intuition.library'
 	dc.b	$00,$00,$00,$00
 dat_001_000AC:
 	dc.b	$64,$66,$30,$3A,$00,$00,$00,$00
-dat_001_000B4:
+; StrInputDevice - "input.device"
+StrInputDevice:
 	dc.b	'input.device'
 	dc.b	$00,$00,$00,$00
-dat_001_000C4:
+; StrGraphicsLibrary2 - "graphics.library"
+StrGraphicsLibrary2:
 	dc.b	'graphics.library'
 	dc.b	$00,$00,$00,$00
 ; ConfigOnDisk - 1 when df0:config was read or written.
 ConfigOnDisk:
 	dc.b	$00,$00
-dat_001_000DA:
+; StrConfig - "df0:config"
+StrConfig:
 	dc.b	'df0:config'
 	dc.b	$00
-dat_001_000E5:
+; StrConfig2 - "df0:config"
+StrConfig2:
 	dc.b	'df0:config'
 	dc.b	$00
-dat_001_000F0:
+; StrConfig3 - "df0:config"
+StrConfig3:
 	dc.b	'df0:config'
 	dc.b	$00
-dat_001_000FB:
+; StrTextTextply - "df0:text/textply"
+StrTextTextply:
 	dc.b	'df0:text/textply'
 	dc.b	$00
-dat_001_0010C:
+; StrTextTextply2 - "df0:text/textply"
+StrTextTextply2:
 	dc.b	'df0:text/textply'
 	dc.b	$00
-dat_001_0011D:
+; StrTextTextctl - "df0:text/textctl"
+StrTextTextctl:
 	dc.b	'df0:text/textctl'
 	dc.b	$00
-dat_001_0012E:
+; StrTextTextctl2 - "df0:text/textctl"
+StrTextTextctl2:
 	dc.b	'df0:text/textctl'
 	dc.b	$00
-dat_001_0013F:
+; StrTextTextply3 - "df0:text/textply"
+StrTextTextply3:
 	dc.b	'df0:text/textply'
 	dc.b	$00
-dat_001_00150:
+; StrTextTextctl3 - "df0:text/textctl"
+StrTextTextctl3:
 	dc.b	'df0:text/textctl'
 	dc.b	$00
-dat_001_00161:
+; StrTextTextply4 - "df0:text/textply"
+StrTextTextply4:
 	dc.b	'df0:text/textply'
 	dc.b	$00
-dat_001_00172:
+; StrTextTextctl4 - "df0:text/textctl"
+StrTextTextctl4:
 	dc.b	'df0:text/textctl'
 	dc.b	$00,$00
 dat_001_00184:
@@ -156,16 +174,19 @@ dat_001_00202:
 	dcb.b	34,$00
 dat_001_00224:
         dc.l    dat_001_00202                   ; 00224
-dat_001_00228:
+; StrKeyboardDevice - "keyboard.device"
+StrKeyboardDevice:
 	dc.b	'keyboard.device'
 	dc.b	$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 	dc.b	$00,$00,$00
 dat_001_0024A:
 	dc.b	$00,$00,$50,$48,$4D,$4B
-dat_001_00250:
+; StrTimerDevice - "timer.device"
+StrTimerDevice:
 	dc.b	'timer.device'
 	dc.b	$00,$00,$00,$00,$00,$00
-dat_001_00262:
+; StrGameportDevice - "gameport.device"
+StrGameportDevice:
 	dc.b	'gameport.device'
 	dc.b	$00,$00,$00
 dat_001_00274:
@@ -178,46 +199,60 @@ dat_001_0027A:
 	dc.b	$00,$C7
 dat_001_0027C:
 	dc.b	$76,$62,$00,$00
-dat_001_00280:
+; StrTextText201 - "df0:text/text201"
+StrTextText201:
 	dc.b	'df0:text/text201'
 	dc.b	$00
-dat_001_00291:
+; StrTextTexti0a - "df0:text/texti0a"
+StrTextTexti0a:
 	dc.b	'df0:text/texti0a'
 	dc.b	$00
-dat_001_002A2:
+; StrTextTexti0b - "df0:text/texti0b"
+StrTextTexti0b:
 	dc.b	'df0:text/texti0b'
 	dc.b	$00
-dat_001_002B3:
+; StrTextTexti1 - "df0:text/texti1"
+StrTextTexti1:
 	dc.b	'df0:text/texti1'
 	dc.b	$00
-dat_001_002C3:
+; StrTextTexti2 - "df0:text/texti2"
+StrTextTexti2:
 	dc.b	'df0:text/texti2'
 	dc.b	$00
-dat_001_002D3:
+; StrTextTexti3 - "df0:text/texti3"
+StrTextTexti3:
 	dc.b	'df0:text/texti3'
 	dc.b	$00
-dat_001_002E3:
+; StrTextTexti4 - "df0:text/texti4"
+StrTextTexti4:
 	dc.b	'df0:text/texti4'
 	dc.b	$00
-dat_001_002F3:
+; StrTextTexti5 - "df0:text/texti5"
+StrTextTexti5:
 	dc.b	'df0:text/texti5'
 	dc.b	$00
-dat_001_00303:
+; StrTextTextegn - "df0:text/textegn"
+StrTextTextegn:
 	dc.b	'df0:text/textegn'
 	dc.b	$00
-dat_001_00314:
+; StrTextTextegn2 - "df0:text/textegn2"
+StrTextTextegn2:
 	dc.b	'df0:text/textegn2'
 	dc.b	$00
-dat_001_00326:
+; StrTextTexttre - "df0:text/texttre"
+StrTextTexttre:
 	dc.b	'df0:text/texttre'
 	dc.b	$00
-dat_001_00337:
+; StrTextTextger - "df0:text/textger"
+StrTextTextger:
 	dc.b	'df0:text/textger'
 	dc.b	$00
-dat_001_00348:
+; StrTextTextcpt - "df0:text/textcpt"
+StrTextTextcpt:
 	dc.b	'df0:text/textcpt'
 	dc.b	$00
-dat_001_00359:
+; StrTextTextwnd - "df0:text/textwnd"
+StrTextTextwnd:
 	dc.b	'df0:text/textwnd'
 	dc.b	$00,$00,$00
 h001_end:

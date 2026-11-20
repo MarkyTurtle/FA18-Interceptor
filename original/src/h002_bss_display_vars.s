@@ -24,35 +24,50 @@ CurrentBullet:
 ; GameView - The game's View.
 GameView:
         ds.b    $4                              ; 00010
-dat_002_00014:
+; GameViewLOFCprList - The game View's LOFCprList (View +4): the copper list made by MrgCop
+; (MakeDisplay keeps one per buffer; ShowDisplay loads the shown buffer's).
+GameViewLOFCprList:
         ds.b    $E                              ; 00014
 ; GameViewPort - The game's ViewPort (320 x 200).
 GameViewPort:
         ds.b    $4                              ; 00022
-dat_002_00026:
+; GameViewPortColorMap - The ViewPort's ColorMap (+4).
+GameViewPortColorMap:
         ds.b    $4                              ; 00026
-dat_002_0002A:
+; GameViewPortDspIns - The game ViewPort's DspIns (ViewPort +8): its copper instructions (one
+; per buffer, as GameViewLOFCprList).
+GameViewPortDspIns:
         ds.b    $10                             ; 0002A
-dat_002_0003A:
+; GameViewPortDWidth - The ViewPort's DWidth (320).
+GameViewPortDWidth:
         ds.b    $2                              ; 0003A
-dat_002_0003C:
+; GameViewPortDHeight - The ViewPort's DHeight (200).
+GameViewPortDHeight:
         ds.b    $2                              ; 0003C
-dat_002_0003E:
+; GameViewPortDxOffset - The ViewPort's DxOffset (0).
+GameViewPortDxOffset:
         ds.b    $2                              ; 0003E
-dat_002_00040:
+; GameViewPortDyOffset - The ViewPort's DyOffset (-2), then Modes.
+GameViewPortDyOffset:
         ds.b    $6                              ; 00040
-dat_002_00046:
+; GameViewPortRasInfo - The ViewPort's RasInfo pointer (to GameRasInfo).
+GameViewPortRasInfo:
         ds.b    $4                              ; 00046
 ; GameColorMap - The ViewPort's ColorMap.
 GameColorMap:
         ds.b    $4                              ; 0004A
-dat_002_0004E:
+; GameRasInfo - The game ViewPort's RasInfo: Next (0), then its BitMap (GameRasInfoBitMap) and
+; offsets.
+GameRasInfo:
         ds.b    $4                              ; 0004E
-dat_002_00052:
+; GameRasInfoBitMap - The RasInfo's BitMap: the buffer shown (MakeDisplay switches it).
+GameRasInfoBitMap:
         ds.b    $4                              ; 00052
-dat_002_00056:
+; GameRasInfoRxOffset - The RasInfo's RxOffset.
+GameRasInfoRxOffset:
         ds.b    $2                              ; 00056
-dat_002_00058:
+; GameRasInfoRyOffset - The RasInfo's RyOffset.
+GameRasInfoRyOffset:
         ds.b    $2                              ; 00058
 ; GameBitMap1 - The display's BitMap (5 planes, 320 x 200).
 GameBitMap1:
@@ -66,28 +81,37 @@ BitMap1:
 ; BitMap2 - The second BitMap's structure.
 BitMap2:
         ds.b    $28                             ; 0008A
-dat_002_000B2:
+; CopperBuffer1 - The copper list of display buffer 1 (copied from GameViewLOFCprList by
+; InitDisplay).
+CopperBuffer1:
         ds.b    $4                              ; 000B2
-dat_002_000B6:
+; CopperBuffer1DspIns - Display buffer 1's DspIns (with CopperBuffer1, its LOFCprList).
+CopperBuffer1DspIns:
         ds.b    $4                              ; 000B6
-dat_002_000BA:
+; CopperBuffer2 - The copper list of display buffer 2.
+CopperBuffer2:
         ds.b    $4                              ; 000BA
-dat_002_000BE:
+; CopperBuffer2DspIns - Display buffer 2's DspIns.
+CopperBuffer2DspIns:
         ds.b    $4                              ; 000BE
 ; _GfxBase - graphics.library.
 _GfxBase:
         ds.b    $4                              ; 000C2
-dat_002_000C6:
+; OldView - The View the system showed before the game (GfxBase->ActiView), put back at the
+; end.
+OldView:
         ds.b    $4                              ; 000C6
 ; GameRastPort1 - The RastPort of BitMap1.
 GameRastPort1:
         ds.b    $4                              ; 000CA
-dat_002_000CE:
+; GameRastPort1BitMap - GameRastPort1's BitMap pointer (RastPort +4).
+GameRastPort1BitMap:
         ds.b    $60                             ; 000CE
 ; GameRastPort2 - The RastPort of BitMap2.
 GameRastPort2:
         ds.b    $4                              ; 0012E
-dat_002_00132:
+; GameRastPort2BitMap - GameRastPort2's BitMap pointer (RastPort +4).
+GameRastPort2BitMap:
         ds.b    $60                             ; 00132
 dat_002_00192:
         ds.b    $F02                            ; 00192
@@ -110,17 +134,23 @@ TitleBitMap:
 ; TitleBMHD - The title picture's BMHD (20 bytes: width.w, height.w ...).
 TitleBMHD:
         ds.b    $2                              ; 028D8
-dat_002_028DA:
+; TitleBMHDHeight - The title picture's height (in its BMHD).
+TitleBMHDHeight:
         ds.b    $12                             ; 028DA
-dat_002_028EC:
+; TitlePlane0 - The title picture's saved planes (SaveTitleBitMap: then TitlePlane1-4).
+TitlePlane0:
         ds.b    $4                              ; 028EC
-dat_002_028F0:
+; TitlePlane1 - The title picture's plane 1.
+TitlePlane1:
         ds.b    $4                              ; 028F0
-dat_002_028F4:
+; TitlePlane2 - The title picture's plane 2.
+TitlePlane2:
         ds.b    $4                              ; 028F4
-dat_002_028F8:
+; TitlePlane3 - The title picture's plane 3.
+TitlePlane3:
         ds.b    $4                              ; 028F8
-dat_002_028FC:
+; TitlePlane4 - The title picture's plane 4.
+TitlePlane4:
         ds.b    $4                              ; 028FC
 ; PanelBitMap - The instrument panel picture's BitMap (pix/inst5, 320 x 55).
 PanelBitMap:
@@ -128,17 +158,24 @@ PanelBitMap:
 ; PanelBMHD - The instrument panel picture's BMHD.
 PanelBMHD:
         ds.b    $2                              ; 02904
-dat_002_02906:
+; PanelBMHDHeight - The panel picture's height (in its BMHD).
+PanelBMHDHeight:
         ds.b    $12                             ; 02906
-dat_002_02918:
+; PanelPlane0 - The instrument panel picture's plane 0 (AllocGameBuffers; then 1-3:
+; PanelPlane1-3).
+PanelPlane0:
         ds.b    $4                              ; 02918
-dat_002_0291C:
+; PanelPlane1 - The panel picture's plane 1.
+PanelPlane1:
         ds.b    $4                              ; 0291C
-dat_002_02920:
+; PanelPlane2 - The panel picture's plane 2.
+PanelPlane2:
         ds.b    $4                              ; 02920
-dat_002_02924:
+; PanelPlane3 - The panel picture's plane 3.
+PanelPlane3:
         ds.b    $8                              ; 02924
-dat_002_0292C:
+; PanelPieceMask - The mask of the panel's piece (DrawPanelPiece).
+PanelPieceMask:
         ds.b    $4                              ; 0292C
 ; FrontBitMap - The front picture's BitMap (pix/frnt5, 288 x 12).
 FrontBitMap:
@@ -146,15 +183,21 @@ FrontBitMap:
 ; FrontBMHD - The front picture's BMHD.
 FrontBMHD:
         ds.b    $2                              ; 02934
-dat_002_02936:
+; PictureBytes - The size of a picture's plane in bytes (from its BMHD), for allocating and
+; freeing.
+PictureBytes:
         ds.b    $12                             ; 02936
-dat_002_02948:
+; PanelPiecePlane0 - The panel piece's planes (then PanelPiecePlane1, 2).
+PanelPiecePlane0:
         ds.b    $4                              ; 02948
-dat_002_0294C:
+; PanelPiecePlane1 - The panel piece's plane 1.
+PanelPiecePlane1:
         ds.b    $4                              ; 0294C
-dat_002_02950:
+; PanelPiecePlane2 - The panel piece's plane 2.
+PanelPiecePlane2:
         ds.b    $4                              ; 02950
-dat_002_02954:
+; PanelPiecePlane3 - The panel piece's plane 3.
+PanelPiecePlane3:
         ds.b    $4                              ; 02954
 dat_002_02958:
         ds.b    $4                              ; 02958
@@ -172,21 +215,29 @@ dat_002_02968:
 ; fired/hits, +$42/+$44 Sidewinders fired/hits, +$46 crashes, +$48 hits from missiles.
 ConfigBuffer:
         ds.b    $4                              ; 0296C
-dat_002_02970:
+; ConfigSize - The flight log's size as read (LoadConfig).
+ConfigSize:
         ds.b    $2                              ; 02970
-dat_002_02972:
+; CodeValue1 - The security check's working values (MakeSecurityCode, CodeCheck): the first.
+CodeValue1:
         ds.b    $2                              ; 02972
-dat_002_02974:
+; CodeValue2 - The security check's second working value.
+CodeValue2:
         ds.b    $1                              ; 02974
-dat_002_02975:
+; CodeValue2Low - The low byte of CodeValue2.
+CodeValue2Low:
         ds.b    $1                              ; 02975
-dat_002_02976:
+; CodeValue4 - The security check's fourth working value.
+CodeValue4:
         ds.b    $2                              ; 02976
-dat_002_02978:
+; CodeValue3 - The security check's third working value.
+CodeValue3:
         ds.b    $2                              ; 02978
-dat_002_0297A:
+; CodeHashValue - The security code's hash (CodeHash), used to make and check the answer.
+CodeHashValue:
         ds.b    $2                              ; 0297A
-dat_002_0297C:
+; TimerRequest - The timer device's IO request (OpenTimer, ReadTime).
+TimerRequest:
         ds.b    $8                              ; 0297C
 dat_002_02984:
         ds.b    $1                              ; 02984
@@ -202,25 +253,34 @@ dat_002_0299C:
         ds.b    $4                              ; 0299C
 dat_002_029A0:
         ds.b    $4                              ; 029A0
-dat_002_029A4:
+; KeyboardRequest - The keyboard device's IO request (OpenKeyboard, ReadKeyEvent).
+KeyboardRequest:
         ds.b    $4                              ; 029A4
 dat_002_029A8:
         ds.b    $2                              ; 029A8
 dat_002_029AA:
         ds.b    $16                             ; 029AA
-dat_002_029C0:
+; LastKey - The key code last pushed (PushKey, GetKey).
+LastKey:
         ds.b    $2                              ; 029C0
-dat_002_029C2:
+; JoystickEventPtr2 - Points at JoystickEvent too (ReadJoystick).
+JoystickEventPtr2:
         ds.b    $4                              ; 029C2
-dat_002_029C6:
+; JoystickPort - The gameport device's message port (OpenJoystick).
+JoystickPort:
         ds.b    $4                              ; 029C6
-dat_002_029CA:
+; JoystickEvent - The gameport's input event buffer.
+JoystickEvent:
         ds.b    $16                             ; 029CA
-dat_002_029E0:
+; JoystickEventPtr - Points at JoystickEvent (the request's data).
+JoystickEventPtr:
         ds.b    $4                              ; 029E0
-dat_002_029E4:
+; JoystickRequest - The gameport device's IO request (OpenJoystick).
+JoystickRequest:
         ds.b    $4                              ; 029E4
-dat_002_029E8:
+; MouseInterruptNode - The interrupt structure of the mouse's vertical-blank server
+; (AddMouseInterrupt).
+MouseInterruptNode:
         ds.b    $8                              ; 029E8
 dat_002_029F0:
         ds.b    $1                              ; 029F0
@@ -230,9 +290,11 @@ dat_002_029F2:
         ds.b    $8                              ; 029F2
 dat_002_029FA:
         ds.b    $4                              ; 029FA
-dat_002_029FE:
+; MouseLastX - The mouse counter's last X (MouseInterrupt).
+MouseLastX:
         ds.b    $2                              ; 029FE
-dat_002_02A00:
+; MouseLastY - The mouse counter's last Y.
+MouseLastY:
         ds.b    $4                              ; 02A00
 h002_end:
 	ifnd	HUNKEXE

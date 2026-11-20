@@ -348,7 +348,7 @@ main:
         move.w  #$3,(dat_071_00112).l           ; 003D6
         moveq   #$1d,d0                         ; 003DE
         move.l  d0,-(a7)                        ; 003E0
-        pea.l   (dat_001_0005C).l               ; 003E2
+        pea.l   (StrGraphicsLibrary).l          ; 003E2
         jsr     (_OpenLibrary).l                ; 003E8
         addq.l  #$8,a7                          ; 003EE
         move.l  d0,(_GfxBase).l                 ; 003F0
@@ -369,7 +369,7 @@ l_000_00418:
         move.b  #$1,(dat_071_001A6).l           ; 00424
         pea.l   (TitleBMHD).l                   ; 0042C
         pea.l   (PictureColours).l              ; 00432
-        pea.l   (dat_001_0006D).l               ; 00438
+        pea.l   (StrPixSplsh).l                 ; 00438
         bsr.w   LoadPicture                     ; 0043E
         lea.l   $c(a7),a7                       ; 00442
         move.l  d0,(TitleBitMap).l              ; 00446
@@ -409,7 +409,7 @@ l_000_00484:
         moveq   #$0,d0                          ; 004D0
         move.w  (TitleBMHD).l,d0                ; 004D2
         moveq   #$0,d1                          ; 004D8
-        move.w  (dat_002_028DA).l,d1            ; 004DA
+        move.w  (TitleBMHDHeight).l,d1          ; 004DA
         move.l  d1,-(a7)                        ; 004E0
         move.l  d0,-(a7)                        ; 004E2
         move.l  a3,-(a7)                        ; 004E4
@@ -539,13 +539,13 @@ l_000_00698:
 l_000_006BC:
         pea.l   (PanelBMHD).l                   ; 006BC
         pea.l   (PictureColours).l              ; 006C2
-        pea.l   (dat_001_0007B).l               ; 006C8
+        pea.l   (StrPixInst5).l                 ; 006C8
         bsr.w   LoadPicture                     ; 006CE
         lea.l   $c(a7),a7                       ; 006D2
         move.l  d0,(PanelBitMap).l              ; 006D6
         pea.l   (FrontBMHD).l                   ; 006DC
         pea.l   (PictureColours).l              ; 006E2
-        pea.l   (dat_001_00089).l               ; 006E8
+        pea.l   (StrPixFrnt5).l                 ; 006E8
         bsr.w   LoadPicture                     ; 006EE
         lea.l   $c(a7),a7                       ; 006F2
         move.l  d0,(FrontBitMap).l              ; 006F6
@@ -557,7 +557,7 @@ l_000_006BC:
         moveq   #$0,d1                          ; 00712
         move.w  (PanelBMHD).l,d1                ; 00714
         moveq   #$0,d2                          ; 0071A
-        move.w  (dat_002_02906).l,d2            ; 0071C
+        move.w  (PanelBMHDHeight).l,d2          ; 0071C
         move.l  d2,-(a7)                        ; 00722
         move.l  d1,-(a7)                        ; 00724
         move.l  a1,-(a7)                        ; 00726
@@ -579,7 +579,7 @@ l_000_006BC:
         moveq   #$0,d0                          ; 00764
         move.w  (FrontBMHD).l,d0                ; 00766
         moveq   #$0,d1                          ; 0076C
-        move.w  (dat_002_02936).l,d1            ; 0076E
+        move.w  (PictureBytes).l,d1             ; 0076E
         move.l  d1,-(a7)                        ; 00774
         move.l  d0,-(a7)                        ; 00776
         move.l  a1,-(a7)                        ; 00778
@@ -605,7 +605,7 @@ l_000_006BC:
 CloseWorkbenchScreen:
         moveq   #$1d,d0                         ; 007AE
         move.l  d0,-(a7)                        ; 007B0
-        pea.l   (dat_001_00097).l               ; 007B2
+        pea.l   (StrIntuitionLibrary).l         ; 007B2
         jsr     (_OpenLibrary).l                ; 007B8
         addq.l  #$8,a7                          ; 007BE
         move.l  d0,(_IntuitionBase).l           ; 007C0
@@ -641,7 +641,7 @@ SetupGameDisplay:
         moveq   #$0,d0                          ; 0080A
         move.w  (TitleBMHD).l,d0                ; 0080C
         moveq   #$0,d1                          ; 00812
-        move.w  (dat_002_028DA).l,d1            ; 00814
+        move.w  (TitleBMHDHeight).l,d1          ; 00814
         move.l  d1,-(a7)                        ; 0081A
         move.l  d0,-(a7)                        ; 0081C
         movea.l (TitleBitMap).l,a0              ; 0081E
@@ -1785,7 +1785,7 @@ InitInput:
         link.w  a6,#$fffc                       ; 01628
         jsr     (OpenTimer).l                   ; 0162C
         jsr     (OpenKeyboard).l                ; 01632
-        pea.l   (dat_001_000B4).l               ; 01638
+        pea.l   (StrInputDevice).l              ; 01638
         jsr     (_FindTask).l                   ; 0163E
         addq.l  #$4,a7                          ; 01644
         moveq   #-128,d1                        ; 01646

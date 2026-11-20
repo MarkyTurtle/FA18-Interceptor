@@ -743,7 +743,7 @@ InitDisplay:
         link.w  a6,#$fff4                       ; 07F04
         moveq   #$1d,d0                         ; 07F08
         move.l  d0,-(a7)                        ; 07F0A
-        pea.l   (dat_001_000C4).l               ; 07F0C
+        pea.l   (StrGraphicsLibrary2).l         ; 07F0C
         jsr     (_OpenLibrary).l                ; 07F12
         addq.l  #$8,a7                          ; 07F18
         move.l  d0,(_GfxBase).l                 ; 07F1A
@@ -755,7 +755,7 @@ InitDisplay:
         addq.l  #$4,a7                          ; 07F2E
 l_000_07F30:
         movea.l (_GfxBase).l,a0                 ; 07F30
-        move.l  $22(a0),(dat_002_000C6).l       ; 07F36
+        move.l  $22(a0),(OldView).l             ; 07F36
         pea.l   (GameView).l                    ; 07F3E
         jsr     (_InitView).l                   ; 07F44
         addq.l  #$4,a7                          ; 07F4A
@@ -788,16 +788,16 @@ l_000_07F30:
         jsr     (_InitRastPort).l               ; 07FCE
         addq.l  #$4,a7                          ; 07FD4
         movea.l (GameBitMap1).l,a0              ; 07FD6
-        move.l  a0,(dat_002_000CE).l            ; 07FDC
-        move.l  (GameBitMap2).l,(dat_002_00132).l ; 07FE2
-        move.l  a0,(dat_002_00052).l            ; 07FEC
+        move.l  a0,(GameRastPort1BitMap).l      ; 07FDC
+        move.l  (GameBitMap2).l,(GameRastPort2BitMap).l ; 07FE2
+        move.l  a0,(GameRasInfoBitMap).l        ; 07FEC
         moveq   #$0,d0                          ; 07FF2
-        move.w  d0,(dat_002_00056).l            ; 07FF4
-        move.w  d0,(dat_002_00058).l            ; 07FFA
-        clr.l   (dat_002_0004E).l               ; 08000
-        move.w  #$140,(dat_002_0003A).l         ; 08006
-        move.w  #$c8,(dat_002_0003C).l          ; 0800E
-        move.l  #dat_002_0004E,(dat_002_00046).l ; 08016
+        move.w  d0,(GameRasInfoRxOffset).l      ; 07FF4
+        move.w  d0,(GameRasInfoRyOffset).l      ; 07FFA
+        clr.l   (GameRasInfo).l                 ; 08000
+        move.w  #$140,(GameViewPortDWidth).l    ; 08006
+        move.w  #$c8,(GameViewPortDHeight).l    ; 0800E
+        move.l  #GameRasInfo,(GameViewPortRasInfo).l ; 08016
         move.l  #$10002,-(a7)                   ; 08020
         move.l  #$1f40,-(a7)                    ; 08026
         jsr     (_AllocMem).l                   ; 0802C
@@ -893,9 +893,9 @@ l_000_081AE:
         addq.l  #$1,-$8(a6)                     ; 081CE
         bra.b   l_000_081AE                     ; 081D2
 l_000_081D4:
-        move.l  (GameColorMap).l,(dat_002_00026).l ; 081D4
-        clr.w   (dat_002_0003E).l               ; 081DE
-        move.w  #$fffe,(dat_002_00040).l        ; 081E4
+        move.l  (GameColorMap).l,(GameViewPortColorMap).l ; 081D4
+        clr.w   (GameViewPortDxOffset).l        ; 081DE
+        move.w  #$fffe,(GameViewPortDyOffset).l ; 081E4
         pea.l   (GameViewPort).l                ; 081EC
         pea.l   (GameView).l                    ; 081F2
         jsr     (_MakeVPort).l                  ; 081F8
@@ -903,8 +903,8 @@ l_000_081D4:
         pea.l   (GameView).l                    ; 08200
         jsr     (_MrgCop).l                     ; 08206
         addq.l  #$4,a7                          ; 0820C
-        move.l  (dat_002_00014).l,(dat_002_000B2).l ; 0820E
-        move.l  (dat_002_0002A).l,(dat_002_000BA).l ; 08218
+        move.l  (GameViewLOFCprList).l,(CopperBuffer1).l ; 0820E
+        move.l  (GameViewPortDspIns).l,(CopperBuffer2).l ; 08218
         unlk    a6                              ; 08222
         rts                                     ; 08224
 
@@ -914,9 +914,9 @@ l_000_081D4:
 ;-------------------------------------------------------------------------------
 MakeDisplay:
         suba.l  a0,a0                           ; 08226
-        move.l  a0,(dat_002_00014).l            ; 08228
-        move.l  a0,(dat_002_0002A).l            ; 0822E
-        move.l  (GameBitMap2).l,(dat_002_00052).l ; 08234
+        move.l  a0,(GameViewLOFCprList).l       ; 08228
+        move.l  a0,(GameViewPortDspIns).l       ; 0822E
+        move.l  (GameBitMap2).l,(GameRasInfoBitMap).l ; 08234
         pea.l   (GameViewPort).l                ; 0823E
         pea.l   (GameView).l                    ; 08244
         jsr     (_MakeVPort).l                  ; 0824A
@@ -924,8 +924,8 @@ MakeDisplay:
         pea.l   (GameView).l                    ; 08252
         jsr     (_MrgCop).l                     ; 08258
         addq.l  #$4,a7                          ; 0825E
-        move.l  (dat_002_00014).l,(dat_002_000B6).l ; 08260
-        move.l  (dat_002_0002A).l,(dat_002_000BE).l ; 0826A
+        move.l  (GameViewLOFCprList).l,(CopperBuffer1DspIns).l ; 08260
+        move.l  (GameViewPortDspIns).l,(CopperBuffer2DspIns).l ; 0826A
         clr.w   (DisplayBuffer).l               ; 08274
         rts                                     ; 0827A
 
@@ -944,14 +944,14 @@ ShowDisplay:
         ext.l   d0                              ; 08298
         asl.l   #$2,d0                          ; 0829A
         movea.l d0,a0                           ; 0829C
-        adda.l  #dat_002_000B2,a0               ; 0829E
-        move.l  (a0),(dat_002_00014).l          ; 082A4
+        adda.l  #CopperBuffer1,a0               ; 0829E
+        move.l  (a0),(GameViewLOFCprList).l     ; 082A4
         move.w  $0(a7),d0                       ; 082AA
         ext.l   d0                              ; 082AE
         asl.l   #$2,d0                          ; 082B0
         movea.l d0,a0                           ; 082B2
-        adda.l  #dat_002_000BA,a0               ; 082B4
-        move.l  (a0),(dat_002_0002A).l          ; 082BA
+        adda.l  #CopperBuffer2,a0               ; 082B4
+        move.l  (a0),(GameViewPortDspIns).l     ; 082BA
         pea.l   (GameView).l                    ; 082C0
         jsr     (_LoadView).l                   ; 082C6
         addq.l  #$4,a7                          ; 082CC
@@ -1068,7 +1068,7 @@ LoadConfig:
         tst.w   d0                              ; 08446
         bne.b   l_000_08464                     ; 08448
         bsr.w   ReadConfig                      ; 0844A
-        move.w  d0,(dat_002_02970).l            ; 0844E
+        move.w  d0,(ConfigSize).l               ; 0844E
         subq.w  #$1,d0                          ; 08454
         bne.b   l_000_08462                     ; 08456
         move.w  #$1,(ConfigOnDisk).l            ; 08458
@@ -1085,7 +1085,7 @@ l_000_08464:
 WriteConfig:
         link.w  a6,#$fff4                       ; 0846C
         move.l  #$3ee,-(a7)                     ; 08470
-        pea.l   (dat_001_000DA).l               ; 08476
+        pea.l   (StrConfig).l                   ; 08476
         jsr     (_Open).l                       ; 0847C
         addq.l  #$8,a7                          ; 08482
         move.l  d0,-$c(a6)                      ; 08484
@@ -1124,7 +1124,7 @@ l_000_084BE:
 ReadConfig:
         link.w  a6,#$fff4                       ; 084D6
         move.l  #$3ed,-(a7)                     ; 084DA
-        pea.l   (dat_001_000E5).l               ; 084E0
+        pea.l   (StrConfig2).l                  ; 084E0
         jsr     (_Open).l                       ; 084E6
         addq.l  #$8,a7                          ; 084EC
         move.l  d0,-$c(a6)                      ; 084EE
@@ -1205,7 +1205,7 @@ SaveConfig:
         rts                                     ; 085D0
 l_000_085D2:
         move.l  #$3ed,-(a7)                     ; 085D2
-        pea.l   (dat_001_000F0).l               ; 085D8
+        pea.l   (StrConfig3).l                  ; 085D8
         jsr     (_Open).l                       ; 085DE
         addq.l  #$8,a7                          ; 085E4
         clr.l   -(a7)                           ; 085E6
@@ -1256,7 +1256,7 @@ l_000_0865E:
 LoadDemoRecording:
         link.w  a6,#$fffc                       ; 08668
         move.l  #$3ed,-(a7)                     ; 0866C
-        pea.l   (dat_001_000FB).l               ; 08672
+        pea.l   (StrTextTextply).l              ; 08672
         jsr     (_Open).l                       ; 08678
         addq.l  #$8,a7                          ; 0867E
         move.l  d0,-$4(a6)                      ; 08680
@@ -1271,7 +1271,7 @@ LoadDemoRecording:
         bra.b   l_000_086C4                     ; 086AA
 l_000_086AC:
         move.l  #$3ee,-(a7)                     ; 086AC
-        pea.l   (dat_001_0010C).l               ; 086B2
+        pea.l   (StrTextTextply2).l             ; 086B2
         jsr     (_Open).l                       ; 086B8
         addq.l  #$8,a7                          ; 086BE
         move.l  d0,-$4(a6)                      ; 086C0
@@ -1280,7 +1280,7 @@ l_000_086C4:
         jsr     (_Close).l                      ; 086C8
         addq.l  #$4,a7                          ; 086CE
         move.l  #$3ed,-(a7)                     ; 086D0
-        pea.l   (dat_001_0011D).l               ; 086D6
+        pea.l   (StrTextTextctl).l              ; 086D6
         jsr     (_Open).l                       ; 086DC
         addq.l  #$8,a7                          ; 086E2
         move.l  d0,-$4(a6)                      ; 086E4
@@ -1296,7 +1296,7 @@ l_000_086C4:
         bra.b   l_000_08722                     ; 08708
 l_000_0870A:
         move.l  #$3ee,-(a7)                     ; 0870A
-        pea.l   (dat_001_0012E).l               ; 08710
+        pea.l   (StrTextTextctl2).l             ; 08710
         jsr     (_Open).l                       ; 08716
         addq.l  #$8,a7                          ; 0871C
         move.l  d0,-$4(a6)                      ; 0871E
@@ -1314,7 +1314,7 @@ l_000_08722:
 SaveRecording:
         link.w  a6,#$fffc                       ; 08732
         move.l  #$3ed,-(a7)                     ; 08736
-        pea.l   (dat_001_0013F).l               ; 0873C
+        pea.l   (StrTextTextply3).l             ; 0873C
         jsr     (_Open).l                       ; 08742
         addq.l  #$8,a7                          ; 08748
         move.l  d0,-$4(a6)                      ; 0874A
@@ -1330,7 +1330,7 @@ l_000_0876A:
         jsr     (_Close).l                      ; 0876E
         addq.l  #$4,a7                          ; 08774
         move.l  #$3ed,-(a7)                     ; 08776
-        pea.l   (dat_001_00150).l               ; 0877C
+        pea.l   (StrTextTextctl3).l             ; 0877C
         jsr     (_Open).l                       ; 08782
         addq.l  #$8,a7                          ; 08788
         move.l  d0,-$4(a6)                      ; 0878A
@@ -1356,7 +1356,7 @@ l_000_087AE:
 LoadRecording:
         link.w  a6,#$fffc                       ; 087BE
         move.l  #$3ed,-(a7)                     ; 087C2
-        pea.l   (dat_001_00161).l               ; 087C8
+        pea.l   (StrTextTextply4).l             ; 087C8
         jsr     (_Open).l                       ; 087CE
         addq.l  #$8,a7                          ; 087D4
         move.l  d0,-$4(a6)                      ; 087D6
@@ -1373,7 +1373,7 @@ l_000_08800:
         jsr     (_Close).l                      ; 08804
         addq.l  #$4,a7                          ; 0880A
         move.l  #$3ed,-(a7)                     ; 0880C
-        pea.l   (dat_001_00172).l               ; 08812
+        pea.l   (StrTextTextctl4).l             ; 08812
         jsr     (_Open).l                       ; 08818
         addq.l  #$8,a7                          ; 0881E
         move.l  d0,-$4(a6)                      ; 08820
@@ -1396,7 +1396,7 @@ l_000_08844:
 ;-------------------------------------------------------------------------------
 ; CodeHash - CodeHash(a, b, c, d): a 16-bit check value from four numbers through the tables at
 ; dat_001_00184 and an LFSR (15 steps, feedback $B400); also leaves (value >> 1) & 3 in
-; dat_002_0297A.
+; CodeHashValue.
 ;-------------------------------------------------------------------------------
 CodeHash:
         link.w  a6,#$fff8                       ; 08854
@@ -1439,19 +1439,19 @@ l_000_088C8:
         move.w  -$2(a6),d0                      ; 088C8
         asr.w   #$1,d0                          ; 088CC
         andi.w  #$3,d0                          ; 088CE
-        move.w  d0,(dat_002_0297A).l            ; 088D2
+        move.w  d0,(CodeHashValue).l            ; 088D2
         move.w  -$4(a6),d0                      ; 088D8
         unlk    a6                              ; 088DC
         rts                                     ; 088DE
 
 ;-------------------------------------------------------------------------------
-; CodeCheck - Works out the expected code from dat_002_02972-02978 with the tables at
-; dat_001_00184 / dat_001_001A4 (CodeHash), masked by dat_001_001C4[dat_002_0297A].
+; CodeCheck - Works out the expected code from CodeValue1-02978 with the tables at
+; dat_001_00184 / dat_001_001A4 (CodeHash), masked by dat_001_001C4[CodeHashValue].
 ;-------------------------------------------------------------------------------
 CodeCheck:
         link.w  a6,#$fff2                       ; 088E0
         movem.l d2-d3,-(a7)                     ; 088E4
-        move.w  (dat_002_02978).l,d0            ; 088E8
+        move.w  (CodeValue3).l,d0               ; 088E8
         move.w  d0,$8(a7)                       ; 088EE
         ext.l   d0                              ; 088F2
         asl.l   #$1,d0                          ; 088F4
@@ -1466,7 +1466,7 @@ CodeCheck:
         adda.l  #dat_001_00184,a0               ; 0890E
         move.w  (a0),d1                         ; 08914
         asr.w   #$4,d1                          ; 08916
-        move.w  (dat_002_02972).l,d2            ; 08918
+        move.w  (CodeValue1).l,d2               ; 08918
         move.w  $8(a7),d3                       ; 0891E
         eor.w   d2,d3                           ; 08922
         move.w  d0,-$6(a6)                      ; 08924
@@ -1474,7 +1474,7 @@ CodeCheck:
         btst    #$0,d3                          ; 0892C
         beq.b   l_000_08960                     ; 08930
         asl.w   #$1,d0                          ; 08932
-        move.w  (dat_002_02974).l,d3            ; 08934
+        move.w  (CodeValue2).l,d3               ; 08934
         andi.w  #$1,d3                          ; 0893A
         add.w   d3,d0                           ; 0893E
         move.w  d0,-$4(a6)                      ; 08940
@@ -1486,12 +1486,12 @@ CodeCheck:
         add.w   d2,d0                           ; 08952
         sub.w   d1,d0                           ; 08954
         andi.w  #$f,d0                          ; 08956
-        move.w  d0,(dat_002_02974).l            ; 0895A
+        move.w  d0,(CodeValue2).l               ; 0895A
 l_000_08960:
         move.w  -$6(a6),d0                      ; 08960
         asl.w   #$1,d0                          ; 08964
-        move.w  (dat_002_02974).l,d1            ; 08966
-        move.w  (dat_002_02972).l,d2            ; 0896C
+        move.w  (CodeValue2).l,d1               ; 08966
+        move.w  (CodeValue1).l,d2               ; 0896C
         sub.w   d2,d1                           ; 08972
         add.w   -$8(a6),d1                      ; 08974
         andi.w  #$f,d1                          ; 08978
@@ -1514,11 +1514,11 @@ l_000_08960:
         cmp.w   d0,d1                           ; 089AC
         bne.b   l_000_089E0                     ; 089AE
 l_000_089B0:
-        move.w  (dat_002_02976).l,d0            ; 089B0
+        move.w  (CodeValue4).l,d0               ; 089B0
         ext.l   d0                              ; 089B6
-        move.w  (dat_002_02978).l,d1            ; 089B8
+        move.w  (CodeValue3).l,d1               ; 089B8
         ext.l   d1                              ; 089BE
-        move.w  (dat_002_02972).l,d2            ; 089C0
+        move.w  (CodeValue1).l,d2               ; 089C0
         ext.l   d2                              ; 089C6
         move.l  d2,-(a7)                        ; 089C8
         move.l  d1,-(a7)                        ; 089CA
@@ -1530,11 +1530,11 @@ l_000_089B0:
         move.w  d0,-$2(a6)                      ; 089DA
         bra.b   l_000_08A0C                     ; 089DE
 l_000_089E0:
-        move.w  (dat_002_02974).l,d0            ; 089E0
+        move.w  (CodeValue2).l,d0               ; 089E0
         ext.l   d0                              ; 089E6
-        move.w  (dat_002_02978).l,d1            ; 089E8
+        move.w  (CodeValue3).l,d1               ; 089E8
         ext.l   d1                              ; 089EE
-        move.w  (dat_002_02972).l,d2            ; 089F0
+        move.w  (CodeValue1).l,d2               ; 089F0
         ext.l   d2                              ; 089F6
         move.l  d2,-(a7)                        ; 089F8
         move.l  d1,-(a7)                        ; 089FA
@@ -1544,7 +1544,7 @@ l_000_089E0:
         lea.l   $10(a7),a7                      ; 08A04
         move.w  d0,-$2(a6)                      ; 08A08
 l_000_08A0C:
-        move.w  (dat_002_0297A).l,d0            ; 08A0C
+        move.w  (CodeHashValue).l,d0            ; 08A0C
         ext.l   d0                              ; 08A12
         asl.l   #$1,d0                          ; 08A14
         movea.l d0,a0                           ; 08A16
@@ -1565,7 +1565,7 @@ FreeTitlePictures:
         moveq   #$0,d0                          ; 08A30
         move.w  (FrontBMHD).l,d0                ; 08A32
         moveq   #$0,d1                          ; 08A38
-        move.w  (dat_002_02936).l,d1            ; 08A3A
+        move.w  (PictureBytes).l,d1             ; 08A3A
         move.l  d1,-(a7)                        ; 08A40
         move.l  d0,-(a7)                        ; 08A42
         movea.l (FrontBitMap).l,a0              ; 08A44
@@ -1575,7 +1575,7 @@ FreeTitlePictures:
         moveq   #$0,d0                          ; 08A58
         move.w  (PanelBMHD).l,d0                ; 08A5A
         moveq   #$0,d1                          ; 08A60
-        move.w  (dat_002_02906).l,d1            ; 08A62
+        move.w  (PanelBMHDHeight).l,d1          ; 08A62
         move.l  d1,-(a7)                        ; 08A68
         move.l  d0,-(a7)                        ; 08A6A
         movea.l (PanelBitMap).l,a0              ; 08A6C
@@ -1585,22 +1585,22 @@ FreeTitlePictures:
         rts                                     ; 08A80
 
 ;-------------------------------------------------------------------------------
-; SaveTitleBitMap - Keeps the title picture's plane pointers (dat_002_028EC-028FC) if
+; SaveTitleBitMap - Keeps the title picture's plane pointers (TitlePlane0-028FC) if
 ; dat_071_001A6 is set.
 ;-------------------------------------------------------------------------------
 SaveTitleBitMap:
         tst.b   (dat_071_001A6).l               ; 08A82
         beq.b   l_000_08AD0                     ; 08A88
         movea.l (TitleBitMap).l,a0              ; 08A8A
-        move.l  $8(a0),(dat_002_028EC).l        ; 08A90
+        move.l  $8(a0),(TitlePlane0).l          ; 08A90
         movea.l (TitleBitMap).l,a0              ; 08A98
-        move.l  $c(a0),(dat_002_028F0).l        ; 08A9E
+        move.l  $c(a0),(TitlePlane1).l          ; 08A9E
         movea.l (TitleBitMap).l,a0              ; 08AA6
-        move.l  $10(a0),(dat_002_028F4).l       ; 08AAC
+        move.l  $10(a0),(TitlePlane2).l         ; 08AAC
         movea.l (TitleBitMap).l,a0              ; 08AB4
-        move.l  $14(a0),(dat_002_028F8).l       ; 08ABA
+        move.l  $14(a0),(TitlePlane3).l         ; 08ABA
         movea.l (TitleBitMap).l,a0              ; 08AC2
-        move.l  $18(a0),(dat_002_028FC).l       ; 08AC8
+        move.l  $18(a0),(TitlePlane4).l         ; 08AC8
 l_000_08AD0:
         rts                                     ; 08AD0
 
@@ -1611,13 +1611,13 @@ AllocGameBuffers:
         link.w  a6,#$fffc                       ; 08AD2
         movem.l a2,-(a7)                        ; 08AD6
         movea.l (PanelBitMap).l,a0              ; 08ADA
-        move.l  $8(a0),(dat_002_02918).l        ; 08AE0
+        move.l  $8(a0),(PanelPlane0).l          ; 08AE0
         movea.l (PanelBitMap).l,a0              ; 08AE8
-        move.l  $c(a0),(dat_002_0291C).l        ; 08AEE
+        move.l  $c(a0),(PanelPlane1).l          ; 08AEE
         movea.l (PanelBitMap).l,a0              ; 08AF6
-        move.l  $10(a0),(dat_002_02920).l       ; 08AFC
+        move.l  $10(a0),(PanelPlane2).l         ; 08AFC
         movea.l (PanelBitMap).l,a0              ; 08B04
-        move.l  $14(a0),(dat_002_02924).l       ; 08B0A
+        move.l  $14(a0),(PanelPlane3).l         ; 08B0A
         move.l  #$10002,-(a7)                   ; 08B12
         moveq   #$20,d0                         ; 08B18
         move.l  d0,-(a7)                        ; 08B1A
@@ -1630,20 +1630,20 @@ AllocGameBuffers:
         jsr     (exit).l                        ; 08B34
         addq.l  #$4,a7                          ; 08B3A
 l_000_08B3C:
-        movea.l (dat_002_02918).l,a0            ; 08B3C
+        movea.l (PanelPlane0).l,a0              ; 08B3C
         adda.w  #$2d0,a0                        ; 08B42
         move.l  a0,(dat_002_0295C).l            ; 08B46
-        movea.l (dat_002_0291C).l,a0            ; 08B4C
+        movea.l (PanelPlane1).l,a0              ; 08B4C
         adda.w  #$2d0,a0                        ; 08B52
         move.l  a0,(dat_002_02960).l            ; 08B56
-        movea.l (dat_002_02920).l,a0            ; 08B5C
+        movea.l (PanelPlane2).l,a0              ; 08B5C
         adda.w  #$2d0,a0                        ; 08B62
         move.l  a0,(dat_002_02964).l            ; 08B66
-        movea.l (dat_002_02924).l,a0            ; 08B6C
+        movea.l (PanelPlane3).l,a0              ; 08B6C
         adda.w  #$2d0,a0                        ; 08B72
         move.l  a0,(dat_002_02968).l            ; 08B76
         move.w  (FrontBMHD).l,d0                ; 08B7C
-        move.w  (dat_002_02936).l,d1            ; 08B82
+        move.w  (PictureBytes).l,d1             ; 08B82
         mulu.w  d1,d0                           ; 08B88
         lsr.l   #$3,d0                          ; 08B8A
         move.l  #$10002,-(a7)                   ; 08B8C
@@ -1651,7 +1651,7 @@ l_000_08B3C:
         move.l  d0,-$4(a6)                      ; 08B94
         jsr     (_AllocMem).l                   ; 08B98
         addq.l  #$8,a7                          ; 08B9E
-        move.l  d0,(dat_002_0292C).l            ; 08BA0
+        move.l  d0,(PanelPieceMask).l           ; 08BA0
         tst.l   d0                              ; 08BA6
         bne.b   l_000_08BB8                     ; 08BA8
         move.l  #$fffffc18,-(a7)                ; 08BAA
@@ -1660,21 +1660,21 @@ l_000_08B3C:
 l_000_08BB8:
         movea.l (FrontBitMap).l,a1              ; 08BB8
         movea.l $8(a1),a0                       ; 08BBE
-        move.l  a0,(dat_002_02948).l            ; 08BC2
+        move.l  a0,(PanelPiecePlane0).l         ; 08BC2
         movea.l (FrontBitMap).l,a2              ; 08BC8
         movea.l $c(a2),a1                       ; 08BCE
-        move.l  a1,(dat_002_0294C).l            ; 08BD2
+        move.l  a1,(PanelPiecePlane1).l         ; 08BD2
         movea.l (FrontBitMap).l,a2              ; 08BD8
         movea.l $10(a2),a0                      ; 08BDE
-        move.l  a0,(dat_002_02950).l            ; 08BE2
+        move.l  a0,(PanelPiecePlane2).l         ; 08BE2
         movea.l (FrontBitMap).l,a2              ; 08BE8
         movea.l $14(a2),a1                      ; 08BEE
-        move.l  a1,(dat_002_02954).l            ; 08BF2
-        move.l  (dat_002_0292C).l,-(a7)         ; 08BF8
+        move.l  a1,(PanelPiecePlane3).l         ; 08BF2
+        move.l  (PanelPieceMask).l,-(a7)        ; 08BF8
         move.l  a1,-(a7)                        ; 08BFE
-        move.l  (dat_002_02950).l,-(a7)         ; 08C00
-        move.l  (dat_002_0294C).l,-(a7)         ; 08C06
-        move.l  (dat_002_02948).l,-(a7)         ; 08C0C
+        move.l  (PanelPiecePlane2).l,-(a7)      ; 08C00
+        move.l  (PanelPiecePlane1).l,-(a7)      ; 08C06
+        move.l  (PanelPiecePlane0).l,-(a7)      ; 08C0C
         move.l  -$4(a6),-(a7)                   ; 08C12
         bsr.b   CopyAndOr3                      ; 08C16
         lea.l   $18(a7),a7                      ; 08C18
@@ -1764,7 +1764,7 @@ OpenKeyboard:
         move.l  d0,-(a7)                        ; 08CDE
         move.l  (dat_001_001FC).l,-(a7)         ; 08CE0
         move.l  d0,-(a7)                        ; 08CE6
-        pea.l   (dat_001_00228).l               ; 08CE8
+        pea.l   (StrKeyboardDevice).l           ; 08CE8
         jsr     (_OpenDevice).l                 ; 08CEE
         lea.l   $10(a7),a7                      ; 08CF4
         move.l  (dat_001_00224).l,-(a7)         ; 08CF8
@@ -1779,7 +1779,7 @@ OpenKeyboard:
         move.l  a1,$28(a0)                      ; 08D26
         move.w  #$9,$1c(a0)                     ; 08D2A
         move.l  a0,-(a7)                        ; 08D30
-        move.l  a1,(dat_002_029A4).l            ; 08D32
+        move.l  a1,(KeyboardRequest).l          ; 08D32
         jsr     (_SendIO).l                     ; 08D38
         addq.l  #$4,a7                          ; 08D3E
         rts                                     ; 08D40
@@ -1800,7 +1800,7 @@ ReadKeyEvent:
         unlk    a6                              ; 08D5E
         rts                                     ; 08D60
 l_000_08D62:
-        movea.l (dat_002_029A4).l,a0            ; 08D62
+        movea.l (KeyboardRequest).l,a0          ; 08D62
         move.w  $6(a0),d0                       ; 08D68
         clr.w   $6(a0)                          ; 08D6C
         move.l  (dat_001_001FC).l,-(a7)         ; 08D70
@@ -1819,7 +1819,7 @@ PushKey:
         move.w  #$1,(dat_001_0024A).l           ; 08D8E
         move.b  $b(a6),d0                       ; 08D96
         ext.w   d0                              ; 08D9A
-        move.w  d0,(dat_002_029C0).l            ; 08D9C
+        move.w  d0,(LastKey).l                  ; 08D9C
         unlk    a6                              ; 08DA2
         rts                                     ; 08DA4
 
@@ -1833,7 +1833,7 @@ GetKey:
         tst.w   (dat_001_0024A).l               ; 08DAA
         beq.b   l_000_08DC2                     ; 08DB0
         clr.w   (dat_001_0024A).l               ; 08DB2
-        move.w  (dat_002_029C0).l,d0            ; 08DB8
+        move.w  (LastKey).l,d0                  ; 08DB8
         unlk    a6                              ; 08DBE
         rts                                     ; 08DC0
 l_000_08DC2:
@@ -1876,15 +1876,15 @@ l_000_08E1E:
         rts                                     ; 08E26
 
 ;-------------------------------------------------------------------------------
-; OpenTimer - Opens timer.device (UNIT_MICROHZ) into dat_002_0297C.
+; OpenTimer - Opens timer.device (UNIT_MICROHZ) into TimerRequest.
 ;-------------------------------------------------------------------------------
 OpenTimer:
         link.w  a6,#$fffe                       ; 08E28
         moveq   #$0,d0                          ; 08E2C
         move.l  d0,-(a7)                        ; 08E2E
-        pea.l   (dat_002_0297C).l               ; 08E30
+        pea.l   (TimerRequest).l                ; 08E30
         move.l  d0,-(a7)                        ; 08E36
-        pea.l   (dat_001_00250).l               ; 08E38
+        pea.l   (StrTimerDevice).l              ; 08E38
         jsr     (_OpenDevice).l                 ; 08E3E
         lea.l   $10(a7),a7                      ; 08E44
         move.w  d0,-$2(a6)                      ; 08E48
@@ -1904,7 +1904,7 @@ ReadTime:
         move.l  a0,(dat_002_02986).l            ; 08E64
         move.l  a0,(dat_002_0298A).l            ; 08E6A
         move.w  #$a,(dat_002_02998).l           ; 08E70
-        pea.l   (dat_002_0297C).l               ; 08E78
+        pea.l   (TimerRequest).l                ; 08E78
         jsr     (_DoIO).l                       ; 08E7E
         addq.l  #$4,a7                          ; 08E84
         move.l  (dat_002_0299C).l,(TimeSeconds).l ; 08E86
@@ -1918,13 +1918,13 @@ ReadTime:
 ;-------------------------------------------------------------------------------
 OpenJoystick:
         link.w  a6,#$fffe                       ; 08E9C
-        move.l  #dat_002_029CA,(dat_002_029E0).l ; 08EA0
+        move.l  #JoystickEvent,(JoystickEventPtr).l ; 08EA0
         moveq   #$0,d0                          ; 08EAA
         move.l  d0,-(a7)                        ; 08EAC
         move.l  d0,-(a7)                        ; 08EAE
         jsr     (_CreatePort).l                 ; 08EB0
         addq.l  #$8,a7                          ; 08EB6
-        move.l  d0,(dat_002_029E4).l            ; 08EB8
+        move.l  d0,(JoystickRequest).l          ; 08EB8
         tst.l   d0                              ; 08EBE
         bne.b   l_000_08ECE                     ; 08EC0
         moveq   #-1,d0                          ; 08EC2
@@ -1932,13 +1932,13 @@ OpenJoystick:
         jsr     (exit).l                        ; 08EC6
         addq.l  #$4,a7                          ; 08ECC
 l_000_08ECE:
-        move.l  (dat_002_029E4).l,-(a7)         ; 08ECE
+        move.l  (JoystickRequest).l,-(a7)       ; 08ECE
         jsr     (_CreateStdIO).l                ; 08ED4
         addq.l  #$4,a7                          ; 08EDA
-        move.l  d0,(dat_002_029C6).l            ; 08EDC
+        move.l  d0,(JoystickPort).l             ; 08EDC
         tst.l   d0                              ; 08EE2
         bne.b   l_000_08F00                     ; 08EE4
-        move.l  (dat_002_029E4).l,-(a7)         ; 08EE6
+        move.l  (JoystickRequest).l,-(a7)       ; 08EE6
         jsr     (_DeletePort).l                 ; 08EEC
         addq.l  #$4,a7                          ; 08EF2
         moveq   #-2,d0                          ; 08EF4
@@ -1947,19 +1947,19 @@ l_000_08ECE:
         addq.l  #$4,a7                          ; 08EFE
 l_000_08F00:
         clr.l   -(a7)                           ; 08F00
-        move.l  (dat_002_029C6).l,-(a7)         ; 08F02
+        move.l  (JoystickPort).l,-(a7)          ; 08F02
         moveq   #$1,d0                          ; 08F08
         move.l  d0,-(a7)                        ; 08F0A
-        pea.l   (dat_001_00262).l               ; 08F0C
+        pea.l   (StrGameportDevice).l           ; 08F0C
         jsr     (_OpenDevice).l                 ; 08F12
         lea.l   $10(a7),a7                      ; 08F18
         move.w  d0,-$2(a6)                      ; 08F1C
         tst.w   d0                              ; 08F20
         beq.b   l_000_08F4C                     ; 08F22
-        move.l  (dat_002_029C6).l,-(a7)         ; 08F24
+        move.l  (JoystickPort).l,-(a7)          ; 08F24
         jsr     (_DeleteStdIO).l                ; 08F2A
         addq.l  #$4,a7                          ; 08F30
-        move.l  (dat_002_029E4).l,-(a7)         ; 08F32
+        move.l  (JoystickRequest).l,-(a7)       ; 08F32
         jsr     (_DeletePort).l                 ; 08F38
         addq.l  #$4,a7                          ; 08F3E
         moveq   #-3,d0                          ; 08F40
@@ -1967,17 +1967,17 @@ l_000_08F00:
         jsr     (exit).l                        ; 08F44
         addq.l  #$4,a7                          ; 08F4A
 l_000_08F4C:
-        move.l  #dat_002_029CA,(dat_002_029C2).l ; 08F4C
+        move.l  #JoystickEvent,(JoystickEventPtr2).l ; 08F4C
         moveq   #$3,d0                          ; 08F56
         move.l  d0,-(a7)                        ; 08F58
         bsr.w   SetJoystickType                 ; 08F5A
         addq.l  #$4,a7                          ; 08F5E
         tst.l   d0                              ; 08F60
         beq.b   l_000_08F8C                     ; 08F62
-        move.l  (dat_002_029C6).l,-(a7)         ; 08F64
+        move.l  (JoystickPort).l,-(a7)          ; 08F64
         jsr     (_DeleteStdIO).l                ; 08F6A
         addq.l  #$4,a7                          ; 08F70
-        move.l  (dat_002_029E4).l,-(a7)         ; 08F72
+        move.l  (JoystickRequest).l,-(a7)       ; 08F72
         jsr     (_DeletePort).l                 ; 08F78
         addq.l  #$4,a7                          ; 08F7E
         moveq   #-4,d0                          ; 08F80
@@ -1988,10 +1988,10 @@ l_000_08F8C:
         bsr.w   SetJoystickTrigger              ; 08F8C
         tst.l   d0                              ; 08F90
         beq.b   l_000_08FBC                     ; 08F92
-        move.l  (dat_002_029C6).l,-(a7)         ; 08F94
+        move.l  (JoystickPort).l,-(a7)          ; 08F94
         jsr     (_DeleteStdIO).l                ; 08F9A
         addq.l  #$4,a7                          ; 08FA0
-        move.l  (dat_002_029E4).l,-(a7)         ; 08FA2
+        move.l  (JoystickRequest).l,-(a7)       ; 08FA2
         jsr     (_DeletePort).l                 ; 08FA8
         addq.l  #$4,a7                          ; 08FAE
         moveq   #-4,d0                          ; 08FB0
@@ -1999,15 +1999,15 @@ l_000_08F8C:
         jsr     (exit).l                        ; 08FB4
         addq.l  #$4,a7                          ; 08FBA
 l_000_08FBC:
-        movea.l (dat_002_029C6).l,a0            ; 08FBC
+        movea.l (JoystickPort).l,a0             ; 08FBC
         move.w  #$9,$1c(a0)                     ; 08FC2
-        movea.l (dat_002_029C6).l,a0            ; 08FC8
-        move.l  #dat_002_029CA,$28(a0)          ; 08FCE
+        movea.l (JoystickPort).l,a0             ; 08FC8
+        move.l  #JoystickEvent,$28(a0)          ; 08FCE
         moveq   #$16,d0                         ; 08FD6
-        movea.l (dat_002_029C6).l,a0            ; 08FD8
+        movea.l (JoystickPort).l,a0             ; 08FD8
         move.l  d0,$24(a0)                      ; 08FDE
         clr.b   $1e(a0)                         ; 08FE2
-        movea.l (dat_002_029C6).l,a0            ; 08FE6
+        movea.l (JoystickPort).l,a0             ; 08FE6
         move.l  d0,$24(a0)                      ; 08FEC
         move.l  a0,-(a7)                        ; 08FF0
         jsr     (_SendIO).l                     ; 08FF2
@@ -2022,7 +2022,7 @@ l_000_08FBC:
 ;-------------------------------------------------------------------------------
 ReadJoystick:
         link.w  a6,#$fffa                       ; 08FFE
-        move.l  (dat_002_029E4).l,-(a7)         ; 09002
+        move.l  (JoystickRequest).l,-(a7)       ; 09002
         jsr     (_GetMsg).l                     ; 09008
         addq.l  #$4,a7                          ; 0900E
         move.l  d0,-$6(a6)                      ; 09010
@@ -2031,7 +2031,7 @@ ReadJoystick:
         clr.b   (dat_071_001FD).l               ; 09018
         bra.b   l_000_09066                     ; 0901E
 l_000_09020:
-        movea.l (dat_002_029C2).l,a0            ; 09020
+        movea.l (JoystickEventPtr2).l,a0        ; 09020
         move.w  $6(a0),d0                       ; 09026
         move.w  d0,-$2(a6)                      ; 0902A
         tst.w   d0                              ; 0902E
@@ -2045,9 +2045,9 @@ l_000_09040:
         bne.b   l_000_0904E                     ; 09046
         jsr     (FireReleased).l                ; 09048
 l_000_0904E:
-        movea.l (dat_002_029C2).l,a0            ; 0904E
+        movea.l (JoystickEventPtr2).l,a0        ; 0904E
         clr.w   $6(a0)                          ; 09054
-        move.l  (dat_002_029C6).l,-(a7)         ; 09058
+        move.l  (JoystickPort).l,-(a7)          ; 09058
         jsr     (_SendIO).l                     ; 0905E
         addq.l  #$4,a7                          ; 09064
 l_000_09066:
@@ -2123,26 +2123,26 @@ l_000_09140:
 ;-------------------------------------------------------------------------------
 SetJoystickType:
         link.w  a6,#$0                          ; 09144
-        movea.l (dat_002_029C6).l,a0            ; 09148
+        movea.l (JoystickPort).l,a0             ; 09148
         move.w  #$b,$1c(a0)                     ; 0914E
         moveq   #$1,d0                          ; 09154
-        movea.l (dat_002_029C6).l,a0            ; 09156
+        movea.l (JoystickPort).l,a0             ; 09156
         move.l  d0,$24(a0)                      ; 0915C
-        movea.l (dat_002_029C6).l,a0            ; 09160
-        move.l  (dat_002_029E0).l,$28(a0)       ; 09166
+        movea.l (JoystickPort).l,a0             ; 09160
+        move.l  (JoystickEventPtr).l,$28(a0)    ; 09166
         move.w  $a(a6),d0                       ; 0916E
-        movea.l (dat_002_029E0).l,a0            ; 09172
+        movea.l (JoystickEventPtr).l,a0         ; 09172
         move.b  d0,(a0)                         ; 09178
-        move.l  (dat_002_029C6).l,-(a7)         ; 0917A
+        move.l  (JoystickPort).l,-(a7)          ; 0917A
         jsr     (_SendIO).l                     ; 09180
         addq.l  #$4,a7                          ; 09186
-        move.l  (dat_002_029E4).l,-(a7)         ; 09188
+        move.l  (JoystickRequest).l,-(a7)       ; 09188
         jsr     (_WaitPort).l                   ; 0918E
         addq.l  #$4,a7                          ; 09194
-        move.l  (dat_002_029E4).l,-(a7)         ; 09196
+        move.l  (JoystickRequest).l,-(a7)       ; 09196
         jsr     (_GetMsg).l                     ; 0919C
         addq.l  #$4,a7                          ; 091A2
-        movea.l (dat_002_029C6).l,a0            ; 091A4
+        movea.l (JoystickPort).l,a0             ; 091A4
         move.b  $1f(a0),d0                      ; 091AA
         ext.w   d0                              ; 091AE
         ext.l   d0                              ; 091B0
@@ -2154,13 +2154,13 @@ SetJoystickType:
 ;-------------------------------------------------------------------------------
 SetJoystickTrigger:
         link.w  a6,#$fff8                       ; 091B6
-        movea.l (dat_002_029C6).l,a0            ; 091BA
+        movea.l (JoystickPort).l,a0             ; 091BA
         move.w  #$d,$1c(a0)                     ; 091C0
         moveq   #$8,d0                          ; 091C6
-        movea.l (dat_002_029C6).l,a0            ; 091C8
+        movea.l (JoystickPort).l,a0             ; 091C8
         move.l  d0,$24(a0)                      ; 091CE
         lea.l   -$8(a6),a0                      ; 091D2
-        movea.l (dat_002_029C6).l,a1            ; 091D6
+        movea.l (JoystickPort).l,a1             ; 091D6
         move.l  a0,$28(a1)                      ; 091DC
         move.w  #$3,-$8(a6)                     ; 091E0
         clr.w   -$6(a6)                         ; 091E6
@@ -2184,16 +2184,16 @@ CloseJoystick:
         move.l  (dat_001_001FC).l,-(a7)         ; 09210
         jsr     (_DeleteStdIO).l                ; 09216
         addq.l  #$4,a7                          ; 0921C
-        pea.l   (dat_002_0297C).l               ; 0921E
+        pea.l   (TimerRequest).l                ; 0921E
         jsr     (_CloseDevice).l                ; 09224
         addq.l  #$4,a7                          ; 0922A
         clr.l   -(a7)                           ; 0922C
         bsr.w   SetJoystickType                 ; 0922E
         addq.l  #$4,a7                          ; 09232
-        move.l  (dat_002_029C6).l,-(a7)         ; 09234
+        move.l  (JoystickPort).l,-(a7)          ; 09234
         jsr     (_CloseDevice).l                ; 0923A
         addq.l  #$4,a7                          ; 09240
-        move.l  (dat_002_029C6).l,-(a7)         ; 09242
+        move.l  (JoystickPort).l,-(a7)          ; 09242
         jsr     (_DeleteStdIO).l                ; 09248
         addq.l  #$4,a7                          ; 0924E
         moveq   #$0,d0                          ; 09250
@@ -2224,8 +2224,8 @@ InitMouse:
         move.w  -$2(a6),d1                      ; 0928E
         asr.w   #$8,d1                          ; 09292
         andi.w  #$ff,d1                         ; 09294
-        move.w  d0,(dat_002_029FE).l            ; 09298
-        move.w  d1,(dat_002_02A00).l            ; 0929E
+        move.w  d0,(MouseLastX).l               ; 09298
+        move.w  d1,(MouseLastY).l               ; 0929E
         bsr.w   AddMouseInterrupt               ; 092A4
         unlk    a6                              ; 092A8
         rts                                     ; 092AA
@@ -2264,9 +2264,9 @@ MouseInterrupt:
         asr.w   #$8,d1                          ; 092F8
         andi.w  #$ff,d1                         ; 092FA
         move.w  d0,-$6(a6)                      ; 092FE
-        sub.w   (dat_002_029FE).l,d0            ; 09302
+        sub.w   (MouseLastX).l,d0               ; 09302
         move.w  d1,-$8(a6)                      ; 09308
-        sub.w   (dat_002_02A00).l,d1            ; 0930C
+        sub.w   (MouseLastY).l,d1               ; 0930C
         move.w  d0,-$a(a6)                      ; 09312
         move.w  d1,-$c(a6)                      ; 09316
         cmpi.w  #$ff80,d0                       ; 0931A
@@ -2341,8 +2341,8 @@ l_000_09408:
         move.l  d1,d0                           ; 09408
 l_000_0940A:
         move.w  d0,(MouseY).l                   ; 0940A
-        move.w  -$6(a6),(dat_002_029FE).l       ; 09410
-        move.w  -$8(a6),(dat_002_02A00).l       ; 09418
+        move.w  -$6(a6),(MouseLastX).l          ; 09410
+        move.w  -$8(a6),(MouseLastY).l          ; 09418
         move.w  (dat_071_00144).l,d0            ; 09420
         addq.w  #$1,d0                          ; 09426
         move.w  d0,(dat_071_00144).l            ; 09428
@@ -2390,14 +2390,14 @@ l_000_09480:
         ext.l   d1                              ; 094C2
         asl.l   #$2,d1                          ; 094C4
         movea.l d1,a0                           ; 094C6
-        adda.l  #dat_002_000B2,a0               ; 094C8
-        move.l  (a0),(dat_002_00014).l          ; 094CE
+        adda.l  #CopperBuffer1,a0               ; 094C8
+        move.l  (a0),(GameViewLOFCprList).l     ; 094CE
         move.w  -$16(a6),d0                     ; 094D4
         ext.l   d0                              ; 094D8
         asl.l   #$2,d0                          ; 094DA
         movea.l d0,a0                           ; 094DC
-        adda.l  #dat_002_000BA,a0               ; 094DE
-        move.l  (a0),(dat_002_0002A).l          ; 094E4
+        adda.l  #CopperBuffer2,a0               ; 094DE
+        move.l  (a0),(GameViewPortDspIns).l     ; 094E4
         moveq   #$10,d0                         ; 094EA
         move.l  d0,-(a7)                        ; 094EC
         move.l  -$10(a6),-(a7)                  ; 094EE
@@ -2408,14 +2408,14 @@ l_000_09480:
         ext.l   d0                              ; 09506
         asl.l   #$2,d0                          ; 09508
         movea.l d0,a0                           ; 0950A
-        adda.l  #dat_002_000B2,a0               ; 0950C
-        move.l  (a0),(dat_002_00014).l          ; 09512
+        adda.l  #CopperBuffer1,a0               ; 0950C
+        move.l  (a0),(GameViewLOFCprList).l     ; 09512
         move.w  -$16(a6),d0                     ; 09518
         ext.l   d0                              ; 0951C
         asl.l   #$2,d0                          ; 0951E
         movea.l d0,a0                           ; 09520
-        adda.l  #dat_002_000BA,a0               ; 09522
-        move.l  (a0),(dat_002_0002A).l          ; 09528
+        adda.l  #CopperBuffer2,a0               ; 09522
+        move.l  (a0),(GameViewPortDspIns).l     ; 09528
         move.b  (FadeLevel).l,d0                ; 0952E
         move.b  (FadeTarget).l,d1               ; 09534
         cmp.b   d1,d0                           ; 0953A
@@ -2456,7 +2456,7 @@ AddMouseInterrupt:
         move.l  #dat_001_0027C,(dat_002_029F2).l ; 095B4
         lea.l   MouseInterrupt(pc),a0           ; 095BE
         move.l  a0,(dat_002_029FA).l            ; 095C2
-        pea.l   (dat_002_029E8).l               ; 095C8
+        pea.l   (MouseInterruptNode).l          ; 095C8
         moveq   #$5,d0                          ; 095CE
         move.l  d0,-(a7)                        ; 095D0
         jsr     (_AddIntServer).l               ; 095D2
@@ -2467,7 +2467,7 @@ AddMouseInterrupt:
 ; RemoveMouseInterrupt - RemIntServer the mouse interrupt.
 ;-------------------------------------------------------------------------------
 RemoveMouseInterrupt:
-        pea.l   (dat_002_029E8).l               ; 095DC
+        pea.l   (MouseInterruptNode).l          ; 095DC
         moveq   #$5,d0                          ; 095E2
         move.l  d0,-(a7)                        ; 095E4
         jsr     (_RemIntServer).l               ; 095E6
@@ -2516,7 +2516,7 @@ UnmakePort:
 LoadSound201:
         moveq   #$23,d0                         ; 09660
         move.l  d0,-(a7)                        ; 09662
-        pea.l   (dat_001_00280).l               ; 09664
+        pea.l   (StrTextText201).l              ; 09664
         jsr     (LoadSound).l                   ; 0966A
         addq.l  #$8,a7                          ; 09670
         tst.l   d0                              ; 09672
@@ -2551,7 +2551,7 @@ LoadMusicSamples:
         clr.l   -$8(a6)                         ; 096C2
         moveq   #$d,d0                          ; 096C6
         move.l  d0,-(a7)                        ; 096C8
-        pea.l   (dat_001_00291).l               ; 096CA
+        pea.l   (StrTextTexti0a).l              ; 096CA
         jsr     (LoadSound).l                   ; 096D0
         addq.l  #$8,a7                          ; 096D6
         moveq   #$e,d0                          ; 096D8
@@ -2562,7 +2562,7 @@ LoadMusicSamples:
         addq.l  #$8,a7                          ; 096E6
         moveq   #$f,d0                          ; 096E8
         move.l  d0,-(a7)                        ; 096EA
-        pea.l   (dat_001_002A2).l               ; 096EC
+        pea.l   (StrTextTexti0b).l              ; 096EC
         jsr     (LoadSound).l                   ; 096F2
         addq.l  #$8,a7                          ; 096F8
         moveq   #$10,d0                         ; 096FA
@@ -2573,7 +2573,7 @@ LoadMusicSamples:
         addq.l  #$8,a7                          ; 09708
         moveq   #$11,d0                         ; 0970A
         move.l  d0,-(a7)                        ; 0970C
-        pea.l   (dat_001_002B3).l               ; 0970E
+        pea.l   (StrTextTexti1).l               ; 0970E
         jsr     (LoadSound).l                   ; 09714
         addq.l  #$8,a7                          ; 0971A
         moveq   #$12,d0                         ; 0971C
@@ -2584,7 +2584,7 @@ LoadMusicSamples:
         addq.l  #$8,a7                          ; 0972A
         moveq   #$13,d0                         ; 0972C
         move.l  d0,-(a7)                        ; 0972E
-        pea.l   (dat_001_002C3).l               ; 09730
+        pea.l   (StrTextTexti2).l               ; 09730
         jsr     (LoadSound).l                   ; 09736
         addq.l  #$8,a7                          ; 0973C
         moveq   #$14,d0                         ; 0973E
@@ -2619,7 +2619,7 @@ LoadMusicSamples:
         addq.l  #$8,a7                          ; 0978C
         moveq   #$19,d0                         ; 0978E
         move.l  d0,-(a7)                        ; 09790
-        pea.l   (dat_001_002D3).l               ; 09792
+        pea.l   (StrTextTexti3).l               ; 09792
         jsr     (LoadSound).l                   ; 09798
         addq.l  #$8,a7                          ; 0979E
         moveq   #$1a,d0                         ; 097A0
@@ -2630,7 +2630,7 @@ LoadMusicSamples:
         addq.l  #$8,a7                          ; 097AE
         moveq   #$1b,d0                         ; 097B0
         move.l  d0,-(a7)                        ; 097B2
-        pea.l   (dat_001_002E3).l               ; 097B4
+        pea.l   (StrTextTexti4).l               ; 097B4
         jsr     (LoadSound).l                   ; 097BA
         addq.l  #$8,a7                          ; 097C0
         moveq   #$1c,d0                         ; 097C2
@@ -2665,7 +2665,7 @@ LoadMusicSamples:
         addq.l  #$8,a7                          ; 09810
         moveq   #$21,d0                         ; 09812
         move.l  d0,-(a7)                        ; 09814
-        pea.l   (dat_001_002F3).l               ; 09816
+        pea.l   (StrTextTexti5).l               ; 09816
         jsr     (LoadSound).l                   ; 0981C
         addq.l  #$8,a7                          ; 09822
         moveq   #$22,d0                         ; 09824
@@ -2794,7 +2794,7 @@ LoadEngineSounds:
         clr.w   -$2(a6)                         ; 099CE
         moveq   #$2,d0                          ; 099D2
         move.l  d0,-(a7)                        ; 099D4
-        pea.l   (dat_001_00303).l               ; 099D6
+        pea.l   (StrTextTextegn).l              ; 099D6
         jsr     (LoadSound).l                   ; 099DC
         addq.l  #$8,a7                          ; 099E2
         tst.l   d0                              ; 099E4
@@ -2804,7 +2804,7 @@ LoadEngineSounds:
 l_000_099F0:
         moveq   #$2,d0                          ; 099F0
         move.l  d0,-(a7)                        ; 099F2
-        pea.l   (dat_001_00314).l               ; 099F4
+        pea.l   (StrTextTextegn2).l             ; 099F4
         jsr     (LoadSound).l                   ; 099FA
         addq.l  #$8,a7                          ; 09A00
         tst.l   d0                              ; 09A02
@@ -2872,7 +2872,7 @@ l_000_09AA0:
 l_000_09AE6:
         moveq   #$5,d0                          ; 09AE6
         move.l  d0,-(a7)                        ; 09AE8
-        pea.l   (dat_001_00326).l               ; 09AEA
+        pea.l   (StrTextTexttre).l              ; 09AEA
         jsr     (LoadSound).l                   ; 09AF0
         addq.l  #$8,a7                          ; 09AF6
         tst.l   d0                              ; 09AF8
@@ -2896,7 +2896,7 @@ l_000_09B04:
 l_000_09B3E:
         moveq   #$b,d0                          ; 09B3E
         move.l  d0,-(a7)                        ; 09B40
-        pea.l   (dat_001_00337).l               ; 09B42
+        pea.l   (StrTextTextger).l              ; 09B42
         jsr     (LoadSound).l                   ; 09B48
         addq.l  #$8,a7                          ; 09B4E
         tst.l   d0                              ; 09B50
@@ -2921,7 +2921,7 @@ l_000_09B68:
         bset    #$1,(SoundFlags).l              ; 09B92
 l_000_09B9A:
         clr.l   -(a7)                           ; 09B9A
-        pea.l   (dat_001_00348).l               ; 09B9C
+        pea.l   (StrTextTextcpt).l              ; 09B9C
         jsr     (LoadSound).l                   ; 09BA2
         addq.l  #$8,a7                          ; 09BA8
         tst.l   d0                              ; 09BAA
@@ -2943,7 +2943,7 @@ l_000_09B9A:
 l_000_09BE6:
         moveq   #$8,d0                          ; 09BE6
         move.l  d0,-(a7)                        ; 09BE8
-        pea.l   (dat_001_00359).l               ; 09BEA
+        pea.l   (StrTextTextwnd).l              ; 09BEA
         jsr     (LoadSound).l                   ; 09BF0
         addq.l  #$8,a7                          ; 09BF6
         tst.l   d0                              ; 09BF8

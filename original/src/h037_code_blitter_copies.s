@@ -7,11 +7,11 @@
 ;===============================================================================
 	CODE_HUNK	h037
 dat_037_00000:
-        dc.l    dat_002_028FC                   ; 00000
-        dc.l    dat_002_028F8                   ; 00004
-        dc.l    dat_002_028F4                   ; 00008
-        dc.l    dat_002_028F0                   ; 0000C
-        dc.l    dat_002_028EC                   ; 00010
+        dc.l    TitlePlane4                     ; 00000
+        dc.l    TitlePlane3                     ; 00004
+        dc.l    TitlePlane2                     ; 00008
+        dc.l    TitlePlane1                     ; 0000C
+        dc.l    TitlePlane0                     ; 00010
 
 ;-------------------------------------------------------------------------------
 ; CopyTitleToScreen - Blits the title picture's five planes (TitleBitMap's saved planes) to the
@@ -63,10 +63,10 @@ BlitCopyGo:
         move.w  d6,$58(a0)                      ; 0008C
         rts                                     ; 00090
 dat_037_00092:
-        dc.l    dat_002_02924                   ; 00092
-        dc.l    dat_002_02920                   ; 00096
-        dc.l    dat_002_0291C                   ; 0009A
-        dc.l    dat_002_02918                   ; 0009E
+        dc.l    PanelPlane3                     ; 00092
+        dc.l    PanelPlane2                     ; 00096
+        dc.l    PanelPlane1                     ; 0009A
+        dc.l    PanelPlane0                     ; 0009E
 l_037_000A2:
         rts                                     ; 000A2
 
@@ -278,12 +278,12 @@ l_037_002BC:
         dbra    d3,l_037_002A6                  ; 002DC
         rts                                     ; 002E0
 dat_037_002E2:
-        dc.l    dat_002_0292C                   ; 002E2
+        dc.l    PanelPieceMask                  ; 002E2
 dat_037_002E6:
-        dc.l    dat_002_02954                   ; 002E6
-        dc.l    dat_002_02950                   ; 002EA
-        dc.l    dat_002_0294C                   ; 002EE
-        dc.l    dat_002_02948                   ; 002F2
+        dc.l    PanelPiecePlane3                ; 002E6
+        dc.l    PanelPiecePlane2                ; 002EA
+        dc.l    PanelPiecePlane1                ; 002EE
+        dc.l    PanelPiecePlane0                ; 002F2
 
 ;-------------------------------------------------------------------------------
 ; DrawPanelPiece - Blits one fixed piece of the panel (from dat_037_002E2) with
