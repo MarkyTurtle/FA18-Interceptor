@@ -39,22 +39,24 @@ before each. Some parts run only every 2nd, 4th, 8th, 16th or 32nd frame (`Frame
 | 5 | `HandleKey`: the keyboard commands (each `Key_` label is named by its key) |
 | 6 | Instrument redraw counters, the fire button (`FirePressed`), `ResetPlayerAircraft` |
 | 8 | The 3D world's objects: which map cell the view is in (`UpdateViewCell`), `DrawObjects` (the visible objects and the scenery list, scaled by distance) |
-| 17 | Aircraft and weapons: `LaunchMissile` (pylons, the flight log's counts) and more |
+| 17 | Objects and weapons: `UpdateAllObjects` (the object slots), `LaunchMissile`, `EnemyMayFire`, `CheckOnTail`, ejecting, the training sequence |
 | 22 | `UpdateObject` (each object's frame), `RecordFrame` (the flight recording) |
-| 30 | Steering from the orientation matrices: probably the computer pilots (they set the control bits, +$65) |
+| 30 | The computer pilots (`ComputerPilot`, `PilotStates`): the states, the manoeuvres, `CombatReactions` |
 | 32 | Attitude and camera: `UpdateAttitude`, `SetAttitude`, `AnglesToMatrix`, `SinCos`, `SetupCamera` |
-| 33 | The 3D view's outline (`PutEdge`, the view's corners: 320 x 180) |
+| 33, 34 | The sky: `DrawSkyAndGround`, `MakeSkyPolygon` (the view above the horizon), `DrawSun` |
 | 18 | Judging the missions (`JudgeMission`, `JudgeF1`..., `CheckMissionTargets`): sets `MissionResult` |
 | 26 | Setting up a mode (`SetupMode`), the camera's opening moves (`FlyBySetup`) |
 | 10 | `DrawModel`: drawing a 3D model (levels of detail, vertices, the plane-test drawing list) |
 | 13, 19, 35 | The shapes' operations (`ShapeOps`: point, line, `ShapePolygon`...), `ClipFillPolygon`, `ProjectPoint` |
 | 38-40 | The radar, the instruments' readouts, the target readout, the text printer, the head-up display |
-| 7, 9, 11, 12, 14, 15, 21, 23-25, 28, 29, 31, 34 | The rest of the game: terrain, scenery, the special shapes - being worked out |
+| 7, 9, 11, 12, 14, 15, 23-25, 28, 29, 31 | The rest of the game: terrain, scenery, the special shapes - being worked out |
 | 20 | Number and text output, the flight log page (`ShowFlightLog`, `ShowLogDate`), `ChecksumPlanes`; the text pages (`SetTextPage`); the security check (`MakeSecurityCode`, `CheckSecurityAnswer`) |
-| 35, 36 | Drawing: the projection, `Plot` and its variants, `DrawLine` (blitter line mode), the copper lists (double-buffered display) |
+| 35, 36 | Drawing: the projection, `Plot` and its variants, `DrawLine` (blitter line mode), the copper lists (double-buffered display), `ClearSkyGround`, `FillPolygonPlane`, `DrawAttitudeIndicator` |
 | 37 | Blitter copies: the title picture and the instrument panel onto the screen |
 | 41-58, 69, 70 | The 3D models (see GAME.md: 41 the F/A-18, 51 missiles, F-16 and MiG, 52 the carrier, 55 the cruise missile, 57 the airliner, 58 animated objects...), drawn by `DrawModel` (hunk 10) through `ModelTable` (hunk 16); and the scenery shapes (42-50, 54-56, 69, 70: `ObjectDrawTable` entries 17-117) |
 | 59-68 | Data tables (some partly mistaken for code by the first trace) |
+| 21 | The palettes: the in-flight palette's 16 fade levels, the yellow flash |
+| 28 | The bay's water areas (`DrawWaterAreas`) and more |
 | 62 | Data in chip RAM (graphics) |
 | 63 | Tables: `SineTable` (a quarter wave in tenths of a degree, 2.14) and others |
 | 64 | The menu and briefing texts: the six missions (F1 VISUAL CONFIRMATION, F2 EMERGENCY DEFENSE, F3 INTERCEPT STOLEN AIRCRAFT, F4 SEARCH AND RESCUE, F5 INTERCEPT INCOMING CRUISE MISSILE, F6 CARRIER SUB MISSION), the flight log page, the training texts; all addressed as numbered text pages (`TextPageTable`) |

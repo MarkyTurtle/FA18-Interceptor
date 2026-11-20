@@ -48,15 +48,20 @@ g.hook('PlotBig', cap_point(2))
 
 SETUP = ('BuildSceneryBits', 'ResetGame', 'SetupMode', 'sub_004_00268', 'sub_004_00392')
 FRAME = ('UpdateViewCell', 'SetupCamera', 'sub_008_00286', 'sub_020_00738', 'sub_000_043F2',
-         'sub_008_00598', 'sub_020_007EA', 'ClearRadarList', 'sub_033_00010', 'sub_028_00B9C',
-         'sub_033_003CE', 'sub_008_0084C', 'sub_008_0085E', 'sub_025_00000', 'sub_023_00000',
+         'sub_008_00598', 'sub_020_007EA', 'ClearRadarList', 'DrawSkyAndGround', 'DrawWaterAreas',
+         'DrawSun', 'sub_008_0084C', 'sub_008_0085E', 'sub_025_00000', 'sub_023_00000',
          'DrawObjects', 'sub_000_072DC')
+
+
+SKY = {}
 
 
 def run(names, verbose=False):
     for n in names:
         try:
             g.call(n, limit=30_000_000)
+            if n == 'DrawSkyAndGround':
+                keep_sky()
         except Exception as e:
             print('error in', n, e)
 
@@ -77,14 +82,31 @@ def view(start=0, heading=None, pitch=None, mode=1):
     return list(OUT)
 
 
+def keep_sky():
+    """After DrawSkyAndGround: the background it made by blitter (ClearSkyGround), which the
+    emulator does not draw - the ground colour (4 land, 6 sea when SeaView is set) and the sky
+    polygon (colour 5) that MakeSkyPolygon left at dat_072_03000 (dat_071_0026E set)."""
+    a = g['dat_072_03000']
+    SKY['sea'] = g.b(g['SeaView']) != 0
+    SKY['poly'] = [(g.w(a + 2 + i * 4), g.w(a + 4 + i * 4)) for i in range(g.w(a))] \
+        if g.b(g['dat_071_0026E']) else []
+
+
 def paint(prims, scale=3, horizon=None):
-    """The sky and the ground behind are the copper's work (colour 0 changed down the screen),
-    not drawn: they are filled in here at the horizon's height."""
+    """The background as the game makes it (keep_sky): the ground colour, then the sky polygon;
+    without one (no DrawSkyAndGround run), sky above `horizon`. Then the primitives in order."""
     pal = render.palette()
-    im = Image.new('RGB', (320 * scale, 180 * scale), pal[5])
-    d = ImageDraw.Draw(im)
-    if horizon is not None:
-        d.rectangle([0, horizon * scale, 320 * scale, 180 * scale], fill=pal[4])
+    d = None
+    if 'poly' in SKY:
+        im = Image.new('RGB', (320 * scale, 180 * scale), pal[6 if SKY['sea'] else 4])
+        d = ImageDraw.Draw(im)
+        if len(SKY['poly']) >= 3:
+            d.polygon([((x + 0.5) * scale, (y + 0.5) * scale) for x, y in SKY['poly']], fill=pal[5])
+    else:
+        im = Image.new('RGB', (320 * scale, 180 * scale), pal[5])
+        d = ImageDraw.Draw(im)
+        if horizon is not None:
+            d.rectangle([0, horizon * scale, 320 * scale, 180 * scale], fill=pal[4])
     for kind, col, ps in prims:
         c = pal[col & 15]
         xy = [((x + 0.5) * scale, (y + 0.5) * scale) for x, y in ps]

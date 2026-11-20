@@ -1,5 +1,6 @@
 ; F/A-18 Interceptor - hunk 34 (code)
-; Used by hunk 33's outline (not worked out yet)
+; Where the horizon crosses the view's edges, for MakeSkyPolygon (not worked out in detail
+; yet).
 ; Included by ../f18_main.s.
 
 ;===============================================================================

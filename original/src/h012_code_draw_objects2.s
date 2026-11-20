@@ -368,25 +368,42 @@ l_012_00398:
 l_012_003BC:
         moveq   #$0,d0                          ; 003BC
         rts                                     ; 003BE
-sub_012_003C0:
-        lea.l   (dat_012_00490).l,a0            ; 003C0
-        bsr.w   sub_012_00400                   ; 003C6
+
+;-------------------------------------------------------------------------------
+; CheckSeaView - sets SeaView when the view looks over the sea (SeaViewTable, by
+; LookupViewTable). Run every other frame.
+;-------------------------------------------------------------------------------
+CheckSeaView:
+        lea.l   (SeaViewTable).l,a0             ; 003C0
+        bsr.w   LookupViewTable                 ; 003C6
         beq.b   l_012_003D6                     ; 003CA
-        move.b  #$1,(dat_071_0026B).l           ; 003CC
+        move.b  #$1,(SeaView).l                 ; 003CC
         rts                                     ; 003D4
 l_012_003D6:
-        move.b  #$0,(dat_071_0026B).l           ; 003D6
+        move.b  #$0,(SeaView).l                 ; 003D6
         rts                                     ; 003DE
-sub_012_003E0:
+
+;-------------------------------------------------------------------------------
+; CheckViewTable2 - Sets dat_071_0026C from the view table at dat_012_006C0 (LookupViewTable),
+; every other frame; used by hunk 28.
+;-------------------------------------------------------------------------------
+CheckViewTable2:
         lea.l   (dat_012_006C0).l,a0            ; 003E0
-        bsr.w   sub_012_00400                   ; 003E6
+        bsr.w   LookupViewTable                 ; 003E6
         beq.b   l_012_003F6                     ; 003EA
         move.b  #$1,(dat_071_0026C).l           ; 003EC
         rts                                     ; 003F4
 l_012_003F6:
         move.b  #$0,(dat_071_0026C).l           ; 003F6
         rts                                     ; 003FE
-sub_012_00400:
+
+;-------------------------------------------------------------------------------
+; LookupViewTable - LookupViewTable(a0 = table): d0 = 1 if the view is listed: the table lists,
+; by ViewBlockZ then ViewBlockX (each a list of values ending -1, then offsets), entries of a
+; height bound (a flag word, 0 = below, then a long against the camera height) followed by
+; lists of dat_071_00220 values, each followed by the ViewOctants that count.
+;-------------------------------------------------------------------------------
+LookupViewTable:
         move.w  (ViewBlockX).l,d0               ; 00400
         move.w  (ViewBlockZ).l,d1               ; 00406
         lea.l   (a0),a1                         ; 0040C
@@ -456,7 +473,9 @@ l_012_00480:
 l_012_0048C:
         moveq   #$0,d0                          ; 0048C
         rts                                     ; 0048E
-dat_012_00490:
+; SeaViewTable - The view table of CheckSeaView: where, how high and looking which way the view
+; shows sea instead of land.
+SeaViewTable:
 	dc.b	$00,$0C,$00,$0D,$00,$0E,$00,$0F,$00,$10,$00,$11,$00,$12,$00,$13
 	dc.b	$FF,$FF,$00,$22,$00,$34,$00,$46,$00,$58,$00,$6A,$00,$7C,$00,$8E
 	dc.b	$00,$98,$00,$11,$00,$12,$00,$13,$00,$14,$FF,$FF,$00,$9E,$00,$9E

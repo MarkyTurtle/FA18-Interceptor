@@ -31,7 +31,9 @@ dat_072_0300A:
 	dc.b	$00
 dat_072_0300E:
 	dcb.b	148,$00
-dat_072_030A2:
+; PanelSkyPolygon - The sky polygon for the attitude indicator (count, then x,y pairs), kept by
+; ClearSkyGround in the cockpit view; count 0 for none.
+PanelSkyPolygon:
 	dcb.b	1374,$00
 dat_072_03600:
 	dcb.b	1536,$00

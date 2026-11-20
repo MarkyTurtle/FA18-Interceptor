@@ -1471,18 +1471,18 @@ GameFrame:
         move.w  #$60,(FrameStage).l             ; 01198
         jsr     (sub_020_007EA).l               ; 011A0
         jsr     (ClearRadarList).l              ; 011A6
-        jsr     (sub_033_00010).l               ; 011AC
+        jsr     (DrawSkyAndGround).l            ; 011AC
         move.w  #$68,(FrameStage).l             ; 011B2
-        move.b  (dat_071_0026B).l,d0            ; 011BA
+        move.b  (SeaView).l,d0                  ; 011BA
         tst.b   d0                              ; 011C0
         beq.b   l_000_011CC                     ; 011C2
         tst.b   (dat_071_00180).l               ; 011C4
         beq.b   l_000_011D2                     ; 011CA
 l_000_011CC:
-        jsr     (sub_028_00B9C).l               ; 011CC
+        jsr     (DrawWaterAreas).l              ; 011CC
 l_000_011D2:
         move.w  #$70,(FrameStage).l             ; 011D2
-        jsr     (sub_033_003CE).l               ; 011DA
+        jsr     (DrawSun).l                     ; 011DA
         cmpi.l  #$f8000000,(dat_071_00436).l    ; 011E0
         ble.w   l_000_01274                     ; 011EA
         move.w  #$78,(FrameStage).l             ; 011EE

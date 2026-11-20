@@ -1,5 +1,6 @@
 ; F/A-18 Interceptor - hunk 21 (code)
-; Data: colour tables (the palette ShowDisplay flashes) (not worked out yet)
+; Data: the palettes - the in-flight palette's 16 fade levels (dat_021_00080: row 0 the
+; brightest, stepped through to fade in and out) and the yellow flash (dat_021_00040).
 ; Included by ../f18_main.s.
 
 ;===============================================================================

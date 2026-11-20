@@ -585,11 +585,11 @@ l_008_006CE:
         move.w  (FrameCount).l,d1               ; 006EE
         andi.w  #$1,d1                          ; 006F4
         bne.b   l_008_0070A                     ; 006F8
-        jsr     (sub_012_003C0).l               ; 006FA
+        jsr     (CheckSeaView).l                ; 006FA
         move.w  #$4d,(FrameStage).l             ; 00700
         bra.b   l_008_00718                     ; 00708
 l_008_0070A:
-        jsr     (sub_012_003E0).l               ; 0070A
+        jsr     (CheckViewTable2).l             ; 0070A
         move.w  #$4e,(FrameStage).l             ; 00710
 l_008_00718:
         movem.l (a7)+,d0-d5/a0                  ; 00718

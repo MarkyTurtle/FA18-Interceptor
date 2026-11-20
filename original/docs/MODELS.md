@@ -127,10 +127,10 @@ coordinates, so these are the game's own frames.
 Colour 9 (orange) is the missiles' exhaust trail; colour 11 (dark green) is the hills and the
 pilot's flight suit.
 
-There are two exceptions. The sky and the ground behind everything come from the copper (colour
-0 changed down the screen), not from drawing, so they are filled in at the horizon. They use colour 5 for the sky and colour 4 for the ground,
-which is a guess: the code that sets those colours has not been found yet. The cockpit
-is left out.
+The background is the one part the emulator cannot draw, because the game clears it by blitter
+(`ClearSkyGround`): the tool paints it from what the game leaves behind - the ground in colour 4
+(land) or 6 (sea, when `SeaView` is set), then the sky polygon that `MakeSkyPolygon` built, in
+colour 5. The cockpit is left out.
 
 ![On the runway](images/view_runway.png)
 ![The third start: the runway's threshold](images/view_runway2.png)

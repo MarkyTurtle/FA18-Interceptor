@@ -308,7 +308,7 @@ EjectAndDrop:
         bra.b   l_017_004EE                     ; 00494
 
 ;-------------------------------------------------------------------------------
-; CheckEjection - CheckEjection: steps the player's ejection (the player's +$7C low nibble)
+; CheckEjection - steps the player's ejection (the player's +$7C low nibble)
 ; while object 5 is free: 9 plays the ejection sound (cockpit view only), 1 starts the canopy
 ; timers, 3 throws the pilot out (EjectPilot, into object 5) and returns d0 = 1.
 ;-------------------------------------------------------------------------------

@@ -75,9 +75,9 @@ stages (`?` = not worked out yet):
 | `$08` | `sub_000_041E8` | ? (the view, the gun sound, the instruments) |
 | `$10` | `UpdateViewCell` (which calls `UpdateAllObjects`) | **the objects**: every object's update - computer pilots, the player's controls or the replay, engine, attitude, flight, missiles; the flight recording - and which map cell the view is in |
 | `$20` | `SetupCamera`, `sub_008_00286`, `sub_020_00738`, `sub_000_043F2`, `sub_008_00598` | the camera, and ? (the view's position and scenery) |
-| `$60` | `sub_020_007EA`, `sub_020_00AB4`, `sub_033_00010` | ? (the 3D view's outline) |
-| `$68` | `sub_028_00B9C` | ? |
-| `$70` | `sub_033_003CE` | ? (3D: through hunk 35) |
+| `$60` | `sub_020_007EA`, `sub_020_00AB4`, `DrawSkyAndGround` | ?, and **the sky and the ground** (below) |
+| `$68` | `DrawWaterAreas` | the bay's water |
+| `$70` | `DrawSun` | the sun (probably) |
 | `$78`, `$80` | `sub_008_0084C`, `sub_008_0085E` | ? (the scenery list) |
 | `$90` | `sub_025_00000` | ? (points: the ground or the sky) |
 | `$A0`-`$B0` | `sub_023_00000`, `DrawObjects`, `sub_000_072DC` | **the 3D view's objects and scenery** |
@@ -359,6 +359,22 @@ Pictures of every model and scenery shape, drawn by running the game's own code 
 emulator, are in [`MODELS.md`](MODELS.md).
 
 
+**The sky and the ground** are not drawn as objects, and there is no copper effect: each frame
+`ClearSkyGround` (hunk 36) clears the 3D view by blitter, one plane at a time, to the ground's
+colour - 4 (green) over land, or 6 (dark blue) when `CheckSeaView` finds that the view looks out
+over the sea (`SeaView`, from a table of map blocks, heights and view directions,
+`SeaViewTable`). `MakeSkyPolygon` (hunk 33) turns the view's four corner directions by the view
+matrix, finds where the horizon crosses the view's edges (hunk 34), and builds the polygon of the
+view above it - two horizon points and the corners on the sky's side. It is filled into plane 0
+(`FillPolygonPlane`: edges, then the blitter's area fill), which turns the ground colour 4 into
+5, the blue-grey sky; over the sea plane 1 is also cleared under it (`PlaneOpUnderFill`), so the
+sky is colour 5 there too. On land the bay's water is then drawn on the ground as flat colour-6
+polygons (`DrawWaterAreas`, hunk 28), and a small orange mark in a fixed direction is probably
+the sun (`DrawSun`). The same sky polygon, made with the instrument's own matrix and shrunk into
+its box, is the panel's **attitude indicator** (`DrawAttitudeIndicator`). The in-flight palette
+is the first row of `dat_021_00080` (16 rows, darker each row, stepped through to fade in and
+out); `dat_021_00040` is the all-yellow palette flashed while `dat_071_00269` counts down.
+
 * The **camera** (`SetupCamera`) is the cockpit, or in the outside views a point near the viewed
   object (`SetOutsideCamera`); `CameraX`, `CameraY`, `CameraZ` and the viewer's cell are what
   everything is drawn relative to.
@@ -630,7 +646,8 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
 * How an enemy decides to attack (who sets `+$63` and the forward-cone bits `+$64`), and the
   object records' unknown fields in `ModeTable`.
 * The 3D pipeline's special shape operations (hunks 12-15) and the clipping (hunk 19).
-* What each scenery shape is; hunk 12's renderer; the ground and sky.
+* What each scenery shape is; hunk 12's renderer; what `dat_071_002A2` bit `$2000` (a whole-sky
+  view) and the second view table (`CheckViewTable2`) are for.
 * The head-up display and most instruments (hunks 39-40).
 * The views (`OutsideView`, `ViewChoice`, `CameraSequence`).
 * The rest of the flight log's words, and which sound file is which effect.

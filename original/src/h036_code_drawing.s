@@ -891,7 +891,16 @@ l_036_008EC:
         clr.l   (a5)+                           ; 008F4
         dbra    d0,l_036_008EC                  ; 008F6
         rts                                     ; 008FA
-sub_036_008FC:
+
+;-------------------------------------------------------------------------------
+; ClearSkyGround - clears the 3D view (ClipY lines) by blitter to the ground
+; colour - plane 2 set, planes 0 and 3 clear, plane 1 set when SeaView: colour 4 (green land)
+; or 6 (sea) - then fills the sky polygon (MakeSkyPolygon) into plane 0, making it colour 5
+; (the sky). Over the sea it also clears plane 1 under the sky (FillPolygonPlane,
+; PlaneOpUnderFill) so the sky stays colour 5. In the cockpit view it keeps the panel's sky
+; polygon (MakeSkyPolygonPanel) at PanelSkyPolygon for the attitude indicator.
+;-------------------------------------------------------------------------------
+ClearSkyGround:
         movea.l (DrawPlanes).l,a2               ; 008FC
         lea.l   (CUSTOM).l,a0                    ; 00902
         move.w  (ClipY).l,d6                    ; 00908
@@ -946,7 +955,7 @@ l_036_00992:
         move.l  $8(a2),d4                       ; 009AE
         addi.l  #$28,d4                         ; 009B2
         move.w  #$100,d2                        ; 009B8
-        tst.b   (dat_071_0026B).l               ; 009BC
+        tst.b   (SeaView).l                     ; 009BC
         beq.b   l_036_009C8                     ; 009C2
         move.w  #$3fa,d2                        ; 009C4
 l_036_009C8:
@@ -996,24 +1005,24 @@ l_036_00A32:
         move.w  d6,BLTSIZE(a0)                  ; 00A4A
         move.l  (dat_071_000B2).l,-(a7)         ; 00A4E
         move.l  $c(a2),(dat_071_000B2).l        ; 00A54
-        jsr     (sub_033_00032).l               ; 00A5C
+        jsr     (MakeSkyPolygon).l              ; 00A5C
         bne.b   l_036_00A7C                     ; 00A62
-        bsr.w   sub_036_00D66                   ; 00A64
+        bsr.w   FillPolygonPlane                ; 00A64
         bne.b   l_036_00A7C                     ; 00A68
-        tst.b   (dat_071_0026B).l               ; 00A6A
+        tst.b   (SeaView).l                     ; 00A6A
         beq.b   l_036_00A7C                     ; 00A70
         moveq   #$8,d0                          ; 00A72
         moveq   #$0,d3                          ; 00A74
         moveq   #$0,d4                          ; 00A76
-        bsr.w   sub_036_00FD6                   ; 00A78
+        bsr.w   PlaneOpUnderFill                ; 00A78
 l_036_00A7C:
         move.l  (a7)+,(dat_071_000B2).l         ; 00A7C
         tst.b   (OutsideView).l                 ; 00A82
         bne.b   l_036_00AAC                     ; 00A88
-        jsr     (sub_033_0002A).l               ; 00A8A
+        jsr     (MakeSkyPolygonPanel).l         ; 00A8A
         bne.b   l_036_00AAC                     ; 00A90
         lea.l   (dat_072_03000).l,a0            ; 00A92
-        lea.l   (dat_072_030A2).l,a4            ; 00A98
+        lea.l   (PanelSkyPolygon).l,a4          ; 00A98
         move.w  (a0)+,(a4)+                     ; 00A9E
         move.l  (a0)+,(a4)+                     ; 00AA0
         move.l  (a0)+,(a4)+                     ; 00AA2
@@ -1022,14 +1031,14 @@ l_036_00A7C:
         move.l  (a0)+,(a4)+                     ; 00AA8
         rts                                     ; 00AAA
 l_036_00AAC:
-        move.w  #$0,(dat_072_030A2).l           ; 00AAC
+        move.w  #$0,(PanelSkyPolygon).l         ; 00AAC
         rts                                     ; 00AB4
 l_036_00AB6:
         rts                                     ; 00AB6
 sub_036_00AB8:
         nop                                     ; 00AB8
         move.w  #$8400,(CUSTOM+DMACON).l        ; 00ABA
-        bsr.w   sub_036_00D66                   ; 00AC2
+        bsr.w   FillPolygonPlane                ; 00AC2
         bne.b   l_036_00AB6                     ; 00AC6
         tst.w   (DrawXor).l                     ; 00AC8
         blt.b   l_036_00AE0                     ; 00ACE
@@ -1046,7 +1055,7 @@ l_036_00AE0:
         bge.b   l_036_00B00                     ; 00AF8
         move.w  (dat_071_00326).l,d3            ; 00AFA
 l_036_00B00:
-        bsr.w   sub_036_00FD6                   ; 00B00
+        bsr.w   PlaneOpUnderFill                ; 00B00
         bra.b   l_036_00B0C                     ; 00B04
 l_036_00B06:
         lsr.w   (dat_071_00326).l               ; 00B06
@@ -1063,7 +1072,7 @@ l_036_00B0C:
 l_036_00B2C:
         move.w  (dat_071_00326).l,d3            ; 00B2C
 l_036_00B32:
-        bsr.w   sub_036_00FD6                   ; 00B32
+        bsr.w   PlaneOpUnderFill                ; 00B32
         bra.b   l_036_00B3E                     ; 00B36
 l_036_00B38:
         lsr.w   (dat_071_00326).l               ; 00B38
@@ -1080,7 +1089,7 @@ l_036_00B3E:
 l_036_00B5E:
         move.w  (dat_071_00326).l,d3            ; 00B5E
 l_036_00B64:
-        bsr.w   sub_036_00FD6                   ; 00B64
+        bsr.w   PlaneOpUnderFill                ; 00B64
         bra.b   l_036_00B70                     ; 00B68
 l_036_00B6A:
         lsr.w   (dat_071_00326).l               ; 00B6A
@@ -1097,7 +1106,7 @@ l_036_00B70:
 l_036_00B90:
         move.w  (dat_071_00326).l,d3            ; 00B90
 l_036_00B96:
-        bsr.w   sub_036_00FD6                   ; 00B96
+        bsr.w   PlaneOpUnderFill                ; 00B96
 l_036_00B9A:
         bsr.w   sub_036_01022                   ; 00B9A
         move.w  #$400,(CUSTOM+DMACON).l         ; 00B9E
@@ -1165,7 +1174,7 @@ l_036_00C3E:
         move.l  d4,BLTCPTH(a0)                  ; 00C68
         move.l  d4,BLTDPTH(a0)                  ; 00C6C
         move.w  d6,BLTSIZE(a0)                  ; 00C70
-        bsr.w   sub_036_00D0C                   ; 00C74
+        bsr.w   DrawAttitudeIndicator           ; 00C74
         move.l  #$7ffff,(dat_071_000B6).l       ; 00C78
         move.w  #$cc,d0                         ; 00C82
         add.w   (ViewX).l,d0                    ; 00C86
@@ -1207,8 +1216,14 @@ l_036_00C3E:
         rts                                     ; 00D08
 l_036_00D0A:
         rts                                     ; 00D0A
-sub_036_00D0C:
-        lea.l   (dat_072_030A2).l,a0            ; 00D0C
+
+;-------------------------------------------------------------------------------
+; DrawAttitudeIndicator - draws the panel's attitude indicator - the sky
+; polygon kept by ClearSkyGround (PanelSkyPolygon), scaled into the instrument's box (x *
+; 24/256 + $C1, y * 31/256 + $A2) and filled into plane 2.
+;-------------------------------------------------------------------------------
+DrawAttitudeIndicator:
+        lea.l   (PanelSkyPolygon).l,a0          ; 00D0C
         lea.l   (dat_072_03000).l,a4            ; 00D12
         move.w  (a0)+,d7                        ; 00D18
         ble.b   l_036_00D0A                     ; 00D1A
@@ -1238,7 +1253,15 @@ l_036_00D20:
 sub_036_00D60:
         movea.w #$c7,a4                         ; 00D60
         bra.b   l_036_00D6C                     ; 00D64
-sub_036_00D66:
+
+;-------------------------------------------------------------------------------
+; FillPolygonPlane - fills the polygon at dat_072_03000 (clipped to ClipY
+; lines) into the one plane at dat_071_000B2 by blitter: finds its bounding box, draws its
+; edges (sub_036_0111A) and area-fills the box in place (BLTCON1 $0A, descending inclusive
+; fill). A polygon only a pixel or two across is plotted or drawn as a line instead. d0 = 0
+; when the plane was filled (the box kept for PlaneOpUnderFill), 1 otherwise.
+;-------------------------------------------------------------------------------
+FillPolygonPlane:
         movea.w (ClipY).l,a4                    ; 00D66
 l_036_00D6C:
         lea.l   (dat_072_03000).l,a0            ; 00D6C
@@ -1486,7 +1509,13 @@ l_036_00FB6:
         move.l  d2,BLTDPTH(a0)                  ; 00FCC
         move.w  d0,BLTSIZE(a0)                  ; 00FD0
         rts                                     ; 00FD4
-sub_036_00FD6:
+
+;-------------------------------------------------------------------------------
+; PlaneOpUnderFill - PlaneOpUnderFill(d0 = plane offset in DrawPlanes, d3, d4): a blitter pass
+; over FillPolygonPlane's box combining another plane with the filled one (A): d3 = d4 = 0
+; clears it under the fill (~A & B), d3 = 1 sets it (A | B), d4 = 1 flips it (A ^ B).
+;-------------------------------------------------------------------------------
+PlaneOpUnderFill:
         lsr.w   (dat_071_00326).l               ; 00FD6
         movea.l (DrawPlanes).l,a2               ; 00FDC
         move.l  (a2,d0.w),d2                    ; 00FE2

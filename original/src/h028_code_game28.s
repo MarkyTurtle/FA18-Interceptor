@@ -1,5 +1,6 @@
 ; F/A-18 Interceptor - hunk 28 (code)
-; Game logic not yet identified (uses the gun sound's variables; called by GameFrame).
+; The bay's water areas (DrawWaterAreas); other game logic not yet identified (uses the gun
+; sound's variables; called by GameFrame).
 ; Included by ../f18_main.s.
 
 ;===============================================================================
@@ -210,7 +211,13 @@ dat_028_00B5C:
 	dc.b	$00,$01,$02,$03,$FF,$00,$00,$00,$FF,$00,$00,$00,$04,$05,$06,$07
 	dc.b	$00,$01,$02,$03,$FF,$00,$00,$00,$FF,$00,$00,$00,$04,$05,$06,$07
 	dc.b	$00,$01,$32,$32,$00,$01,$06,$07,$00,$01,$06,$07,$06,$07,$32,$32
-sub_028_00B9C:
+
+;-------------------------------------------------------------------------------
+; DrawWaterAreas - Frame stage $68: draws the water of the bay - flat polygons
+; in colour 6 on the ground, by the map block in view - over the land-coloured ground. Skipped
+; when the whole ground is already sea (SeaView), unless dat_071_00180 is set.
+;-------------------------------------------------------------------------------
+DrawWaterAreas:
         link.w  a6,#$ffba                       ; 00B9C
         clr.b   (dat_071_0026D).l               ; 00BA0
         clr.w   (PolygonBuffer).l               ; 00BA6

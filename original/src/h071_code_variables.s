@@ -846,7 +846,9 @@ dat_071_00269:
 	dc.b	$00
 dat_071_0026A:
 	dc.b	$00
-dat_071_0026B:
+; SeaView - Set (CheckSeaView) when the ground under the horizon is drawn as sea (colour 6)
+; instead of land (colour 4).
+SeaView:
 	dc.b	$00
 dat_071_0026C:
 	dc.b	$00

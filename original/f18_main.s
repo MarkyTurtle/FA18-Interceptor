@@ -310,7 +310,8 @@
 ;         (MakeSecurityCode, CheckSecurityAnswer).
 	include	"src/h020_code_text_log.s"
 
-; Hunk 21: Data: colour tables (the palette ShowDisplay flashes) (not worked out yet)
+; Hunk 21: Data: the palettes - the in-flight palette's 16 fade levels (dat_021_00080) and
+;         the yellow flash (dat_021_00040).
 	include	"src/h021_code_colours.s"
 
 ; Hunk 22: UpdateObject (each object's frame: states, computer pilots, warnings), RecordFrame
@@ -333,14 +334,16 @@
 ; Hunk 27: Routes: the computer aircraft's routes (waypoints).
 	include	"src/h027_code_routes.s"
 
-; Hunk 28: Game logic not yet identified (uses the gun sound's variables; called by GameFrame).
+; Hunk 28: The bay's water areas (DrawWaterAreas); other game logic not yet identified (uses
+;         the gun sound's variables; called by GameFrame).
 	include	"src/h028_code_game28.s"
 
 ; Hunk 29: Game logic not yet identified (objects, the camera, the game modes).
 	include	"src/h029_code_game29.s"
 
 ; Hunk 30: ComputerPilot: the computer aircraft's pilots (a state machine steering towards a
-;         destination or along a route, setting the control bits).
+;         destination or along a route, setting the control bits), the manoeuvres and
+;         CombatReactions.
 	include	"src/h030_code_pilots.s"
 
 ; Hunk 31: Lines drawn relative to the camera (DrawLine) (not worked out yet)
@@ -349,10 +352,12 @@
 ; Hunk 32: Attitude and camera: SetAttitude, AnglesToMatrix, SinCos, SetupCamera.
 	include	"src/h032_code_attitude_camera.s"
 
-; Hunk 33: The 3D view's outline: PutEdge and the view's corners (320 x 180).
+; Hunk 33: The sky: DrawSkyAndGround, MakeSkyPolygon (the view above the horizon, from
+;         PutEdge and the view's corners, 320 x 180), DrawSun.
 	include	"src/h033_code_3d_outline.s"
 
-; Hunk 34: Used by hunk 33's outline (not worked out yet)
+; Hunk 34: Where the horizon crosses the view's edges, for MakeSkyPolygon (not worked out
+;         in detail yet).
 	include	"src/h034_code_3d_outline2.s"
 
 ; Hunk 35: Projecting points onto the screen (ProjectPoint: a 90-degree view) and plotting

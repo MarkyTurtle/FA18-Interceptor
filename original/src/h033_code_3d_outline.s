@@ -1,5 +1,6 @@
 ; F/A-18 Interceptor - hunk 33 (code)
-; The 3D view's outline: PutEdge and the view's corners (320 x 180).
+; The sky: DrawSkyAndGround, MakeSkyPolygon (the view above the horizon, from PutEdge and the
+; view's corners, 320 x 180), DrawSun.
 ; Included by ../f18_main.s.
 
 ;===============================================================================
@@ -8,19 +9,38 @@
 	CODE_HUNK	h033
 dat_033_00000:
 	dc.b	$28,$00,$DC,$00,$D5,$00,$DA,$00,$D8,$00,$24,$00,$26,$00,$2B,$00
-sub_033_00010:
+
+;-------------------------------------------------------------------------------
+; DrawSkyAndGround - Frame stage $60: the 3D view's background. Normally
+; ClearSkyGround; when dat_071_002A2 bit $2000 is set, a whole-view polygon instead
+; (SkyFillsView).
+;-------------------------------------------------------------------------------
+DrawSkyAndGround:
         move.w  (dat_071_002A2).l,d0            ; 00010
         andi.w  #$2000,d0                       ; 00016
         bne.b   l_033_00024                     ; 0001A
-        jsr     (sub_036_008FC).l               ; 0001C
+        jsr     (ClearSkyGround).l              ; 0001C
         rts                                     ; 00022
 l_033_00024:
-        bsr.w   sub_033_00318                   ; 00024
+        bsr.w   SkyFillsView                    ; 00024
         rts                                     ; 00028
-sub_033_0002A:
+
+;-------------------------------------------------------------------------------
+; MakeSkyPolygonPanel - MakeSkyPolygon with the second matrix (dat_071_005BA): the sky polygon
+; for the instrument panel's attitude indicator.
+;-------------------------------------------------------------------------------
+MakeSkyPolygonPanel:
         lea.l   (dat_071_005BA).l,a2            ; 0002A
         bra.b   l_033_00038                     ; 00030
-sub_033_00032:
+
+;-------------------------------------------------------------------------------
+; MakeSkyPolygon - turns the view's four corner directions (dat_033_00000) by
+; the view matrix (dat_071_005A8), finds where the horizon cuts the view's edges (hunk 34), and
+; builds the polygon of the view above the horizon - the sky - at dat_072_03000 from the two
+; horizon points (PutEdge) and the corners on the sky's side. Returns d0 = 0 (dat_071_0026E
+; set) when there is sky to fill, 1 when there is none.
+;-------------------------------------------------------------------------------
+MakeSkyPolygon:
         lea.l   (dat_071_005A8).l,a2            ; 00032
 l_033_00038:
         lea.l   (a2),a4                         ; 00038
@@ -122,7 +142,7 @@ l_033_00130:
         bra.w   l_033_00374                     ; 00130
 l_033_00134:
         tst.w   $4(a1)                          ; 00134
-        beq.w   sub_033_00318                   ; 00138
+        beq.w   SkyFillsView                    ; 00138
         tst.w   $6(a1)                          ; 0013C
         beq.b   l_033_0014E                     ; 00140
         move.w  $c(a1),d0                       ; 00142
@@ -252,7 +272,13 @@ l_033_002F4:
         addq.w  #$8,a1                          ; 0030E
         bsr.w   PutCornerBR                     ; 00310
         bra.w   l_033_00350                     ; 00314
-sub_033_00318:
+
+;-------------------------------------------------------------------------------
+; SkyFillsView - The sky polygon as the whole view (all four corners): used when no horizon
+; edge crosses the view and the view looks up (its pitch, dat_071_0045A or dat_071_00464
+; outside, above $3840); otherwise no sky at all.
+;-------------------------------------------------------------------------------
+SkyFillsView:
         lea.l   (dat_072_03000).l,a1            ; 00318
         move.w  #$4,(a1)+                       ; 0031E
         bsr.w   PutCornerTL                     ; 00322
@@ -335,7 +361,12 @@ PutCornerBL:
         clr.w   (a1)+                           ; 003C6
         move.w  #$b3,(a1)+                      ; 003C8
         rts                                     ; 003CC
-sub_033_003CE:
+
+;-------------------------------------------------------------------------------
+; DrawSun - Frame stage $70: plots a small mark in colour 9 (orange) in a fixed
+; direction in the sky (-$2000, $3800, -$2000, turned by the view matrix): probably the sun.
+;-------------------------------------------------------------------------------
+DrawSun:
         move.w  #$e000,d2                       ; 003CE
         move.w  #$3800,d3                       ; 003D2
         move.w  #$e000,d4                       ; 003D6
