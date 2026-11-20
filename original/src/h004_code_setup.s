@@ -37,7 +37,7 @@ InitGameValues:
         lea.l   (FileSize).l,a0                 ; 0002C
         move.w  #$fffc,$2a(a0)                  ; 00032
         clr.b   (PaletteLoadCount).l            ; 00038
-        clr.b   (dat_071_001A5).l               ; 0003E
+        clr.b   (TextKeyCount).l                ; 0003E
         move.b  #$f,(FadeLevel).l               ; 00044
         move.b  #$f,(FadeTarget).l              ; 0004C
         move.b  #$1,(KeyMode).l                 ; 00054
@@ -213,7 +213,7 @@ CameraAtRunway2:
 
 ;-------------------------------------------------------------------------------
 ; SetCameraAt - Sets the camera's position (CameraX/Y/Z from d0-d2) and the negated offsets
-; within its cell at dat_071_00602.
+; within its cell at CameraCellOffset.
 ;-------------------------------------------------------------------------------
 SetCameraAt:
         move.l  d0,(CameraX).l                  ; 002A2
@@ -224,7 +224,7 @@ SetCameraAt:
         neg.l   d0                              ; 002C0
         neg.l   d1                              ; 002C2
         neg.l   d2                              ; 002C4
-        move.l  d0,(dat_071_00602).l            ; 002C6
+        move.l  d0,(CameraCellOffset).l         ; 002C6
         move.l  d1,(dat_071_00606).l            ; 002CC
         move.l  d2,(dat_071_0060A).l            ; 002D2
         rts                                     ; 002D8
@@ -599,7 +599,7 @@ ResetPlayerFlags:
         move.w  #$148,$0(a0)                    ; 00780
         ori.w   #$1080,$0(a0)                   ; 00786
         move.w  #$1400,$7e(a0)                  ; 0078C
-        clr.b   (dat_071_00269).l               ; 00792
+        clr.b   (FlashCount).l                  ; 00792
         clr.b   (dat_071_0026A).l               ; 00798
         clr.b   (dat_071_00283).l               ; 0079E
         clr.b   (dat_071_00281).l               ; 007A4

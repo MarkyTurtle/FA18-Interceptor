@@ -73,7 +73,7 @@ l_038_000A8:
         move.w  #$3,d2                          ; 000CA
         btst    #$2,$20(a0)                     ; 000CE
         beq.b   l_038_000E4                     ; 000D4
-        btst    #$1,(dat_071_002AB).l           ; 000D6
+        btst    #$1,(BlinkPhase).l              ; 000D6
         beq.b   l_038_000E4                     ; 000DE
         move.w  #$1,d2                          ; 000E0
 l_038_000E4:
@@ -221,7 +221,7 @@ l_038_002B8:
 l_038_002C0:
         moveq   #$0,d7                          ; 002C0
         addq.b  #$1,(dat_071_00253).l           ; 002C2
-        clr.b   (dat_071_0023D).l               ; 002C8
+        clr.b   (RadarBlipBits).l               ; 002C8
         lea.l   (RadarList).l,a0                ; 002CE
         moveq   #$1,d6                          ; 002D4
         lea.l   (RadarBlips).l,a2               ; 002D6
@@ -332,15 +332,15 @@ l_038_003F0:
 l_038_00428:
         btst    #$3,$1(a1)                      ; 00428
         beq.b   l_038_0043A                     ; 0042E
-        bset    #$1,(dat_071_0023D).l           ; 00430
+        bset    #$1,(RadarBlipBits).l           ; 00430
         bra.b   l_038_00488                     ; 00438
 l_038_0043A:
         cmpi.b  #$15,$62(a1)                    ; 0043A
         beq.b   l_038_0044C                     ; 00440
-        bset    #$2,(dat_071_0023D).l           ; 00442
+        bset    #$2,(RadarBlipBits).l           ; 00442
         bra.b   l_038_00488                     ; 0044A
 l_038_0044C:
-        bset    #$3,(dat_071_0023D).l           ; 0044C
+        bset    #$3,(RadarBlipBits).l           ; 0044C
         bra.b   l_038_00488                     ; 00454
 l_038_00456:
         move.b  $38(a1),d1                      ; 00456
@@ -349,10 +349,10 @@ l_038_00456:
         bne.b   l_038_00488                     ; 00464
         cmpi.b  #$0,$62(a1)                     ; 00466
         bne.b   l_038_00478                     ; 0046C
-        bset    #$4,(dat_071_0023D).l           ; 0046E
+        bset    #$4,(RadarBlipBits).l           ; 0046E
         bra.b   l_038_00488                     ; 00476
 l_038_00478:
-        bset    #$5,(dat_071_0023D).l           ; 00478
+        bset    #$5,(RadarBlipBits).l           ; 00478
         bra.b   l_038_00488                     ; 00480
 l_038_00482:
         bclr    #$6,$20(a1)                     ; 00482
@@ -482,7 +482,7 @@ l_038_005F0:
         bra.w   l_038_002E8                     ; 005F6
 l_038_005FA:
         move.w  #$ffff,(a2)                     ; 005FA
-        move.b  (dat_071_0023D).l,d0            ; 005FE
+        move.b  (RadarBlipBits).l,d0            ; 005FE
         beq.w   l_038_006C8                     ; 00604
         move.b  (StatusLights).l,d1             ; 00608
         btst    #$4,d0                          ; 0060E
@@ -599,7 +599,7 @@ l_038_00736:
         asr.w   #$4,d0                          ; 007A0
         addq.b  #$1,d0                          ; 007A2
         move.b  d0,(dat_071_00238).l            ; 007A4
-        andi.w  #$dfff,(dat_071_0029E).l        ; 007AA
+        andi.w  #$dfff,(WarningBits).l          ; 007AA
         bra.b   l_038_007CC                     ; 007B2
 l_038_007B4:
         addi.w  #$10,d0                         ; 007B4

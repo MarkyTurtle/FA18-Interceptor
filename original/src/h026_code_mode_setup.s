@@ -819,12 +819,12 @@ l_026_00984:
         bra.w   l_026_00A0E                     ; 009A4
 l_026_009A8:
         move.w  $68(a0),d0                      ; 009A8
-        move.w  (dat_071_002FA).l,d1            ; 009AC
+        move.w  (ViewHeadingSaved).l,d1         ; 009AC
         sub.w   d0,d1                           ; 009B2
         bge.b   l_026_009B8                     ; 009B4
         neg.w   d1                              ; 009B6
 l_026_009B8:
-        move.w  d0,(dat_071_002FA).l            ; 009B8
+        move.w  d0,(ViewHeadingSaved).l         ; 009B8
         cmpi.w  #$1c20,d1                       ; 009BE
         blt.b   l_026_009EE                     ; 009C2
         cmpi.w  #$5460,d1                       ; 009C4
@@ -1266,7 +1266,7 @@ l_026_00E96:
         neg.l   d5                              ; 00EA2
         neg.l   d6                              ; 00EA4
         neg.l   d7                              ; 00EA6
-        movem.l d5-d7,(dat_071_00602).l         ; 00EA8
+        movem.l d5-d7,(CameraCellOffset).l      ; 00EA8
         rts                                     ; 00EB0
 	dc.b	$00,$00
 h026_end:

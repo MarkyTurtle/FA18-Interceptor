@@ -573,7 +573,7 @@ l_022_0069A:
         bne.w   l_022_00816                     ; 006AE
         btst    #$6,d0                          ; 006B2
         beq.b   l_022_00710                     ; 006B6
-        btst    #$0,(dat_071_002AB).l           ; 006B8
+        btst    #$0,(BlinkPhase).l              ; 006B8
         bne.b   l_022_006E6                     ; 006C0
         move.b  (dat_071_0021F).l,d1            ; 006C2
         or.b    (dat_071_0021E).l,d1            ; 006C8
@@ -584,7 +584,7 @@ l_022_0069A:
         bra.b   l_022_006F8                     ; 006E4
 l_022_006E6:
         move.w  #$d00b,d1                       ; 006E6
-        btst    #$1,(dat_071_002AB).l           ; 006EA
+        btst    #$1,(BlinkPhase).l              ; 006EA
         beq.b   l_022_006F8                     ; 006F2
         move.w  #$d00c,d1                       ; 006F4
 l_022_006F8:

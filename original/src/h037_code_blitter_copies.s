@@ -246,7 +246,7 @@ DrawFuelGauge:
         bgt.b   l_037_00280                     ; 0026C
         cmp.w   (dat_071_00374).l,d2            ; 0026E
         beq.b   l_037_00256                     ; 00274
-        btst    #$0,(dat_071_002AB).l           ; 00276
+        btst    #$0,(BlinkPhase).l              ; 00276
         beq.b   l_037_00286                     ; 0027E
 l_037_00280:
         move.w  d2,(dat_071_00374).l            ; 00280
@@ -422,9 +422,9 @@ l_037_0044A:
 l_037_0049A:
         rts                                     ; 0049A
 sub_037_0049C:
-        tst.b   (dat_071_0020E).l               ; 0049C
+        tst.b   (PanelIndicatorRedraw).l        ; 0049C
         ble.b   l_037_00504                     ; 004A2
-        subq.b  #$1,(dat_071_0020E).l           ; 004A4
+        subq.b  #$1,(PanelIndicatorRedraw).l    ; 004A4
         move.w  #$f1,d0                         ; 004AA
         add.w   (ViewX).l,d0                    ; 004AE
         blt.b   l_037_00504                     ; 004B4
@@ -568,7 +568,7 @@ sub_037_00674:
         move.w  #$30a,d2                        ; 00696
         tst.b   (dat_071_00216).l               ; 0069A
         ble.b   l_037_006B0                     ; 006A0
-        btst    #$1,(dat_071_002AB).l           ; 006A2
+        btst    #$1,(BlinkPhase).l              ; 006A2
         beq.b   l_037_006B0                     ; 006AA
         move.w  #$3fa,d2                        ; 006AC
 l_037_006B0:
@@ -752,7 +752,7 @@ DrawCompass:
         blt.b   l_037_008E2                     ; 008D0
         cmp.w   d2,d0                           ; 008D2
         beq.b   l_037_008B6                     ; 008D4
-        btst    #$0,(dat_071_002AB).l           ; 008D6
+        btst    #$0,(BlinkPhase).l              ; 008D6
         bne.b   l_037_008B6                     ; 008DE
         bra.b   l_037_008F2                     ; 008E0
 l_037_008E2:

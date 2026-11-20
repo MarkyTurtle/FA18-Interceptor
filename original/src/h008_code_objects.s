@@ -16,7 +16,7 @@ sub_008_00000:
         adda.w  (ViewObject).l,a0               ; 00014
         move.l  $14(a0),d2                      ; 0001A
         andi.l  #$3fffff,d2                     ; 0001E
-        add.l   (dat_071_00602).l,d2            ; 00024
+        add.l   (CameraCellOffset).l,d2         ; 00024
         bge.b   l_008_00032                     ; 0002A
         neg.l   d2                              ; 0002C
         bset    #$0,d0                          ; 0002E
@@ -115,7 +115,7 @@ l_008_0010C:
         bne.b   l_008_00114                     ; 00110
         neg.l   d4                              ; 00112
 l_008_00114:
-        move.l  (dat_071_00602).l,d0            ; 00114
+        move.l  (CameraCellOffset).l,d0         ; 00114
         move.l  (dat_071_00606).l,d1            ; 0011A
         move.l  (dat_071_0060A).l,d5            ; 00120
         add.l   d0,d2                           ; 00126
@@ -804,7 +804,7 @@ l_008_00988:
         subq.b  #$1,$7(a0)                      ; 00988
         move.b  $7(a0),(dat_071_0028D).l        ; 0098C
         move.w  $4(a0),d1                       ; 00994
-        move.w  d1,(dat_071_00510).l            ; 00998
+        move.w  d1,(ObjectDistance).l           ; 00998
         cmp.w   (dat_071_00382).l,d1            ; 0099E
         movea.l (a1)+,a2                        ; 009A4
         movea.l (a1)+,a0                        ; 009A6
@@ -1042,7 +1042,7 @@ l_008_00C92:
         subq.b  #$1,$7(a0)                      ; 00C92
         move.b  $7(a0),(dat_071_0028D).l        ; 00C96
         move.w  $4(a0),d1                       ; 00C9E
-        move.w  d1,(dat_071_00510).l            ; 00CA2
+        move.w  d1,(ObjectDistance).l           ; 00CA2
         andi.w  #$ff00,d7                       ; 00CA8
         add.w   d7,d7                           ; 00CAC
         move.w  d7,(CurrentObjectOffset).l      ; 00CAE
@@ -1788,7 +1788,7 @@ dat_008_0160E:
 	dc.b	'GjnDD`j'
 l_008_01642:
         move.w  #$7fff,d1                       ; 01642
-        move.w  d1,(dat_071_00510).l            ; 01646
+        move.w  d1,(ObjectDistance).l           ; 01646
         movem.l (a7)+,d5/d7                     ; 0164C
         rts                                     ; 01650
 
@@ -1881,7 +1881,7 @@ l_008_016F0:
         ble.b   l_008_01708                     ; 01702
         move.w  #$7fff,d1                       ; 01704
 l_008_01708:
-        move.w  d1,(dat_071_00510).l            ; 01708
+        move.w  d1,(ObjectDistance).l           ; 01708
         rts                                     ; 0170E
 dat_008_01710:
 	dc.b	$40,$00,$40,$00,$40,$00,$40,$01,$40,$02,$40,$03,$40,$04,$40,$06

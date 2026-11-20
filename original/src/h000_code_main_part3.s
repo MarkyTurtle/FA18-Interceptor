@@ -57,7 +57,7 @@ l_000_075C6:
         movea.l (CurrentBullet).l,a0            ; 075EA
         move.l  $10(a0),d0                      ; 075F0
         asr.l   #$8,d0                          ; 075F4
-        move.w  d0,(dat_071_004A0).l            ; 075F6
+        move.w  d0,(DivideBy).l                 ; 075F6
         tst.w   d0                              ; 075FC
         beq.w   l_000_07734                     ; 075FE
         move.w  $a(a6),d0                       ; 07602
@@ -804,33 +804,33 @@ l_000_07F30:
         addq.l  #$8,a7                          ; 08032
         movea.l (GameBitMap1).l,a0              ; 08034
         move.l  d0,$8(a0)                       ; 0803A
-        move.l  d0,(dat_071_0008E).l            ; 0803E
+        move.l  d0,(Buffer1Plane0).l            ; 0803E
         move.l  #$10002,-(a7)                   ; 08044
         move.l  #$1f40,-(a7)                    ; 0804A
         jsr     (_AllocMem).l                   ; 08050
         addq.l  #$8,a7                          ; 08056
         movea.l (GameBitMap1).l,a0              ; 08058
         move.l  d0,$c(a0)                       ; 0805E
-        move.l  d0,(dat_071_00092).l            ; 08062
+        move.l  d0,(Buffer1Plane1).l            ; 08062
         move.l  #$10002,-(a7)                   ; 08068
         move.l  #$1f40,-(a7)                    ; 0806E
         jsr     (_AllocMem).l                   ; 08074
         addq.l  #$8,a7                          ; 0807A
         movea.l (GameBitMap1).l,a0              ; 0807C
         move.l  d0,$10(a0)                      ; 08082
-        move.l  d0,(dat_071_00096).l            ; 08086
+        move.l  d0,(Buffer1Plane2).l            ; 08086
         move.l  #$10002,-(a7)                   ; 0808C
         move.l  #$1f40,-(a7)                    ; 08092
         jsr     (_AllocMem).l                   ; 08098
         addq.l  #$8,a7                          ; 0809E
         movea.l (GameBitMap1).l,a0              ; 080A0
         move.l  d0,$14(a0)                      ; 080A6
-        move.l  d0,(dat_071_0009A).l            ; 080AA
-        tst.l   (dat_071_0008E).l               ; 080B0
+        move.l  d0,(Buffer1Plane3).l            ; 080AA
+        tst.l   (Buffer1Plane0).l               ; 080B0
         beq.b   l_000_080CC                     ; 080B6
-        tst.l   (dat_071_00092).l               ; 080B8
+        tst.l   (Buffer1Plane1).l               ; 080B8
         beq.b   l_000_080CC                     ; 080BE
-        tst.l   (dat_071_00096).l               ; 080C0
+        tst.l   (Buffer1Plane2).l               ; 080C0
         beq.b   l_000_080CC                     ; 080C6
         tst.l   d0                              ; 080C8
         bne.b   l_000_080DA                     ; 080CA
@@ -845,17 +845,17 @@ l_000_080DA:
         addq.l  #$8,a7                          ; 080EC
         movea.l (GameBitMap1).l,a0              ; 080EE
         move.l  d0,$18(a0)                      ; 080F4
-        move.l  d0,(dat_071_0009E).l            ; 080F8
+        move.l  d0,(Buffer1Plane4).l            ; 080F8
         tst.l   d0                              ; 080FE
         bne.b   l_000_08110                     ; 08100
         move.l  #$fffffc18,-(a7)                ; 08102
         jsr     (exit).l                        ; 08108
         addq.l  #$4,a7                          ; 0810E
 l_000_08110:
-        move.l  (dat_071_0008E).l,(dat_071_000A2).l ; 08110
-        move.l  (dat_071_00092).l,(dat_071_000A6).l ; 0811A
-        move.l  (dat_071_00096).l,(dat_071_000AA).l ; 08124
-        move.l  (dat_071_0009A).l,(dat_071_000AE).l ; 0812E
+        move.l  (Buffer1Plane0).l,(Buffer2Plane0).l ; 08110
+        move.l  (Buffer1Plane1).l,(Buffer2Plane1).l ; 0811A
+        move.l  (Buffer1Plane2).l,(Buffer2Plane2).l ; 08124
+        move.l  (Buffer1Plane3).l,(Buffer2Plane3).l ; 0812E
         movea.l (GameBitMap2).l,a0              ; 08138
         movea.l (GameBitMap1).l,a1              ; 0813E
         move.l  $8(a1),$8(a0)                   ; 08144
@@ -932,7 +932,7 @@ MakeDisplay:
 ;-------------------------------------------------------------------------------
 ; ShowDisplay - Waits for the bottom of the ViewPort and loads the View with the copper list of
 ; the buffer to show (DisplayBuffer); flashes the palette (dat_021_00040 / the game palette)
-; while dat_071_00269 counts down, or once when PaletteLoadCount is set.
+; while FlashCount counts down, or once when PaletteLoadCount is set.
 ;-------------------------------------------------------------------------------
 ShowDisplay:
         link.w  a6,#$fffe                       ; 0827C
@@ -955,14 +955,14 @@ ShowDisplay:
         pea.l   (GameView).l                    ; 082C0
         jsr     (_LoadView).l                   ; 082C6
         addq.l  #$4,a7                          ; 082CC
-        tst.b   (dat_071_00269).l               ; 082CE
+        tst.b   (FlashCount).l                  ; 082CE
         beq.w   l_000_08376                     ; 082D4
         pea.l   (GameViewPort).l                ; 082D8
         jsr     (_WaitBOVP).l                   ; 082DE
         addq.l  #$4,a7                          ; 082E4
         jsr     (_WaitBlit).l                   ; 082E6
 l_000_082EC:
-        move.b  (dat_071_00269).l,d0            ; 082EC
+        move.b  (FlashCount).l,d0               ; 082EC
         tst.b   d0                              ; 082F2
         ble.w   l_000_083C0                     ; 082F4
         moveq   #$20,d0                         ; 082F8
@@ -989,9 +989,9 @@ l_000_082EC:
         pea.l   (GameViewPort).l                ; 08356
         jsr     (_WaitBOVP).l                   ; 0835C
         addq.l  #$4,a7                          ; 08362
-        move.b  (dat_071_00269).l,d0            ; 08364
+        move.b  (FlashCount).l,d0               ; 08364
         subq.b  #$1,d0                          ; 0836A
-        move.b  d0,(dat_071_00269).l            ; 0836C
+        move.b  d0,(FlashCount).l               ; 0836C
         bra.w   l_000_082EC                     ; 08372
 l_000_08376:
         tst.b   (PaletteLoadCount).l            ; 08376
@@ -999,7 +999,7 @@ l_000_08376:
         move.b  (PaletteLoadCount).l,d0         ; 0837E
         subq.b  #$1,d0                          ; 08384
         move.b  d0,(PaletteLoadCount).l         ; 08386
-        move.w  (dat_071_002A2).l,d0            ; 0838C
+        move.w  (FlightBits2).l,d0              ; 0838C
         btst    #$8,d0                          ; 08392
         bne.b   l_000_083C0                     ; 08396
         pea.l   (GameViewPort).l                ; 08398
@@ -3031,11 +3031,11 @@ l_000_09CDE:
 
 ;-------------------------------------------------------------------------------
 ; PlayTitleMusic - Starts the title music (if the music samples were loaded, SoundsLoaded bit
-; 7), unless dat_071_001A7 says it is already playing.
+; 7), unless MusicState says it is already playing.
 ;-------------------------------------------------------------------------------
 PlayTitleMusic:
         link.w  a6,#$0                          ; 09CE6
-        move.b  (dat_071_001A7).l,d0            ; 09CEA
+        move.b  (MusicState).l,d0               ; 09CEA
         tst.b   d0                              ; 09CF0
         bne.w   l_000_09D76                     ; 09CF2
         btst    #$7,(SoundsLoaded).l            ; 09CF6
@@ -3056,7 +3056,7 @@ PlayTitleMusic:
         move.l  d0,-(a7)                        ; 09D22
         bsr.w   PlaySound                       ; 09D24
         lea.l   $c(a7),a7                       ; 09D28
-        move.b  #$2,(dat_071_001A7).l           ; 09D2C
+        move.b  #$2,(MusicState).l              ; 09D2C
         bra.b   l_000_09D76                     ; 09D34
 l_000_09D36:
         btst    #$2,(SoundFlags).l              ; 09D36
@@ -3074,7 +3074,7 @@ l_000_09D36:
         move.l  d0,-(a7)                        ; 09D5C
         bsr.w   PlaySound                       ; 09D5E
         lea.l   $c(a7),a7                       ; 09D62
-        move.b  #$2,(dat_071_001A7).l           ; 09D66
+        move.b  #$2,(MusicState).l              ; 09D66
         bra.b   l_000_09D76                     ; 09D6E
 l_000_09D70:
         jsr     (StopAllSounds).l               ; 09D70

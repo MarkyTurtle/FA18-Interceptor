@@ -12,11 +12,11 @@ dat_033_00000:
 
 ;-------------------------------------------------------------------------------
 ; DrawSkyAndGround - Frame stage $60: the 3D view's background. Normally
-; ClearSkyGround; when dat_071_002A2 bit $2000 is set, a whole-view polygon instead
+; ClearSkyGround; when FlightBits2 bit $2000 is set, a whole-view polygon instead
 ; (SkyFillsView).
 ;-------------------------------------------------------------------------------
 DrawSkyAndGround:
-        move.w  (dat_071_002A2).l,d0            ; 00010
+        move.w  (FlightBits2).l,d0              ; 00010
         andi.w  #$2000,d0                       ; 00016
         bne.b   l_033_00024                     ; 0001A
         jsr     (ClearSkyGround).l              ; 0001C
@@ -155,7 +155,7 @@ l_033_00152:
         move.w  #$4,(a1)+                       ; 00158
         tst.b   (OutsideView).l                 ; 0015C
         bne.b   l_033_00170                     ; 00162
-        move.w  (dat_071_0029A).l,d6            ; 00164
+        move.w  (FlightBits).l,d6               ; 00164
         andi.w  #$2,d6                          ; 0016A
         bne.b   l_033_0018E                     ; 0016E
 l_033_00170:
@@ -174,7 +174,7 @@ l_033_0018E:
 l_033_0019E:
         lea.l   (dat_072_03000).l,a1            ; 0019E
         move.w  #$5,(a1)+                       ; 001A4
-        move.w  (dat_071_0029A).l,d6            ; 001A8
+        move.w  (FlightBits).l,d6               ; 001A8
         andi.w  #$2,d6                          ; 001AE
         bne.b   l_033_001D8                     ; 001B2
         bsr.w   PutEdge                         ; 001B4
@@ -195,7 +195,7 @@ l_033_001D8:
 l_033_001EC:
         lea.l   (dat_072_03000).l,a1            ; 001EC
         move.w  #$5,(a1)+                       ; 001F2
-        move.w  (dat_071_0029A).l,d6            ; 001F6
+        move.w  (FlightBits).l,d6               ; 001F6
         andi.w  #$2,d6                          ; 001FC
         bne.b   l_033_00216                     ; 00200
         bsr.w   PutEdge                         ; 00202
@@ -216,7 +216,7 @@ l_033_00216:
 l_033_0023A:
         lea.l   (dat_072_03000).l,a1            ; 0023A
         move.w  #$5,(a1)+                       ; 00240
-        move.w  (dat_071_0029A).l,d6            ; 00244
+        move.w  (FlightBits).l,d6               ; 00244
         andi.w  #$2,d6                          ; 0024A
         bne.b   l_033_00274                     ; 0024E
         bsr.w   PutEdge                         ; 00250
@@ -254,7 +254,7 @@ l_033_002BA:
 l_033_002CA:
         lea.l   (dat_072_03000).l,a1            ; 002CA
         move.w  #$5,(a1)+                       ; 002D0
-        move.w  (dat_071_0029A).l,d6            ; 002D4
+        move.w  (FlightBits).l,d6               ; 002D4
         andi.w  #$2,d6                          ; 002DA
         bne.b   l_033_002F4                     ; 002DE
         bsr.w   PutEdge                         ; 002E0

@@ -108,9 +108,9 @@ l_000_044D0:
 l_000_044D8:
         clr.b   (HeightBand).l                  ; 044D8
 l_000_044DE:
-        move.w  (dat_071_0029A).l,d0            ; 044DE
+        move.w  (FlightBits).l,d0               ; 044DE
         andi.w  #$fffd,d0                       ; 044E4
-        move.w  d0,(dat_071_0029A).l            ; 044E8
+        move.w  d0,(FlightBits).l               ; 044E8
         clr.b   -$5(a6)                         ; 044EE
         move.w  -$2(a6),d0                      ; 044F2
         cmpi.w  #$384,d0                        ; 044F6
@@ -136,9 +136,9 @@ l_000_0452A:
 l_000_04530:
         tst.b   -$5(a6)                         ; 04530
         beq.b   l_000_04546                     ; 04534
-        move.w  (dat_071_0029A).l,d0            ; 04536
+        move.w  (FlightBits).l,d0               ; 04536
         ori.w   #$2,d0                          ; 0453C
-        move.w  d0,(dat_071_0029A).l            ; 04540
+        move.w  d0,(FlightBits).l               ; 04540
 l_000_04546:
         unlk    a6                              ; 04546
         rts                                     ; 04548
@@ -240,13 +240,13 @@ l_000_0464A:
         move.l  $10(a6),d1                      ; 0466E
         asl.l   d0,d1                           ; 04672
         move.l  d1,(dat_071_0049C).l            ; 04674
-        move.w  d2,(dat_071_004A0).l            ; 0467A
+        move.w  d2,(DivideBy).l                 ; 0467A
         tst.w   d2                              ; 04680
         beq.b   l_000_046B0                     ; 04682
         jsr     (Divide).l                      ; 04684
-        move.w  (dat_071_004A2).l,d0            ; 0468A
+        move.w  (DivideResult).l,d0             ; 0468A
         asr.w   #$6,d0                          ; 04690
-        move.w  d0,(dat_071_004A2).l            ; 04692
+        move.w  d0,(DivideResult).l             ; 04692
         ext.l   d0                              ; 04698
         asl.l   #$1,d0                          ; 0469A
         movea.l d0,a0                           ; 0469C
@@ -265,11 +265,11 @@ l_000_046BA:
         move.l  $18(a6),d1                      ; 046C0
         asl.l   d0,d1                           ; 046C4
         move.l  d1,(dat_071_0049C).l            ; 046C6
-        move.w  -$4(a6),(dat_071_004A0).l       ; 046CC
+        move.w  -$4(a6),(DivideBy).l            ; 046CC
         jsr     (Divide).l                      ; 046D4
-        move.w  (dat_071_004A2).l,d0            ; 046DA
+        move.w  (DivideResult).l,d0             ; 046DA
         asr.w   #$6,d0                          ; 046E0
-        move.w  d0,(dat_071_004A2).l            ; 046E2
+        move.w  d0,(DivideResult).l             ; 046E2
         ext.l   d0                              ; 046E8
         asl.l   #$1,d0                          ; 046EA
         movea.l d0,a0                           ; 046EC
@@ -322,18 +322,18 @@ l_000_0474C:
         asr.l   d0,d1                           ; 04786
         move.w  d1,-$2(a6)                      ; 04788
         ext.l   d1                              ; 0478C
-        move.w  (dat_071_00538).l,d0            ; 0478E
+        move.w  (AngleScratch).l,d0             ; 0478E
         ext.l   d0                              ; 04794
         cmp.l   d0,d1                           ; 04796
         bgt.b   l_000_047E0                     ; 04798
         asl.l   #$8,d1                          ; 0479A
         move.l  d1,(dat_071_0049C).l            ; 0479C
-        move.w  (dat_071_00538).l,d0            ; 047A2
-        move.w  d0,(dat_071_004A0).l            ; 047A8
+        move.w  (AngleScratch).l,d0             ; 047A2
+        move.w  d0,(DivideBy).l                 ; 047A8
         tst.w   d0                              ; 047AE
         beq.b   l_000_047D6                     ; 047B0
         jsr     (Divide).l                      ; 047B2
-        move.w  (dat_071_004A2).l,d0            ; 047B8
+        move.w  (DivideResult).l,d0             ; 047B8
         ext.l   d0                              ; 047BE
         asl.l   #$1,d0                          ; 047C0
         movea.l d0,a0                           ; 047C2
@@ -347,13 +347,13 @@ l_000_047D6:
         move.l  #$e10,-$e(a6)                   ; 047D6
         bra.b   l_000_04822                     ; 047DE
 l_000_047E0:
-        move.w  (dat_071_00538).l,d0            ; 047E0
+        move.w  (AngleScratch).l,d0             ; 047E0
         ext.l   d0                              ; 047E6
         asl.l   #$8,d0                          ; 047E8
         move.l  d0,(dat_071_0049C).l            ; 047EA
-        move.w  -$2(a6),(dat_071_004A0).l       ; 047F0
+        move.w  -$2(a6),(DivideBy).l            ; 047F0
         jsr     (Divide).l                      ; 047F8
-        move.w  (dat_071_004A2).l,d0            ; 047FE
+        move.w  (DivideResult).l,d0             ; 047FE
         ext.l   d0                              ; 04804
         asl.l   #$1,d0                          ; 04806
         movea.l d0,a0                           ; 04808
@@ -1522,7 +1522,7 @@ l_000_055F2:
         move.w  (a0),d0                         ; 05648
         andi.w  #$fff7,d0                       ; 0564A
         move.w  d0,(a0)                         ; 0564E
-        move.b  #$2,(dat_071_0020E).l           ; 05650
+        move.b  #$2,(PanelIndicatorRedraw).l    ; 05650
         bra.b   l_000_056C4                     ; 05658
 l_000_0565A:
         cmpi.l  #$70800,(PlayerFuel).l          ; 0565A
@@ -1781,7 +1781,7 @@ l_000_0593A:
         adda.l  d0,a0                           ; 05948
         move.w  (a0),d0                         ; 0594A
         neg.w   d0                              ; 0594C
-        move.w  d0,(dat_071_00532).l            ; 0594E
+        move.w  d0,(ControlScratch).l           ; 0594E
         bra.b   l_000_059AE                     ; 05954
 l_000_05956:
         cmpi.w  #$a,-$1c(a6)                    ; 05956
@@ -1793,7 +1793,7 @@ l_000_05964:
         asl.l   #$1,d0                          ; 0596A
         movea.l -$6(a6),a0                      ; 0596C
         adda.l  d0,a0                           ; 05970
-        move.w  (a0),(dat_071_00532).l          ; 05972
+        move.w  (a0),(ControlScratch).l         ; 05972
         bra.b   l_000_059AE                     ; 05978
 l_000_0597A:
         move.w  -$1c(a6),d0                     ; 0597A
@@ -1806,7 +1806,7 @@ l_000_0597A:
         adda.l  d0,a0                           ; 0598C
         move.w  (a0),d0                         ; 0598E
         neg.w   d0                              ; 05990
-        move.w  d0,(dat_071_00532).l            ; 05992
+        move.w  d0,(ControlScratch).l           ; 05992
         bra.b   l_000_059AE                     ; 05998
 l_000_0599A:
         move.w  -$1c(a6),d0                     ; 0599A
@@ -1814,13 +1814,13 @@ l_000_0599A:
         asl.l   #$1,d0                          ; 059A0
         movea.l -$6(a6),a0                      ; 059A2
         adda.l  d0,a0                           ; 059A6
-        move.w  (a0),(dat_071_00532).l          ; 059A8
+        move.w  (a0),(ControlScratch).l         ; 059A8
 l_000_059AE:
         movea.l -$a(a6),a0                      ; 059AE
         move.w  (a0),d0                         ; 059B2
         btst    #$7,d0                          ; 059B4
         bne.b   l_000_059D0                     ; 059B8
-        move.w  (dat_071_00532).l,d0            ; 059BA
+        move.w  (ControlScratch).l,d0           ; 059BA
         ext.l   d0                              ; 059C0
         neg.l   d0                              ; 059C2
         move.l  d0,-(a7)                        ; 059C4
@@ -1836,7 +1836,7 @@ l_000_059D0:
         bne.w   l_000_05A84                     ; 059EA
         tst.w   -$1e(a6)                        ; 059EE
         beq.w   l_000_05A84                     ; 059F2
-        move.w  (dat_071_00532).l,d0            ; 059F6
+        move.w  (ControlScratch).l,d0           ; 059F6
         ext.l   d0                              ; 059FC
         move.l  d0,-(a7)                        ; 059FE
         bsr.w   sub_000_05D5A                   ; 05A00
@@ -1849,7 +1849,7 @@ l_000_059D0:
 l_000_05A16:
         cmpi.w  #$360,-$1e(a6)                  ; 05A16
         ble.b   l_000_05A34                     ; 05A1C
-        move.w  (dat_071_00532).l,d0            ; 05A1E
+        move.w  (ControlScratch).l,d0           ; 05A1E
         ext.l   d0                              ; 05A24
         neg.l   d0                              ; 05A26
         move.l  d0,-(a7)                        ; 05A28
@@ -1861,7 +1861,7 @@ l_000_05A34:
         bge.b   l_000_05A62                     ; 05A3A
         tst.w   -$1c(a6)                        ; 05A3C
         bmi.b   l_000_05A58                     ; 05A40
-        move.w  (dat_071_00532).l,d0            ; 05A42
+        move.w  (ControlScratch).l,d0           ; 05A42
         ext.l   d0                              ; 05A48
         neg.l   d0                              ; 05A4A
         move.l  d0,-(a7)                        ; 05A4C
@@ -1875,7 +1875,7 @@ l_000_05A58:
 l_000_05A62:
         tst.w   -$1c(a6)                        ; 05A62
         bgt.b   l_000_05A7C                     ; 05A66
-        move.w  (dat_071_00532).l,d0            ; 05A68
+        move.w  (ControlScratch).l,d0           ; 05A68
         ext.l   d0                              ; 05A6E
         neg.l   d0                              ; 05A70
         move.l  d0,-(a7)                        ; 05A72
@@ -1900,7 +1900,7 @@ l_000_05A84:
         bra.b   l_000_05AE8                     ; 05AA0
 l_000_05AA2:
         moveq   #$0,d0                          ; 05AA2
-        move.w  d0,(dat_071_00532).l            ; 05AA4
+        move.w  d0,(ControlScratch).l           ; 05AA4
         movea.l -$a(a6),a0                      ; 05AAA
         move.w  (a0),d1                         ; 05AAE
         move.w  d0,-$1c(a6)                     ; 05AB0
@@ -2391,7 +2391,7 @@ l_000_05FF0:
         bne.b   l_000_0608C                     ; 06038
         ori.w   #$8,d0                          ; 0603A
         move.w  d0,(a0)                         ; 0603E
-        move.b  #$2,(dat_071_0020E).l           ; 06040
+        move.b  #$2,(PanelIndicatorRedraw).l    ; 06040
         move.w  (ViewObjectIndex).l,d0          ; 06048
         move.w  -$32(a6),d1                     ; 0604E
         cmp.w   d0,d1                           ; 06052
@@ -2433,7 +2433,7 @@ l_000_06098:
         move.b  (a0),d0                         ; 060C4
         subq.b  #$1,d0                          ; 060C6
         move.b  d0,(a0)                         ; 060C8
-        move.b  #$2,(dat_071_0020E).l           ; 060CA
+        move.b  #$2,(PanelIndicatorRedraw).l    ; 060CA
         move.w  (ViewObjectIndex).l,d0          ; 060D2
         move.w  -$32(a6),d1                     ; 060D8
         cmp.w   d0,d1                           ; 060DC
@@ -2604,7 +2604,7 @@ l_000_062CC:
         move.w  (StatusBits).l,d0               ; 062CC
         btst    #$6,d0                          ; 062D2
         beq.w   l_000_06812                     ; 062D6
-        move.w  (dat_071_0029E).l,d0            ; 062DA
+        move.w  (WarningBits).l,d0              ; 062DA
         btst    #$e,d0                          ; 062E0
         bne.w   l_000_06812                     ; 062E4
         tst.w   -$24(a6)                        ; 062E8
@@ -3044,19 +3044,19 @@ l_000_06812:
         bne.b   l_000_06868                     ; 06820
         cmpi.w  #$20d0,d0                       ; 06822
         blt.b   l_000_06858                     ; 06826
-        move.w  (dat_071_002A2).l,d0            ; 06828
+        move.w  (FlightBits2).l,d0              ; 06828
         btst    #$e,d0                          ; 0682E
         bne.b   l_000_06868                     ; 06832
         ori.w   #$4000,d0                       ; 06834
-        move.w  d0,(dat_071_002A2).l            ; 06838
+        move.w  d0,(FlightBits2).l              ; 06838
         move.b  #$3,(ShakeKind).l               ; 0683E
         move.b  #$fa,(EngineSoundRequest).l     ; 06846
         move.b  #$2,(dat_071_00167).l           ; 0684E
         bra.b   l_000_06868                     ; 06856
 l_000_06858:
-        move.w  (dat_071_002A2).l,d0            ; 06858
+        move.w  (FlightBits2).l,d0              ; 06858
         andi.w  #$bfff,d0                       ; 0685E
-        move.w  d0,(dat_071_002A2).l            ; 06862
+        move.w  d0,(FlightBits2).l              ; 06862
 l_000_06868:
         clr.w   -$16(a6)                        ; 06868
         movea.l -$30(a6),a0                     ; 0686C
@@ -3695,16 +3695,16 @@ l_000_07056:
         move.w  (Player_6E).l,d0                ; 07056
         tst.w   d0                              ; 0705C
         bne.b   l_000_070DA                     ; 0705E
-        move.w  (dat_071_002A2).l,d0            ; 07060
+        move.w  (FlightBits2).l,d0              ; 07060
         btst    #$1,d0                          ; 07066
         bne.b   l_000_070BC                     ; 0706A
         moveq   #$4,d0                          ; 0706C
         move.b  d0,(ShakeKind).l                ; 0706E
-        move.w  (dat_071_0029A).l,d0            ; 07074
+        move.w  (FlightBits).l,d0               ; 07074
         btst    #$8,d0                          ; 0707A
         beq.b   l_000_070AC                     ; 0707E
         andi.w  #$feff,d0                       ; 07080
-        move.w  d0,(dat_071_0029A).l            ; 07084
+        move.w  d0,(FlightBits).l               ; 07084
         movea.l -$30(a6),a0                     ; 0708A
         move.b  (a0),d0                         ; 0708E
         btst    #$2,d0                          ; 07090
@@ -3717,31 +3717,31 @@ l_000_07056:
 l_000_070A6:
         jsr     (sub_006_00132).l               ; 070A6
 l_000_070AC:
-        move.w  (dat_071_002A2).l,d0            ; 070AC
+        move.w  (FlightBits2).l,d0              ; 070AC
         ori.w   #$2,d0                          ; 070B2
-        move.w  d0,(dat_071_002A2).l            ; 070B6
+        move.w  d0,(FlightBits2).l              ; 070B6
 l_000_070BC:
         tst.l   (PlayerFuel).l                  ; 070BC
         bne.w   l_000_07178                     ; 070C2
-        move.w  (dat_071_0029E).l,d0            ; 070C6
+        move.w  (WarningBits).l,d0              ; 070C6
         ori.w   #$4000,d0                       ; 070CC
-        move.w  d0,(dat_071_0029E).l            ; 070D0
+        move.w  d0,(WarningBits).l              ; 070D0
         bra.w   l_000_07178                     ; 070D6
 l_000_070DA:
-        move.w  (dat_071_002A2).l,d0            ; 070DA
+        move.w  (FlightBits2).l,d0              ; 070DA
         btst    #$1,d0                          ; 070E0
         beq.w   l_000_07178                     ; 070E4
         move.b  #$3,(ShakeKind).l               ; 070E8
         bset    #$1,(dat_071_00526).l           ; 070F0
         andi.w  #$fffd,d0                       ; 070F8
-        move.w  d0,(dat_071_002A2).l            ; 070FC
+        move.w  d0,(FlightBits2).l              ; 070FC
         bra.b   l_000_07178                     ; 07102
 l_000_07104:
         movea.l -$28(a6),a0                     ; 07104
         move.w  (a0),d0                         ; 07108
         btst    #$9,d0                          ; 0710A
         bne.b   l_000_07178                     ; 0710E
-        move.w  (dat_071_0029E).l,d0            ; 07110
+        move.w  (WarningBits).l,d0              ; 07110
         btst    #$e,d0                          ; 07116
         beq.b   l_000_07178                     ; 0711A
         move.l  (PlayerFuel).l,d0               ; 0711C
@@ -3756,9 +3756,9 @@ l_000_07104:
         move.w  d0,(dat_071_002A0).l            ; 07146
         bra.b   l_000_07178                     ; 0714C
 l_000_0714E:
-        move.w  (dat_071_0029E).l,d0            ; 0714E
+        move.w  (WarningBits).l,d0              ; 0714E
         andi.w  #$bfff,d0                       ; 07154
-        move.w  d0,(dat_071_0029E).l            ; 07158
+        move.w  d0,(WarningBits).l              ; 07158
         move.w  (dat_071_002A0).l,d0            ; 0715E
         andi.w  #$ffef,d0                       ; 07164
         move.w  d0,(dat_071_002A0).l            ; 07168
@@ -3814,12 +3814,12 @@ l_000_071DC:
         move.w  (a0),d0                         ; 07224
         andi.w  #$efff,d0                       ; 07226
         move.w  d0,(a0)                         ; 0722A
-        move.w  (dat_071_002A2).l,d0            ; 0722C
+        move.w  (FlightBits2).l,d0              ; 0722C
         andi.w  #$fffd,d0                       ; 07232
-        move.w  d0,(dat_071_002A2).l            ; 07236
-        move.w  (dat_071_0029A).l,d0            ; 0723C
+        move.w  d0,(FlightBits2).l              ; 07236
+        move.w  (FlightBits).l,d0               ; 0723C
         ori.w   #$100,d0                        ; 07242
-        move.w  d0,(dat_071_0029A).l            ; 07246
+        move.w  d0,(FlightBits).l               ; 07246
         bra.b   l_000_07254                     ; 0724C
 l_000_0724E:
         jsr     (sub_006_000F6).l               ; 0724E

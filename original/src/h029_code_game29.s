@@ -494,7 +494,7 @@ l_029_006B0:
         move.b  d7,$70(a0)                      ; 006C4
         tst.b   (NewView).l                     ; 006C8
         beq.b   l_029_0072E                     ; 006CE
-        btst    #$0,(dat_071_002AB).l           ; 006D0
+        btst    #$0,(BlinkPhase).l              ; 006D0
         beq.b   l_029_0072E                     ; 006D8
 l_029_006DA:
         ext.w   d4                              ; 006DA

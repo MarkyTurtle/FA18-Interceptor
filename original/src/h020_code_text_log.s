@@ -220,7 +220,7 @@ SetTextPage:
 l_020_00236:
         rts                                     ; 00236
 sub_020_00238:
-        tst.b   (dat_071_001A7).l               ; 00238
+        tst.b   (MusicState).l                  ; 00238
         beq.b   l_020_00236                     ; 0023E
         move.l  (dat_071_00038).l,d0            ; 00240
         move.l  (dat_074_000FE).l,d1            ; 00246
@@ -492,10 +492,10 @@ UpdateClock:
         jsr     (ReadTime).l                    ; 00562
         move.l  (dat_071_004D2).l,d1            ; 00568
         blt.w   l_020_005F4                     ; 0056E
-        move.w  (dat_071_0029E).l,d0            ; 00572
+        move.w  (WarningBits).l,d0              ; 00572
         andi.w  #$100,d0                        ; 00578
         beq.b   l_020_00596                     ; 0057C
-        andi.w  #$febf,(dat_071_0029E).l        ; 0057E
+        andi.w  #$febf,(WarningBits).l          ; 0057E
         clr.l   (dat_071_004E0).l               ; 00586
         clr.l   (dat_071_004E4).l               ; 0058C
         bra.w   l_020_00670                     ; 00592
@@ -518,7 +518,7 @@ l_020_005D2:
         sub.l   (dat_071_004E4).l,d1            ; 005D8
         cmpi.l  #$2710,d1                       ; 005DE
         blt.b   l_020_005F4                     ; 005E4
-        ori.w   #$40,(dat_071_0029E).l          ; 005E6
+        ori.w   #$40,(WarningBits).l            ; 005E6
         add.l   d1,(dat_071_004E4).l            ; 005EE
 l_020_005F4:
         move.l  (TimeSeconds).l,d0              ; 005F4
@@ -778,7 +778,7 @@ l_020_008BA:
         lsr.w   #$1,d2                          ; 008D2
         bra.b   l_020_008BA                     ; 008D4
 l_020_008D6:
-        move.w  d1,(dat_071_00538).l            ; 008D6
+        move.w  d1,(AngleScratch).l             ; 008D6
         movem.l (a7)+,d0-d3                     ; 008DC
         rts                                     ; 008E0
 l_020_008E2:
@@ -803,7 +803,7 @@ l_020_008F6:
         bra.b   l_020_008F6                     ; 00910
 l_020_00912:
         lsl.w   #$2,d1                          ; 00912
-        move.w  d1,(dat_071_00538).l            ; 00914
+        move.w  d1,(AngleScratch).l             ; 00914
         movem.l (a7)+,d0-d3                     ; 0091A
         rts                                     ; 0091E
 l_020_00920:
@@ -826,13 +826,13 @@ l_020_0092A:
         bra.b   l_020_0092A                     ; 00944
 l_020_00946:
         lsl.w   #$4,d1                          ; 00946
-        move.w  d1,(dat_071_00538).l            ; 00948
+        move.w  d1,(AngleScratch).l             ; 00948
         movem.l (a7)+,d0-d3                     ; 0094E
         rts                                     ; 00952
 
 ;-------------------------------------------------------------------------------
 ; StartWarning - StartWarning(d0 = a sound word): makes it the warning or message now sounding
-; (CurrentWarning) and sets the flags that go with it (StatusBits bit 0; dat_071_0029E bit
+; (CurrentWarning) and sets the flags that go with it (StatusBits bit 0; WarningBits bit
 ; 13 for the $2000 kind, cleared for $40xx / $48xx). Used by the keys that answer with a voice
 ; or tone, the training and the objects.
 ;-------------------------------------------------------------------------------
@@ -844,8 +844,8 @@ StartWarning:
         move.w  d0,d1                           ; 00968
         andi.w  #$2000,d1                       ; 0096A
         beq.b   l_020_00982                     ; 0096E
-        andi.w  #$7fff,(dat_071_0029E).l        ; 00970
-        ori.w   #$2000,(dat_071_0029E).l        ; 00978
+        andi.w  #$7fff,(WarningBits).l          ; 00970
+        ori.w   #$2000,(WarningBits).l          ; 00978
         bra.b   l_020_00996                     ; 00980
 l_020_00982:
         cmpi.w  #$4000,d0                       ; 00982
@@ -853,7 +853,7 @@ l_020_00982:
         cmpi.w  #$4800,d0                       ; 00988
         bne.b   l_020_00996                     ; 0098C
 l_020_0098E:
-        andi.w  #$dfff,(dat_071_0029E).l        ; 0098E
+        andi.w  #$dfff,(WarningBits).l          ; 0098E
 l_020_00996:
         move.w  (a7)+,d1                        ; 00996
         rts                                     ; 00998
@@ -1120,12 +1120,12 @@ l_020_00BCE:
         rts                                     ; 00BCE
 
 ;-------------------------------------------------------------------------------
-; Divide - dat_071_004A2 = dat_071_0049C (long) / dat_071_004A0 (word), rounded.
+; Divide - DivideResult = dat_071_0049C (long) / DivideBy (word), rounded.
 ;-------------------------------------------------------------------------------
 Divide:
         movem.l d0-d2,-(a7)                     ; 00BD0
         move.l  (dat_071_0049C).l,d0            ; 00BD4
-        move.w  (dat_071_004A0).l,d1            ; 00BDA
+        move.w  (DivideBy).l,d1                 ; 00BDA
         move.w  d1,d2                           ; 00BE0
         bge.b   l_020_00BE6                     ; 00BE2
         neg.w   d2                              ; 00BE4
@@ -1150,7 +1150,7 @@ l_020_00C00:
 l_020_00C04:
         swap    d0                              ; 00C04
 l_020_00C06:
-        move.w  d0,(dat_071_004A2).l            ; 00C06
+        move.w  d0,(DivideResult).l             ; 00C06
         movem.l (a7)+,d0-d2                     ; 00C0C
         rts                                     ; 00C10
 

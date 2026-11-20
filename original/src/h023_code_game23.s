@@ -35,7 +35,7 @@ l_023_0002E:
         add.w   d1,d1                           ; 00034
         lea.l   (ObjectTable).l,a1              ; 00036
         adda.w  d1,a1                           ; 0003C
-        lea.l   (dat_071_00602).l,a2            ; 0003E
+        lea.l   (CameraCellOffset).l,a2         ; 0003E
         movem.l $14(a1),d2-d4                   ; 00044
         sub.l   $c(a2),d2                       ; 0004A
         bge.b   l_023_00052                     ; 0004E
@@ -54,7 +54,7 @@ l_023_00062:
         asr.l   #$8,d4                          ; 00066
         jsr     (VectorLength).l                ; 00068
         move.w  d1,-(a7)                        ; 0006E
-        lea.l   (dat_071_00602).l,a2            ; 00070
+        lea.l   (CameraCellOffset).l,a2         ; 00070
         movem.l $0(a0),d2-d4                    ; 00076
         move.w  $30(a0),d5                      ; 0007C
         ext.l   d5                              ; 00080

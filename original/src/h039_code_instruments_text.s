@@ -95,9 +95,9 @@ l_039_001CA:
 ; ShowRadarRange - The radar's range: 10 (RadarScale $80), 20 ($40) or 40.
 ;-------------------------------------------------------------------------------
 ShowRadarRange:
-        tst.b   (dat_071_0020D).l               ; 001CC
+        tst.b   (RadarRangeRedraw).l            ; 001CC
         ble.b   l_039_001CA                     ; 001D2
-        subq.b  #$1,(dat_071_0020D).l           ; 001D4
+        subq.b  #$1,(RadarRangeRedraw).l        ; 001D4
         move.w  (RadarScale).l,d0               ; 001DA
         cmpi.w  #$80,d0                         ; 001E0
         bne.b   l_039_001EA                     ; 001E4
@@ -111,7 +111,7 @@ l_039_001EA:
 l_039_001F4:
         moveq   #$28,d0                         ; 001F4
 l_039_001F6:
-        move.b  #$1,(dat_071_0020D).l           ; 001F6
+        move.b  #$1,(RadarRangeRedraw).l        ; 001F6
         btst    #$0,(dat_071_00254).l           ; 001FE
         beq.b   l_039_0021A                     ; 00206
         move.w  #$f0a,d6                        ; 00208
@@ -203,7 +203,7 @@ ValueChanged:
         blt.b   l_039_00348                     ; 0032A
         cmp.w   d2,d0                           ; 0032C
         beq.b   l_039_00344                     ; 0032E
-        btst    #$0,(dat_071_002AB).l           ; 00330
+        btst    #$0,(BlinkPhase).l              ; 00330
         bne.b   l_039_00344                     ; 00338
         tst.b   (WorldFrozen).l                 ; 0033A
         bne.b   l_039_00348                     ; 00340
@@ -315,7 +315,7 @@ l_039_00434:
 ;-------------------------------------------------------------------------------
 ; ShowGLoad - Apparently the G meter: the pitch rotation rate (+$56, plus a little of
 ; dat_071_00316) / 8, plus or minus 1 g (10 tenths) as the aircraft is upright or not
-; (dat_071_0029A bit 1), with its sign; the F/A-18 ($11) and F-16 cockpits put it in different
+; (FlightBits bit 1), with its sign; the F/A-18 ($11) and F-16 cockpits put it in different
 ; places.
 ;-------------------------------------------------------------------------------
 ShowGLoad:
@@ -364,7 +364,7 @@ l_039_00508:
         add.w   (dat_071_00316).l,d0            ; 0050E
 l_039_00514:
         asr.w   #$3,d0                          ; 00514
-        move.w  (dat_071_0029A).l,d1            ; 00516
+        move.w  (FlightBits).l,d1               ; 00516
         andi.w  #$2,d1                          ; 0051C
         beq.b   l_039_00528                     ; 00520
         addi.w  #$a,d0                          ; 00522
@@ -577,7 +577,7 @@ l_039_00770:
         blt.b   l_039_00792                     ; 0077E
         cmp.l   d2,d0                           ; 00780
         beq.b   l_039_00790                     ; 00782
-        btst    #$0,(dat_071_002AB).l           ; 00784
+        btst    #$0,(BlinkPhase).l              ; 00784
         bne.b   l_039_00790                     ; 0078C
         bra.b   l_039_007A6                     ; 0078E
 l_039_00790:
@@ -816,14 +816,14 @@ l_039_00A96:
         move.b  d1,(a2)+                        ; 00A9A
         bra.b   l_039_00A96                     ; 00A9C
 l_039_00A9E:
-        andi.b  #$3f,(dat_071_00232).l          ; 00A9E
-        ori.b   #$80,(dat_071_00232).l          ; 00AA6
+        andi.b  #$3f,(LampBits).l               ; 00A9E
+        ori.b   #$80,(LampBits).l               ; 00AA6
         lea.l   (ObjectTable).l,a4              ; 00AAE
         adda.w  d2,a4                           ; 00AB4
         btst    #$6,$20(a4)                     ; 00AB6
         bne.b   l_039_00AD0                     ; 00ABC
         lea.l   (TextNoSig).l,a1                ; 00ABE
-        andi.b  #$3f,(dat_071_00232).l          ; 00AC4
+        andi.b  #$3f,(LampBits).l               ; 00AC4
         bra.w   l_039_00B56                     ; 00ACC
 l_039_00AD0:
         move.b  $62(a4),d1                      ; 00AD0
@@ -856,15 +856,15 @@ l_039_00B1C:
         bne.b   l_039_00B3A                     ; 00B20
         lea.l   (TextF16).l,a1                  ; 00B22
 l_039_00B28:
-        andi.b  #$3f,(dat_071_00232).l          ; 00B28
-        ori.b   #$40,(dat_071_00232).l          ; 00B30
+        andi.b  #$3f,(LampBits).l               ; 00B28
+        ori.b   #$40,(LampBits).l               ; 00B30
         bra.b   l_039_00B56                     ; 00B38
 l_039_00B3A:
         cmpi.b  #$15,d1                         ; 00B3A
         bne.b   l_039_00B64                     ; 00B3E
         lea.l   (TextCruise).l,a1               ; 00B40
-        andi.b  #$3f,(dat_071_00232).l          ; 00B46
-        ori.b   #$80,(dat_071_00232).l          ; 00B4E
+        andi.b  #$3f,(LampBits).l               ; 00B46
+        ori.b   #$80,(LampBits).l               ; 00B4E
 l_039_00B56:
         lea.l   (dat_071_001DE).l,a2            ; 00B56
 l_039_00B5C:
@@ -1000,7 +1000,7 @@ l_039_00CA6:
         move.w  (ViewShift).l,d6                ; 00CC0
         move.l  (PanelShakeOffset).l,d7         ; 00CC6
         movem.l d0/d6-d7/a1-a2/a4-a5,-(a7)      ; 00CCC
-        move.b  (dat_071_00232).l,d3            ; 00CD0
+        move.b  (LampBits).l,d3                 ; 00CD0
         rol.b   #$2,d3                          ; 00CD6
         andi.b  #$3,d3                          ; 00CD8
         beq.b   l_039_00CF4                     ; 00CDC
@@ -1317,12 +1317,12 @@ l_039_00FA6:
 
 ;-------------------------------------------------------------------------------
 ; ShowMissilesLeft - The number of missiles left (+$5F) by the weapon's type on the panel,
-; while dat_071_00214 counts down.
+; while MissilesLeftRedraw counts down.
 ;-------------------------------------------------------------------------------
 ShowMissilesLeft:
-        tst.b   (dat_071_00214).l               ; 00FA8
+        tst.b   (MissilesLeftRedraw).l          ; 00FA8
         ble.b   l_039_00FA6                     ; 00FAE
-        subq.b  #$1,(dat_071_00214).l           ; 00FB0
+        subq.b  #$1,(MissilesLeftRedraw).l      ; 00FB0
         lea.l   (ObjectTable).l,a1              ; 00FB6
         adda.w  (ViewObject).l,a1               ; 00FBC
         moveq   #$0,d0                          ; 00FC2
@@ -1626,7 +1626,7 @@ l_039_01304:
         blt.b   l_039_0133A                     ; 01314
         movem.l (PrintLineStart).l,a1-a2/a4     ; 01316
         movem.l a1-a2/a4,(PrintPosition).l      ; 0131E
-        move.b  (dat_071_001A7).l,d1            ; 01326
+        move.b  (MusicState).l,d1               ; 01326
         beq.b   l_039_01332                     ; 0132C
         subq.b  #$1,d1                          ; 0132E
         bne.b   l_039_01338                     ; 01330
@@ -1755,10 +1755,10 @@ l_039_014B2:
         clr.b   (a3)+                           ; 014B4
         dbra    d0,l_039_014B2                  ; 014B6
         moveq   #$0,d4                          ; 014BA
-        clr.b   (dat_071_001AE).l               ; 014BC
+        clr.b   (PrintDelay).l                  ; 014BC
         bra.b   l_039_014D4                     ; 014C2
 l_039_014C4:
-        move.b  #$1,(dat_071_001AE).l           ; 014C4
+        move.b  #$1,(PrintDelay).l              ; 014C4
         move.b  #$1,(dat_071_001AF).l           ; 014CC
 l_039_014D4:
         move.b  #$1,(dat_071_00193).l           ; 014D4
@@ -1802,9 +1802,9 @@ l_039_0155C:
         beq.w   l_039_013EC                     ; 01578
         cmpi.b  #$44,d4                         ; 0157C
         beq.b   l_039_015AE                     ; 01580
-        tst.b   (dat_071_001AE).l               ; 01582
+        tst.b   (PrintDelay).l                  ; 01582
         ble.b   l_039_015F6                     ; 01588
-        subq.b  #$1,(dat_071_001AE).l           ; 0158A
+        subq.b  #$1,(PrintDelay).l              ; 0158A
         subq.b  #$1,(KeyBufferCount).l          ; 01590
         clr.b   (a0,d5.w)                       ; 01596
         addq.b  #$1,d5                          ; 0159A
@@ -1823,18 +1823,18 @@ l_039_015AE:
 l_039_015CA:
         andi.b  #$fd,(TextStatus).l             ; 015CA
         jsr     (SaveConfig).l                  ; 015D2
-        move.b  #$ff,(dat_071_001A5).l          ; 015D8
+        move.b  #$ff,(TextKeyCount).l           ; 015D8
         bra.w   l_039_013EC                     ; 015E0
 l_039_015E4:
-        tst.b   (dat_071_001AE).l               ; 015E4
+        tst.b   (PrintDelay).l                  ; 015E4
         ble.w   l_039_013EC                     ; 015EA
-        subq.b  #$1,(dat_071_001AE).l           ; 015EE
+        subq.b  #$1,(PrintDelay).l              ; 015EE
         bra.b   l_039_01654                     ; 015F4
 l_039_015F6:
         move.b  (TypeDelay).l,d1                ; 015F6
         ext.w   d1                              ; 015FC
         move.w  d1,(dat_071_00118).l            ; 015FE
-        move.b  #$1,(dat_071_001AE).l           ; 01604
+        move.b  #$1,(PrintDelay).l              ; 01604
         cmpi.b  #$41,d4                         ; 0160C
         bne.b   l_039_01654                     ; 01610
         tst.b   (InputPos).l                    ; 01612
@@ -1869,7 +1869,7 @@ l_039_0165C:
         beq.w   l_039_017F4                     ; 0168A
         cmpi.b  #$20,d4                         ; 0168E
         blt.b   l_039_016D8                     ; 01692
-        tst.b   (dat_071_001AE).l               ; 01694
+        tst.b   (PrintDelay).l                  ; 01694
         ble.b   l_039_016D8                     ; 0169A
         cmpi.b  #$3,(TextStatus).l              ; 0169C
         beq.b   l_039_016BC                     ; 016A4
@@ -1897,7 +1897,7 @@ l_039_016D8:
         andi.w  #$ff,d4                         ; 016E8
         cmpi.b  #$8,d4                          ; 016EC
         bne.b   l_039_01702                     ; 016F0
-        tst.b   (dat_071_001AE).l               ; 016F2
+        tst.b   (PrintDelay).l                  ; 016F2
         bgt.b   l_039_016FC                     ; 016F8
         subq.w  #$4,a1                          ; 016FA
 l_039_016FC:
@@ -1919,9 +1919,9 @@ l_039_01702:
         movem.l a1-a2/a4,(PrintPosition).l      ; 0172E
         bra.w   l_039_015F6                     ; 01736
 l_039_0173A:
-        tst.b   (dat_071_001AE).l               ; 0173A
+        tst.b   (PrintDelay).l                  ; 0173A
         beq.b   l_039_01758                     ; 01740
-        move.b  (dat_071_001A7).l,d1            ; 01742
+        move.b  (MusicState).l,d1               ; 01742
         beq.b   l_039_01752                     ; 01748
         subq.b  #$1,d1                          ; 0174A
         bne.b   l_039_01758                     ; 0174C
@@ -1986,7 +1986,7 @@ l_039_017C8:
         movem.l a1-a2/a4,(PrintPosition).l      ; 017DC
         bra.w   l_039_015F6                     ; 017E4
 l_039_017E8:
-        tst.b   (dat_071_001AE).l               ; 017E8
+        tst.b   (PrintDelay).l                  ; 017E8
         bgt.b   l_039_017F4                     ; 017EE
         addq.w  #$4,a1                          ; 017F0
         addq.w  #$1,a2                          ; 017F2
@@ -2084,7 +2084,7 @@ KeyBeep:
 ; MenuBeep - The sound of a menu key.
 ;-------------------------------------------------------------------------------
 MenuBeep:
-        tst.b   (dat_071_001A7).l               ; 0188E
+        tst.b   (MusicState).l                  ; 0188E
         bne.b   l_039_01880                     ; 01894
         moveq   #$2,d0                          ; 01896
         moveq   #$4,d1                          ; 01898

@@ -128,10 +128,10 @@ l_018_00152:
         beq.b   l_018_001D8                     ; 00158
         cmpi.b  #$1,(WorldFrozen).l             ; 0015A
         bgt.w   l_018_00204                     ; 00162
-        btst    #$7,(dat_071_0018E).l           ; 00166
+        btst    #$7,(JudgeSavedView).l          ; 00166
         bne.w   l_018_00204                     ; 0016E
-        move.b  (ViewChoice).l,(dat_071_0018E).l ; 00172
-        bset    #$7,(dat_071_0018E).l           ; 0017C
+        move.b  (ViewChoice).l,(JudgeSavedView).l ; 00172
+        bset    #$7,(JudgeSavedView).l          ; 0017C
         move.b  (OutsideView).l,(dat_071_00204).l ; 00184
         btst    #$6,$1(a1)                      ; 0018E
         beq.w   l_018_00204                     ; 00194
@@ -141,7 +141,7 @@ l_018_00152:
         clr.b   (MapView).l                     ; 001B0
         tst.b   (OutsideView).l                 ; 001B6
         bne.b   l_018_00204                     ; 001BC
-        move.w  $68(a1),(dat_071_002FA).l       ; 001BE
+        move.w  $68(a1),(ViewHeadingSaved).l    ; 001BE
         ori.w   #$2,(GunFlags).l                ; 001C6
         move.b  #$ff,(dat_071_00203).l          ; 001CE
         bra.b   l_018_00204                     ; 001D6
@@ -359,10 +359,10 @@ l_018_00452:
         beq.b   l_018_004D8                     ; 00458
         cmpi.b  #$1,(WorldFrozen).l             ; 0045A
         bgt.w   l_018_0051C                     ; 00462
-        btst    #$7,(dat_071_0018E).l           ; 00466
+        btst    #$7,(JudgeSavedView).l          ; 00466
         bne.w   l_018_0051C                     ; 0046E
-        move.b  (ViewChoice).l,(dat_071_0018E).l ; 00472
-        bset    #$7,(dat_071_0018E).l           ; 0047C
+        move.b  (ViewChoice).l,(JudgeSavedView).l ; 00472
+        bset    #$7,(JudgeSavedView).l          ; 0047C
         move.b  (OutsideView).l,(dat_071_00204).l ; 00484
         btst    #$6,$1(a1)                      ; 0048E
         beq.w   l_018_0051C                     ; 00494
@@ -372,7 +372,7 @@ l_018_00452:
         clr.b   (MapView).l                     ; 004B0
         tst.b   (OutsideView).l                 ; 004B6
         bne.b   l_018_0051C                     ; 004BC
-        move.w  $68(a1),(dat_071_002FA).l       ; 004BE
+        move.w  $68(a1),(ViewHeadingSaved).l    ; 004BE
         ori.w   #$2,(GunFlags).l                ; 004C6
         move.b  #$3,(dat_071_00203).l           ; 004CE
         bra.b   l_018_0051C                     ; 004D6

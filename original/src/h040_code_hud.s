@@ -872,7 +872,7 @@ l_040_00C0E:
         blt.b   l_040_00C5A                     ; 00C24
         cmpi.b  #$1,(ShootCue).l                ; 00C26
         bne.b   l_040_00C44                     ; 00C2E
-        move.b  (dat_071_002AB).l,d7            ; 00C30
+        move.b  (BlinkPhase).l,d7               ; 00C30
         andi.b  #$1f,d7                         ; 00C36
         cmpi.b  #$9,d7                          ; 00C3A
         beq.b   l_040_00C44                     ; 00C3E
@@ -905,7 +905,7 @@ l_040_00C8E:
         andi.l  #$200,d5                        ; 00CA6
         beq.b   l_040_00CC2                     ; 00CAC
 l_040_00CAE:
-        move.b  (dat_071_002AB).l,d7            ; 00CAE
+        move.b  (BlinkPhase).l,d7               ; 00CAE
         andi.b  #$1f,d7                         ; 00CB4
         cmpi.b  #$9,d7                          ; 00CB8
         beq.b   l_040_00CC2                     ; 00CBC

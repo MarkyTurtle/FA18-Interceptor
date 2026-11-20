@@ -104,52 +104,64 @@ dat_071_0008A:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0008E:
+; Buffer1Plane0 - Display buffer 1's plane 0 (with Buffer1Plane1-4 after it: the 5-plane
+; BitMap's planes, InitDisplay).
+Buffer1Plane0:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00092:
+; Buffer1Plane1 - Display buffer 1's plane 1.
+Buffer1Plane1:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00096:
+; Buffer1Plane2 - Display buffer 1's plane 2.
+Buffer1Plane2:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0009A:
+; Buffer1Plane3 - Display buffer 1's plane 3.
+Buffer1Plane3:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0009E:
+; Buffer1Plane4 - Display buffer 1's plane 4.
+Buffer1Plane4:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_000A2:
+; Buffer2Plane0 - Display buffer 2's plane 0 (with Buffer2Plane1-3).
+Buffer2Plane0:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_000A6:
+; Buffer2Plane1 - Display buffer 2's plane 1.
+Buffer2Plane1:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_000AA:
+; Buffer2Plane2 - Display buffer 2's plane 2.
+Buffer2Plane2:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_000AE:
+; Buffer2Plane3 - Display buffer 2's plane 3.
+Buffer2Plane3:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_000B2:
+; FillPlane - The plane FillPolygonPlane fills into (and draws the edges in): normally a work
+; plane, plane 0 for the sky.
+FillPlane:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -372,7 +384,8 @@ dat_071_00163:
 ; GameFrame runs its drawing stages; clear for the text screens.
 FlightScreen:
 	dc.b	$00
-dat_071_00166:
+; BriefingLastKey - The key last seen on the briefing screens (to act on a new press only).
+BriefingLastKey:
 	dc.b	$00
 dat_071_00167:
 	dc.b	$00
@@ -474,7 +487,9 @@ FireNow:
 	dc.b	$00
 dat_071_0018D:
 	dc.b	$00
-dat_071_0018E:
+; JudgeSavedView - The view choice saved by the judges (bit 7 set while saved), put back by
+; StateFlying.
+JudgeSavedView:
 	dc.b	$00
 	dc.b	$00
 ; ShakeKind - The view shake running (ShakeView): 1-3 picks the sequence; 0 none.
@@ -514,11 +529,14 @@ LogDiskCheck:
 	dc.b	$00
 dat_071_001A4:
 	dc.b	$00
-dat_071_001A5:
+; TextKeyCount - Counts keys on the text screens (HandleKey); -1 to start a new page.
+TextKeyCount:
 	dc.b	$00
 dat_071_001A6:
 	dc.b	$00
-dat_071_001A7:
+; MusicState - The title music: 0 not playing, 1 playing (the menus), 2 started
+; (PlayTitleMusic); MenuBeep and PrintNumber stay quiet while it plays.
+MusicState:
 	dc.b	$00
 dat_071_001A8:
 	dc.b	$00
@@ -537,7 +555,8 @@ PageFlags:
 ; detail is drawn (the scenery's distance limits, the ground shapes, the water).
 GroundDetail:
 	dc.b	$00
-dat_071_001AE:
+; PrintDelay - PrintText's character delay counter.
+PrintDelay:
 	dc.b	$00
 dat_071_001AF:
 	dc.b	$00
@@ -701,9 +720,12 @@ WeaponRangeRedraw:
 ; and RedrawInstruments).
 TargetReadoutRedraw:
 	dc.b	$00
-dat_071_0020D:
+; RadarRangeRedraw - Frames left to redraw the radar's range (ShowRadarRange).
+RadarRangeRedraw:
 	dc.b	$00
-dat_071_0020E:
+; PanelIndicatorRedraw - Frames left to redraw the indicator drawn by sub_037_0049C (set to 2
+; by the controls and the engine).
+PanelIndicatorRedraw:
 	dc.b	$00
 dat_071_0020F:
 	dc.b	$00
@@ -717,7 +739,8 @@ dat_071_00212:
 ; is fired or selected.
 StoresRedraw:
 	dc.b	$00
-dat_071_00214:
+; MissilesLeftRedraw - Frames left to redraw the missiles left (ShowMissilesLeft).
+MissilesLeftRedraw:
 	dc.b	$00
 dat_071_00215:
 	dc.b	$00
@@ -790,7 +813,9 @@ dat_071_00230:
 	dc.b	$00
 dat_071_00231:
 	dc.b	$00
-dat_071_00232:
+; LampBits - The panel's warning lamps (bits 0-5, UpdateWarnings) and two of the target
+; readout's (bits 6-7).
+LampBits:
 	dc.b	$00
 dat_071_00233:
 	dc.b	$00
@@ -817,7 +842,8 @@ HeightBand:
 	dc.b	$00
 dat_071_0023C:
 	dc.b	$00
-dat_071_0023D:
+; RadarBlipBits - Bits set by DrawRadarBlips for the kinds of blip drawn this frame.
+RadarBlipBits:
 	dc.b	$00
 ; StatusLights - Bits for the panel's status lights (DrawStatusLights): bits 1, 2, 4 and 5.
 StatusLights:
@@ -879,7 +905,8 @@ WarningTicks:
 ; ShakeStep - How far through its sequence the view shake is (ShakeView).
 ShakeStep:
 	dc.b	$00
-dat_071_00260:
+; WarningTickCount - WarningTicker's counter (8 frames).
+WarningTickCount:
 	dc.b	$00
 dat_071_00261:
 	dc.b	$00
@@ -896,7 +923,9 @@ AircraftLeft:
 ; CodeTries - Tries left at the security code (2, so 3 tries).
 CodeTries:
 	dc.b	$00
-dat_071_00269:
+; FlashCount - Frames left of the yellow flash (ShowDisplay shows dat_021_00040 while it
+; counts; $28 when hit).
+FlashCount:
 	dc.b	$00
 dat_071_0026A:
 	dc.b	$00
@@ -1014,7 +1043,9 @@ GunFlags:
 dat_071_00298:
 	dc.b	$00
 	dc.b	$00
-dat_071_0029A:
+; FlightBits - Bits of the flight's state: 1 set by SetHeightBand (tested by ShowGLoad), 8 set
+; by FlyAircraft and cleared when the flight starts; MakeSkyPolygon reads the whole word.
+FlightBits:
 	dc.b	$00
 	dc.b	$00
 ; StatusBits - A word of status bits: 0 a warning or message is showing (StartWarning), 3
@@ -1025,13 +1056,18 @@ StatusBits:
 	dc.b	$00
 dat_071_0029D:
 	dc.b	$00
-dat_071_0029E:
+; WarningBits - Bits for the warnings: 8 set when the flight is ready, 13 a $2000-kind warning
+; is sounding (StartWarning), 14 set by FlyAircraft (tested by EngineAndSpeed), 15 cleared by
+; StartWarning; 5 and 6 used by UpdateWarnings and UpdateClock.
+WarningBits:
 	dc.b	$00
 	dc.b	$00
 dat_071_002A0:
 	dc.b	$00
 	dc.b	$00
-dat_071_002A2:
+; FlightBits2 - More bits of the flight's state: 1 set when ready and by FlyAircraft, 8 tested
+; by ShowDisplay, 13 the sky fills the view (DrawSkyAndGround), 14 cleared by EngineAndSpeed.
+FlightBits2:
 	dc.b	$00
 	dc.b	$00
 dat_071_002A4:
@@ -1048,7 +1084,9 @@ ViewY:
 ; frame).
 FrameCount:
 	dc.b	$00
-dat_071_002AB:
+; BlinkPhase - Bits that alternate with time (bit 0, bit 1): the gauges and lamps that blink
+; test them.
+BlinkPhase:
 	dc.b	$00
 ; ViewObjectIndex - The number of the object the view follows (0 the player; ViewObject is this
 ; x $200).
@@ -1107,7 +1145,9 @@ AltitudeShown:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_002D4:
+; PauseStartTime - When the game was paused (TimeSeconds), so that FlightStartTime can be moved
+; on by the pause.
+PauseStartTime:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1162,7 +1202,9 @@ dat_071_002F4:
 LogDiskStatus:
 	dc.b	$00
 	dc.b	$00
-dat_071_002FA:
+; ViewHeadingSaved - The viewed object's heading (+$68) when the outside view began;
+; UpdateCamera turns the camera by its change.
+ViewHeadingSaved:
 	dc.b	$00
 	dc.b	$00
 dat_071_002FC:
@@ -1670,10 +1712,12 @@ dat_071_0049C:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_004A0:
+; DivideBy - Divide's divisor (a word); VectorToAngles and MoveBullet set it.
+DivideBy:
 	dc.b	$00
 	dc.b	$00
-dat_071_004A2:
+; DivideResult - Divide's result.
+DivideResult:
 	dc.b	$00
 	dc.b	$00
 ; FrameStage - Which part of GameFrame is running ($08, $10 ... $1D4): set before each part.
@@ -1837,7 +1881,9 @@ dat_071_0050C:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00510:
+; ObjectDistance - The distance of the object being drawn (VectorLength's result), for the
+; level of detail.
+ObjectDistance:
 	dc.b	$00
 	dc.b	$00
 dat_071_00512:
@@ -1899,7 +1945,8 @@ dat_071_0052E:
 dat_071_00530:
 	dc.b	$00
 	dc.b	$00
-dat_071_00532:
+; ControlScratch - FlightControls' working word.
+ControlScratch:
 	dc.b	$00
 	dc.b	$00
 dat_071_00534:
@@ -1907,7 +1954,8 @@ dat_071_00534:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00538:
+; AngleScratch - VectorToAngles' working word.
+AngleScratch:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2129,7 +2177,9 @@ dat_071_005F0:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00602:
+; CameraCellOffset - Minus the camera's position within its cell (x, y, z longs; SetCameraAt,
+; the M key).
+CameraCellOffset:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00

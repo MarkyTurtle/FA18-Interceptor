@@ -24,14 +24,14 @@ RedrawInstruments:
         move.b  d4,(PanelBlitCount).l           ; 00010
         move.b  d4,(dat_071_00209).l            ; 00016
         move.b  d4,(dat_071_0020A).l            ; 0001C
-        move.b  d4,(dat_071_0020E).l            ; 00022
+        move.b  d4,(PanelIndicatorRedraw).l     ; 00022
         move.b  d4,(dat_071_0020F).l            ; 00028
         move.b  d4,(dat_071_00210).l            ; 0002E
         move.b  d4,(dat_071_00211).l            ; 00034
         move.b  d4,(WeaponRangeRedraw).l        ; 0003A
-        move.b  d4,(dat_071_0020D).l            ; 00040
+        move.b  d4,(RadarRangeRedraw).l         ; 00040
         move.b  d4,(StoresRedraw).l             ; 00046
-        move.b  d4,(dat_071_00214).l            ; 0004C
+        move.b  d4,(MissilesLeftRedraw).l       ; 0004C
         move.b  d4,(dat_071_00215).l            ; 00052
         move.b  d4,(TargetReadoutRedraw).l      ; 00058
         tst.b   (ShakeKind).l                   ; 0005E
@@ -43,12 +43,12 @@ l_006_00072:
 
 ;-------------------------------------------------------------------------------
 ; StartGunSound - Sets bit 7 of GroundDetail, RadarScale = $80, and the instrument counter
-; dat_071_0020D.
+; RadarRangeRedraw.
 ;-------------------------------------------------------------------------------
 StartGunSound:
         bset    #$7,(GroundDetail).l            ; 00074
         move.w  #$80,(RadarScale).l             ; 0007C
-        move.b  #$3,(dat_071_0020D).l           ; 00084
+        move.b  #$3,(RadarRangeRedraw).l        ; 00084
         rts                                     ; 0008C
 
 ;-------------------------------------------------------------------------------
@@ -133,7 +133,7 @@ ResetPlayerAircraft:
         move.b  #$24,(PlayerMissiles).l         ; 00168
         move.w  #$1f4,(Player_60).l             ; 00170
         move.b  #$3,(StoresRedraw).l            ; 00178
-        move.b  #$3,(dat_071_00214).l           ; 00180
+        move.b  #$3,(MissilesLeftRedraw).l      ; 00180
         move.b  #$10,(dat_071_0021C).l          ; 00188
         move.b  #$10,(dat_071_0021D).l          ; 00190
         clr.b   (dat_071_0025B).l               ; 00198

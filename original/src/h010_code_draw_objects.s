@@ -99,7 +99,7 @@ DrawSceneryPlain:
         link.w  a6,#$ff68                       ; 000DC
         clr.w   -$80(a6)                        ; 000E0
 l_010_000E4:
-        move.w  (dat_071_00510).l,d1            ; 000E4
+        move.w  (ObjectDistance).l,d1           ; 000E4
         move.w  d1,-$96(a6)                     ; 000EA
         tst.b   (GroundDetail).l                ; 000EE
         bne.b   l_010_00108                     ; 000F4

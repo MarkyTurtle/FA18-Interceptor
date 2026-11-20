@@ -104,9 +104,9 @@ HandleKey:
         link.w  a6,#$0                          ; 0015C
         move.l  $8(a6),d0                       ; 00160
         unlk    a6                              ; 00164
-        tst.b   (dat_071_001A5).l               ; 00166
+        tst.b   (TextKeyCount).l                ; 00166
         bgt.b   l_005_0017A                     ; 0016C
-        addq.b  #$1,(dat_071_001A5).l           ; 0016E
+        addq.b  #$1,(TextKeyCount).l            ; 0016E
         ble.b   l_005_0015A                     ; 00174
         bclr    #$7,d0                          ; 00176
 l_005_0017A:
@@ -885,7 +885,7 @@ l_005_00A74:
 l_005_00A82:
         lea.l   (ObjectTable).l,a0              ; 00A82
         move.w  (ViewObject).l,d4               ; 00A88
-        move.w  $68(a0,d4.w),(dat_071_002FA).l  ; 00A8E
+        move.w  $68(a0,d4.w),(ViewHeadingSaved).l ; 00A8E
         ori.w   #$2,(GunFlags).l                ; 00A96
         move.b  #$ff,(dat_071_00203).l          ; 00A9E
         bra.w   l_005_01624                     ; 00AA6
@@ -1204,7 +1204,7 @@ l_005_00EF8:
         bge.b   l_005_00F08                     ; 00F00
         asl.w   (RadarScale).l                  ; 00F02
 l_005_00F08:
-        move.b  #$3,(dat_071_0020D).l           ; 00F08
+        move.b  #$3,(RadarRangeRedraw).l        ; 00F08
         move.b  #$ff,(dat_071_00261).l          ; 00F10
         move.b  (GroundDetail).l,d4             ; 00F18
         andi.b  #$7f,d4                         ; 00F1E
@@ -1254,7 +1254,7 @@ l_005_00FD2:
         andi.b  #$f,(PlayerWeapon).l            ; 00FD2
         or.b    d4,(PlayerWeapon).l             ; 00FDA
         move.b  #$3,(StoresRedraw).l            ; 00FE0
-        move.b  #$3,(dat_071_00214).l           ; 00FE8
+        move.b  #$3,(MissilesLeftRedraw).l      ; 00FE8
         clr.b   (ShootCue).l                    ; 00FF0
         bra.w   l_005_01624                     ; 00FF6
 Key_G:
@@ -1513,7 +1513,7 @@ ViewFollow:
         bra.w   l_005_01624                     ; 01318
 l_005_0131C:
         lea.l   (ObjectTable).l,a0              ; 0131C
-        move.w  $68(a0,d1.w),(dat_071_002FA).l  ; 01322
+        move.w  $68(a0,d1.w),(ViewHeadingSaved).l ; 01322
         move.b  $62(a0,d1.w),d4                 ; 0132A
         andi.b  #$f0,d4                         ; 0132E
         cmpi.b  #$30,d4                         ; 01332
@@ -1550,7 +1550,7 @@ l_005_0139C:
         neg.l   d4                              ; 013D6
         neg.l   d1                              ; 013D8
         neg.l   d2                              ; 013DA
-        move.l  d4,(dat_071_00602).l            ; 013DC
+        move.l  d4,(CameraCellOffset).l         ; 013DC
         move.l  d1,(dat_071_00606).l            ; 013E2
         move.l  d2,(dat_071_0060A).l            ; 013E8
         clr.l   (dat_071_0061A).l               ; 013EE

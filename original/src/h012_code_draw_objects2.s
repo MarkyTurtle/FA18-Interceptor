@@ -13,7 +13,7 @@ l_012_00000:
 ;-------------------------------------------------------------------------------
 ; DrawGroundShape - The draw routine of the flat ground shapes (most of hunks 69 and 70: the
 ; city's ground, parks and hills, and the roads): only while the shape is at most $380000 below
-; the camera (ViewOffsetY). Picks a level of detail by distance (dat_071_00510, scaled by
+; the camera (ViewOffsetY). Picks a level of detail by distance (ObjectDistance, scaled by
 ; RadarScale unless GroundDetail is set), then turns its vertices - x and z only, all at the
 ; shape's height - by the view matrix into VertexBuffer, and runs its face list through
 ; ShapeOps (with further vertex groups, TransformGroundVertices, as DrawModel's
@@ -33,7 +33,7 @@ DrawGroundShapeFar:
 l_012_0001E:
         link.w  a6,#$ff68                       ; 0001E
         move.l  #$fffff,(FillPattern).l         ; 00022
-        move.w  (dat_071_00510).l,d2            ; 0002C
+        move.w  (ObjectDistance).l,d2           ; 0002C
         move.w  d2,-$96(a6)                     ; 00032
         tst.b   (GroundDetail).l                ; 00036
         bne.b   l_012_00050                     ; 0003C

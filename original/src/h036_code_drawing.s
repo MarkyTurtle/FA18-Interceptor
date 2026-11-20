@@ -50,25 +50,25 @@ l_036_0004C:
 ;-------------------------------------------------------------------------------
 SetupBufferPlanes:
         lea.l   (BufferPlanes).l,a0             ; 0004E
-        move.l  (dat_071_0009A).l,(a0)+         ; 00054
-        move.l  (dat_071_00096).l,(a0)+         ; 0005A
-        move.l  (dat_071_00092).l,(a0)+         ; 00060
-        move.l  (dat_071_0008E).l,(a0)+         ; 00066
-        move.l  (dat_071_000AE).l,(a0)+         ; 0006C
-        move.l  (dat_071_000AA).l,(a0)+         ; 00072
-        move.l  (dat_071_000A6).l,(a0)+         ; 00078
-        move.l  (dat_071_000A2).l,(a0)          ; 0007E
+        move.l  (Buffer1Plane3).l,(a0)+         ; 00054
+        move.l  (Buffer1Plane2).l,(a0)+         ; 0005A
+        move.l  (Buffer1Plane1).l,(a0)+         ; 00060
+        move.l  (Buffer1Plane0).l,(a0)+         ; 00066
+        move.l  (Buffer2Plane3).l,(a0)+         ; 0006C
+        move.l  (Buffer2Plane2).l,(a0)+         ; 00072
+        move.l  (Buffer2Plane1).l,(a0)+         ; 00078
+        move.l  (Buffer2Plane0).l,(a0)          ; 0007E
         lea.l   (dat_071_0005E).l,a0            ; 00084
-        move.l  (dat_071_0009E).l,(a0)+         ; 0008A
-        move.l  (dat_071_0009A).l,(a0)+         ; 00090
-        move.l  (dat_071_00096).l,(a0)+         ; 00096
-        move.l  (dat_071_00092).l,(a0)+         ; 0009C
-        move.l  (dat_071_0008E).l,(a0)+         ; 000A2
-        move.l  (dat_071_000AE).l,(a0)+         ; 000A8
-        move.l  (dat_071_000AE).l,(a0)+         ; 000AE
-        move.l  (dat_071_000AA).l,(a0)+         ; 000B4
-        move.l  (dat_071_000A6).l,(a0)+         ; 000BA
-        move.l  (dat_071_000A2).l,(a0)          ; 000C0
+        move.l  (Buffer1Plane4).l,(a0)+         ; 0008A
+        move.l  (Buffer1Plane3).l,(a0)+         ; 00090
+        move.l  (Buffer1Plane2).l,(a0)+         ; 00096
+        move.l  (Buffer1Plane1).l,(a0)+         ; 0009C
+        move.l  (Buffer1Plane0).l,(a0)+         ; 000A2
+        move.l  (Buffer2Plane3).l,(a0)+         ; 000A8
+        move.l  (Buffer2Plane3).l,(a0)+         ; 000AE
+        move.l  (Buffer2Plane2).l,(a0)+         ; 000B4
+        move.l  (Buffer2Plane1).l,(a0)+         ; 000BA
+        move.l  (Buffer2Plane0).l,(a0)          ; 000C0
         rts                                     ; 000C6
 
 ;-------------------------------------------------------------------------------
@@ -893,11 +893,11 @@ l_036_00890:
 ; ClearScreen - Clears the drawing planes.
 ;-------------------------------------------------------------------------------
 ClearScreen:
-        movea.l (dat_071_0008E).l,a0            ; 00892
-        movea.l (dat_071_00092).l,a1            ; 00898
-        movea.l (dat_071_00096).l,a2            ; 0089E
-        movea.l (dat_071_0009A).l,a3            ; 008A4
-        movea.l (dat_071_0009E).l,a4            ; 008AA
+        movea.l (Buffer1Plane0).l,a0            ; 00892
+        movea.l (Buffer1Plane1).l,a1            ; 00898
+        movea.l (Buffer1Plane2).l,a2            ; 0089E
+        movea.l (Buffer1Plane3).l,a3            ; 008A4
+        movea.l (Buffer1Plane4).l,a4            ; 008AA
         move.w  #$7cf,d0                        ; 008B0
 l_036_008B4:
         clr.l   (a0)+                           ; 008B4
@@ -909,11 +909,11 @@ l_036_008B4:
         clr.l   (a4)+                           ; 008C4
 l_036_008C6:
         dbra    d0,l_036_008B4                  ; 008C6
-        movea.l (dat_071_000A2).l,a0            ; 008CA
-        movea.l (dat_071_000A6).l,a1            ; 008D0
-        movea.l (dat_071_000AA).l,a2            ; 008D6
-        movea.l (dat_071_000AE).l,a3            ; 008DC
-        movea.l (dat_071_000B2).l,a5            ; 008E2
+        movea.l (Buffer2Plane0).l,a0            ; 008CA
+        movea.l (Buffer2Plane1).l,a1            ; 008D0
+        movea.l (Buffer2Plane2).l,a2            ; 008D6
+        movea.l (Buffer2Plane3).l,a3            ; 008DC
+        movea.l (FillPlane).l,a5                ; 008E2
         move.w  #$7cf,d0                        ; 008E8
 l_036_008EC:
         clr.l   (a0)+                           ; 008EC
@@ -1035,8 +1035,8 @@ l_036_00A32:
         move.l  d4,BLTCPTH(a0)                  ; 00A42
         move.l  d4,BLTDPTH(a0)                  ; 00A46
         move.w  d6,BLTSIZE(a0)                  ; 00A4A
-        move.l  (dat_071_000B2).l,-(a7)         ; 00A4E
-        move.l  $c(a2),(dat_071_000B2).l        ; 00A54
+        move.l  (FillPlane).l,-(a7)             ; 00A4E
+        move.l  $c(a2),(FillPlane).l            ; 00A54
         jsr     (MakeSkyPolygon).l              ; 00A5C
         bne.b   l_036_00A7C                     ; 00A62
         bsr.w   FillPolygonPlane                ; 00A64
@@ -1048,7 +1048,7 @@ l_036_00A32:
         moveq   #$0,d4                          ; 00A76
         bsr.w   PlaneOpUnderFill                ; 00A78
 l_036_00A7C:
-        move.l  (a7)+,(dat_071_000B2).l         ; 00A7C
+        move.l  (a7)+,(FillPlane).l             ; 00A7C
         tst.b   (OutsideView).l                 ; 00A82
         bne.b   l_036_00AAC                     ; 00A88
         jsr     (MakeSkyPolygonPanel).l         ; 00A8A
@@ -1304,7 +1304,7 @@ FillPolygonPanel:
 
 ;-------------------------------------------------------------------------------
 ; FillPolygonPlane - Fills the polygon at dat_072_03000 (clipped to ClipY
-; lines) into the one plane at dat_071_000B2 by blitter: finds its bounding box, draws its
+; lines) into the one plane at FillPlane by blitter: finds its bounding box, draws its
 ; edges (DrawFillEdges) and area-fills the box in place (BLTCON1 $0A, descending inclusive
 ; fill). A polygon only a pixel or two across is plotted or drawn as a line instead. d0 = 0
 ; when the plane was filled (the box kept for PlaneOpUnderFill), 1 otherwise.
@@ -1498,7 +1498,7 @@ l_036_00F00:
 l_036_00F04:
         move.l  d1,(dat_071_00338).l            ; 00F04
         move.l  d2,d1                           ; 00F0A
-        add.l   (dat_071_000B2).l,d1            ; 00F0C
+        add.l   (FillPlane).l,d1                ; 00F0C
         sub.l   d7,d1                           ; 00F12
         move.l  d1,(dat_071_00330).l            ; 00F14
         move.l  d1,d2                           ; 00F1A
@@ -1724,7 +1724,7 @@ l_036_01146:
         add.w   d2,d7                           ; 01166
 l_036_01168:
         ext.l   d7                              ; 01168
-        add.l   (dat_071_000B2).l,d7            ; 0116A
+        add.l   (FillPlane).l,d7                ; 0116A
         moveq   #$3,d1                          ; 01170
         andi.w  #$f,d6                          ; 01172
         ror.w   #$4,d6                          ; 01176
