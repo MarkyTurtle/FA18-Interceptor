@@ -138,7 +138,7 @@ l_029_00110:
         jsr     (PlotPoint3DSmall).l            ; 00168
         move.w  (LoopIndex).l,d2                ; 0016E
         addq.w  #$1,d2                          ; 00174
-        move.w  (dat_071_00328).l,d0            ; 00176
+        move.w  (MarkerIndex).l,d0              ; 00176
         blt.b   l_029_00194                     ; 0017C
         move.w  (dat_071_0032A).l,d1            ; 0017E
         moveq   #$0,d3                          ; 00184

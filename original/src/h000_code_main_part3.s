@@ -621,7 +621,7 @@ RunGame:
         move.l  d0,-(a7)                        ; 07D5E
         jsr     (_AvailMem).l                   ; 07D60
         addq.l  #$4,a7                          ; 07D66
-        move.l  d0,(dat_071_00028).l            ; 07D68
+        move.l  d0,(RadarAltitude).l            ; 07D68
         moveq   #$1,d0                          ; 07D6E
         move.l  d0,-(a7)                        ; 07D70
         move.l  #$1b58,-(a7)                    ; 07D72
@@ -639,7 +639,7 @@ RunGame:
         move.l  d0,-(a7)                        ; 07DA6
         jsr     (_AvailMem).l                   ; 07DA8
         addq.l  #$4,a7                          ; 07DAE
-        move.l  d0,(dat_071_0002C).l            ; 07DB0
+        move.l  d0,(AltitudeValue).l            ; 07DB0
         jsr     (AllocRecordBuffers).l          ; 07DB6
         tst.l   d0                              ; 07DBC
         beq.b   l_000_07DC6                     ; 07DBE
@@ -1586,10 +1586,10 @@ FreeTitlePictures:
 
 ;-------------------------------------------------------------------------------
 ; SaveTitleBitMap - Keeps the title picture's plane pointers (TitlePlane0-028FC) if
-; dat_071_001A6 is set.
+; TitleShown is set.
 ;-------------------------------------------------------------------------------
 SaveTitleBitMap:
-        tst.b   (dat_071_001A6).l               ; 08A82
+        tst.b   (TitleShown).l                  ; 08A82
         beq.b   l_000_08AD0                     ; 08A88
         movea.l (TitleBitMap).l,a0              ; 08A8A
         move.l  $8(a0),(TitlePlane0).l          ; 08A90
@@ -2076,7 +2076,7 @@ ReadStick:
         tst.l   d0                              ; 090A2
         beq.b   l_000_090B6                     ; 090A4
         jsr     (StickUp).l                     ; 090A6
-        move.b  #$1,(dat_071_00201).l           ; 090AC
+        move.b  #$1,(StickXMoved).l             ; 090AC
         bra.b   l_000_090FC                     ; 090B4
 l_000_090B6:
         move.w  -$6(a6),d0                      ; 090B6
@@ -2090,30 +2090,30 @@ l_000_090B6:
         tst.l   d0                              ; 090D4
         beq.b   l_000_090E8                     ; 090D6
         jsr     (StickDown).l                   ; 090D8
-        move.b  #$1,(dat_071_00201).l           ; 090DE
+        move.b  #$1,(StickXMoved).l             ; 090DE
         bra.b   l_000_090FC                     ; 090E6
 l_000_090E8:
-        tst.b   (dat_071_00201).l               ; 090E8
+        tst.b   (StickXMoved).l                 ; 090E8
         beq.b   l_000_090FC                     ; 090EE
         jsr     (StickPitchCentre).l            ; 090F0
-        clr.b   (dat_071_00201).l               ; 090F6
+        clr.b   (StickXMoved).l                 ; 090F6
 l_000_090FC:
         btst    #$1,-$6(a6)                     ; 090FC
         beq.b   l_000_09114                     ; 09102
         jsr     (StickLeft).l                   ; 09104
-        move.b  #$1,(dat_071_00202).l           ; 0910A
+        move.b  #$1,(StickYMoved).l             ; 0910A
         bra.b   l_000_09140                     ; 09112
 l_000_09114:
         btst    #$1,-$5(a6)                     ; 09114
         beq.b   l_000_0912C                     ; 0911A
         jsr     (StickRight).l                  ; 0911C
-        move.b  #$1,(dat_071_00202).l           ; 09122
+        move.b  #$1,(StickYMoved).l             ; 09122
         bra.b   l_000_09140                     ; 0912A
 l_000_0912C:
-        tst.b   (dat_071_00202).l               ; 0912C
+        tst.b   (StickYMoved).l                 ; 0912C
         beq.b   l_000_09140                     ; 09132
         jsr     (StickRollCentre).l             ; 09134
-        clr.b   (dat_071_00202).l               ; 0913A
+        clr.b   (StickYMoved).l                 ; 0913A
 l_000_09140:
         unlk    a6                              ; 09140
         rts                                     ; 09142
@@ -2343,29 +2343,29 @@ l_000_0940A:
         move.w  d0,(MouseY).l                   ; 0940A
         move.w  -$6(a6),(MouseLastX).l          ; 09410
         move.w  -$8(a6),(MouseLastY).l          ; 09418
-        move.w  (dat_071_00144).l,d0            ; 09420
+        move.w  (MouseIntFrames).l,d0           ; 09420
         addq.w  #$1,d0                          ; 09426
-        move.w  d0,(dat_071_00144).l            ; 09428
+        move.w  d0,(MouseIntFrames).l           ; 09428
         move.b  (FadeLevel).l,d0                ; 0942E
         move.b  (FadeTarget).l,d1               ; 09434
         cmp.b   d1,d0                           ; 0943A
         beq.w   l_000_09574                     ; 0943C
-        move.b  (dat_071_00273).l,d2            ; 09440
+        move.b  (MouseIntCount).l,d2            ; 09440
         subq.b  #$1,d2                          ; 09446
-        move.b  d2,(dat_071_00273).l            ; 09448
+        move.b  d2,(MouseIntCount).l            ; 09448
         tst.b   d2                              ; 0944E
         bpl.w   l_000_09596                     ; 09450
         cmp.b   d1,d0                           ; 09454
         ble.b   l_000_0946A                     ; 09456
         subq.b  #$1,d0                          ; 09458
         move.b  d0,(FadeLevel).l                ; 0945A
-        move.b  #$1,(dat_071_00273).l           ; 09460
+        move.b  #$1,(MouseIntCount).l           ; 09460
         bra.b   l_000_09480                     ; 09468
 l_000_0946A:
         move.b  (FadeLevel).l,d0                ; 0946A
         addq.b  #$1,d0                          ; 09470
         move.b  d0,(FadeLevel).l                ; 09472
-        move.b  #$2,(dat_071_00273).l           ; 09478
+        move.b  #$2,(MouseIntCount).l           ; 09478
 l_000_09480:
         lea.l   (dat_021_00080).l,a0            ; 09480
         move.b  (FadeLevel).l,d0                ; 09486

@@ -92,7 +92,7 @@ l_023_000C4:
 
 ;-------------------------------------------------------------------------------
 ; BulletHitTest - Whether a bullet (its number on the stack) hit an object or a scenery shape
-; near it: the objects in its cell (within $800, or dat_071_00376) and the drawing list's
+; near it: the objects in its cell (within $800, or BulletHitRange) and the drawing list's
 ; shapes. d0 = 1 for a hit (BulletHitObject the object hit).
 ;-------------------------------------------------------------------------------
 BulletHitTest:
@@ -109,9 +109,9 @@ BulletHitTest:
         asr.l   #$8,d0                          ; 000EE
         asr.l   #$8,d1                          ; 000F0
         asr.l   #$8,d2                          ; 000F2
-        movem.w d0-d2,(dat_071_00B48).l         ; 000F4
-        move.w  (dat_071_00B50).l,-$12(a6)      ; 000FC
-        movem.w (dat_071_00B42).l,d0-d2         ; 00104
+        movem.w d0-d2,(BulletTestPos).l         ; 000F4
+        move.w  (BulletTestRange).l,-$12(a6)    ; 000FC
+        movem.w (BulletTestFrom).l,d0-d2        ; 00104
         movem.w d0-d2,-$10(a6)                  ; 0010C
         move.w  #$0,(BulletHitObject).l         ; 00112
         lea.l   (ObjectTable).l,a0              ; 0011A
@@ -124,7 +124,7 @@ BulletHitTest:
 l_023_0013E:
         clr.l   -$a(a6)                         ; 0013E
         moveq   #-1,d5                          ; 00142
-        movea.l (dat_071_00396).l,a5            ; 00144
+        movea.l (DrawListEnd).l,a5              ; 00144
 l_023_0014A:
         move.w  (a5),-$2(a6)                    ; 0014A
         suba.w  #$18,a5                         ; 0014E
@@ -172,7 +172,7 @@ l_023_001DE:
         move.w  #$800,d7                        ; 001F0
         bra.b   l_023_001FC                     ; 001F4
 l_023_001F6:
-        move.w  (dat_071_00376).l,d7            ; 001F6
+        move.w  (BulletHitRange).l,d7           ; 001F6
 l_023_001FC:
         ext.l   d7                              ; 001FC
         movem.l $0(a3),d0-d1/d6                 ; 001FE
@@ -279,7 +279,7 @@ l_023_00302:
         move.l  $8(a6),d0                       ; 00302
         cmpi.w  #$14,d0                         ; 00306
         blt.w   l_023_003DA                     ; 0030A
-        move.w  (dat_071_00376).l,d7            ; 0030E
+        move.w  (BulletHitRange).l,d7           ; 0030E
         ext.l   d7                              ; 00314
         movem.l $0(a3),d0-d1/d6                 ; 00316
         asr.l   #$8,d0                          ; 0031C
@@ -393,7 +393,7 @@ l_023_00434:
 sub_023_00438:
         move.l  $4(a3),d3                       ; 00438
         blt.w   BulletHitGround                 ; 0043C
-        move.w  (dat_071_00B4E).l,d0            ; 00440
+        move.w  (BulletTestKind).l,d0           ; 00440
         beq.b   l_023_0045C                     ; 00446
         subq.w  #$1,d0                          ; 00448
         beq.b   l_023_00456                     ; 0044A

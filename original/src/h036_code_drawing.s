@@ -45,7 +45,7 @@ l_036_0004C:
         rts                                     ; 0004C
 
 ;-------------------------------------------------------------------------------
-; SetupBufferPlanes - Fills BufferPlanes (and dat_071_0005E) with the two display buffers'
+; SetupBufferPlanes - Fills BufferPlanes (and BufferPlanes5) with the two display buffers'
 ; plane addresses, in the order the drawing uses (plane 3 first).
 ;-------------------------------------------------------------------------------
 SetupBufferPlanes:
@@ -58,7 +58,7 @@ SetupBufferPlanes:
         move.l  (Buffer2Plane2).l,(a0)+         ; 00072
         move.l  (Buffer2Plane1).l,(a0)+         ; 00078
         move.l  (Buffer2Plane0).l,(a0)          ; 0007E
-        lea.l   (dat_071_0005E).l,a0            ; 00084
+        lea.l   (BufferPlanes5).l,a0            ; 00084
         move.l  (Buffer1Plane4).l,(a0)+         ; 0008A
         move.l  (Buffer1Plane3).l,(a0)+         ; 00090
         move.l  (Buffer1Plane2).l,(a0)+         ; 00096
@@ -72,19 +72,19 @@ SetupBufferPlanes:
         rts                                     ; 000C6
 
 ;-------------------------------------------------------------------------------
-; SelectDrawBuffer - Points DrawPlanes (and dat_071_0008A) at the planes of the buffer to draw
+; SelectDrawBuffer - Points DrawPlanes (and DrawBitPlanes) at the planes of the buffer to draw
 ; into, by DisplayBuffer: the double buffering's swap.
 ;-------------------------------------------------------------------------------
 SelectDrawBuffer:
         lea.l   (BufferPlanes).l,a0             ; 000C8
-        lea.l   (dat_071_0005E).l,a1            ; 000CE
+        lea.l   (BufferPlanes5).l,a1            ; 000CE
         tst.w   (DisplayBuffer).l               ; 000D4
         beq.b   l_036_000E4                     ; 000DA
         adda.w  #$10,a0                         ; 000DC
         adda.w  #$14,a1                         ; 000E0
 l_036_000E4:
         move.l  a0,(DrawPlanes).l               ; 000E4
-        move.l  a1,(dat_071_0008A).l            ; 000EA
+        move.l  a1,(DrawBitPlanes).l            ; 000EA
         rts                                     ; 000F0
 
 ;-------------------------------------------------------------------------------
@@ -904,7 +904,7 @@ l_036_008B4:
         clr.l   (a1)+                           ; 008B6
         clr.l   (a2)+                           ; 008B8
         clr.l   (a3)+                           ; 008BA
-        tst.b   (dat_071_001A6).l               ; 008BC
+        tst.b   (TitleShown).l                  ; 008BC
         beq.b   l_036_008C6                     ; 008C2
         clr.l   (a4)+                           ; 008C4
 l_036_008C6:
@@ -966,10 +966,10 @@ l_036_00930:
 l_036_00972:
         btst    #$6,DMACONR(a0)                 ; 00972
         beq.b   l_036_00982                     ; 00978
-        addq.w  #$1,(dat_071_002EC).l           ; 0097A
+        addq.w  #$1,(SkyStepCount1).l           ; 0097A
         bra.b   l_036_00972                     ; 00980
 l_036_00982:
-        move.l  (dat_071_002EC).l,d0            ; 00982
+        move.l  (SkyStepCount1).l,d0            ; 00982
         move.w  d0,d3                           ; 00988
         swap    d0                              ; 0098A
         cmp.w   d3,d0                           ; 0098C
@@ -979,7 +979,7 @@ l_036_00992:
         clr.w   d0                              ; 00992
         swap    d0                              ; 00994
         move.w  d3,d0                           ; 00996
-        move.l  d0,(dat_071_002EC).l            ; 00998
+        move.l  d0,(SkyStepCount1).l            ; 00998
         move.w  d2,BLTCON0(a0)                  ; 0099E
         move.l  d4,BLTCPTH(a0)                  ; 009A2
         move.l  d4,BLTDPTH(a0)                  ; 009A6
@@ -993,10 +993,10 @@ l_036_00992:
 l_036_009C8:
         btst    #$6,DMACONR(a0)                 ; 009C8
         beq.b   l_036_009D8                     ; 009CE
-        addq.w  #$1,(dat_071_002F0).l           ; 009D0
+        addq.w  #$1,(SkyStepCount2).l           ; 009D0
         bra.b   l_036_009C8                     ; 009D6
 l_036_009D8:
-        move.l  (dat_071_002F0).l,d0            ; 009D8
+        move.l  (SkyStepCount2).l,d0            ; 009D8
         move.w  d0,d3                           ; 009DE
         swap    d0                              ; 009E0
         cmp.w   d3,d0                           ; 009E2
@@ -1006,7 +1006,7 @@ l_036_009E8:
         clr.w   d0                              ; 009E8
         swap    d0                              ; 009EA
         move.w  d3,d0                           ; 009EC
-        move.l  d0,(dat_071_002F0).l            ; 009EE
+        move.l  d0,(SkyStepCount2).l            ; 009EE
         move.w  d2,BLTCON0(a0)                  ; 009F4
         move.l  d4,BLTCPTH(a0)                  ; 009F8
         move.l  d4,BLTDPTH(a0)                  ; 009FC
@@ -1017,10 +1017,10 @@ l_036_009E8:
 l_036_00A12:
         btst    #$6,DMACONR(a0)                 ; 00A12
         beq.b   l_036_00A22                     ; 00A18
-        addq.w  #$1,(dat_071_002F4).l           ; 00A1A
+        addq.w  #$1,(SkyStepCount3).l           ; 00A1A
         bra.b   l_036_00A12                     ; 00A20
 l_036_00A22:
-        move.l  (dat_071_002F4).l,d0            ; 00A22
+        move.l  (SkyStepCount3).l,d0            ; 00A22
         move.w  d0,d3                           ; 00A28
         swap    d0                              ; 00A2A
         cmp.w   d3,d0                           ; 00A2C
@@ -1030,7 +1030,7 @@ l_036_00A32:
         clr.w   d0                              ; 00A32
         swap    d0                              ; 00A34
         move.w  d3,d0                           ; 00A36
-        move.l  d0,(dat_071_002F4).l            ; 00A38
+        move.l  d0,(SkyStepCount3).l            ; 00A38
         move.w  d2,BLTCON0(a0)                  ; 00A3E
         move.l  d4,BLTCPTH(a0)                  ; 00A42
         move.l  d4,BLTDPTH(a0)                  ; 00A46
@@ -1402,7 +1402,7 @@ l_036_00E08:
         ble.b   l_036_00E34                     ; 00E0C
 l_036_00E0E:
         move.l  (FillPattern).l,-(a7)           ; 00E0E
-        tst.b   (dat_071_00172).l               ; 00E14
+        tst.b   (GroundDotsDrawn).l             ; 00E14
         bne.b   l_036_00E26                     ; 00E1A
         move.l  #$fffff,(FillPattern).l         ; 00E1C
 l_036_00E26:
@@ -1438,7 +1438,7 @@ l_036_00E5C:
         clr.w   d0                              ; 00E60
 l_036_00E62:
         exg.l   d1,d2                           ; 00E62
-        movem.w d0-d3,(dat_071_0034C).l         ; 00E64
+        movem.w d0-d3,(FillBox).l               ; 00E64
         move.w  (DrawColour).l,(ColourBits).l   ; 00E6C
         lea.l   (dat_072_03000).l,a2            ; 00E76
         lea.l   (dat_071_00340).l,a3            ; 00E7C
@@ -1459,7 +1459,7 @@ l_036_00E8C:
         move.w  a4,-(a7)                        ; 00EAA
         bsr.w   DrawFillEdges                   ; 00EAC
         movea.w (a7)+,a4                        ; 00EB0
-        movem.w (dat_071_0034C).l,d1/d3         ; 00EB2
+        movem.w (FillBox).l,d1/d3               ; 00EB2
         asr.w   #$4,d3                          ; 00EBA
         move.w  d3,d2                           ; 00EBC
         asr.w   #$4,d1                          ; 00EBE
@@ -1468,7 +1468,7 @@ l_036_00E8C:
         add.w   d3,d3                           ; 00EC4
         neg.w   d3                              ; 00EC6
         addi.w  #$27,d3                         ; 00EC8
-        move.w  (dat_071_00352).l,d5            ; 00ECC
+        move.w  (FillBottom).l,d5               ; 00ECC
         move.w  d5,d1                           ; 00ED2
         move.w  d5,d7                           ; 00ED4
         asl.w   #$3,d1                          ; 00ED6
@@ -1500,7 +1500,7 @@ l_036_00F04:
         move.l  d2,d1                           ; 00F0A
         add.l   (FillPlane).l,d1                ; 00F0C
         sub.l   d7,d1                           ; 00F12
-        move.l  d1,(dat_071_00330).l            ; 00F14
+        move.l  d1,(FillPlaneStart).l           ; 00F14
         move.l  d1,d2                           ; 00F1A
         move.l  d1,(FillBoxModulo).l            ; 00F1C
         sub.w   (dat_071_00350).l,d5            ; 00F22
@@ -1596,7 +1596,7 @@ l_036_0100E:
 ;-------------------------------------------------------------------------------
 ClearFillPlane:
         move.w  (FillBoxSize).l,d0              ; 01022
-        move.l  (dat_071_00330).l,d2            ; 01028
+        move.l  (FillPlaneStart).l,d2           ; 01028
         move.l  d2,d1                           ; 0102E
         lea.l   (CUSTOM).l,a0                    ; 01030
 l_036_01036:
@@ -1629,7 +1629,7 @@ FillPanelPlane:
         move.l  (FillBoxStart).l,d1             ; 0107A
         add.l   d2,d1                           ; 01080
         move.l  (FillBoxModulo).l,d2            ; 01082
-        move.w  (dat_071_00352).l,d6            ; 01088
+        move.w  (FillBottom).l,d6               ; 01088
         sub.w   (ViewY).l,d6                    ; 0108E
         subi.w  #$b7,d6                         ; 01094
         add.w   d6,d6                           ; 01098
@@ -1644,7 +1644,7 @@ FillPanelPlane:
         neg.w   d4                              ; 010B2
         cmpi.w  #$1,d4                          ; 010B4
         beq.b   l_036_010D2                     ; 010B8
-        move.w  (dat_071_0034C).l,d6            ; 010BA
+        move.w  (FillBox).l,d6                  ; 010BA
         asr.w   #$4,d6                          ; 010C0
         move.w  (ViewShift).l,d7                ; 010C2
         addi.w  #$c,d7                          ; 010C8

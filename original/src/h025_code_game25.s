@@ -33,7 +33,7 @@ l_025_00042:
         move.l  (ViewOffsetY8).l,d1             ; 00042
         cmp.l   d2,d1                           ; 00048
         blt.w   l_025_00274                     ; 0004A
-        move.b  #$1,(dat_071_00172).l           ; 0004E
+        move.b  #$1,(GroundDotsDrawn).l         ; 0004E
         clr.w   -$22(a6)                        ; 00056
         cmpi.l  #$fffffe00,d1                   ; 0005A
         bge.b   l_025_00066                     ; 00060
@@ -90,7 +90,7 @@ l_025_0010C:
         move.l  #dat_025_00D18,-$10(a6)         ; 00114
         move.l  #dat_025_00D30,-$14(a6)         ; 0011C
 l_025_00124:
-        lea.l   (dat_071_005AA).l,a0            ; 00124
+        lea.l   (ViewMatrixRow2).l,a0           ; 00124
         move.w  -$4(a6),d2                      ; 0012A
         move.w  d2,d1                           ; 0012E
         move.w  d2,d3                           ; 00130
@@ -219,7 +219,7 @@ l_025_0026C:
         subq.w  #$1,-$8(a6)                     ; 0026C
         bgt.w   l_025_00150                     ; 00270
 l_025_00274:
-        clr.b   (dat_071_00172).l               ; 00274
+        clr.b   (GroundDotsDrawn).l             ; 00274
         unlk    a6                              ; 0027A
         rts                                     ; 0027C
 l_025_0027E:

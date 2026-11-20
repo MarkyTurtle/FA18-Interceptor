@@ -547,9 +547,9 @@ l_038_006C8:
         clr.w   (CurrentWarning).l              ; 006D8
 l_038_006DE:
         move.b  d0,(StatusLights).l             ; 006DE
-        tst.b   (dat_071_00189).l               ; 006E4
+        tst.b   (TKeyPressed).l                 ; 006E4
         beq.w   l_038_007CC                     ; 006EA
-        clr.b   (dat_071_00189).l               ; 006EE
+        clr.b   (TKeyPressed).l                 ; 006EE
         lea.l   (RadarList).l,a0                ; 006F4
         moveq   #$0,d0                          ; 006FA
         tst.w   (LockedTarget).l                ; 006FC

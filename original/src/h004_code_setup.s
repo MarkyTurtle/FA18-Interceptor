@@ -84,17 +84,17 @@ l_004_000E4:
         adda.w  #$20,a0                         ; 000EA
         dbra    d0,l_004_000E0                  ; 000EE
         bsr.w   ResetPlayerFlags                ; 000F2
-        move.w  #$140,(dat_071_00376).l         ; 000F6
+        move.w  #$140,(BulletHitRange).l        ; 000F6
         move.w  #$140,(dat_071_00378).l         ; 000FE
         move.b  #$0,(StartPoint).l              ; 00106
         move.b  #$1,(MarkersOn).l               ; 0010E
         move.w  #$800,(dat_073_0165A).l         ; 00116
         bsr.w   BayCentre                       ; 0011E
         bsr.w   SetCameraAt                     ; 00122
-        move.l  #$3000000,(dat_071_00034).l     ; 00126
+        move.l  #$3000000,(MapViewHeight).l     ; 00126
         clr.l   (CameraVelocity).l              ; 00130
-        clr.l   (dat_071_0061E).l               ; 00136
-        clr.l   (dat_071_00622).l               ; 0013C
+        clr.l   (CameraVelocityY).l             ; 00136
+        clr.l   (CameraVelocityZ).l             ; 0013C
         move.w  #$1c20,(OutsideCamPitch).l      ; 00142
         move.w  #$0,(OutsideCamHeading).l       ; 0014A
         move.w  #$a7,(ClipY).l                  ; 00152
@@ -105,9 +105,9 @@ l_004_000E4:
         move.l  d0,(ClockLast).l                ; 00172
         move.b  d0,(ViewOctantShown).l          ; 00178
         move.b  #$f,(dat_071_0028E).l           ; 0017E
-        move.w  #$7fff,(dat_071_004B8).l        ; 00186
-        move.l  #$800000,(dat_071_000CA).l      ; 0018E
-        move.w  #$a8,(dat_071_0040E).l          ; 00198
+        move.w  #$7fff,(BestClock).l            ; 00186
+        move.l  #$800000,(FlightValue).l        ; 0018E
+        move.w  #$a8,(ScaleFactors).l           ; 00198
         move.w  #$fc,(dat_071_00410).l          ; 001A0
         move.w  #$80,(RadarScale).l             ; 001A8
         move.b  #$80,(GroundDetail).l           ; 001B0
@@ -243,7 +243,7 @@ PointAheadOfView:
 
 ;-------------------------------------------------------------------------------
 ; TurnByPanelMatrix - Turns (d3, d4, d5) by the viewed object's matrix (after
-; CameraHeadingMatrix), into dat_071_005DE.
+; CameraHeadingMatrix), into PanelVector.
 ;-------------------------------------------------------------------------------
 TurnByPanelMatrix:
         movem.l a1-a2,-(a7)                     ; 002F0
@@ -252,7 +252,7 @@ TurnByPanelMatrix:
         movem.w (a7)+,d3-d5                     ; 002FE
         lea.l   (ObjectTable).l,a1              ; 00302
         adda.w  (ViewObject).l,a1               ; 00308
-        lea.l   (dat_071_005DE).l,a2            ; 0030E
+        lea.l   (PanelVector).l,a2              ; 0030E
         bra.b   l_004_0033E                     ; 00314
 
 ;-------------------------------------------------------------------------------
@@ -379,7 +379,7 @@ l_004_0046C:
         move.b  $6(a1,d2.w),d4                  ; 00470
         andi.b  #$f,d4                          ; 00474
         move.b  d4,(Player_7D).l                ; 00478
-        clr.b   (dat_071_00170).l               ; 0047E
+        clr.b   (FlightFlag170).l               ; 0047E
         lea.l   (ObjectTable).l,a1              ; 00484
         andi.w  #$f9ff,$0(a1)                   ; 0048A
         andi.w  #$deff,$2(a1)                   ; 00490
@@ -395,7 +395,7 @@ l_004_0046C:
         move.b  #$0,$7c(a1)                     ; 004CC
         clr.b   (ModelVariant).l                ; 004D2
         clr.b   (GearState).l                   ; 004D8
-        clr.b   (dat_071_0017B).l               ; 004DE
+        clr.b   (EjectKeyFlag).l                ; 004DE
         clr.b   (PanelIndicatorBlink).l         ; 004E4
 l_004_004EA:
         lea.l   (StartPoints).l,a0              ; 004EA
@@ -584,7 +584,7 @@ ResetPlayerMotion:
         clr.l   (SoundRequests).l               ; 0074C
         clr.w   (CurrentWarning).l              ; 00752
         clr.w   (WarningPlaying).l              ; 00758
-        move.w  #$ffff,(dat_071_004B4).l        ; 0075E
+        move.w  #$ffff,(TargetReadoutShown).l   ; 0075E
         rts                                     ; 00766
 
 ;-------------------------------------------------------------------------------

@@ -436,7 +436,7 @@ l_028_00E1E:
         bne.b   l_028_00E80                     ; 00E36
         cmpi.w  #$4,d2                          ; 00E38
         bne.b   l_028_00E6A                     ; 00E3C
-        move.b  (dat_071_0026C).l,-$24(a6)      ; 00E3E
+        move.b  (ViewTable2Hit).l,-$24(a6)      ; 00E3E
         cmpi.l  #$400,-$28(a6)                  ; 00E46
         bgt.b   l_028_00E58                     ; 00E4E
         move.w  #$2,-$20(a6)                    ; 00E50
@@ -604,7 +604,7 @@ l_028_0101C:
         swap    d2                              ; 0101C
 l_028_0101E:
         neg.w   d2                              ; 0101E
-        lea.l   (dat_071_005AA).l,a0            ; 01020
+        lea.l   (ViewMatrixRow2).l,a0           ; 01020
         move.w  d2,d1                           ; 01026
         move.w  d2,d3                           ; 01028
         muls.w  (a0),d1                         ; 0102A

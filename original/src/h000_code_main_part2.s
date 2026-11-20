@@ -314,7 +314,7 @@ l_000_0474C:
         muls.w  d2,d2                           ; 04768
         move.l  d1,-$16(a6)                     ; 0476A
         add.l   d2,d1                           ; 0476E
-        move.l  d1,(dat_071_00534).l            ; 04770
+        move.l  d1,(AngleDistance).l            ; 04770
         jsr     (sub_020_0089E).l               ; 04776
         move.w  -$18(a6),d0                     ; 0477C
         ext.l   d0                              ; 04780
@@ -725,7 +725,7 @@ l_000_04C46:
         lea.l   $24(a7),a7                      ; 04C7C
         bra.w   l_000_04DCE                     ; 04C80
 l_000_04C84:
-        btst    #$0,(dat_071_00526).l           ; 04C84
+        btst    #$0,(FlightSoundBits).l         ; 04C84
         beq.b   l_000_04CC2                     ; 04C8C
         moveq   #$1,d0                          ; 04C8E
         move.l  d0,-(a7)                        ; 04C90
@@ -810,7 +810,7 @@ l_000_04D40:
         lea.l   $24(a7),a7                      ; 04D76
         bra.b   l_000_04DCE                     ; 04D7A
 l_000_04D7C:
-        btst    #$3,(dat_071_00526).l           ; 04D7C
+        btst    #$3,(FlightSoundBits).l         ; 04D7C
         beq.b   l_000_04DB8                     ; 04D84
         moveq   #$5,d0                          ; 04D86
         move.l  d0,-(a7)                        ; 04D88
@@ -877,7 +877,7 @@ l_000_04E3A:
 l_000_04E40:
         tst.b   -$11(a6)                        ; 04E40
         bne.b   l_000_04E56                     ; 04E44
-        move.b  (dat_071_00191).l,d0            ; 04E46
+        move.b  (FrameParity).l,d0              ; 04E46
         andi.b  #$3,d0                          ; 04E4C
         tst.b   d0                              ; 04E50
         bne.w   l_000_0528A                     ; 04E52
@@ -2244,7 +2244,7 @@ sub_000_05E84:
         beq.b   l_000_05ED2                     ; 05E8A
         tst.b   (MouseActive).l                 ; 05E8C
         beq.b   l_000_05ED2                     ; 05E92
-        move.w  (dat_071_00150).l,d0            ; 05E94
+        move.w  (FrameControlEvents).l,d0       ; 05E94
         andi.w  #$3,d0                          ; 05E9A
         subq.w  #$3,d0                          ; 05E9E
         bne.b   l_000_05ED2                     ; 05EA0
@@ -2259,7 +2259,7 @@ sub_000_05E84:
 l_000_05EC4:
         move.b  #$77,(GearState).l              ; 05EC4
 l_000_05ECC:
-        clr.w   (dat_071_00150).l               ; 05ECC
+        clr.w   (FrameControlEvents).l          ; 05ECC
 l_000_05ED2:
         rts                                     ; 05ED2
 
@@ -3272,7 +3272,7 @@ l_000_06AB0:
         asl.w   #$1,d0                          ; 06AB4
         add.w   -$4(a6),d0                      ; 06AB6
         sub.w   -$2(a6),d0                      ; 06ABA
-        move.l  (dat_071_000CA).l,d1            ; 06ABE
+        move.l  (FlightValue).l,d1              ; 06ABE
         movea.l (CockpitObject).l,a0            ; 06AC4
         sub.l   $18(a0),d1                      ; 06ACA
         move.w  $2(a0),d2                       ; 06ACE
@@ -3302,11 +3302,11 @@ l_000_06AF6:
 ;-------------------------------------------------------------------------------
 ; FlyAircraft - The flight model for one aircraft (CurrentObject; CockpitObject = its record):
 ; the nose's direction is the third column of its +$92 matrix (M13, M23, M33, into
-; dat_071_00470-00474); ScaleToLength makes it a velocity of the aircraft's speed (+$6E) along
+; FlightScratch-00474); ScaleToLength makes it a velocity of the aircraft's speed (+$6E) along
 ; the nose (ScaledVector-00420); each part of the velocity then moves part of the way there
 ; from the present velocity (EaseVelocity), +$76 is added to the vertical part (unless bit 0 of
-; dat_071_0016F), and the result is the new velocity (+$3E, +$42, +$46). Then the undercarriage
-; / landing and the rest (dat_071_0016F modes 1 and 3 add or take away $6000 vertically; type
+; FlightStep), and the result is the new velocity (+$3E, +$42, +$46). Then the undercarriage
+; / landing and the rest (FlightStep modes 1 and 3 add or take away $6000 vertically; type
 ; $14 uses +$4E)...
 ;-------------------------------------------------------------------------------
 FlyAircraft:
@@ -3330,9 +3330,9 @@ FlyAircraft:
         adda.w  #$20,a2                         ; 06B44
         movea.l d0,a3                           ; 06B48
         move.w  $96(a3),d1                      ; 06B4A
-        move.w  d1,(dat_071_00470).l            ; 06B4E
+        move.w  d1,(FlightScratch).l            ; 06B4E
         move.w  $96(a3),d2                      ; 06B54
-        move.w  d2,(dat_071_00470).l            ; 06B58
+        move.w  d2,(FlightScratch).l            ; 06B58
         move.w  $9c(a3),d1                      ; 06B5E
         move.w  d1,(dat_071_00472).l            ; 06B62
         move.w  $a2(a3),d2                      ; 06B68
@@ -3341,7 +3341,7 @@ FlyAircraft:
         neg.w   d1                              ; 06B76
         move.w  d1,-$22(a6)                     ; 06B78
         ext.l   d1                              ; 06B7C
-        move.w  (dat_071_00470).l,d3            ; 06B7E
+        move.w  (FlightScratch).l,d3            ; 06B7E
         ext.l   d3                              ; 06B84
         move.w  (dat_071_00472).l,d4            ; 06B86
         ext.l   d4                              ; 06B8C
@@ -3369,7 +3369,7 @@ FlyAircraft:
         asr.l   #$2,d1                          ; 06BE2
         move.w  d0,-$8(a6)                      ; 06BE4
         move.w  d1,-$c(a6)                      ; 06BE8
-        tst.b   (dat_071_00170).l               ; 06BEC
+        tst.b   (FlightFlag170).l               ; 06BEC
         beq.b   l_000_06C0E                     ; 06BF2
         tst.w   -$24(a6)                        ; 06BF4
         bne.b   l_000_06C0E                     ; 06BF8
@@ -3403,7 +3403,7 @@ l_000_06C42:
         move.l  $42(a0),d0                      ; 06C48
         asr.l   #$2,d0                          ; 06C4C
         move.w  d0,-$a(a6)                      ; 06C4E
-        tst.b   (dat_071_00170).l               ; 06C52
+        tst.b   (FlightFlag170).l               ; 06C52
         beq.b   l_000_06C66                     ; 06C58
         tst.w   -$24(a6)                        ; 06C5A
         bne.b   l_000_06C66                     ; 06C5E
@@ -3418,7 +3418,7 @@ l_000_06C66:
         move.l  d0,-(a7)                        ; 06C74
         bsr.w   EaseVelocity                    ; 06C76
         addq.l  #$8,a7                          ; 06C7A
-        move.b  (dat_071_0016F).l,d1            ; 06C7C
+        move.b  (FlightStep).l,d1               ; 06C7C
         move.w  d0,-$4(a6)                      ; 06C82
         btst    #$0,d1                          ; 06C86
         bne.b   l_000_06C9A                     ; 06C8A
@@ -3439,7 +3439,7 @@ l_000_06C9A:
         move.l  d0,-$10(a6)                     ; 06CBA
         move.l  d1,-$14(a6)                     ; 06CBE
         move.l  d2,-$18(a6)                     ; 06CC2
-        tst.b   (dat_071_00170).l               ; 06CC6
+        tst.b   (FlightFlag170).l               ; 06CC6
         beq.b   l_000_06D00                     ; 06CCC
         tst.w   -$24(a6)                        ; 06CCE
         bne.b   l_000_06D00                     ; 06CD2
@@ -3477,14 +3477,14 @@ l_000_06D00:
 l_000_06D42:
         tst.w   -$24(a6)                        ; 06D42
         bne.b   l_000_06D6E                     ; 06D46
-        move.b  (dat_071_0016F).l,d0            ; 06D48
+        move.b  (FlightStep).l,d0               ; 06D48
         subq.b  #$3,d0                          ; 06D4E
         bne.b   l_000_06D5C                     ; 06D50
         move.l  -$1c(a6),d0                     ; 06D52
         sub.l   d0,-$14(a6)                     ; 06D56
         bra.b   l_000_06D6E                     ; 06D5A
 l_000_06D5C:
-        move.b  (dat_071_0016F).l,d0            ; 06D5C
+        move.b  (FlightStep).l,d0               ; 06D5C
         subq.b  #$1,d0                          ; 06D62
         bne.b   l_000_06D6E                     ; 06D64
         move.l  -$1c(a6),d0                     ; 06D66
@@ -3633,7 +3633,7 @@ l_000_06F30:
         jsr     (ReadTime).l                    ; 06F64
         move.l  (TimeSeconds).l,(FlightStartTime).l ; 06F6A
         moveq   #$0,d0                          ; 06F74
-        move.b  d0,(dat_071_0016F).l            ; 06F76
+        move.b  d0,(FlightStep).l               ; 06F76
         moveq   #$1,d0                          ; 06F7C
         move.b  d0,(ShakeKind).l                ; 06F7E
         cmpi.w  #$240,-$4(a6)                   ; 06F84
@@ -3732,7 +3732,7 @@ l_000_070DA:
         btst    #$1,d0                          ; 070E0
         beq.w   l_000_07178                     ; 070E4
         move.b  #$3,(ShakeKind).l               ; 070E8
-        bset    #$1,(dat_071_00526).l           ; 070F0
+        bset    #$1,(FlightSoundBits).l         ; 070F0
         andi.w  #$fffd,d0                       ; 070F8
         move.w  d0,(FlightBits2).l              ; 070FC
         bra.b   l_000_07178                     ; 07102
@@ -3749,19 +3749,19 @@ l_000_07104:
         move.l  d0,(PlayerFuel).l               ; 07128
         cmpi.l  #$61a80000,d0                   ; 0712E
         bge.b   l_000_0714E                     ; 07134
-        move.w  (dat_071_002A0).l,d0            ; 07136
+        move.w  (FlightBits4).l,d0              ; 07136
         btst    #$4,d0                          ; 0713C
         bne.b   l_000_07178                     ; 07140
         ori.w   #$10,d0                         ; 07142
-        move.w  d0,(dat_071_002A0).l            ; 07146
+        move.w  d0,(FlightBits4).l              ; 07146
         bra.b   l_000_07178                     ; 0714C
 l_000_0714E:
         move.w  (WarningBits).l,d0              ; 0714E
         andi.w  #$bfff,d0                       ; 07154
         move.w  d0,(WarningBits).l              ; 07158
-        move.w  (dat_071_002A0).l,d0            ; 0715E
+        move.w  (FlightBits4).l,d0              ; 0715E
         andi.w  #$ffef,d0                       ; 07164
-        move.w  d0,(dat_071_002A0).l            ; 07168
+        move.w  d0,(FlightBits4).l              ; 07168
         move.l  #$61a80000,(PlayerFuel).l       ; 0716E
 l_000_07178:
         clr.l   (PlayerVelY).l                  ; 07178
@@ -3803,7 +3803,7 @@ l_000_071DC:
         move.l  (TimeSeconds).l,d1              ; 071EE
         sub.l   d0,d1                           ; 071F4
         move.l  d1,(FlightStartTime).l          ; 071F6
-        add.l   d1,(dat_071_002E0).l            ; 071FC
+        add.l   d1,(FlightTimeExtra).l          ; 071FC
         clr.l   (FlightStartTime).l             ; 07202
         movea.l (CockpitObject).l,a0            ; 07208
         move.b  $21(a0),d0                      ; 0720E
@@ -3830,7 +3830,7 @@ l_000_07254:
         move.b  d0,(a0)                         ; 0725E
         bra.b   l_000_07280                     ; 07260
 l_000_07262:
-        move.l  (dat_071_000CA).l,d0            ; 07262
+        move.l  (FlightValue).l,d0              ; 07262
         movea.l (CockpitObject).l,a0            ; 07268
         move.l  $18(a0),d1                      ; 0726E
         cmp.l   d0,d1                           ; 07272

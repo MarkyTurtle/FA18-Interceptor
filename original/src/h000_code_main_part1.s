@@ -366,7 +366,7 @@ l_000_00404:
 l_000_00418:
         clr.b   (MusicState).l                  ; 00418
         clr.l   (dat_071_00528).l               ; 0041E
-        move.b  #$1,(dat_071_001A6).l           ; 00424
+        move.b  #$1,(TitleShown).l              ; 00424
         pea.l   (TitleBMHD).l                   ; 0042C
         pea.l   (PictureColours).l              ; 00432
         pea.l   (StrPixSplsh).l                 ; 00438
@@ -1696,12 +1696,12 @@ ReadControls:
         link.w  a6,#$fffa                       ; 01514
         jsr     (ReadJoystick).l                ; 01518
         jsr     (ReadButtons).l                 ; 0151E
-        move.w  (dat_071_0014E).l,d1            ; 01524
+        move.w  (LastFrameEvents).l,d1          ; 01524
         move.w  d0,-$6(a6)                      ; 0152A
         cmp.w   d0,d1                           ; 0152E
         beq.b   l_000_01544                     ; 01530
-        move.w  d0,(dat_071_0014E).l            ; 01532
-        move.w  d0,(dat_071_00150).l            ; 01538
+        move.w  d0,(LastFrameEvents).l          ; 01532
+        move.w  d0,(FrameControlEvents).l       ; 01538
         jsr     (sub_000_05E84).l               ; 0153E
 l_000_01544:
         move.b  (RecordMode).l,d0               ; 01544
@@ -1897,7 +1897,7 @@ RunGameState:
         beq.w   l_000_01820                     ; 0178C
         move.l  (TimeSeconds).l,d0              ; 01790
         sub.l   (MissionStartTime).l,d0         ; 01796
-        sub.l   (dat_071_002D8).l,d0            ; 0179C
+        sub.l   (PausedTotal).l,d0              ; 0179C
         move.l  d0,-$4(a6)                      ; 017A2
         tst.l   (PauseStartTime).l              ; 017A6
         beq.b   l_000_017BE                     ; 017AC
@@ -1906,7 +1906,7 @@ RunGameState:
         sub.l   d1,-$4(a6)                      ; 017BA
 l_000_017BE:
         move.l  -$4(a6),d0                      ; 017BE
-        sub.l   (dat_071_002E0).l,d0            ; 017C2
+        sub.l   (FlightTimeExtra).l,d0          ; 017C2
         move.l  d0,-$4(a6)                      ; 017C8
         tst.l   (FlightStartTime).l             ; 017CC
         beq.b   l_000_017E4                     ; 017D2
@@ -1996,9 +1996,9 @@ l_000_01922:
         subq.b  #$1,d0                          ; 0192C
         move.b  d0,(QuitDelay).l                ; 0192E
 l_000_01934:
-        move.b  (dat_071_00191).l,d0            ; 01934
+        move.b  (FrameParity).l,d0              ; 01934
         addq.b  #$1,d0                          ; 0193A
-        move.b  d0,(dat_071_00191).l            ; 0193C
+        move.b  d0,(FrameParity).l              ; 0193C
         move.w  (StateTimer).l,d0               ; 01942
         subq.w  #$1,d0                          ; 01948
         move.w  d0,(StateTimer).l               ; 0194A
@@ -3788,7 +3788,7 @@ l_000_03078:
         moveq   #$0,d0                          ; 030AC
         move.w  d0,(ViewObjectIndex).l          ; 030AE
         move.w  d0,(ViewObject).l               ; 030B4
-        move.b  (dat_071_00204).l,d0            ; 030BA
+        move.b  (SavedOutsideView2).l,d0        ; 030BA
         move.b  d0,(OutsideView).l              ; 030C0
         tst.b   d0                              ; 030C6
         beq.b   l_000_030DC                     ; 030C8
@@ -4080,7 +4080,7 @@ ClearTextPages:
         move.b  d0,(TextPageIndex).l            ; 03482
         move.b  d0,(TextShowing).l              ; 03488
         move.b  d0,(TextStatus).l               ; 0348E
-        move.b  d0,(dat_071_00241).l            ; 03494
+        move.b  d0,(TextPaused).l               ; 03494
         unlk    a6                              ; 0349A
         rts                                     ; 0349C
 	dc.b	$00,$00
@@ -4677,7 +4677,7 @@ l_000_03BD6:
         move.l  (TimeSeconds).l,d1              ; 03BE2
         sub.l   d0,d1                           ; 03BE8
         move.l  d1,(PauseStartTime).l           ; 03BEA
-        add.l   d1,(dat_071_002D8).l            ; 03BF0
+        add.l   d1,(PausedTotal).l              ; 03BF0
         tst.l   (FlightStartTime).l             ; 03BF6
         beq.b   l_000_03C0A                     ; 03BFC
         move.l  (PauseStartTime).l,d0           ; 03BFE
@@ -4910,7 +4910,7 @@ l_000_03ECC:
         move.w  d0,(StatusBits).l               ; 03EE0
         clr.w   -$4(a6)                         ; 03EE6
 l_000_03EEA:
-        move.w  (dat_071_004B2).l,d0            ; 03EEA
+        move.w  (WarningSaved).l,d0             ; 03EEA
         andi.w  #$ff,d0                         ; 03EF0
         move.w  -$4(a6),d1                      ; 03EF4
         andi.w  #$ff,d1                         ; 03EF8
@@ -4918,7 +4918,7 @@ l_000_03EEA:
         beq.w   l_000_03F8C                     ; 03EFE
         move.w  -$4(a6),d0                      ; 03F02
         move.w  d0,(CurrentWarning).l           ; 03F06
-        move.w  d0,(dat_071_004B2).l            ; 03F0C
+        move.w  d0,(WarningSaved).l             ; 03F0C
         move.w  (WarningBits).l,d0              ; 03F12
         andi.w  #$dfff,d0                       ; 03F18
         move.w  d0,(WarningBits).l              ; 03F1C
@@ -4944,7 +4944,7 @@ l_000_03EEA:
         addi.l  #$1b,d0                         ; 03F68
         movea.l d0,a0                           ; 03F6E
         adda.l  #Messages,a0                    ; 03F70
-        move.b  (a0),(dat_071_00233).l          ; 03F76
+        move.b  (a0),(WarningLampNow).l         ; 03F76
         move.b  (LampBits).l,d0                 ; 03F7C
         andi.b  #$3f,d0                         ; 03F82
         move.b  d0,(WarningRepeatTime).l        ; 03F86
@@ -4964,7 +4964,7 @@ l_000_03F8C:
         move.b  (WarningRepeatTime).l,(WarningRepeat).l ; 03FBE
         bra.b   l_000_03FD4                     ; 03FC8
 l_000_03FCA:
-        move.b  (dat_071_00544).l,(WarningRepeat).l ; 03FCA
+        move.b  (WarningRepeatDefault).l,(WarningRepeat).l ; 03FCA
 l_000_03FD4:
         move.w  (CurrentWarning).l,d0           ; 03FD4
         btst    #$c,d0                          ; 03FDA
@@ -4998,7 +4998,7 @@ l_000_0403C:
         addq.w  #$1,d0                          ; 04042
         move.w  d0,(WarningPlaying).l           ; 04044
 l_000_0404A:
-        tst.b   (dat_071_00233).l               ; 0404A
+        tst.b   (WarningLampNow).l              ; 0404A
         beq.w   l_000_041B6                     ; 04050
         bset    #$3,(CockpitSoundBits).l        ; 04054
         bra.w   l_000_041B6                     ; 0405C
@@ -5007,7 +5007,7 @@ l_000_04060:
         ori.w   #$20,d0                         ; 04066
         move.w  d0,(WarningBits).l              ; 0406A
         move.w  (CurrentWarning).l,(WarningPlaying).l ; 04070
-        tst.b   (dat_071_00233).l               ; 0407A
+        tst.b   (WarningLampNow).l              ; 0407A
         beq.b   l_000_0408A                     ; 04080
         bset    #$2,(CockpitSoundBits).l        ; 04082
 l_000_0408A:
@@ -5021,7 +5021,7 @@ l_000_0408A:
         move.w  (WarningPlaying).l,d0           ; 040A8
         andi.w  #$ff,d0                         ; 040AE
         move.w  d0,(WarningPlaying).l           ; 040B2
-        move.w  d0,(dat_071_004B2).l            ; 040B8
+        move.w  d0,(WarningSaved).l             ; 040B8
         move.w  d0,(CurrentWarning).l           ; 040BE
         move.w  (WarningBits).l,d0              ; 040C4
         andi.w  #$dfff,d0                       ; 040CA
@@ -5049,7 +5049,7 @@ l_000_040F8:
         move.b  (WarningRepeatTime).l,(WarningRepeat).l ; 0412E
         bra.b   l_000_04144                     ; 04138
 l_000_0413A:
-        move.b  (dat_071_00544).l,(WarningRepeat).l ; 0413A
+        move.b  (WarningRepeatDefault).l,(WarningRepeat).l ; 0413A
 l_000_04144:
         move.w  (CurrentWarning).l,(WarningPlaying).l ; 04144
 l_000_0414E:
@@ -5080,11 +5080,11 @@ l_000_041B6:
         move.b  (LampBits).l,d0                 ; 041B6
         andi.b  #$c0,d0                         ; 041BC
         move.b  d0,(LampBits).l                 ; 041C0
-        move.b  (dat_071_00230).l,d1            ; 041C6
+        move.b  (WarningLast).l,d1              ; 041C6
         cmp.b   d0,d1                           ; 041CC
         beq.b   l_000_041DE                     ; 041CE
-        move.b  d0,(dat_071_00230).l            ; 041D0
-        move.b  #$2,(dat_071_00231).l           ; 041D6
+        move.b  d0,(WarningLast).l              ; 041D0
+        move.b  #$2,(WarningLampCount).l        ; 041D6
 l_000_041DE:
         clr.b   (WarningTicks).l                ; 041DE
         unlk    a6                              ; 041E4
@@ -5096,7 +5096,7 @@ l_000_041DE:
 ; in the cockpit's place off the screen (ViewShift 50, ViewX 800), coming back puts it at 0;
 ; then the gun sound is restarted, everything redrawn and ClipY set ($A7, or $B3 when MapView
 ; is set). Under a parachute (+$62 $30) the view is always outside. Outside, GunFlags bit 4
-; flips dat_071_0017C; in camera sequence 6 below height $24000 the view's bottom returns to
+; flips ViewSide; in camera sequence 6 below height $24000 the view's bottom returns to
 ; $A7.
 ;-------------------------------------------------------------------------------
 SwitchView:
@@ -5130,7 +5130,7 @@ l_000_04206:
         move.b  d0,(OutsideView).l              ; 04250
         clr.w   (ViewShift).l                   ; 04256
         move.b  d0,(dat_071_00176).l            ; 0425C
-        move.b  #$1,(dat_071_00205).l           ; 04262
+        move.b  #$1,(ViewSwitched).l            ; 04262
         bra.b   l_000_0427E                     ; 0426A
 l_000_0426C:
         move.b  (SavedOutsideView).l,(OutsideView).l ; 0426C
@@ -5183,9 +5183,9 @@ l_000_04330:
         beq.b   l_000_0435E                     ; 04342
         andi.w  #$ffef,d0                       ; 04344
         move.w  d0,(GunFlags).l                 ; 04348
-        move.b  (dat_071_0017C).l,d0            ; 0434E
+        move.b  (ViewSide).l,d0                 ; 0434E
         eori.b  #$1,d0                          ; 04354
-        move.b  d0,(dat_071_0017C).l            ; 04358
+        move.b  d0,(ViewSide).l                 ; 04358
 l_000_0435E:
         move.b  (CameraSequence).l,d0           ; 0435E
         subq.b  #$6,d0                          ; 04364

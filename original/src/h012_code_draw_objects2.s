@@ -407,17 +407,17 @@ l_012_003D6:
         rts                                     ; 003DE
 
 ;-------------------------------------------------------------------------------
-; CheckViewTable2 - Sets dat_071_0026C from the view table at dat_012_006C0 (LookupViewTable),
+; CheckViewTable2 - Sets ViewTable2Hit from the view table at dat_012_006C0 (LookupViewTable),
 ; every other frame; used by hunk 28.
 ;-------------------------------------------------------------------------------
 CheckViewTable2:
         lea.l   (dat_012_006C0).l,a0            ; 003E0
         bsr.w   LookupViewTable                 ; 003E6
         beq.b   l_012_003F6                     ; 003EA
-        move.b  #$1,(dat_071_0026C).l           ; 003EC
+        move.b  #$1,(ViewTable2Hit).l           ; 003EC
         rts                                     ; 003F4
 l_012_003F6:
-        move.b  #$0,(dat_071_0026C).l           ; 003F6
+        move.b  #$0,(ViewTable2Hit).l           ; 003F6
         rts                                     ; 003FE
 
 ;-------------------------------------------------------------------------------

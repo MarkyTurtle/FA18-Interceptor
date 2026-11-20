@@ -56,12 +56,14 @@ FrontChecksum:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00028:
+; RadarAltitude - The radar altimeter's height (RunGame), shown when RadarAltimeterOn.
+RadarAltitude:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0002C:
+; AltitudeValue - The height for the altitude readout (RunGame), at most 99,999.
+AltitudeValue:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -73,7 +75,9 @@ LivePalette:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00034:
+; MapViewHeight - The map view's camera height ($3000000 at the start; the M key keeps the
+; camera's).
+MapViewHeight:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -92,7 +96,9 @@ DisplayBuffer:
 ; apart).
 BufferPlanes:
 	dcb.b	32,$00
-dat_071_0005E:
+; BufferPlanes5 - The five plane addresses of the display buffer (SetupBufferPlanes), for
+; SelectDrawBuffer.
+BufferPlanes5:
 	dcb.b	40,$00
 ; DrawPlanes - Points at the four plane pointers that drawing goes to (the buffer being drawn).
 DrawPlanes:
@@ -100,7 +106,8 @@ DrawPlanes:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0008A:
+; DrawBitPlanes - Points at the plane list of the buffer being drawn (SelectDrawBuffer).
+DrawBitPlanes:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -196,7 +203,8 @@ dat_071_000BE:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_000C2:
+; DistanceScaleBase - A value scaled by DistanceScale.
+DistanceScaleBase:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -206,7 +214,9 @@ dat_071_000C6:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_000CA:
+; FlightValue - FlightValue - A long value that FlyAircraft and sub_000_06A32 use with the
+; cockpit object (not worked out).
+FlightValue:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -302,10 +312,12 @@ dat_071_00112:
 TextHoldTimer:
 	dc.b	$00
 	dc.b	$00
-dat_071_00116:
+; PrintIndex - PrintText's position in its text.
+PrintIndex:
 	dc.b	$00
 	dc.b	$00
-dat_071_00118:
+; PrintCount - PrintText's character count (-1 from PrintNumber).
+PrintCount:
 	dc.b	$00
 	dc.b	$00
 ; TextPages - The queue of text pages to show (words, ended by 0): each state queues the pages
@@ -316,7 +328,8 @@ TextPages:
 TextPageShown:
 	dc.b	$00
 	dc.b	$00
-dat_071_00144:
+; MouseIntFrames - Counts the mouse interrupt's frames.
+MouseIntFrames:
 	dc.b	$00
 	dc.b	$00
 ; MouseX - The mouse pointer's x (moved by MouseInterrupt).
@@ -334,10 +347,12 @@ MouseY:
 ThrottleMouseY:
 	dc.b	$00
 	dc.b	$00
-dat_071_0014E:
+; LastFrameEvents - The previous frame's control events (ReadControls).
+LastFrameEvents:
 	dc.b	$00
 	dc.b	$00
-dat_071_00150:
+; FrameControlEvents - The control events of the frame (ReadControls), read by sub_000_05E84.
+FrameControlEvents:
 	dc.b	$00
 	dc.b	$00
 ; EscortTimer - Mission F3: frames left flying close to the stolen aircraft before they turn
@@ -358,7 +373,8 @@ OutsideView:
 ; lists are rebuilt.
 HeightBandChanged:
 	dc.b	$00
-dat_071_00157:
+; TextInputOn - Set while text can be typed (the callsign): HandleKey and the G key test it.
+TextInputOn:
 	dc.b	$00
 ; ObjectsHeld - Set (with WorldFrozen) to hold the objects still while the flight is being
 ; readied.
@@ -422,21 +438,24 @@ ZonesEntered:
 	dc.b	$00
 dat_071_0016E:
 	dc.b	$00
-dat_071_0016F:
+; FlightStep - A step value used by FlyAircraft (compared with 3...).
+FlightStep:
 	dc.b	$00
-dat_071_00170:
+; FlightFlag170 - Tested three times by FlyAircraft, cleared by ResetPlayer.
+FlightFlag170:
 	dc.b	$00
 ; HUDOn - Whether the head-up display shows its readouts (the G load, height, speed, heading
 ; and gun sight): set when the flight starts, toggled by the H key.
 HUDOn:
 	dc.b	$00
-dat_071_00172:
+; GroundDotsDrawn - Set by DrawGroundDots while drawing (FillPolygonPlane tests it).
+GroundDotsDrawn:
 	dc.b	$00
 ; KeyPressed - Set by HandleKey when a key or button is pressed this frame (2 for the skip key
 ; during the start).
 KeyPressed:
 	dc.b	$00
-; RadarAltimeterOn - Set when the height shown is the radar altimeter's (dat_071_00028) rather
+; RadarAltimeterOn - Set when the height shown is the radar altimeter's (RadarAltitude) rather
 ; than the height above the sea.
 RadarAltimeterOn:
 	dc.b	$00
@@ -454,12 +473,15 @@ ZoomKeyHeld:
 dat_071_00179:
 	dc.b	$00
 	dc.b	$00
-dat_071_0017B:
+; EjectKeyFlag - The E key's flag (eject), cleared for a new aircraft.
+EjectKeyFlag:
 	dc.b	$00
-dat_071_0017C:
+; ViewSide - Flipped by SwitchView (GunFlags bit 4) in the outside view: which side the camera
+; is on (sub_008_00000).
+ViewSide:
 	dc.b	$00
 ; MapView - Set while the map view is on (the M key): the camera fixed above the middle of the
-; bay looking straight down, at the height kept in dat_071_00034; the view's bottom is then
+; bay looking straight down, at the height kept in MapViewHeight; the view's bottom is then
 ; ClipY $B3. -1 at startup.
 MapView:
 	dc.b	$00
@@ -494,7 +516,8 @@ JustFired:
 	dc.b	$00
 dat_071_00188:
 	dc.b	$00
-dat_071_00189:
+; TKeyPressed - Set by the T key; the radar blips' drawing takes and clears it.
+TKeyPressed:
 	dc.b	$00
 ; LaunchRequest - 1: launch the selected missile.
 LaunchRequest:
@@ -517,7 +540,8 @@ JudgeSavedView:
 ; ShakeKind - The view shake running (ShakeView): 1-3 picks the sequence; 0 none.
 ShakeKind:
 	dc.b	$00
-dat_071_00191:
+; FrameParity - Counted up by RunGameState each frame; its low bits pace the cockpit sounds.
+FrameParity:
 	dc.b	$00
 	dc.b	$00
 ; TextShowing - Set while a text screen is up (ClearTextPages and the text states); StateFlying
@@ -556,7 +580,8 @@ dat_071_001A4:
 ; TextKeyCount - Counts keys on the text screens (HandleKey); -1 to start a new page.
 TextKeyCount:
 	dc.b	$00
-dat_071_001A6:
+; TitleShown - Set once the title picture is up (main; SaveTitleBitMap tests it).
+TitleShown:
 	dc.b	$00
 ; MusicState - The title music: 0 not playing, 1 playing (the menus), 2 started
 ; (PlayTitleMusic); MenuBeep and PrintNumber stay quiet while it plays.
@@ -586,7 +611,8 @@ GroundDetail:
 ; PrintDelay - PrintText's character delay counter.
 PrintDelay:
 	dc.b	$00
-dat_071_001AF:
+; PrintFlag - Set by PrintText and PrintNumber while printing.
+PrintFlag:
 	dc.b	$00
 ; TextStatus - The text printer's state: 1 waiting for input, 2/3 typing, bit 7 set when the
 ; queue has been shown (states wait for it).
@@ -637,7 +663,8 @@ KeyBufferCount:
 ; printed or drawn.
 TextBuffer:
 	dc.b	$00
-dat_071_001CB:
+; TextBuffer1 - TextBuffer + 1: where the digits start.
+TextBuffer1:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -716,17 +743,21 @@ CommaPeriodInput:
 ; RollInput - The stick / cursor keys, roll: $08 left, $04 right, 0 centre.
 RollInput:
 	dc.b	$00
-dat_071_00201:
+; StickXMoved - Set by ReadStick when the stick moved across.
+StickXMoved:
 	dc.b	$00
-dat_071_00202:
+; StickYMoved - Set by ReadStick when the stick moved up or down.
+StickYMoved:
 	dc.b	$00
 ; SavedOutsideView - The outside view to go back to (SwitchView sets OutsideView from it); -1
 ; from the Enter key and the judges.
 SavedOutsideView:
 	dc.b	$00
-dat_071_00204:
+; SavedOutsideView2 - OutsideView kept by the judges, put back by StateFlying.
+SavedOutsideView2:
 	dc.b	$00
-dat_071_00205:
+; ViewSwitched - Set by SwitchView when the view changes (DrawObjects clears it).
+ViewSwitched:
 	dc.b	$00
 ; PanelBlitCount - Frames left in which the instrument panel picture is blitted in full
 ; (DrawPanel): set to 3 when the cockpit appears or the view changes, counted down by
@@ -740,9 +771,11 @@ PanelRedraw:
 ; ObjectsDrawnCount - How many objects DrawObjects drew this frame (the radar tests it).
 ObjectsDrawnCount:
 	dc.b	$00
-dat_071_00209:
+; GridZRedraw - Frames left to redraw ShowGridZ's readout.
+GridZRedraw:
 	dc.b	$00
-dat_071_0020A:
+; GridXRedraw - Frames left to redraw ShowGridX's readout.
+GridXRedraw:
 	dc.b	$00
 ; WeaponRangeRedraw - Frames left to redraw the weapon's range (ShowWeaponRange).
 WeaponRangeRedraw:
@@ -802,9 +835,11 @@ PlayerAircraftType:
 ; word is not replayed), 4 finished.
 RecordMode:
 	dc.b	$00
-dat_071_0021C:
+; ChaffLeft - Chaff charges left (16 at the start; the C key uses one).
+ChaffLeft:
 	dc.b	$00
-dat_071_0021D:
+; FlaresLeft - Flares left (16 at the start, ResetPlayerAircraft; the F key uses one).
+FlaresLeft:
 	dc.b	$00
 ; ChaffTime - Frames left of the chaff just dropped (30 from the C key), as FlareTime.
 ChaffTime:
@@ -831,7 +866,8 @@ ViewOctant:
 ; (UpdateViewCell).
 ViewOctantShown:
 	dc.b	$00
-dat_071_00226:
+; SceneryCellCount - Counts the cells added by BuildSceneryList.
+SceneryCellCount:
 	dc.b	$00
 ; MarkersOn - Set while the start points' markers are drawn (the start point's choice, the
 ; clearance; DrawStartPointMarkers and the map's markers test it).
@@ -840,7 +876,8 @@ MarkersOn:
 ; RedrawFlags - What must be drawn again (set when the view moves into another map cell...).
 RedrawFlags:
 	dc.b	$00
-dat_071_00229:
+; SceneryBuilt - Set by UpdateScenery when the scenery lists have been built.
+SceneryBuilt:
 	dc.b	$00
 dat_071_0022A:
 	dc.b	$00
@@ -856,15 +893,18 @@ dat_071_0022E:
 	dc.b	$00
 dat_071_0022F:
 	dc.b	$00
-dat_071_00230:
+; WarningLast - The warning chosen last frame (UpdateWarnings).
+WarningLast:
 	dc.b	$00
-dat_071_00231:
+; WarningLampCount - Frames for the warning lamp (2, counted down by TargetReadout).
+WarningLampCount:
 	dc.b	$00
 ; LampBits - The panel's warning lamps (bits 0-5, UpdateWarnings) and two of the target
 ; readout's (bits 6-7).
 LampBits:
 	dc.b	$00
-dat_071_00233:
+; WarningLampNow - The lamp of the warning now chosen (UpdateWarnings).
+WarningLampNow:
 	dc.b	$00
 ; SceneryDetailed - Set while the detailed scenery (SceneryMap2, the cells themselves) is built
 ; and drawn; clear for the coarse maps.
@@ -906,7 +946,8 @@ VisualConfirmTimer:
 ; EngineAndSpeed and the controls use it).
 GearState:
 	dc.b	$00
-dat_071_00241:
+; TextPaused - Set while the text waits (ClearTextPages; PrintText tests it).
+TextPaused:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -914,12 +955,14 @@ dat_071_00241:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00248:
+; ShiftDown - Set while the left Shift key is held (HandleKey reads it).
+ShiftDown:
 	dc.b	$00
 ; LeftAmigaDown - Set while the left Amiga key is held.
 LeftAmigaDown:
 	dc.b	$00
-dat_071_0024A:
+; RightAmigaDown - Set while the right Amiga key is held.
+RightAmigaDown:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1001,7 +1044,8 @@ NewAircraftReady:
 ; instead of land (colour 4).
 SeaView:
 	dc.b	$00
-dat_071_0026C:
+; ViewTable2Hit - Set by CheckViewTable2 when the view is in its table (used by hunk 28).
+ViewTable2Hit:
 	dc.b	$00
 dat_071_0026D:
 	dc.b	$00
@@ -1018,7 +1062,8 @@ FadeLevel:
 FadeTarget:
 	dc.b	$00
 	dc.b	$00
-dat_071_00273:
+; MouseIntCount - MouseInterrupt's counter (1, 2...).
+MouseIntCount:
 	dc.b	$00
 ; PaletteLoadCount - Frames left in which ShowDisplay loads LivePalette into the display (set
 ; when it changes).
@@ -1127,7 +1172,9 @@ FlightBits:
 ; is placed; 13-14 cleared on a crash.
 StatusBits:
 	dc.b	$00
-dat_071_0029D:
+; StatusBitsLow - The low byte of StatusBits (bit 6 tested by JudgeMission and
+; ShowHeadingText).
+StatusBitsLow:
 	dc.b	$00
 ; WarningBits - Bits for the warnings: 8 set when the flight is ready, 13 a $2000-kind warning
 ; is sounding (StartWarning), 14 set by FlyAircraft (tested by EngineAndSpeed), 15 cleared by
@@ -1135,7 +1182,8 @@ dat_071_0029D:
 WarningBits:
 	dc.b	$00
 	dc.b	$00
-dat_071_002A0:
+; FlightBits4 - Bits used by FlyAircraft (bit 4).
+FlightBits4:
 	dc.b	$00
 	dc.b	$00
 ; FlightBits2 - More bits of the flight's state: 1 set when ready and by FlyAircraft, 8 tested
@@ -1226,7 +1274,8 @@ PauseStartTime:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_002D8:
+; PausedTotal - The time spent paused in total (StatePaused adds to it).
+PausedTotal:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1238,7 +1287,8 @@ FlightStartTime:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_002E0:
+; FlightTimeExtra - Time added to the flight's length by FlyAircraft.
+FlightTimeExtra:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1256,17 +1306,20 @@ PanelShakeOffset:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_002EC:
+; SkyStepCount1 - Counters stepped by ClearSkyGround each frame (with SkyStepCount2, 3).
+SkyStepCount1:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_002F0:
+; SkyStepCount2 - See SkyStepCount1.
+SkyStepCount2:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_002F4:
+; SkyStepCount3 - See SkyStepCount1.
+SkyStepCount3:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1289,7 +1342,8 @@ dat_071_002FC:
 dat_071_00300:
 	dc.b	$00
 	dc.b	$00
-dat_071_00302:
+; ObjectListPointer - DrawObjects' pointer into the object list.
+ObjectListPointer:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1352,7 +1406,8 @@ TextColour:
 ; DrawColour - The colour Plot and DrawLine draw in (0-15).
 DrawColour:
 	dc.b	$00
-dat_071_00325:
+; PrintColour - The colour PrintNumber and the HUD's digits draw in (bits 0-3, one per plane).
+PrintColour:
 	dc.b	$00
 ; ColourBits - The colour being drawn (a copy of DrawColour), shifted right one bit per bit-
 ; plane as the line and fill routines go through the planes.
@@ -1361,7 +1416,8 @@ ColourBits:
 ; ColourPlaneBits - The low byte of ColourBits: DrawLine sets or clears each plane by its bit.
 ColourPlaneBits:
 	dc.b	$00
-dat_071_00328:
+; MarkerIndex - DrawStartPointMarkers' index (-1 none).
+MarkerIndex:
 	dc.b	$00
 	dc.b	$00
 dat_071_0032A:
@@ -1375,7 +1431,8 @@ GridZShown:
 GridXShown:
 	dc.b	$00
 	dc.b	$00
-dat_071_00330:
+; FillPlaneStart - The fill's start address in its plane (FillPolygonPlane, ClearFillPlane).
+FillPlaneStart:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1411,7 +1468,8 @@ dat_071_00340:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0034C:
+; FillBox - The filled polygon's bounding box (x1, y1, x2, y2: FillPolygonPlane).
+FillBox:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1419,7 +1477,8 @@ dat_071_0034C:
 dat_071_00350:
 	dc.b	$00
 	dc.b	$00
-dat_071_00352:
+; FillBottom - The fill's bottom row (FillPolygonPlane, FillPanelPlane).
+FillBottom:
 	dc.b	$00
 	dc.b	$00
 ; ClipY - The row PlotBigAbove switches at ($90 = 144: the top of the panel).
@@ -1479,17 +1538,21 @@ ViewKeys2:
 DebugCheckpoint:
 	dc.b	$00
 	dc.b	$00
-dat_071_00370:
+; HeadingTens - The viewed object's heading in tens of degrees (CompassPosition).
+HeadingTens:
 	dc.b	$00
 	dc.b	$00
 ; CompassShown - The compass position last drawn (bit 15: draw it again).
 CompassShown:
 	dc.b	$00
 	dc.b	$00
-dat_071_00374:
+; FuelShownLast - The fuel value last drawn by DrawFuelGauge.
+FuelShownLast:
 	dc.b	$00
 	dc.b	$00
-dat_071_00376:
+; BulletHitRange - How close a bullet must pass to hit an object ($140 at the start; $800 for
+; some, BulletHitTest).
+BulletHitRange:
 	dc.b	$00
 	dc.b	$00
 dat_071_00378:
@@ -1500,16 +1563,20 @@ dat_071_00378:
 LoopIndex:
 	dc.b	$00
 	dc.b	$00
-dat_071_0037C:
+; FarList0Count - The number of entries in FarSceneryList0 (DrawFarScenery0's loop count).
+FarList0Count:
 	dc.b	$00
 	dc.b	$00
-dat_071_0037E:
+; FarList1Count - The number of entries in FarSceneryList1.
+FarList1Count:
 	dc.b	$00
 	dc.b	$00
-dat_071_00380:
+; ObjectListCount - The number of entries in the object drawing list (DrawObjects).
+ObjectListCount:
 	dc.b	$00
 	dc.b	$00
-dat_071_00382:
+; DistanceFactor - The drawn object's distance turned by DistanceCurve (x 256; $7FFE far away).
+DistanceFactor:
 	dc.b	$00
 	dc.b	$00
 ; CurrentObject - The number of the object being worked on.
@@ -1548,7 +1615,8 @@ EjectedPilot:
 TargetReadoutMode:
 	dc.b	$00
 	dc.b	$00
-dat_071_00396:
+; DrawListEnd - The end of the drawing list built this frame (BulletHitTest goes through it).
+DrawListEnd:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1587,7 +1655,8 @@ ShapeNext:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0040E:
+; ScaleFactors - The three scale words of ScaleRows ($A8 at the start).
+ScaleFactors:
 	dc.b	$00
 	dc.b	$00
 dat_071_00410:
@@ -1633,7 +1702,8 @@ HitPointZ:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0042E:
+; ViewCellLast - The view's cell last frame (UpdateViewCell), to see when it changes.
+ViewCellLast:
 	dc.b	$00
 	dc.b	$00
 dat_071_00430:
@@ -1660,7 +1730,8 @@ ViewOffsetZ:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0043E:
+; ViewCellCheck - The camera's distance into its cell, checked by UpdateViewCell against $A000.
+ViewCellCheck:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1690,12 +1761,14 @@ EyeX:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00450:
+; EyeY - The y long of EyeX.
+EyeY:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00454:
+; EyeZ - The z long of EyeX.
+EyeZ:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1705,19 +1778,24 @@ dat_071_00454:
 OutsideCamPos:
 	dc.b	$00
 	dc.b	$00
-dat_071_0045A:
+; ViewPitchAngle - The view's pitch (with ViewHeadingAngle, ViewRollAngle: the angles
+; CockpitViewMatrix builds the view from; SkyFillsView tests it).
+ViewPitchAngle:
 	dc.b	$00
 	dc.b	$00
 dat_071_0045C:
 	dc.b	$00
 	dc.b	$00
-dat_071_0045E:
+; ViewHeadingAngle - The view's heading (see ViewPitchAngle).
+ViewHeadingAngle:
 	dc.b	$00
 	dc.b	$00
 dat_071_00460:
 	dc.b	$00
 	dc.b	$00
-dat_071_00462:
+; ViewRollAngle - The view's roll (see ViewPitchAngle; MakeSkyPolygon tests it against $3840,
+; upside down).
+ViewRollAngle:
 	dc.b	$00
 	dc.b	$00
 ; OutsideCamPitch - The outside camera's pitch (90 degrees, $1C20, looking straight down for
@@ -1737,7 +1815,8 @@ OutsideCamHeading:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00470:
+; FlightScratch - FlyAircraft's working words.
+FlightScratch:
 	dc.b	$00
 	dc.b	$00
 dat_071_00472:
@@ -1840,16 +1919,19 @@ WarningPlaying:
 CurrentWarning:
 	dc.b	$00
 	dc.b	$00
-dat_071_004B2:
+; WarningSaved - The warning saved by UpdateWarnings (its low byte).
+WarningSaved:
 	dc.b	$00
 	dc.b	$00
-dat_071_004B4:
+; TargetReadoutShown - The target readout's value last drawn (-1 to draw it again).
+TargetReadoutShown:
 	dc.b	$00
 	dc.b	$00
 dat_071_004B6:
 	dc.b	$00
 	dc.b	$00
-dat_071_004B8:
+; BestClock - The smallest of a timed value kept by sub_020_006DA ($7FFF at the start).
+BestClock:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1870,7 +1952,8 @@ TimeSeconds:
 TimeMicros:
 	dc.b	$00
 	dc.b	$00
-dat_071_004C8:
+; PlaceRandom - A random word for placing objects (SetupMode, PlaceObjectList).
+PlaceRandom:
 	dc.b	$00
 dat_071_004C9:
 	dc.b	$00
@@ -1901,15 +1984,18 @@ dat_071_004DA:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_004DE:
+; ClockFrames - UpdateClock's frame counter (up to $7D).
+ClockFrames:
 	dc.b	$00
 	dc.b	$00
-dat_071_004E0:
+; ClockSum - UpdateClock's sum of elapsed time.
+ClockSum:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_004E4:
+; ClockMark - UpdateClock's last mark (compared to ClockSum against 10,000).
+ClockMark:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2024,7 +2110,8 @@ ControlBits:
 SoundRequests:
 	dc.b	$00
 	dc.b	$00
-dat_071_00526:
+; FlightSoundBits - Sound request bits from FlyAircraft for CockpitSounds (bits 0, 1, 3).
+FlightSoundBits:
 	dc.b	$00
 ; CockpitSoundBits - Requests for the cockpit's sounds, one bit each, set by the warnings and
 ; the controls and played by CockpitSounds.
@@ -2054,7 +2141,8 @@ ControlScratch3:
 ControlScratch:
 	dc.b	$00
 	dc.b	$00
-dat_071_00534:
+; AngleDistance - VectorToAngles' distance (a long), used by sub_020_0089E.
+AngleDistance:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2073,7 +2161,8 @@ AngleScratch:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00544:
+; WarningRepeatDefault - The default repeat time for warnings.
+WarningRepeatDefault:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2163,7 +2252,9 @@ dat_071_00592:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00596:
+; SceneryMatrix - A matrix for turning the scenery's vertices (DrawSceneryPlain,
+; TransformMoreVertices).
+SceneryMatrix:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2187,7 +2278,9 @@ dat_071_00596:
 ViewMatrix:
 	dc.b	$00
 	dc.b	$00
-dat_071_005AA:
+; ViewMatrixRow2 - The view matrix's second row (ViewMatrix + 2 words... used by DrawGroundDots
+; and hunk 28).
+ViewMatrixRow2:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2225,7 +2318,9 @@ PanelViewMatrix:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_005CC:
+; PanelMatrixHeading - A matrix for the viewed object's heading (CockpitViewMatrix; used by
+; SetOutsideCamera and AddRadarObject).
+PanelMatrixHeading:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2244,7 +2339,8 @@ dat_071_005CC:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_005DE:
+; PanelVector - A vector turned by TurnByPanelMatrix (or CameraHeadingMatrix's matrix).
+PanelVector:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2263,7 +2359,9 @@ dat_071_005DE:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_005F0:
+; ObjectMatrix - The drawn object's matrix combined with the view (CockpitViewMatrix, the
+; scenery's transforms).
+ObjectMatrix:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2326,12 +2424,14 @@ CameraVelocity:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0061E:
+; CameraVelocityY - The y long of CameraVelocity.
+CameraVelocityY:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00622:
+; CameraVelocityZ - The z long of CameraVelocity.
+CameraVelocityZ:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2373,24 +2473,28 @@ FlyByPoint:
 ; fired it, +$30 / +$32 its map cell (x, z).
 Bullets:
 	dcb.b	1280,$00
-dat_071_00B42:
+; BulletTestFrom - BulletHitTest's start point (x, y, z words).
+BulletTestFrom:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00B48:
+; BulletTestPos - BulletHitTest's bullet position (x, y, z words).
+BulletTestPos:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00B4E:
+; BulletTestKind - The kind of test sub_023_00438 makes (0, 1 or more).
+BulletTestKind:
 	dc.b	$00
 	dc.b	$00
-dat_071_00B50:
+; BulletTestRange - BulletHitTest's range word.
+BulletTestRange:
 	dc.b	$00
 	dc.b	$00
 dat_071_00B52:

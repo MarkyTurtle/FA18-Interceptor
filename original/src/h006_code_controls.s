@@ -22,8 +22,8 @@ RedrawInstruments:
         moveq   #$3,d4                          ; 00008
         move.b  d4,(PanelRedraw).l              ; 0000A
         move.b  d4,(PanelBlitCount).l           ; 00010
-        move.b  d4,(dat_071_00209).l            ; 00016
-        move.b  d4,(dat_071_0020A).l            ; 0001C
+        move.b  d4,(GridZRedraw).l              ; 00016
+        move.b  d4,(GridXRedraw).l              ; 0001C
         move.b  d4,(PanelIndicatorRedraw).l     ; 00022
         move.b  d4,(BackslashLampRedraw).l      ; 00028
         move.b  d4,(JLampRedraw).l              ; 0002E
@@ -134,8 +134,8 @@ ResetPlayerAircraft:
         move.w  #$1f4,(Player_60).l             ; 00170
         move.b  #$3,(StoresRedraw).l            ; 00178
         move.b  #$3,(MissilesLeftRedraw).l      ; 00180
-        move.b  #$10,(dat_071_0021C).l          ; 00188
-        move.b  #$10,(dat_071_0021D).l          ; 00190
+        move.b  #$10,(ChaffLeft).l              ; 00188
+        move.b  #$10,(FlaresLeft).l             ; 00190
         clr.b   (CountermeasureSound).l         ; 00198
         clr.b   (BulletHitAircraft2).l          ; 0019E
         clr.b   (BulletHitAircraft).l           ; 001A4

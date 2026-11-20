@@ -31,7 +31,7 @@ JudgeMission:
         clr.b   (InstructorFire).l              ; 0003C
         clr.b   (FireNow).l                     ; 00042
         jsr     (CheckLockedTarget).l           ; 00048
-        btst    #$6,(dat_071_0029D).l           ; 0004E
+        btst    #$6,(StatusBitsLow).l           ; 0004E
         beq.b   l_018_000C4                     ; 00056
         tst.b   (DemoActive).l                  ; 00058
         bne.b   l_018_000C4                     ; 0005E
@@ -132,7 +132,7 @@ l_018_00152:
         bne.w   l_018_00204                     ; 0016E
         move.b  (ViewChoice).l,(JudgeSavedView).l ; 00172
         bset    #$7,(JudgeSavedView).l          ; 0017C
-        move.b  (OutsideView).l,(dat_071_00204).l ; 00184
+        move.b  (OutsideView).l,(SavedOutsideView2).l ; 00184
         btst    #$6,$1(a1)                      ; 0018E
         beq.w   l_018_00204                     ; 00194
         move.b  #$7,(ViewChoice).l              ; 00198
@@ -363,7 +363,7 @@ l_018_00452:
         bne.w   l_018_0051C                     ; 0046E
         move.b  (ViewChoice).l,(JudgeSavedView).l ; 00472
         bset    #$7,(JudgeSavedView).l          ; 0047C
-        move.b  (OutsideView).l,(dat_071_00204).l ; 00484
+        move.b  (OutsideView).l,(SavedOutsideView2).l ; 00484
         btst    #$6,$1(a1)                      ; 0048E
         beq.w   l_018_0051C                     ; 00494
         move.b  #$7,(ViewChoice).l              ; 00498

@@ -556,7 +556,7 @@ l_024_0064C:
         move.w  d0,-$6(a6)                      ; 0066C
         clr.l   -$a(a6)                         ; 00670
         moveq   #-1,d5                          ; 00674
-        movea.l (dat_071_00396).l,a5            ; 00676
+        movea.l (DrawListEnd).l,a5              ; 00676
 l_024_0067C:
         move.w  (a5),-$2(a6)                    ; 0067C
         suba.w  #$18,a5                         ; 00680

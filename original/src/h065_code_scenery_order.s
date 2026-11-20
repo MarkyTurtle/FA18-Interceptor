@@ -8,7 +8,7 @@
 ;===============================================================================
 	CODE_HUNK	h065
 ; DistanceCurve - A table of bytes (they happen to read as text) turning a
-; distance / 128 into a value (x 256) for dat_071_00382 (DrawObjects); $7F at the far end.
+; distance / 128 into a value (x 256) for DistanceFactor (DrawObjects); $7F at the far end.
 DistanceCurve:
 	dc.b	'@DHLPTWZ]`bcdefghijklmnopqrstuvwxyz{|}~'
 	dc.b	$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F

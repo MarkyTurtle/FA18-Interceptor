@@ -496,8 +496,8 @@ UpdateClock:
         andi.w  #$100,d0                        ; 00578
         beq.b   l_020_00596                     ; 0057C
         andi.w  #$febf,(WarningBits).l          ; 0057E
-        clr.l   (dat_071_004E0).l               ; 00586
-        clr.l   (dat_071_004E4).l               ; 0058C
+        clr.l   (ClockSum).l                    ; 00586
+        clr.l   (ClockMark).l                   ; 0058C
         bra.w   l_020_00670                     ; 00592
 l_020_00596:
         sub.l   (TimeSeconds).l,d1              ; 00596
@@ -508,18 +508,18 @@ l_020_00596:
         divs.w  #$3e8,d0                        ; 005AE
         ext.l   d0                              ; 005B2
         add.l   d0,d1                           ; 005B4
-        add.l   d1,(dat_071_004E0).l            ; 005B6
-        add.w   d1,(dat_071_004DE).l            ; 005BC
-        cmpi.w  #$7d,(dat_071_004DE).l          ; 005C2
+        add.l   d1,(ClockSum).l                 ; 005B6
+        add.w   d1,(ClockFrames).l              ; 005BC
+        cmpi.w  #$7d,(ClockFrames).l            ; 005C2
         blt.b   l_020_005D2                     ; 005CA
-        clr.w   (dat_071_004DE).l               ; 005CC
+        clr.w   (ClockFrames).l                 ; 005CC
 l_020_005D2:
-        move.l  (dat_071_004E0).l,d1            ; 005D2
-        sub.l   (dat_071_004E4).l,d1            ; 005D8
+        move.l  (ClockSum).l,d1                 ; 005D2
+        sub.l   (ClockMark).l,d1                ; 005D8
         cmpi.l  #$2710,d1                       ; 005DE
         blt.b   l_020_005F4                     ; 005E4
         ori.w   #$40,(WarningBits).l            ; 005E6
-        add.l   d1,(dat_071_004E4).l            ; 005EE
+        add.l   d1,(ClockMark).l                ; 005EE
 l_020_005F4:
         move.l  (TimeSeconds).l,d0              ; 005F4
         cmp.l   (ClockLast).l,d0                ; 005FA
@@ -605,9 +605,9 @@ sub_020_006DA:
 l_020_006F8:
         move.l  #$c3500,d0                      ; 006F8
         divu.w  d1,d0                           ; 006FE
-        cmp.w   (dat_071_004B8).l,d0            ; 00700
+        cmp.w   (BestClock).l,d0                ; 00700
         bge.b   l_020_0070E                     ; 00706
-        move.w  d0,(dat_071_004B8).l            ; 00708
+        move.w  d0,(BestClock).l                ; 00708
 l_020_0070E:
         cmp.w   (dat_071_002B0).l,d0            ; 0070E
         ble.b   l_020_0071C                     ; 00714
@@ -758,7 +758,7 @@ l_020_00896:
         rts                                     ; 0089C
 sub_020_0089E:
         movem.l d0-d3,-(a7)                     ; 0089E
-        move.l  (dat_071_00534).l,d0            ; 008A2
+        move.l  (AngleDistance).l,d0            ; 008A2
         cmpi.l  #$63f000,d0                     ; 008A8
         bgt.w   l_020_008E2                     ; 008AE
         move.l  d0,d2                           ; 008B2
@@ -1017,13 +1017,13 @@ ClearRadarList:
         rts                                     ; 00AC4
 
 ;-------------------------------------------------------------------------------
-; AddRadarObject - Adds an object's position, turned by the player's matrix (dat_071_005CC)
+; AddRadarObject - Adds an object's position, turned by the player's matrix (PanelMatrixHeading)
 ; into the aircraft's axes, to RadarList.
 ;-------------------------------------------------------------------------------
 AddRadarObject:
         move.w  d7,d5                           ; 00AC6
         move.w  d7,-(a7)                        ; 00AC8
-        lea.l   (dat_071_005CC).l,a0            ; 00ACA
+        lea.l   (PanelMatrixHeading).l,a0       ; 00ACA
         movea.l (RadarListEnd).l,a3             ; 00AD0
         move.w  d2,d5                           ; 00AD6
         move.w  d3,d6                           ; 00AD8

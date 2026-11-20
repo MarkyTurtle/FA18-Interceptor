@@ -53,7 +53,7 @@ l_010_0004C:
         cmp.l   (ShapeNow).l,d0                 ; 00052
         beq.w   DrawSceneryPlain                ; 00058
         move.l  d0,(ShapeNow).l                 ; 0005C
-        tst.b   (dat_071_00205).l               ; 00062
+        tst.b   (ViewSwitched).l                ; 00062
         bne.w   DrawSceneryPlain                ; 00068
         move.b  (HeightBand).l,d1               ; 0006C
         beq.b   l_010_00094                     ; 00072
@@ -313,7 +313,7 @@ l_010_00340:
         lea.l   (ObjectTable).l,a0              ; 00370
         adda.w  (CurrentObjectOffset).l,a0      ; 00376
         adda.w  #$92,a0                         ; 0037C
-        lea.l   (dat_071_00596).l,a2            ; 00380
+        lea.l   (SceneryMatrix).l,a2            ; 00380
         movem.w (a0)+,d0-d7                     ; 00386
         asr.w   #$6,d0                          ; 0038A
         asr.w   #$6,d1                          ; 0038C
@@ -340,7 +340,7 @@ l_010_00340:
         blt.w   l_010_0059C                     ; 003C4
         move.w  #$39,-$60(a6)                   ; 003C8
         movem.w (a1)+,d2-d4                     ; 003CE
-        lea.l   (dat_071_00596).l,a2            ; 003D2
+        lea.l   (SceneryMatrix).l,a2            ; 003D2
         move.w  d2,d5                           ; 003D8
         move.w  d3,d6                           ; 003DA
         move.w  d4,d7                           ; 003DC
@@ -449,7 +449,7 @@ l_010_004DE:
         rts                                     ; 004E2
 l_010_004E4:
         movem.w (a1)+,d2-d4                     ; 004E4
-        lea.l   (dat_071_00596).l,a2            ; 004E8
+        lea.l   (SceneryMatrix).l,a2            ; 004E8
         move.w  d2,d5                           ; 004EE
         move.w  d3,d6                           ; 004F0
         move.w  d4,d7                           ; 004F2
@@ -545,7 +545,7 @@ sub_010_005B6:
         asr.w   d7,d2                           ; 005C8
         asr.w   d7,d3                           ; 005CA
         asr.w   d7,d4                           ; 005CC
-        lea.l   (dat_071_005F0).l,a2            ; 005CE
+        lea.l   (ObjectMatrix).l,a2             ; 005CE
         move.w  d2,d5                           ; 005D4
         move.w  d3,d6                           ; 005D6
         move.w  d4,d7                           ; 005D8
@@ -1226,7 +1226,7 @@ TransformMoreVertices:
         beq.w   l_010_00D5A                     ; 00C7C
         movem.l a2/a5,-(a7)                     ; 00C80
         lea.l   $a(a1,d7.w),a1                  ; 00C84
-        lea.l   (dat_071_00596).l,a2            ; 00C88
+        lea.l   (SceneryMatrix).l,a2            ; 00C88
         lea.l   (a2),a4                         ; 00C8E
         adda.w  d7,a3                           ; 00C90
         movem.l -$20(a6),d0-d2                  ; 00C92

@@ -120,8 +120,8 @@ l_015_00106:
         movem.l $3e(a1),d0-d2                   ; 00106
         movem.l $14(a1),d3-d5                   ; 0010C
         sub.l   (EyeX).l,d3                     ; 00112
-        sub.l   (dat_071_00450).l,d4            ; 00118
-        sub.l   (dat_071_00454).l,d5            ; 0011E
+        sub.l   (EyeY).l,d4                     ; 00118
+        sub.l   (EyeZ).l,d5                     ; 0011E
         cmpi.w  #$100,$6e(a1)                   ; 00124
         blt.b   l_015_00132                     ; 0012A
         asr.l   #$8,d0                          ; 0012C
@@ -166,8 +166,8 @@ l_015_00178:
         adda.w  d0,a3                           ; 0019A
         movem.l (a3),d3-d5                      ; 0019C
         sub.l   (EyeX).l,d3                     ; 001A0
-        sub.l   (dat_071_00450).l,d4            ; 001A6
-        sub.l   (dat_071_00454).l,d5            ; 001AC
+        sub.l   (EyeY).l,d4                     ; 001A6
+        sub.l   (EyeZ).l,d5                     ; 001AC
         moveq   #$0,d7                          ; 001B2
         move.l  d3,d0                           ; 001B4
         bge.b   l_015_001BA                     ; 001B6

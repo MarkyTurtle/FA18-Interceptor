@@ -237,7 +237,7 @@ l_033_00274:
 l_033_00288:
         lea.l   (dat_072_03000).l,a1            ; 00288
         move.w  #$4,(a1)+                       ; 0028E
-        cmpi.w  #$3840,(dat_071_00462).l        ; 00292
+        cmpi.w  #$3840,(ViewRollAngle).l        ; 00292
         bge.b   l_033_002BA                     ; 0029A
         bsr.w   PutEdge                         ; 0029C
         bsr.w   PutCornerBL                     ; 002A0
@@ -275,7 +275,7 @@ l_033_002F4:
 
 ;-------------------------------------------------------------------------------
 ; SkyFillsView - The sky polygon as the whole view (all four corners): used when no horizon
-; edge crosses the view and the view looks up (its pitch, dat_071_0045A or OutsideCamPitch
+; edge crosses the view and the view looks up (its pitch, ViewPitchAngle or OutsideCamPitch
 ; outside, above $3840); otherwise no sky at all.
 ;-------------------------------------------------------------------------------
 SkyFillsView:
@@ -287,7 +287,7 @@ SkyFillsView:
         bsr.w   PutCornerBL                     ; 0032E
         tst.b   (OutsideView).l                 ; 00332
         bne.b   l_033_00342                     ; 00338
-        move.w  (dat_071_0045A).l,d0            ; 0033A
+        move.w  (ViewPitchAngle).l,d0           ; 0033A
         bra.b   l_033_00348                     ; 00340
 l_033_00342:
         move.w  (OutsideCamPitch).l,d0          ; 00342

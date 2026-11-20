@@ -46,7 +46,7 @@ l_026_00040:
         move.w  (ModeVariant).l,d1              ; 0005A
         bra.b   l_026_00076                     ; 00060
 l_026_00062:
-        move.w  (dat_071_004C8).l,d1            ; 00062
+        move.w  (PlaceRandom).l,d1              ; 00062
         andi.w  #$3,d1                          ; 00068
         beq.b   l_026_00076                     ; 0006C
         subq.w  #$1,d1                          ; 0006E
@@ -522,7 +522,7 @@ l_026_00586:
         swap    d4                              ; 0058A
         bra.b   l_026_005DC                     ; 0058C
 l_026_0058E:
-        move.w  (dat_071_004C8).l,d1            ; 0058E
+        move.w  (PlaceRandom).l,d1              ; 0058E
         lsr.w   #$1,d1                          ; 00594
         andi.w  #$3,d1                          ; 00596
         btst    #$4,(dat_071_004C9).l           ; 0059A
@@ -535,7 +535,7 @@ l_026_005A6:
         asr.w   #$1,d1                          ; 005B2
 l_026_005B4:
         add.w   d1,d2                           ; 005B4
-        move.w  (dat_071_004C8).l,d1            ; 005B6
+        move.w  (PlaceRandom).l,d1              ; 005B6
         lsr.w   #$2,d1                          ; 005BC
         andi.w  #$3,d1                          ; 005BE
         btst    #$5,(dat_071_004C9).l           ; 005C2
@@ -1044,7 +1044,7 @@ CameraShot7:
         cmpi.l  #$800000,d3                     ; 00BE4
         bgt.w   l_026_00E28                     ; 00BEA
         moveq   #$c,d4                          ; 00BEE
-        cmpi.l  #$fff00000,(dat_071_0061E).l    ; 00BF0
+        cmpi.l  #$fff00000,(CameraVelocityY).l  ; 00BF0
         bge.b   l_026_00C06                     ; 00BFA
         cmpi.l  #$100000,d3                     ; 00BFC
         bgt.w   l_026_00E28                     ; 00C02

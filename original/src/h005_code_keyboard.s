@@ -87,7 +87,7 @@ l_005_00098:
         bne.w   l_005_00C78                     ; 00148
 l_005_0014C:
         clr.b   (LeftAmigaDown).l               ; 0014C
-        clr.b   (dat_071_0024A).l               ; 00152
+        clr.b   (RightAmigaDown).l              ; 00152
 l_005_00158:
         rts                                     ; 00158
 l_005_0015A:
@@ -111,7 +111,7 @@ HandleKey:
         bclr    #$7,d0                          ; 00176
 l_005_0017A:
         move.b  (OutsideView).l,d5              ; 0017A
-        move.b  (dat_071_00248).l,d6            ; 00180
+        move.b  (ShiftDown).l,d6                ; 00180
         move.b  (CameraSequence).l,d3           ; 00186
         cmpi.b  #$3,d3                          ; 0018C
         beq.w   l_005_00420                     ; 00190
@@ -121,7 +121,7 @@ l_005_0017A:
         bne.w   l_005_00420                     ; 001A4
         tst.b   (AircraftChosen).l              ; 001A8
         bne.w   l_005_0038A                     ; 001AE
-        tst.b   (dat_071_00157).l               ; 001B2
+        tst.b   (TextInputOn).l                 ; 001B2
         beq.w   l_005_0038A                     ; 001B8
         tst.b   (GameMode).l                    ; 001BC
         beq.w   l_005_0038A                     ; 001C2
@@ -332,7 +332,7 @@ l_005_00432:
         cmpi.b  #$61,d0                         ; 00480
         bne.b   l_005_00492                     ; 00484
 Key_LShift:
-        move.b  #$1,(dat_071_00248).l           ; 00486
+        move.b  #$1,(ShiftDown).l               ; 00486
         bra.w   Key_LShiftUp_RShiftUp           ; 0048E
 l_005_00492:
         cmpi.b  #$e0,d0                         ; 00492
@@ -354,7 +354,7 @@ l_005_004BE:
         bne.b   l_005_004DA                     ; 004C8
         bra.w   Key_LShiftUp_RShiftUp           ; 004CA
 Key_RAmiga:
-        move.b  #$1,(dat_071_0024A).l           ; 004CE
+        move.b  #$1,(RightAmigaDown).l          ; 004CE
         bra.w   Key_LShiftUp_RShiftUp           ; 004D6
 l_005_004DA:
         cmpi.b  #$2,(TextStatus).l              ; 004DA
@@ -378,7 +378,7 @@ l_005_00516:
         tst.b   (WorldFrozen).l                 ; 00516
         bne.w   l_005_01624                     ; 0051C
         move.b  #$8,(PanelIndicatorBlink).l     ; 00520
-        lea.l   (dat_071_0017B).l,a0            ; 00528
+        lea.l   (EjectKeyFlag).l,a0             ; 00528
         bsr.w   ToggleByte                      ; 0052E
         bset    #$5,(JoyEvents).l               ; 00532
         ori.b   #$a,(Player_7C).l               ; 0053A
@@ -406,7 +406,7 @@ l_005_00568:
 Key_T:
         jsr     (KeyBeep).l                     ; 0058C
         bset    #$7,(JoyEvents).l               ; 00592
-        move.b  #$1,(dat_071_00189).l           ; 0059A
+        move.b  #$1,(TKeyPressed).l             ; 0059A
         bra.w   l_005_01624                     ; 005A2
 	dc.b	$41,$F9
         dc.l    CameraFollows                   ; 005A8
@@ -1303,14 +1303,14 @@ l_005_01080:
 l_005_0108C:
         bra.w   l_005_01624                     ; 0108C
 l_005_01090:
-        tst.b   (dat_071_00157).l               ; 01090
+        tst.b   (TextInputOn).l                 ; 01090
         bne.w   l_005_01160                     ; 01096
         cmpi.w  #$0,d4                          ; 0109A
         blt.w   l_005_01624                     ; 0109E
         cmpi.w  #$8,d4                          ; 010A2
         bgt.w   l_005_01624                     ; 010A6
         addq.w  #$1,d4                          ; 010AA
-        move.b  d4,(dat_071_00157).l            ; 010AC
+        move.b  d4,(TextInputOn).l              ; 010AC
         bra.w   l_005_01624                     ; 010B2
 l_005_010B6:
         move.b  (RecordMode).l,d2               ; 010B6
@@ -1533,14 +1533,14 @@ Key_M:
         bset    #$0,(ViewKeys).l                ; 0137E
         tst.b   (MapView).l                     ; 01386
         beq.b   l_005_0139C                     ; 0138C
-        move.l  (CameraY).l,(dat_071_00034).l   ; 0138E
+        move.l  (CameraY).l,(MapViewHeight).l   ; 0138E
         bra.w   l_005_00A6C                     ; 01398
 l_005_0139C:
         move.w  d0,-(a7)                        ; 0139C
         jsr     (StopAllSounds).l               ; 0139E
         move.w  (a7)+,d0                        ; 013A4
         move.l  #$10c00000,d4                   ; 013A6
-        move.l  (dat_071_00034).l,d1            ; 013AC
+        move.l  (MapViewHeight).l,d1            ; 013AC
         move.l  #$11400000,d2                   ; 013B2
         move.l  d4,(CameraX).l                  ; 013B8
         move.l  d1,(CameraY).l                  ; 013BE
@@ -1554,8 +1554,8 @@ l_005_0139C:
         move.l  d1,(CameraCellOffsetY).l        ; 013E2
         move.l  d2,(CameraCellOffsetZ).l        ; 013E8
         clr.l   (CameraVelocity).l              ; 013EE
-        clr.l   (dat_071_0061E).l               ; 013F4
-        clr.l   (dat_071_00622).l               ; 013FA
+        clr.l   (CameraVelocityY).l             ; 013F4
+        clr.l   (CameraVelocityZ).l             ; 013FA
         move.w  #$1c20,(OutsideCamPitch).l      ; 01400
         clr.w   (OutsideCamHeading).l           ; 01408
         clr.b   (CameraFollows).l               ; 0140E
@@ -1611,7 +1611,7 @@ Key_F:
         tst.b   d6                              ; 014C8
         bne.b   l_005_0150A                     ; 014CA
         bset    #$1,(ToggleKeys).l              ; 014CC
-        subq.b  #$1,(dat_071_0021D).l           ; 014D4
+        subq.b  #$1,(FlaresLeft).l              ; 014D4
         ble.b   l_005_014F4                     ; 014DA
         move.b  #$1e,(FlareTime).l              ; 014DC
         move.w  d0,d4                           ; 014E4
@@ -1619,7 +1619,7 @@ Key_F:
         move.b  #$2,(CountermeasureSound).l     ; 014EA
         bra.b   l_005_014FE                     ; 014F2
 l_005_014F4:
-        clr.b   (dat_071_0021D).l               ; 014F4
+        clr.b   (FlaresLeft).l                  ; 014F4
         move.w  #$4027,d0                       ; 014FA
 l_005_014FE:
         jsr     (StartWarning).l                ; 014FE
@@ -1650,7 +1650,7 @@ l_005_01556:
         bra.w   l_005_01624                     ; 01556
 Key_C:
         bset    #$2,(ToggleKeys).l              ; 0155A
-        subq.b  #$1,(dat_071_0021C).l           ; 01562
+        subq.b  #$1,(ChaffLeft).l               ; 01562
         ble.b   l_005_01582                     ; 01568
         move.b  #$1e,(ChaffTime).l              ; 0156A
         move.w  d0,d4                           ; 01572
@@ -1658,7 +1658,7 @@ Key_C:
         move.b  #$1,(CountermeasureSound).l     ; 01578
         bra.b   l_005_0158C                     ; 01580
 l_005_01582:
-        clr.b   (dat_071_0021C).l               ; 01582
+        clr.b   (ChaffLeft).l                   ; 01582
         move.w  #$4029,d0                       ; 01588
 l_005_0158C:
         jsr     (StartWarning).l                ; 0158C
@@ -1730,9 +1730,9 @@ l_005_01652:
         ext.w   d4                              ; 01686
         move.b  d0,(a3,d4.w)                    ; 01688
 l_005_0168C:
-        clr.b   (dat_071_00248).l               ; 0168C
+        clr.b   (ShiftDown).l                   ; 0168C
         clr.b   (LeftAmigaDown).l               ; 01692
-        clr.b   (dat_071_0024A).l               ; 01698
+        clr.b   (RightAmigaDown).l              ; 01698
 Key_LShiftUp_RShiftUp:
         rts                                     ; 0169E
 Key_Z_Del:

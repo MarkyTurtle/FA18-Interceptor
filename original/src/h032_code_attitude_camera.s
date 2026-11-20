@@ -629,7 +629,7 @@ l_032_006A8:
         lea.l   (ViewMatrix).l,a1               ; 006BE
         bsr.w   ScaleRows                       ; 006C4
         move.w  (OutsideCamHeading).l,d4        ; 006C8
-        lea.l   (dat_071_005CC).l,a1            ; 006CE
+        lea.l   (PanelMatrixHeading).l,a1       ; 006CE
         bsr.w   HeadingMatrix                   ; 006D4
         movem.w (Player_66).l,d0-d2             ; 006D8
         movem.l d0-d2,(OutsideCamPos).l         ; 006E0
@@ -648,19 +648,19 @@ CameraHeadingMatrix:
         sub.w   d4,d1                           ; 00700
         move.w  d1,d4                           ; 00702
 l_032_00704:
-        lea.l   (dat_071_005DE).l,a1            ; 00704
+        lea.l   (PanelVector).l,a1              ; 00704
         bsr.w   HeadingMatrixFull               ; 0070A
         rts                                     ; 0070E
 
 ;-------------------------------------------------------------------------------
 ; CockpitViewMatrix - The view's matrices from the viewed object's attitude (+$68...) - the
-; panel's (dat_071_005CC) and, in the cockpit, the view's.
+; panel's (PanelMatrixHeading) and, in the cockpit, the view's.
 ;-------------------------------------------------------------------------------
 CockpitViewMatrix:
         lea.l   (ObjectTable).l,a0              ; 00710
         adda.w  (ViewObject).l,a0               ; 00716
         move.w  $68(a0),d4                      ; 0071C
-        lea.l   (dat_071_005CC).l,a1            ; 00720
+        lea.l   (PanelMatrixHeading).l,a1       ; 00720
         bsr.w   HeadingMatrix                   ; 00726
         lea.l   (ObjectTable).l,a0              ; 0072A
         adda.w  (ViewObject).l,a0               ; 00730
@@ -778,9 +778,9 @@ l_032_0084E:
 l_032_00862:
         move.l  a0,-(a7)                        ; 00862
         movem.w d0/d2/d4,-(a7)                  ; 00864
-        lea.l   (dat_071_005F0).l,a1            ; 00868
+        lea.l   (ObjectMatrix).l,a1             ; 00868
         bsr.w   AttitudeMatrix                  ; 0086E
-        lea.l   (dat_071_005F0).l,a1            ; 00872
+        lea.l   (ObjectMatrix).l,a1             ; 00872
         bsr.w   ScaleRows                       ; 00878
         movem.w (a7)+,d0/d2/d4                  ; 0087C
         movea.l (a7)+,a0                        ; 00880
@@ -788,9 +788,9 @@ l_032_00862:
         bsr.w   NormaliseAngles                 ; 00886
         movem.l d4-d6,(OutsideCamPos).l         ; 0088A
 l_032_00892:
-        move.w  (dat_071_0045A).l,d0            ; 00892
-        move.w  (dat_071_0045E).l,d2            ; 00898
-        move.w  (dat_071_00462).l,d4            ; 0089E
+        move.w  (ViewPitchAngle).l,d0           ; 00892
+        move.w  (ViewHeadingAngle).l,d2         ; 00898
+        move.w  (ViewRollAngle).l,d4            ; 0089E
         lea.l   (ViewMatrix).l,a1               ; 008A4
         bsr.w   AttitudeMatrix                  ; 008AA
         lea.l   (ViewMatrix).l,a1               ; 008AE
@@ -1794,10 +1794,10 @@ AnglesToMatrix2:
         rts                                     ; 011A2
 
 ;-------------------------------------------------------------------------------
-; ScaleRows - Multiplies the three words at a1 by dat_071_0040E-00412 (/256).
+; ScaleRows - Multiplies the three words at a1 by ScaleFactors-00412 (/256).
 ;-------------------------------------------------------------------------------
 ScaleRows:
-        movem.w (dat_071_0040E).l,d0-d2         ; 011A4
+        movem.w (ScaleFactors).l,d0-d2          ; 011A4
         movem.w (a1),d3-d5                      ; 011AC
         muls.w  d0,d3                           ; 011B0
         muls.w  d0,d4                           ; 011B2

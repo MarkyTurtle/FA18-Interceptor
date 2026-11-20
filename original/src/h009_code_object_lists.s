@@ -170,7 +170,7 @@ l_009_001BE:
         btst    #$4,(dat_071_0022A).l           ; 001F6
         beq.b   l_009_00218                     ; 001FE
 l_009_00200:
-        clr.w   (dat_071_000C2).l               ; 00200
+        clr.w   (DistanceScaleBase).l           ; 00200
         bra.b   l_009_00224                     ; 00206
 l_009_00208:
         move.w  #$26,(DebugCheckpoint).l        ; 00208
@@ -178,7 +178,7 @@ l_009_00208:
         bra.b   l_009_00208                     ; 00216
 l_009_00218:
         movea.l $4(a1),a1                       ; 00218
-        clr.w   (dat_071_000C2).l               ; 0021C
+        clr.w   (DistanceScaleBase).l           ; 0021C
         move.w  (a3)+,d6                        ; 00222
 l_009_00224:
         tst.b   (SceneryDetailed).l             ; 00224
@@ -311,7 +311,7 @@ l_009_0045A:
         move.l  (dat_071_000BE).l,d0            ; 0045A
         asr.l   d6,d0                           ; 00460
         move.w  d0,(a2)+                        ; 00462
-        move.w  (dat_071_000C2).l,d0            ; 00464
+        move.w  (DistanceScaleBase).l,d0        ; 00464
         asr.w   d6,d0                           ; 0046A
         move.w  d0,(a2)+                        ; 0046C
         move.l  (dat_071_000C6).l,d0            ; 0046E
@@ -417,7 +417,7 @@ l_009_005B6:
         bgt.b   l_009_005A6                     ; 005BE
         beq.w   l_009_006F8                     ; 005C0
         suba.w  #$18,a2                         ; 005C4
-        move.l  a2,(dat_071_00396).l            ; 005C8
+        move.l  a2,(DrawListEnd).l              ; 005C8
         clr.b   d0                              ; 005CE
         clr.b   (dat_071_0022F).l               ; 005D0
 l_009_005D6:

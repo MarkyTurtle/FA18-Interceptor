@@ -19,7 +19,7 @@ dat_037_00000:
 ;-------------------------------------------------------------------------------
 CopyTitleToScreen:
         lea.l   (CUSTOM).l,a0                    ; 00014
-        movea.l (dat_071_0008A).l,a2            ; 0001A
+        movea.l (DrawBitPlanes).l,a2            ; 0001A
         lea.l   dat_037_00000(pc),a1            ; 00020
         move.w  #$9f0,d2                        ; 00024
         movea.w #$14,a4                         ; 00028
@@ -244,12 +244,12 @@ DrawFuelGauge:
         lsr.w   #$2,d2                          ; 00264
         tst.b   (PanelRedraw).l                 ; 00266
         bgt.b   l_037_00280                     ; 0026C
-        cmp.w   (dat_071_00374).l,d2            ; 0026E
+        cmp.w   (FuelShownLast).l,d2            ; 0026E
         beq.b   l_037_00256                     ; 00274
         btst    #$0,(BlinkPhase).l              ; 00276
         beq.b   l_037_00286                     ; 0027E
 l_037_00280:
-        move.w  d2,(dat_071_00374).l            ; 00280
+        move.w  d2,(FuelShownLast).l            ; 00280
 l_037_00286:
         move.w  #$15,d3                         ; 00286
         move.w  #$70,d0                         ; 0028A
@@ -506,7 +506,7 @@ l_037_005B0:
         bsr.w   ClipPanelBlit                   ; 005DA
         blt.b   l_037_005AE                     ; 005DE
         move.w  #$30a,d2                        ; 005E0
-        tst.b   (dat_071_0017B).l               ; 005E4
+        tst.b   (EjectKeyFlag).l                ; 005E4
         beq.b   l_037_005FA                     ; 005EA
         btst    #$0,(PanelIndicatorBlink).l     ; 005EC
         beq.b   l_037_005FA                     ; 005F4
@@ -833,7 +833,7 @@ l_037_009E8:
 
 ;-------------------------------------------------------------------------------
 ; CompassPosition - From the viewed object's heading (+$68): the heading in tens
-; (dat_071_00370) and the compass strip's position (CompassPos, 0-$5F, wrapping).
+; (HeadingTens) and the compass strip's position (CompassPos, 0-$5F, wrapping).
 ;-------------------------------------------------------------------------------
 CompassPosition:
         lea.l   (ObjectTable).l,a0              ; 009EA
@@ -842,7 +842,7 @@ CompassPosition:
         ext.l   d0                              ; 009FA
         asr.l   #$3,d0                          ; 009FC
         divu.w  #$a,d0                          ; 009FE
-        move.w  d0,(dat_071_00370).l            ; 00A02
+        move.w  d0,(HeadingTens).l              ; 00A02
         asr.w   #$1,d0                          ; 00A08
         mulu.w  #$87,d0                         ; 00A0A
         asr.l   #$8,d0                          ; 00A0E
