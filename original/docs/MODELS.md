@@ -1,5 +1,7 @@
 # The 3D models and scenery, drawn
 
+![On the runway, from the game's own frame](images/view_runway.png)
+
 These pictures were made by running the game's own drawing code. `tools/models/` loads the
 assembled executable into a 68000 emulator ([unicorn](https://www.unicorn-engine.org/)), sets up
 an object and a camera, and calls the game's draw routine for a model (`DrawModel`, hunk 10).
@@ -23,6 +25,12 @@ The first version of these pictures had faults, since corrected:
   scenery uses that entry.
 * Shapes that reached behind the camera were drawn without clipping.
 * The pictures were mirrored.
+* Faces were missing from some shapes, such as Coit Tower's front. The drawing lists' plane
+  tests compare the camera's position against the shape (`dat_071_00442`-`00448`), and the tool
+  had not set it.
+* The emulator kept the first routine it was asked to run and ran it again for later calls.
+  It translates code once and keeps it, and the tool rewrote its call in place without
+  flushing it.
 
 The pictures were made this way:
 
@@ -54,7 +62,10 @@ Notes on the models:
 * The carrier has a dark flight deck, the angled deck stepped along one side, the island and a
   hull under part of the deck.
 * One airliner model serves as Air Force One, the 707 and the 767.
-* `$F0`, object 15 of mission F6, is a ship like the carrier.
+* `$F0`, object 15 of mission F6, is the submarine: a long dark hull with its sail. It is the
+  shadow sub of the Carrier Sub mission, not a ship as first thought.
+
+![The submarine](images/submarine.png)
 * `$DC` is a box under a parachute: the rescue pod of mission F4. Its frames show the canopy
   opening, then the box on the ground.
 * The cruise missile (`$C8`) is drawn with lines, like the Sidewinder and the AMRAAM. Its
@@ -76,11 +87,17 @@ Some can be recognised:
 * the Golden Gate Bridge in two halves (32, 33, red);
 * the Bay Bridge and the bay's other bridges and causeways, in sections (34-41);
 * the Transamerica Pyramid (46);
-* Coit Tower (48);
+* Coit Tower (48), a column with its top;
 * Sutro Tower (49, red and white);
 * airfield control towers (86, 87).
 
-Most of the rest are runway and taxiway markings, drawn as lines. They include the runways'
+Most of the rest are pieces that only make sense put together:
+
+* runway and taxiway markings, drawn as lines, and runway numbers;
+* building blocks;
+* the orange hills (42).
+
+The scenery maps place them, so the in-game views below show what they make. They include the runways'
 numbers (for example 64, 65).
 
 Some shapes are not shown:
@@ -89,6 +106,42 @@ Some shapes are not shown:
 * The shapes drawn by hunk 12's own renderer (`DrawGroundShape`: 20-26, 82-85, 89, 90 and 93-116,
   mostly hunk 70) are not captured yet. Their output does not go through the routines the tool
   hooks.
+
+## In the game
+
+`scene.py` goes further and runs the game itself in the emulator. It runs the game's own set-up
+routines:
+
+* `ResetGame`;
+* `SetupMode` for a free flight;
+* the routine that places the aircraft at a starting point.
+
+Then it runs the 3D stages of a frame (`UpdateViewCell`, `SetupCamera`, the scenery lists,
+`DrawObjects`...), twice. It captures what reaches the screen: the filled polygons after the
+game's clipping and projection, the lines and the points. They are painted in order, in screen
+coordinates, so these are the game's own frames.
+
+There are two exceptions. The sky and the ground behind everything come from the copper (colour
+0 changed down the screen), not from drawing, so they are filled in at the horizon. The cockpit
+is left out.
+
+![On the runway](images/view_runway.png)
+![The third start: the runway's threshold](images/view_runway2.png)
+![On the carrier's deck](images/view_carrier.png)
+![Over the airfield](images/view_airfield.png)
+![The Bay Bridge](images/view_baybridge.png)
+![Towards the Golden Gate, over the city](images/view_goldengate.png)
+![The city's hills and Sutro Tower](images/view_sutro.png)
+
+The ground is drawn in the colours of the land, the water (the bay), the city (grey) and the
+hills (orange). The scenery maps' pieces become the airfields with their runways and control
+tower, the bridges and the city.
+
+Some places:
+
+* the free flight starts in map cell (65, 66) on an airfield;
+* the city around (65-66, 69);
+* the Golden Gate Bridge in cell (66, 70).
 
 ## Making the pictures
 
@@ -99,6 +152,8 @@ python3 gallery.py models          # out/models.png
 python3 gallery2.py x              # out/scenery_a.png, out/scenery_b.png
 python3 one.py m 0x50 2.5 0.45 out/fa18.png 0 480   # one model: m + ModelTable offset
 python3 one.py s 33 0.45 0.0 out/gg.png 0 480        # one scenery shape: s + entry
+python3 scene.py 3 "" "" out/carrier.png              # the game's frame at a start point
+python3 views.py                                      # the views above, into out/
 ```
 
 The tool assembles the source with its labels first (`vasmm68k_mot` must be on the path), so

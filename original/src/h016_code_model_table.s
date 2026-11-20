@@ -12,8 +12,8 @@
 ; a0), +$08 the shape list to draw (ShapeNow), +$0C ShapeNext (changed for animations), +$10 a
 ; second model or 0. $00 Sidewinder, $14 AMRAAM, $28 and $104 a pilot under his parachute (hunk
 ; 58; the downed pilot in F4), $3C F-16, $50 F/A-18, $64 Air Force One, $78 and $8C the MiGs,
-; $A0 and $B4 the carrier, $C8 the cruise missile, $DC the rescue pod under a parachute, $F0 a
-; ship (object 15 of F6), $118 and $12C the airliners. Pictures of them: docs/MODELS.md.
+; $A0 and $B4 the carrier, $C8 the cruise missile, $DC the rescue pod under a parachute, $F0 the
+; submarine (object 15 of F6), $118 and $12C the airliners. Pictures of them: docs/MODELS.md.
 ModelTable:
         dc.l    DrawModel                       ; 00000
         dc.l    dat_051_00A6C                   ; 00004

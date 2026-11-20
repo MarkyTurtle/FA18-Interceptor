@@ -88,7 +88,9 @@ class Game:
         sp = 0x7FF0
         start = self.sym[name] if isinstance(name, str) else name
         self.uc.mem_write(TRAMP, b'\x4e\xb9' + struct.pack('>I', start) + b'\x4e\x71\x4e\x71')
+        self.uc.ctl_remove_cache(TRAMP, TRAMP + 16)  # the trampoline changes: drop its old translation
         self.uc.reg_write(UC_M68K_REG_A7, sp)
+        self.uc.reg_write(UC_M68K_REG_A6, 0x6F00)    # a frame for routines that use their caller's locals
         for r, v in (regs or {}).items():
             self.uc.reg_write(r, v & 0xFFFFFFFF)
         try:

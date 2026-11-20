@@ -21,7 +21,7 @@ def build(entries, path, cols=3):
     d = ImageDraw.Draw(im)
     for i, (n, label) in enumerate(entries):
         x, y = (i % cols) * cw, (i // cols) * ch
-        for k, (yaw, pitch) in enumerate(((0.45, 0.0), (0.45, -1.25))):
+        for k, (yaw, pitch) in enumerate(((0.45, 0.0), (0.45, 1.25))):
             p = '%s/s%03d_%d.png' % (OUT, n, k)
             if not os.path.exists(p):
                 gallery.one('s', n, yaw, pitch, 0, p)

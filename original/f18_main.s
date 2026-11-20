@@ -415,8 +415,8 @@
 ; Hunk 52: The carrier's 3D model (ModelTable $A0, $B4).
 	include	"src/h052_code_model_carrier.s"
 
-; Hunk 53: A ship's 3D model, like the carrier: object 15 of mission F6 (ModelTable $F0).
-	include	"src/h053_code_model_ship.s"
+; Hunk 53: The submarine's 3D model: object 15 of mission F6, the shadow sub (ModelTable $F0).
+	include	"src/h053_code_model_submarine.s"
 
 ; Hunk 54: Scenery shapes: ObjectDrawTable entries 45-47, 73, 74, 91, 92.
 	include	"src/h054_code_scenery_shapes.s"

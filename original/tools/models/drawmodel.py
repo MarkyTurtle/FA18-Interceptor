@@ -49,7 +49,7 @@ def rot(yaw, pitch, roll):
     return mul(mul(Ry, Rx), Rz)
 
 
-def draw(entry, yaw=0.6, pitch=0.35, roll=0.0, dist=0x40000, lod=16, obj=1, model=None):
+def draw(entry, yaw=0.6, pitch=0.35, roll=0.0, dist=0x40000, lod=16, obj=1, model=None, shift=0):
     """Draws ObjectDrawTable entry `entry` (or ModelTable offset `model`, copied into object
     `obj`'s entry) as object `obj`; returns the captured primitives."""
     OUT.clear()
@@ -76,7 +76,9 @@ def draw(entry, yaw=0.6, pitch=0.35, roll=0.0, dist=0x40000, lod=16, obj=1, mode
     for v in ('dat_071_00500', 'dat_071_00504', 'dat_071_00508', 'dat_071_0050C'):
         if v in g.sym: g.setl(g[v], 0)
     g.setl(g['dat_071_0050C'], py)            # the height offset the drawing uses
-    g.setw(g['dat_071_00488'], 0)
+    if shift is None:                         # as the game: DistanceScale by the distance
+        shift = g.b(g['DistanceScale'] + min(dist >> 13, 0xEF))
+    g.setw(g['dat_071_00488'], shift)
     g.setw(g['dat_071_00510'], lod)
     g.setb(g['dat_071_001AD'], 1)
     g.setb(g['dat_071_0023C'], 1)
@@ -86,7 +88,11 @@ def draw(entry, yaw=0.6, pitch=0.35, roll=0.0, dist=0x40000, lod=16, obj=1, mode
     g.setw(g['ViewObject'], 0)
     g.setl(g['ShapeNow'], now)
     g.setl(g['ShapeNext'], nxt)
-    g.setl(g['dat_071_00448'], -0x1000)
+    # the camera's position against the object, /256: the plane tests of the drawing lists use it
+    g.setw(g['dat_071_00442'], px >> 8); g.setw(g['dat_071_00442'] + 2, py >> 8); g.setw(g['dat_071_00446'], pz >> 8)
+    g.setl(g['dat_071_00448'], py >> 8)
+    for k in range(3):
+        g.setw(g['dat_071_004FA'] + 2 * k, 0)
     if routine == g['DrawModel']:
         routine = g['DrawSceneryPlain']     # the same, without the own-aircraft checks
     g.call(routine, {UC_M68K_REG_A0: mbase})

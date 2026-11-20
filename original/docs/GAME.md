@@ -123,7 +123,8 @@ record holds (see the header above `ObjectTable` for all that is known):
 * what has happened to it (`+$20`): bit 1 destroyed, bit 6 its signature confirmed (seen up
   close, so the radar's readout names it), bit 7 hit by the player;
 * its position: a map cell (`+$06` X, `+$08` Z) and a 32-bit position (`+$14` X, `+$18` Y, `+$1C` Z)
-  whose low 22 bits are the position inside the cell; Y is height, negative upwards;
+  whose low 22 bits are the position inside the cell; Y is height, positive upwards (`$708` on
+  a runway; the game's own frame, drawn in the emulator, shows this);
 * its velocity (`+$3E`, `+$42`, `+$46`) and speed (`+$6C`, `+$6E`);
 * its attitude: pitch, heading, roll (`+$66`, `+$68`, `+$6A`) and two rotation matrices made from
   them (`+$80`, and `+$92` from the negated angles, whose third column is the nose's direction);
@@ -321,7 +322,7 @@ emulator, are in [`MODELS.md`](MODELS.md).
   | `$A0`, `$B4` | the carrier (always object 14) | 52 |
   | `$C8` | the cruise missile | 55 |
   | `$DC` | the rescue pod: a box under a parachute (animated) | 58 |
-  | `$F0` | a ship like the carrier (object 15 of F6) | 53 |
+  | `$F0` | the submarine (object 15 of F6, the shadow sub) | 53 |
 
 * **A model** (`DrawModel`, hunk 10) starts with a list choosing the shape by distance - the
   levels of detail: distance words (bits 0-13) compared with the object's distance, with

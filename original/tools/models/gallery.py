@@ -10,7 +10,7 @@ os.makedirs(OUT, exist_ok=True)
 
 MODELS = [(0x00, 'Sidewinder'), (0x14, 'AMRAAM'), (0x28, 'Pilot and parachute'), (0x3C, 'F-16'),
           (0x50, 'F/A-18'), (0x64, 'Air Force One'), (0x78, 'MiG'), (0xA0, 'Aircraft carrier'),
-          (0xC8, 'Cruise missile'), (0xDC, 'Rescue pod (box) on parachute'), (0xF0, 'Ship (F6, object 15)'),
+          (0xC8, 'Cruise missile'), (0xDC, 'Rescue pod (box) on parachute'), (0xF0, 'Submarine (F6, object 15)'),
           (0x118, 'Airliner (707/767)')]
 
 
