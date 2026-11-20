@@ -90,7 +90,12 @@ FireReleased:
         bset    #$3,(JoyEvents).l               ; 000E4
         andi.w  #$fff7,(GunFlags).l             ; 000EC
         rts                                     ; 000F4
-sub_006_000F6:
+
+;-------------------------------------------------------------------------------
+; SetObjectBit7C - Sets the current object's +$7C bit 7 (the entry after it, written as data,
+; clears it), unless its +$03 bit 7 is set.
+;-------------------------------------------------------------------------------
+SetObjectBit7C:
         movem.l d4/d7/a1,-(a7)                  ; 000F6
         move.b  #$1,d7                          ; 000FA
         bra.b   l_006_00106                     ; 000FE
@@ -109,7 +114,12 @@ l_006_00126:
 l_006_0012C:
         movem.l (a7)+,d4/d7/a1                  ; 0012C
         rts                                     ; 00130
-sub_006_00132:
+
+;-------------------------------------------------------------------------------
+; RearmAircraft - Re-arms and refuels the player's aircraft (ResetPlayerAircraft) with a
+; message ($4005); in mission F6 the mission's result is cleared unless it is 1 or -1.
+;-------------------------------------------------------------------------------
+RearmAircraft:
         swap    d0                              ; 00132
         move.w  #$4005,d0                       ; 00134
         jsr     (StartWarning).l                ; 00138

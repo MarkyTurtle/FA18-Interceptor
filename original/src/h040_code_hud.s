@@ -134,7 +134,7 @@ l_040_0015A:
         move.w  d6,d0                           ; 0018E
         jsr     (PrintNumberHUD0).l             ; 00190
         move.w  #$ca,d0                         ; 00196
-        lea.l   (sub_040_001C0).l,a2            ; 0019A
+        lea.l   (HUDTapeLabels).l,a2            ; 0019A
         lea.l   $2(a2),a0                       ; 001A0
         lea.l   FtPlaces(pc),a1                 ; 001A4
         lea.l   $e52.w,a4                       ; 001A8
@@ -143,7 +143,12 @@ l_040_0015A:
         move.w  #$1,d0                          ; 001B2
         jsr     (PrintTextHUD).l                ; 001B6
         bra.w   HUDSpeed                        ; 001BC
-sub_040_001C0:
+
+;-------------------------------------------------------------------------------
+; HUDTapeLabels - Draws an F-16 tape's numbers (the value / 10 in BCD, HUDDigits2Alt at the
+; places in a1).
+;-------------------------------------------------------------------------------
+HUDTapeLabels:
         not.w   (a4)                            ; 001C0
 l_040_001C2:
         divu.w  #$a,d0                          ; 001C2

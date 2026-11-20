@@ -390,7 +390,11 @@ l_023_00428:
         add.l   d2,$8(a3)                       ; 00430
 l_023_00434:
         bra.w   l_023_0067A                     ; 00434
-sub_023_00438:
+
+;-------------------------------------------------------------------------------
+; BulletTestPoint - Tests a bullet's point against the ground and the objects (BulletTestKind).
+;-------------------------------------------------------------------------------
+BulletTestPoint:
         move.l  $4(a3),d3                       ; 00438
         blt.w   BulletHitGround                 ; 0043C
         move.w  (BulletTestKind).l,d0           ; 00440
@@ -470,10 +474,10 @@ l_023_004DA:
         move.b  -$4(a6),d0                      ; 004FC
         andi.b  #$10,d0                         ; 00500
         beq.b   l_023_0050C                     ; 00504
-        bsr.w   sub_023_006D8                   ; 00506
+        bsr.w   BulletTestCell                  ; 00506
         bra.b   l_023_00510                     ; 0050A
 l_023_0050C:
-        bsr.w   sub_023_007A2                   ; 0050C
+        bsr.w   BulletTestCell2                 ; 0050C
 l_023_00510:
         move.l  (a7)+,d5                        ; 00510
         tst.w   d7                              ; 00512
@@ -522,7 +526,11 @@ l_023_005AC:
         or.b    d7,d0                           ; 005B0
         move.b  d0,$3c(a1)                      ; 005B2
         bra.w   l_023_00480                     ; 005B6
-sub_023_005BA:
+
+;-------------------------------------------------------------------------------
+; BulletHitStep - Steps a hit object's damage counter (+$3C).
+;-------------------------------------------------------------------------------
+BulletHitStep:
         move.b  $3c(a1),d7                      ; 005BA
         move.b  d7,d0                           ; 005BE
         andi.b  #$f0,d7                         ; 005C0
@@ -594,7 +602,11 @@ l_023_0067A:
         moveq   #$0,d0                          ; 0067A
         unlk    a6                              ; 0067C
         rts                                     ; 0067E
-sub_023_00680:
+
+;-------------------------------------------------------------------------------
+; BulletHitTestNext - BulletHitTest's next entry.
+;-------------------------------------------------------------------------------
+BulletHitTestNext:
         swap    d5                              ; 00680
         move.l  $4(a3),d3                       ; 00682
         bge.w   l_023_002E8                     ; 00686
@@ -635,7 +647,11 @@ l_023_006D0:
 l_023_006D4:
         moveq   #$0,d0                          ; 006D4
         bra.b   l_023_006D0                     ; 006D6
-sub_023_006D8:
+
+;-------------------------------------------------------------------------------
+; BulletTestCell - Tests a bullet against a cell's items.
+;-------------------------------------------------------------------------------
+BulletTestCell:
         movem.l a3/a5,-(a7)                     ; 006D8
         clr.b   -$20(a6)                        ; 006DC
         movem.l $0(a3),d2-d4                    ; 006E0
@@ -670,7 +686,7 @@ l_023_0071C:
 l_023_0073C:
         tst.w   (a4)                            ; 0073C
         blt.b   l_023_00796                     ; 0073E
-        jsr     (sub_024_0059E).l               ; 00740
+        jsr     (CollideWithList).l             ; 00740
         beq.b   l_023_0073C                     ; 00746
         bra.w   l_023_0079A                     ; 00748
 l_023_0074C:
@@ -697,7 +713,7 @@ l_023_00762:
         cmp.l   a1,d4                           ; 0078A
         blt.b   l_023_00796                     ; 0078C
 l_023_0078E:
-        jsr     (sub_024_0059E).l               ; 0078E
+        jsr     (CollideWithList).l             ; 0078E
         bne.b   l_023_0079A                     ; 00794
 l_023_00796:
         moveq   #$0,d7                          ; 00796
@@ -707,7 +723,11 @@ l_023_0079A:
 l_023_0079C:
         movem.l (a7)+,a3/a5                     ; 0079C
         rts                                     ; 007A0
-sub_023_007A2:
+
+;-------------------------------------------------------------------------------
+; BulletTestCell2 - As BulletTestCell (the other list).
+;-------------------------------------------------------------------------------
+BulletTestCell2:
         movem.l a3/a5,-(a7)                     ; 007A2
         clr.b   -$20(a6)                        ; 007A6
         movem.l $0(a3),d2-d4                    ; 007AA

@@ -219,7 +219,12 @@ SetTextPage:
 	dc.b	$4E,$75
 l_020_00236:
         rts                                     ; 00236
-sub_020_00238:
+
+;-------------------------------------------------------------------------------
+; TitleMusicStep - While the title music plays (MusicState), steps it on with time
+; (TitleTimer).
+;-------------------------------------------------------------------------------
+TitleMusicStep:
         tst.b   (MusicState).l                  ; 00238
         beq.b   l_020_00236                     ; 0023E
         move.l  (TitleTimer).l,d0               ; 00240
@@ -430,7 +435,12 @@ l_020_004C0:
         rts                                     ; 004C8
 l_020_004CA:
         rts                                     ; 004CA
-sub_020_004CC:
+
+;-------------------------------------------------------------------------------
+; PrepareShape89 - Prepares shape 89's data at the start (InitInput): adjusts its vertex lists
+; in place.
+;-------------------------------------------------------------------------------
+PrepareShape89:
         lea.l   (Shape89_00000).l,a0            ; 004CC
 l_020_004D2:
         move.w  (a0)+,d0                        ; 004D2
@@ -594,7 +604,11 @@ CountDownByte:
         subq.b  #$1,(a0)                        ; 006D6
 l_020_006D8:
         rts                                     ; 006D8
-sub_020_006DA:
+
+;-------------------------------------------------------------------------------
+; TimeSomething - Measures a time (with ClockStart) and keeps the best (BestTime, TimedResult).
+;-------------------------------------------------------------------------------
+TimeSomething:
         tst.l   (ClockStart).l                  ; 006DA
         blt.b   l_020_00722                     ; 006E0
         move.l  (TimedValue).l,d1               ; 006E2
@@ -756,7 +770,11 @@ l_020_00874:
 l_020_00896:
         jsr     (RedrawInstruments).l           ; 00896
         rts                                     ; 0089C
-sub_020_0089E:
+
+;-------------------------------------------------------------------------------
+; AngleBySize - VectorToAngles' scaling by the distance (AngleDistance, up to $63F000).
+;-------------------------------------------------------------------------------
+AngleBySize:
         movem.l d0-d3,-(a7)                     ; 0089E
         move.l  (AngleDistance).l,d0            ; 008A2
         cmpi.l  #$63f000,d0                     ; 008A8
@@ -1168,17 +1186,21 @@ l_020_00C28:
         move.b  (a6),d6                         ; 00C28
         lsr.b   #$4,d6                          ; 00C2A
         andi.w  #$f,d6                          ; 00C2C
-        bsr.w   sub_020_00C50                   ; 00C30
+        bsr.w   NextPowerOfTen                  ; 00C30
         move.b  (a6)+,d6                        ; 00C34
         andi.w  #$f,d6                          ; 00C36
-        bsr.w   sub_020_00C50                   ; 00C3A
+        bsr.w   NextPowerOfTen                  ; 00C3A
         dbra    d5,l_020_00C28                  ; 00C3E
         move.l  d7,(BCDIn).l                    ; 00C42
         movem.l (a7)+,d5-d7/a5-a6               ; 00C48
         rts                                     ; 00C4C
 l_020_00C4E:
         add.l   (a5),d7                         ; 00C4E
-sub_020_00C50:
+
+;-------------------------------------------------------------------------------
+; NextPowerOfTen - Part of BCDToBinary: on to the next power of ten.
+;-------------------------------------------------------------------------------
+NextPowerOfTen:
         dbra    d6,l_020_00C4E                  ; 00C50
         addq.l  #$4,a5                          ; 00C54
         rts                                     ; 00C56

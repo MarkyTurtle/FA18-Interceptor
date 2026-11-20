@@ -370,7 +370,11 @@ l_012_00366:
         tst.w   d6                              ; 00370
         blt.b   l_012_003BC                     ; 00372
         bra.b   l_012_00388                     ; 00374
-sub_012_00376:
+
+;-------------------------------------------------------------------------------
+; GroundShapeColours - Sets the colour 7 and a pattern for a ground shape's polygons.
+;-------------------------------------------------------------------------------
+GroundShapeColours:
         move.w  #$7,(DrawColour).l              ; 00376
         move.w  #$f,d1                          ; 0037E
         move.w  #$ffff,d2                       ; 00382

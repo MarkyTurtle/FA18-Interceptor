@@ -2445,7 +2445,7 @@ l_000_09574:
         jsr     (_LoadRGB4).l                   ; 0958C
         lea.l   $c(a7),a7                       ; 09592
 l_000_09596:
-        jsr     (sub_020_00238).l               ; 09596
+        jsr     (TitleMusicStep).l              ; 09596
         moveq   #$0,d0                          ; 0959C
         movem.l (a7)+,d2                        ; 0959E
         unlk    a6                              ; 095A2
@@ -2845,7 +2845,7 @@ l_000_09A64:
         movea.l (EffectSound).l,a0              ; 09A78
         move.l  $4(a0),-(a7)                    ; 09A7E
         move.l  (a0),-(a7)                      ; 09A82
-        jsr     (sub_083_001C8).l               ; 09A84
+        jsr     (SoundMakeTone).l               ; 09A84
         addq.l  #$8,a7                          ; 09A8A
         movea.l (EffectSound).l,a0              ; 09A8C
         move.l  #EffectParams,$30(a0)           ; 09A92
@@ -2862,7 +2862,7 @@ l_000_09AA0:
         movea.l (SweepSound).l,a0               ; 09AB6
         move.l  $4(a0),-(a7)                    ; 09ABC
         move.l  (a0),-(a7)                      ; 09AC0
-        jsr     (sub_083_002A6).l               ; 09AC2
+        jsr     (SoundMakeSweep).l              ; 09AC2
         addq.l  #$8,a7                          ; 09AC8
         movea.l (SweepSound).l,a0               ; 09ACA
         moveq   #-1,d0                          ; 09AD0
@@ -3200,7 +3200,12 @@ PlayEngineSound:
 l_000_09EBA:
         unlk    a6                              ; 09EBA
         rts                                     ; 09EBC
-sub_000_09EBE:
+
+;-------------------------------------------------------------------------------
+; EngineSoundUpdate - The engine's sound each frame: its pitch (EnginePitch) if the sound is
+; loaded, otherwise a simpler sound.
+;-------------------------------------------------------------------------------
+EngineSoundUpdate:
         link.w  a6,#$0                          ; 09EBE
         btst    #$0,(SoundsLoaded).l            ; 09EC2
         beq.b   l_000_09EE0                     ; 09ECA
@@ -3282,7 +3287,7 @@ PlayWindSound:
         moveq   #$6,d0                          ; 09FBA
         move.l  d0,-(a7)                        ; 09FBC
         move.l  a0,$4(a7)                       ; 09FBE
-        jsr     (sub_083_00272).l               ; 09FC2
+        jsr     (SoundRandom).l                 ; 09FC2
         addq.l  #$4,a7                          ; 09FC8
         addi.l  #$168,d0                        ; 09FCA
         moveq   #$10,d1                         ; 09FD0
@@ -3293,7 +3298,7 @@ PlayWindSound:
         moveq   #$6,d0                          ; 09FE2
         move.l  d0,-(a7)                        ; 09FE4
         move.l  a0,$4(a7)                       ; 09FE6
-        jsr     (sub_083_00272).l               ; 09FEA
+        jsr     (SoundRandom).l                 ; 09FEA
         addq.l  #$4,a7                          ; 09FF0
         addi.l  #$168,d0                        ; 09FF2
         moveq   #$10,d1                         ; 09FF8
@@ -3403,7 +3408,7 @@ PlaySweep:
         moveq   #$b,d0                          ; 0A134
         move.l  d0,-(a7)                        ; 0A136
         move.l  a0,$4(a7)                       ; 0A138
-        jsr     (sub_083_00272).l               ; 0A13C
+        jsr     (SoundRandom).l                 ; 0A13C
         addq.l  #$4,a7                          ; 0A142
         asl.l   #$2,d0                          ; 0A144
         addi.l  #$231e,d0                       ; 0A146
@@ -3535,7 +3540,7 @@ PlayEffect2:
         moveq   #$3,d0                          ; 0A2AC
         move.l  d0,-(a7)                        ; 0A2AE
         move.l  a0,$4(a7)                       ; 0A2B0
-        jsr     (sub_083_00272).l               ; 0A2B4
+        jsr     (SoundRandom).l                 ; 0A2B4
         addq.l  #$4,a7                          ; 0A2BA
         addi.l  #$8c,d0                         ; 0A2BC
         moveq   #$10,d1                         ; 0A2C2

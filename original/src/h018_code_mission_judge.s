@@ -6,7 +6,12 @@
 ; Hunk 18: CODE, $65C bytes
 ;===============================================================================
 	CODE_HUNK	h018
-sub_018_00000:
+
+;-------------------------------------------------------------------------------
+; TargetMessage - When the object being drawn is the locked target: a message ($4016) - visual
+; confirmation of the target.
+;-------------------------------------------------------------------------------
+TargetMessage:
         move.l  d0,-(a7)                        ; 00000
         move.w  (LockedTarget).l,d0             ; 00002
         cmpi.w  #$ffff,d0                       ; 00008

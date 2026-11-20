@@ -561,7 +561,12 @@ l_009_00730:
 l_009_0073C:
         unlk    a6                              ; 0073C
         rts                                     ; 0073E
-sub_009_00740:
+
+;-------------------------------------------------------------------------------
+; BuildDrawGroups - Builds the drawing groups for the frame's lists (DrawGroupList), when
+; DrawGroupsReady.
+;-------------------------------------------------------------------------------
+BuildDrawGroups:
         movem.l d0-d7/a0-a5,-(a7)               ; 00740
         tst.b   (DrawGroupsReady).l             ; 00744
         beq.w   l_009_008B8                     ; 0074A
@@ -623,7 +628,11 @@ l_009_007D4:
         andi.w  #$ff00,d1                       ; 007EE
         add.w   d1,d1                           ; 007F2
         bra.b   l_009_00804                     ; 007F4
-sub_009_007F6:
+
+;-------------------------------------------------------------------------------
+; SmallObjectsToList - Adds the small objects to the drawing list.
+;-------------------------------------------------------------------------------
+SmallObjectsToList:
         lea.l   (SmallObjects).l,a0             ; 007F6
         move.w  d1,d6                           ; 007FC
         andi.w  #$ff00,d1                       ; 007FE
@@ -654,7 +663,7 @@ l_009_0084E:
         move.w  d1,(a3)+                        ; 0084E
         adda.w  #$c,a1                          ; 00850
         dbra    d0,l_009_00792                  ; 00854
-        bsr.w   sub_009_008BE                   ; 00858
+        bsr.w   StartSmallList                  ; 00858
         lea.l   (a2),a1                         ; 0085C
         lea.l   (VertexBuffer).l,a5             ; 0085E
         lea.l   (a5),a4                         ; 00864
@@ -687,7 +696,11 @@ l_009_008AE:
 l_009_008B8:
         movem.l (a7)+,d0-d7/a0-a5               ; 008B8
         rts                                     ; 008BC
-sub_009_008BE:
+
+;-------------------------------------------------------------------------------
+; StartSmallList - Starts SmallList from SmallListTemplate.
+;-------------------------------------------------------------------------------
+StartSmallList:
         movem.l d0-d6/a0-a5,-(a7)               ; 008BE
         lea.l   (SmallList).l,a5                ; 008C2
         movem.l (SmallListTemplate).l,d0-d6/a1-a4 ; 008C8
@@ -725,7 +738,11 @@ l_009_0090C:
 l_009_00916:
         movem.l (a7)+,d0-d6/a0-a5               ; 00916
         rts                                     ; 0091A
-sub_009_0091C:
+
+;-------------------------------------------------------------------------------
+; CompareDepth - Compares two entries' depths for the sorting (by kind d5).
+;-------------------------------------------------------------------------------
+CompareDepth:
         cmpi.b  #$2,d5                          ; 0091C
         beq.w   l_009_00938                     ; 00920
         cmpi.b  #$3,d5                          ; 00924
@@ -747,7 +764,12 @@ l_009_00944:
 l_009_00954:
         unlk    a6                              ; 00954
         rts                                     ; 00956
-sub_009_00958:
+
+;-------------------------------------------------------------------------------
+; SortDrawList - Orders the scenery list by distance from the viewer (EntryDistance for each
+; entry's distance).
+;-------------------------------------------------------------------------------
+SortDrawList:
         link.w  a6,#$ffde                       ; 00958
         lea.l   (SceneryList).l,a1              ; 0095C
         moveq   #-1,d5                          ; 00962
@@ -790,14 +812,14 @@ l_009_009B0:
 l_009_009BA:
         move.w  d5,(DrawSortFirst).l            ; 009BA
         lea.l   (a1),a0                         ; 009C0
-        bsr.w   sub_009_01052                   ; 009C2
+        bsr.w   EntryPlace                      ; 009C2
         move.w  (ViewOffsetX8).l,d2             ; 009C6
         move.w  (ViewOffsetZ8).l,d4             ; 009CC
         neg.w   d2                              ; 009D2
         neg.w   d4                              ; 009D4
         ext.l   d2                              ; 009D6
         ext.l   d4                              ; 009D8
-        bsr.w   sub_009_01114                   ; 009DA
+        bsr.w   ViewCellXRel                    ; 009DA
         move.l  d2,-$c(a6)                      ; 009DE
         move.l  d4,-$10(a6)                     ; 009E2
         move.w  (a1),d1                         ; 009E6
@@ -806,7 +828,7 @@ l_009_009BA:
         bsr.w   ObjectPosition                  ; 009EE
         bra.b   l_009_009F8                     ; 009F2
 l_009_009F4:
-        bsr.w   sub_009_00FF8                   ; 009F4
+        bsr.w   EntryDistance                   ; 009F4
 l_009_009F8:
         movea.l d2,a3                           ; 009F8
         movea.l d3,a4                           ; 009FA
@@ -829,8 +851,8 @@ l_009_00A1E:
         bsr.w   ObjectOf                        ; 00A28
         bra.b   l_009_00A36                     ; 00A2C
 l_009_00A2E:
-        bsr.w   sub_009_00FF8                   ; 00A2E
-        bsr.w   sub_009_010EC                   ; 00A32
+        bsr.w   EntryDistance                   ; 00A2E
+        bsr.w   EntryCellX                      ; 00A32
 l_009_00A36:
         sub.l   a3,d2                           ; 00A36
         bge.b   l_009_00A3C                     ; 00A38
@@ -873,7 +895,7 @@ l_009_00A6E:
         bra.b   l_009_00A94                     ; 00A8A
 l_009_00A8C:
         exg.l   a0,a1                           ; 00A8C
-        bsr.w   sub_009_00FF8                   ; 00A8E
+        bsr.w   EntryDistance                   ; 00A8E
         exg.l   a0,a1                           ; 00A92
 l_009_00A94:
         move.l  d2,d5                           ; 00A94
@@ -892,8 +914,8 @@ l_009_00AAC:
         bsr.w   ObjectOf                        ; 00AB6
         bra.b   l_009_00AC4                     ; 00ABA
 l_009_00ABC:
-        bsr.w   sub_009_00FF8                   ; 00ABC
-        bsr.w   sub_009_010EC                   ; 00AC0
+        bsr.w   EntryDistance                   ; 00ABC
+        bsr.w   EntryCellX                      ; 00AC0
 l_009_00AC4:
         move.l  #$a00,d0                        ; 00AC4
         sub.l   d5,d2                           ; 00ACA
@@ -920,8 +942,8 @@ l_009_00AEE:
         bne.b   l_009_00B16                     ; 00AF4
         btst    #$4,d1                          ; 00AF6
         bne.w   l_009_00B7E                     ; 00AFA
-        bsr.w   sub_009_00FF8                   ; 00AFE
-        bsr.w   sub_009_010EC                   ; 00B02
+        bsr.w   EntryDistance                   ; 00AFE
+        bsr.w   EntryCellX                      ; 00B02
         move.w  d2,-$2(a6)                      ; 00B06
         move.l  d3,-$6(a6)                      ; 00B0A
         move.w  d4,-$8(a6)                      ; 00B0E
@@ -997,7 +1019,7 @@ l_009_00BFE:
         move.w  (a4)+,d0                        ; 00C06
         blt.w   l_009_00C8A                     ; 00C08
         exg.l   a0,a1                           ; 00C0C
-        bsr.w   sub_009_00FF8                   ; 00C0E
+        bsr.w   EntryDistance                   ; 00C0E
         exg.l   a0,a1                           ; 00C12
         movea.w d2,a3                           ; 00C14
         movea.w d4,a5                           ; 00C16
@@ -1354,7 +1376,11 @@ l_009_00FE6:
         move.w  $e(a2),d4                       ; 00FF0
         ext.l   d4                              ; 00FF4
         rts                                     ; 00FF6
-sub_009_00FF8:
+
+;-------------------------------------------------------------------------------
+; EntryDistance - The distance of a drawing-list entry from the viewer.
+;-------------------------------------------------------------------------------
+EntryDistance:
         movem.w d5-d7,-(a7)                     ; 00FF8
         move.w  $6(a1),d2                       ; 00FFC
         ext.l   d2                              ; 01000
@@ -1386,7 +1412,11 @@ sub_009_00FF8:
         asl.l   d1,d3                           ; 0104A
         movem.w (a7)+,d5-d7                     ; 0104C
         rts                                     ; 01050
-sub_009_01052:
+
+;-------------------------------------------------------------------------------
+; EntryPlace - The place of a drawing-list entry within its cell.
+;-------------------------------------------------------------------------------
+EntryPlace:
         move.w  (a1),d1                         ; 01052
         btst    #$4,d1                          ; 01054
         bne.b   l_009_01070                     ; 01058
@@ -1449,7 +1479,11 @@ l_009_010BE:
         add.l   d1,d4                           ; 010E6
         movea.l (a7)+,a2                        ; 010E8
         rts                                     ; 010EA
-sub_009_010EC:
+
+;-------------------------------------------------------------------------------
+; EntryCellX - An entry's cell x relative to the view.
+;-------------------------------------------------------------------------------
+EntryCellX:
         moveq   #$0,d1                          ; 010EC
         move.w  $e(a1),d1                       ; 010EE
         lsr.w   #$8,d1                          ; 010F2
@@ -1465,7 +1499,11 @@ sub_009_010EC:
         asr.l   #$2,d1                          ; 0110E
         add.l   d1,d4                           ; 01110
         rts                                     ; 01112
-sub_009_01114:
+
+;-------------------------------------------------------------------------------
+; ViewCellXRel - The view's cell x relative to an entry.
+;-------------------------------------------------------------------------------
+ViewCellXRel:
         moveq   #$0,d1                          ; 01114
         move.w  (ViewCellX).l,d1                ; 01116
         andi.w  #$ff,d1                         ; 0111C

@@ -11,7 +11,11 @@ l_005_00000:
         move.w  #$33,(DebugCheckpoint).l        ; 00000
         jsr     (Nop).l                         ; 00008
         rts                                     ; 0000E
-sub_005_00010:
+
+;-------------------------------------------------------------------------------
+; ViewKeysFrame - Handles the view keys of the frame (FrameEvents1).
+;-------------------------------------------------------------------------------
+ViewKeysFrame:
         move.w  (FrameEvents1).l,d0             ; 00010
         andi.w  #$f0,d0                         ; 00016
         bne.b   l_005_00000                     ; 0001A
@@ -383,7 +387,11 @@ l_005_00516:
         bset    #$5,(JoyEvents).l               ; 00532
         ori.b   #$a,(Player_7C).l               ; 0053A
         bra.w   l_005_01624                     ; 00542
-sub_005_00546:
+
+;-------------------------------------------------------------------------------
+; SetViewLimits - Sets ClipY by ViewY (the bottom of the 3D view).
+;-------------------------------------------------------------------------------
+SetViewLimits:
         tst.w   (ViewY).l                       ; 00546
         beq.b   l_005_0055C                     ; 0054C
         move.w  #$0,d1                          ; 0054E
@@ -954,7 +962,7 @@ l_005_00B64:
 Key_KP9:
         bset    #$5,(ViewKeys).l                ; 00B68
         tst.b   (OutsideView).l                 ; 00B70
-        beq.w   sub_005_00CEE                   ; 00B76
+        beq.w   BackToCockpitView               ; 00B76
         moveq   #$1,d4                          ; 00B7A
         bra.b   l_005_00BB4                     ; 00B7C
 l_005_00B7E:
@@ -964,7 +972,11 @@ Key_KP3:
         bset    #$7,(ViewKeys).l                ; 00B82
         moveq   #$3,d4                          ; 00B8A
         bra.b   l_005_00BB4                     ; 00B8C
-sub_005_00B8E:
+
+;-------------------------------------------------------------------------------
+; OutsideViewKind - Picks an outside view (4, 5 or 6) for the keypad keys.
+;-------------------------------------------------------------------------------
+OutsideViewKind:
         moveq   #$4,d4                          ; 00B8E
         bra.b   l_005_00BB4                     ; 00B90
 l_005_00B92:
@@ -1060,14 +1072,18 @@ Key_KP8:
         bset    #$4,(ViewKeys).l                ; 00CE0
         tst.b   d5                              ; 00CE8
         bne.w   l_005_00B64                     ; 00CEA
-sub_005_00CEE:
+
+;-------------------------------------------------------------------------------
+; BackToCockpitView - Back to the cockpit's view (ZoomKeyHeld cleared).
+;-------------------------------------------------------------------------------
+BackToCockpitView:
         clr.b   d7                              ; 00CEE
         move.b  #$0,(ZoomKeyHeld).l             ; 00CF0
         bra.w   l_005_00DB4                     ; 00CF8
 Key_KP2:
         bset    #$0,(ViewKeys2).l               ; 00CFC
         tst.b   d5                              ; 00D04
-        bne.w   sub_005_00B8E                   ; 00D06
+        bne.w   OutsideViewKind                 ; 00D06
         moveq   #$6,d7                          ; 00D0A
         move.b  #$0,(ZoomKeyHeld).l             ; 00D0C
         bra.w   l_005_00DB4                     ; 00D14
@@ -1078,9 +1094,9 @@ Key_KP4:
         move.b  #$0,(ZoomKeyHeld).l             ; 00D26
         subq.b  #$1,(ViewZoom).l                ; 00D2E
         blt.b   l_005_00D44                     ; 00D34
-        beq.b   sub_005_00CEE                   ; 00D36
+        beq.b   BackToCockpitView               ; 00D36
         cmpi.b  #$b,(ViewZoom).l                ; 00D38
-        bge.b   sub_005_00CEE                   ; 00D40
+        bge.b   BackToCockpitView               ; 00D40
         bra.b   l_005_00DC2                     ; 00D42
 l_005_00D44:
         moveq   #$b,d7                          ; 00D44
@@ -1093,7 +1109,7 @@ Key_KP6:
         addq.b  #$1,(ViewZoom).l                ; 00D5E
         cmpi.b  #$b,(ViewZoom).l                ; 00D64
         ble.b   l_005_00DC2                     ; 00D6C
-        bra.w   sub_005_00CEE                   ; 00D6E
+        bra.w   BackToCockpitView               ; 00D6E
 Key_KP7:
         bset    #$3,(ViewKeys2).l               ; 00D72
         tst.b   d5                              ; 00D7A
@@ -1475,7 +1491,12 @@ l_005_01276:
         bne.w   l_005_01624                     ; 0128C
         lea.l   (NewView).l,a0                  ; 01290
         bra.w   ToggleByte                      ; 01296
-sub_005_0129A:
+
+;-------------------------------------------------------------------------------
+; ViewKeyCommon - The common end of the view keys (KeyPressed -1, then the outside or the
+; cockpit).
+;-------------------------------------------------------------------------------
+ViewKeyCommon:
         move.b  #$ff,(KeyPressed).l             ; 0129A
         tst.b   (OutsideView).l                 ; 012A2
         bne.w   l_005_00A6C                     ; 012A8
@@ -1517,7 +1538,7 @@ l_005_0131C:
         move.b  $62(a0,d1.w),d4                 ; 0132A
         andi.b  #$f0,d4                         ; 0132E
         cmpi.b  #$30,d4                         ; 01332
-        bne.w   sub_005_00CEE                   ; 01336
+        bne.w   BackToCockpitView               ; 01336
         move.w  #$32,(ViewShift).l              ; 0133A
         move.w  #$320,(ViewX).l                 ; 01342
         clr.b   (ViewZoom).l                    ; 0134A
@@ -1525,7 +1546,7 @@ l_005_0131C:
         move.w  #$a7,(ClipY).l                  ; 01354
         bra.w   l_005_01624                     ; 0135C
 	dc.b	$02,$70,$FF,$BF,$40,$00,$60,$00,$02,$BC,$4E,$B9
-        dc.l    sub_006_00132                   ; 0136C
+        dc.l    RearmAircraft                   ; 0136C
 	dc.b	$60,$00,$02,$B2
 Key_M:
         tst.b   (CameraSequence).l              ; 01374

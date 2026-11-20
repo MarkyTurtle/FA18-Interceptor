@@ -491,7 +491,7 @@ l_022_00596:
         sub.l   d5,d2                           ; 005A0
         sub.l   d6,d3                           ; 005A2
         sub.l   d7,d4                           ; 005A4
-        jsr     (sub_024_00006).l               ; 005A6
+        jsr     (ObjectCollisions).l            ; 005A6
         movem.l (a7)+,d5-d7/a1                  ; 005AC
         beq.w   l_022_0082C                     ; 005B0
         move.w  (CurrentObject).l,d1            ; 005B4
@@ -648,15 +648,15 @@ l_022_007D2:
         moveq   #$11,d1                         ; 007D2
         cmpi.w  #$20,d0                         ; 007D4
         bge.b   l_022_007F2                     ; 007D8
-        bsr.w   sub_022_008BA                   ; 007DA
+        bsr.w   ObjectHeightCheck               ; 007DA
         move.l  a1,-(a7)                        ; 007DE
-        jsr     (sub_028_0115A).l               ; 007E0
+        jsr     (WaterUnderObject).l            ; 007E0
         movea.l (a7)+,a1                        ; 007E6
         btst    #$1,$4(a1)                      ; 007E8
         bne.b   l_022_007F6                     ; 007EE
         moveq   #$0,d1                          ; 007F0
 l_022_007F2:
-        bsr.w   sub_022_008EA                   ; 007F2
+        bsr.w   FreeSmallObject                 ; 007F2
 l_022_007F6:
         ori.w   #$400,$0(a1)                    ; 007F6
         move.w  #$f,$4c(a1)                     ; 007FC
@@ -665,7 +665,7 @@ l_022_007F6:
         beq.b   l_022_00816                     ; 0080E
         bclr    #$1,$0(a1)                      ; 00810
 l_022_00816:
-        bsr.w   sub_022_00AB6                   ; 00816
+        bsr.w   UpdateFlame                     ; 00816
         rts                                     ; 0081A
 l_022_0081C:
         bclr    #$6,$1(a1)                      ; 0081C
@@ -712,7 +712,12 @@ l_022_00894:
         clr.b   (ShootCue).l                    ; 008B0
 l_022_008B6:
         bra.w   l_022_00816                     ; 008B6
-sub_022_008BA:
+
+;-------------------------------------------------------------------------------
+; ObjectHeightCheck - Compares an object's height (+$18) with the ground (d5-d7)
+; (UpdateObject).
+;-------------------------------------------------------------------------------
+ObjectHeightCheck:
         move.l  d5,d0                           ; 008BA
         move.l  d6,d1                           ; 008BC
         move.l  d7,d2                           ; 008BE
@@ -734,7 +739,12 @@ sub_022_008BA:
         add.l   d2,$1c(a1)                      ; 008E4
 l_022_008E8:
         rts                                     ; 008E8
-sub_022_008EA:
+
+;-------------------------------------------------------------------------------
+; FreeSmallObject - Finds a free small object record (SmallObjects, 16 of $20 bytes: +$01 bit 6
+; clear).
+;-------------------------------------------------------------------------------
+FreeSmallObject:
         lea.l   (SmallObjects).l,a4             ; 008EA
         moveq   #$f,d0                          ; 008F0
 l_022_008F2:
@@ -885,7 +895,12 @@ l_022_00A98:
         rts                                     ; 00AB2
 l_022_00AB4:
         rts                                     ; 00AB4
-sub_022_00AB6:
+
+;-------------------------------------------------------------------------------
+; UpdateFlame - Steps the flame's animation (FlameStep) for the object that has one
+; (FlameObject).
+;-------------------------------------------------------------------------------
+UpdateFlame:
         move.w  (CurrentObjectOffset).l,d0      ; 00AB6
         cmp.w   (FlameObject).l,d0              ; 00ABC
         bne.b   l_022_00AB4                     ; 00AC2

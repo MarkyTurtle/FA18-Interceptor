@@ -6,7 +6,12 @@
 ; Hunk 76: CODE, $1A4 bytes
 ;===============================================================================
 	CODE_HUNK	h076
-sub_076_00000:
+
+;-------------------------------------------------------------------------------
+; AudioInterrupt - The audio interrupt for one channel (the four entries of dat_074_00090...):
+; acknowledges it (INTREQ) and queues the channel's next piece of sound.
+;-------------------------------------------------------------------------------
+AudioInterrupt:
         movem.l d0-d3/a0-a4,-(a7)               ; 00000
         move.w  $16(a1),(CUSTOM+INTREQ).l       ; 00004
         movea.l $0(a1),a0                       ; 0000C
@@ -19,7 +24,7 @@ sub_076_00000:
         asr.l   #$1,d0                          ; 0002A
         move.w  d0,$4(a0)                       ; 0002C
         move.w  $10(a1),(CUSTOM+DMACON).l       ; 00030
-        jsr     (sub_076_00108).l               ; 00038
+        jsr     (AudioSetPeriod).l              ; 00038
         cmpi.l  #$ffffffff,$10(a3)              ; 0003E
         beq.b   l_076_0007A                     ; 00046
         subq.l  #$1,$10(a3)                     ; 00048
@@ -38,7 +43,12 @@ l_076_00074:
 l_076_0007A:
         movem.l (a7)+,d0-d3/a0-a4               ; 0007A
         rts                                     ; 0007E
-sub_076_00080:
+
+;-------------------------------------------------------------------------------
+; AudioVBlank - The sound driver's vertical-blank routine: steps each channel's sound
+; (AudioChannels), its period and volume changes.
+;-------------------------------------------------------------------------------
+AudioVBlank:
         movem.l d0-d3/a0-a4,-(a7)               ; 00080
         moveq   #$0,d3                          ; 00084
         lea.l   (AudioChannels).l,a0            ; 00086
@@ -50,9 +60,9 @@ l_076_0008C:
         movea.l $0(a2),a3                       ; 00098
         cmpa.l  #$0,a3                          ; 0009C
         beq.b   l_076_000F4                     ; 000A2
-        jsr     (sub_076_0013A).l               ; 000A4
+        jsr     (AudioCountDown).l              ; 000A4
         movea.l $0(a1),a0                       ; 000AA
-        jsr     (sub_076_00108).l               ; 000AE
+        jsr     (AudioSetPeriod).l              ; 000AE
         move.l  $18(a3),d0                      ; 000B4
         add.l   d0,$8(a3)                       ; 000B8
         move.l  $1c(a3),d0                      ; 000BC
@@ -77,7 +87,11 @@ l_076_000F4:
         bne.b   l_076_0008C                     ; 00100
         movem.l (a7)+,d0-d3/a0-a4               ; 00102
         rts                                     ; 00106
-sub_076_00108:
+
+;-------------------------------------------------------------------------------
+; AudioSetPeriod - Sets a channel's period (at least $7C).
+;-------------------------------------------------------------------------------
+AudioSetPeriod:
         move.l  $8(a3),d0                       ; 00108
         swap    d0                              ; 0010C
         cmpi.w  #$7c,d0                         ; 0010E
@@ -94,7 +108,11 @@ l_076_00118:
 l_076_00134:
         move.w  d0,$8(a0)                       ; 00134
         rts                                     ; 00138
-sub_076_0013A:
+
+;-------------------------------------------------------------------------------
+; AudioCountDown - Counts down a channel's sound length and moves to its next part.
+;-------------------------------------------------------------------------------
+AudioCountDown:
         cmpi.l  #$0,$2c(a3)                     ; 0013A
         beq.b   l_076_001A2                     ; 00142
         subq.l  #$1,$2c(a3)                     ; 00144

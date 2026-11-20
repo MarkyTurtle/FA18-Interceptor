@@ -7,7 +7,7 @@
 ;===============================================================================
 	CODE_HUNK	h068
 ; WaterMapCoarse - The water areas by map block, coarse: an 8 x 8 table of words (the area at
-; each block), then the areas (count, then x, z pairs), drawn by DrawWaterAreas (sub_028_00C5A)
+; each block), then the areas (count, then x, z pairs), drawn by DrawWaterAreas (DrawWaterCoarse)
 ; from far away.
 WaterMapCoarse:
 	dc.b	$01,$C2,$01,$C2,$01,$AA,$01,$AA,$01,$AA,$01,$AA,$01,$AA,$01,$AA
@@ -52,7 +52,7 @@ WaterAreaCoarse_001AE:
 	dc.b	$00,$04,$11,$00,$11,$00,$00,$00,$10,$80,$00,$00,$00,$00,$10,$80
 	dc.b	$00,$00,$FF,$FF,$FF,$FF
 ; WaterMapFine - The water areas by map cell, detailed: a 32 x 32 table of words, used by
-; DrawWaterAreas (sub_028_00C34) close to the ground and by hunk 28 for what lies under a
+; DrawWaterAreas (DrawWaterFine) close to the ground and by hunk 28 for what lies under a
 ; point.
 WaterMapFine:
 	dc.b	$08,$00,$08,$00,$08,$00,$08,$00,$08,$00,$08,$00,$08,$00,$08,$00

@@ -374,7 +374,7 @@ l_010_00340:
         blt.w   l_010_005AC                     ; 00414
         btst    #$0,-$7f(a6)                    ; 00418
         beq.b   l_010_00428                     ; 0041E
-        bsr.w   sub_010_005B6                   ; 00420
+        bsr.w   TransformScenery                ; 00420
         bra.w   l_010_004B6                     ; 00424
 l_010_00428:
         move.w  a4,d2                           ; 00428
@@ -487,7 +487,7 @@ l_010_00530:
         blt.b   l_010_005AC                     ; 00532
         btst    #$0,-$7f(a6)                    ; 00534
         beq.b   l_010_00542                     ; 0053A
-        bsr.w   sub_010_005B6                   ; 0053C
+        bsr.w   TransformScenery                ; 0053C
         bra.b   l_010_00598                     ; 00540
 l_010_00542:
         move.w  a4,d2                           ; 00542
@@ -537,7 +537,12 @@ l_010_005AC:
         subq.w  #$1,d0                          ; 005AC
         bgt.w   l_010_004E4                     ; 005AE
         bra.w   l_010_009C0                     ; 005B2
-sub_010_005B6:
+
+;-------------------------------------------------------------------------------
+; TransformScenery - Turns a scenery item's vertices into VertexBuffer (with SceneryMatrix, the
+; item's place and DistanceShift); used by DrawSceneryPlain and TransformMoreVertices.
+;-------------------------------------------------------------------------------
+TransformScenery:
         movem.w -$6(a1),d2-d4                   ; 005B6
         subi.w  #$28,d3                         ; 005BC
         subi.w  #$a3,d4                         ; 005C0
@@ -1006,7 +1011,7 @@ l_010_009DE:
         move.l  (a4)+,(a0)+                     ; 00A2C
         move.w  (a4),(a0)                       ; 00A2E
         movea.w d7,a3                           ; 00A30
-        bsr.w   sub_010_00E54                   ; 00A32
+        bsr.w   PlaneTestKind                   ; 00A32
         bra.b   l_010_00A48                     ; 00A36
 l_010_00A38:
         movem.w (a5)+,d0-d5                     ; 00A38
@@ -1143,7 +1148,11 @@ l_010_00BA0:
         move.w  -$7c(a6),d0                     ; 00BA6
         unlk    a6                              ; 00BAA
         rts                                     ; 00BAC
-sub_010_00BAE:
+
+;-------------------------------------------------------------------------------
+; DrawModelEnd - The end of a drawing list (d0 = 0).
+;-------------------------------------------------------------------------------
+DrawModelEnd:
         unlk    a6                              ; 00BAE
         moveq   #$0,d0                          ; 00BB0
         rts                                     ; 00BB2
@@ -1275,7 +1284,7 @@ l_010_00CB6:
         asr.l   #$8,d4                          ; 00CF6
         btst    #$0,-$7f(a6)                    ; 00CF8
         beq.b   l_010_00D06                     ; 00CFE
-        bsr.w   sub_010_005B6                   ; 00D00
+        bsr.w   TransformScenery                ; 00D00
         bra.b   l_010_00D4A                     ; 00D04
 l_010_00D06:
         move.w  a5,d2                           ; 00D06
@@ -1430,7 +1439,11 @@ FacesCamera:
         move.w  d7,d1                           ; 00E4A
         andi.w  #$c00,d1                        ; 00E4C
         bne.w   l_010_00F02                     ; 00E50
-sub_010_00E54:
+
+;-------------------------------------------------------------------------------
+; PlaneTestKind - Picks the kind of side test of a drawing-list entry (bits 12-13).
+;-------------------------------------------------------------------------------
+PlaneTestKind:
         andi.w  #$3000,d7                       ; 00E54
         beq.b   l_010_00E9C                     ; 00E58
         movea.l -$2c(a6),a0                     ; 00E5A

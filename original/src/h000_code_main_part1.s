@@ -1599,10 +1599,10 @@ l_000_01398:
         jsr     (ShowGridZ).l                   ; 013B2
         jsr     (ShowGridX).l                   ; 013B8
         jsr     (ShowRadarRange).l              ; 013BE
-        jsr     (sub_037_00674).l               ; 013C4
+        jsr     (DrawAfterburnerLamp).l         ; 013C4
         jsr     (ShowWeaponRange).l             ; 013CA
         jsr     (TargetReadout).l               ; 013D0
-        jsr     (sub_037_0049C).l               ; 013D6
+        jsr     (DrawPanelIndicator).l          ; 013D6
         move.b  (PanelRedraw).l,d0              ; 013DC
         tst.b   d0                              ; 013E2
         bmi.b   l_000_013EE                     ; 013E4
@@ -1633,7 +1633,7 @@ l_000_0142C:
         andi.w  #$7,d0                          ; 01450
         subq.w  #$7,d0                          ; 01454
         bne.b   l_000_0145E                     ; 01456
-        jsr     (sub_020_006DA).l               ; 01458
+        jsr     (TimeSomething).l               ; 01458
 l_000_0145E:
         move.w  -$2(a6),d0                      ; 0145E
         andi.w  #$f,d0                          ; 01462
@@ -1689,7 +1689,7 @@ l_000_01502:
 
 ;-------------------------------------------------------------------------------
 ; ReadControls - Reads the controls once a frame: the joystick (ReadJoystick) and the fire /
-; mouse buttons (ReadButtons; a change goes to sub_000_05E84), then every key waiting (GetKey
+; mouse buttons (ReadButtons; a change goes to MouseThrottle), then every key waiting (GetKey
 ; -> HandleKey).
 ;-------------------------------------------------------------------------------
 ReadControls:
@@ -1702,7 +1702,7 @@ ReadControls:
         beq.b   l_000_01544                     ; 01530
         move.w  d0,(LastFrameEvents).l          ; 01532
         move.w  d0,(FrameControlEvents).l       ; 01538
-        jsr     (sub_000_05E84).l               ; 0153E
+        jsr     (MouseThrottle).l               ; 0153E
 l_000_01544:
         move.b  (RecordMode).l,d0               ; 01544
         move.b  d0,-$2(a6)                      ; 0154A
@@ -1713,7 +1713,7 @@ l_000_01544:
 l_000_01558:
         tst.w   (FrameEvents1).l                ; 01558
         beq.b   l_000_0158A                     ; 0155E
-        jsr     (sub_005_00010).l               ; 01560
+        jsr     (ViewKeysFrame).l               ; 01560
         bra.b   l_000_01558                     ; 01566
 l_000_01568:
         cmpi.b  #$3,-$2(a6)                     ; 01568
@@ -1724,7 +1724,7 @@ l_000_01570:
         or.w    d1,d0                           ; 0157C
         tst.w   d0                              ; 0157E
         beq.b   l_000_0158A                     ; 01580
-        jsr     (sub_005_00010).l               ; 01582
+        jsr     (ViewKeysFrame).l               ; 01582
         bra.b   l_000_01570                     ; 01588
 l_000_0158A:
         jsr     (GetKey).l                      ; 0158A
@@ -1795,7 +1795,7 @@ InitInput:
         jsr     (_SetTaskPri).l                 ; 01650
         addq.l  #$8,a7                          ; 01656
         jsr     (OpenJoystick).l                ; 01658
-        jsr     (sub_020_004CC).l               ; 0165E
+        jsr     (PrepareShape89).l              ; 0165E
         jsr     (LoadEngineSounds).l            ; 01664
         move.l  #$3c0,d0                        ; 0166A
         move.l  d0,-(a7)                        ; 01670
@@ -4491,7 +4491,7 @@ StateNewAircraft:
         move.b  (OutsideView).l,d0              ; 03998
         tst.b   d0                              ; 0399E
         bne.b   l_000_039A8                     ; 039A0
-        jsr     (sub_005_00CEE).l               ; 039A2
+        jsr     (BackToCockpitView).l           ; 039A2
 l_000_039A8:
         jsr     (ResetPlayer).l                 ; 039A8
         move.w  #$5,(StateTimer).l              ; 039AE
@@ -5107,7 +5107,7 @@ SwitchView:
         move.b  (ViewKeyRepeat).l,d0            ; 041F6
         tst.b   d0                              ; 041FC
         bne.b   l_000_04206                     ; 041FE
-        jsr     (sub_005_00CEE).l               ; 04200
+        jsr     (BackToCockpitView).l           ; 04200
 l_000_04206:
         move.w  (ViewObjectIndex).l,d0          ; 04206
         moveq   #$9,d1                          ; 0420C

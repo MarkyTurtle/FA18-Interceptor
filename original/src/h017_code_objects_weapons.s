@@ -11,7 +11,7 @@
 ;-------------------------------------------------------------------------------
 ; UpdateAllObjects - Updates every object for the frame: the small objects' timers count down;
 ; every 16 frames CheckZones; each object's per-frame flag (+$02 bit 0) is cleared; then for
-; each of the 16 objects in turn (unrolled): its timer (+$4C), sub_017_005A8, UpdateMissile,
+; each of the 16 objects in turn (unrolled): its timer (+$4C), TrainingAndGLimit, UpdateMissile,
 ; AfterburnerAndTrack and UpdateObject.
 ;-------------------------------------------------------------------------------
 UpdateAllObjects:
@@ -79,7 +79,7 @@ l_017_000CE:
         subq.w  #$1,$4c(a1)                     ; 000F2
 l_017_000F6:
         andi.w  #$fffd,$0(a1)                   ; 000F6
-        bsr.w   sub_017_005A8                   ; 000FC
+        bsr.w   TrainingAndGLimit               ; 000FC
         bsr.w   UpdateMissile                   ; 00100
         bsr.w   AfterburnerAndTrack             ; 00104
         jsr     (UpdateObject).l                ; 00108
@@ -416,7 +416,11 @@ l_017_0059E:
         clr.b   (FireNow).l                     ; 0059E
         moveq   #$1,d0                          ; 005A4
         rts                                     ; 005A6
-sub_017_005A8:
+
+;-------------------------------------------------------------------------------
+; TrainingAndGLimit - The training's steps and the G limit (a test of +$56 and GLoadValue).
+;-------------------------------------------------------------------------------
+TrainingAndGLimit:
         move.w  $56(a1),d0                      ; 005A8
         move.w  d0,d1                           ; 005AC
         asr.w   #$3,d1                          ; 005AE
@@ -1084,7 +1088,7 @@ l_017_00E96:
         bne.w   UpdateMissile                   ; 00E9C
         tst.w   $2c(a1)                         ; 00EA0
         blt.w   UpdateMissile                   ; 00EA4
-        bsr.w   sub_017_018E8                   ; 00EA8
+        bsr.w   MissileTrackRate                ; 00EA8
         move.w  $6c(a1),d2                      ; 00EAC
         cmpi.b  #$ff,$38(a1)                    ; 00EB0
         bne.b   l_017_00F02                     ; 00EB6
@@ -1374,7 +1378,7 @@ l_017_011EE:
         beq.b   l_017_0121A                     ; 01206
         jsr     (ViewFollow).l                  ; 01208
         clr.b   (ReadoutsDrawn).l               ; 0120E
-        jsr     (sub_005_00B8E).l               ; 01214
+        jsr     (OutsideViewKind).l             ; 01214
 l_017_0121A:
         movem.l (a7)+,d0-d2                     ; 0121A
 l_017_0121E:
@@ -1644,7 +1648,11 @@ l_017_014D0:
 l_017_014DE:
         tst.b   (MissileFlag).l                 ; 014DE
         bra.b   l_017_014F0                     ; 014E4
-sub_017_014E6:
+
+;-------------------------------------------------------------------------------
+; PlaceAhead - Puts a point $150 ahead of an object (and another behind: -$24).
+;-------------------------------------------------------------------------------
+PlaceAhead:
         moveq   #$0,d3                          ; 014E6
         moveq   #$0,d4                          ; 014E8
         move.w  #$150,d5                        ; 014EA
@@ -1988,7 +1996,12 @@ l_017_018CA:
         bra.b   l_017_0192A                     ; 018E4
 l_017_018E6:
         rts                                     ; 018E6
-sub_017_018E8:
+
+;-------------------------------------------------------------------------------
+; MissileTrackRate - A missile's tracking rate by its range (+$39 counting, every $20 or $50 by
+; +$4A).
+;-------------------------------------------------------------------------------
+MissileTrackRate:
         addi.b  #$10,$39(a1)                    ; 018E8
         cmpi.w  #$480,$4a(a1)                   ; 018EE
         blt.b   l_017_0190E                     ; 018F4

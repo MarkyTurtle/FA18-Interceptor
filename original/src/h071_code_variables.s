@@ -218,7 +218,7 @@ DistanceScaleZ:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-; FlightValue - A long value that FlyAircraft and sub_000_06A32 use with the cockpit object
+; FlightValue - A long value that FlyAircraft and PitchEffect use with the cockpit object
 ; (not worked out).
 FlightValue:
 	dc.b	$00
@@ -357,7 +357,7 @@ ThrottleMouseY:
 LastFrameEvents:
 	dc.b	$00
 	dc.b	$00
-; FrameControlEvents - The control events of the frame (ReadControls), read by sub_000_05E84.
+; FrameControlEvents - The control events of the frame (ReadControls), read by MouseThrottle.
 FrameControlEvents:
 	dc.b	$00
 	dc.b	$00
@@ -442,7 +442,7 @@ TrainingStep:
 TrainingWaitKey:
 	dc.b	$00
 	dc.b	$00
-; TrainingStepFlag - Set to $FF by sub_017_005A8 (the training's steps).
+; TrainingStepFlag - Set to $FF by TrainingAndGLimit (the training's steps).
 TrainingStepFlag:
 	dc.b	$00
 ; ZonesEntered - One bit per zone (Zones) the player has entered.
@@ -472,7 +472,7 @@ KeyPressed:
 ; than the height above the sea.
 RadarAltimeterOn:
 	dc.b	$00
-; DrawGroupsReady - Set when the drawing groups are built (tested by sub_009_00740).
+; DrawGroupsReady - Set when the drawing groups are built (tested by BuildDrawGroups).
 DrawGroupsReady:
 	dc.b	$00
 ; AnglesSet - Set by VectorToAngles; cleared by SwitchView and ResetViewAndRecording.
@@ -482,10 +482,10 @@ AnglesSet:
 ; cleared when the view changes; DrawModel draws more detail when it is 3 or less.
 ViewZoom:
 	dc.b	$00
-; ZoomKeyHeld - Cleared by the keypad's view keys (KP1, 2, 4, 6, 7) and sub_005_00CEE.
+; ZoomKeyHeld - Cleared by the keypad's view keys (KP1, 2, 4, 6, 7) and BackToCockpitView.
 ZoomKeyHeld:
 	dc.b	$00
-; ViewKeyFlag - Cleared by the KP1 key and sub_005_00546.
+; ViewKeyFlag - Cleared by the KP1 key and SetViewLimits.
 ViewKeyFlag:
 	dc.b	$00
 	dc.b	$00
@@ -493,7 +493,7 @@ ViewKeyFlag:
 EjectKeyFlag:
 	dc.b	$00
 ; ViewSide - Flipped by SwitchView (GunFlags bit 4) in the outside view: which side the camera
-; is on (sub_008_00000).
+; is on (OutsideEyeOffset).
 ViewSide:
 	dc.b	$00
 ; MapView - Set while the map view is on (the M key): the camera fixed above the middle of the
@@ -820,7 +820,7 @@ TargetReadoutRedraw:
 ; RadarRangeRedraw - Frames left to redraw the radar's range (ShowRadarRange).
 RadarRangeRedraw:
 	dc.b	$00
-; PanelIndicatorRedraw - Frames left to redraw the indicator drawn by sub_037_0049C (set to 2
+; PanelIndicatorRedraw - Frames left to redraw the indicator drawn by DrawPanelIndicator (set to 2
 ; by the controls and the engine).
 PanelIndicatorRedraw:
 	dc.b	$00
@@ -834,7 +834,7 @@ JLampRedraw:
 ; Redraw211 - A redraw count set by RedrawInstruments.
 Redraw211:
 	dc.b	$00
-; PanelIndicatorBlink - Frames of blinking for sub_037_0049C's indicator (8 from the E key).
+; PanelIndicatorBlink - Frames of blinking for DrawPanelIndicator's indicator (8 from the E key).
 PanelIndicatorBlink:
 	dc.b	$00
 ; StoresRedraw - Frames left to redraw the stores display (DrawStores): set to 3 when a weapon
@@ -844,13 +844,13 @@ StoresRedraw:
 ; MissilesLeftRedraw - Frames left to redraw the missiles left (ShowMissilesLeft).
 MissilesLeftRedraw:
 	dc.b	$00
-; PanelLampRedraw - Frames left to redraw sub_037_00674's lamp (3 from the A key and
+; PanelLampRedraw - Frames left to redraw DrawAfterburnerLamp's lamp (3 from the A key and
 ; UpdateObject).
 PanelLampRedraw:
 	dc.b	$00
 ; AfterburnerOn - Set (with a beep) while the player's throttle setting (+$6C) is $1200 or more
 ; and he has not ejected: probably the afterburner, whose lamp on the panel blinks
-; (sub_037_00674).
+; (DrawAfterburnerLamp).
 AfterburnerOn:
 	dc.b	$00
 ; ModelVariant - Which variant of the model to draw (ShapeSelectVariant; bit 7 flipped by the A
@@ -921,7 +921,7 @@ DistanceBits:
 ; DrawModel, DistanceScale and the ground shapes).
 ObjectDrawFlags:
 	dc.b	$00
-; DrawGroupCount - The number of drawing groups (sub_009_007F6, sub_009_00740).
+; DrawGroupCount - The number of drawing groups (SmallObjectsToList, BuildDrawGroups).
 DrawGroupCount:
 	dc.b	$00
 ; DrawGroupIndex - The drawing group being worked on (counts down from DrawGroupCount).
@@ -1033,7 +1033,7 @@ TargetReadoutCount:
 ; RadarBlipTimer - A timer for the radar's blip ($18; the target readout counts it down).
 RadarBlipTimer:
 	dc.b	$00
-; ClockFlag - Set and cleared by sub_017_005A8, tested by UpdateClock.
+; ClockFlag - Set and cleared by TrainingAndGLimit, tested by UpdateClock.
 ClockFlag:
 	dc.b	$00
 ; CrashKind - How the aircraft was lost (StateCrashed; 5 tested by StateFlying and the sounds).
@@ -1103,7 +1103,7 @@ WaterDrawn:
 ; none).
 SkyPolygonReady:
 	dc.b	$00
-; Hunk24Flag - Set by hunk 24's routines (sub_024_00006, sub_024_0059E), tested by
+; Hunk24Flag - Set by hunk 24's routines (ObjectCollisions, CollideWithList), tested by
 ; UpdateObject.
 Hunk24Flag:
 	dc.b	$00
@@ -1137,7 +1137,7 @@ Difficulty:
 ; DifficultySaved - The difficulty as loaded from the flight log.
 DifficultySaved:
 	dc.b	$00
-; TargetsPlaced - Counts the mission's targets placed (PlaceObjectList, sub_017_014E6; cleared
+; TargetsPlaced - Counts the mission's targets placed (PlaceObjectList, PlaceAhead; cleared
 ; by SetupMode).
 TargetsPlaced:
 	dc.b	$00
@@ -1193,7 +1193,7 @@ JToggle:
 ObjectScaled:
 	dc.b	$00
 ; DrawDetail - The detail to draw the objects with (5, 3 or 1, by the view's turn rates:
-; sub_008_0052E), put in their drawing entries.
+; DetailByTurnRate), put in their drawing entries.
 DrawDetail:
 	dc.b	$00
 ; ObjectDrawByte - The drawn object's entry's byte +$07 (DrawObjects; its low two bits for
@@ -1286,7 +1286,7 @@ ViewObjectIndex:
 ViewObject:
 	dc.b	$00
 	dc.b	$00
-; BestTime - The best of the times sub_020_006DA measures.
+; BestTime - The best of the times TimeSomething measures.
 BestTime:
 	dc.b	$00
 	dc.b	$00
@@ -1450,7 +1450,7 @@ TargetBoxPos:
 TargetBoxPosY:
 	dc.b	$00
 	dc.b	$00
-; GLoadValue - The G load (worked out in UpdateAttitude's sub_032_00946; ShowGLoad prints it).
+; GLoadValue - The G load (worked out in UpdateAttitude's ComputeGLoad; ShowGLoad prints it).
 GLoadValue:
 	dc.b	$00
 	dc.b	$00
@@ -1708,7 +1708,7 @@ RadarListEnd:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-; DrawGroupList - A list of groups for the drawing order (sub_009_00740).
+; DrawGroupList - A list of groups for the drawing order (BuildDrawGroups).
 DrawGroupList:
 	dcb.b	96,$00
 ; SceneryListLimit - The end of the scenery list being built (BuildSceneryList,
@@ -2018,11 +2018,11 @@ WarningSaved:
 TargetReadoutShown:
 	dc.b	$00
 	dc.b	$00
-; TimedResult - The result of sub_020_006DA (shown by ShowDebugNumbers).
+; TimedResult - The result of TimeSomething (shown by ShowDebugNumbers).
 TimedResult:
 	dc.b	$00
 	dc.b	$00
-; BestClock - The smallest of a timed value kept by sub_020_006DA ($7FFF at the start).
+; BestClock - The smallest of a timed value kept by TimeSomething ($7FFF at the start).
 BestClock:
 	dc.b	$00
 	dc.b	$00
@@ -2056,7 +2056,7 @@ ClockStart:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-; StartMicros - Microseconds kept by sub_020_006DA.
+; StartMicros - Microseconds kept by TimeSomething.
 StartMicros:
 	dc.b	$00
 	dc.b	$00
@@ -2074,7 +2074,7 @@ ClockMicros:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-; TimedValue - A time measured by sub_020_006DA (at most $7FFF).
+; TimedValue - A time measured by TimeSomething (at most $7FFF).
 TimedValue:
 	dc.b	$00
 	dc.b	$00
@@ -2241,7 +2241,7 @@ ControlScratch3:
 ControlScratch:
 	dc.b	$00
 	dc.b	$00
-; AngleDistance - VectorToAngles' distance (a long), used by sub_020_0089E.
+; AngleDistance - VectorToAngles' distance (a long), used by AngleBySize.
 AngleDistance:
 	dc.b	$00
 	dc.b	$00
@@ -2596,7 +2596,7 @@ BulletTestPos:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-; BulletTestKind - The kind of test sub_023_00438 makes (0, 1 or more).
+; BulletTestKind - The kind of test BulletTestPoint makes (0, 1 or more).
 BulletTestKind:
 	dc.b	$00
 	dc.b	$00

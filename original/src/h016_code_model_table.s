@@ -633,8 +633,8 @@ DrawAircraft:
         andi.w  #$fdff,$0(a1)                   ; 00A9C
         ori.w   #$400,$0(a1)                    ; 00AA2
         move.l  a0,-(a7)                        ; 00AA8
-        bsr.w   sub_016_00C28                   ; 00AAA
-        jsr     (sub_018_00000).l               ; 00AAE
+        bsr.w   NoDraw                          ; 00AAA
+        jsr     (TargetMessage).l               ; 00AAE
         movea.l (a7)+,a0                        ; 00AB4
 l_016_00AB6:
         jmp     (DrawModel).l                   ; 00AB6
@@ -724,7 +724,11 @@ l_016_00C10:
         move.l  #RescuePodModel,(ShapeNow).l    ; 00C10
         move.l  #RescuePodModel,(ShapeNext).l   ; 00C1A
         bra.w   l_016_00AB6                     ; 00C24
-sub_016_00C28:
+
+;-------------------------------------------------------------------------------
+; NoDraw - Does nothing (an object that is not drawn).
+;-------------------------------------------------------------------------------
+NoDraw:
         rts                                     ; 00C28
 	dc.b	$00,$00
 h016_end:

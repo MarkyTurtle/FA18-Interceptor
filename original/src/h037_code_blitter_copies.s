@@ -421,7 +421,12 @@ l_037_0044A:
         bra.b   DrawStoresMarks                 ; 00498
 l_037_0049A:
         rts                                     ; 0049A
-sub_037_0049C:
+
+;-------------------------------------------------------------------------------
+; DrawPanelIndicator - Draws a panel indicator (at 241, 180) for the viewed object while
+; PanelIndicatorRedraw counts down.
+;-------------------------------------------------------------------------------
+DrawPanelIndicator:
         tst.b   (PanelIndicatorRedraw).l        ; 0049C
         ble.b   l_037_00504                     ; 004A2
         subq.b  #$1,(PanelIndicatorRedraw).l    ; 004A4
@@ -556,7 +561,12 @@ dat_037_00662:
         dc.l    dat_062_00090                   ; 0066E
 l_037_00672:
         rts                                     ; 00672
-sub_037_00674:
+
+;-------------------------------------------------------------------------------
+; DrawAfterburnerLamp - Blits the afterburner's lamp (at $1C70) on or off (AfterburnerOn,
+; blinking with BlinkPhase).
+;-------------------------------------------------------------------------------
+DrawAfterburnerLamp:
         move.l  #$1c70,d1                       ; 00674
         movea.w #$2,a4                          ; 0067A
         move.w  #$202,d6                        ; 0067E

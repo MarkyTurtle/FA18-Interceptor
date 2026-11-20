@@ -295,7 +295,7 @@ l_031_00404:
         cmpi.b  #$3,d4                          ; 0040C
         bne.b   l_031_00446                     ; 00410
         movem.l d0-d4/d7,-(a7)                  ; 00412
-        bsr.w   sub_031_00704                   ; 00416
+        bsr.w   PuffDistance                    ; 00416
         move.w  d1,d5                           ; 0041A
         movem.l (a7)+,d0-d4/d7                  ; 0041C
         move.w  #$2800,d6                       ; 00420
@@ -562,7 +562,11 @@ l_031_006F4:
         movem.w (dat_072_03002).l,d0-d3         ; 006F4
         jsr     (DrawLine).l                    ; 006FC
         bra.b   l_031_006A4                     ; 00702
-sub_031_00704:
+
+;-------------------------------------------------------------------------------
+; PuffDistance - The puff's distance from the camera (for its size).
+;-------------------------------------------------------------------------------
+PuffDistance:
         movem.w (ViewOffsetX8).l,d3-d5          ; 00704
         moveq   #$0,d7                          ; 0070C
         add.l   d3,d0                           ; 0070E

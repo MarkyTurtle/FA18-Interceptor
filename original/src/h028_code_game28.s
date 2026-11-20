@@ -255,13 +255,17 @@ l_028_00C0C:
         cmpi.l  #$3f8,d0                        ; 00C10
         ble.b   l_028_00C24                     ; 00C16
         move.w  #$6,(DrawColour).l              ; 00C18
-        bsr.w   sub_028_00C5A                   ; 00C20
+        bsr.w   DrawWaterCoarse                 ; 00C20
 l_028_00C24:
         move.w  #$6,(DrawColour).l              ; 00C24
-        bsr.w   sub_028_00C34                   ; 00C2C
+        bsr.w   DrawWaterFine                   ; 00C2C
         unlk    a6                              ; 00C30
         rts                                     ; 00C32
-sub_028_00C34:
+
+;-------------------------------------------------------------------------------
+; DrawWaterFine - DrawWaterAreas with WaterMapFine (close to the ground).
+;-------------------------------------------------------------------------------
+DrawWaterFine:
         move.w  #$1,-$3e(a6)                    ; 00C34
         clr.w   -$44(a6)                        ; 00C3A
         move.l  #WaterMapFine,-$34(a6)          ; 00C3E
@@ -269,7 +273,11 @@ sub_028_00C34:
         move.w  #$1f,-$30(a6)                   ; 00C4C
         move.w  #$1f,-$2e(a6)                   ; 00C52
         bra.b   l_028_00C7C                     ; 00C58
-sub_028_00C5A:
+
+;-------------------------------------------------------------------------------
+; DrawWaterCoarse - DrawWaterAreas with WaterMapCoarse (from far away).
+;-------------------------------------------------------------------------------
+DrawWaterCoarse:
         clr.w   -$3e(a6)                        ; 00C5A
         clr.w   -$44(a6)                        ; 00C5E
         move.l  #WaterMapCoarse,-$34(a6)        ; 00C62
@@ -732,7 +740,12 @@ l_028_01142:
 l_028_01150:
         bclr    #$1,$4(a1)                      ; 01150
         bra.w   l_028_0134A                     ; 01156
-sub_028_0115A:
+
+;-------------------------------------------------------------------------------
+; WaterUnderObject - Whether the current object is over water (the water maps at its place):
+; used by FlyAircraft and UpdateObject.
+;-------------------------------------------------------------------------------
+WaterUnderObject:
         lea.l   (ObjectTable).l,a1              ; 0115A
         adda.w  (CurrentObjectOffset).l,a1      ; 01160
         move.l  $14(a1),d6                      ; 01166

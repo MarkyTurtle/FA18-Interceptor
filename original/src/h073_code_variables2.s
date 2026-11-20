@@ -6,17 +6,17 @@
 ; Hunk 73: CODE, $16A8 bytes
 ;===============================================================================
 	CODE_HUNK	h073
-; SmallListTemplate - A block of 11 longs copied to SmallList by sub_009_008BE (a list's
+; SmallListTemplate - A block of 11 longs copied to SmallList by StartSmallList (a list's
 ; starting values).
 SmallListTemplate:
 	dcb.b	44,$00
-; SmallList - The list sub_009_008BE builds (from SmallListTemplate).
+; SmallList - The list StartSmallList builds (from SmallListTemplate).
 SmallList:
 	dcb.b	44,$00
 ; ResetList - A list cleared by ResetGame.
 ResetList:
 	dcb.b	88,$00
-; SmallListWork - sub_009_007F6's work area.
+; SmallListWork - SmallObjectsToList's work area.
 SmallListWork:
 	dcb.b	44,$00
 ; SkyPolygonCorners - MakeSkyPolygon's corner flags and counts (with the words after it: the
@@ -104,7 +104,7 @@ FarSceneryList1:
 ; y / z words, a long...), ending with $FFFF.
 SceneryList:
 	dcb.b	1680,$00
-; DrawSortFirst - sub_009_00958's working words (with DrawSortLast, DrawSortIndex).
+; DrawSortFirst - SortDrawList's working words (with DrawSortLast, DrawSortIndex).
 DrawSortFirst:
 	dc.b	$00
 	dc.b	$00
@@ -185,7 +185,7 @@ InfoDataPtr:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-; FlameStep - The flame's animation step (0-6, sub_022_00AB6; DrawObjectFlame draws by it).
+; FlameStep - The flame's animation step (0-6, UpdateFlame; DrawObjectFlame draws by it).
 FlameStep:
 	dc.b	$00
 ; FlameStep2 - A second step of the flame's animation (0-5).
@@ -196,7 +196,7 @@ FlameStep2:
 FlameObject:
 	dc.b	$00
 	dc.b	$00
-; FlamePoints - The flame's points (DrawObjectFlame, sub_022_00AB6).
+; FlamePoints - The flame's points (DrawObjectFlame, UpdateFlame).
 FlamePoints:
 	dcb.b	72,$00
 ; BlobRowsBuffer - A chip buffer for DrawBlobRows (allocated by SetupGameDisplay).

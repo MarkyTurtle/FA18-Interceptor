@@ -10,7 +10,12 @@ l_024_00000:
         moveq   #$0,d0                          ; 00000
         unlk    a6                              ; 00002
         rts                                     ; 00004
-sub_024_00006:
+
+;-------------------------------------------------------------------------------
+; ObjectCollisions - Tests the current object against the others and the scenery near it (hunk
+; 24): collisions.
+;-------------------------------------------------------------------------------
+ObjectCollisions:
         clr.b   (Hunk24Flag).l                  ; 00006
         moveq   #$0,d0                          ; 0000C
         link.w  a6,#$ffa4                       ; 0000E
@@ -243,7 +248,7 @@ l_024_002A4:
 l_024_002C4:
         tst.w   (a4)                            ; 002C4
         blt.b   l_024_002D4                     ; 002C6
-        bsr.w   sub_024_0059E                   ; 002C8
+        bsr.w   CollideWithList                 ; 002C8
         beq.b   l_024_002C4                     ; 002CC
         move.w  (a7)+,d0                        ; 002CE
         bra.w   l_024_00A18                     ; 002D0
@@ -454,7 +459,7 @@ l_024_0051C:
         cmp.l   d4,d3                           ; 00554
         bge.b   l_024_00594                     ; 00556
 l_024_00558:
-        bsr.w   sub_024_0059E                   ; 00558
+        bsr.w   CollideWithList                 ; 00558
         beq.b   l_024_00594                     ; 0055C
         move.w  (a7)+,d0                        ; 0055E
         bra.w   l_024_00A18                     ; 00560
@@ -480,7 +485,11 @@ l_024_00598:
         subq.w  #$2,a4                          ; 00598
         moveq   #$1,d7                          ; 0059A
         rts                                     ; 0059C
-sub_024_0059E:
+
+;-------------------------------------------------------------------------------
+; CollideWithList - Tests against the items of a list (a4) - part of ObjectCollisions.
+;-------------------------------------------------------------------------------
+CollideWithList:
         move.l  (a4)+,d2                        ; 0059E
         blt.b   l_024_00598                     ; 005A0
         movea.l d2,a5                           ; 005A2
@@ -539,7 +548,7 @@ sub_024_0059E:
         muls.w  d4,d7                           ; 00638
         add.l   d5,d7                           ; 0063A
         add.l   d6,d7                           ; 0063C
-        blt.w   sub_024_0059E                   ; 0063E
+        blt.w   CollideWithList                 ; 0063E
 l_024_00642:
         tst.l   (a4)+                           ; 00642
         bge.b   l_024_00642                     ; 00644

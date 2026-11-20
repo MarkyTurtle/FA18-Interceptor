@@ -46,14 +46,18 @@ l_153_00024:
         clr.l   d0                              ; 00056
         clr.l   d1                              ; 00058
         clr.l   d3                              ; 0005A
-        bsr.b   sub_153_0006E                   ; 0005C
+        bsr.b   DivideLongs                     ; 0005C
         move.l  d1,d0                           ; 0005E
-        bsr.b   sub_153_0006E                   ; 00060
+        bsr.b   DivideLongs                     ; 00060
         jsr     (fp_DoublePack).l               ; 00062
 l_153_00068:
         movem.l (a7)+,d2-d7                     ; 00068
         rts                                     ; 0006C
-sub_153_0006E:
+
+;-------------------------------------------------------------------------------
+; DivideLongs - fp_DoubleDiv's long division step.
+;-------------------------------------------------------------------------------
+DivideLongs:
         move.w  #$20,-(a7)                      ; 0006E
         moveq   #$0,d1                          ; 00072
 l_153_00074:

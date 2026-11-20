@@ -7,7 +7,12 @@
 ; Hunk 8: CODE, $1914 bytes
 ;===============================================================================
 	CODE_HUNK	h008
-sub_008_00000:
+
+;-------------------------------------------------------------------------------
+; OutsideEyeOffset - The camera's offset when watching the viewed object from the side
+; (ViewSide set).
+;-------------------------------------------------------------------------------
+OutsideEyeOffset:
         movem.l d0-d6,-(a7)                     ; 00000
         tst.b   (ViewSide).l                    ; 00004
         beq.b   l_008_00078                     ; 0000A
@@ -318,7 +323,7 @@ l_008_002C0:
         movem.l d0-d2,(ViewOffsetX).l           ; 0033A
         bra.b   l_008_00360                     ; 00342
 l_008_00344:
-        bsr.w   sub_008_00000                   ; 00344
+        bsr.w   OutsideEyeOffset                ; 00344
         movem.l (CameraX).l,d0-d2               ; 00348
         movem.l d0-d2,(EyeX).l                  ; 00350
         movem.l (ViewOffsetX).l,d0-d2           ; 00358
@@ -375,7 +380,7 @@ l_008_003EE:
         bne.b   l_008_0044E                     ; 003FA
         lea.l   (ObjectTable).l,a3              ; 003FC
         adda.w  (ViewObject).l,a3               ; 00402
-        bsr.w   sub_008_0052E                   ; 00408
+        bsr.w   DetailByTurnRate                ; 00408
         move.w  $6(a3),(ViewCellX).l            ; 0040C
         move.w  $8(a3),(ViewCellZ).l            ; 00414
         move.b  $a(a3),(ViewSubCell).l          ; 0041C
@@ -396,7 +401,7 @@ l_008_0044E:
         jsr     (UpdateCamera).l                ; 00450
         move.w  (a7)+,d5                        ; 00456
         lea.l   (ObjectTable).l,a3              ; 00458
-        bsr.w   sub_008_0052E                   ; 0045E
+        bsr.w   DetailByTurnRate                ; 0045E
         move.l  (CameraX).l,d0                  ; 00462
         move.l  (CameraZ).l,d1                  ; 00468
         andi.l  #$1fffffff,d0                   ; 0046E
@@ -463,7 +468,12 @@ l_008_00516:
 l_008_00526:
         or.b    d5,(RedrawFlags).l              ; 00526
         rts                                     ; 0052C
-sub_008_0052E:
+
+;-------------------------------------------------------------------------------
+; DetailByTurnRate - Sets DrawDetail (5, 3 or 1) from how fast the viewed object turns (+$56,
+; +$58): less detail while the view swings.
+;-------------------------------------------------------------------------------
+DetailByTurnRate:
         move.w  $56(a3),d0                      ; 0052E
         bge.b   l_008_00536                     ; 00532
         neg.w   d0                              ; 00534
@@ -516,7 +526,7 @@ l_008_00596:
 ;-------------------------------------------------------------------------------
 ; UpdateScenery - Stage $20: when RedrawFlags asks (bit 0 the coarse map, bit 1 the second map,
 ; bit 3 the detailed one) rebuilds the scenery lists for the view's block (BuildSceneryList);
-; then sub_009_00740 and sub_009_00958, and every other frame CheckSeaView or CheckViewTable2.
+; then BuildDrawGroups and SortDrawList, and every other frame CheckSeaView or CheckViewTable2.
 ;-------------------------------------------------------------------------------
 UpdateScenery:
         cmpi.l  #$f8000000,(ViewOffsetY).l      ; 00598
@@ -589,10 +599,10 @@ l_008_006C2:
         move.b  #$1,-$2c(a6)                    ; 006C2
         clr.b   (RedrawFlags).l                 ; 006C8
 l_008_006CE:
-        jsr     (sub_009_00740).l               ; 006CE
+        jsr     (BuildDrawGroups).l             ; 006CE
         move.w  #$4b,(FrameStage).l             ; 006D4
         clr.b   -$2c(a6)                        ; 006DC
-        jsr     (sub_009_00958).l               ; 006E0
+        jsr     (SortDrawList).l                ; 006E0
         move.w  #$4c,(FrameStage).l             ; 006E6
         move.w  (FrameCount).l,d1               ; 006EE
         andi.w  #$1,d1                          ; 006F4
