@@ -1151,7 +1151,7 @@ l_030_00DB4:
         lea.l   (RollRates).l,a0                ; 00DC4
         bra.b   l_030_00DD2                     ; 00DCA
 l_030_00DCC:
-        lea.l   (dat_030_0118A).l,a0            ; 00DCC
+        lea.l   (PilotAimData1).l,a0            ; 00DCC
 l_030_00DD2:
         add.w   d3,d3                           ; 00DD2
         move.w  (a0,d3.w),d3                    ; 00DD4
@@ -1531,7 +1531,8 @@ RollRates:
 TurnRatesAF1:
 	dc.b	$00,$08,$00,$10,$00,$18,$00,$20,$00,$28,$00,$30,$00,$38,$00,$40
 	dc.b	$00,$48,$00,$50,$00,$58
-dat_030_0118A:
+; PilotAimData1 - Data used by PilotAim.
+PilotAimData1:
 	dc.b	$00,$08,$00,$10,$00,$18,$00,$20,$00,$28,$00,$30,$00,$38,$00,$40
 	dc.b	$00,$48,$00,$50,$00,$58
 h030_end:

@@ -8,11 +8,11 @@
 	CODE_HUNK	h126
 
 ;-------------------------------------------------------------------------------
-; MemUsed - The memory used (dat_148_0000C x 8).
+; MemUsed - The memory used (MemoryUsed x 8).
 ;-------------------------------------------------------------------------------
 MemUsed:
         link.w  a6,#$fffc                       ; 00000
-        move.l  (dat_148_0000C).l,d0            ; 00004
+        move.l  (MemoryUsed).l,d0               ; 00004
         asl.l   #$3,d0                          ; 0000A
         unlk    a6                              ; 0000C
         rts                                     ; 0000E
@@ -42,7 +42,7 @@ l_126_00036:
         addq.l  #$7,d0                          ; 0003A
         moveq   #$8,d1                          ; 0003C
         jsr     (CXD33).l                       ; 0003E
-        move.l  #dat_148_00008,-$8(a6)          ; 00044
+        move.l  #RbrkData6,-$8(a6)              ; 00044
         movea.l -$8(a6),a0                      ; 0004C
         move.l  (a0),-$4(a6)                    ; 00050
         move.l  d0,-$10(a6)                     ; 00054
@@ -68,7 +68,7 @@ l_126_0007A:
         add.l   d0,-$4(a6)                      ; 0008C
 l_126_00090:
         move.l  -$10(a6),d0                     ; 00090
-        sub.l   d0,(dat_148_0000C).l            ; 00094
+        sub.l   d0,(MemoryUsed).l               ; 00094
         movea.l -$4(a6),a0                      ; 0009A
         move.l  a0,d0                           ; 0009E
         unlk    a6                              ; 000A0
@@ -146,8 +146,8 @@ l_126_00134:
         move.l  a0,-$14(a6)                     ; 00154
         adda.l  d0,a0                           ; 00158
         move.l  -$1c(a6),d0                     ; 0015A
-        add.l   d0,(dat_148_0000C).l            ; 0015E
-        move.l  #dat_148_00008,-$c(a6)          ; 00164
+        add.l   d0,(MemoryUsed).l               ; 0015E
+        move.l  #RbrkData6,-$c(a6)              ; 00164
         movea.l -$c(a6),a1                      ; 0016C
         move.l  (a1),-$4(a6)                    ; 00170
         move.l  a0,-$18(a6)                     ; 00174
@@ -189,7 +189,7 @@ l_126_001DA:
         cmpa.l  -$8(a6),a0                      ; 001DE
         bcc.b   l_126_001F4                     ; 001E2
         move.l  -$1c(a6),d0                     ; 001E4
-        sub.l   d0,(dat_148_0000C).l            ; 001E8
+        sub.l   d0,(MemoryUsed).l               ; 001E8
         moveq   #-1,d0                          ; 001EE
         unlk    a6                              ; 001F0
         rts                                     ; 001F2
@@ -205,7 +205,7 @@ l_126_001F4:
         cmpa.l  (a1),a0                         ; 0020E
         bls.b   l_126_00222                     ; 00210
         move.l  -$1c(a6),d0                     ; 00212
-        sub.l   d0,(dat_148_0000C).l            ; 00216
+        sub.l   d0,(MemoryUsed).l               ; 00216
         moveq   #-1,d0                          ; 0021C
         unlk    a6                              ; 0021E
         rts                                     ; 00220

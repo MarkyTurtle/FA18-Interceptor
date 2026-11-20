@@ -12,7 +12,7 @@ It then captures what the game would have drawn:
 
 Each primitive is captured in the camera's space and drawn again with Python's PIL, in the
 colours of the flight's palette. That is the brightest of the 16 fade levels in hunk 21
-(`dat_021_00080`), which the game loads for its view.
+(`FlightPalette`), which the game loads for its view.
 
 Each picture is scaled to fit its panel, so sizes cannot be compared between pictures.
 

@@ -435,7 +435,7 @@ l_000_00484:
         jsr     (_FreeSprite).l                 ; 0052E
         addq.l  #$4,a7                          ; 00534
         move.l  #$3f0000,d0                     ; 00536
-        move.l  d0,(dat_074_000FE).l            ; 0053C
+        move.l  d0,(AudioPeriodMin).l           ; 0053C
         move.l  d0,(TitleTimer).l               ; 00542
         btst    #$7,(SoundsLoaded).l            ; 00548
         beq.b   l_000_00560                     ; 00550
@@ -1227,12 +1227,14 @@ l_000_00E82:
 l_000_00E8C:
         subi.l  #$8,d1                          ; 00E8C
         bmi.b   l_000_00EE8                     ; 00E92
-        cmp.l   dat_000_00E9E(pc,d1.l),d0       ; 00E94
+        cmp.l   ChunkIds(pc,d1.l),d0            ; 00E94
         bne.b   l_000_00E8C                     ; 00E98
-        jmp     dat_000_00EA2(pc,d1.l)          ; 00E9A
-dat_000_00E9E:
+        jmp     ChunkJumps(pc,d1.l)             ; 00E9A
+; ChunkIds - The IFF chunk names GetChunkHdr knows (compared with the chunk read).
+ChunkIds:
 	dc.b	$43,$41,$54,$20
-dat_000_00EA2:
+; ChunkJumps - GetChunkHdr's jump table, one entry per name in ChunkIds.
+ChunkJumps:
 	dc.b	$60,$00,$00,$1A,$50,$52,$4F,$50,$60,$00,$00,$12,$46,$4F,$52,$4D
 	dc.b	$60,$00,$00,$0A,$4C,$49,$53,$54,$60,$00,$00,$02,$20,$6E,$FF,$FC
 	dc.b	$D0,$FC,$00,$1C,$20,$08,$72,$04,$2F,$01,$2F,$00,$2F,$2E,$FF,$FC
@@ -1393,7 +1395,7 @@ CheckDisk:
         move.l  d0,(InfoData).l                 ; 0107C
         moveq   #-2,d1                          ; 01082
         move.l  d1,-(a7)                        ; 01084
-        pea.l   (dat_001_000AC).l               ; 01086
+        pea.l   (CheckDiskData1).l              ; 01086
         move.l  d0,-$10(a6)                     ; 0108C
         jsr     (_Lock).l                       ; 01090
         addq.l  #$8,a7                          ; 01096
@@ -2026,7 +2028,7 @@ l_000_01978:
         ext.l   d0                              ; 01982
         asl.l   #$1,d0                          ; 01984
         movea.l d0,a0                           ; 01986
-        adda.l  #dat_021_00080,a0               ; 01988
+        adda.l  #FlightPalette,a0               ; 01988
         movea.l -$4(a6),a1                      ; 0198E
         move.w  (a0),(a1)                       ; 01992
         addq.l  #$2,-$4(a6)                     ; 01994
@@ -2160,7 +2162,7 @@ l_000_01B00:
         bra.b   l_000_01B52                     ; 01B32
 l_000_01B34:
         clr.b   (RecordMode).l                  ; 01B34
-        pea.l   (dat_021_00000).l               ; 01B3A
+        pea.l   (TitlePalette).l                ; 01B3A
         jsr     (SetPalette).l                  ; 01B40
         addq.l  #$4,a7                          ; 01B46
         lea.l   StateMenuChoice(pc),a0          ; 01B48
@@ -2325,7 +2327,7 @@ StateMainMenu:
         move.b  (MusicState).l,d0               ; 01D50
         tst.b   d0                              ; 01D56
         bne.b   l_000_01D64                     ; 01D58
-        move.l  #$1f0000,(dat_074_000FE).l      ; 01D5A
+        move.l  #$1f0000,(AudioPeriodMin).l     ; 01D5A
 l_000_01D64:
         moveq   #$f,d0                          ; 01D64
         move.l  d0,-(a7)                        ; 01D66
@@ -2338,7 +2340,7 @@ l_000_01D64:
         jsr     (BusyWait).l                    ; 01D88
         addq.l  #$4,a7                          ; 01D8E
         clr.b   (KeyMode).l                     ; 01D90
-        pea.l   (dat_021_00000).l               ; 01D96
+        pea.l   (TitlePalette).l                ; 01D96
         jsr     (SetPalette).l                  ; 01D9C
         addq.l  #$4,a7                          ; 01DA2
         move.l  #$1e0,(TextCursor).l            ; 01DA4
@@ -2555,7 +2557,7 @@ StateFlightSetup:
         move.l  d0,-(a7)                        ; 0204C
         jsr     (StopSound).l                   ; 0204E
         addq.l  #$4,a7                          ; 02054
-        move.l  #$3f0000,(dat_074_000FE).l      ; 02056
+        move.l  #$3f0000,(AudioPeriodMin).l     ; 02056
         move.w  -$2(a6),d0                      ; 02060
         cmpi.w  #$3,d0                          ; 02064
         bcs.b   l_000_0207E                     ; 02068
@@ -2704,7 +2706,7 @@ StateMissionList:
         lea.l   (TextPages).l,a0                ; 022D8
         move.w  #$40,(a0)                       ; 022DE
         addq.l  #$2,a0                          ; 022E2
-        move.l  #dat_064_00000,-$8(a6)          ; 022E4
+        move.l  #MissionListPage,-$8(a6)        ; 022E4
         move.b  #$3,-$9(a6)                     ; 022EC
         move.l  a0,-$4(a6)                      ; 022F2
 l_000_022F6:
@@ -4136,7 +4138,7 @@ StateChecksumError:
         move.w  (StateTimer).l,d0               ; 03534
         tst.w   d0                              ; 0353A
         bpl.b   l_000_03566                     ; 0353C
-        pea.l   (dat_021_00000).l               ; 0353E
+        pea.l   (TitlePalette).l                ; 0353E
         bsr.w   SetPalette                      ; 03544
         addq.l  #$4,a7                          ; 03548
         move.w  #$61,(TextPages).l              ; 0354A
@@ -4173,7 +4175,7 @@ StateTitle:
         move.w  (StateTimer).l,d0               ; 03596
         tst.w   d0                              ; 0359C
         bpl.b   l_000_035C0                     ; 0359E
-        pea.l   (dat_021_00000).l               ; 035A0
+        pea.l   (TitlePalette).l                ; 035A0
         bsr.w   SetPalette                      ; 035A6
         addq.l  #$4,a7                          ; 035AA
         move.w  #$f,(TextPages).l               ; 035AC
@@ -4194,7 +4196,7 @@ StateTitleWait:
         beq.b   l_000_03620                     ; 035CE
         move.l  #$1f0000,(TitleTimer).l         ; 035D0
         move.b  #$1,(MusicState).l              ; 035DA
-        pea.l   (dat_021_00080).l               ; 035E2
+        pea.l   (FlightPalette).l               ; 035E2
         bsr.w   SetPalette                      ; 035E8
         addq.l  #$4,a7                          ; 035EC
         jsr     (ClearTextPages).l              ; 035EE
@@ -4235,7 +4237,7 @@ l_000_0365A:
         move.l  a0,(GameState).l                ; 0366E
         bra.b   l_000_036EA                     ; 03674
 l_000_03676:
-        pea.l   (dat_021_00000).l               ; 03676
+        pea.l   (TitlePalette).l                ; 03676
         bsr.w   SetPalette                      ; 0367C
         addq.l  #$4,a7                          ; 03680
         lea.l   (TextPages).l,a0                ; 03682
@@ -4301,7 +4303,7 @@ StateWelcome:
         tst.w   d0                              ; 03720
         bpl.w   l_000_037CE                     ; 03722
         move.b  #$1,(KeyMode).l                 ; 03726
-        pea.l   (dat_021_00000).l               ; 0372E
+        pea.l   (TitlePalette).l                ; 0372E
         bsr.w   SetPalette                      ; 03734
         addq.l  #$4,a7                          ; 03738
         moveq   #$0,d0                          ; 0373A
@@ -4522,7 +4524,7 @@ StateNoAircraftLeft:
         move.w  (StateTimer).l,d0               ; 039F0
         tst.w   d0                              ; 039F6
         bpl.b   l_000_03A34                     ; 039F8
-        pea.l   (dat_021_00000).l               ; 039FA
+        pea.l   (TitlePalette).l                ; 039FA
         bsr.w   SetPalette                      ; 03A00
         addq.l  #$4,a7                          ; 03A04
         move.b  (PlayerAircraftType).l,d0       ; 03A06

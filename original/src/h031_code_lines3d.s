@@ -96,7 +96,7 @@ l_031_000EA:
         bra.w   DrawPuff                        ; 000F0
 
 ;-------------------------------------------------------------------------------
-; DrawBulletHit - Draws a bullet's hit: three small orange 3D crosses (dat_031_001BE) round
+; DrawBulletHit - Draws a bullet's hit: three small orange 3D crosses (DrawBulletHitData1) round
 ; where it struck.
 ;-------------------------------------------------------------------------------
 DrawBulletHit:
@@ -132,11 +132,11 @@ DrawBulletHit:
         move.w  #$ffff,(DrawXor).l              ; 00162
         clr.l   (FillPattern2).l                ; 0016A
         move.w  #$9,(DrawColour).l              ; 00170
-        lea.l   (dat_031_001BE).l,a2            ; 00178
+        lea.l   (DrawBulletHitData1).l,a2       ; 00178
         movea.w -$8(a6),a4                      ; 0017E
         movea.w -$6(a6),a5                      ; 00182
 l_031_00186:
-        lea.l   (dat_072_04202).l,a1            ; 00186
+        lea.l   (LineEnds).l,a1                 ; 00186
 l_031_0018C:
         movem.w (a2)+,d3-d5                     ; 0018C
         add.w   a4,d3                           ; 00190
@@ -146,7 +146,7 @@ l_031_0018C:
         move.w  d6,(a1)+                        ; 0019C
         move.w  d2,(a1)+                        ; 0019E
         move.w  d5,(a1)+                        ; 001A0
-        cmpa.l  #dat_072_0420E,a1               ; 001A2
+        cmpa.l  #LineEndsEnd,a1                 ; 001A2
         blt.b   l_031_0018C                     ; 001A8
         move.l  a2,-(a7)                        ; 001AA
         jsr     (ProjectDrawLine).l             ; 001AC
@@ -155,7 +155,8 @@ l_031_0018C:
         bgt.b   l_031_00186                     ; 001B8
         unlk    a6                              ; 001BA
         rts                                     ; 001BC
-dat_031_001BE:
+; DrawBulletHitData1 - Data used by DrawBulletHit.
+DrawBulletHitData1:
 	dc.b	$FF,$FD,$00,$03,$FF,$FD,$00,$03,$FF,$FD,$00,$03,$00,$02,$00,$01
 	dc.b	$FF,$FE,$FF,$FE,$FF,$FF,$00,$02,$FF,$FD,$FF,$FD,$FF,$FD,$00,$03
 	dc.b	$00,$03,$00,$03
@@ -376,7 +377,7 @@ DrawPuffShape:
         movem.w d0-d2,-$8(a6)                   ; 004E0
         move.w  d3,-$30(a6)                     ; 004E6
         move.w  #$b,-$a(a6)                     ; 004EA
-        move.w  #$3,(dat_072_03000).l           ; 004F0
+        move.w  #$3,(ScreenPolygon).l           ; 004F0
         subq.b  #$1,d4                          ; 004F8
         ble.b   l_031_00556                     ; 004FA
         subq.b  #$1,d4                          ; 004FC
@@ -447,7 +448,7 @@ l_031_005D2:
         move.w  d3,(DrawColour).l               ; 005D2
         lea.l   PuffSegments(pc),a2             ; 005D8
         movea.l (a2,d4.w),a2                    ; 005DC
-        lea.l   (dat_072_03002).l,a1            ; 005E0
+        lea.l   (ScreenPolygonPoints).l,a1      ; 005E0
 l_031_005E6:
         cmpi.b  #$3,-$2e(a6)                    ; 005E6
         bne.b   l_031_005F6                     ; 005EC
@@ -523,7 +524,7 @@ l_031_00680:
         move.w  d7,(a1)+                        ; 0068E
         cmpi.b  #$3,-$2e(a6)                    ; 00690
         beq.b   l_031_006CE                     ; 00696
-        cmpa.l  #dat_072_0300E,a1               ; 00698
+        cmpa.l  #ScreenPolygonLimit,a1          ; 00698
         blt.w   l_031_005E6                     ; 0069E
         bra.b   l_031_006CE                     ; 006A2
 l_031_006A4:
@@ -551,7 +552,7 @@ l_031_006CE:
         beq.b   l_031_006F4                     ; 006D2
         subq.b  #$3,d0                          ; 006D4
         bne.b   l_031_006EC                     ; 006D6
-        movem.w (dat_072_03002).l,d0-d1         ; 006D8
+        movem.w (ScreenPolygonPoints).l,d0-d1   ; 006D8
         move.w  -$3c(a6),d6                     ; 006E0
         jsr     (DrawBlobRows).l                ; 006E4
         bra.b   l_031_006A4                     ; 006EA
@@ -559,7 +560,7 @@ l_031_006EC:
         jsr     (FillPolygon).l                 ; 006EC
         bra.b   l_031_006A4                     ; 006F2
 l_031_006F4:
-        movem.w (dat_072_03002).l,d0-d3         ; 006F4
+        movem.w (ScreenPolygonPoints).l,d0-d3   ; 006F4
         jsr     (DrawLine).l                    ; 006FC
         bra.b   l_031_006A4                     ; 00702
 

@@ -1236,7 +1236,7 @@ l_039_00EA6:
         andi.w  #$ff,d4                         ; 00EC2
         subi.w  #$20,d4                         ; 00EC6
         add.w   d4,d4                           ; 00ECA
-        lea.l   (dat_061_00000).l,a3            ; 00ECC
+        lea.l   (PanelFont).l,a3                ; 00ECC
         adda.w  (a3,d4.w),a3                    ; 00ED2
         move.l  a3,d4                           ; 00ED6
         swap    d6                              ; 00ED8
@@ -1577,7 +1577,7 @@ l_039_0120E:
         andi.w  #$ff,d4                         ; 01238
         subi.w  #$20,d4                         ; 0123C
         add.w   d4,d4                           ; 01240
-        lea.l   (dat_061_00000).l,a3            ; 01242
+        lea.l   (PanelFont).l,a3                ; 01242
         adda.w  (a3,d4.w),a3                    ; 01248
         move.l  a3,d4                           ; 0124C
         move.l  (a5),d1                         ; 0124E

@@ -6,7 +6,8 @@
 ; Hunk 88: DATA, $4 bytes
 ;===============================================================================
 	DATA_HUNK	h088
-dat_088_00000:
+; GetbufData1 - Data used by _getbuf.
+GetbufData1:
 	dc.b	$00,$00,$02,$00
 h088_end:
 	ifnd	HUNKEXE

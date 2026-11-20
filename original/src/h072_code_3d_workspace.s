@@ -9,63 +9,81 @@
 ; VertexBuffer - The current model's vertices moved to the camera (3 words each), DrawModel.
 VertexBuffer:
 	dcb.b	10752,$00
-dat_072_02A00:
+; ExtraVertices - Vertices made by the shape operations (ShapeLineRow) and the scenery
+; transforms.
+ExtraVertices:
 	dcb.b	1536,$00
-dat_072_03000:
+; ScreenPolygon - The polygon in screen coordinates (count, then x, y pairs) after clipping and
+; projection; the sky polygon too.
+ScreenPolygon:
 	dc.b	$00
 	dc.b	$00
-dat_072_03002:
+; ScreenPolygonPoints - ScreenPolygon's points (after its count).
+ScreenPolygonPoints:
 	dc.b	$00
 	dc.b	$00
-dat_072_03004:
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-dat_072_0300A:
+; ScreenPolygonFirst - ScreenPolygon's first point.
+ScreenPolygonFirst:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_072_0300E:
+	dc.b	$00
+	dc.b	$00
+; ScreenPolygonCorner - A corner in ScreenPolygon (MakeSkyPolygon).
+ScreenPolygonCorner:
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+; ScreenPolygonLimit - A limit within ScreenPolygon (DrawGroundDots, DrawPuffShape).
+ScreenPolygonLimit:
 	dcb.b	148,$00
 ; PanelSkyPolygon - The sky polygon for the attitude indicator (count, then x,y pairs), kept by
 ; ClearSkyGround in the cockpit view; count 0 for none.
 PanelSkyPolygon:
 	dcb.b	1374,$00
-dat_072_03600:
+; ClipCorners - The corners of the polygon being clipped (ClipFillPolygonBuffer) and the view's
+; corners (FindHorizonEdges).
+ClipCorners:
 	dcb.b	1536,$00
 ; PolygonBuffer - The polygon being drawn: a shift, the vertex count, then the vertices (x, y,
 ; z words).
 PolygonBuffer:
 	dc.b	$00
 	dc.b	$00
-dat_072_03C02:
+; PolygonColourWord - The colour word of the polygon being drawn (ShapePolygon).
+PolygonColourWord:
 	dc.b	$00
 	dc.b	$00
-dat_072_03C04:
+; PlanePoints - Points copied for a side test or a grid (the vertices' turned positions).
+PlanePoints:
 	dcb.b	1534,$00
-dat_072_04202:
+; LineEnds - The two ends of the 3D line being drawn (x, y, z words each).
+LineEnds:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_072_04208:
+; LineEnd2 - The second end in LineEnds.
+LineEnd2:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_072_0420E:
+; LineEndsEnd - The end of LineEnds.
+LineEndsEnd:
 	dcb.b	4594,$00
-dat_072_05400:
+; CellItemPointers - Pointers to the items of the cells near a point (for BulletHitTest and
+; CollideWithList).
+CellItemPointers:
 	dcb.b	44,$00
-dat_072_0542C:
+; CellItemPointers2 - More pointers to cell items (see CellItemPointers).
+CellItemPointers2:
 	dcb.b	2816,$00
 ; RadarList - The objects around the player, turned into the aircraft's own axes (12 bytes of
 ; position then the object's word): filled by AddRadarObject, read by the radar.
@@ -75,7 +93,8 @@ RadarList:
 ; two display buffers ($28 bytes apart), so they can be erased.
 RadarBlips:
 	dcb.b	40,$00
-dat_072_063B4:
+; RadarObjectList - The objects the radar shows this frame (AddRadarObject; -1 ends it).
+RadarObjectList:
 	dcb.b	40,$00
 h072_end:
 	ifnd	HUNKEXE

@@ -39,7 +39,7 @@ l_009_0005C:
         move.b  (a1,d0.w),d0                    ; 0006E
         ext.w   d0                              ; 00072
         move.w  d0,d1                           ; 00074
-        lea.l   (dat_008_0149C).l,a1            ; 00076
+        lea.l   (NeighbourCells).l,a1                   ; 00076
         add.w   d1,d1                           ; 0007C
         move.b  (a1,d1.w),d2                    ; 0007E
         move.b  $1(a1,d1.w),d3                  ; 00082
@@ -62,7 +62,7 @@ l_009_000A2:
         movem.w (a1,d0.w),d2-d3                 ; 000B8
         tst.b   (SceneryDetailed).l             ; 000BE
         beq.b   l_009_000E2                     ; 000C4
-        lea.l   (dat_008_0151A).l,a1            ; 000C6
+        lea.l   (SubCellOffsets).l,a1                   ; 000C6
         move.b  (ViewPlace).l,d6                ; 000CC
         ext.w   d6                              ; 000D2
         add.w   d6,d6                           ; 000D4
@@ -150,7 +150,7 @@ l_009_001B2:
         add.w   d6,d6                           ; 001BC
 l_009_001BE:
         move.l  a1,-(a7)                        ; 001BE
-        lea.l   (dat_008_0151A).l,a1            ; 001C0
+        lea.l   (SubCellOffsets).l,a1                   ; 001C0
         move.b  (ViewPlace).l,d7                ; 001C6
         ext.w   d7                              ; 001CC
         add.w   d7,d7                           ; 001CE
@@ -186,7 +186,7 @@ l_009_00224:
         add.w   d6,d6                           ; 0022C
         add.w   d6,d6                           ; 0022E
 l_009_00230:
-        lea.l   (dat_008_0151A).l,a1            ; 00230
+        lea.l   (SubCellOffsets).l,a1                   ; 00230
         move.b  (ViewPlace).l,d7                ; 00236
         ext.w   d7                              ; 0023C
         add.w   d7,d7                           ; 0023E
@@ -351,7 +351,7 @@ l_009_004C2:
         addq.w  #$1,(DistanceCount).l           ; 004D4
         tst.b   (DistanceFlag).l                ; 004DA
         bne.b   l_009_00524                     ; 004E0
-        lea.l   (dat_009_00536).l,a1            ; 004E2
+        lea.l   (DistanceScaleData1).l,a1       ; 004E2
         move.l  (ViewOffsetY8).l,d6             ; 004E8
         neg.l   d6                              ; 004EE
         asr.l   #$8,d6                          ; 004F0
@@ -379,7 +379,8 @@ l_009_00524:
         suba.w  #$18,a2                         ; 0052E
 l_009_00532:
         bra.w   l_009_0013A                     ; 00532
-dat_009_00536:
+; DistanceScaleData1 - Data used by DistanceScale.
+DistanceScaleData1:
 	dc.b	$00,$1E,$00,$28,$00,$1E,$00,$32,$00,$20,$00,$3C,$00,$28,$00,$46
 l_009_00546:
         tst.b   (SceneryDetailed).l             ; 00546
@@ -455,11 +456,11 @@ l_009_0060E:
         andi.w  #$3fff,d4                       ; 00632
         ext.w   d0                              ; 00636
         move.w  d0,d1                           ; 00638
-        lea.l   (dat_072_05400).l,a1            ; 0063A
+        lea.l   (CellItemPointers).l,a1         ; 0063A
         add.w   d1,d1                           ; 00640
         add.w   d1,d1                           ; 00642
         move.l  a0,(a1,d1.w)                    ; 00644
-        lea.l   (dat_072_0542C).l,a1            ; 00648
+        lea.l   (CellItemPointers2).l,a1        ; 00648
         asl.w   #$6,d1                          ; 0064E
         adda.w  d1,a1                           ; 00650
         move.l  d6,(a1)+                        ; 00652
@@ -522,7 +523,7 @@ l_009_00698:
 l_009_006BE:
         ext.w   d0                              ; 006BE
         move.w  d0,d1                           ; 006C0
-        lea.l   (dat_072_05400).l,a1            ; 006C2
+        lea.l   (CellItemPointers).l,a1         ; 006C2
         add.w   d1,d1                           ; 006C8
         add.w   d1,d1                           ; 006CA
         move.l  #$ffffffff,(a1,d1.w)            ; 006CC

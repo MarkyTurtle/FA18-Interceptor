@@ -1,23 +1,27 @@
 ; F/A-18 Interceptor - hunk 21 (code)
-; Data: the palettes - the in-flight palette's 16 fade levels (dat_021_00080: row 0 the
-; brightest, stepped through to fade in and out) and the yellow flash (dat_021_00040).
+; Data: the palettes - the in-flight palette's 16 fade levels (FlightPalette: row 0 the
+; brightest, stepped through to fade in and out) and the yellow flash (FlashPalette).
 ; Included by ../f18_main.s.
 
 ;===============================================================================
 ; Hunk 21: CODE, $280 bytes
 ;===============================================================================
 	CODE_HUNK	h021
-dat_021_00000:
+; TitlePalette - The palette of the title and text screens (32 colours).
+TitlePalette:
 	dc.b	$00,$00,$0A,$20,$09,$99,$01,$11,$02,$82,$05,$5B,$00,$36,$04,$44
 	dc.b	$06,$66,$00,$30,$05,$55,$09,$61,$03,$33,$08,$88,$08,$88,$03,$33
 	dc.b	$00,$00,$09,$10,$02,$76,$00,$00,$05,$68,$01,$11,$02,$22,$03,$33
 	dc.b	$07,$10,$04,$44,$05,$55,$06,$66,$07,$77,$08,$88,$0A,$AA,$0B,$BB
-dat_021_00040:
+; FlashPalette - The all-yellow palette flashed while FlashCount runs (ShowDisplay).
+FlashPalette:
 	dc.b	$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2
 	dc.b	$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2
 	dc.b	$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2
 	dc.b	$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2,$0F,$B2
-dat_021_00080:
+; FlightPalette - The in-flight palette: 16 rows of 16 colours, row 0 the brightest, stepped
+; through to fade in and out (FadeLevel).
+FlightPalette:
 	dc.b	$00,$00,$08,$00,$08,$88,$01,$11,$01,$51,$04,$47,$00,$36,$04,$44
 	dc.b	$05,$55,$0D,$92,$06,$66,$00,$30,$03,$33,$07,$77,$07,$77,$03,$33
 	dc.b	$00,$00,$07,$00,$07,$77,$00,$00,$00,$40,$03,$36,$00,$25,$03,$33

@@ -145,11 +145,11 @@ l_035_000FC:
         rts                                     ; 000FE
 
 ;-------------------------------------------------------------------------------
-; ProjectDrawLine - Draws the 3D line at dat_072_04202 without clipping: both ends must be in
+; ProjectDrawLine - Draws the 3D line at LineEnds without clipping: both ends must be in
 ; front and in the view.
 ;-------------------------------------------------------------------------------
 ProjectDrawLine:
-        lea.l   (dat_072_04202).l,a1            ; 00100
+        lea.l   (LineEnds).l,a1                 ; 00100
         move.w  (a1)+,d0                        ; 00106
         move.w  (a1)+,d1                        ; 00108
         move.w  (a1)+,d2                        ; 0010A
@@ -246,14 +246,14 @@ l_035_001D4:
         rts                                     ; 001D8
 
 ;-------------------------------------------------------------------------------
-; ClipDrawLine3D - Draws the 3D line whose two turned end points are at dat_072_04202 (x, y, z
+; ClipDrawLine3D - Draws the 3D line whose two turned end points are at LineEnds (x, y, z
 ; words each): clips it against the view's four edge planes and the near plane (ClipSwitch),
 ; projects it and draws it (DrawLine). Used by all the shapes' line operations.
 ;-------------------------------------------------------------------------------
 ClipDrawLine3D:
         link.w  a6,#$fffc                       ; 001DA
-        lea.l   (dat_072_04202).l,a1            ; 001DE
-        lea.l   (dat_072_03000).l,a0            ; 001E4
+        lea.l   (LineEnds).l,a1                 ; 001DE
+        lea.l   (ScreenPolygon).l,a0            ; 001E4
         move.w  #$1,-$2(a6)                     ; 001EA
 l_035_001F0:
         movem.w (a1),d3-d5                      ; 001F0
@@ -458,7 +458,7 @@ l_035_003FA:
         move.w  d4,(a0)+                        ; 00408
         subq.w  #$1,-$2(a6)                     ; 0040A
         beq.b   l_035_00430                     ; 0040E
-        movem.w (dat_072_03000).l,d0-d3         ; 00410
+        movem.w (ScreenPolygon).l,d0-d3         ; 00410
         jsr     (DrawLine).l                    ; 00418
         unlk    a6                              ; 0041E
         moveq   #$1,d0                          ; 00420
@@ -775,11 +775,12 @@ l_035_0069E:
 l_035_006C2:
         sub.w   d0,d1                           ; 006C2
         add.w   d0,d0                           ; 006C4
-        move.w  dat_035_006D2(pc,d0.w),d0       ; 006C6
+        move.w  DrawBlobRowsData1(pc,d0.w),d0   ; 006C6
         ror.w   d7,d0                           ; 006CA
         move.w  d0,BLTAFWM(a2)                  ; 006CC
         bra.b   l_035_006F4                     ; 006D0
-dat_035_006D2:
+; DrawBlobRowsData1 - Data used by DrawBlobRows.
+DrawBlobRowsData1:
 	dc.b	$00,$00,$80,$00,$C0,$00,$E0,$00,$F0,$00,$F8,$00,$FC,$00,$FE,$00
 	dc.b	$FF,$00,$FF,$80,$FF,$C0,$FF,$E0,$FF,$F0,$FF,$F8,$FF,$FC,$FF,$FE
 	dc.b	$FF,$FF
@@ -798,9 +799,10 @@ l_035_0070C:
         blt.b   l_035_0073A                     ; 0070E
         addq.w  #$1,d7                          ; 00710
         add.w   d1,d1                           ; 00712
-        move.w  dat_035_0071A(pc,d1.w),d0       ; 00714
+        move.w  Hunk035Data1(pc,d1.w),d0        ; 00714
         bra.b   l_035_0073C                     ; 00718
-dat_035_0071A:
+; Hunk035Data1 - Data used by DrawBlobRowsData1.
+Hunk035Data1:
 	dc.b	$80,$00,$C0,$00,$E0,$00,$F0,$00,$F8,$00,$FC,$00,$FE,$00,$FF,$00
 	dc.b	$FF,$80,$FF,$C0,$FF,$E0,$FF,$F0,$FF,$F8,$FF,$FC,$FF,$FE,$FF,$FF
 l_035_0073A:

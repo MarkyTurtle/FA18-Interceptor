@@ -52,7 +52,7 @@ freopen:
         bsr.w   fclose                          ; 00062
         addq.l  #$4,a7                          ; 00066
 l_105_00068:
-        move.l  (dat_103_00000).l,-$c(a6)       ; 00068
+        move.l  (FreopenData1).l,-$c(a6)        ; 00068
         move.l  $c(a6),-$10(a6)                 ; 00070
         moveq   #$0,d0                          ; 00076
         movea.l -$10(a6),a0                     ; 00078

@@ -25,7 +25,7 @@ l_014_0002E:
         move.w  (a2)+,d1                        ; 0002E
         blt.b   l_014_0007C                     ; 00030
         movem.w (a2)+,d2-d4                     ; 00032
-        lea.l   (dat_072_03C04).l,a0            ; 00036
+        lea.l   (PlanePoints).l,a0              ; 00036
         lea.l   (VertexBuffer).l,a3             ; 0003C
         lea.l   (a3,d1.w),a4                    ; 00042
         move.l  (a4)+,(a0)+                     ; 00046
@@ -102,7 +102,7 @@ ShapeQuadListPat:
 l_014_00112:
         addq.w  #$6,a3                          ; 00112
 l_014_00114:
-        lea.l   (dat_072_03C04).l,a0            ; 00114
+        lea.l   (PlanePoints).l,a0              ; 00114
         movem.w (a3),d1-d3                      ; 0011A
         move.w  d1,d4                           ; 0011E
         move.w  d2,d5                           ; 00120
@@ -150,7 +150,7 @@ ShapeLineRun:
         clr.w   -$7e(a6)                        ; 0019C
 l_014_001A0:
         movem.w (a3)+,d0-d5                     ; 001A0
-        movem.w d0-d5,(dat_072_04202).l         ; 001A4
+        movem.w d0-d5,(LineEnds).l              ; 001A4
         move.l  a3,-(a7)                        ; 001AC
         jsr     (ClipDrawLine3D).l              ; 001AE
         or.w    d0,-$7e(a6)                     ; 001B4
@@ -190,7 +190,7 @@ l_014_001FE:
         sub.w   a4,d3                           ; 00208
         sub.w   d6,d4                           ; 0020A
         sub.w   d7,d5                           ; 0020C
-        movem.w d0-d5,(dat_072_04202).l         ; 0020E
+        movem.w d0-d5,(LineEnds).l              ; 0020E
         move.l  a3,-(a7)                        ; 00216
         movem.w d6-d7/a4,-(a7)                  ; 00218
         jsr     (ClipDrawLine3D).l              ; 0021C
@@ -236,7 +236,7 @@ l_014_0026C:
         andi.w  #$7fff,d2                       ; 0027C
 l_014_00280:
         lea.l   (VertexBuffer).l,a3             ; 00280
-        lea.l   (dat_072_04202).l,a0            ; 00286
+        lea.l   (LineEnds).l,a0                 ; 00286
         lea.l   (a3,d1.w),a4                    ; 0028C
         move.l  (a4)+,(a0)+                     ; 00290
         move.w  (a4),d6                         ; 00292
@@ -280,7 +280,7 @@ l_014_002E0:
         sub.w   d2,d5                           ; 002EC
         sub.w   d3,d6                           ; 002EE
         sub.w   d4,d7                           ; 002F0
-        lea.l   (dat_072_04202).l,a0            ; 002F2
+        lea.l   (LineEnds).l,a0                 ; 002F2
         movem.w (a3,d1.w),d2-d4                 ; 002F8
         sub.w   d5,d2                           ; 002FE
         sub.w   d6,d3                           ; 00300
@@ -497,7 +497,7 @@ l_014_00536:
 ;-------------------------------------------------------------------------------
 ShapeRunwaySide:
         lea.l   (VertexBuffer).l,a3             ; 0053E
-        lea.l   (dat_072_03C02).l,a0            ; 00544
+        lea.l   (PolygonColourWord).l,a0        ; 00544
         move.w  #$3,(a0)+                       ; 0054A
         move.w  (a2)+,(DrawColour).l            ; 0054E
         movea.l (CurrentShape).l,a4             ; 00554
@@ -578,7 +578,7 @@ l_014_00622:
 ;-------------------------------------------------------------------------------
 ShapeRunwaySide2:
         lea.l   (VertexBuffer).l,a3             ; 0062A
-        lea.l   (dat_072_03C02).l,a0            ; 00630
+        lea.l   (PolygonColourWord).l,a0        ; 00630
         move.w  #$3,(a0)+                       ; 00636
         move.w  (a2)+,(DrawColour).l            ; 0063A
         move.w  (a2)+,d0                        ; 00640

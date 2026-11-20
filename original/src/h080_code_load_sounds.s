@@ -174,7 +174,7 @@ l_080_001C2:
         unlk    a6                              ; 001D6
         rts                                     ; 001D8
 l_080_001DA:
-        pea.l   (dat_081_000A0).l               ; 001DA
+        pea.l   (LoadSoundData1).l              ; 001DA
         move.l  $8(a6),-(a7)                    ; 001E0
         jsr     (fopen).l                       ; 001E4
         addq.l  #$8,a7                          ; 001EA

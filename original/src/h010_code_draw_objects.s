@@ -830,7 +830,7 @@ l_010_00840:
         move.b  -$64(a6),d4                     ; 00840
         andi.b  #$8,d4                          ; 00844
         beq.w   l_010_009C0                     ; 00848
-        lea.l   (dat_072_02A00).l,a0            ; 0084C
+        lea.l   (ExtraVertices).l,a0            ; 0084C
 l_010_00852:
         move.w  (a1)+,-$30(a6)                  ; 00852
         blt.w   l_010_009C0                     ; 00856
@@ -999,7 +999,7 @@ l_010_009DE:
         move.w  d7,d1                           ; 00A06
         andi.w  #$2000,d1                       ; 00A08
         bne.b   l_010_00A38                     ; 00A0C
-        lea.l   (dat_072_03C04).l,a0            ; 00A0E
+        lea.l   (PlanePoints).l,a0              ; 00A0E
         lea.l   (a3,d0.w),a4                    ; 00A14
         move.l  (a4)+,(a0)+                     ; 00A18
         move.w  (a4),(a0)+                      ; 00A1A
@@ -1476,7 +1476,7 @@ l_010_00E98:
         clr.w   d7                              ; 00E98
         rts                                     ; 00E9A
 l_010_00E9C:
-        lea.l   (dat_072_03C04).l,a0            ; 00E9C
+        lea.l   (PlanePoints).l,a0              ; 00E9C
         movem.w (a0),d0-d5                      ; 00EA2
         sub.w   d0,d3                           ; 00EA6
         sub.w   d1,d4                           ; 00EA8

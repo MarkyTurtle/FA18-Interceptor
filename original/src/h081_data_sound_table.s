@@ -63,7 +63,8 @@ WindSample:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00024:
+; PlayWindSoundData1 - Data used by LoadEngineSounds, PlayWindSound.
+PlayWindSoundData1:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -88,32 +89,38 @@ EffectSound2:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00034:
+; LoadMusicSamplesData1 - Data used by LoadMusicSamples.
+LoadMusicSamplesData1:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00038:
+; LoadMusicSamplesData2 - Data used by LoadMusicSamples.
+LoadMusicSamplesData2:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_0003C:
+; LoadMusicSamplesData3 - Data used by LoadMusicSamples.
+LoadMusicSamplesData3:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00040:
+; LoadMusicSamplesData4 - Data used by LoadMusicSamples.
+LoadMusicSamplesData4:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00044:
+; LoadMusicSamplesData5 - Data used by LoadMusicSamples.
+LoadMusicSamplesData5:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00048:
+; LoadMusicSamplesData6 - Data used by LoadMusicSamples.
+LoadMusicSamplesData6:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -126,12 +133,14 @@ dat_081_00048:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00054:
+; LoadMusicSamplesData7 - Data used by LoadMusicSamples.
+LoadMusicSamplesData7:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00058:
+; LoadMusicSamplesData8 - Data used by LoadMusicSamples.
+LoadMusicSamplesData8:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -144,12 +153,14 @@ dat_081_00058:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00064:
+; LoadMusicSamplesData9 - Data used by LoadMusicSamples.
+LoadMusicSamplesData9:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00068:
+; LoadMusicSamplesData10 - Data used by LoadMusicSamples.
+LoadMusicSamplesData10:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -162,12 +173,14 @@ dat_081_00068:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00074:
+; LoadMusicSamplesData11 - Data used by LoadMusicSamples.
+LoadMusicSamplesData11:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_081_00078:
+; LoadMusicSamplesData12 - Data used by LoadMusicSamples.
+LoadMusicSamplesData12:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -177,15 +190,20 @@ dat_081_00078:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00,$00,$00,$00
-dat_081_00084:
+; LoadMusicSamplesData13 - Data used by LoadMusicSamples.
+LoadMusicSamplesData13:
 	dc.b	$00,$00,$00,$00
-dat_081_00088:
+; LoadMusicSamplesData14 - Data used by LoadMusicSamples.
+LoadMusicSamplesData14:
 	dc.b	$00,$00,$00,$00
-dat_081_0008C:
+; LoadSound201Data1 - Data used by LoadSound201.
+LoadSound201Data1:
 	dc.b	$00,$00,$00,$00
-dat_081_00090:
+; LoadSound201Data2 - Data used by LoadSound201.
+LoadSound201Data2:
 	dc.b	$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-dat_081_000A0:
+; LoadSoundData1 - Data used by LoadSound.
+LoadSoundData1:
 	dc.b	$72,$00,$00,$00
 h081_end:
 	ifnd	HUNKEXE

@@ -14,32 +14,40 @@
 	dc.b	$FF,$FF,$FF,$00,$01,$FF,$FF,$FF,$FF,$FF,$FF,$80,$01,$FF,$FF,$FF
 	dc.b	$FF,$FF,$FF,$80,$01,$FF,$FF,$FF,$FF,$FF,$FF,$80,$01,$FF,$FF,$FF
 	dc.b	$FF,$FF,$FF,$80
-dat_062_00074:
+; DrawAfterburnerLampData2 - Data used by DrawAfterburnerLamp.
+DrawAfterburnerLampData2:
 	dc.b	$00,$0F,$FF,$FE,$00,$0F,$FF,$FE,$00,$0F,$FF,$FE,$00,$0F,$FF,$FE
 	dc.b	$00,$0F,$FF,$FE,$00,$0F,$FF,$FE,$00,$0F,$FF,$FE
-dat_062_00090:
+; Hunk037Data1 - Data used by DrawAfterburnerLampData1.
+Hunk037Data1:
 	dc.b	$00,$00,$03,$80,$00,$00,$3E,$80,$00,$00,$03,$80,$00,$03,$FF,$F8
 	dc.b	$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-dat_062_000AC:
+; Hunk037Data2 - Data used by DrawAfterburnerLampData1.
+Hunk037Data2:
 	dc.b	$00,$00,$00,$00,$00,$00,$38,$00,$00,$00,$0F,$80,$00,$03,$FE,$F8
 	dc.b	$00,$00,$03,$80,$00,$00,$00,$00,$00,$00,$00,$00
-dat_062_000C8:
+; Hunk037Data3 - Data used by DrawAfterburnerLampData1.
+Hunk037Data3:
 	dc.b	$00,$00,$00,$00,$00,$00,$30,$00,$00,$00,$18,$00,$00,$03,$FF,$F8
 	dc.b	$00,$00,$14,$00,$00,$00,$1C,$00,$00,$00,$00,$00
-dat_062_000E4:
+; Hunk037Data4 - Data used by DrawAfterburnerLampData1.
+Hunk037Data4:
 	dc.b	$00,$00,$00,$00,$00,$00,$20,$00,$00,$00,$20,$00,$00,$03,$FF,$F8
 	dc.b	$00,$00,$70,$00,$00,$00,$50,$00,$00,$00,$70,$00
-dat_062_00100:
+; DrawPanelLampData1 - Data used by DrawPanelLamp.
+DrawPanelLampData1:
 	dc.b	$00,$03,$F8,$00,$00,$0F,$FE,$00,$00,$3F,$FF,$80,$00,$7F,$FF,$C0
 	dc.b	$00,$FF,$FF,$E0,$01,$FF,$FF,$F0,$01,$FF,$FF,$F0,$03,$FF,$FF,$F8
 	dc.b	$03,$FF,$FF,$F8,$03,$FF,$FF,$F8,$03,$FF,$FF,$F8,$03,$FF,$FF,$F8
 	dc.b	$03,$FF,$FF,$F8,$01,$FF,$FF,$F0,$01,$FF,$FF,$F0,$00,$FF,$FF,$E0
 	dc.b	$00,$FF,$FF,$E0,$00,$7F,$FF,$C0,$00,$3F,$FF,$80,$00,$0F,$FE,$00
 	dc.b	$00,$03,$F8,$00
-dat_062_00154:
+; FillPanelPlaneData1 - Data used by FillPanelPlane.
+FillPanelPlaneData1:
 	dc.b	$1F,$FF,$FF,$FF,$7F,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
 	dc.b	$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-dat_062_00174:
+; DrawCompassData1 - Data used by DrawCompass.
+DrawCompassData1:
 	dc.b	$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$88,$08,$80,$F8
 	dc.b	$07,$80,$88,$08,$80,$F8,$07,$80,$88,$0C,$80,$80,$08,$00,$88,$0C
 	dc.b	$80,$80,$08,$00,$A8,$8A,$88,$F0,$87,$08,$A8,$8A,$88,$F0,$87,$08

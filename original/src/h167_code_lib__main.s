@@ -15,7 +15,7 @@
 __main:
         link.w  a6,#$fffa                       ; 00000
 l_167_00004:
-        cmpi.l  #$20,(dat_169_00000).l          ; 00004
+        cmpi.l  #$20,(MainData14).l             ; 00004
         bge.w   l_167_00116                     ; 0000E
 l_167_00012:
         movea.l $8(a6),a0                       ; 00012
@@ -39,11 +39,11 @@ l_167_00034:
         move.b  (a0),d0                         ; 00044
         cmpi.b  #$22,d0                         ; 00046
         bne.b   l_167_000BC                     ; 0004A
-        move.l  (dat_169_00000).l,d0            ; 0004C
+        move.l  (MainData14).l,d0               ; 0004C
         asl.l   #$2,d0                          ; 00052
-        addq.l  #$1,(dat_169_00000).l           ; 00054
+        addq.l  #$1,(MainData14).l              ; 00054
         movea.l d0,a1                           ; 0005A
-        adda.l  #dat_169_00004,a1               ; 0005C
+        adda.l  #MainData15,a1                  ; 0005C
         addq.l  #$1,a0                          ; 00062
         move.l  a0,(a1)                         ; 00064
         move.l  a0,$8(a6)                       ; 00066
@@ -62,7 +62,7 @@ l_167_00080:
         tst.b   d0                              ; 00086
         bne.b   l_167_000AE                     ; 00088
         pea.l   (StrErrorNonTerminatedQuotedStri).l ; 0008A
-        pea.l   (dat_143_00030).l               ; 00090
+        pea.l   (MainData10).l                  ; 00090
         jsr     (fprintf).l                     ; 00096
         addq.l  #$8,a7                          ; 0009C
         moveq   #$1,d0                          ; 0009E
@@ -76,11 +76,11 @@ l_167_000AE:
         addq.l  #$1,$8(a6)                      ; 000B4
         bra.w   l_167_00004                     ; 000B8
 l_167_000BC:
-        move.l  (dat_169_00000).l,d0            ; 000BC
+        move.l  (MainData14).l,d0               ; 000BC
         asl.l   #$2,d0                          ; 000C2
-        addq.l  #$1,(dat_169_00000).l           ; 000C4
+        addq.l  #$1,(MainData14).l              ; 000C4
         movea.l d0,a0                           ; 000CA
-        adda.l  #dat_169_00004,a0               ; 000CC
+        adda.l  #MainData15,a0                  ; 000CC
         move.l  $8(a6),(a0)                     ; 000D2
 l_167_000D6:
         movea.l $8(a6),a0                       ; 000D6
@@ -109,15 +109,15 @@ l_167_00108:
         addq.l  #$1,$8(a6)                      ; 0010E
         bra.w   l_167_00004                     ; 00112
 l_167_00116:
-        clr.b   (dat_143_00011).l               ; 00116
+        clr.b   (MainData7).l                   ; 00116
         moveq   #$1,d0                          ; 0011C
-        move.b  d0,(dat_143_00010).l            ; 0011E
-        move.b  d0,(dat_143_00029).l            ; 00124
+        move.b  d0,(MainData6).l                ; 0011E
+        move.b  d0,(MainData9).l                ; 00124
         moveq   #$2,d0                          ; 0012A
-        move.b  d0,(dat_143_00028).l            ; 0012C
-        move.b  d0,(dat_143_00041).l            ; 00132
-        move.b  d0,(dat_143_00040).l            ; 00138
-        tst.l   (dat_169_00000).l               ; 0013E
+        move.b  d0,(MainData8).l                ; 0012C
+        move.b  d0,(MainData12).l               ; 00132
+        move.b  d0,(MainData11).l               ; 00138
+        tst.l   (MainData14).l                  ; 0013E
         bne.w   l_167_001CA                     ; 00144
         movea.l (_WBenchMsg).l,a1               ; 00148
         movea.l $24(a1),a0                      ; 0014E
@@ -131,33 +131,33 @@ l_167_00116:
         pea.l   (s_ConsoleWindow).l             ; 00170
         jsr     (_Open).l                       ; 00176
         addq.l  #$8,a7                          ; 0017C
-        move.l  d0,(dat_137_00002).l            ; 0017E
-        move.l  d0,(dat_137_00008).l            ; 00184
+        move.l  d0,(MainData1).l                ; 0017E
+        move.l  d0,(MainData3).l                ; 00184
         moveq   #$4,d1                          ; 0018A
-        move.b  d1,(dat_137_00006).l            ; 0018C
-        move.l  d0,(dat_137_0000E).l            ; 00192
-        move.b  d1,(dat_137_0000C).l            ; 00198
+        move.b  d1,(MainData2).l                ; 0018C
+        move.l  d0,(MainData5).l                ; 00192
+        move.b  d1,(MainData4).l                ; 00198
         asl.l   #$2,d0                          ; 0019E
         clr.l   -(a7)                           ; 001A0
-        move.l  d0,(dat_169_00088).l            ; 001A2
+        move.l  d0,(MainData17).l               ; 001A2
         jsr     (_FindTask).l                   ; 001A8
         addq.l  #$4,a7                          ; 001AE
-        movea.l (dat_169_00088).l,a0            ; 001B0
+        movea.l (MainData17).l,a0               ; 001B0
         movea.l d0,a1                           ; 001B6
         move.l  $8(a0),$a4(a1)                  ; 001B8
         clr.l   -$6(a6)                         ; 001BE
-        move.l  d0,(dat_169_00084).l            ; 001C2
+        move.l  d0,(MainData16).l               ; 001C2
         bra.b   l_167_00202                     ; 001C8
 l_167_001CA:
         jsr     (_Input).l                      ; 001CA
-        move.l  d0,(dat_137_00002).l            ; 001D0
+        move.l  d0,(MainData1).l                ; 001D0
         jsr     (_Output).l                     ; 001D6
-        move.l  d0,(dat_137_00008).l            ; 001DC
+        move.l  d0,(MainData3).l                ; 001DC
         move.l  #$3ed,-(a7)                     ; 001E2
-        pea.l   (dat_168_0004D).l               ; 001E8
+        pea.l   (MainData13).l                  ; 001E8
         jsr     (_Open).l                       ; 001EE
         addq.l  #$8,a7                          ; 001F4
-        move.l  d0,(dat_137_0000E).l            ; 001F6
+        move.l  d0,(MainData5).l                ; 001F6
         moveq   #$4,d0                          ; 001FC
         move.l  d0,-$6(a6)                      ; 001FE
 l_167_00202:
@@ -170,16 +170,16 @@ l_167_00202:
         move.b  d1,(_ufbs).l                    ; 00218
         move.l  -$6(a6),d0                      ; 0021E
         ori.l   #$a0,d0                         ; 00222
-        move.b  (dat_137_00006).l,d1            ; 00228
+        move.b  (MainData2).l,d1                ; 00228
         ext.w   d1                              ; 0022E
         ext.l   d1                              ; 00230
         or.l    d0,d1                           ; 00232
-        move.b  d1,(dat_137_00006).l            ; 00234
-        move.b  (dat_137_0000C).l,d0            ; 0023A
+        move.b  d1,(MainData2).l                ; 00234
+        move.b  (MainData4).l,d0                ; 0023A
         ori.b   #$a0,d0                         ; 00240
-        move.b  d0,(dat_137_0000C).l            ; 00244
-        pea.l   (dat_169_00004).l               ; 0024A
-        move.l  (dat_169_00000).l,-(a7)         ; 00250
+        move.b  d0,(MainData4).l                ; 00244
+        pea.l   (MainData15).l                  ; 0024A
+        move.l  (MainData14).l,-(a7)            ; 00250
         jsr     (main).l                        ; 00256
         addq.l  #$8,a7                          ; 0025C
         clr.l   -(a7)                           ; 0025E

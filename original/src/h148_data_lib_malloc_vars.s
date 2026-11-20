@@ -6,13 +6,17 @@
 ; Hunk 148: DATA, $10 bytes
 ;===============================================================================
 	DATA_HUNK	h148
-dat_148_00000:
+; RbrkData4 - Data used by rbrk.
+RbrkData4:
 	dc.b	$00,$00,$00,$00
-dat_148_00004:
+; RbrkData5 - Data used by rbrk.
+RbrkData5:
 	dc.b	$00,$00,$00,$00
-dat_148_00008:
+; RbrkData6 - Data used by _free, _malloc, rbrk.
+RbrkData6:
 	dc.b	$00,$00,$00,$00
-dat_148_0000C:
+; MemoryUsed - The memory allocated (malloc, free; MemUsed).
+MemoryUsed:
 	dc.b	$00,$00,$00,$00
 h148_end:
 	ifnd	HUNKEXE

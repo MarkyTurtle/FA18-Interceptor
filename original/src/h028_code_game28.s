@@ -7,12 +7,14 @@
 ; Hunk 28: CODE, $14B4 bytes
 ;===============================================================================
 	CODE_HUNK	h028
-dat_028_00000:
+; Hunk028Data1 - Data used by DrawWaterCoarseData8.
+Hunk028Data1:
 	dc.b	$01,$01,$00,$01,$FF,$01,$01,$00,$00,$00,$FF,$00,$01,$FF,$00,$FF
 	dc.b	$FF,$FF,$02,$02,$01,$02,$00,$02,$FF,$02,$FE,$02,$02,$01,$FE,$01
 	dc.b	$02,$00,$FE,$00,$02,$FF,$FE,$FF,$02,$FE,$01,$FE,$00,$FE,$FF,$FE
 	dc.b	$FE,$FE
-dat_028_00032:
+; DrawWaterCoarseData1 - Data used by DrawWaterCoarse.
+DrawWaterCoarseData1:
 	dc.b	$00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0E,$10,$92
 	dc.b	$00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0E,$10,$92
 	dc.b	$00,$01,$02,$03,$04,$05,$06,$07,$08,$0A,$0B,$0C,$0D,$0F,$11,$93
@@ -29,21 +31,25 @@ dat_028_00032:
 	dc.b	$00,$01,$02,$03,$04,$05,$06,$07,$08,$0E,$10,$12,$14,$15,$16,$97
 	dc.b	$00,$01,$02,$03,$04,$05,$06,$07,$08,$0F,$11,$13,$15,$16,$17,$98
 	dc.b	$00,$01,$02,$03,$04,$05,$06,$07,$08,$0F,$11,$13,$15,$16,$17,$98
-dat_028_00132:
+; DrawWaterCoarseData2 - Data used by DrawWaterCoarse.
+DrawWaterCoarseData2:
 	dc.b	$00,$01,$03,$84,$00,$01,$03,$84,$01,$02,$04,$85,$01,$02,$04,$85
 	dc.b	$00,$01,$03,$84,$00,$01,$03,$84,$01,$02,$04,$85,$01,$02,$04,$85
 	dc.b	$03,$04,$06,$87,$03,$04,$06,$87,$04,$05,$07,$88,$04,$05,$07,$88
 	dc.b	$03,$04,$06,$87,$03,$04,$06,$87,$04,$05,$07,$88,$04,$05,$07,$88
-dat_028_00172:
+; DrawWaterCoarseData3 - Data used by DrawWaterCoarse.
+DrawWaterCoarseData3:
 	dc.b	$00,$01,$02,$03,$04,$05,$06,$07,$08,$FF,$00,$01,$02,$03,$04,$05
 	dc.b	$06,$07,$08,$FF,$00,$01,$02,$03,$04,$05,$06,$07,$08,$FF,$00,$01
 	dc.b	$02,$03,$04,$05,$06,$07,$08,$FF,$00,$01,$02,$03,$04,$05,$06,$07
 	dc.b	$08,$FF,$00,$01,$02,$03,$04,$05,$06,$07,$08,$FF,$00,$01,$02,$03
 	dc.b	$04,$05,$06,$07,$08,$FF,$00,$01,$02,$03,$04,$05,$06,$07,$08,$FF
-dat_028_001C2:
+; DrawWaterCoarseData4 - Data used by DrawWaterCoarse.
+DrawWaterCoarseData4:
 	dc.b	$00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,$0F
 	dc.b	$10,$11,$12,$13,$14,$15,$16,$17,$18,$FF
-dat_028_001DC:
+; Hunk028Data2 - Data used by DrawWaterCoarseData8.
+Hunk028Data2:
 	dc.b	$00,$01,$02,$03,$04,$FF,$00,$00,$00,$01,$02,$03,$04,$05,$FF,$00
 	dc.b	$00,$01,$02,$03,$04,$05,$06,$87,$00,$01,$02,$03,$04,$05,$06,$87
 	dc.b	$00,$01,$03,$04,$06,$07,$FF,$00,$00,$01,$03,$04,$06,$07,$FF,$00
@@ -108,7 +114,8 @@ dat_028_001DC:
 	dc.b	$02,$04,$05,$07,$08,$FF,$00,$00,$04,$05,$06,$07,$08,$FF,$00,$00
 	dc.b	$03,$04,$05,$06,$07,$08,$FF,$00,$01,$03,$04,$05,$06,$07,$08,$FF
 	dc.b	$01,$02,$03,$04,$05,$06,$07,$88,$01,$02,$03,$04,$05,$06,$07,$88
-dat_028_005DC:
+; Hunk028Data3 - Data used by DrawWaterCoarseData8.
+Hunk028Data3:
 	dc.b	$00,$01,$03,$04,$FF,$00,$00,$01,$03,$04,$FF,$00,$00,$01,$03,$04
 	dc.b	$FF,$00,$00,$01,$03,$04,$FF,$00,$00,$01,$03,$04,$FF,$00,$00,$01
 	dc.b	$03,$04,$FF,$00,$00,$01,$03,$04,$FF,$00,$00,$01,$03,$04,$FF,$00
@@ -157,7 +164,8 @@ dat_028_005DC:
 	dc.b	$04,$05,$07,$08,$FF,$00,$04,$05,$07,$08,$FF,$00,$04,$05,$07,$08
 	dc.b	$FF,$00,$04,$05,$07,$08,$FF,$00,$04,$05,$07,$08,$FF,$00,$04,$05
 	dc.b	$07,$08,$FF,$00,$04,$05,$07,$08,$FF,$00,$04,$05,$07,$08,$FF,$00
-dat_028_008DC:
+; Hunk028Data4 - Data used by DrawWaterCoarseData8.
+Hunk028Data4:
 	dc.b	$00,$01,$03,$84,$00,$01,$03,$84,$00,$01,$03,$84,$00,$01,$03,$84
 	dc.b	$00,$01,$03,$84,$00,$01,$03,$84,$00,$01,$03,$84,$00,$01,$03,$84
 	dc.b	$00,$01,$04,$FF,$01,$04,$FF,$00,$01,$04,$FF,$00,$01,$03,$04,$FF
@@ -190,7 +198,8 @@ dat_028_008DC:
 	dc.b	$04,$07,$08,$FF,$04,$07,$FF,$00,$04,$07,$FF,$00,$04,$05,$07,$FF
 	dc.b	$04,$05,$07,$88,$04,$05,$07,$88,$04,$05,$07,$88,$04,$05,$07,$88
 	dc.b	$04,$05,$07,$88,$04,$05,$07,$88,$04,$05,$07,$88,$04,$05,$07,$88
-dat_028_00ADC:
+; DrawWaterCoarseData5 - Data used by DrawWaterCoarse.
+DrawWaterCoarseData5:
 	dc.b	$32,$32,$32,$32,$03,$32,$32,$32,$04
 	dc.b	'2222222'
 	dc.b	$02,$32,$32,$32,$02,$03,$32,$32,$04,$05,$32,$32,$05,$32,$32,$32
@@ -198,7 +207,8 @@ dat_028_00ADC:
 	dc.b	'2222222'
 	dc.b	$00,$32,$32,$32,$07
 	dc.b	'2222222'
-dat_028_00B1C:
+; DrawWaterCoarseData6 - Data used by DrawWaterCoarse.
+DrawWaterCoarseData6:
 	dc.b	$32,$32,$32,$32,$03,$04,$32,$32,$03,$04
 	dc.b	'222222'
 	dc.b	$01,$02,$32,$32,$FF,$00,$00,$00,$FF,$00,$00,$00,$05,$06,$32,$32
@@ -206,7 +216,8 @@ dat_028_00B1C:
 	dc.b	'222222'
 	dc.b	$00,$07,$32,$32,$00,$07
 	dc.b	'222222'
-dat_028_00B5C:
+; DrawWaterCoarseData7 - Data used by DrawWaterCoarse.
+DrawWaterCoarseData7:
 	dc.b	$02,$03,$32,$32,$02,$03,$04,$05,$02,$03,$04,$05,$04,$05,$32,$32
 	dc.b	$00,$01,$02,$03,$FF,$00,$00,$00,$FF,$00,$00,$00,$04,$05,$06,$07
 	dc.b	$00,$01,$02,$03,$FF,$00,$00,$00,$FF,$00,$00,$00,$04,$05,$06,$07
@@ -331,12 +342,12 @@ l_028_00CD2:
         add.w   d3,d4                           ; 00CF8
         cmpi.l  #$5000,-$28(a6)                 ; 00CFA
         bgt.b   l_028_00D0E                     ; 00D02
-        lea.l   dat_028_00132(pc),a0            ; 00D04
+        lea.l   DrawWaterCoarseData2(pc),a0     ; 00D04
         add.w   d4,d4                           ; 00D08
         add.w   d4,d4                           ; 00D0A
         bra.b   l_028_00D14                     ; 00D0C
 l_028_00D0E:
-        lea.l   dat_028_00032(pc),a0            ; 00D0E
+        lea.l   DrawWaterCoarseData1(pc),a0     ; 00D0E
         asl.w   #$4,d4                          ; 00D12
 l_028_00D14:
         adda.w  d4,a0                           ; 00D14
@@ -346,10 +357,10 @@ l_028_00D1A:
         ble.b   l_028_00D3E                     ; 00D22
         cmpi.l  #$10000,-$28(a6)                ; 00D24
         bgt.b   l_028_00D36                     ; 00D2C
-        lea.l   dat_028_00172(pc),a0            ; 00D2E
+        lea.l   DrawWaterCoarseData3(pc),a0     ; 00D2E
         bra.w   l_028_00E00                     ; 00D32
 l_028_00D36:
-        lea.l   dat_028_001C2(pc),a0            ; 00D36
+        lea.l   DrawWaterCoarseData4(pc),a0     ; 00D36
         bra.w   l_028_00E00                     ; 00D3A
 l_028_00D3E:
         move.b  (ViewOctant).l,d2               ; 00D3E
@@ -360,13 +371,13 @@ l_028_00D3E:
         bgt.b   l_028_00D72                     ; 00D5A
         cmpi.l  #$10,-$28(a6)                   ; 00D5C
         bgt.b   l_028_00D6C                     ; 00D64
-        lea.l   dat_028_00B5C(pc),a0            ; 00D66
+        lea.l   DrawWaterCoarseData7(pc),a0     ; 00D66
         bra.b   l_028_00D76                     ; 00D6A
 l_028_00D6C:
-        lea.l   dat_028_00B1C(pc),a0            ; 00D6C
+        lea.l   DrawWaterCoarseData6(pc),a0     ; 00D6C
         bra.b   l_028_00D76                     ; 00D70
 l_028_00D72:
-        lea.l   dat_028_00ADC(pc),a0            ; 00D72
+        lea.l   DrawWaterCoarseData5(pc),a0     ; 00D72
 l_028_00D76:
         move.b  (ViewPlace).l,d3                ; 00D76
         ext.w   d3                              ; 00D7C
@@ -384,15 +395,16 @@ l_028_00D76:
         cmp.b   (a0),d2                         ; 00D94
         bne.b   l_028_00DAA                     ; 00D96
 l_028_00D98:
-        lea.l   (dat_028_00DA8).l,a0            ; 00D98
+        lea.l   (DrawWaterCoarseData8).l,a0     ; 00D98
         move.b  #$1,(WaterDrawn).l              ; 00D9E
         bra.b   l_028_00E00                     ; 00DA6
-dat_028_00DA8:
+; DrawWaterCoarseData8 - Data used by DrawWaterCoarse.
+DrawWaterCoarseData8:
 	dc.b	$04,$FF
 l_028_00DAA:
-        lea.l   dat_028_008DC(pc),a0            ; 00DAA
-        lea.l   dat_028_005DC(pc),a1            ; 00DAE
-        lea.l   dat_028_001DC(pc),a2            ; 00DB2
+        lea.l   Hunk028Data4(pc),a0             ; 00DAA
+        lea.l   Hunk028Data3(pc),a1             ; 00DAE
+        lea.l   Hunk028Data2(pc),a2             ; 00DB2
         move.b  (ViewPlace).l,d3                ; 00DB6
         ext.w   d3                              ; 00DBC
         asl.w   #$4,d3                          ; 00DBE
@@ -460,7 +472,7 @@ l_028_00E6A:
         move.w  #$1,-$20(a6)                    ; 00E74
         move.w  #$1,-$22(a6)                    ; 00E7A
 l_028_00E80:
-        lea.l   dat_028_00000(pc),a2            ; 00E80
+        lea.l   Hunk028Data1(pc),a2             ; 00E80
         add.w   d2,d2                           ; 00E84
         adda.w  d2,a2                           ; 00E86
         lea.l   (a2),a1                         ; 00E88
@@ -502,7 +514,8 @@ l_028_00EE6:
         move.w  #$40,(DebugCheckpoint).l        ; 00EE6
         jsr     (Nop).l                         ; 00EEE
         bra.w   l_028_00E00                     ; 00EF4
-dat_028_00EF8:
+; Hunk028Data5 - Data used by Hunk028Data5.
+Hunk028Data5:
 	dc.b	$00,$84,$00,$88,$00,$90,$00,$98,$00,$9C,$00,$A0,$00,$A2,$00,$A4
 	dc.b	$00,$A6,$00,$A8,$00,$B0,$00,$C0,$00,$F0,$01,$00,$01,$08,$01,$10
 	dc.b	$01,$20,$01,$20
@@ -548,7 +561,7 @@ l_028_00F66:
         ble.b   l_028_00F88                     ; 00F82
         move.w  #$11,d3                         ; 00F84
 l_028_00F88:
-        lea.l   dat_028_00EF8(pc),a2            ; 00F88
+        lea.l   Hunk028Data5(pc),a2             ; 00F88
         add.w   d3,d3                           ; 00F8C
         move.w  (a2,d3.w),d6                    ; 00F8E
         tst.b   (GroundDetail).l                ; 00F92
@@ -644,7 +657,7 @@ l_028_01066:
         jsr     (Nop).l                         ; 01074
         bra.w   l_028_010F0                     ; 0107A
 l_028_0107E:
-        lea.l   (dat_072_03C02).l,a5            ; 0107E
+        lea.l   (PolygonColourWord).l,a5        ; 0107E
         move.w  d1,(a5)+                        ; 01084
         lea.l   (ViewMatrix).l,a0               ; 01086
         movem.w -$8(a6),d6/a2/a4                ; 0108C
@@ -994,7 +1007,7 @@ l_028_0135E:
         asl.l   #$8,d2                          ; 01376
         add.w   d3,d3                           ; 01378
         add.w   d3,d3                           ; 0137A
-        lea.l   (dat_008_0151A).l,a4            ; 0137C
+        lea.l   (SubCellOffsets).l,a4                   ; 0137C
         movem.w (a4,d3.w),d6-d7                 ; 01382
         asl.l   #$8,d6                          ; 01388
         asl.l   #$8,d7                          ; 0138A

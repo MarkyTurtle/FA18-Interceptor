@@ -3,7 +3,7 @@ import drawmodel as dm
 
 g = dm.g
 PLACES = [(-32 if b == 0xE0 else -96 if b == 0xA0 else 96 if b == 0x60 else 32) for b in
-          g.uc.mem_read(g['dat_008_015EE'], 32)]
+          g.uc.mem_read(g['ScenePlaces'], 32)]
 
 
 def cells(mapname='SceneryMap2'):

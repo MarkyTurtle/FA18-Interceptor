@@ -113,7 +113,8 @@ GameRastPort2:
 ; GameRastPort2BitMap - GameRastPort2's BitMap pointer (RastPort +4).
 GameRastPort2BitMap:
         ds.b    $60                             ; 00132
-dat_002_00192:
+; ReadButtonsData1 - Data used by ReadButtons.
+ReadButtonsData1:
         ds.b    $F02                            ; 00192
 ; SceneryBits0 - A bit for each of the 128 x 128 map cells that has scenery in SceneryMap0 (16
 ; bytes a row), made by BuildSceneryBits for a quick test.
@@ -199,15 +200,20 @@ PanelPiecePlane2:
 ; PanelPiecePlane3 - The panel piece's plane 3.
 PanelPiecePlane3:
         ds.b    $4                              ; 02954
-dat_002_02958:
+; AllocGameBuffersData1 - Data used by AllocGameBuffers.
+AllocGameBuffersData1:
         ds.b    $4                              ; 02958
-dat_002_0295C:
+; AllocGameBuffersData2 - Data used by AllocGameBuffers.
+AllocGameBuffersData2:
         ds.b    $4                              ; 0295C
-dat_002_02960:
+; AllocGameBuffersData3 - Data used by AllocGameBuffers.
+AllocGameBuffersData3:
         ds.b    $4                              ; 02960
-dat_002_02964:
+; AllocGameBuffersData4 - Data used by AllocGameBuffers.
+AllocGameBuffersData4:
         ds.b    $4                              ; 02964
-dat_002_02968:
+; AllocGameBuffersData5 - Data used by AllocGameBuffers.
+AllocGameBuffersData5:
         ds.b    $4                              ; 02968
 ; ConfigBuffer - The pilot's flight log (df0:config, 78 bytes; disk/FILES.md has its fields):
 ; +$02 copied to Difficulty, +$08 the accumulated flight time in seconds, +$36 missions
@@ -239,26 +245,35 @@ CodeHashValue:
 ; TimerRequest - The timer device's IO request (OpenTimer, ReadTime).
 TimerRequest:
         ds.b    $8                              ; 0297C
-dat_002_02984:
+; TimerCommand - The timer request's fields (command, flags...: ReadTime).
+TimerCommand:
         ds.b    $1                              ; 02984
-dat_002_02985:
+; ReadTimeData1 - Data used by ReadTime.
+ReadTimeData1:
         ds.b    $1                              ; 02985
-dat_002_02986:
+; ReadTimeData2 - Data used by ReadTime.
+ReadTimeData2:
         ds.b    $4                              ; 02986
-dat_002_0298A:
+; ReadTimeData3 - Data used by ReadTime.
+ReadTimeData3:
         ds.b    $E                              ; 0298A
-dat_002_02998:
+; ReadTimeData4 - Data used by ReadTime.
+ReadTimeData4:
         ds.b    $4                              ; 02998
-dat_002_0299C:
+; TimerSeconds - The time read (seconds; ReadTime).
+TimerSeconds:
         ds.b    $4                              ; 0299C
-dat_002_029A0:
+; TimerMicros - The time read (microseconds).
+TimerMicros:
         ds.b    $4                              ; 029A0
 ; KeyboardRequest - The keyboard device's IO request (OpenKeyboard, ReadKeyEvent).
 KeyboardRequest:
         ds.b    $4                              ; 029A4
-dat_002_029A8:
+; OpenKeyboardData1 - Data used by OpenKeyboard.
+OpenKeyboardData1:
         ds.b    $2                              ; 029A8
-dat_002_029AA:
+; OpenKeyboardData2 - Data used by OpenKeyboard.
+OpenKeyboardData2:
         ds.b    $16                             ; 029AA
 ; LastKey - The key code last pushed (PushKey, GetKey).
 LastKey:
@@ -282,13 +297,17 @@ JoystickRequest:
 ; (AddMouseInterrupt).
 MouseInterruptNode:
         ds.b    $8                              ; 029E8
-dat_002_029F0:
+; AddMouseInterruptData1 - Data used by AddMouseInterrupt.
+AddMouseInterruptData1:
         ds.b    $1                              ; 029F0
-dat_002_029F1:
+; AddMouseInterruptData2 - Data used by AddMouseInterrupt.
+AddMouseInterruptData2:
         ds.b    $1                              ; 029F1
-dat_002_029F2:
+; AddMouseInterruptData3 - Data used by AddMouseInterrupt.
+AddMouseInterruptData3:
         ds.b    $8                              ; 029F2
-dat_002_029FA:
+; AddMouseInterruptData4 - Data used by AddMouseInterrupt.
+AddMouseInterruptData4:
         ds.b    $4                              ; 029FA
 ; MouseLastX - The mouse counter's last X (MouseInterrupt).
 MouseLastX:

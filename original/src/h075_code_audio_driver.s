@@ -107,12 +107,12 @@ AudioRestoreVector:
 
 ;-------------------------------------------------------------------------------
 ; AddSoundVBlank - Adds the sound's vertical blank interrupt server (exec AddIntServer,
-; INTB_VERTB, dat_074_000E8).
+; INTB_VERTB, SoundVBlankNode).
 ;-------------------------------------------------------------------------------
 AddSoundVBlank:
         movem.l d0-d7/a0-a6,-(a7)               ; 000F2
         move.w  #$5,d0                          ; 000F6
-        lea.l   (dat_074_000E8).l,a1            ; 000FA
+        lea.l   (SoundVBlankNode).l,a1          ; 000FA
         movea.l $4.w,a6                         ; 00100
         movea.l a6,a0                           ; 00104
         adda.l  #$ffffff58,a0                   ; 00106
@@ -126,7 +126,7 @@ AddSoundVBlank:
 RemSoundVBlank:
         movem.l d0-d7/a0-a6,-(a7)               ; 00114
         move.w  #$5,d0                          ; 00118
-        lea.l   (dat_074_000E8).l,a1            ; 0011C
+        lea.l   (SoundVBlankNode).l,a1          ; 0011C
         movea.l $4.w,a6                         ; 00122
         movea.l a6,a0                           ; 00126
         adda.l  #$ffffff52,a0                   ; 00128

@@ -9,7 +9,7 @@
 
 ;-------------------------------------------------------------------------------
 ; DrawGroundDots - Stage $90: when low enough (the limit by HeightBand), dots in colour 3
-; scattered on the ground round the viewer (patterns from dat_025_00754 and on), so that height
+; scattered on the ground round the viewer (patterns from DrawGroundDotsData2 and on), so that height
 ; and speed can be judged over plain ground.
 ;-------------------------------------------------------------------------------
 DrawGroundDots:
@@ -49,16 +49,16 @@ l_025_00066:
         clr.w   -$16(a6)                        ; 00088
         cmp.w   d3,d0                           ; 0008C
         blt.b   l_025_0009E                     ; 0008E
-        lea.l   (dat_025_00754).l,a3            ; 00090
+        lea.l   (DrawGroundDotsData2).l,a3      ; 00090
         move.w  #$3,-$16(a6)                    ; 00096
         bra.b   l_025_000B0                     ; 0009C
 l_025_0009E:
         cmp.w   d4,d0                           ; 0009E
         blt.b   l_025_000AA                     ; 000A0
-        lea.l   (dat_025_00998).l,a3            ; 000A2
+        lea.l   (DrawGroundDotsData3).l,a3      ; 000A2
         bra.b   l_025_000B0                     ; 000A8
 l_025_000AA:
-        lea.l   (dat_025_00B7C).l,a3            ; 000AA
+        lea.l   (DrawGroundDotsData4).l,a3      ; 000AA
 l_025_000B0:
         move.w  (a3)+,-$8(a6)                   ; 000B0
         move.w  (a3)+,-$1a(a6)                  ; 000B4
@@ -81,14 +81,14 @@ l_025_000B0:
         move.w  -$4(a6),d0                      ; 000E8
         asl.w   d1,d0                           ; 000EC
         move.w  d0,-$4(a6)                      ; 000EE
-        move.l  #dat_025_00D0C,-$c(a6)          ; 000F2
-        move.l  #dat_025_00D24,-$10(a6)         ; 000FA
-        move.l  #dat_025_00D3C,-$14(a6)         ; 00102
+        move.l  #DrawGroundDotsData6,-$c(a6)    ; 000F2
+        move.l  #DrawGroundDotsData8,-$10(a6)   ; 000FA
+        move.l  #DrawGroundDotsData10,-$14(a6)  ; 00102
         bra.b   l_025_00124                     ; 0010A
 l_025_0010C:
-        move.l  #dat_025_00D00,-$c(a6)          ; 0010C
-        move.l  #dat_025_00D18,-$10(a6)         ; 00114
-        move.l  #dat_025_00D30,-$14(a6)         ; 0011C
+        move.l  #DrawGroundDotsData5,-$c(a6)    ; 0010C
+        move.l  #DrawGroundDotsData7,-$10(a6)   ; 00114
+        move.l  #DrawGroundDotsData9,-$14(a6)   ; 0011C
 l_025_00124:
         lea.l   (ViewMatrix01).l,a0             ; 00124
         move.w  -$4(a6),d2                      ; 0012A
@@ -101,7 +101,7 @@ l_025_00124:
         muls.w  $c(a0),d3                       ; 0013C
         asr.l   #$8,d3                          ; 00140
         movem.w d1-d3,-$20(a6)                  ; 00142
-        move.w  #$3,(dat_072_03000).l           ; 00148
+        move.w  #$3,(ScreenPolygon).l           ; 00148
 l_025_00150:
         movem.w (a3)+,d0-d2                     ; 00150
         move.w  d2,-$18(a6)                     ; 00154
@@ -119,7 +119,7 @@ l_025_0016C:
         asr.w   #$8,d4                          ; 0016E
         lsl.w   #$5,d4                          ; 00170
         add.w   d3,d4                           ; 00172
-        lea.l   (dat_025_00354).l,a4            ; 00174
+        lea.l   (DrawGroundDotsData1).l,a4      ; 00174
         move.b  (a4,d4.w),d3                    ; 0017A
         ext.w   d3                              ; 0017E
         cmp.w   -$1a(a6),d3                     ; 00180
@@ -148,7 +148,7 @@ l_025_001AA:
         movem.w -$20(a6),d1/d5/d7               ; 001B6
         tst.w   d2                              ; 001BC
         bge.w   l_025_00292                     ; 001BE
-        lea.l   (dat_072_03002).l,a1            ; 001C2
+        lea.l   (ScreenPolygonPoints).l,a1      ; 001C2
         movea.l (a6,d2.w),a2                    ; 001C8
 l_025_001CC:
         movem.w (a2)+,d3-d4                     ; 001CC
@@ -210,7 +210,7 @@ l_025_00248:
         neg.w   d2                              ; 00252
         move.w  d6,(a1)+                        ; 00254
         move.w  d2,(a1)+                        ; 00256
-        cmpa.l  #dat_072_0300E,a1               ; 00258
+        cmpa.l  #ScreenPolygonLimit,a1          ; 00258
         blt.w   l_025_001CC                     ; 0025E
         move.l  a3,-(a7)                        ; 00262
         jsr     (FillPolygon).l                 ; 00264
@@ -317,7 +317,8 @@ l_025_00348:
 l_025_0034E:
         move.w  #$b3,d2                         ; 0034E
         bra.b   l_025_00308                     ; 00352
-dat_025_00354:
+; DrawGroundDotsData1 - Data used by DrawGroundDots.
+DrawGroundDotsData1:
 	dc.b	$01,$01,$01,$01,$02,$02,$02,$02,$03,$03,$03,$03,$04,$04,$04,$04
 	dc.b	$05,$05,$05,$05,$06,$06,$06,$06,$07,$07,$07,$07,$08,$08,$08,$08
 	dc.b	$01,$01,$01,$01,$02,$02,$02,$02,$03,$03,$03,$03,$04,$04,$04,$04
@@ -382,7 +383,8 @@ dat_025_00354:
 	dc.b	$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09
 	dc.b	$08,$08,$08,$08,$08,$08,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09
 	dc.b	$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09
-dat_025_00754:
+; DrawGroundDotsData2 - Data used by DrawGroundDots.
+DrawGroundDotsData2:
 	dc.b	$00,$60,$00,$02,$05,$40,$06,$C0,$FF,$EC,$01,$60,$05,$80,$FF,$EC
 	dc.b	$06,$C0,$03,$C0,$FF,$EC,$02,$80,$00,$80,$FF,$EC,$01,$00,$07,$00
 	dc.b	$FF,$F0,$04,$00,$05,$00,$FF,$F0,$00,$80,$03,$00,$FF,$F0,$06,$00
@@ -420,7 +422,8 @@ dat_025_00754:
 	dc.b	$FE,$C0,$F3,$C0,$00,$02,$FA,$80,$F0,$80,$00,$01,$F5,$40,$F6,$C0
 	dc.b	$00,$02,$F1,$60,$F5,$80,$00,$02,$F6,$C0,$F3,$C0,$00,$01,$F2,$80
 	dc.b	$F0,$80,$00,$01
-dat_025_00998:
+; DrawGroundDotsData3 - Data used by DrawGroundDots.
+DrawGroundDotsData3:
 	dc.b	$00,$50,$00,$03,$05,$40,$06,$C0,$FF,$EC,$01,$60,$05,$80,$FF,$EC
 	dc.b	$06,$C0,$03,$C0,$FF,$EC,$02,$80,$00,$80,$FF,$EC,$01,$00,$07,$00
 	dc.b	$FF,$F0,$04,$00,$05,$00,$FF,$F0,$00,$80,$03,$00,$FF,$F0,$06,$00
@@ -452,7 +455,8 @@ dat_025_00998:
 	dc.b	$FE,$C0,$F3,$C0,$00,$01,$FA,$80,$F0,$80,$00,$01,$F5,$40,$F6,$C0
 	dc.b	$00,$01,$F1,$60,$F5,$80,$00,$01,$F6,$C0,$F3,$C0,$00,$01,$F2,$80
 	dc.b	$F0,$80,$00,$01
-dat_025_00B7C:
+; DrawGroundDotsData4 - Data used by DrawGroundDots.
+DrawGroundDotsData4:
 	dc.b	$00,$40,$00,$04,$05,$40,$06,$C0,$FF,$EC,$01,$60,$05,$80,$FF,$EC
 	dc.b	$06,$C0,$03,$C0,$FF,$EC,$02,$80,$00,$80,$FF,$EC,$FD,$40,$06,$C0
 	dc.b	$FF,$EC,$F9,$60,$05,$80,$FF,$EC,$FE,$C0,$03,$C0,$FF,$EC,$FA,$80
@@ -478,17 +482,23 @@ dat_025_00B7C:
 	dc.b	$FE,$C0,$F3,$C0,$00,$01,$FA,$80,$F0,$80,$00,$01,$F5,$40,$F6,$C0
 	dc.b	$00,$01,$F1,$60,$F5,$80,$00,$01,$F6,$C0,$F3,$C0,$00,$01,$F2,$80
 	dc.b	$F0,$80,$00,$01
-dat_025_00D00:
+; DrawGroundDotsData5 - Data used by DrawGroundDots.
+DrawGroundDotsData5:
 	dc.b	$00,$02,$FF,$FE,$FF,$FE,$FF,$FE,$00,$00,$00,$01
-dat_025_00D0C:
+; DrawGroundDotsData6 - Data used by DrawGroundDots.
+DrawGroundDotsData6:
 	dc.b	$00,$0B,$FF,$F5,$FF,$F5,$FF,$F5,$00,$00,$00,$08
-dat_025_00D18:
+; DrawGroundDotsData7 - Data used by DrawGroundDots.
+DrawGroundDotsData7:
 	dc.b	$00,$03,$FF,$FD,$FF,$FD,$FF,$FD,$00,$00,$00,$02
-dat_025_00D24:
+; DrawGroundDotsData8 - Data used by DrawGroundDots.
+DrawGroundDotsData8:
 	dc.b	$00,$15,$FF,$EB,$FF,$EB,$FF,$EB,$00,$00,$00,$10
-dat_025_00D30:
+; DrawGroundDotsData9 - Data used by DrawGroundDots.
+DrawGroundDotsData9:
 	dc.b	$00,$05,$FF,$FB,$FF,$FB,$FF,$FB,$00,$00,$00,$04
-dat_025_00D3C:
+; DrawGroundDotsData10 - Data used by DrawGroundDots.
+DrawGroundDotsData10:
 	dc.b	$00,$2B,$FF,$D5,$FF,$D5,$FF,$D5,$00,$00,$00,$20
 h025_end:
 	ifnd	HUNKEXE				; the hunk's tables, as in the original file

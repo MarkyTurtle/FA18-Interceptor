@@ -393,8 +393,8 @@ sky is colour 5 there too. On land the bay's water is then drawn on the ground a
 polygons (`DrawWaterAreas`, hunk 28), and a small orange mark in a fixed direction is probably
 the sun (`DrawSun`). The same sky polygon, made with the instrument's own matrix and shrunk into
 its box, is the panel's **attitude indicator** (`DrawAttitudeIndicator`). The in-flight palette
-is the first row of `dat_021_00080` (16 rows, darker each row, stepped through to fade in and
-out); `dat_021_00040` is the all-yellow palette flashed while `FlashCount` counts down.
+is the first row of `FlightPalette` (16 rows, darker each row, stepped through to fade in and
+out); `FlashPalette` is the all-yellow palette flashed while `FlashCount` counts down.
 
 * The **camera** (`SetupCamera`) is the cockpit, or in the outside views a point near the viewed
   object (`SetOutsideCamera`); `CameraX`, `CameraY`, `CameraZ` and the viewer's cell are what

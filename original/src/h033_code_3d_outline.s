@@ -7,7 +7,9 @@
 ; Hunk 33: CODE, $424 bytes
 ;===============================================================================
 	CODE_HUNK	h033
-dat_033_00000:
+; ViewCorners - The view's four corner directions (MakeSkyPolygon turns them by the view
+; matrix).
+ViewCorners:
 	dc.b	$28,$00,$DC,$00,$D5,$00,$DA,$00,$D8,$00,$24,$00,$26,$00,$2B,$00
 
 ;-------------------------------------------------------------------------------
@@ -34,9 +36,9 @@ MakeSkyPolygonPanel:
         bra.b   l_033_00038                     ; 00030
 
 ;-------------------------------------------------------------------------------
-; MakeSkyPolygon - Turns the view's four corner directions (dat_033_00000) by
+; MakeSkyPolygon - Turns the view's four corner directions (ViewCorners) by
 ; the view matrix (ViewMatrix), finds where the horizon cuts the view's edges (hunk 34), and
-; builds the polygon of the view above the horizon - the sky - at dat_072_03000 from the two
+; builds the polygon of the view above the horizon - the sky - at ScreenPolygon from the two
 ; horizon points (PutEdge) and the corners on the sky's side. Returns d0 = 0 (SkyPolygonReady
 ; set) when there is sky to fill, 1 when there is none.
 ;-------------------------------------------------------------------------------
@@ -45,8 +47,8 @@ MakeSkyPolygon:
 l_033_00038:
         lea.l   (a2),a4                         ; 00038
         link.w  a6,#$fffe                       ; 0003A
-        lea.l   dat_033_00000(pc),a1            ; 0003E
-        lea.l   (dat_072_03000).l,a3            ; 00042
+        lea.l   ViewCorners(pc),a1              ; 0003E
+        lea.l   (ScreenPolygon).l,a3            ; 00042
         lea.l   -$2(a6),a0                      ; 00048
         move.w  #$4,(a0)                        ; 0004C
 l_033_00050:
@@ -151,7 +153,7 @@ l_033_00134:
 l_033_0014E:
         bra.w   l_033_00374                     ; 0014E
 l_033_00152:
-        lea.l   (dat_072_03000).l,a1            ; 00152
+        lea.l   (ScreenPolygon).l,a1            ; 00152
         move.w  #$4,(a1)+                       ; 00158
         tst.b   (OutsideView).l                 ; 0015C
         bne.b   l_033_00170                     ; 00162
@@ -162,7 +164,7 @@ l_033_00170:
         bsr.w   PutEdge                         ; 00170
         bsr.w   PutCornerBR                     ; 00174
         bsr.w   PutCornerBL                     ; 00178
-        lea.l   (dat_072_0300A).l,a1            ; 0017C
+        lea.l   (ScreenPolygonCorner).l,a1      ; 0017C
         bsr.w   PutCornerTR                     ; 00182
         bsr.w   PutCornerTL                     ; 00186
         bra.w   l_033_00350                     ; 0018A
@@ -172,7 +174,7 @@ l_033_0018E:
         bsr.w   PutCornerBL                     ; 00196
         bra.w   l_033_00350                     ; 0019A
 l_033_0019E:
-        lea.l   (dat_072_03000).l,a1            ; 0019E
+        lea.l   (ScreenPolygon).l,a1            ; 0019E
         move.w  #$5,(a1)+                       ; 001A4
         move.w  (FlightBits).l,d6               ; 001A8
         andi.w  #$2,d6                          ; 001AE
@@ -181,7 +183,7 @@ l_033_0019E:
         bsr.w   PutCornerTR                     ; 001B8
         bsr.w   PutCornerBR                     ; 001BC
         bsr.w   PutCornerBL                     ; 001C0
-        lea.l   (dat_072_03000).l,a1            ; 001C4
+        lea.l   (ScreenPolygon).l,a1            ; 001C4
         move.w  #$3,(a1)+                       ; 001CA
         addq.w  #$8,a1                          ; 001CE
         bsr.w   PutCornerTL                     ; 001D0
@@ -193,7 +195,7 @@ l_033_001D8:
         bsr.w   PutCornerBL                     ; 001E4
         bra.w   l_033_00350                     ; 001E8
 l_033_001EC:
-        lea.l   (dat_072_03000).l,a1            ; 001EC
+        lea.l   (ScreenPolygon).l,a1            ; 001EC
         move.w  #$5,(a1)+                       ; 001F2
         move.w  (FlightBits).l,d6               ; 001F6
         andi.w  #$2,d6                          ; 001FC
@@ -208,13 +210,13 @@ l_033_00216:
         bsr.w   PutCornerBR                     ; 0021A
         bsr.w   PutCornerTR                     ; 0021E
         bsr.w   PutCornerTL                     ; 00222
-        lea.l   (dat_072_03000).l,a1            ; 00226
+        lea.l   (ScreenPolygon).l,a1            ; 00226
         move.w  #$3,(a1)+                       ; 0022C
         addq.w  #$8,a1                          ; 00230
         bsr.w   PutCornerBL                     ; 00232
         bra.w   l_033_00350                     ; 00236
 l_033_0023A:
-        lea.l   (dat_072_03000).l,a1            ; 0023A
+        lea.l   (ScreenPolygon).l,a1            ; 0023A
         move.w  #$5,(a1)+                       ; 00240
         move.w  (FlightBits).l,d6               ; 00244
         andi.w  #$2,d6                          ; 0024A
@@ -223,7 +225,7 @@ l_033_0023A:
         bsr.w   PutCornerBR                     ; 00254
         bsr.w   PutCornerBL                     ; 00258
         bsr.w   PutCornerTL                     ; 0025C
-        lea.l   (dat_072_03000).l,a1            ; 00260
+        lea.l   (ScreenPolygon).l,a1            ; 00260
         move.w  #$3,(a1)+                       ; 00266
         addq.w  #$8,a1                          ; 0026A
         bsr.w   PutCornerTR                     ; 0026C
@@ -235,14 +237,14 @@ l_033_00274:
         bsr.w   PutCornerTL                     ; 00280
         bra.w   l_033_00350                     ; 00284
 l_033_00288:
-        lea.l   (dat_072_03000).l,a1            ; 00288
+        lea.l   (ScreenPolygon).l,a1            ; 00288
         move.w  #$4,(a1)+                       ; 0028E
         cmpi.w  #$3840,(ViewRollAngle).l        ; 00292
         bge.b   l_033_002BA                     ; 0029A
         bsr.w   PutEdge                         ; 0029C
         bsr.w   PutCornerBL                     ; 002A0
         bsr.w   PutCornerTL                     ; 002A4
-        lea.l   (dat_072_0300A).l,a1            ; 002A8
+        lea.l   (ScreenPolygonCorner).l,a1      ; 002A8
         bsr.w   PutCornerBR                     ; 002AE
         bsr.w   PutCornerTR                     ; 002B2
         bra.w   l_033_00350                     ; 002B6
@@ -252,7 +254,7 @@ l_033_002BA:
         bsr.w   PutCornerTL                     ; 002C2
         bra.w   l_033_00350                     ; 002C6
 l_033_002CA:
-        lea.l   (dat_072_03000).l,a1            ; 002CA
+        lea.l   (ScreenPolygon).l,a1            ; 002CA
         move.w  #$5,(a1)+                       ; 002D0
         move.w  (FlightBits).l,d6               ; 002D4
         andi.w  #$2,d6                          ; 002DA
@@ -267,7 +269,7 @@ l_033_002F4:
         bsr.w   PutCornerTR                     ; 002F8
         bsr.w   PutCornerTL                     ; 002FC
         bsr.w   PutCornerBL                     ; 00300
-        lea.l   (dat_072_03000).l,a1            ; 00304
+        lea.l   (ScreenPolygon).l,a1            ; 00304
         move.w  #$3,(a1)+                       ; 0030A
         addq.w  #$8,a1                          ; 0030E
         bsr.w   PutCornerBR                     ; 00310
@@ -279,7 +281,7 @@ l_033_002F4:
 ; outside, above $3840); otherwise no sky at all.
 ;-------------------------------------------------------------------------------
 SkyFillsView:
-        lea.l   (dat_072_03000).l,a1            ; 00318
+        lea.l   (ScreenPolygon).l,a1            ; 00318
         move.w  #$4,(a1)+                       ; 0031E
         bsr.w   PutCornerTL                     ; 00322
         bsr.w   PutCornerTR                     ; 00326
@@ -310,13 +312,13 @@ l_033_00374:
         rts                                     ; 0037E
 
 ;-------------------------------------------------------------------------------
-; PutEdge - PutEdge(d0, d1 = two projected points of dat_072_03600, 8 bytes each): writes their
+; PutEdge - PutEdge(d0, d1 = two projected points of ClipCorners, 8 bytes each): writes their
 ; screen positions at (a1)+, as (319 - x, 179 - y).
 ;-------------------------------------------------------------------------------
 PutEdge:
         asl.w   #$3,d0                          ; 00380
         asl.w   #$3,d1                          ; 00382
-        lea.l   (dat_072_03600).l,a0            ; 00384
+        lea.l   (ClipCorners).l,a0              ; 00384
         move.w  #$13f,d2                        ; 0038A
         move.w  d2,d4                           ; 0038E
         sub.w   (a0,d0.w),d2                    ; 00390

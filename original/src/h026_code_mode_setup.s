@@ -757,22 +757,26 @@ CameraShots:
         dc.l    l_026_00E10                     ; 00824
         dc.l    CameraShot7                     ; 00828
         dc.l    CameraShot8                     ; 0082C
-dat_026_00830:
+; UpdateCameraData1 - Data used by UpdateCamera.
+UpdateCameraData1:
 	dc.b	$00,$00,$00,$03,$00,$0F,$FF,$F7,$00,$03,$00,$0E,$FF,$EF,$00,$03
 	dc.b	$00,$00,$FF,$F7,$00,$03,$FF,$F2,$00,$00,$00,$03,$FF,$F2,$00,$09
 	dc.b	$00,$03,$FF,$F2,$00,$11,$00,$03,$00,$00,$00,$09,$00,$03,$00,$0E
 	dc.b	$00,$00,$00,$12,$FF,$FB,$00,$00,$FF,$F7,$00,$0C
-dat_026_0086C:
+; UpdateCameraData2 - Data used by UpdateCamera.
+UpdateCameraData2:
 	dc.b	$00,$00,$00,$03,$00,$12,$FF,$F7,$00,$03,$00,$11,$FF,$EE,$00,$03
 	dc.b	$00,$00,$FF,$F7,$00,$03,$FF,$F2,$00,$00,$00,$03,$FF,$EE,$00,$09
 	dc.b	$00,$03,$FF,$F2,$00,$12,$00,$03,$00,$00,$00,$09,$00,$03,$00,$11
 	dc.b	$00,$00,$00,$15,$FF,$FB,$00,$00,$FF,$F1,$00,$11
-dat_026_008A8:
+; UpdateCameraData3 - Data used by UpdateCamera.
+UpdateCameraData3:
 	dc.b	$00,$00,$00,$08,$00,$30,$FF,$E0,$00,$04,$00,$2C,$FF,$D4,$00,$04
 	dc.b	$00,$00,$FF,$E4,$00,$04,$FF,$D8,$00,$00,$00,$04,$FF,$D0,$00,$1C
 	dc.b	$00,$04,$FF,$D8,$00,$2C,$00,$04,$00,$00,$00,$20,$00,$04,$00,$2C
 	dc.b	$00,$00,$00,$30,$FF,$F4,$00,$00,$FF,$E0,$00,$30
-dat_026_008E4:
+; UpdateCameraData4 - Data used by UpdateCamera.
+UpdateCameraData4:
 	dc.b	$00,$01,$00,$09,$00,$14,$FF,$F2,$00,$0C,$00,$0F,$FF,$EC,$00,$0C
 	dc.b	$00,$01,$FF,$F2,$00,$0C,$FF,$F1,$00,$01,$00,$09,$FF,$EC,$00,$0E
 	dc.b	$00,$06,$FF,$F1,$00,$14,$00,$06,$00,$01,$00,$0E,$00,$06,$00,$0F
@@ -815,7 +819,7 @@ l_026_00984:
         move.b  d0,d7                           ; 00998
         cmpi.b  #$30,d0                         ; 0099A
         bne.b   l_026_009A8                     ; 0099E
-        lea.l   dat_026_008E4(pc),a1            ; 009A0
+        lea.l   UpdateCameraData4(pc),a1        ; 009A0
         bra.w   l_026_00A0E                     ; 009A4
 l_026_009A8:
         move.w  $68(a0),d0                      ; 009A8
@@ -846,13 +850,13 @@ l_026_009EE:
         beq.b   l_026_00A04                     ; 009F4
         cmpi.b  #$14,$62(a0)                    ; 009F6
         beq.b   l_026_00A0A                     ; 009FC
-        lea.l   dat_026_00830(pc),a1            ; 009FE
+        lea.l   UpdateCameraData1(pc),a1        ; 009FE
         bra.b   l_026_00A0E                     ; 00A02
 l_026_00A04:
-        lea.l   dat_026_0086C(pc),a1            ; 00A04
+        lea.l   UpdateCameraData2(pc),a1        ; 00A04
         bra.b   l_026_00A0E                     ; 00A08
 l_026_00A0A:
-        lea.l   dat_026_008A8(pc),a1            ; 00A0A
+        lea.l   UpdateCameraData3(pc),a1        ; 00A0A
 l_026_00A0E:
         move.b  (ViewChoice).l,d0               ; 00A0E
         ext.w   d0                              ; 00A14

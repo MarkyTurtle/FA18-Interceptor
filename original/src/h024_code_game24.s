@@ -577,8 +577,8 @@ l_024_0067C:
         cmpi.w  #$a,d5                          ; 0069C
         bge.w   l_024_00744                     ; 006A0
         addq.w  #$1,d5                          ; 006A4
-        lea.l   (dat_072_05400).l,a0            ; 006A6
-        lea.l   (dat_072_0542C).l,a1            ; 006AC
+        lea.l   (CellItemPointers).l,a0         ; 006A6
+        lea.l   (CellItemPointers2).l,a1        ; 006AC
         move.w  d5,d0                           ; 006B2
         asl.w   #$2,d0                          ; 006B4
         move.l  (a0,d0.w),d1                    ; 006B6

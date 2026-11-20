@@ -310,8 +310,8 @@
 ;         (MakeSecurityCode, CheckSecurityAnswer).
 	include	"src/h020_code_text_log.s"
 
-; Hunk 21: Data: the palettes - the in-flight palette's 16 fade levels (dat_021_00080) and
-;         the yellow flash (dat_021_00040).
+; Hunk 21: Data: the palettes - the in-flight palette's 16 fade levels (FlightPalette) and
+;         the yellow flash (FlashPalette).
 	include	"src/h021_code_colours.s"
 
 ; Hunk 22: UpdateObject (each object's frame: states, computer pilots, warnings), RecordFrame

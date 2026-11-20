@@ -109,20 +109,21 @@ DrawRadar:
         bra.w   l_038_0026A                     ; 00144
 l_038_00148:
         move.w  #$ffff,(RadarBlips).l           ; 00148
-        move.w  #$ffff,(dat_072_063B4).l        ; 00150
+        move.w  #$ffff,(RadarObjectList).l      ; 00150
 l_038_00158:
         bsr.w   DrawRadarLines                  ; 00158
         bsr.w   DrawRadarBlips                  ; 0015C
         rts                                     ; 00160
-dat_038_00162:
+; DrawRadarLinesData1 - Data used by DrawRadarLines.
+DrawRadarLinesData1:
 	dc.b	$00,$9A,$00,$A3,$00,$8B,$00,$93,$00,$A2,$00,$A3,$00,$B1,$00,$93
 
 ;-------------------------------------------------------------------------------
-; DrawRadarLines - The scope's two lines (dat_038_00162), offset by ViewX / ViewY.
+; DrawRadarLines - The scope's two lines (DrawRadarLinesData1), offset by ViewX / ViewY.
 ;-------------------------------------------------------------------------------
 DrawRadarLines:
         move.w  #$3,(DrawColour).l              ; 00172
-        lea.l   dat_038_00162(pc),a0            ; 0017A
+        lea.l   DrawRadarLinesData1(pc),a0      ; 0017A
         movem.w (a0)+,d0-d3                     ; 0017E
         add.w   (ViewX).l,d0                    ; 00182
         blt.b   l_038_001B4                     ; 00188
@@ -446,7 +447,7 @@ l_038_00590:
         movea.l (a7)+,a0                        ; 00596
         tst.w   (DisplayBuffer).l               ; 00598
         bne.b   l_038_005A8                     ; 0059E
-        cmpa.l  #dat_072_063B4,a2               ; 005A0
+        cmpa.l  #RadarObjectList,a2             ; 005A0
         bra.b   l_038_005AE                     ; 005A6
 l_038_005A8:
         cmpa.l  #h072_end,a2                    ; 005A8

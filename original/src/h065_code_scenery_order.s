@@ -13,26 +13,32 @@ DistanceCurve:
 	dc.b	'@DHLPTWZ]`bcdefghijklmnopqrstuvwxyz{|}~'
 	dc.b	$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F
 	dc.b	$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F
-dat_065_00040:
+; BuildSceneryListData4 - Data used by BuildSceneryList.
+BuildSceneryListData4:
 	dc.b	$00,$00,$01,$01,$00,$00,$01,$01,$02,$02,$03,$03,$02,$02,$03,$03
-dat_065_00050:
+; BuildSceneryListData5 - Data used by BuildSceneryList.
+BuildSceneryListData5:
 	dc.b	$00,$01,$02,$03,$04,$05,$06,$07,$07,$06,$05,$04,$03,$02,$01,$00
 	dc.b	$03,$02,$01,$00,$07,$06,$05,$04,$04,$05,$06,$07,$00,$01,$02,$03
-dat_065_00070:
+; BuildSceneryListData6 - Data used by BuildSceneryList.
+BuildSceneryListData6:
 	dc.b	$00,$01,$01,$00,$02,$03,$03,$02,$02,$03,$03,$02,$00,$01,$01,$00
-dat_065_00080:
+; BuildSceneryListData7 - Data used by BuildSceneryList.
+BuildSceneryListData7:
 	dc.b	$00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,$0F
 	dc.b	$03,$02,$01,$00,$07,$06,$05,$04,$0B,$0A,$09,$08,$0F,$0E,$0D,$0C
 	dc.b	$0C,$0D,$0E,$0F,$08,$09,$0A,$0B,$04,$05,$06,$07,$00,$01,$02,$03
 	dc.b	$0F,$0E,$0D,$0C,$0B,$0A,$09,$08,$07,$06,$05,$04,$03,$02,$01,$00
-dat_065_000C0:
+; BuildSceneryListData8 - Data used by BuildSceneryList.
+BuildSceneryListData8:
 	dc.b	$00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,$0F
 	dc.b	$10,$11,$12,$13,$14,$00,$00,$00,$02,$01,$00,$05,$04,$03,$08,$07
 	dc.b	$06,$0B,$0A,$09,$0D,$0C,$0F,$0E,$11,$10,$14,$13,$12,$00,$00,$00
 	dc.b	$06,$07,$08,$03,$04,$05,$00,$01,$02,$12,$13,$14,$10,$11,$0E,$0F
 	dc.b	$0C,$0D,$09,$0A,$0B,$00,$00,$00,$08,$07,$06,$05,$04,$03,$02,$01
 	dc.b	$00,$14,$13,$12,$11,$10,$0F,$0E,$0D,$0C,$0B,$0A,$09,$00
-dat_065_0011E:
+; BuildSceneryListData9 - Data used by BuildSceneryList.
+BuildSceneryListData9:
 	dc.b	$00,$08,$00,$9E,$01,$37,$01,$CE,$09,$04,$0B,$0D,$0E,$0F,$0A,$06
 	dc.b	$08,$09,$0C,$0D,$0E,$0F,$0C,$04,$07,$0B,$0E,$0F,$0E,$06,$02,$03
 	dc.b	$06,$07,$0B,$0F,$00,$10,$00,$01,$02,$03,$04,$05,$06,$07,$08,$09
@@ -72,7 +78,8 @@ dat_065_0011E:
 	dc.b	$05,$06,$07,$0A,$0B,$08,$08,$00,$01,$02,$03,$04,$05,$06,$08,$04
 	dc.b	$10,$0C,$0D,$08,$0E,$04,$09,$0F,$00,$0A,$05,$0B,$01,$06,$07,$02
 	dc.b	$03,$FF
-dat_065_00380:
+; BuildSceneryListData10 - Data used by BuildSceneryList.
+BuildSceneryListData10:
 	dc.b	$00,$40,$00,$7B,$00,$B8,$00,$FF,$01,$47,$01,$86,$01,$C0,$02,$05
 	dc.b	$02,$4A,$02,$84,$02,$C3,$03,$09,$03,$4F,$03,$91,$03,$D2,$04,$0A
 	dc.b	$07,$F8,$08,$35,$08,$76,$08,$BA,$08,$FD,$09,$37,$09,$6F,$09,$A3
@@ -264,7 +271,8 @@ dat_065_00380:
 	dc.b	$00,$01,$07,$06,$04,$05,$0B,$0A,$08,$09,$0F,$0E,$0C,$0D,$03,$08
 	dc.b	$00,$04,$01,$05,$02,$06,$03,$07,$04,$07,$03,$02,$00,$06,$01,$04
 	dc.b	$05,$FF
-dat_065_00F62:
+; BuildSceneryListData11 - Data used by BuildSceneryList.
+BuildSceneryListData11:
 	dc.b	$00,$80,$00,$A6,$00,$B0,$00,$8D,$00,$A6,$00,$A6,$00,$B0,$00,$B0
 	dc.b	$00,$B8,$00,$B8,$00,$C0,$00,$C0,$00,$96,$00,$B8,$00,$C0,$00,$9F
 	dc.b	$00,$C6,$00,$E6,$00,$EE,$00,$CF,$00,$E6,$00,$E6,$00,$EE,$00,$EE

@@ -1053,7 +1053,7 @@ l_036_00A7C:
         bne.b   l_036_00AAC                     ; 00A88
         jsr     (MakeSkyPolygonPanel).l         ; 00A8A
         bne.b   l_036_00AAC                     ; 00A90
-        lea.l   (dat_072_03000).l,a0            ; 00A92
+        lea.l   (ScreenPolygon).l,a0            ; 00A92
         lea.l   (PanelSkyPolygon).l,a4          ; 00A98
         move.w  (a0)+,(a4)+                     ; 00A9E
         move.l  (a0)+,(a4)+                     ; 00AA0
@@ -1069,7 +1069,7 @@ l_036_00AB6:
         rts                                     ; 00AB6
 
 ;-------------------------------------------------------------------------------
-; FillPolygon - Fills the polygon at dat_072_03000 in DrawColour: the edges and the area fill
+; FillPolygon - Fills the polygon at ScreenPolygon in DrawColour: the edges and the area fill
 ; into one plane (FillPolygonPlane), then each plane of the colour set or cleared from it (or a
 ; patterned fill, FillPatterned). The 2D fill under ClipFillPolygon.
 ;-------------------------------------------------------------------------------
@@ -1189,7 +1189,7 @@ l_036_00C08:
         move.w  #$fff,d0                        ; 00C08
 l_036_00C0C:
         add.w   d7,d5                           ; 00C0C
-        move.l  #dat_062_00100,d7               ; 00C0E
+        move.l  #DrawPanelLampData1,d7          ; 00C0E
         movea.l (DrawPlanes).l,a2               ; 00C14
         move.l  $4(a2),d4                       ; 00C1A
         add.l   d1,d4                           ; 00C1E
@@ -1267,7 +1267,7 @@ l_036_00D0A:
 ;-------------------------------------------------------------------------------
 DrawAttitudeIndicator:
         lea.l   (PanelSkyPolygon).l,a0          ; 00D0C
-        lea.l   (dat_072_03000).l,a4            ; 00D12
+        lea.l   (ScreenPolygon).l,a4            ; 00D12
         move.w  (a0)+,d7                        ; 00D18
         ble.b   l_036_00D0A                     ; 00D1A
         move.w  d7,(a4)+                        ; 00D1C
@@ -1303,7 +1303,7 @@ FillPolygonPanel:
         bra.b   l_036_00D6C                     ; 00D64
 
 ;-------------------------------------------------------------------------------
-; FillPolygonPlane - Fills the polygon at dat_072_03000 (clipped to ClipY
+; FillPolygonPlane - Fills the polygon at ScreenPolygon (clipped to ClipY
 ; lines) into the one plane at FillPlane by blitter: finds its bounding box, draws its
 ; edges (DrawFillEdges) and area-fills the box in place (BLTCON1 $0A, descending inclusive
 ; fill). A polygon only a pixel or two across is plotted or drawn as a line instead. d0 = 0
@@ -1312,7 +1312,7 @@ FillPolygonPanel:
 FillPolygonPlane:
         movea.w (ClipY).l,a4                    ; 00D66
 l_036_00D6C:
-        lea.l   (dat_072_03000).l,a0            ; 00D6C
+        lea.l   (ScreenPolygon).l,a0            ; 00D6C
         move.w  (a0)+,d6                        ; 00D72
         subq.w  #$3,d6                          ; 00D74
         movem.w (a0)+,d0-d5                     ; 00D76
@@ -1440,7 +1440,7 @@ l_036_00E62:
         exg.l   d1,d2                           ; 00E62
         movem.w d0-d3,(FillBox).l               ; 00E64
         move.w  (DrawColour).l,(ColourBits).l   ; 00E6C
-        lea.l   (dat_072_03000).l,a2            ; 00E76
+        lea.l   (ScreenPolygon).l,a2            ; 00E76
         lea.l   (FillWork).l,a3                 ; 00E7C
         move.w  (a2)+,(a3)                      ; 00E82
         subq.w  #$1,(a3)                        ; 00E84
@@ -1455,7 +1455,7 @@ l_036_00E8C:
         bgt.b   l_036_00E8C                     ; 00E9C
         move.w  (a2)+,d0                        ; 00E9E
         move.w  (a2),d1                         ; 00EA0
-        movem.w (dat_072_03002).l,d2-d3         ; 00EA2
+        movem.w (ScreenPolygonPoints).l,d2-d3   ; 00EA2
         move.w  a4,-(a7)                        ; 00EAA
         bsr.w   DrawFillEdges                   ; 00EAC
         movea.w (a7)+,a4                        ; 00EB0
@@ -1620,7 +1620,7 @@ l_036_01052:
 
 ;-------------------------------------------------------------------------------
 ; FillPanelPlane - The attitude indicator's plane pass: combines the filled sky with the
-; instrument's mask (dat_062_00154) into the plane.
+; instrument's mask (FillPanelPlaneData1) into the plane.
 ;-------------------------------------------------------------------------------
 FillPanelPlane:
         movea.l (DrawPlanes).l,a2               ; 0106A
@@ -1635,7 +1635,7 @@ FillPanelPlane:
         add.w   d6,d6                           ; 01098
         add.w   d6,d6                           ; 0109A
         ext.l   d6                              ; 0109C
-        move.l  #dat_062_00154,d5               ; 0109E
+        move.l  #FillPanelPlaneData1,d5         ; 0109E
         add.l   d6,d5                           ; 010A4
         subq.l  #$2,d5                          ; 010A6
         move.w  d0,d4                           ; 010A8

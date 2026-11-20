@@ -15,7 +15,8 @@ s_ConsoleWindow:
 StrErrorNonTerminatedQuotedStri:
 	dc.b	'Error: non-terminated quoted string'
 	dc.b	$0A,$00
-dat_168_0004D:
+; MainData13 - Data used by __main.
+MainData13:
 	dc.b	$2A,$00,$00
 h168_end:
 	ifnd	HUNKEXE

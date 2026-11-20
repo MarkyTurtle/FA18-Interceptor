@@ -352,7 +352,7 @@ _getbuf:
         unlk    a6                              ; 0039C
         rts                                     ; 0039E
 l_120_003A0:
-        move.l  (dat_088_00000).l,-(a7)         ; 003A0
+        move.l  (GetbufData1).l,-(a7)           ; 003A0
         jsr     (malloc).l                      ; 003A6
         addq.l  #$4,a7                          ; 003AC
         movea.l $8(a6),a0                       ; 003AE
@@ -367,7 +367,7 @@ l_120_003A0:
         rts                                     ; 003C8
 l_120_003CA:
         movea.l $8(a6),a0                       ; 003CA
-        move.l  (dat_088_00000).l,$12(a0)       ; 003CE
+        move.l  (GetbufData1).l,$12(a0)         ; 003CE
         move.b  $10(a0),d0                      ; 003D6
         andi.b  #$f3,d0                         ; 003DA
         move.b  d0,$10(a0)                      ; 003DE

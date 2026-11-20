@@ -7,11 +7,11 @@ g = dm.g
 
 
 def palette(label=None):
-    """The game's palette in flight: the brightest of the 16 fade levels at dat_021_00080, which
+    """The game's palette in flight: the brightest of the 16 fade levels at FlightPalette, which
     the game loads into its view (the panel picture's own CMAP has colours 9 and 11 the other
     way round)."""
     if label is None:
-        return _palette('dat_021_00080')[:16]
+        return _palette('FlightPalette')[:16]
     if label == 'inst5':
         d = open(os.path.join(dm.ROOT if hasattr(dm, 'ROOT') else '', 'disk', 'files', 'F-18 Interceptor', 'pix', 'inst5'), 'rb').read()
         i = d.index(b'CMAP'); n = int.from_bytes(d[i + 4:i + 8], 'big'); c = d[i + 8:i + 8 + n]
@@ -92,7 +92,7 @@ def render(prims, pal, size=320, bg=(64, 64, 112), width=1):
 
 if __name__ == '__main__':
     import sys
-    pal = palette(sys.argv[2] if len(sys.argv) > 2 else 'dat_021_00000')
+    pal = palette(sys.argv[2] if len(sys.argv) > 2 else 'TitlePalette')
     a = sys.argv[1]
     prims = dm.draw(0, model=int(a[1:], 0)) if a.startswith('m') else dm.draw(int(a, 0))
     render(prims, pal).save('/tmp/out.png')

@@ -220,7 +220,7 @@ l_013_0021A:
 ; the camera, skips the next $12 bytes.
 ;-------------------------------------------------------------------------------
 ShapeSkipIfBack:
-        lea.l   (dat_072_03C04).l,a0            ; 00222
+        lea.l   (PlanePoints).l,a0              ; 00222
         lea.l   (VertexBuffer).l,a3             ; 00228
         movem.w (a2)+,d0-d2                     ; 0022E
         move.l  (a3,d0.w),(a0)+                 ; 00232
@@ -243,7 +243,7 @@ l_013_00258:
 ; triangle faces the camera.
 ;-------------------------------------------------------------------------------
 ShapePointIfFront:
-        lea.l   (dat_072_03C04).l,a0            ; 0025E
+        lea.l   (PlanePoints).l,a0              ; 0025E
         lea.l   (VertexBuffer).l,a3             ; 00264
         movem.w (a2)+,d0-d2                     ; 0026A
         move.l  (a3,d0.w),(a0)+                 ; 0026E
@@ -256,7 +256,7 @@ ShapePointIfFront:
         move.w  a3,d7                           ; 00288
         jsr     (FacesCamera).l                 ; 0028A
         bne.b   l_013_002B0                     ; 00290
-        movem.w (dat_072_03C04).l,d0-d2         ; 00292
+        movem.w (PlanePoints).l,d0-d2           ; 00292
         move.w  a3,(DrawColour).l               ; 0029A
         movem.l a1-a2,-(a7)                     ; 002A0
         jsr     (PlotPoint3D).l                 ; 002A4
@@ -291,7 +291,7 @@ ShapeLine:
         lea.l   (ClipDrawLine3D).l,a4           ; 002CC
 l_013_002D2:
         move.l  #$ffffffff,(FillPattern).l      ; 002D2
-        lea.l   (dat_072_04202).l,a0            ; 002DC
+        lea.l   (LineEnds).l,a0                 ; 002DC
         lea.l   (VertexBuffer).l,a3             ; 002E2
         move.w  (a2)+,d1                        ; 002E8
         move.l  (a3,d1.w),(a0)+                 ; 002EA
@@ -386,7 +386,7 @@ l_013_003B0:
         move.w  (a4),(a0)+                      ; 003BA
         and.w   (a4),d6                         ; 003BC
         blt.b   l_013_0040A                     ; 003BE
-        move.w  d7,(dat_072_03C02).l            ; 003C0
+        move.w  d7,(PolygonColourWord).l        ; 003C0
 l_013_003C6:
         movea.w (a2)+,a3                        ; 003C6
         move.w  a3,d7                           ; 003C8
@@ -434,7 +434,7 @@ l_013_00428:
         blt.b   l_013_0040E                     ; 0042A
         move.l  a4,-(a7)                        ; 0042C
         adda.w  d1,a4                           ; 0042E
-        lea.l   (dat_072_03C04).l,a0            ; 00430
+        lea.l   (PlanePoints).l,a0              ; 00430
         lea.l   (VertexBuffer).l,a3             ; 00436
         moveq   #$3,d7                          ; 0043C
         move.w  (a4)+,d1                        ; 0043E
@@ -459,7 +459,7 @@ l_013_0046C:
         move.w  $4(a3,d1.w),(a0)+               ; 00474
         and.w   -$2(a0),d6                      ; 00478
         blt.b   l_013_004B4                     ; 0047C
-        move.w  d7,(dat_072_03C02).l            ; 0047E
+        move.w  d7,(PolygonColourWord).l        ; 0047E
         movea.w (a4)+,a3                        ; 00484
         move.w  a3,d7                           ; 00486
         blt.b   l_013_004A0                     ; 00488
@@ -632,7 +632,7 @@ l_013_00622:
 l_013_00662:
         move.w  (a2)+,d7                        ; 00662
         addq.w  #$2,a2                          ; 00664
-        lea.l   (dat_072_03C02).l,a0            ; 00666
+        lea.l   (PolygonColourWord).l,a0        ; 00666
         move.w  d7,(a0)+                        ; 0066C
         move.w  d7,-$e(a6)                      ; 0066E
 l_013_00672:
@@ -763,7 +763,7 @@ l_013_00774:
         move.w  -$5e(a6),(DrawColour).l         ; 007B4
         tst.b   (HeightBandChanged).l           ; 007BC
         beq.w   l_013_0089C                     ; 007C2
-        lea.l   (dat_072_03C04).l,a0            ; 007C6
+        lea.l   (PlanePoints).l,a0              ; 007C6
         lea.l   (VertexBuffer).l,a3             ; 007CC
         move.l  $12(a0),$c(a0)                  ; 007D2
         move.w  $16(a0),$10(a0)                 ; 007D8
@@ -806,7 +806,7 @@ l_013_00816:
         move.w  -$5e(a6),(DrawColour).l         ; 0084A
         tst.b   (HeightBandChanged).l           ; 00852
         beq.b   l_013_0089C                     ; 00858
-        lea.l   (dat_072_03C04).l,a0            ; 0085A
+        lea.l   (PlanePoints).l,a0              ; 0085A
         lea.l   (VertexBuffer).l,a3             ; 00860
         movem.w (a3),d0-d2                      ; 00866
         movem.w d0-d2,(a0)                      ; 0086A
@@ -908,11 +908,11 @@ l_013_00958:
 
 ;-------------------------------------------------------------------------------
 ; ShapeLineGridOffset - A line grid across a face, with its corner vertices copied to
-; dat_072_03C04 first.
+; PlanePoints first.
 ;-------------------------------------------------------------------------------
 ShapeLineGridOffset:
         movem.l a1/a5,-(a7)                     ; 0096E
-        lea.l   (dat_072_03C04).l,a0            ; 00972
+        lea.l   (PlanePoints).l,a0              ; 00972
         lea.l   (VertexBuffer).l,a3             ; 00978
         move.w  (a2)+,d1                        ; 0097E
         lea.l   (a3,d1.w),a4                    ; 00980
@@ -940,7 +940,7 @@ l_013_009C0:
         subq.w  #$1,-$a(a6)                     ; 009C0
         blt.b   l_013_009F4                     ; 009C4
         moveq   #-1,d6                          ; 009C6
-        lea.l   (dat_072_04202).l,a0            ; 009C8
+        lea.l   (LineEnds).l,a0                 ; 009C8
         move.w  (a2)+,d1                        ; 009CE
         lea.l   (a3,d1.w),a4                    ; 009D0
         move.l  (a4)+,(a0)+                     ; 009D4
@@ -963,12 +963,12 @@ l_013_009F4:
 
 ;-------------------------------------------------------------------------------
 ; ShapeLineRow - Op $18: a count and two vertices: vertices evenly spaced between the two (into
-; dat_072_02A00), joined by lines; used by the Golden Gate's shapes (91, 92).
+; ExtraVertices), joined by lines; used by the Golden Gate's shapes (91, 92).
 ;-------------------------------------------------------------------------------
 ShapeLineRow:
         clr.w   -$7e(a6)                        ; 009FC
         lea.l   (VertexBuffer).l,a3             ; 00A00
-        lea.l   (dat_072_02A00).l,a4            ; 00A06
+        lea.l   (ExtraVertices).l,a4            ; 00A06
         lea.l   $c(a4),a0                       ; 00A0C
         move.w  (a2)+,d0                        ; 00A10
         move.w  d0,-$30(a6)                     ; 00A12
@@ -1041,7 +1041,7 @@ l_013_00AA2:
         dbra    d1,l_013_00AA2                  ; 00AB0
         move.w  (a2)+,(DrawColour).l            ; 00AB4
         movem.l a1-a2/a5,-(a7)                  ; 00ABA
-        lea.l   (dat_072_02A00).l,a4            ; 00ABE
+        lea.l   (ExtraVertices).l,a4            ; 00ABE
         subq.w  #$1,-$30(a6)                    ; 00AC4
 l_013_00AC8:
         movem.l (a4)+,d1-d6                     ; 00AC8
@@ -1069,7 +1069,7 @@ l_013_00AEA:
         bcc.b   l_013_00AF0                     ; 00AEC
         addq.w  #$1,d6                          ; 00AEE
 l_013_00AF0:
-        movem.w d1-d6,(dat_072_04202).l         ; 00AF0
+        movem.w d1-d6,(LineEnds).l              ; 00AF0
         move.l  a4,-(a7)                        ; 00AF8
         jsr     (ClipDrawLine3D).l              ; 00AFA
         or.w    d0,-$7e(a6)                     ; 00B00
@@ -1146,10 +1146,10 @@ SceneryFacing:
         neg.l   d2                              ; 00BAE
 l_013_00BB0:
         asr.l   #$4,d2                          ; 00BB0
-        lea.l   (dat_013_00BEC).l,a3            ; 00BB2
+        lea.l   (SceneryFacingData1).l,a3       ; 00BB2
         cmpi.l  #$ffffff80,(ViewOffsetY8).l     ; 00BB8
         bgt.b   l_013_00BCA                     ; 00BC2
-        lea.l   (dat_013_00C04).l,a3            ; 00BC4
+        lea.l   (SceneryFacingData2).l,a3       ; 00BC4
 l_013_00BCA:
         move.w  -$28(a6),d0                     ; 00BCA
         asr.w   #$4,d0                          ; 00BCE
@@ -1166,10 +1166,12 @@ l_013_00BDA:
 l_013_00BE8:
         moveq   #-1,d0                          ; 00BE8
         rts                                     ; 00BEA
-dat_013_00BEC:
+; SceneryFacingData1 - Data used by SceneryFacing.
+SceneryFacingData1:
 	dc.b	$00,$00,$00,$10,$00,$20,$01,$00,$02,$00,$04,$00,$08,$00,$0B,$00
 	dc.b	$0D,$00,$0E,$00,$0F,$00,$0F,$80
-dat_013_00C04:
+; SceneryFacingData2 - Data used by SceneryFacing.
+SceneryFacingData2:
 	dc.b	$00,$00,$00,$10,$00,$20,$01,$80,$06,$00,$0C,$00,$0E,$00,$0F,$00
 	dc.b	$0F,$80,$10,$00,$14,$00,$1A,$00
 
@@ -1234,7 +1236,7 @@ l_013_00CAE:
         add.w   -$46(a6),d4                     ; 00CCA
         add.w   -$44(a6),d5                     ; 00CCE
         add.w   -$42(a6),d6                     ; 00CD2
-        movem.w d1-d6,(dat_072_04202).l         ; 00CD6
+        movem.w d1-d6,(LineEnds).l              ; 00CD6
         move.l  a3,-(a7)                        ; 00CDE
         jsr     (ClipDrawLine3D).l              ; 00CE0
         or.w    d0,-$7e(a6)                     ; 00CE6
@@ -1265,7 +1267,7 @@ l_013_00D0C:
         sub.w   -$46(a6),d4                     ; 00D2A
         sub.w   -$44(a6),d5                     ; 00D2E
         sub.w   -$42(a6),d6                     ; 00D32
-        movem.w d1-d6,(dat_072_04202).l         ; 00D36
+        movem.w d1-d6,(LineEnds).l              ; 00D36
         jsr     (ClipDrawLine3D).l              ; 00D3E
         or.w    d0,-$7e(a6)                     ; 00D44
         subq.w  #$1,-$3a(a6)                    ; 00D48
@@ -1341,7 +1343,7 @@ l_013_00E14:
         add.w   -$3c(a6),d6                     ; 00E22
 l_013_00E26:
         movem.w d4-d6,-$58(a6)                  ; 00E26
-        lea.l   (dat_072_03C04).l,a0            ; 00E2C
+        lea.l   (PlanePoints).l,a0              ; 00E2C
         movem.w (a3),d1-d3                      ; 00E32
         asr.w   #$1,d4                          ; 00E36
         asr.w   #$1,d5                          ; 00E38
@@ -1389,7 +1391,7 @@ l_013_00EAA:
         add.w   -$3c(a6),d6                     ; 00EB8
 l_013_00EBC:
         movem.w d4-d6,-$58(a6)                  ; 00EBC
-        lea.l   (dat_072_03C04).l,a0            ; 00EC2
+        lea.l   (PlanePoints).l,a0              ; 00EC2
         movem.w -$4c(a6),d1-d3                  ; 00EC8
         asr.w   #$1,d4                          ; 00ECE
         asr.w   #$1,d5                          ; 00ED0
@@ -1483,7 +1485,7 @@ l_013_00FD4:
         add.w   -$3c(a6),d6                     ; 00FE2
 l_013_00FE6:
         movem.w d4-d6,-$58(a6)                  ; 00FE6
-        lea.l   (dat_072_03C04).l,a0            ; 00FEC
+        lea.l   (PlanePoints).l,a0              ; 00FEC
         movem.w (a3),d1-d3                      ; 00FF2
         asr.w   #$1,d4                          ; 00FF6
         asr.w   #$1,d5                          ; 00FF8
@@ -1576,7 +1578,7 @@ l_013_010F4:
         add.w   d4,d1                           ; 01104
         add.w   d5,d2                           ; 01106
         add.w   d6,d3                           ; 01108
-        movem.w d1-d3,(dat_072_04202).l         ; 0110A
+        movem.w d1-d3,(LineEnds).l              ; 0110A
         movem.w (a3),d1-d3                      ; 01112
         add.w   -$52(a6),d1                     ; 01116
         add.w   -$50(a6),d2                     ; 0111A
@@ -1584,7 +1586,7 @@ l_013_010F4:
         add.w   d4,d1                           ; 01122
         add.w   d5,d2                           ; 01124
         add.w   d6,d3                           ; 01126
-        movem.w d1-d3,(dat_072_04208).l         ; 01128
+        movem.w d1-d3,(LineEnd2).l              ; 01128
         movem.l a2-a3,-(a7)                     ; 01130
         jsr     (ClipDrawLine3D).l              ; 01134
         or.w    d0,-$7e(a6)                     ; 0113A

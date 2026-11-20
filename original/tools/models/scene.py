@@ -1,6 +1,6 @@
 """Draw a whole view as the game does: set up a flight in the emulator with the game's own
 routines, run the 3D stages of a frame, and capture what reaches the screen - the filled
-polygons (after clipping and projection, from dat_072_03000), the lines (DrawLine) and the points
+polygons (after clipping and projection, from ScreenPolygon), the lines (DrawLine) and the points
 (Plot...) - in screen coordinates. Then paint them, in order, into a 320 x 180 picture.
 
 scene.py [START [HEADING [PITCH [OUT]]]]   START a StartPoints entry (0-4), HEADING in degrees."""
@@ -21,7 +21,7 @@ def reg(r):
 
 
 def cap_fill(gm):
-    a = gm['dat_072_03000']
+    a = gm['ScreenPolygon']
     n = gm.w(a)
     OUT.append(('poly', gm.uw(gm['DrawColour']), [(gm.w(a + 2 + i * 4), gm.w(a + 4 + i * 4)) for i in range(n)]))
     return 0
@@ -85,8 +85,8 @@ def view(start=0, heading=None, pitch=None, mode=1):
 def keep_sky():
     """After DrawSkyAndGround: the background it made by blitter (ClearSkyGround), which the
     emulator does not draw - the ground colour (4 land, 6 sea when SeaView is set) and the sky
-    polygon (colour 5) that MakeSkyPolygon left at dat_072_03000 (SkyPolygonReady set)."""
-    a = g['dat_072_03000']
+    polygon (colour 5) that MakeSkyPolygon left at ScreenPolygon (SkyPolygonReady set)."""
+    a = g['ScreenPolygon']
     SKY['sea'] = g.b(g['SeaView']) != 0
     SKY['poly'] = [(g.w(a + 2 + i * 4), g.w(a + 4 + i * 4)) for i in range(g.w(a))] \
         if g.b(g['SkyPolygonReady']) else []

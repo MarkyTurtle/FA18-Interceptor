@@ -69,13 +69,13 @@ l_123_00078:
 rbrk:
         bsr.b   FreeAllTracked                  ; 00084
         moveq   #$0,d0                          ; 00086
-        move.l  d0,(dat_001_00010).l            ; 00088
-        move.l  d0,(dat_001_00008).l            ; 0008E
-        move.l  d0,(dat_001_0000C).l            ; 00094
-        move.l  d0,(dat_148_00008).l            ; 0009A
-        move.l  d0,(dat_148_00000).l            ; 000A0
-        move.l  d0,(dat_148_0000C).l            ; 000A6
-        move.l  d0,(dat_148_00004).l            ; 000AC
+        move.l  d0,(RbrkData3).l                ; 00088
+        move.l  d0,(RbrkData1).l                ; 0008E
+        move.l  d0,(RbrkData2).l                ; 00094
+        move.l  d0,(RbrkData6).l                ; 0009A
+        move.l  d0,(RbrkData4).l                ; 000A0
+        move.l  d0,(MemoryUsed).l               ; 000A6
+        move.l  d0,(RbrkData5).l                ; 000AC
         rts                                     ; 000B2
 
 ;-------------------------------------------------------------------------------

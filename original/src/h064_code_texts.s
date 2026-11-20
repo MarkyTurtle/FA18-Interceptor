@@ -7,7 +7,8 @@
 ; Hunk 64: CODE, $2428 bytes
 ;===============================================================================
 	CODE_HUNK	h064
-dat_064_00000:
+; MissionListPage - The mission list's text page (StateMissionList).
+MissionListPage:
 	dc.b	$00,$4D,$00,$4E,$00,$4F,$00,$50,$00,$51
 ; TextPageTable - The text pages: entry n-1 is the offset (from this table) of page n: a row,
 ; then lines of text. A page number with bit 15 set is printed at the bottom, bit 14 set

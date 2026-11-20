@@ -17,7 +17,7 @@ def cap_poly(gm):
 
 
 def cap_line(gm):
-    a = gm['dat_072_04202']
+    a = gm['LineEnds']
     p = [(gm.w(a + i * 6), gm.w(a + 2 + i * 6), gm.w(a + 4 + i * 6)) for i in range(2)]
     OUT.append(('line', gm.uw(gm['DrawColour']), p))
     return 0

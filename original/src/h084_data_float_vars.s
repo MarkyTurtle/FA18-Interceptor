@@ -6,7 +6,8 @@
 ; Hunk 84: DATA, $4 bytes
 ;===============================================================================
 	DATA_HUNK	h084
-dat_084_00000:
+; NoiseSeed - The sound noise generator's state (SoundRandomBit).
+NoiseSeed:
 	dc.b	$47,$09,$12,$47
 h084_end:
 	ifnd	HUNKEXE

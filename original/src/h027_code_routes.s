@@ -32,23 +32,27 @@ Routes:
 ; Zones - The map's eight zones: pointers to each zone's record (a rectangle of map cells x1,
 ; x2, z1, z2, then its objects), ended by -1.
 Zones:
-        dc.l    dat_027_00152                   ; 00140
-        dc.l    dat_027_00186                   ; 00144
-        dc.l    dat_027_001A6                   ; 00148
-        dc.l    dat_027_001BC                   ; 0014C
+        dc.l    ZonesData1                      ; 00140
+        dc.l    ZonesData2                      ; 00144
+        dc.l    ZonesData3                      ; 00148
+        dc.l    ZonesData4                      ; 0014C
 	dc.b	$FF,$FF
-dat_027_00152:
+; ZonesData1 - Data used by Zones.
+ZonesData1:
 	dc.b	$00,$41,$00,$43,$00,$41,$00,$43,$00,$00,$00,$3C,$00,$10,$00,$04
 	dc.b	$00,$3C,$80,$00,$00,$3C,$00,$10,$00,$06,$00,$3E,$80,$00,$FF,$FF
 	dc.b	$00,$41,$00,$42,$12,$00,$24,$00,$00,$07,$00,$42,$00,$42,$28,$00
 	dc.b	$20,$00,$02,$00
-dat_027_00186:
+; ZonesData2 - Data used by Zones.
+ZonesData2:
 	dc.b	$00,$3E,$00,$40,$00,$45,$00,$49,$00,$00,$00,$78,$00,$12,$00,$08
 	dc.b	$00,$50,$00,$00,$00,$78,$00,$12,$00,$0A,$00,$52,$00,$00,$FF,$FF
-dat_027_001A6:
+; ZonesData3 - Data used by Zones.
+ZonesData3:
 	dc.b	$00,$32,$00,$4C,$00,$43,$00,$4C,$00,$01,$00,$78,$00,$12,$0E,$0C
 	dc.b	$00,$6E,$00,$01,$FF,$FF
-dat_027_001BC:
+; ZonesData4 - Data used by Zones.
+ZonesData4:
 	dc.b	$00,$4B,$00,$4D,$00,$4B,$00,$4D,$00,$01,$00,$C8,$00,$15,$89,$04
 	dc.b	$00,$3A,$68,$00,$FF,$FF,$00,$4C,$00,$4C,$20,$00,$20,$00,$00,$B0
 	dc.b	$00,$3E,$00,$47,$28,$00,$10,$00,$00,$B0,$00,$3C,$00,$3F,$09,$00

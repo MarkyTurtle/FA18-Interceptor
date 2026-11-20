@@ -8,7 +8,7 @@
 	CODE_HUNK	h076
 
 ;-------------------------------------------------------------------------------
-; AudioInterrupt - The audio interrupt for one channel (the four entries of dat_074_00090...):
+; AudioInterrupt - The audio interrupt for one channel (the four entries of Hunk074Data3...):
 ; acknowledges it (INTREQ) and queues the channel's next piece of sound.
 ;-------------------------------------------------------------------------------
 AudioInterrupt:
@@ -102,9 +102,9 @@ l_076_00118:
         move.l  $c(a3),d0                       ; 0011C
         swap    d0                              ; 00120
         andi.w  #$3f,d0                         ; 00122
-        cmp.w   (dat_074_000FE).l,d0            ; 00126
+        cmp.w   (AudioPeriodMin).l,d0           ; 00126
         ble.b   l_076_00134                     ; 0012C
-        move.w  (dat_074_000FE).l,d0            ; 0012E
+        move.w  (AudioPeriodMin).l,d0           ; 0012E
 l_076_00134:
         move.w  d0,$8(a0)                       ; 00134
         rts                                     ; 00138

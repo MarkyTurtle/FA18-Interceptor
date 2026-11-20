@@ -6,11 +6,14 @@
 ; Hunk 118: DATA, $10 bytes
 ;===============================================================================
 	DATA_HUNK	h118
-dat_118_00000:
+; LseekData1 - Data used by lseek.
+LseekData1:
 	dc.b	$FF,$FF,$FF,$FF,$00,$00,$00,$00,$00,$00,$00,$01
-dat_118_0000C:
+; BreakFlag - Set when Ctrl-C was pressed (the console; GetBreakFlag).
+BreakFlag:
 	dc.b	$00
-dat_118_0000D:
+; OpenConsoleData1 - Data used by OpenConsole.
+OpenConsoleData1:
 	dc.b	$2A,$00,$00
 h118_end:
 	ifnd	HUNKEXE

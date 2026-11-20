@@ -936,7 +936,7 @@ l_005_00B0A:
         asl.l   #$6,d1                          ; 00B1C
         add.w   d2,d2                           ; 00B1E
         add.w   d2,d2                           ; 00B20
-        lea.l   (dat_008_0151A).l,a4            ; 00B22
+        lea.l   (SubCellOffsets).l,a4                   ; 00B22
         movem.w (a4,d2.w),d6-d7                 ; 00B28
         asl.l   #$8,d6                          ; 00B2E
         asl.l   #$8,d7                          ; 00B30
@@ -1162,7 +1162,7 @@ l_005_00E30:
         move.w  #$320,(ViewX).l                 ; 00E40
         bra.w   l_005_01624                     ; 00E48
 l_005_00E4C:
-        lea.l   (dat_005_00EBC).l,a0            ; 00E4C
+        lea.l   (Key_KP1Data1).l,a0             ; 00E4C
         move.b  (ViewZoom).l,d4                 ; 00E52
         ext.w   d4                              ; 00E58
         move.b  (a0,d4.w),d4                    ; 00E5A
@@ -1197,7 +1197,8 @@ l_005_00E98:
 l_005_00EB0:
         move.w  #$a7,(ClipY).l                  ; 00EB0
         bra.w   l_005_01624                     ; 00EB8
-dat_005_00EBC:
+; Key_KP1Data1 - Data used by Key_KP1.
+Key_KP1Data1:
 	dc.b	$00,$F9,$F2,$EB,$CE,$32,$32,$32,$32,$15,$0E,$07,$32,$32
 Key_RBracket:
         moveq   #$20,d3                         ; 00ECA

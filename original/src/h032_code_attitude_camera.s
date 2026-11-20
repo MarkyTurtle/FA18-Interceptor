@@ -463,7 +463,7 @@ l_032_00500:
         bset    #$2,$3(a1)                      ; 00508
         tst.b   $28(a1)                         ; 0050E
         beq.w   l_032_00592                     ; 00512
-        move.w  (dat_060_0000C).l,d0            ; 00516
+        move.w  (UpdateAttitudeData1).l,d0      ; 00516
         tst.w   $56(a1)                         ; 0051C
         bge.b   l_032_00524                     ; 00520
         neg.w   d0                              ; 00522
@@ -471,7 +471,7 @@ l_032_00524:
         add.w   d0,$56(a1)                      ; 00524
         bra.w   l_032_00592                     ; 00528
 l_032_0052C:
-        move.w  (dat_060_0000C).l,d0            ; 0052C
+        move.w  (UpdateAttitudeData1).l,d0      ; 0052C
         tst.w   $58(a1)                         ; 00532
         bge.b   l_032_0053A                     ; 00536
         neg.w   d0                              ; 00538
@@ -760,10 +760,10 @@ l_032_00834:
 l_032_0083A:
         cmpi.b  #$30,d3                         ; 0083A
         bne.b   l_032_00848                     ; 0083E
-        lea.l   (dat_032_008FC).l,a1            ; 00840
+        lea.l   (CockpitViewMatrixData2).l,a1   ; 00840
         bra.b   l_032_0084E                     ; 00846
 l_032_00848:
-        lea.l   (dat_032_008BA).l,a1            ; 00848
+        lea.l   (CockpitViewMatrixData1).l,a1   ; 00848
 l_032_0084E:
         subq.w  #$1,d1                          ; 0084E
         ext.w   d1                              ; 00850
@@ -796,13 +796,15 @@ l_032_00892:
         lea.l   (ViewMatrix).l,a1               ; 008AE
         bsr.w   ScaleRows                       ; 008B4
         rts                                     ; 008B8
-dat_032_008BA:
+; CockpitViewMatrixData1 - Data used by CockpitViewMatrix.
+CockpitViewMatrixData1:
 	dc.b	$00,$00,$08,$D0,$00,$00,$00,$00,$12,$C0,$00,$00,$00,$00,$1C,$20
 	dc.b	$00,$00,$00,$00,$25,$80,$00,$00,$00,$00,$2E,$E0,$00,$00,$00,$00
 	dc.b	$38,$40,$00,$00,$00,$00,$41,$A0,$00,$00,$00,$00,$4B,$00,$00,$00
 	dc.b	$00,$00,$54,$60,$00,$00,$00,$00,$5D,$C0,$00,$00,$00,$00,$67,$B0
 	dc.b	$00,$00
-dat_032_008FC:
+; CockpitViewMatrixData2 - Data used by CockpitViewMatrix.
+CockpitViewMatrixData2:
 	dc.b	$5D,$C0,$1C,$20,$54,$60,$67,$20,$1C,$20,$54,$60,$00,$00,$1C,$20
 	dc.b	$54,$60,$09,$60,$1C,$20,$54,$60,$12,$C0,$1C,$20,$54,$60,$1C,$20
 	dc.b	$1C,$20,$54,$60,$25,$80,$1C,$20,$54,$60,$2E,$E0,$1C,$20,$54,$60
@@ -933,7 +935,7 @@ l_032_00A54:
         bgt.b   l_032_00A72                     ; 00A58
         asr.w   #$8,d1                          ; 00A5A
         add.w   d1,d1                           ; 00A5C
-        lea.l   (dat_032_00ABA).l,a0            ; 00A5E
+        lea.l   (ComputeGLoadData1).l,a0        ; 00A5E
         muls.w  (a0,d1.w),d3                    ; 00A64
         muls.w  (a0,d1.w),d5                    ; 00A68
         asr.l   #$8,d3                          ; 00A6C
@@ -977,7 +979,8 @@ l_032_00AAE:
 l_032_00AB4:
         neg.w   $54(a1)                         ; 00AB4
         rts                                     ; 00AB8
-dat_032_00ABA:
+; ComputeGLoadData1 - Data used by ComputeGLoad.
+ComputeGLoadData1:
 	dc.b	$01,$00,$00,$F0,$00,$DC,$00,$C8,$00,$B4,$00,$A0,$00,$8C,$00,$78
 	dc.b	$00,$64,$00,$50,$00,$3C,$00,$28,$00,$14,$00,$00,$00,$00
 
@@ -1095,7 +1098,7 @@ l_032_00C1C:
         blt.b   l_032_00C74                     ; 00C22
         cmpi.l  #$ff60000,d1                    ; 00C24
         blt.b   l_032_00C4E                     ; 00C2A
-        lea.l   (dat_063_008E8).l,a1            ; 00C2C
+        lea.l   (NormaliseAnglesData3).l,a1     ; 00C2C
         moveq   #$c,d2                          ; 00C32
         asr.l   d2,d1                           ; 00C34
         bcc.b   l_032_00C3A                     ; 00C36
@@ -1107,7 +1110,7 @@ l_032_00C3A:
         move.w  #$f8,d1                         ; 00C48
         bra.b   l_032_00C6A                     ; 00C4C
 l_032_00C4E:
-        lea.l   (dat_063_00498).l,a1            ; 00C4E
+        lea.l   (NormaliseAnglesData2).l,a1     ; 00C4E
         moveq   #$10,d2                         ; 00C54
         asr.l   d2,d1                           ; 00C56
         bcc.b   l_032_00C5C                     ; 00C58
@@ -1125,7 +1128,7 @@ l_032_00C70:
         move.w  d1,d0                           ; 00C70
         bra.b   l_032_00C82                     ; 00C72
 l_032_00C74:
-        lea.l   (dat_063_00292).l,a1            ; 00C74
+        lea.l   (NormaliseAnglesData1).l,a1     ; 00C74
         swap    d0                              ; 00C7A
         asr.w   #$4,d0                          ; 00C7C
         bcc.b   l_032_00C82                     ; 00C7E
@@ -1150,7 +1153,7 @@ l_032_00C96:
 l_032_00CAA:
         add.w   d3,d3                           ; 00CAA
         lea.l   (SineTable).l,a0                ; 00CAC
-        lea.l   (dat_063_00292).l,a1            ; 00CB2
+        lea.l   (NormaliseAnglesData1).l,a1     ; 00CB2
         move.w  (a0,d3.w),d3                    ; 00CB8
         cmpi.w  #$8f,d3                         ; 00CBC
         bge.b   l_032_00CD4                     ; 00CC0

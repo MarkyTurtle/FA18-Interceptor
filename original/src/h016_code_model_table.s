@@ -108,7 +108,9 @@ ObjectDrawTable:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_016_00144:
+; ObjectDrawEntries - ObjectDrawTable's entries for the objects (0-16), filled when the objects
+; are placed.
+ObjectDrawEntries:
 	dcb.b	336,$00
         dc.l    DrawSceneryPlain                ; 00294
         dc.l    Shape17                         ; 00298

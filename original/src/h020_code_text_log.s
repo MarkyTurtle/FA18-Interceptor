@@ -228,7 +228,7 @@ TitleMusicStep:
         tst.b   (MusicState).l                  ; 00238
         beq.b   l_020_00236                     ; 0023E
         move.l  (TitleTimer).l,d0               ; 00240
-        move.l  (dat_074_000FE).l,d1            ; 00246
+        move.l  (AudioPeriodMin).l,d1           ; 00246
         cmp.l   d0,d1                           ; 0024C
         beq.b   l_020_00236                     ; 0024E
         bgt.b   l_020_00262                     ; 00250
@@ -240,7 +240,7 @@ l_020_00262:
         subi.l  #$4000,d1                       ; 00262
         blt.b   l_020_00272                     ; 00268
 l_020_0026A:
-        move.l  d1,(dat_074_000FE).l            ; 0026A
+        move.l  d1,(AudioPeriodMin).l           ; 0026A
         rts                                     ; 00270
 l_020_00272:
         moveq   #$0,d1                          ; 00272
@@ -248,7 +248,8 @@ l_020_00272:
 l_020_00276:
         move.l  #$3f0000,d1                     ; 00276
         bra.b   l_020_0026A                     ; 0027C
-dat_020_0027E:
+; UpdateClockData1 - Data used by UpdateClock.
+UpdateClockData1:
 	dc.b	$FF,$FF,$03,$E8,$01,$F4,$01,$4D,$00,$FA,$00,$C8,$00,$A7,$00,$8F
 	dc.b	$00,$7D,$00,$6F,$00,$64,$00,$5B,$00,$53,$00,$4D,$00,$47,$00,$43
 	dc.b	$00,$3F,$00,$3B,$00,$38,$00,$35,$00,$32,$00,$30,$00,$2D,$00,$2B
@@ -585,7 +586,7 @@ l_020_00670:
         andi.w  #$7,d2                          ; 006B2
         addq.w  #$1,d2                          ; 006B6
         divu.w  d2,d1                           ; 006B8
-        lea.l   dat_020_0027E(pc),a0            ; 006BA
+        lea.l   UpdateClockData1(pc),a0         ; 006BA
         move.b  (ClockStep).l,d2                ; 006BE
         ext.w   d2                              ; 006C4
         add.w   d2,d2                           ; 006C6
@@ -684,31 +685,41 @@ l_020_00794:
 l_020_00796:
         move.b  d1,(ViewOctant).l               ; 00796
         rts                                     ; 0079C
-dat_020_0079E:
+; Hunk020Data1 - Data used by ShakeSequences.
+Hunk020Data1:
 	dc.b	$04,$00
-dat_020_007A0:
+; Hunk020Data2 - Data used by ShakeSequences.
+Hunk020Data2:
 	dc.b	$FF,$01,$00,$00,$00,$00,$00
-dat_020_007A7:
+; Hunk020Data3 - Data used by ShakeSequences.
+Hunk020Data3:
 	dc.b	$04,$00
-dat_020_007A9:
+; Hunk020Data4 - Data used by ShakeSequences.
+Hunk020Data4:
 	dc.b	$01,$FF,$00,$00,$00,$00,$00
-dat_020_007B0:
+; Hunk020Data5 - Data used by ShakeSequences.
+Hunk020Data5:
 	dc.b	$04,$00
-dat_020_007B2:
+; Hunk020Data6 - Data used by ShakeSequences.
+Hunk020Data6:
 	dc.b	$FF,$01,$00,$00,$00,$00,$00
-dat_020_007B9:
+; Hunk020Data7 - Data used by ShakeSequences.
+Hunk020Data7:
 	dc.b	$04,$00
-dat_020_007BB:
+; Hunk020Data8 - Data used by ShakeSequences.
+Hunk020Data8:
 	dc.b	$01,$FF,$00,$00,$00,$00,$00
-dat_020_007C2:
-        dc.l    dat_020_0079E                   ; 007C2
-        dc.l    dat_020_007A0                   ; 007C6
-        dc.l    dat_020_007A7                   ; 007CA
-        dc.l    dat_020_007A9                   ; 007CE
-        dc.l    dat_020_007B0                   ; 007D2
-        dc.l    dat_020_007B2                   ; 007D6
-        dc.l    dat_020_007B9                   ; 007DA
-        dc.l    dat_020_007BB                   ; 007DE
+; ShakeSequences - The view shake's sequences (ShakeView): pointers to lists of offsets, by
+; ShakeKind.
+ShakeSequences:
+        dc.l    Hunk020Data1                    ; 007C2
+        dc.l    Hunk020Data2                    ; 007C6
+        dc.l    Hunk020Data3                    ; 007CA
+        dc.l    Hunk020Data4                    ; 007CE
+        dc.l    Hunk020Data5                    ; 007D2
+        dc.l    Hunk020Data6                    ; 007D6
+        dc.l    Hunk020Data7                    ; 007DA
+        dc.l    Hunk020Data8                    ; 007DE
 l_020_007E2:
         clr.b   (ShakeKind).l                   ; 007E2
 l_020_007E8:
@@ -716,7 +727,7 @@ l_020_007E8:
 
 ;-------------------------------------------------------------------------------
 ; ShakeView - Stage $60: while ShakeKind (1-3) is set, moves the view up and down (ViewY, ClipY
-; and the digits' offset) by the next of that kind's offsets (dat_020_007C2), ShakeStep
+; and the digits' offset) by the next of that kind's offsets (ShakeSequences), ShakeStep
 ; counting; at the end puts it back and redraws the instruments.
 ;-------------------------------------------------------------------------------
 ShakeView:
@@ -728,7 +739,7 @@ ShakeView:
 l_020_007FC:
         cmpi.w  #$e,d1                          ; 007FC
         bgt.b   l_020_007E2                     ; 00800
-        lea.l   dat_020_007C2(pc),a0            ; 00802
+        lea.l   ShakeSequences(pc),a0           ; 00802
         ext.w   d0                              ; 00806
         subq.w  #$1,d0                          ; 00808
         asl.w   #$3,d0                          ; 0080A

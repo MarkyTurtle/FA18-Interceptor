@@ -1081,7 +1081,7 @@ AircraftLeft:
 ; CodeTries - Tries left at the security code (2, so 3 tries).
 CodeTries:
 	dc.b	$00
-; FlashCount - Frames left of the yellow flash (ShowDisplay shows dat_021_00040 while it
+; FlashCount - Frames left of the yellow flash (ShowDisplay shows FlashPalette while it
 ; counts; $28 when hit).
 FlashCount:
 	dc.b	$00
@@ -1108,7 +1108,7 @@ SkyPolygonReady:
 Hunk24Flag:
 	dc.b	$00
 ; FadeLevel - The palette's brightness now (0-15; 15 is the full in-flight palette,
-; dat_021_00080 row 0), stepped towards FadeTarget by MouseInterrupt.
+; FlightPalette row 0), stepped towards FadeTarget by MouseInterrupt.
 FadeLevel:
 	dc.b	$00
 ; FadeTarget - The brightness the palette is fading to (FadeLevel); the states set it and wait

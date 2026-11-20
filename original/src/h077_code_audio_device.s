@@ -13,31 +13,31 @@
 ; AddSoundVBlank). Returns 0 if audio.device did not open.
 ;-------------------------------------------------------------------------------
 InitSound:
-        tst.l   (dat_078_00002).l               ; 00000
+        tst.l   (InitSoundData2).l              ; 00000
         bne.b   l_077_00030                     ; 00006
         move.l  #$10002,-(a7)                   ; 00008
         moveq   #$44,d0                         ; 0000E
         move.l  d0,-(a7)                        ; 00010
         jsr     (_AllocMem).l                   ; 00012
         addq.l  #$8,a7                          ; 00018
-        move.l  d0,(dat_079_00000).l            ; 0001A
+        move.l  d0,(AudioRequest).l             ; 0001A
         tst.l   d0                              ; 00020
         bne.b   l_077_00028                     ; 00022
         moveq   #$1,d0                          ; 00024
         rts                                     ; 00026
 l_077_00028:
         moveq   #$1,d0                          ; 00028
-        move.l  d0,(dat_078_00002).l            ; 0002A
+        move.l  d0,(InitSoundData2).l           ; 0002A
 l_077_00030:
-        tst.l   (dat_078_00006).l               ; 00030
+        tst.l   (InitSoundData3).l              ; 00030
         bne.b   l_077_0006E                     ; 00036
-        movea.l (dat_079_00000).l,a0            ; 00038
+        movea.l (AudioRequest).l,a0             ; 00038
         move.b  #$7f,$9(a0)                     ; 0003E
         clr.l   -(a7)                           ; 00044
         pea.l   (StrPortName).l                 ; 00046
         jsr     (_CreatePort).l                 ; 0004C
         addq.l  #$8,a7                          ; 00052
-        movea.l (dat_079_00000).l,a0            ; 00054
+        movea.l (AudioRequest).l,a0             ; 00054
         move.l  d0,$e(a0)                       ; 0005A
         tst.l   d0                              ; 0005E
         bne.b   l_077_00066                     ; 00060
@@ -45,18 +45,18 @@ l_077_00030:
         rts                                     ; 00064
 l_077_00066:
         moveq   #$1,d0                          ; 00066
-        move.l  d0,(dat_078_00006).l            ; 00068
+        move.l  d0,(InitSoundData3).l           ; 00068
 l_077_0006E:
-        tst.l   (dat_078_0000A).l               ; 0006E
+        tst.l   (InitSoundData4).l              ; 0006E
         bne.b   l_077_000BC                     ; 00074
-        movea.l (dat_079_00000).l,a0            ; 00076
-        move.l  #dat_078_00000,$22(a0)          ; 0007C
+        movea.l (AudioRequest).l,a0             ; 00076
+        move.l  #InitSoundData1,$22(a0)         ; 0007C
         moveq   #$1,d0                          ; 00084
-        movea.l (dat_079_00000).l,a0            ; 00086
+        movea.l (AudioRequest).l,a0             ; 00086
         move.l  d0,$26(a0)                      ; 0008C
         moveq   #$0,d0                          ; 00090
         move.l  d0,-(a7)                        ; 00092
-        move.l  (dat_079_00000).l,-(a7)         ; 00094
+        move.l  (AudioRequest).l,-(a7)          ; 00094
         move.l  d0,-(a7)                        ; 0009A
         pea.l   (StrAudioDevice).l              ; 0009C
         jsr     (_OpenDevice).l                 ; 000A2
@@ -67,7 +67,7 @@ l_077_0006E:
         rts                                     ; 000B2
 l_077_000B4:
         moveq   #$1,d0                          ; 000B4
-        move.l  d0,(dat_078_0000A).l            ; 000B6
+        move.l  d0,(InitSoundData4).l           ; 000B6
 l_077_000BC:
         tst.l   (AudioDeviceOpen).l             ; 000BC
         bne.b   l_077_000D8                     ; 000C2
@@ -90,29 +90,29 @@ CloseSound:
         jsr     (RemSoundVBlank).l              ; 000EA
         clr.l   (AudioDeviceOpen).l             ; 000F0
 l_077_000F6:
-        tst.l   (dat_078_0000A).l               ; 000F6
+        tst.l   (InitSoundData4).l              ; 000F6
         beq.b   l_077_00112                     ; 000FC
-        move.l  (dat_079_00000).l,-(a7)         ; 000FE
+        move.l  (AudioRequest).l,-(a7)          ; 000FE
         jsr     (_CloseDevice).l                ; 00104
         addq.l  #$4,a7                          ; 0010A
-        clr.l   (dat_078_0000A).l               ; 0010C
+        clr.l   (InitSoundData4).l              ; 0010C
 l_077_00112:
-        tst.l   (dat_078_00006).l               ; 00112
+        tst.l   (InitSoundData3).l              ; 00112
         beq.b   l_077_00132                     ; 00118
-        movea.l (dat_079_00000).l,a0            ; 0011A
+        movea.l (AudioRequest).l,a0             ; 0011A
         move.l  $e(a0),-(a7)                    ; 00120
         jsr     (_DeletePort).l                 ; 00124
         addq.l  #$4,a7                          ; 0012A
-        clr.l   (dat_078_00006).l               ; 0012C
+        clr.l   (InitSoundData3).l              ; 0012C
 l_077_00132:
-        tst.l   (dat_078_00002).l               ; 00132
+        tst.l   (InitSoundData2).l              ; 00132
         beq.b   l_077_00152                     ; 00138
         moveq   #$44,d0                         ; 0013A
         move.l  d0,-(a7)                        ; 0013C
-        move.l  (dat_079_00000).l,-(a7)         ; 0013E
+        move.l  (AudioRequest).l,-(a7)          ; 0013E
         jsr     (_FreeMem).l                    ; 00144
         addq.l  #$8,a7                          ; 0014A
-        clr.l   (dat_078_00002).l               ; 0014C
+        clr.l   (InitSoundData2).l              ; 0014C
 l_077_00152:
         moveq   #$0,d0                          ; 00152
         rts                                     ; 00154

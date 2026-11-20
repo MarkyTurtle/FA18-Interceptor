@@ -6,7 +6,8 @@
 ; Hunk 79: BSS, $4 bytes
 ;===============================================================================
 	BSS_HUNK	h079
-dat_079_00000:
+; AudioRequest - The audio device's IO request.
+AudioRequest:
         ds.b    $4                              ; 00000
 h079_end:
 	ifnd	HUNKEXE

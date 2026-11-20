@@ -11,11 +11,14 @@
 ; _StackSize - The stack size.
 _StackSize:
 	dc.b	$00,$00,$00,$00
-dat_001_00008:
+; RbrkData1 - Data used by rbrk.
+RbrkData1:
 	dc.b	$00,$00,$00,$00
-dat_001_0000C:
+; RbrkData2 - Data used by rbrk.
+RbrkData2:
 	dc.b	$00,$00,$00,$00
-dat_001_00010:
+; RbrkData3 - Data used by rbrk.
+RbrkData3:
 	dc.b	$00,$00,$00,$00
 ; _MSTEP - How much the heap grows by when malloc runs out.
 _MSTEP:
@@ -99,7 +102,8 @@ StrPixFrnt5:
 StrIntuitionLibrary:
 	dc.b	'intuition.library'
 	dc.b	$00,$00,$00,$00
-dat_001_000AC:
+; CheckDiskData1 - Data used by CheckDisk.
+CheckDiskData1:
 	dc.b	$64,$66,$30,$3A,$00,$00,$00,$00
 ; StrInputDevice - "input.device"
 StrInputDevice:
@@ -156,30 +160,38 @@ StrTextTextply4:
 StrTextTextctl4:
 	dc.b	'df0:text/textctl'
 	dc.b	$00,$00
-dat_001_00184:
+; CodeCheckData1 - Data used by CodeCheck, CodeHash.
+CodeCheckData1:
 	dc.b	$00,$00,$00,$04,$00,$12,$00,$17,$00,$25,$00,$31,$00,$33,$00,$46
 	dc.b	$00,$54,$00,$62,$00,$66,$00,$70,$00,$83,$00,$85,$00,$91,$00,$97
-dat_001_001A4:
+; CodeCheckData2 - Data used by CodeCheck.
+CodeCheckData2:
 	dc.b	$00,$0D,$00,$07,$00,$00,$00,$02,$00,$06,$00,$09,$00,$0F,$00,$03
 	dc.b	$00,$05,$00,$0C,$00,$0A,$00,$01,$00,$0E,$00,$08,$00,$04,$00,$0B
-dat_001_001C4:
+; CodeCheckData3 - Data used by CodeCheck.
+CodeCheckData3:
 	dc.b	$01,$FF,$0F,$FF,$7F,$FF,$FF,$FF
-dat_001_001CC:
+; Hunk001Data1 - Data used by KeyboardPort.
+Hunk001Data1:
 	dcb.b	48,$00
-dat_001_001FC:
-        dc.l    dat_001_001CC                   ; 001FC
+; KeyboardPort - The keyboard device's message port.
+KeyboardPort:
+        dc.l    Hunk001Data1                    ; 001FC
 	dc.b	$00
 	dc.b	$00
-dat_001_00202:
+; Hunk001Data2 - Data used by KeyboardPortPtr.
+Hunk001Data2:
 	dcb.b	34,$00
-dat_001_00224:
-        dc.l    dat_001_00202                   ; 00224
+; KeyboardPortPtr - A pointer used in opening the keyboard.
+KeyboardPortPtr:
+        dc.l    Hunk001Data2                    ; 00224
 ; StrKeyboardDevice - "keyboard.device"
 StrKeyboardDevice:
 	dc.b	'keyboard.device'
 	dc.b	$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 	dc.b	$00,$00,$00
-dat_001_0024A:
+; KeyWaiting - Set when a key is waiting (PushKey; GetKey takes it).
+KeyWaiting:
 	dc.b	$00,$00,$50,$48,$4D,$4B
 ; StrTimerDevice - "timer.device"
 StrTimerDevice:
@@ -189,15 +201,20 @@ StrTimerDevice:
 StrGameportDevice:
 	dc.b	'gameport.device'
 	dc.b	$00,$00,$00
-dat_001_00274:
+; MouseMinX - The mouse's limits (with MouseMinY, MouseMaxX, MouseMaxY: SetMouseLimits).
+MouseMinX:
 	dc.b	$00,$00
-dat_001_00276:
+; MouseMinY - See MouseMinX.
+MouseMinY:
 	dc.b	$00,$00
-dat_001_00278:
+; MouseMaxX - See MouseMinX.
+MouseMaxX:
 	dc.b	$01,$3F
-dat_001_0027A:
+; MouseMaxY - See MouseMinX.
+MouseMaxY:
 	dc.b	$00,$C7
-dat_001_0027C:
+; MouseInterruptName - The mouse interrupt's name.
+MouseInterruptName:
 	dc.b	$76,$62,$00,$00
 ; StrTextText201 - "df0:text/text201"
 StrTextText201:

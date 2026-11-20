@@ -1334,8 +1334,9 @@ l_000_05392:
         cmpi.l  #$4,d0                          ; 05398
         bcc.b   l_000_053EC                     ; 0539E
         asl.l   #$1,d0                          ; 053A0
-        jmp     dat_000_053A6(pc,d0.l)          ; 053A2
-dat_000_053A6:
+        jmp     EngineVolumeJumps(pc,d0.l)      ; 053A2
+; EngineVolumeJumps - CockpitEngineVolume's jump table.
+EngineVolumeJumps:
 	dc.b	$60,$06,$60,$18
 	dc.b	'`*`40.'
 	dc.b	$00,$0A,$48,$C0,$2F,$00,$61,$00,$01,$2E,$58,$8F,$3D,$40,$00,$0A
@@ -1351,8 +1352,9 @@ l_000_053EC:
         cmpi.l  #$4,d0                          ; 05400
         bge.b   l_000_05480                     ; 05406
         asl.l   #$1,d0                          ; 05408
-        jmp     dat_000_0540E(pc,d0.l)          ; 0540A
-dat_000_0540E:
+        jmp     EngineVolumeJumps2(pc,d0.l)     ; 0540A
+; EngineVolumeJumps2 - A second jump table reached from EngineVolumeJumps.
+EngineVolumeJumps2:
 	dc.b	$60,$06,$60,$10,$60,$1A,$60,$2C,$30,$2E,$00,$0A,$E6,$40,$91,$6E
 	dc.b	$00,$0A,$60,$5E,$30,$2E,$00,$0A,$E4,$40,$91,$6E,$00,$0A,$60,$52
 	dc.b	$30,$2E,$00,$0A,$48,$C0,$2F,$00,$61,$00,$00,$AE,$58,$8F,$3D,$40

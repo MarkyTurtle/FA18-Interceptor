@@ -81,7 +81,7 @@ l_117_000AE:
         jsr     (CXM33).l                       ; 000B4
         movea.l d0,a0                           ; 000BA
         adda.l  #_ufbs,a0                       ; 000BC
-        move.l  (dat_115_00000).l,d0            ; 000C2
+        move.l  (OpenData1).l,d0                ; 000C2
         andi.l  #$8000,d0                       ; 000C8
         move.l  $c(a6),d1                       ; 000CE
         eor.l   d1,d0                           ; 000D2
@@ -314,7 +314,7 @@ l_117_0033C:
         move.l  $10(a6),d0                      ; 0033C
         asl.l   #$2,d0                          ; 00340
         movea.l d0,a0                           ; 00342
-        adda.l  #dat_118_00000,a0               ; 00344
+        adda.l  #LseekData1,a0                  ; 00344
         move.l  (a0),-(a7)                      ; 0034A
         move.l  $c(a6),-(a7)                    ; 0034C
         movea.l -$4(a6),a1                      ; 00350
@@ -434,7 +434,7 @@ l_117_0045C:
 ;-------------------------------------------------------------------------------
 OpenConsole:
         move.l  #$3ed,-(a7)                     ; 00462
-        pea.l   (dat_118_0000D).l               ; 00468
+        pea.l   (OpenConsoleData1).l            ; 00468
         jsr     (_Open).l                       ; 0046E
         addq.l  #$8,a7                          ; 00474
         move.l  d0,(_ConsoleHandle).l           ; 00476
@@ -453,11 +453,11 @@ l_117_00490:
         bne.b   l_117_0049A                     ; 00496
         bsr.b   OpenConsole                     ; 00498
 l_117_0049A:
-        tst.b   (dat_118_0000C).l               ; 0049A
+        tst.b   (BreakFlag).l                   ; 0049A
         beq.b   l_117_004BE                     ; 004A0
-        move.b  (dat_118_0000C).l,d0            ; 004A2
+        move.b  (BreakFlag).l,d0                ; 004A2
         move.b  d0,-$1(a6)                      ; 004A8
-        clr.b   (dat_118_0000C).l               ; 004AC
+        clr.b   (BreakFlag).l                   ; 004AC
         moveq   #$0,d1                          ; 004B2
         move.b  -$1(a6),d1                      ; 004B4
         move.l  d1,d0                           ; 004B8
@@ -476,14 +476,14 @@ l_117_004BE:
         rts                                     ; 004DE
 
 ;-------------------------------------------------------------------------------
-; GetBreakFlag - Takes and clears the console's break flag (dat_118_0000C).
+; GetBreakFlag - Takes and clears the console's break flag (BreakFlag).
 ;-------------------------------------------------------------------------------
 GetBreakFlag:
         link.w  a6,#$fffe                       ; 004E0
-        tst.b   (dat_118_0000C).l               ; 004E4
+        tst.b   (BreakFlag).l                   ; 004E4
         beq.b   l_117_00506                     ; 004EA
-        move.b  (dat_118_0000C).l,d0            ; 004EC
-        clr.b   (dat_118_0000C).l               ; 004F2
+        move.b  (BreakFlag).l,d0                ; 004EC
+        clr.b   (BreakFlag).l                   ; 004F2
         move.b  d0,-$1(a6)                      ; 004F8
         andi.l  #$ff,d0                         ; 004FC
         unlk    a6                              ; 00502
@@ -522,14 +522,14 @@ l_117_0052C:
 ;-------------------------------------------------------------------------------
 TestBreakFlag:
         link.w  a6,#$0                          ; 0054E
-        tst.b   (dat_118_0000C).l               ; 00552
+        tst.b   (BreakFlag).l                   ; 00552
         beq.b   l_117_00560                     ; 00558
         moveq   #-1,d0                          ; 0055A
         unlk    a6                              ; 0055C
         rts                                     ; 0055E
 l_117_00560:
         move.l  $8(a6),d0                       ; 00560
-        move.b  d0,(dat_118_0000C).l            ; 00564
+        move.b  d0,(BreakFlag).l                ; 00564
         unlk    a6                              ; 0056A
         rts                                     ; 0056C
 

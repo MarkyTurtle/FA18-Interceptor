@@ -411,11 +411,11 @@ l_012_003D6:
         rts                                     ; 003DE
 
 ;-------------------------------------------------------------------------------
-; CheckViewTable2 - Sets ViewTable2Hit from the view table at dat_012_006C0 (LookupViewTable),
+; CheckViewTable2 - Sets ViewTable2Hit from the view table at CheckViewTable2Data1 (LookupViewTable),
 ; every other frame; used by hunk 28.
 ;-------------------------------------------------------------------------------
 CheckViewTable2:
-        lea.l   (dat_012_006C0).l,a0            ; 003E0
+        lea.l   (CheckViewTable2Data1).l,a0     ; 003E0
         bsr.w   LookupViewTable                 ; 003E6
         beq.b   l_012_003F6                     ; 003EA
         move.b  #$1,(ViewTable2Hit).l           ; 003EC
@@ -538,7 +538,8 @@ SeaViewTable:
 	dc.b	$0B,$00,$01,$02,$03,$FF,$0F,$00,$01,$02,$03,$FF,$FF,$00,$FF,$FF
 	dc.b	$FF,$FF,$00,$00,$00,$00,$02,$60,$06,$04,$FF,$0A,$07,$FF,$FF,$00
 	dc.b	$00,$00,$00,$00,$02,$00,$09,$01,$FF,$0A,$06,$FF,$FF,$00,$FF,$FF
-dat_012_006C0:
+; CheckViewTable2Data1 - Data used by CheckViewTable2.
+CheckViewTable2Data1:
 	dc.b	$00,$11,$FF,$FF,$00,$06,$00,$10,$FF,$FF,$00,$0C,$00,$00,$00,$00
 	dc.b	$0A,$00,$04,$03,$04,$05,$06,$FF,$06,$05,$FF,$08,$03,$04,$05,$06
 	dc.b	$FF,$09,$02,$03,$04,$05,$06,$07,$FF,$0A,$03,$04,$05,$06,$FF,$0C

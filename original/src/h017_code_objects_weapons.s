@@ -349,7 +349,8 @@ l_017_004EE:
 l_017_004F0:
         movea.l (a7)+,a2                        ; 004F0
         rts                                     ; 004F2
-dat_017_004F4:
+; EjectSoundData1 - Data used by EjectSound.
+EjectSoundData1:
 	dc.b	$00,$C8,$00,$0E,$00,$08,$00,$C8,$00,$00,$00,$02,$00,$01,$00,$05
 	dc.b	$00,$01
 
@@ -358,7 +359,7 @@ dat_017_004F4:
 ;-------------------------------------------------------------------------------
 EjectSound:
         move.l  a1,-(a7)                        ; 00506
-        lea.l   dat_017_004F4(pc),a1            ; 00508
+        lea.l   EjectSoundData1(pc),a1          ; 00508
         movem.w (a1),d0-d7/a0                   ; 0050C
         movem.l d0-d7/a0,-(a7)                  ; 00510
         jsr     (PlayEffect).l                  ; 00514
@@ -461,7 +462,7 @@ l_017_00616:
 l_017_00628:
         ext.w   d0                              ; 00628
         asl.w   #$3,d0                          ; 0062A
-        lea.l   (dat_017_009A2).l,a5            ; 0062C
+        lea.l   (TrainingAndGLimitData1).l,a5   ; 0062C
         move.w  (a5,d0.w),d0                    ; 00632
         jsr     (StartWarning).l                ; 00636
         move.b  #$fe,(TrainingWaitKey).l        ; 0063C
@@ -615,7 +616,7 @@ l_017_0081C:
 l_017_00852:
         ext.w   d0                              ; 00852
         asl.w   #$3,d0                          ; 00854
-        lea.l   (dat_017_009A2).l,a5            ; 00856
+        lea.l   (TrainingAndGLimitData1).l,a5   ; 00856
         move.w  (a5,d0.w),d0                    ; 0085C
         jsr     (StartWarning).l                ; 00860
         bra.w   l_017_008CA                     ; 00866
@@ -709,13 +710,14 @@ l_017_00970:
         move.w  #$35,d0                         ; 00988
         bra.b   l_017_0099A                     ; 0098C
 l_017_0098E:
-        lea.l   (dat_017_009A2).l,a5            ; 0098E
+        lea.l   (TrainingAndGLimitData1).l,a5   ; 0098E
         asl.w   #$3,d1                          ; 00994
         move.w  $2(a5,d1.w),d0                  ; 00996
 l_017_0099A:
         jsr     (StartWarning).l                ; 0099A
         rts                                     ; 009A0
-dat_017_009A2:
+; TrainingAndGLimitData1 - Data used by NextManoeuvre, TrainingAndGLimit, TrainingPilot.
+TrainingAndGLimitData1:
 	dc.b	$00,$00,$00,$00,$00,$00,$00,$00,$00,$2E,$00,$17,$00,$00,$00,$00
 	dc.b	$00,$31,$00,$1A,$00,$00,$00,$00,$00,$30,$00,$19,$00,$00,$00,$00
 	dc.b	$00,$32,$00,$1B,$00,$00,$00,$00,$00,$33,$00,$2B,$00,$00,$00,$00
@@ -927,10 +929,10 @@ l_017_00C5C:
         move.b  #$3,(MissilesLeftRedraw).l      ; 00C6A
         cmpi.b  #$10,$62(a2)                    ; 00C72
         beq.b   l_017_00C82                     ; 00C78
-        lea.l   (dat_017_00DD6).l,a4            ; 00C7A
+        lea.l   (LaunchMissileData2).l,a4       ; 00C7A
         bra.b   l_017_00C9C                     ; 00C80
 l_017_00C82:
-        lea.l   (dat_017_00DB2).l,a4            ; 00C82
+        lea.l   (LaunchMissileData1).l,a4       ; 00C82
         bra.b   l_017_00C9C                     ; 00C88
 l_017_00C8A:
         lea.l   (PylonOffsets).l,a4             ; 00C8A
@@ -1023,11 +1025,13 @@ l_017_00DA4:
 ; aircraft's own axes.
 PylonOffsets:
 	dc.b	$00,$00,$00,$03,$00,$14,$00,$00,$FF,$FD,$00,$00
-dat_017_00DB2:
+; LaunchMissileData1 - Data used by LaunchMissile.
+LaunchMissileData1:
 	dc.b	$FF,$ED,$FF,$FF,$00,$00,$00,$13,$FF,$FF,$00,$00,$FF,$F9,$FF,$FE
 	dc.b	$00,$02,$00,$07,$FF,$FE,$00,$02,$FF,$F1,$FF,$FE,$00,$01,$00,$0F
 	dc.b	$FF,$FE,$00,$01
-dat_017_00DD6:
+; LaunchMissileData2 - Data used by LaunchMissile.
+LaunchMissileData2:
 	dc.b	$FF,$E6,$00,$00,$00,$00,$00,$1A,$00,$00,$00,$00,$FF,$FB,$FF,$FE
 	dc.b	$00,$02,$00,$05,$FF,$FE,$00,$02,$FF,$F1,$FF,$FE,$00,$01,$00,$0F
 	dc.b	$FF,$FE,$00,$01

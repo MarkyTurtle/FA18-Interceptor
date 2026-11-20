@@ -78,7 +78,7 @@ l_029_000D6:
         swap    d1                              ; 000DA
         asl.l   #$8,d1                          ; 000DC
         asl.w   #$2,d2                          ; 000DE
-        lea.l   (dat_008_0151A).l,a1            ; 000E0
+        lea.l   (SubCellOffsets).l,a1                   ; 000E0
         movem.w (a1,d2.w),d5-d6                 ; 000E6
         asl.l   #$8,d5                          ; 000EC
         asl.l   #$8,d6                          ; 000EE
@@ -181,7 +181,7 @@ DrawMapMarkers:
         move.w  #$73,-$6(a6)                    ; 001F4
         move.w  #$18,-$8(a6)                    ; 001FA
 l_029_00200:
-        lea.l   (dat_072_04202).l,a5            ; 00200
+        lea.l   (LineEnds).l,a5                 ; 00200
         move.w  -$4(a6),d2                      ; 00206
         move.w  -$2(a6),d3                      ; 0020A
         move.w  #$23e0,d4                       ; 0020E
@@ -202,7 +202,7 @@ l_029_00200:
         beq.b   l_029_00290                     ; 00250
         movem.l d0/a0,-(a7)                     ; 00252
         moveq   #$2,d3                          ; 00256
-        move.l  (dat_072_03004).l,d0            ; 00258
+        move.l  (ScreenPolygonFirst).l,d0       ; 00258
         move.l  d0,d1                           ; 0025E
         swap    d0                              ; 00260
         subi.w  #$c,d0                          ; 00262
@@ -235,7 +235,7 @@ l_029_002A2:
         move.w  #$c0,d0                         ; 002C0
         swap    d0                              ; 002C4
 l_029_002C6:
-        lea.l   (dat_072_04202).l,a5            ; 002C6
+        lea.l   (LineEnds).l,a5                 ; 002C6
         move.w  #$1440,d2                       ; 002CC
         move.w  -$2(a6),d3                      ; 002D0
         move.w  -$4(a6),d4                      ; 002D4
@@ -256,7 +256,7 @@ l_029_002C6:
         beq.b   l_029_00354                     ; 00316
         movem.l d0/a0,-(a7)                     ; 00318
         moveq   #$1,d3                          ; 0031C
-        move.l  (dat_072_03000).l,d0            ; 0031E
+        move.l  (ScreenPolygon).l,d0            ; 0031E
         move.l  d0,d1                           ; 00324
         swap    d0                              ; 00326
         subq.w  #$1,d1                          ; 00328
@@ -300,7 +300,7 @@ l_029_00398:
         movem.l $14(a0),d2-d4                   ; 00398
         swap    d2                              ; 0039E
         swap    d4                              ; 003A0
-        lea.l   (dat_072_04202).l,a5            ; 003A2
+        lea.l   (LineEnds).l,a5                 ; 003A2
         move.l  d0,-(a7)                        ; 003A8
         move.w  d6,-(a7)                        ; 003AA
         move.w  -$2(a6),d3                      ; 003AC
@@ -342,7 +342,8 @@ l_029_00414:
         ble.w   l_029_00372                     ; 0041C
         unlk    a6                              ; 00420
         rts                                     ; 00422
-dat_029_00424:
+; MapMarkerObjectData1 - Data used by MapMarkerObject.
+MapMarkerObjectData1:
 	dc.b	$00,$22,$00,$32,$00,$45,$00,$58,$00,$68,$00,$78,$00,$88,$00,$9B
 	dc.b	$00,$AE,$00,$BE,$00,$D1,$00,$E4,$00,$F4,$01,$04,$01,$14,$01,$27
 	dc.b	$00,$22,$FD,$00,$01,$FE,$00,$01,$FF,$FF,$03,$00,$FF,$03,$01,$FE
@@ -363,20 +364,21 @@ dat_029_00424:
 	dc.b	$02,$00,$01,$80,$FD,$FD,$01,$FE,$FE,$02,$FF,$FE,$05,$00,$FF,$03
 	dc.b	$01,$FF,$02,$02,$FF,$01,$80,$FD,$FE,$01,$FE,$FE,$02,$FF,$FF,$03
 	dc.b	$00,$FF,$04,$01,$FE,$03,$02,$FE,$01,$80
-dat_029_0055E:
+; MapMarkerPointData1 - Data used by MapMarkerPoint.
+MapMarkerPointData1:
 	dc.b	$FF,$01,$01,$00,$FB,$0B,$01,$FC,$09,$80
 
 ;-------------------------------------------------------------------------------
-; MapMarkerPoint - DrawMapMarkers' mark at a point (dat_072_04202), in colour 3.
+; MapMarkerPoint - DrawMapMarkers' mark at a point (LineEnds), in colour 3.
 ;-------------------------------------------------------------------------------
 MapMarkerPoint:
         tst.b   (MarkersOn).l                   ; 00568
         blt.b   l_029_00590                     ; 0056E
-        movem.w (dat_072_04202).l,d0-d2         ; 00570
+        movem.w (LineEnds).l,d0-d2              ; 00570
         jsr     (ProjectPoint).l                ; 00578
         blt.b   l_029_00590                     ; 0057E
         move.w  #$3,(DrawColour).l              ; 00580
-        lea.l   dat_029_0055E(pc),a1            ; 00588
+        lea.l   MapMarkerPointData1(pc),a1      ; 00588
         bra.w   l_029_006E8                     ; 0058C
 l_029_00590:
         rts                                     ; 00590
@@ -386,14 +388,14 @@ l_029_00590:
 ; then MapMarkerPoint.
 ;-------------------------------------------------------------------------------
 MapMarkerObject:
-        movem.w (dat_072_04202).l,d0-d2         ; 00592
+        movem.w (LineEnds).l,d0-d2              ; 00592
         move.l  $14(a0),d2                      ; 0059A
         move.l  $1c(a0),d4                      ; 0059E
         swap    d2                              ; 005A2
         move.w  -$2(a6),d3                      ; 005A4
         swap    d4                              ; 005A8
         jsr     (TurnToViewOffset).l            ; 005AA
-        movem.w (dat_072_04202).l,d0-d2         ; 005B0
+        movem.w (LineEnds).l,d0-d2              ; 005B0
         jsr     (ProjectPoint).l                ; 005B8
         bge.b   l_029_005C8                     ; 005BE
         clr.b   (FlyByPhase).l                  ; 005C0
@@ -499,7 +501,7 @@ l_029_006B0:
 l_029_006DA:
         ext.w   d4                              ; 006DA
         add.w   d4,d4                           ; 006DC
-        lea.l   dat_029_00424(pc),a1            ; 006DE
+        lea.l   MapMarkerObjectData1(pc),a1     ; 006DE
         move.w  (a1,d4.w),d5                    ; 006E2
         adda.w  d5,a1                           ; 006E6
 l_029_006E8:

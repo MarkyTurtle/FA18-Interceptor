@@ -365,7 +365,7 @@ l_004_00438:
         movem.l (a0),d0-d4                      ; 00440
         move.l  #DrawModel,d0                   ; 00444
         movem.l d0-d4,(ObjectDrawTable).l       ; 0044A
-        movea.l (dat_016_00144).l,a1            ; 00452
+        movea.l (ObjectDrawEntries).l,a1        ; 00452
         move.w  (a1),d2                         ; 00458
         blt.b   l_004_0046C                     ; 0045A
         andi.w  #$4000,d2                       ; 0045C
@@ -409,7 +409,7 @@ l_004_004EA:
         move.w  d0,(ViewBlockX).l               ; 00506
         move.w  d1,(ViewBlockZ).l               ; 0050C
         move.b  d2,$b(a1)                       ; 00512
-        lea.l   (dat_008_0160E).l,a2            ; 00516
+        lea.l   (StartPointSubCells).l,a2       ; 00516
         move.w  d2,d6                           ; 0051C
         add.w   d6,d6                           ; 0051E
         move.w  (ViewBlockX).l,d5               ; 00520
@@ -431,7 +431,7 @@ l_004_004EA:
         swap    d1                              ; 00558
         asl.l   #$8,d1                          ; 0055A
         asl.w   #$2,d2                          ; 0055C
-        lea.l   (dat_008_0151A).l,a2            ; 0055E
+        lea.l   (SubCellOffsets).l,a2                   ; 0055E
         movem.w (a2,d2.w),d5-d6                 ; 00564
         asl.l   #$8,d5                          ; 0056A
         asl.l   #$8,d6                          ; 0056C

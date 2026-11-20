@@ -10,14 +10,14 @@
 
 ;-------------------------------------------------------------------------------
 ; FindHorizonEdges - Where the horizon crosses the view's four edges: tests each corner
-; (dat_072_03600) against the horizon and puts the crossing points into dat_072_03000
+; (ClipCorners) against the horizon and puts the crossing points into ScreenPolygon
 ; (HorizonCrossTop, Bottom, Left, Right).
 ;-------------------------------------------------------------------------------
 FindHorizonEdges:
         link.w  a6,#$fffc                       ; 00000
         clr.b   -$2(a6)                         ; 00004
-        lea.l   (dat_072_03600).l,a0            ; 00008
-        lea.l   (dat_072_03000).l,a1            ; 0000E
+        lea.l   (ClipCorners).l,a0              ; 00008
+        lea.l   (ScreenPolygon).l,a1            ; 0000E
         clr.w   d0                              ; 00014
         move.w  #$7,$8(a6)                      ; 00016
 l_034_0001C:

@@ -202,8 +202,8 @@ l_023_00232:
         cmpi.w  #$a,d5                          ; 00232
         bge.w   l_023_002E8                     ; 00236
         addq.w  #$1,d5                          ; 0023A
-        lea.l   (dat_072_05400).l,a0            ; 0023C
-        lea.l   (dat_072_0542C).l,a1            ; 00242
+        lea.l   (CellItemPointers).l,a0         ; 0023C
+        lea.l   (CellItemPointers2).l,a1        ; 00242
         move.w  d5,d0                           ; 00248
         asl.w   #$2,d0                          ; 0024A
         move.l  (a0,d0.w),d1                    ; 0024C

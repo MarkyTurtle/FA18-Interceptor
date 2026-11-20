@@ -6,13 +6,17 @@
 ; Hunk 78: DATA, $28 bytes
 ;===============================================================================
 	DATA_HUNK	h078
-dat_078_00000:
+; InitSoundData1 - Data used by InitSound.
+InitSoundData1:
 	dc.b	$0F,$00
-dat_078_00002:
+; InitSoundData2 - Data used by CloseSound, InitSound.
+InitSoundData2:
 	dc.b	$00,$00,$00,$00
-dat_078_00006:
+; InitSoundData3 - Data used by CloseSound, InitSound.
+InitSoundData3:
 	dc.b	$00,$00,$00,$00
-dat_078_0000A:
+; InitSoundData4 - Data used by CloseSound, InitSound.
+InitSoundData4:
 	dc.b	$00,$00,$00,$00
 ; AudioDeviceOpen - Non-zero once audio.device is open (no sound otherwise).
 AudioDeviceOpen:

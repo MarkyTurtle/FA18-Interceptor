@@ -9,7 +9,8 @@
 ; ControlResponse - The rotation rate for each stick deflection (words), the normal table.
 ControlResponse:
 	dc.b	$00,$12,$00,$1B,$00,$2D,$00,$3F,$00,$5A,$00,$75
-dat_060_0000C:
+; UpdateAttitudeData1 - Data used by UpdateAttitude.
+UpdateAttitudeData1:
 	dc.b	$00,$90,$00,$AB,$00,$BD,$00,$CF,$00,$E1,$00,$F3,$01,$05,$01,$20
 	dc.b	$01,$32,$01,$4D,$01,$68,$01,$83,$01,$9E,$01,$B9,$01,$D4,$01,$EF
 	dc.b	$02,$13,$02,$37,$02,$52,$02,$76,$02,$9A,$02,$BE,$02,$E2,$03,$06

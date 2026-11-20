@@ -6,7 +6,8 @@
 ; Hunk 115: DATA, $4 bytes
 ;===============================================================================
 	DATA_HUNK	h115
-dat_115_00000:
+; OpenData1 - Data used by open.
+OpenData1:
 	dc.b	$00,$00,$00,$00
 h115_end:
 	ifnd	HUNKEXE

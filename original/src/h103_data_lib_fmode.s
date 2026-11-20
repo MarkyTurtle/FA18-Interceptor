@@ -6,7 +6,8 @@
 ; Hunk 103: DATA, $4 bytes
 ;===============================================================================
 	DATA_HUNK	h103
-dat_103_00000:
+; FreopenData1 - Data used by freopen.
+FreopenData1:
 	dc.b	$00,$00,$00,$00
 h103_end:
 	ifnd	HUNKEXE

@@ -6,7 +6,8 @@
 ; Hunk 37: CODE, $A60 bytes
 ;===============================================================================
 	CODE_HUNK	h037
-dat_037_00000:
+; CopyTitleToScreenData1 - Data used by CopyTitleToScreen.
+CopyTitleToScreenData1:
         dc.l    TitlePlane4                     ; 00000
         dc.l    TitlePlane3                     ; 00004
         dc.l    TitlePlane2                     ; 00008
@@ -20,7 +21,7 @@ dat_037_00000:
 CopyTitleToScreen:
         lea.l   (CUSTOM).l,a0                    ; 00014
         movea.l (DrawBitPlanes).l,a2            ; 0001A
-        lea.l   dat_037_00000(pc),a1            ; 00020
+        lea.l   CopyTitleToScreenData1(pc),a1   ; 00020
         move.w  #$9f0,d2                        ; 00024
         movea.w #$14,a4                         ; 00028
         move.w  #$c8,d6                         ; 0002C
@@ -62,7 +63,8 @@ BlitCopyGo:
         move.l  d4,$54(a0)                      ; 00088
         move.w  d6,$58(a0)                      ; 0008C
         rts                                     ; 00090
-dat_037_00092:
+; DrawPanelData1 - Data used by DrawPanel.
+DrawPanelData1:
         dc.l    PanelPlane3                     ; 00092
         dc.l    PanelPlane2                     ; 00096
         dc.l    PanelPlane1                     ; 0009A
@@ -80,7 +82,7 @@ DrawPanel:
         subq.b  #$1,(PanelBlitCount).l          ; 000AC
         lea.l   (CUSTOM).l,a0                    ; 000B2
         movea.l (DrawPlanes).l,a2               ; 000B8
-        lea.l   dat_037_00092(pc),a1            ; 000BE
+        lea.l   DrawPanelData1(pc),a1           ; 000BE
         move.w  #$9f0,d2                        ; 000C2
         move.l  #$16a8,d1                       ; 000C6
         movea.w #$14,a4                         ; 000CC
@@ -277,21 +279,23 @@ l_037_002BC:
         subq.w  #$1,d1                          ; 002DA
         dbra    d3,l_037_002A6                  ; 002DC
         rts                                     ; 002E0
-dat_037_002E2:
+; DrawPanelPieceData1 - Data used by DrawPanelPiece.
+DrawPanelPieceData1:
         dc.l    PanelPieceMask                  ; 002E2
-dat_037_002E6:
+; DrawPanelPieceData2 - Data used by DrawPanelPiece.
+DrawPanelPieceData2:
         dc.l    PanelPiecePlane3                ; 002E6
         dc.l    PanelPiecePlane2                ; 002EA
         dc.l    PanelPiecePlane1                ; 002EE
         dc.l    PanelPiecePlane0                ; 002F2
 
 ;-------------------------------------------------------------------------------
-; DrawPanelPiece - Blits one fixed piece of the panel (from dat_037_002E2) with
+; DrawPanelPiece - Blits one fixed piece of the panel (from DrawPanelPieceData1) with
 ; BlitPanelPicture; called each frame by GameFrame.
 ;-------------------------------------------------------------------------------
 DrawPanelPiece:
-        lea.l   dat_037_002E6(pc),a1            ; 002F6
-        lea.l   dat_037_002E2(pc),a3            ; 002FA
+        lea.l   DrawPanelPieceData2(pc),a1      ; 002F6
+        lea.l   DrawPanelPieceData1(pc),a3      ; 002FA
         move.w  #$fce,d2                        ; 002FE
         movea.l (a3),a3                         ; 00302
         move.l  (a3),d0                         ; 00304
@@ -302,9 +306,11 @@ DrawPanelPiece:
         move.w  #$1,d7                          ; 00318
         bsr.w   BlitPanelPicture                ; 0031C
         rts                                     ; 00320
-dat_037_00322:
+; DrawStoresData1 - Data used by DrawStores.
+DrawStoresData1:
 	dc.b	$00,$55,$00,$AC,$00,$33,$00,$AC,$FF,$FF
-dat_037_0032C:
+; DrawStoresData2 - Data used by DrawStores.
+DrawStoresData2:
 	dc.b	$00,$4A,$00,$9F,$00,$3E,$00,$9F,$00,$51,$00,$A7,$00,$37,$00,$A7
 	dc.b	$FF,$FF
 l_037_0033E:
@@ -353,7 +359,7 @@ l_037_003D2:
         jsr     (Plot).l                        ; 003D8
         movem.l (a7)+,d5/a0                     ; 003DE
 l_037_003E2:
-        lea.l   dat_037_00322(pc),a1            ; 003E2
+        lea.l   DrawStoresData1(pc),a1          ; 003E2
         move.b  $5f(a0),d4                      ; 003E6
         lsr.b   #$4,d4                          ; 003EA
         cmpi.b  #$20,d5                         ; 003EC
@@ -364,7 +370,7 @@ l_037_003F8:
         bset    #$1f,d4                         ; 003F8
 l_037_003FC:
         bsr.w   DrawStoresMarks                 ; 003FC
-        lea.l   dat_037_0032C(pc),a1            ; 00400
+        lea.l   DrawStoresData2(pc),a1          ; 00400
         move.b  $5f(a0),d4                      ; 00404
         andi.b  #$f,d4                          ; 00408
         cmpi.b  #$30,d5                         ; 0040C
@@ -554,11 +560,12 @@ l_037_0061E:
         move.l  d4,BLTDPTH(a0)                  ; 00658
         move.w  d6,BLTSIZE(a0)                  ; 0065C
         rts                                     ; 00660
-dat_037_00662:
-        dc.l    dat_062_000E4                   ; 00662
-        dc.l    dat_062_000C8                   ; 00666
-        dc.l    dat_062_000AC                   ; 0066A
-        dc.l    dat_062_00090                   ; 0066E
+; DrawAfterburnerLampData1 - Data used by DrawAfterburnerLamp.
+DrawAfterburnerLampData1:
+        dc.l    Hunk037Data4                    ; 00662
+        dc.l    Hunk037Data3                    ; 00666
+        dc.l    Hunk037Data2                    ; 0066A
+        dc.l    Hunk037Data1                    ; 0066E
 l_037_00672:
         rts                                     ; 00672
 
@@ -593,14 +600,14 @@ l_037_006BE:
         lea.l   (ObjectTable).l,a1              ; 006CC
         adda.w  (ViewObject).l,a1               ; 006D2
         move.b  $7c(a1),d0                      ; 006D8
-        lea.l   dat_037_00662(pc),a1            ; 006DC
+        lea.l   DrawAfterburnerLampData1(pc),a1 ; 006DC
         bclr    #$7,d0                          ; 006E0
         asr.b   #$5,d0                          ; 006E4
         ext.w   d0                              ; 006E6
         add.w   d0,d0                           ; 006E8
         add.w   d0,d0                           ; 006EA
         adda.w  d0,a1                           ; 006EC
-        move.l  #dat_062_00074,d0               ; 006EE
+        move.l  #DrawAfterburnerLampData2,d0    ; 006EE
         move.l  #$1d88,d1                       ; 006F4
         move.w  #$0,d7                          ; 006FA
         movea.w #$2,a4                          ; 006FE
@@ -803,7 +810,7 @@ l_037_00956:
         andi.w  #$f0,d4                         ; 00956
         asr.w   #$3,d4                          ; 0095A
         ext.l   d4                              ; 0095C
-        addi.l  #dat_062_00174,d4               ; 0095E
+        addi.l  #DrawCompassData1,d4            ; 0095E
         add.w   d7,d7                           ; 00964
         ext.l   d7                              ; 00966
         add.l   d7,d4                           ; 00968

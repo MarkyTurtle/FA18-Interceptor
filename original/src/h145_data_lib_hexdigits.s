@@ -9,7 +9,8 @@
 ; _HexDigits - "0123456789ABCDEF" (for printf).
 _HexDigits:
 	dc.b	'0123456789ABCDEF'
-dat_145_00010:
+; PfmtJump2Data1 - Data used by PfmtJump2.
+PfmtJump2Data1:
 	dc.b	$00,$00,$00,$00
 h145_end:
 	ifnd	HUNKEXE

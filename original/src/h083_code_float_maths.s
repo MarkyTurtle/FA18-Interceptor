@@ -164,24 +164,24 @@ l_083_00220:
         rts                                     ; 00222
 
 ;-------------------------------------------------------------------------------
-; SoundRandomBit - The next bit of the noise generator (dat_084_00000).
+; SoundRandomBit - The next bit of the noise generator (NoiseSeed).
 ;-------------------------------------------------------------------------------
 SoundRandomBit:
         link.w  a6,#$fffc                       ; 00224
-        move.l  (dat_084_00000).l,d0            ; 00228
+        move.l  (NoiseSeed).l,d0                ; 00228
         andi.l  #$1,d0                          ; 0022E
-        move.l  (dat_084_00000).l,d1            ; 00234
+        move.l  (NoiseSeed).l,d1                ; 00234
         asr.l   #$3,d1                          ; 0023A
         andi.l  #$1,d1                          ; 0023C
         eor.l   d1,d0                           ; 00242
-        move.l  (dat_084_00000).l,d1            ; 00244
+        move.l  (NoiseSeed).l,d1                ; 00244
         asr.l   #$1,d1                          ; 0024A
         andi.l  #$7fffffff,d1                   ; 0024C
-        move.l  d1,(dat_084_00000).l            ; 00252
+        move.l  d1,(NoiseSeed).l                ; 00252
         move.l  d0,-$4(a6)                      ; 00258
         tst.l   d0                              ; 0025C
         beq.b   l_083_0026A                     ; 0025E
-        subi.l  #$80000000,(dat_084_00000).l    ; 00260
+        subi.l  #$80000000,(NoiseSeed).l        ; 00260
 l_083_0026A:
         move.l  -$4(a6),d0                      ; 0026A
         unlk    a6                              ; 0026E

@@ -33,7 +33,7 @@ ClipFillPolygonBuffer:
         cmpi.w  #$3,d0                          ; 0002A
         blt.b   l_019_00004                     ; 0002E
         move.w  d0,-$4(a6)                      ; 00030
-        lea.l   (dat_072_03600).l,a1            ; 00034
+        lea.l   (ClipCorners).l,a1              ; 00034
         lea.l   (ClipWork3).l,a2                ; 0003A
         lea.l   (ClipWork2).l,a3                ; 00040
         lea.l   (ClipWork1).l,a4                ; 00046
@@ -802,8 +802,8 @@ l_019_00676:
         beq.w   l_019_006EA                     ; 00678
         cmpi.w  #$2,d7                          ; 0067C
         ble.b   l_019_006A0                     ; 00680
-        lea.l   (dat_072_03600).l,a1            ; 00682
-        lea.l   (dat_072_03000).l,a0            ; 00688
+        lea.l   (ClipCorners).l,a1              ; 00682
+        lea.l   (ScreenPolygon).l,a0            ; 00688
         move.w  #$13f,d0                        ; 0068E
         move.w  #$b3,d1                         ; 00692
         move.w  d7,(a0)+                        ; 00696

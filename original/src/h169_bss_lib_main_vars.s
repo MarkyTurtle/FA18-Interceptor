@@ -6,13 +6,17 @@
 ; Hunk 169: BSS, $8C bytes
 ;===============================================================================
 	BSS_HUNK	h169
-dat_169_00000:
+; MainData14 - Data used by __main.
+MainData14:
         ds.b    $4                              ; 00000
-dat_169_00004:
+; MainData15 - Data used by __main.
+MainData15:
         ds.b    $80                             ; 00004
-dat_169_00084:
+; MainData16 - Data used by __main.
+MainData16:
         ds.b    $4                              ; 00084
-dat_169_00088:
+; MainData17 - Data used by __main.
+MainData17:
         ds.b    $4                              ; 00088
 h169_end:
 	ifnd	HUNKEXE
