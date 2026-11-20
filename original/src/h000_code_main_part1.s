@@ -1628,7 +1628,7 @@ l_000_0142C:
         jsr     (CheckViewObjectGone).l         ; 01434
         jsr     (EmptyReadout).l                ; 0143A
         jsr     (DrawMapMarkers).l              ; 01440
-        jsr     (sub_020_00562).l               ; 01446
+        jsr     (UpdateClock).l                 ; 01446
         move.w  -$2(a6),d0                      ; 0144C
         andi.w  #$7,d0                          ; 01450
         subq.w  #$7,d0                          ; 01454
@@ -5150,7 +5150,7 @@ l_000_0429A:
         jsr     (StartGunSound).l               ; 042A8
         clr.b   (ViewZoom).l                    ; 042AE
         move.b  #$ff,(RedrawFlags).l            ; 042B4
-        jsr     (sub_005_00E6E).l               ; 042BC
+        jsr     (ApplyViewZoom).l               ; 042BC
         cmpi.b  #$30,-$1(a6)                    ; 042C2
         beq.b   l_000_042D2                     ; 042C8
         tst.b   (OutsideView).l                 ; 042CA
@@ -5173,7 +5173,7 @@ l_000_042EC:
         jsr     (StartGunSound).l               ; 0430E
         clr.b   (ViewZoom).l                    ; 04314
         move.b  #$ff,(RedrawFlags).l            ; 0431A
-        jsr     (sub_005_00E6E).l               ; 04322
+        jsr     (ApplyViewZoom).l               ; 04322
         move.w  #$a7,(ClipY).l                  ; 04328
 l_000_04330:
         tst.b   (OutsideView).l                 ; 04330

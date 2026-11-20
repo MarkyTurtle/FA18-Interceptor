@@ -785,7 +785,7 @@ l_026_00920:
 ; camera, or the camera sequence's step (CameraShots) for the distance to the viewed object.
 ;-------------------------------------------------------------------------------
 UpdateCamera:
-        jsr     (sub_032_006EA).l               ; 00922
+        jsr     (CameraHeadingMatrix).l         ; 00922
         tst.b   (OutsideView).l                 ; 00928
         beq.b   l_026_00920                     ; 0092E
         tst.b   (NewView).l                     ; 00930

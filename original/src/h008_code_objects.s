@@ -526,7 +526,7 @@ UpdateScenery:
         move.b  (RedrawFlags).l,d0              ; 005AC
         beq.w   l_008_006CE                     ; 005B2
         move.w  #$49,(FrameStage).l             ; 005B6
-        bsr.w   sub_008_007BA                   ; 005BE
+        bsr.w   MarkAllObjectsInView            ; 005BE
         move.b  d0,d1                           ; 005C2
         andi.b  #$f,d1                          ; 005C4
         cmpi.b  #$c,d1                          ; 005C8
@@ -623,33 +623,53 @@ l_008_00758:
 l_008_0075E:
         clr.b   (dat_071_00229).l               ; 0075E
         rts                                     ; 00764
-sub_008_00766:
+
+;-------------------------------------------------------------------------------
+; PlayerCellXNext - PlayerCellX + 1, wrapping from 127 to 0.
+;-------------------------------------------------------------------------------
+PlayerCellXNext:
         addq.w  #$1,(PlayerCellX).l             ; 00766
         cmpi.w  #$7f,(PlayerCellX).l            ; 0076C
         ble.b   l_008_0077C                     ; 00774
         clr.w   (PlayerCellX).l                 ; 00776
 l_008_0077C:
         rts                                     ; 0077C
-sub_008_0077E:
+
+;-------------------------------------------------------------------------------
+; PlayerCellXPrev - PlayerCellX - 1, wrapping from 0 to 127.
+;-------------------------------------------------------------------------------
+PlayerCellXPrev:
         subq.w  #$1,(PlayerCellX).l             ; 0077E
         bge.b   l_008_0078E                     ; 00784
         move.w  #$7f,(PlayerCellX).l            ; 00786
 l_008_0078E:
         rts                                     ; 0078E
-sub_008_00790:
+
+;-------------------------------------------------------------------------------
+; PlayerCellZNext - PlayerCellZ + 1, wrapping from 127 to 0.
+;-------------------------------------------------------------------------------
+PlayerCellZNext:
         addq.w  #$1,(PlayerCellZ).l             ; 00790
         cmpi.w  #$7f,(PlayerCellZ).l            ; 00796
         ble.b   l_008_007A6                     ; 0079E
         clr.w   (PlayerCellZ).l                 ; 007A0
 l_008_007A6:
         rts                                     ; 007A6
-sub_008_007A8:
+
+;-------------------------------------------------------------------------------
+; PlayerCellZPrev - PlayerCellZ - 1, wrapping from 0 to 127.
+;-------------------------------------------------------------------------------
+PlayerCellZPrev:
         subq.w  #$1,(PlayerCellZ).l             ; 007A8
         bge.b   l_008_007B8                     ; 007AE
         move.w  #$7f,(PlayerCellZ).l            ; 007B0
 l_008_007B8:
         rts                                     ; 007B8
-sub_008_007BA:
+
+;-------------------------------------------------------------------------------
+; MarkAllObjectsInView - Sets +$01 bit 4 (in a cell being drawn) on all 16 objects.
+;-------------------------------------------------------------------------------
+MarkAllObjectsInView:
         lea.l   (ObjectTable).l,a0              ; 007BA
         move.b  #$10,d7                         ; 007C0
         or.b    d7,$1(a0)                       ; 007C4
@@ -772,7 +792,7 @@ l_008_00954:
         bne.b   l_008_00970                     ; 0095C
 l_008_0095E:
         movem.w (ObjectViewPos).l,d2-d4         ; 0095E
-        jsr     (sub_008_01652).l               ; 00966
+        jsr     (ScaledViewOffset).l            ; 00966
         move.w  d1,$4(a0)                       ; 0096C
 l_008_00970:
         move.w  $8(a0),(dat_071_0048A).l        ; 00970
@@ -817,7 +837,7 @@ l_008_009F2:
 ; DrawObjects - Draws the objects and the scenery: for each of VisibleObjects, its position
 ; relative to the view (map cell and position in the cell) and its distance (the largest of
 ; |dx|, |dy|, |dz|) give its scale (DistanceScale), then its routine of ObjectDrawTable draws
-; it; then each entry of SceneryList (sub_008_01652 gives its depth); then the small objects
+; it; then each entry of SceneryList (ScaledViewOffset gives its depth); then the small objects
 ; near the view.
 ;-------------------------------------------------------------------------------
 DrawObjects:
@@ -918,7 +938,7 @@ l_008_00AEA:
         asr.l   #$8,d3                          ; 00B28
         asr.l   #$8,d4                          ; 00B2A
         movem.w d2-d4,(ObjectViewPos).l         ; 00B2C
-        jsr     (sub_008_01652).l               ; 00B34
+        jsr     (ScaledViewOffset).l            ; 00B34
         lea.l   (ObjectDrawTable).l,a1          ; 00B3A
         move.w  (CurrentObject).l,d1            ; 00B40
         add.w   d1,d1                           ; 00B46
@@ -972,10 +992,10 @@ l_008_00BC2:
         asl.l   #$8,d4                          ; 00BF6
         bra.b   l_008_00C1C                     ; 00BF8
 l_008_00BFA:
-        bsr.w   sub_008_00DDC                   ; 00BFA
+        bsr.w   SmallObjectRecord               ; 00BFA
         bra.b   l_008_00C04                     ; 00BFE
 l_008_00C00:
-        bsr.w   sub_008_00DEE                   ; 00C00
+        bsr.w   ObjectRecord                    ; 00C00
 l_008_00C04:
         movem.l d2-d4,(ObjectViewPosL).l        ; 00C04
         asr.l   #$8,d2                          ; 00C0C
@@ -1006,7 +1026,7 @@ l_008_00C52:
         bne.b   l_008_00C6E                     ; 00C5A
 l_008_00C5C:
         movem.w (ObjectViewPos).l,d2-d4         ; 00C5C
-        jsr     (sub_008_01652).l               ; 00C64
+        jsr     (ScaledViewOffset).l            ; 00C64
         move.w  d1,$4(a0)                       ; 00C6A
 l_008_00C6E:
         btst    #$6,d7                          ; 00C6E
@@ -1130,14 +1150,23 @@ l_008_00DD0:
         blt.b   l_008_00D60                     ; 00DD8
 l_008_00DDA:
         rts                                     ; 00DDA
-sub_008_00DDC:
+
+;-------------------------------------------------------------------------------
+; SmallObjectRecord - a2 = the record of small object (d7 high byte) in SmallObjects; d6 = d7's
+; low nibble.
+;-------------------------------------------------------------------------------
+SmallObjectRecord:
         lea.l   (SmallObjects).l,a2             ; 00DDC
         move.w  d7,d1                           ; 00DE2
         move.w  d7,d6                           ; 00DE4
         andi.w  #$ff00,d1                       ; 00DE6
         asr.w   #$3,d1                          ; 00DEA
         bra.b   l_008_00DFE                     ; 00DEC
-sub_008_00DEE:
+
+;-------------------------------------------------------------------------------
+; ObjectRecord - a2 = the record of object (d7 high byte) in ObjectTable; d6 = d7's low nibble.
+;-------------------------------------------------------------------------------
+ObjectRecord:
         lea.l   (ObjectTable).l,a2              ; 00DEE
         move.w  d7,d1                           ; 00DF4
         move.w  d7,d6                           ; 00DF6
@@ -1248,7 +1277,7 @@ l_008_00F6C:
         move.w  #$60,d1                         ; 00FB4
         moveq   #$d,d2                          ; 00FB8
 l_008_00FBA:
-        bsr.w   sub_008_0145A                   ; 00FBA
+        bsr.w   FillWordsStride                 ; 00FBA
         dbra    d2,l_008_00FBA                  ; 00FBE
         tst.b   (dat_071_00226).l               ; 00FC2
         bne.b   l_008_00FF8                     ; 00FC8
@@ -1463,7 +1492,7 @@ l_008_011FE:
 l_008_0120E:
         bsr.w   FindObjectsInCell               ; 0120E
 l_008_01212:
-        bsr.w   sub_008_01310                   ; 01212
+        bsr.w   AddObjectsToScenery             ; 01212
         movem.l (a7)+,d2-d5/a0-a5               ; 01216
         rts                                     ; 0121A
 
@@ -1566,7 +1595,12 @@ l_008_012FE:
         bra.b   l_008_012FE                     ; 0130C
 l_008_0130E:
         rts                                     ; 0130E
-sub_008_01310:
+
+;-------------------------------------------------------------------------------
+; AddObjectsToScenery - With detailed scenery: adds the objects that exist (+$01 bit 6) to the
+; scenery list being built (up to SceneryListLimit).
+;-------------------------------------------------------------------------------
+AddObjectsToScenery:
         tst.b   (SceneryDetailed).l             ; 01310
         beq.b   l_008_0130E                     ; 01316
         move.w  #$51,(FrameStage).l             ; 01318
@@ -1678,7 +1712,11 @@ l_008_0144A:
         move.w  #$36,(DebugCheckpoint).l        ; 0144A
         jsr     (Nop).l                         ; 01452
         bra.b   l_008_0144A                     ; 01458
-sub_008_0145A:
+
+;-------------------------------------------------------------------------------
+; FillWordsStride - Writes d0 to (a1) and on every d1 bytes (unrolled).
+;-------------------------------------------------------------------------------
+FillWordsStride:
         move.w  d0,(a1)                         ; 0145A
         adda.w  d1,a1                           ; 0145C
         move.w  d0,(a1)                         ; 0145E
@@ -1753,7 +1791,12 @@ l_008_01642:
         move.w  d1,(dat_071_00510).l            ; 01646
         movem.l (a7)+,d5/d7                     ; 0164C
         rts                                     ; 01650
-sub_008_01652:
+
+;-------------------------------------------------------------------------------
+; ScaledViewOffset - The camera offset (ViewOffsetX8, Y8, Z8) shifted down by DistanceShift:
+; d1, d6, d7.
+;-------------------------------------------------------------------------------
+ScaledViewOffset:
         movem.l d5/d7,-(a7)                     ; 01652
         move.w  (ViewOffsetX8).l,d1             ; 01656
         move.l  (ViewOffsetY8).l,d6             ; 0165C

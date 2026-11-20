@@ -647,7 +647,7 @@ l_009_00804:
         move.l  d1,(dat_071_0050C).l            ; 00832
         move.b  #$1,(dat_071_0028B).l           ; 00838
 l_009_00840:
-        jsr     (sub_008_01652).l               ; 00840
+        jsr     (ScaledViewOffset).l            ; 00840
         move.w  (DistanceShift).l,d2            ; 00846
         asl.w   d2,d1                           ; 0084C
 l_009_0084E:
@@ -803,7 +803,7 @@ l_009_009BA:
         move.w  (a1),d1                         ; 009E6
         btst    #$4,d1                          ; 009E8
         beq.b   l_009_009F4                     ; 009EC
-        bsr.w   sub_009_00FD8                   ; 009EE
+        bsr.w   ObjectPosition                  ; 009EE
         bra.b   l_009_009F8                     ; 009F2
 l_009_009F4:
         bsr.w   sub_009_00FF8                   ; 009F4
@@ -819,14 +819,14 @@ l_009_00A04:
         move.w  (a1),d1                         ; 00A0C
         btst    #$6,d1                          ; 00A0E
         beq.b   l_009_00A1E                     ; 00A12
-        bsr.w   sub_009_00FC8                   ; 00A14
-        bsr.w   sub_009_0109C                   ; 00A18
+        bsr.w   SmallObjectPosition             ; 00A14
+        bsr.w   SmallObjectOf                   ; 00A18
         bra.b   l_009_00A36                     ; 00A1C
 l_009_00A1E:
         btst    #$4,d1                          ; 00A1E
         beq.b   l_009_00A2E                     ; 00A22
-        bsr.w   sub_009_00FD8                   ; 00A24
-        bsr.w   sub_009_010AE                   ; 00A28
+        bsr.w   ObjectPosition                  ; 00A24
+        bsr.w   ObjectOf                        ; 00A28
         bra.b   l_009_00A36                     ; 00A2C
 l_009_00A2E:
         bsr.w   sub_009_00FF8                   ; 00A2E
@@ -869,7 +869,7 @@ l_009_00A6E:
         move.w  (a0),d1                         ; 00A7E
         btst    #$4,d1                          ; 00A80
         beq.b   l_009_00A8C                     ; 00A84
-        bsr.w   sub_009_00FD8                   ; 00A86
+        bsr.w   ObjectPosition                  ; 00A86
         bra.b   l_009_00A94                     ; 00A8A
 l_009_00A8C:
         exg.l   a0,a1                           ; 00A8C
@@ -882,14 +882,14 @@ l_009_00A94:
         move.w  (a1),d1                         ; 00A9A
         btst    #$6,d1                          ; 00A9C
         beq.b   l_009_00AAC                     ; 00AA0
-        bsr.w   sub_009_00FC8                   ; 00AA2
-        bsr.w   sub_009_0109C                   ; 00AA6
+        bsr.w   SmallObjectPosition             ; 00AA2
+        bsr.w   SmallObjectOf                   ; 00AA6
         bra.b   l_009_00AC4                     ; 00AAA
 l_009_00AAC:
         btst    #$4,d1                          ; 00AAC
         beq.b   l_009_00ABC                     ; 00AB0
-        bsr.w   sub_009_00FD8                   ; 00AB2
-        bsr.w   sub_009_010AE                   ; 00AB6
+        bsr.w   ObjectPosition                  ; 00AB2
+        bsr.w   ObjectOf                        ; 00AB6
         bra.b   l_009_00AC4                     ; 00ABA
 l_009_00ABC:
         bsr.w   sub_009_00FF8                   ; 00ABC
@@ -934,7 +934,7 @@ l_009_00B16:
         move.w  $e(a3,d1.w),d4                  ; 00B26
         move.l  $10(a3,d1.w),-$6(a6)            ; 00B2A
         move.w  d1,-(a7)                        ; 00B30
-        bsr.w   sub_009_0109C                   ; 00B32
+        bsr.w   SmallObjectOf                   ; 00B32
         move.w  (a7)+,d1                        ; 00B36
         move.w  d2,-$2(a6)                      ; 00B38
         move.w  d4,-$8(a6)                      ; 00B3C
@@ -964,7 +964,7 @@ l_009_00B7E:
         move.w  $e(a3,d1.w),d4                  ; 00B8E
         move.l  $10(a3,d1.w),-$6(a6)            ; 00B92
         move.w  d1,-(a7)                        ; 00B98
-        bsr.w   sub_009_010AE                   ; 00B9A
+        bsr.w   ObjectOf                        ; 00B9A
         move.w  (a7)+,d1                        ; 00B9E
         move.w  d2,-$2(a6)                      ; 00BA0
         move.w  d4,-$8(a6)                      ; 00BA4
@@ -1326,13 +1326,23 @@ l_009_00FBC:
         dbra    d7,l_009_00F98                  ; 00FC0
         unlk    a6                              ; 00FC4
         rts                                     ; 00FC6
-sub_009_00FC8:
+
+;-------------------------------------------------------------------------------
+; SmallObjectPosition - The position of the small object in d1 (high byte): from its record in
+; SmallObjects.
+;-------------------------------------------------------------------------------
+SmallObjectPosition:
         andi.w  #$ff00,d1                       ; 00FC8
         lsr.w   #$3,d1                          ; 00FCC
         lea.l   (SmallObjects).l,a2             ; 00FCE
         adda.w  d1,a2                           ; 00FD4
         bra.b   l_009_00FE6                     ; 00FD6
-sub_009_00FD8:
+
+;-------------------------------------------------------------------------------
+; ObjectPosition - The position of the object in d1 (high byte): from its record in ObjectTable
+; (+$0C cell, +$10 height...).
+;-------------------------------------------------------------------------------
+ObjectPosition:
         andi.w  #$ff00,d1                       ; 00FD8
         add.w   d1,d1                           ; 00FDC
         lea.l   (ObjectTable).l,a2              ; 00FDE
@@ -1400,14 +1410,22 @@ l_009_01070:
         move.w  d1,-$1e(a6)                     ; 01094
         movea.l (a7)+,a2                        ; 01098
         rts                                     ; 0109A
-sub_009_0109C:
+
+;-------------------------------------------------------------------------------
+; SmallObjectOf - a2 = the SmallObjects record of the drawing-list entry at a1.
+;-------------------------------------------------------------------------------
+SmallObjectOf:
         move.l  a2,-(a7)                        ; 0109C
         move.w  (a1),d1                         ; 0109E
         andi.w  #$ff00,d1                       ; 010A0
         lsr.w   #$3,d1                          ; 010A4
         lea.l   (SmallObjects).l,a2             ; 010A6
         bra.b   l_009_010BE                     ; 010AC
-sub_009_010AE:
+
+;-------------------------------------------------------------------------------
+; ObjectOf - a2 = the ObjectTable record of the drawing-list entry at a1.
+;-------------------------------------------------------------------------------
+ObjectOf:
         move.l  a2,-(a7)                        ; 010AE
         move.w  (a1),d1                         ; 010B0
         andi.w  #$ff00,d1                       ; 010B2

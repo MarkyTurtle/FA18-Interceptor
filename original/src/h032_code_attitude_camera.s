@@ -269,7 +269,7 @@ l_032_002EC:
         bsr.w   sub_032_00946                   ; 002F0
 l_032_002F4:
         lea.l   $80(a1),a4                      ; 002F4
-        bsr.w   sub_032_00AD8                   ; 002F8
+        bsr.w   NormaliseAngles                 ; 002F8
         bclr    #$4,$3(a1)                      ; 002FC
         beq.b   l_032_00366                     ; 00302
         move.w  $6a(a1),d6                      ; 00304
@@ -530,7 +530,7 @@ l_032_00592:
         rts                                     ; 00592
 
 ;-------------------------------------------------------------------------------
-; SetupCamera - The camera, once a frame: from the cockpit (sub_032_00710) or, in the outside
+; SetupCamera - The camera, once a frame: from the cockpit (CockpitViewMatrix) or, in the outside
 ; views (OutsideView), from a point near the viewed object (SetOutsideCamera).
 ;-------------------------------------------------------------------------------
 SetupCamera:
@@ -539,10 +539,10 @@ SetupCamera:
         bsr.w   SetOutsideCamera                ; 0059C
         rts                                     ; 005A0
 l_032_005A2:
-        bsr.w   sub_032_00710                   ; 005A2
+        bsr.w   CockpitViewMatrix               ; 005A2
         rts                                     ; 005A6
 l_032_005A8:
-        jsr     (sub_020_00B18).l               ; 005A8
+        jsr     (FreeCameraKeys).l              ; 005A8
         bra.w   l_032_006A8                     ; 005AE
 
 ;-------------------------------------------------------------------------------
@@ -625,16 +625,21 @@ l_032_006A8:
         move.w  (OutsideCamPitch).l,d0          ; 006A8
         move.w  (OutsideCamHeading).l,d2        ; 006AE
         lea.l   (ViewMatrix).l,a1               ; 006B4
-        bsr.w   sub_032_00F86                   ; 006BA
+        bsr.w   PitchHeadingMatrix              ; 006BA
         lea.l   (ViewMatrix).l,a1               ; 006BE
-        bsr.w   sub_032_011A4                   ; 006C4
+        bsr.w   ScaleRows                       ; 006C4
         move.w  (OutsideCamHeading).l,d4        ; 006C8
         lea.l   (dat_071_005CC).l,a1            ; 006CE
-        bsr.w   sub_032_00F3E                   ; 006D4
+        bsr.w   HeadingMatrix                   ; 006D4
         movem.w (Player_66).l,d0-d2             ; 006D8
         movem.l d0-d2,(dat_071_00458).l         ; 006E0
         rts                                     ; 006E8
-sub_032_006EA:
+
+;-------------------------------------------------------------------------------
+; CameraHeadingMatrix - The matrix for turning to the viewed object's heading (360 degrees -
+; +$68).
+;-------------------------------------------------------------------------------
+CameraHeadingMatrix:
         lea.l   (ObjectTable).l,a0              ; 006EA
         adda.w  (ViewObject).l,a0               ; 006F0
         move.w  #$7080,d1                       ; 006F6
@@ -644,14 +649,19 @@ sub_032_006EA:
         move.w  d1,d4                           ; 00702
 l_032_00704:
         lea.l   (dat_071_005DE).l,a1            ; 00704
-        bsr.w   sub_032_00F68                   ; 0070A
+        bsr.w   HeadingMatrixFull               ; 0070A
         rts                                     ; 0070E
-sub_032_00710:
+
+;-------------------------------------------------------------------------------
+; CockpitViewMatrix - The view's matrices from the viewed object's attitude (+$68...) - the
+; panel's (dat_071_005CC) and, in the cockpit, the view's.
+;-------------------------------------------------------------------------------
+CockpitViewMatrix:
         lea.l   (ObjectTable).l,a0              ; 00710
         adda.w  (ViewObject).l,a0               ; 00716
         move.w  $68(a0),d4                      ; 0071C
         lea.l   (dat_071_005CC).l,a1            ; 00720
-        bsr.w   sub_032_00F3E                   ; 00726
+        bsr.w   HeadingMatrix                   ; 00726
         lea.l   (ObjectTable).l,a0              ; 0072A
         adda.w  (ViewObject).l,a0               ; 00730
         tst.b   (OutsideView).l                 ; 00736
@@ -659,7 +669,7 @@ sub_032_00710:
         movem.w $66(a0),d0/d2/d4                ; 0073E
         lea.l   (PanelViewMatrix).l,a1          ; 00744
         move.l  a0,-(a7)                        ; 0074A
-        bsr.w   sub_032_00FD6                   ; 0074C
+        bsr.w   AttitudeMatrix                  ; 0074C
         movea.l (a7)+,a0                        ; 00750
 l_032_00752:
         moveq   #$0,d0                          ; 00752
@@ -769,22 +779,22 @@ l_032_00862:
         move.l  a0,-(a7)                        ; 00862
         movem.w d0/d2/d4,-(a7)                  ; 00864
         lea.l   (dat_071_005F0).l,a1            ; 00868
-        bsr.w   sub_032_00FD6                   ; 0086E
+        bsr.w   AttitudeMatrix                  ; 0086E
         lea.l   (dat_071_005F0).l,a1            ; 00872
-        bsr.w   sub_032_011A4                   ; 00878
+        bsr.w   ScaleRows                       ; 00878
         movem.w (a7)+,d0/d2/d4                  ; 0087C
         movea.l (a7)+,a0                        ; 00880
         lea.l   $80(a0),a4                      ; 00882
-        bsr.w   sub_032_00AD8                   ; 00886
+        bsr.w   NormaliseAngles                 ; 00886
         movem.l d4-d6,(dat_071_00458).l         ; 0088A
 l_032_00892:
         move.w  (dat_071_0045A).l,d0            ; 00892
         move.w  (dat_071_0045E).l,d2            ; 00898
         move.w  (dat_071_00462).l,d4            ; 0089E
         lea.l   (ViewMatrix).l,a1               ; 008A4
-        bsr.w   sub_032_00FD6                   ; 008AA
+        bsr.w   AttitudeMatrix                  ; 008AA
         lea.l   (ViewMatrix).l,a1               ; 008AE
-        bsr.w   sub_032_011A4                   ; 008B4
+        bsr.w   ScaleRows                       ; 008B4
         rts                                     ; 008B8
 dat_032_008BA:
 	dc.b	$00,$00,$08,$D0,$00,$00,$00,$00,$12,$C0,$00,$00,$00,$00,$1C,$20
@@ -957,7 +967,12 @@ l_032_00AB4:
 dat_032_00ABA:
 	dc.b	$01,$00,$00,$F0,$00,$DC,$00,$C8,$00,$B4,$00,$A0,$00,$8C,$00,$78
 	dc.b	$00,$64,$00,$50,$00,$3C,$00,$28,$00,$14,$00,$00,$00,$00
-sub_032_00AD8:
+
+;-------------------------------------------------------------------------------
+; NormaliseAngles - Brings the angles d0, d2 (and d4) into 0-$7080 (360 degrees) and makes the
+; matrix from them.
+;-------------------------------------------------------------------------------
+NormaliseAngles:
         movem.l d1/a0-a1,-(a7)                  ; 00AD8
         tst.w   d0                              ; 00ADC
         bge.b   l_032_00AE4                     ; 00ADE
@@ -1449,7 +1464,11 @@ l_032_00F2C:
         asl.l   #$3,d6                          ; 00F36
         movem.l (a7)+,d1/a0-a1                  ; 00F38
         rts                                     ; 00F3C
-sub_032_00F3E:
+
+;-------------------------------------------------------------------------------
+; HeadingMatrix - A rotation matrix for the heading d4 alone (SinCos), into (a1).
+;-------------------------------------------------------------------------------
+HeadingMatrix:
         asr.w   #$3,d4                          ; 00F3E
         bsr.w   SinCos                          ; 00F40
         move.w  d5,d6                           ; 00F44
@@ -1469,7 +1488,11 @@ sub_032_00F3E:
         asr.w   #$6,d5                          ; 00F62
         move.w  d5,(a1)+                        ; 00F64
         rts                                     ; 00F66
-sub_032_00F68:
+
+;-------------------------------------------------------------------------------
+; HeadingMatrixFull - A full-scale rotation matrix for the heading d4 (SinCos), into (a1).
+;-------------------------------------------------------------------------------
+HeadingMatrixFull:
         asr.w   #$3,d4                          ; 00F68
         bsr.w   SinCos                          ; 00F6A
         move.w  d5,(a1)+                        ; 00F6E
@@ -1483,7 +1506,11 @@ sub_032_00F68:
         clr.w   (a1)+                           ; 00F80
         move.w  d5,(a1)+                        ; 00F82
         rts                                     ; 00F84
-sub_032_00F86:
+
+;-------------------------------------------------------------------------------
+; PitchHeadingMatrix - A rotation matrix for pitch d0 and heading d2 (SinCos2), into (a1).
+;-------------------------------------------------------------------------------
+PitchHeadingMatrix:
         lsr.w   #$3,d0                          ; 00F86
         lsr.w   #$3,d2                          ; 00F88
         bsr.w   SinCos2                         ; 00F8A
@@ -1523,7 +1550,12 @@ sub_032_00F86:
         asr.w   #$4,d6                          ; 00FD0
         move.w  d6,(a1)                         ; 00FD2
         rts                                     ; 00FD4
-sub_032_00FD6:
+
+;-------------------------------------------------------------------------------
+; AttitudeMatrix - A rotation matrix for pitch d0, heading d2 and roll d4 (SinCos2, SinCos),
+; into (a1).
+;-------------------------------------------------------------------------------
+AttitudeMatrix:
         lsr.w   #$3,d0                          ; 00FD6
         lsr.w   #$3,d2                          ; 00FD8
         lsr.w   #$3,d4                          ; 00FDA
@@ -1760,7 +1792,11 @@ AnglesToMatrix2:
         asr.l   d7,d6                           ; 0119E
         move.w  d6,(a1)                         ; 011A0
         rts                                     ; 011A2
-sub_032_011A4:
+
+;-------------------------------------------------------------------------------
+; ScaleRows - Multiplies the three words at a1 by dat_071_0040E-00412 (/256).
+;-------------------------------------------------------------------------------
+ScaleRows:
         movem.w (dat_071_0040E).l,d0-d2         ; 011A4
         movem.w (a1),d3-d5                      ; 011AC
         muls.w  d0,d3                           ; 011B0

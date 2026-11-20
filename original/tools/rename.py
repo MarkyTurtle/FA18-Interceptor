@@ -8,7 +8,7 @@ NAMES.txt, one label per line ('#' starts a comment line):
   OLD  NEW  [- description]
   OLD  NEW  - !description        (replaces the label's existing header or comment)
 
-* OLD is renamed NEW everywhere (whole words only). OLD may already be NEW: then only the
+* OLD is renamed NEW everywhere, comments included (whole words only). OLD may already be NEW: then only the
   description is added. OLD may be hNNN+$OFFSET (an address the source writes that way because
   it has no label): NEW becomes a label there, and every hNNN+$OFFSET becomes NEW.
 * With a description, a routine (a code label) gets a header box above it, a data label a
@@ -85,7 +85,7 @@ def main():
                 if new != code and sep and code.startswith(' '):
                     new = new.rstrip().expandtabs(8)
                     new = new.ljust(COMMENT_COL) if len(new) < COMMENT_COL else new + ' '
-                l = new + sep + cmt
+                l = new + sep + word.sub(lambda m: ren[m.group(1)], cmt)   # comments name it too
             m = re.match(r'^([A-Za-z_.][\w.]*):', l)
             if m and m.group(1) in desc:
                 text0 = desc[m.group(1)]

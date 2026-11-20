@@ -166,7 +166,7 @@ l_040_0021E:
         move.l  d0,(BCDOut).l                   ; 00220
         move.l  (BCDOut).l,-(a7)                ; 00226
         move.l  d1,(BCDOut).l                   ; 0022C
-        jsr     (sub_020_00C12).l               ; 00232
+        jsr     (BCDToBinary).l                 ; 00232
         move.l  (a7)+,(BCDOut).l                ; 00238
         move.l  (BCDIn).l,d1                    ; 0023E
         add.l   d2,d1                           ; 00244
@@ -327,7 +327,7 @@ l_040_0044A:
         move.l  d0,(BCDOut).l                   ; 0044C
         move.l  (BCDOut).l,-(a7)                ; 00452
         move.l  d1,(BCDOut).l                   ; 00458
-        jsr     (sub_020_00C12).l               ; 0045E
+        jsr     (BCDToBinary).l                 ; 0045E
         move.l  (a7)+,(BCDOut).l                ; 00464
         move.l  (BCDIn).l,d1                    ; 0046A
         add.l   d2,d1                           ; 00470
@@ -448,7 +448,7 @@ l_040_00608:
         move.l  d0,(BCDOut).l                   ; 00608
         move.l  (BCDOut).l,-(a7)                ; 0060E
         move.l  d1,(BCDOut).l                   ; 00614
-        jsr     (sub_020_00C12).l               ; 0061A
+        jsr     (BCDToBinary).l                 ; 0061A
         move.l  (a7)+,(BCDOut).l                ; 00620
         move.l  (BCDIn).l,d1                    ; 00626
         add.l   d2,d1                           ; 0062C

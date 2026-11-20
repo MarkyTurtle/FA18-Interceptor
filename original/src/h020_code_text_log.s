@@ -484,7 +484,11 @@ l_020_004DE:
         movem.w d0-d5,$8(a1)                    ; 00554
         adda.w  #$14,a1                         ; 0055A
         bra.w   l_020_004DE                     ; 0055E
-sub_020_00562:
+
+;-------------------------------------------------------------------------------
+; UpdateClock - Stage $1D0: reads the time (ReadTime) and keeps the flight's timers.
+;-------------------------------------------------------------------------------
+UpdateClock:
         jsr     (ReadTime).l                    ; 00562
         move.l  (dat_071_004D2).l,d1            ; 00568
         blt.w   l_020_005F4                     ; 0056E
@@ -531,11 +535,11 @@ l_020_005F4:
         clr.b   (a0)                            ; 00620
 l_020_00622:
         lea.l   (dat_071_00256).l,a0            ; 00622
-        bsr.w   sub_020_006D2                   ; 00628
+        bsr.w   CountDownByte                   ; 00628
         lea.l   (dat_071_00261).l,a0            ; 0062C
-        bsr.w   sub_020_006D2                   ; 00632
+        bsr.w   CountDownByte                   ; 00632
         lea.l   (dat_071_0025A).l,a0            ; 00636
-        bsr.w   sub_020_006D2                   ; 0063C
+        bsr.w   CountDownByte                   ; 0063C
         move.b  (dat_071_00259).l,d1            ; 00640
         tst.b   (dat_071_00258).l               ; 00646
         beq.b   l_020_0065A                     ; 0064C
@@ -580,7 +584,11 @@ l_020_00670:
         bra.b   l_020_00670                     ; 006CE
 l_020_006D0:
         rts                                     ; 006D0
-sub_020_006D2:
+
+;-------------------------------------------------------------------------------
+; CountDownByte - Subtracts 1 from the byte at a0 unless it is negative.
+;-------------------------------------------------------------------------------
+CountDownByte:
         tst.b   (a0)                            ; 006D2
         blt.b   l_020_006D8                     ; 006D4
         subq.b  #$1,(a0)                        ; 006D6
@@ -935,7 +943,11 @@ l_020_00A2C:
         move.w  #$15,(DebugCheckpoint).l        ; 00A2C
         jsr     (Nop).l                         ; 00A34
         bra.b   l_020_00A2C                     ; 00A3A
-sub_020_00A3C:
+
+;-------------------------------------------------------------------------------
+; ScaleToLengthStack - ScaleToLength's body, called with its arguments on the stack.
+;-------------------------------------------------------------------------------
+ScaleToLengthStack:
         link.w  a6,#$0                          ; 00A3C
         movem.l $8(a6),d0/d5-d7                 ; 00A40
         tst.w   d0                              ; 00A46
@@ -1042,7 +1054,12 @@ AddRadarObject:
         clr.l   $8(a3)                          ; 00B0C
         move.l  a3,(RadarListEnd).l             ; 00B10
         rts                                     ; 00B16
-sub_020_00B18:
+
+;-------------------------------------------------------------------------------
+; FreeCameraKeys - In an outside view with the camera free (not the map, not following, no
+; camera sequence): turns the camera (OutsideCamPitch, OutsideCamHeading) with the stick.
+;-------------------------------------------------------------------------------
+FreeCameraKeys:
         tst.b   (OutsideView).l                 ; 00B18
         beq.w   l_020_00BCE                     ; 00B1E
         tst.b   (MapView).l                     ; 00B22
@@ -1136,7 +1153,11 @@ l_020_00C06:
         move.w  d0,(dat_071_004A2).l            ; 00C06
         movem.l (a7)+,d0-d2                     ; 00C0C
         rts                                     ; 00C10
-sub_020_00C12:
+
+;-------------------------------------------------------------------------------
+; BCDToBinary - Turns the BCD digits of BCDOut back into a number (by PowersOfTen): d7.
+;-------------------------------------------------------------------------------
+BCDToBinary:
         movem.l d5-d7/a5-a6,-(a7)               ; 00C12
         movea.l #BCDOut,a6                      ; 00C16
         lea.l   (PowersOfTen).l,a5              ; 00C1C

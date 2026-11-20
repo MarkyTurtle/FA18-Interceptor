@@ -32,7 +32,7 @@ CheckViewObjectGone:
         moveq   #$0,d0                          ; 043DC
         move.w  d0,(ViewShift).l                ; 043DE
         move.w  d0,(ViewX).l                    ; 043E4
-        jsr     (sub_005_00E6E).l               ; 043EA
+        jsr     (ApplyViewZoom).l               ; 043EA
 l_000_043F0:
         rts                                     ; 043F0
 

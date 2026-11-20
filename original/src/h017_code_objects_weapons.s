@@ -750,7 +750,7 @@ l_017_00A52:
         move.w  #$3840,d4                       ; 00A6C
         lea.l   $80(a1),a4                      ; 00A70
         movem.l a1-a2,-(a7)                     ; 00A74
-        jsr     (sub_032_00AD8).l               ; 00A78
+        jsr     (NormaliseAngles).l             ; 00A78
         movem.w d4-d6,$66(a1)                   ; 00A7E
         jsr     (SetAttitude).l                 ; 00A84
         movem.l (a7)+,a1-a2                     ; 00A8A

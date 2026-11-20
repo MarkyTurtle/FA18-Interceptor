@@ -379,7 +379,7 @@ l_005_00516:
         bne.w   l_005_01624                     ; 0051C
         move.b  #$8,(dat_071_00212).l           ; 00520
         lea.l   (dat_071_0017B).l,a0            ; 00528
-        bsr.w   sub_005_015FC                   ; 0052E
+        bsr.w   ToggleByte                      ; 0052E
         bset    #$5,(JoyEvents).l               ; 00532
         ori.b   #$a,(Player_7C).l               ; 0053A
         bra.w   l_005_01624                     ; 00542
@@ -402,7 +402,7 @@ l_005_00568:
         ext.l   d1                              ; 00578
         move.l  d1,(PanelShakeOffset).l         ; 0057A
         move.b  #$0,(dat_071_00179).l           ; 00580
-        bra.w   sub_005_00E6E                   ; 00588
+        bra.w   ApplyViewZoom                   ; 00588
 Key_T:
         jsr     (KeyBeep).l                     ; 0058C
         bset    #$7,(JoyEvents).l               ; 00592
@@ -468,7 +468,7 @@ l_005_0065C:
 ; PlayerFrameControls - The player's controls for the frame: in the replay modes (RecordMode
 ; 1-3) the control byte and the event words come from the recording (ReplayPointer,
 ; ReplayControlsPointer; it ends at three $FF bytes or at the end of the buffer, and starts
-; again); then the throttle (+$2B) is moved towards dat_071_00240 (sub_005_008B8 / 008BC /
+; again); then the throttle (+$2B) is moved towards dat_071_00240 (ThrottleUp / 008BC /
 ; 008C6)...
 ;-------------------------------------------------------------------------------
 PlayerFrameControls:
@@ -544,20 +544,20 @@ l_005_00748:
         blt.b   l_005_0077A                     ; 0076C
         cmpi.b  #$2,d1                          ; 0076E
         blt.b   l_005_0077A                     ; 00772
-        bsr.w   sub_005_008C6                   ; 00774
+        bsr.w   ThrottleHold                    ; 00774
         bra.b   l_005_007B4                     ; 00778
 l_005_0077A:
-        bsr.w   sub_005_008BC                   ; 0077A
+        bsr.w   ThrottleDown                    ; 0077A
         bra.b   l_005_007B4                     ; 0077E
 l_005_00780:
         cmpi.b  #$8,d0                          ; 00780
         bgt.b   l_005_00792                     ; 00784
         cmpi.b  #$2,d1                          ; 00786
         blt.b   l_005_00792                     ; 0078A
-        bsr.w   sub_005_008C6                   ; 0078C
+        bsr.w   ThrottleHold                    ; 0078C
         bra.b   l_005_007B4                     ; 00790
 l_005_00792:
-        bsr.w   sub_005_008B8                   ; 00792
+        bsr.w   ThrottleUp                      ; 00792
         bra.b   l_005_007B4                     ; 00796
 l_005_00798:
         cmpi.b  #$78,$2b(a1)                    ; 00798
@@ -567,7 +567,7 @@ l_005_00798:
         btst    #$5,$2(a1)                      ; 007A8
         bne.b   l_005_007B4                     ; 007AE
 l_005_007B0:
-        bsr.w   sub_005_008C0                   ; 007B0
+        bsr.w   ThrottleHoldReset               ; 007B0
 l_005_007B4:
         tst.w   (CurrentObjectOffset).l         ; 007B4
         bne.b   l_005_007D2                     ; 007BA
@@ -688,15 +688,31 @@ l_005_008AA:
 l_005_008B2:
         move.b  d4,$2a(a1)                      ; 008B2
         rts                                     ; 008B6
-sub_005_008B8:
+
+;-------------------------------------------------------------------------------
+; ThrottleUp - Sets PlayerControls' throttle bits (bits 0-1) to 1 (up).
+;-------------------------------------------------------------------------------
+ThrottleUp:
         moveq   #$1,d2                          ; 008B8
         bra.b   l_005_008C8                     ; 008BA
-sub_005_008BC:
+
+;-------------------------------------------------------------------------------
+; ThrottleDown - Sets PlayerControls' throttle bits to 2 (down).
+;-------------------------------------------------------------------------------
+ThrottleDown:
         moveq   #$2,d2                          ; 008BC
         bra.b   l_005_008C8                     ; 008BE
-sub_005_008C0:
+
+;-------------------------------------------------------------------------------
+; ThrottleHoldReset - Clears dat_071_00240, then ThrottleHold.
+;-------------------------------------------------------------------------------
+ThrottleHoldReset:
         clr.b   (dat_071_00240).l               ; 008C0
-sub_005_008C6:
+
+;-------------------------------------------------------------------------------
+; ThrottleHold - Clears PlayerControls' throttle bits (neither up nor down).
+;-------------------------------------------------------------------------------
+ThrottleHold:
         moveq   #$0,d2                          ; 008C6
 l_005_008C8:
         move.b  (PlayerControls).l,d1           ; 008C8
@@ -817,16 +833,21 @@ l_005_009AA:
         andi.b  #$fc,d1                         ; 009B0
         or.b    d2,d1                           ; 009B4
         move.b  d1,(PlayerControls).l           ; 009B6
-        bsr.w   sub_005_009EA                   ; 009BC
+        bsr.w   ResetMouseThrottle              ; 009BC
         bra.w   l_005_01624                     ; 009C0
 Key_Backslash_Backspace:
-        bsr.w   sub_005_009EA                   ; 009C4
+        bsr.w   ResetMouseThrottle              ; 009C4
         jsr     (KeyBeep).l                     ; 009C8
         bset    #$0,(dat_071_0036B).l           ; 009CE
         move.b  #$3,(dat_071_0020F).l           ; 009D6
         eori.w  #$800,(ObjectTable).l           ; 009DE
         bra.w   l_005_01624                     ; 009E6
-sub_005_009EA:
+
+;-------------------------------------------------------------------------------
+; ResetMouseThrottle - Clears dat_071_00240 and the mouse's throttle positions (MouseY,
+; ThrottleMouseY).
+;-------------------------------------------------------------------------------
+ResetMouseThrottle:
         clr.b   (dat_071_00240).l               ; 009EA
         clr.w   (MouseY).l                      ; 009F0
         clr.w   (ThrottleMouseY).l              ; 009F6
@@ -1133,7 +1154,12 @@ l_005_00E4C:
         move.w  d4,(ViewShift).l                ; 00E60
         asl.w   #$4,d4                          ; 00E66
         move.w  d4,(ViewX).l                    ; 00E68
-sub_005_00E6E:
+
+;-------------------------------------------------------------------------------
+; ApplyViewZoom - Redraws the instruments and sets up the view for ViewZoom (the panel shown or
+; not, ClipY).
+;-------------------------------------------------------------------------------
+ApplyViewZoom:
         jsr     (RedrawInstruments).l           ; 00E6E
         move.b  (ViewZoom).l,d4                 ; 00E74
         cmpi.b  #$3,d4                          ; 00E7A
@@ -1448,7 +1474,7 @@ l_005_01276:
         tst.b   (KeyMode).l                     ; 01286
         bne.w   l_005_01624                     ; 0128C
         lea.l   (NewView).l,a0                  ; 01290
-        bra.w   sub_005_015FC                   ; 01296
+        bra.w   ToggleByte                      ; 01296
 sub_005_0129A:
         move.b  #$ff,(KeyPressed).l             ; 0129A
         tst.b   (OutsideView).l                 ; 012A2
@@ -1495,7 +1521,7 @@ l_005_0131C:
         move.w  #$32,(ViewShift).l              ; 0133A
         move.w  #$320,(ViewX).l                 ; 01342
         clr.b   (ViewZoom).l                    ; 0134A
-        bsr.w   sub_005_00E6E                   ; 01350
+        bsr.w   ApplyViewZoom                   ; 01350
         move.w  #$a7,(ClipY).l                  ; 01354
         bra.w   l_005_01624                     ; 0135C
 	dc.b	$02,$70,$FF,$BF,$40,$00,$60,$00,$02,$BC,$4E,$B9
@@ -1553,7 +1579,7 @@ Key_P:
         beq.b   l_005_0147A                     ; 01466
         move.b  #$fe,(EngineSoundRequest).l     ; 01468
         lea.l   (WorldFrozen).l,a0              ; 01470
-        bra.w   sub_005_015FC                   ; 01476
+        bra.w   ToggleByte                      ; 01476
 l_005_0147A:
         move.w  d0,-(a7)                        ; 0147A
         jsr     (StopAllSounds).l               ; 0147C
@@ -1573,7 +1599,11 @@ l_005_0147A:
 l_005_014A8:
         move.b  #$ff,(WorldFrozen).l            ; 014A8
         bra.w   l_005_01624                     ; 014B0
-sub_005_014B4:
+
+;-------------------------------------------------------------------------------
+; FreezeWorld - Stops the world (WorldFrozen) and rounds FrameCount down to a multiple of 8.
+;-------------------------------------------------------------------------------
+FreezeWorld:
         move.b  #$1,(WorldFrozen).l             ; 014B4
         andi.w  #$fff8,(FrameCount).l           ; 014BC
         bra.w   l_005_01624                     ; 014C4
@@ -1651,7 +1681,12 @@ Key_J:
         move.b  #$3,(dat_071_00210).l           ; 015E8
         jsr     (KeyBeep).l                     ; 015F0
         lea.l   (dat_071_00285).l,a0            ; 015F6
-sub_005_015FC:
+
+;-------------------------------------------------------------------------------
+; ToggleByte - Flips the byte at a0 between 0 and 1 (the keys that switch something on and
+; off).
+;-------------------------------------------------------------------------------
+ToggleByte:
         tst.b   (a0)                            ; 015FC
         beq.b   l_005_01606                     ; 015FE
         move.b  #$0,(a0)                        ; 01600

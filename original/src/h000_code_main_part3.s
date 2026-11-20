@@ -533,7 +533,7 @@ sub_000_07C24:
         move.l  d2,-(a7)                        ; 07C46
         move.l  d1,-(a7)                        ; 07C48
         move.l  d0,-(a7)                        ; 07C4A
-        jsr     (sub_020_00A3C).l               ; 07C4C
+        jsr     (ScaleToLengthStack).l          ; 07C4C
         lea.l   $10(a7),a7                      ; 07C52
         move.w  (dat_071_0041C).l,d0            ; 07C56
         ext.l   d0                              ; 07C5C
