@@ -30,7 +30,7 @@ def cap_point(gm):
     return 0
 
 
-g.hook('ClipFillPolygon', cap_poly)
+g.hook('sub_019_00018', cap_poly)   # ClipFillPolygon's second entry, used by most operations
 g.hook('sub_035_001DA', cap_line)
 g.hook('PlotPoint3D', cap_point)
 for nm in ('Nop',):

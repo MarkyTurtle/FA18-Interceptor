@@ -7,9 +7,10 @@ SIZE = 240
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.environ.get('OUT', os.path.join(HERE, 'out'))
 os.makedirs(OUT, exist_ok=True)
+
 MODELS = [(0x00, 'Sidewinder'), (0x14, 'AMRAAM'), (0x28, 'Pilot and parachute'), (0x3C, 'F-16'),
           (0x50, 'F/A-18'), (0x64, 'Air Force One'), (0x78, 'MiG'), (0xA0, 'Aircraft carrier'),
-          (0xC8, 'Cruise missile'), (0xDC, 'Box (rescue pod?)'), (0xF0, 'Ship (F6, object 15)'),
+          (0xC8, 'Cruise missile'), (0xDC, 'Rescue pod (box) on parachute'), (0xF0, 'Ship (F6, object 15)'),
           (0x118, 'Airliner (707/767)')]
 
 
@@ -40,7 +41,7 @@ if __name__ == '__main__':
         items = []
         for n, name in MODELS:
             p = '%s/model_%03X.png' % (OUT, n)
-            c = one('m', n, 2.5, 0.45, 0x40000, p)
+            c = one('m', n, 2.5, 0.45, 0, p)
             items.append((p if c else None, '%s ($%02X)%s' % (name, n, '' if c else ': -')))
         sheet(items, OUT + '/models.png')
     else:

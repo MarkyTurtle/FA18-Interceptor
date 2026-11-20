@@ -24,7 +24,7 @@ def build(entries, path, cols=3):
         for k, (yaw, pitch) in enumerate(((0.45, 0.0), (0.45, -1.25))):
             p = '%s/s%03d_%d.png' % (OUT, n, k)
             if not os.path.exists(p):
-                gallery.one('s', n, yaw, pitch, 0x40000, p)
+                gallery.one('s', n, yaw, pitch, 0, p)
             if os.path.exists(p):
                 im.paste(Image.open(p), (x + k * (S + 2), y + 18))
         d.text((x + 4, y + 3), label, fill=(230, 230, 230))

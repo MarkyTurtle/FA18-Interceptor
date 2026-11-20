@@ -23,12 +23,37 @@ def _palette(label):
     return out
 
 
+NEAR = 16
+
+
+def clip(kind, ps):
+    """Clips a polygon (or a line) to z >= NEAR, as the game clips to its view."""
+    if all(p[2] >= NEAR for p in ps):
+        return ps
+    def cut(a, b):
+        t = (NEAR - a[2]) / (b[2] - a[2])
+        return tuple(a[i] + (b[i] - a[i]) * t for i in range(3))
+    if kind == 'line':
+        a, b = ps[0], ps[-1]
+        if a[2] < NEAR and b[2] < NEAR:
+            return []
+        return [a if a[2] >= NEAR else cut(a, b), b if b[2] >= NEAR else cut(a, b)]
+    out = []
+    for i, a in enumerate(ps):
+        b = ps[(i + 1) % len(ps)]
+        if a[2] >= NEAR:
+            out.append(a)
+        if (a[2] >= NEAR) != (b[2] >= NEAR):
+            out.append(cut(a, b))
+    return out
+
+
 def project(prims, size, margin=12):
     pts = []
     for kind, col, ps in prims:
         for x, y, z in ps:
             if z > 0:
-                pts.append((x / z, -y / z))
+                pts.append((-x / z, -y / z))
     if not pts:
         return None
     x0 = min(p[0] for p in pts); x1 = max(p[0] for p in pts)
@@ -36,18 +61,18 @@ def project(prims, size, margin=12):
     s = (size - 2 * margin) / max(x1 - x0, y1 - y0, 1e-9)
     ox = margin + ((size - 2 * margin) - (x1 - x0) * s) / 2 - x0 * s
     oy = margin + ((size - 2 * margin) - (y1 - y0) * s) / 2 - y0 * s
-    return lambda p: (ox + p[0] / p[2] * s, oy - p[1] / p[2] * s)
+    return lambda p: (ox - p[0] / p[2] * s, oy - p[1] / p[2] * s)
 
 
 def render(prims, pal, size=320, bg=(64, 64, 112), width=1):
     im = Image.new('RGB', (size, size), bg)
     d = ImageDraw.Draw(im)
+    prims = [(k, c, clip(k if len(ps) > 2 else 'line', ps)) for k, c, ps in prims]
     pr = project(prims, size)
     if pr is None:
         return im
     for kind, col, ps in prims:
         c = pal[col & 15]
-        ps = [p for p in ps if p[2] > 0]
         if not ps:
             continue
         xy = [pr(p) for p in ps]
