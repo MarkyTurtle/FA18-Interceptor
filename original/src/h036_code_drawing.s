@@ -1080,7 +1080,7 @@ FillPolygon:
         bne.b   l_036_00AB6                     ; 00AC6
         tst.w   (DrawXor).l                     ; 00AC8
         blt.b   l_036_00AE0                     ; 00ACE
-        move.w  (dat_071_000BC).l,d5            ; 00AD0
+        move.w  (FillPattern3).l,d5             ; 00AD0
         beq.b   l_036_00AE0                     ; 00AD6
         bsr.w   FillPatterned                   ; 00AD8
         bra.w   l_036_00B9A                     ; 00ADC
@@ -1441,7 +1441,7 @@ l_036_00E62:
         movem.w d0-d3,(FillBox).l               ; 00E64
         move.w  (DrawColour).l,(ColourBits).l   ; 00E6C
         lea.l   (dat_072_03000).l,a2            ; 00E76
-        lea.l   (dat_071_00340).l,a3            ; 00E7C
+        lea.l   (FillWork).l,a3                 ; 00E7C
         move.w  (a2)+,(a3)                      ; 00E82
         subq.w  #$1,(a3)                        ; 00E84
         lea.l   (CUSTOM).l,a0                    ; 00E86
@@ -1503,7 +1503,7 @@ l_036_00F04:
         move.l  d1,(FillPlaneStart).l           ; 00F14
         move.l  d1,d2                           ; 00F1A
         move.l  d1,(FillBoxModulo).l            ; 00F1C
-        sub.w   (dat_071_00350).l,d5            ; 00F22
+        sub.w   (FillTop).l,d5                  ; 00F22
         addq.w  #$1,d5                          ; 00F28
         move.w  d5,d7                           ; 00F2A
         addq.w  #$1,d6                          ; 00F2C

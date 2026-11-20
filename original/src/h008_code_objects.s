@@ -725,7 +725,7 @@ DrawFarScenery1:
         move.w  (FarList1Count).l,(LoopIndex).l ; 00866
 l_008_00870:
         clr.b   (SceneryDetailed).l             ; 00870
-        clr.b   (dat_071_0028B).l               ; 00876
+        clr.b   (ObjectScaled).l                ; 00876
         move.l  (ViewOffsetY8).l,d0             ; 0087C
         neg.l   d0                              ; 00882
         cmpi.l  #$7fff,d0                       ; 00884
@@ -929,7 +929,7 @@ l_008_00AEA:
         add.l   (ViewOffsetY).l,d0              ; 00B02
         asr.l   d6,d0                           ; 00B08
         move.l  d0,(ObjectViewY).l              ; 00B0A
-        move.b  #$1,(dat_071_0028B).l           ; 00B10
+        move.b  #$1,(ObjectScaled).l            ; 00B10
         asr.l   d6,d2                           ; 00B18
         asr.l   d6,d3                           ; 00B1A
         asr.l   d6,d4                           ; 00B1C
@@ -981,7 +981,7 @@ l_008_00BC2:
         move.w  d7,d1                           ; 00BCC
         lsr.w   #$8,d1                          ; 00BCE
         move.w  d1,(CurrentObject).l            ; 00BD0
-        clr.b   (dat_071_0028B).l               ; 00BD6
+        clr.b   (ObjectScaled).l                ; 00BD6
         btst    #$6,d7                          ; 00BDC
         bne.w   l_008_00BFA                     ; 00BE0
         btst    #$4,d7                          ; 00BE4
@@ -1191,7 +1191,7 @@ l_008_00DFE:
         add.l   (ViewOffsetY).l,d1              ; 00E2C
         asr.l   d6,d1                           ; 00E32
         move.l  d1,(ObjectViewY).l              ; 00E34
-        move.b  #$1,(dat_071_0028B).l           ; 00E3A
+        move.b  #$1,(ObjectScaled).l            ; 00E3A
         rts                                     ; 00E42
 
 ;-------------------------------------------------------------------------------
@@ -1809,7 +1809,7 @@ ScaledViewOffset:
         bpl.b   l_008_0167A                     ; 01676
         neg.w   d2                              ; 01678
 l_008_0167A:
-        tst.b   (dat_071_0028B).l               ; 0167A
+        tst.b   (ObjectScaled).l                ; 0167A
         beq.b   l_008_0168C                     ; 01680
         move.l  (ObjectViewY).l,d3              ; 01682
         asr.l   #$8,d3                          ; 01688

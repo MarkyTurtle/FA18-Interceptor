@@ -37,7 +37,7 @@ MakeSkyPolygonPanel:
 ; MakeSkyPolygon - Turns the view's four corner directions (dat_033_00000) by
 ; the view matrix (ViewMatrix), finds where the horizon cuts the view's edges (hunk 34), and
 ; builds the polygon of the view above the horizon - the sky - at dat_072_03000 from the two
-; horizon points (PutEdge) and the corners on the sky's side. Returns d0 = 0 (dat_071_0026E
+; horizon points (PutEdge) and the corners on the sky's side. Returns d0 = 0 (SkyPolygonReady
 ; set) when there is sky to fill, 1 when there is none.
 ;-------------------------------------------------------------------------------
 MakeSkyPolygon:
@@ -299,12 +299,12 @@ l_033_00350:
         move.w  #$1,(FillPattern).l             ; 00350
         move.w  #$1,(DrawXor).l                 ; 00358
         clr.l   (FillPattern2).l                ; 00360
-        move.b  #$1,(dat_071_0026E).l           ; 00366
+        move.b  #$1,(SkyPolygonReady).l         ; 00366
         moveq   #$0,d0                          ; 0036E
         unlk    a6                              ; 00370
         rts                                     ; 00372
 l_033_00374:
-        clr.b   (dat_071_0026E).l               ; 00374
+        clr.b   (SkyPolygonReady).l             ; 00374
         moveq   #$1,d0                          ; 0037A
         unlk    a6                              ; 0037C
         rts                                     ; 0037E

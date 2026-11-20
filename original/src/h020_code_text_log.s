@@ -303,7 +303,7 @@ l_020_002CC:
         adda.w  #$11,a1                         ; 00350
         move.l  (BCDOut).l,d0                   ; 00354
         move.b  d0,d1                           ; 0035A
-        lea.l   (dat_071_004F4).l,a3            ; 0035C
+        lea.l   (BogeyWork).l,a3                ; 0035C
         andi.b  #$f0,$1(a3)                     ; 00362
         andi.b  #$f,d1                          ; 00368
         cmpi.b  #$5,d1                          ; 0036C
@@ -316,7 +316,7 @@ l_020_002CC:
         abcd.b  -(a2),-(a3)                     ; 00388
         cmpi.l  #$360,(BCDOut).l                ; 0038A
         blt.b   l_020_0039C                     ; 00394
-        clr.w   (dat_071_004F4).l               ; 00396
+        clr.w   (BogeyWork).l                   ; 00396
 l_020_0039C:
         move.b  (a3)+,d1                        ; 0039C
         andi.b  #$f,d1                          ; 0039E
@@ -504,7 +504,7 @@ l_020_00596:
         neg.l   d1                              ; 0059C
         mulu.w  #$3e8,d1                        ; 0059E
         move.l  (TimeMicros).l,d0               ; 005A2
-        sub.l   (dat_071_004D6).l,d0            ; 005A8
+        sub.l   (ClockMicros).l,d0              ; 005A8
         divs.w  #$3e8,d0                        ; 005AE
         ext.l   d0                              ; 005B2
         add.l   d0,d1                           ; 005B4
@@ -525,7 +525,7 @@ l_020_005F4:
         cmp.l   (ClockLast).l,d0                ; 005FA
         beq.b   l_020_00666                     ; 00600
         move.l  d0,(ClockLast).l                ; 00602
-        subq.b  #$1,(dat_071_00254).l           ; 00608
+        subq.b  #$1,(ClockBlink).l              ; 00608
         lea.l   (GearSoundCount).l,a0           ; 0060E
         tst.b   (a0)                            ; 00614
         beq.b   l_020_00622                     ; 00616
@@ -536,12 +536,12 @@ l_020_005F4:
 l_020_00622:
         lea.l   (TargetReadoutCount).l,a0       ; 00622
         bsr.w   CountDownByte                   ; 00628
-        lea.l   (dat_071_00261).l,a0            ; 0062C
+        lea.l   (ViewKeyRepeat).l,a0            ; 0062C
         bsr.w   CountDownByte                   ; 00632
-        lea.l   (dat_071_0025A).l,a0            ; 00636
+        lea.l   (BeepCount).l,a0                ; 00636
         bsr.w   CountDownByte                   ; 0063C
         move.b  (CrashKind).l,d1                ; 00640
-        tst.b   (dat_071_00258).l               ; 00646
+        tst.b   (ClockFlag).l                   ; 00646
         beq.b   l_020_0065A                     ; 0064C
         addq.b  #$1,d1                          ; 0064E
         cmpi.b  #$f,d1                          ; 00650
@@ -555,7 +555,7 @@ l_020_0065A:
 l_020_00660:
         move.b  d1,(CrashKind).l                ; 00660
 l_020_00666:
-        move.l  (TimeMicros).l,(dat_071_004D6).l ; 00666
+        move.l  (TimeMicros).l,(ClockMicros).l  ; 00666
 l_020_00670:
         jsr     (ReadTime).l                    ; 00670
         move.l  (ClockStart).l,d1               ; 00676
@@ -564,11 +564,11 @@ l_020_00670:
         neg.l   d1                              ; 00684
         mulu.w  #$3e8,d1                        ; 00686
         move.l  (TimeMicros).l,d0               ; 0068A
-        sub.l   (dat_071_004CE).l,d0            ; 00690
+        sub.l   (StartMicros).l,d0              ; 00690
         divs.w  #$3e8,d0                        ; 00696
         ext.l   d0                              ; 0069A
         add.l   d0,d1                           ; 0069C
-        move.l  d1,(dat_071_004DA).l            ; 0069E
+        move.l  d1,(TimedValue).l               ; 0069E
         cmpi.l  #$7fff,d1                       ; 006A4
         bgt.b   l_020_006D0                     ; 006AA
         move.w  (FrameCount).l,d2               ; 006AC
@@ -576,7 +576,7 @@ l_020_00670:
         addq.w  #$1,d2                          ; 006B6
         divu.w  d2,d1                           ; 006B8
         lea.l   dat_020_0027E(pc),a0            ; 006BA
-        move.b  (dat_071_0028E).l,d2            ; 006BE
+        move.b  (ClockStep).l,d2                ; 006BE
         ext.w   d2                              ; 006C4
         add.w   d2,d2                           ; 006C6
         cmp.w   (a0,d2.w),d1                    ; 006C8
@@ -597,7 +597,7 @@ l_020_006D8:
 sub_020_006DA:
         tst.l   (ClockStart).l                  ; 006DA
         blt.b   l_020_00722                     ; 006E0
-        move.l  (dat_071_004DA).l,d1            ; 006E2
+        move.l  (TimedValue).l,d1               ; 006E2
         cmpi.l  #$7fff,d1                       ; 006E8
         ble.b   l_020_006F8                     ; 006EE
         move.l  #$270f,d0                       ; 006F0
@@ -609,19 +609,19 @@ l_020_006F8:
         bge.b   l_020_0070E                     ; 00706
         move.w  d0,(BestClock).l                ; 00708
 l_020_0070E:
-        cmp.w   (dat_071_002B0).l,d0            ; 0070E
+        cmp.w   (BestTime).l,d0                 ; 0070E
         ble.b   l_020_0071C                     ; 00714
-        move.w  d0,(dat_071_002B0).l            ; 00716
+        move.w  d0,(BestTime).l                 ; 00716
 l_020_0071C:
-        move.w  d0,(dat_071_004B6).l            ; 0071C
+        move.w  d0,(TimedResult).l              ; 0071C
 l_020_00722:
         move.l  (TimeSeconds).l,(ClockStart).l  ; 00722
-        move.l  (TimeMicros).l,(dat_071_004CE).l ; 0072C
+        move.l  (TimeMicros).l,(StartMicros).l  ; 0072C
         rts                                     ; 00736
 
 ;-------------------------------------------------------------------------------
 ; SetViewOctant - Sets ViewOctant (0-7): the eighth of the compass the view faces
-; (dat_071_0045C in the cockpit, OutsideCamHeading outside), for the scenery order.
+; (ViewHeadingLong in the cockpit, OutsideCamHeading outside), for the scenery order.
 ;-------------------------------------------------------------------------------
 SetViewOctant:
         tst.b   (OutsideView).l                 ; 00738
@@ -629,7 +629,7 @@ SetViewOctant:
         move.w  (OutsideCamHeading).l,d0        ; 00740
         bra.b   l_020_0074E                     ; 00746
 l_020_00748:
-        move.l  (dat_071_0045C).l,d0            ; 00748
+        move.l  (ViewHeadingLong).l,d0          ; 00748
 l_020_0074E:
         cmpi.w  #$3840,d0                       ; 0074E
         bge.b   l_020_00776                     ; 00752
@@ -1012,7 +1012,7 @@ l_020_00AA2:
 ; ClearRadarList - Empties RadarList.
 ;-------------------------------------------------------------------------------
 ClearRadarList:
-        clr.w   (dat_071_00B52).l               ; 00AB4
+        clr.w   (PolygonsDrawn).l               ; 00AB4
         move.l  #RadarList,(RadarListEnd).l     ; 00ABA
         rts                                     ; 00AC4
 

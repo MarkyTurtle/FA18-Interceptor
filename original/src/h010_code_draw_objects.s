@@ -177,7 +177,7 @@ l_010_001A2:
         andi.w  #$4000,d1                       ; 001A6
         bne.b   l_010_001C2                     ; 001AA
         moveq   #$1,d7                          ; 001AC
-        tst.b   (dat_071_0016E).l               ; 001AE
+        tst.b   (SceneryFlag).l                 ; 001AE
         beq.b   l_010_001C2                     ; 001B4
         move.w  (FrameCount).l,d4               ; 001B6
         andi.w  #$1,d4                          ; 001BC
@@ -286,13 +286,13 @@ l_010_002AE:
 l_010_0031A:
         move.w  #$78,d2                         ; 0031A
 l_010_0031E:
-        move.b  d2,(dat_071_00239).l            ; 0031E
+        move.b  d2,(EjectSoundLength).l         ; 0031E
         asr.w   #$1,d2                          ; 00324
-        move.b  d2,(dat_071_0023A).l            ; 00326
+        move.b  d2,(EjectSoundPitch).l          ; 00326
         asr.w   #$4,d2                          ; 0032C
         moveq   #$4,d4                          ; 0032E
         sub.w   d2,d4                           ; 00330
-        move.b  d4,(dat_071_00188).l            ; 00332
+        move.b  d4,(EjectSoundCount).l          ; 00332
 l_010_00338:
         cmpi.w  #$c,d1                          ; 00338
         ble.w   l_010_00B42                     ; 0033C

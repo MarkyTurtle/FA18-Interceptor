@@ -187,7 +187,7 @@ TurnToView:
         add.l   d3,d5                           ; 00210
         add.l   d4,d5                           ; 00212
         asr.l   #$8,d5                          ; 00214
-        move.w  d5,(dat_071_00486).l            ; 00216
+        move.w  d5,(TurnedZ).l                  ; 00216
         rts                                     ; 0021C
 ; PuffSegments - Eight pointers to the segments a puff's outline is built from
 ; (PuffSegment0-7).

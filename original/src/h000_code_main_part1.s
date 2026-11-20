@@ -345,7 +345,7 @@ l_000_00340:
 main:
         link.w  a6,#$ffe8                       ; 003CE
         movem.l d2/a2-a3,-(a7)                  ; 003D2
-        move.w  #$3,(dat_071_00112).l           ; 003D6
+        move.w  #$3,(TextRows).l                ; 003D6
         moveq   #$1d,d0                         ; 003DE
         move.l  d0,-(a7)                        ; 003E0
         pea.l   (StrGraphicsLibrary).l          ; 003E2
@@ -365,7 +365,7 @@ l_000_00404:
         jsr     (CloseSound).l                  ; 00412
 l_000_00418:
         clr.b   (MusicState).l                  ; 00418
-        clr.l   (dat_071_00528).l               ; 0041E
+        clr.l   (GKeyValue).l                   ; 0041E
         move.b  #$1,(TitleShown).l              ; 00424
         pea.l   (TitleBMHD).l                   ; 0042C
         pea.l   (PictureColours).l              ; 00432
@@ -1476,7 +1476,7 @@ GameFrame:
         move.b  (SeaView).l,d0                  ; 011BA
         tst.b   d0                              ; 011C0
         beq.b   l_000_011CC                     ; 011C2
-        tst.b   (dat_071_00180).l               ; 011C4
+        tst.b   (JToggle2).l                    ; 011C4
         beq.b   l_000_011D2                     ; 011CA
 l_000_011CC:
         jsr     (DrawWaterAreas).l              ; 011CC
@@ -1673,7 +1673,7 @@ l_000_014C0:
         addq.l  #$4,a7                          ; 014CE
 l_000_014D0:
         jsr     (DrawStartPointMarkers).l       ; 014D0
-        tst.b   (dat_071_00182).l               ; 014D6
+        tst.b   (GameFrameFlag).l               ; 014D6
         beq.b   l_000_01502                     ; 014DC
         tst.b   (FlightScreen).l                ; 014DE
         beq.b   l_000_01502                     ; 014E4
@@ -3700,7 +3700,7 @@ StateFlying:
         andi.b  #$f,d0                          ; 02F1E
         tst.b   d0                              ; 02F22
         bne.w   l_000_02FE6                     ; 02F24
-        tst.b   (dat_071_0015C).l               ; 02F28
+        tst.b   (FlightHeld).l                  ; 02F28
         beq.w   l_000_02FC4                     ; 02F2E
         movea.l (ConfigBuffer).l,a0             ; 02F32
         move.w  $10(a0),d0                      ; 02F38
@@ -4459,9 +4459,9 @@ l_000_03902:
         move.b  #$f,(FadeTarget).l              ; 03922
         moveq   #$0,d0                          ; 0392A
         move.b  d0,(CrashKind).l                ; 0392C
-        move.w  (dat_071_002A4).l,d0            ; 03932
+        move.w  (CrashBits).l,d0                ; 03932
         andi.w  #$fbff,d0                       ; 03938
-        move.w  d0,(dat_071_002A4).l            ; 0393C
+        move.w  d0,(CrashBits).l                ; 0393C
         move.b  (AircraftLeft).l,d0             ; 03942
         subq.b  #$1,d0                          ; 03948
         move.b  d0,(AircraftLeft).l             ; 0394A
@@ -4797,7 +4797,7 @@ l_000_03D48:
 
 ;-------------------------------------------------------------------------------
 ; UpdateWarnings - Stage $C0: picks the warning to sound (CurrentWarning, a sound word with
-; flags) from what is wrong - by priority, special cases first (dat_071_00298 bit 15,
+; flags) from what is wrong - by priority, special cases first (WarningBits4 bit 15,
 ; WarningBits3 bit 5), then the warnings (WarningFlags) and the status lights (StatusLights
 ; bits 4, 5...) - and plays it on the beat of WarningTicks (not worked out in detail).
 ;-------------------------------------------------------------------------------
@@ -4812,7 +4812,7 @@ UpdateWarnings:
         move.w  d0,-$6(a6)                      ; 03D70
         btst    #$0,d1                          ; 03D74
         bne.w   l_000_03ECC                     ; 03D78
-        move.w  (dat_071_00298).l,d0            ; 03D7C
+        move.w  (WarningBits4).l,d0             ; 03D7C
         andi.w  #$8000,d0                       ; 03D82
         tst.w   d0                              ; 03D86
         beq.b   l_000_03D94                     ; 03D88
@@ -5104,7 +5104,7 @@ SwitchView:
         move.b  (OutsideView).l,d0              ; 041EC
         tst.b   d0                              ; 041F2
         bne.b   l_000_04206                     ; 041F4
-        move.b  (dat_071_00261).l,d0            ; 041F6
+        move.b  (ViewKeyRepeat).l,d0            ; 041F6
         tst.b   d0                              ; 041FC
         bne.b   l_000_04206                     ; 041FE
         jsr     (sub_005_00CEE).l               ; 04200
@@ -5129,7 +5129,7 @@ l_000_04206:
         moveq   #$0,d0                          ; 0424E
         move.b  d0,(OutsideView).l              ; 04250
         clr.w   (ViewShift).l                   ; 04256
-        move.b  d0,(dat_071_00176).l            ; 0425C
+        move.b  d0,(AnglesSet).l                ; 0425C
         move.b  #$1,(ViewSwitched).l            ; 04262
         bra.b   l_000_0427E                     ; 0426A
 l_000_0426C:

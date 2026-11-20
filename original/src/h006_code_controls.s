@@ -27,7 +27,7 @@ RedrawInstruments:
         move.b  d4,(PanelIndicatorRedraw).l     ; 00022
         move.b  d4,(BackslashLampRedraw).l      ; 00028
         move.b  d4,(JLampRedraw).l              ; 0002E
-        move.b  d4,(dat_071_00211).l            ; 00034
+        move.b  d4,(Redraw211).l                ; 00034
         move.b  d4,(WeaponRangeRedraw).l        ; 0003A
         move.b  d4,(RadarRangeRedraw).l         ; 00040
         move.b  d4,(StoresRedraw).l             ; 00046

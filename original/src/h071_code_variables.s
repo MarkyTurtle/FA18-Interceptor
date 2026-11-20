@@ -195,21 +195,25 @@ FillPattern2:
 ; DrawXorMask - The planes XORed when DrawXor >= 0.
 DrawXorMask:
 	dc.b	$00
-dat_071_000BC:
+; FillPattern3 - FillPattern's third word (FillPolygon: whether the fill is patterned).
+FillPattern3:
 	dc.b	$00
 	dc.b	$00
-dat_071_000BE:
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-; DistanceScaleBase - A value scaled by DistanceScale.
-DistanceScaleBase:
+; DistanceScaleX - DistanceScale's scaled values (with DistanceScaleY at 000C2, DistanceScaleZ
+; at 000C6).
+DistanceScaleX:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_000C6:
+; DistanceScaleY - DistanceScaleY - See DistanceScaleX.
+DistanceScaleY:
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+; DistanceScaleZ - See DistanceScaleX.
+DistanceScaleZ:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -231,7 +235,8 @@ PrintPosition:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_000D6:
+; PrintTarget - The plane address PrintText draws into.
+PrintTarget:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -305,7 +310,8 @@ TextCursor:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00112:
+; TextRows - A text setting set to 3 at the start (main).
+TextRows:
 	dc.b	$00
 	dc.b	$00
 ; TextHoldTimer - Frames the last page stays up before TextStatus bit 7 is set.
@@ -380,17 +386,22 @@ TextInputOn:
 ; readied.
 ObjectsHeld:
 	dc.b	$00
-dat_071_00159:
+; LaunchFlag - Tested by LaunchMissile.
+LaunchFlag:
 	dc.b	$00
-dat_071_0015A:
+; MissileFlag - Set by UpdateMissile.
+MissileFlag:
 	dc.b	$00
 	dc.b	$00
-dat_071_0015C:
+; FlightHeld - Tested by StateFlying and UpdateObject.
+FlightHeld:
 	dc.b	$00
 	dc.b	$00
-dat_071_0015E:
+; StepFlag - Tested by StepObject.
+StepFlag:
 	dc.b	$00
-dat_071_0015F:
+; AttitudeFlag - Tested by UpdateAttitude.
+AttitudeFlag:
 	dc.b	$00
 ; DemoActive - Set while the demo or a recorded flight is playing (DemoSetup); the judges and
 ; the P key test it.
@@ -431,12 +442,14 @@ TrainingStep:
 TrainingWaitKey:
 	dc.b	$00
 	dc.b	$00
-dat_071_0016C:
+; TrainingStepFlag - Set to $FF by sub_017_005A8 (the training's steps).
+TrainingStepFlag:
 	dc.b	$00
 ; ZonesEntered - One bit per zone (Zones) the player has entered.
 ZonesEntered:
 	dc.b	$00
-dat_071_0016E:
+; SceneryFlag - Tested by DrawSceneryPlain.
+SceneryFlag:
 	dc.b	$00
 ; FlightStep - A step value used by FlyAircraft (compared with 3...).
 FlightStep:
@@ -459,9 +472,11 @@ KeyPressed:
 ; than the height above the sea.
 RadarAltimeterOn:
 	dc.b	$00
-dat_071_00175:
+; DrawGroupsReady - Set when the drawing groups are built (tested by sub_009_00740).
+DrawGroupsReady:
 	dc.b	$00
-dat_071_00176:
+; AnglesSet - Set by VectorToAngles; cleared by SwitchView and ResetViewAndRecording.
+AnglesSet:
 	dc.b	$00
 ; ViewZoom - The outside camera's distance step (0-$0B: the keypad's 4 and 6, KP1 sets it),
 ; cleared when the view changes; DrawModel draws more detail when it is 3 or less.
@@ -470,7 +485,8 @@ ViewZoom:
 ; ZoomKeyHeld - Cleared by the keypad's view keys (KP1, 2, 4, 6, 7) and sub_005_00CEE.
 ZoomKeyHeld:
 	dc.b	$00
-dat_071_00179:
+; ViewKeyFlag - Cleared by the KP1 key and sub_005_00546.
+ViewKeyFlag:
 	dc.b	$00
 	dc.b	$00
 ; EjectKeyFlag - The E key's flag (eject), cleared for a new aircraft.
@@ -489,15 +505,21 @@ MapView:
 ; the debriefing): FrameCount does not advance, the objects and the bullets are not moved.
 WorldFrozen:
 	dc.b	$00
-dat_071_0017F:
+; PilotsHeld - Set to stop the computer pilots (tested with WorldFrozen by ComputerPilot);
+; UpdateAttitude reads it.
+PilotsHeld:
 	dc.b	$00
-dat_071_00180:
+; JToggle2 - Toggled with JToggle by the J key; GameFrame and DrawWaterAreas test it.
+JToggle2:
 	dc.b	$00
-dat_071_00181:
+; CockpitViewKind - The kind of cockpit view (CockpitViewMatrix tests 1).
+CockpitViewKind:
 	dc.b	$00
-dat_071_00182:
+; GameFrameFlag - Tested by GameFrame.
+GameFrameFlag:
 	dc.b	$00
-dat_071_00183:
+; DebugNumbersOn - Set to show ShowDebugNumbers' readings.
+DebugNumbersOn:
 	dc.b	$00
 ; CameraFollows - The outside camera follows the viewed object (set by the keypad's Enter, the
 ; fly-bys and the judges); cleared for the map view (SetOutsideCamera).
@@ -514,7 +536,9 @@ CameraShotStep:
 ; reactions read and clear it.
 JustFired:
 	dc.b	$00
-dat_071_00188:
+; EjectSoundCount - Frames of the ejection's sound (-1 from CheckEjection, counted by
+; CockpitSounds).
+EjectSoundCount:
 	dc.b	$00
 ; TKeyPressed - Set by the T key; the radar blips' drawing takes and clears it.
 TKeyPressed:
@@ -530,7 +554,8 @@ InstructorFire:
 ; cleared after the launch and by JudgeMission.
 FireNow:
 	dc.b	$00
-dat_071_0018D:
+; BulletsHeld - Set to stop the bullets moving (tested with WorldFrozen).
+BulletsHeld:
 	dc.b	$00
 ; JudgeSavedView - The view choice saved by the judges (bit 7 set while saved), put back by
 ; StateFlying.
@@ -575,7 +600,8 @@ SecurityAnswer:
 ; LogDiskCheck - Set while the log disk is checked; cleared when the player goes on.
 LogDiskCheck:
 	dc.b	$00
-dat_071_001A4:
+; GameStarted - Set to 1 at the start (InitGameValues).
+GameStarted:
 	dc.b	$00
 ; TextKeyCount - Counts keys on the text screens (HandleKey); -1 to start a new page.
 TextKeyCount:
@@ -668,9 +694,11 @@ TextBuffer1:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_001CE:
+; TextBuffer4 - TextBuffer + 4.
+TextBuffer4:
 	dc.b	$00
-dat_071_001CF:
+; TextBuffer5 - TextBuffer + 5.
+TextBuffer5:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -688,7 +716,8 @@ TargetText:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_001DE:
+; ReadoutText1 - A text buffer of TargetReadout.
+ReadoutText1:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -698,7 +727,8 @@ dat_071_001DE:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_001E7:
+; ReadoutText2 - A text buffer of TargetReadout.
+ReadoutText2:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -708,9 +738,11 @@ dat_071_001E7:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_001F0:
+; ReadoutText3a - A text buffer of TargetReadout.
+ReadoutText3a:
 	dc.b	$00
-dat_071_001F1:
+; ReadoutText3 - A text buffer of TargetReadout.
+ReadoutText3:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -732,7 +764,8 @@ RestartMission:
 ; QuitDelay - Frames before QuitRequest 2 or 3 is acted on (4).
 QuitDelay:
 	dc.b	$00
-dat_071_001FD:
+; JoystickFlag - Cleared by ReadJoystick.
+JoystickFlag:
 	dc.b	$00
 ; PitchInput - The stick / cursor keys, pitch: $10 up, $20 down, 0 centre.
 PitchInput:
@@ -798,7 +831,8 @@ BackslashLampRedraw:
 ; JLampRedraw - Frames left to redraw the lamp of the J key's function.
 JLampRedraw:
 	dc.b	$00
-dat_071_00211:
+; Redraw211 - A redraw count set by RedrawInstruments.
+Redraw211:
 	dc.b	$00
 ; PanelIndicatorBlink - Frames of blinking for sub_037_0049C's indicator (8 from the E key).
 PanelIndicatorBlink:
@@ -879,19 +913,25 @@ RedrawFlags:
 ; SceneryBuilt - Set by UpdateScenery when the scenery lists have been built.
 SceneryBuilt:
 	dc.b	$00
-dat_071_0022A:
+; DistanceBits - Bits set before DistanceScale (bits 4 and 6 tested by it and the routine
+; before it).
+DistanceBits:
 	dc.b	$00
 ; ObjectDrawFlags - Flags for the object being drawn (DrawObjects; bit 6 and bit 4 tested by
 ; DrawModel, DistanceScale and the ground shapes).
 ObjectDrawFlags:
 	dc.b	$00
-dat_071_0022C:
+; DrawGroupCount - The number of drawing groups (sub_009_007F6, sub_009_00740).
+DrawGroupCount:
 	dc.b	$00
-dat_071_0022D:
+; DrawGroupIndex - The drawing group being worked on (counts down from DrawGroupCount).
+DrawGroupIndex:
 	dc.b	$00
-dat_071_0022E:
+; DistanceCount2 - A count kept by DistanceScale and the routine before it.
+DistanceCount2:
 	dc.b	$00
-dat_071_0022F:
+; DistanceCount3 - A count kept by the routine before DistanceScale.
+DistanceCount3:
 	dc.b	$00
 ; WarningLast - The warning chosen last frame (UpdateWarnings).
 WarningLast:
@@ -913,16 +953,21 @@ SceneryDetailed:
 ; SceneryMapOne - With SceneryDetailed clear: SceneryMap1 rather than SceneryMap0.
 SceneryMapOne:
 	dc.b	$00
-dat_071_00236:
+; DistanceFlag - Tested by DistanceScale and the routine before it.
+DistanceFlag:
 	dc.b	$00
-dat_071_00237:
+; DistanceFlag237 - Cleared by the routine before DistanceScale.
+DistanceFlag237:
 	dc.b	$00
 ; RadarLockState - The radar's lock state (DrawRadarBlips; cleared when the lock is lost).
 RadarLockState:
 	dc.b	$00
-dat_071_00239:
+; EjectSoundLength - A sound value CheckEjection sets ($78) for CockpitSounds.
+EjectSoundLength:
 	dc.b	$00
-dat_071_0023A:
+; EjectSoundPitch - A sound value CheckEjection sets ($3F) for CockpitSounds (DrawSceneryPlain
+; also writes it).
+EjectSoundPitch:
 	dc.b	$00
 ; HeightBand - How high the view is (0-3, SetHeightBand): decides how much of the ground and
 ; scenery is drawn (the ground dots, the shadow, the shapes' operations).
@@ -975,7 +1020,8 @@ RightAmigaDown:
 ; BlinkCounter - A counter whose low bit makes the start markers and radar blips blink.
 BlinkCounter:
 	dc.b	$00
-dat_071_00254:
+; ClockBlink - Counted down by UpdateClock; its low bit makes the radar range blink.
+ClockBlink:
 	dc.b	$00
 ; GearSoundCount - The gear's sound counter ($83 from the G key, counted by CockpitSounds).
 GearSoundCount:
@@ -987,12 +1033,14 @@ TargetReadoutCount:
 ; RadarBlipTimer - A timer for the radar's blip ($18; the target readout counts it down).
 RadarBlipTimer:
 	dc.b	$00
-dat_071_00258:
+; ClockFlag - Set and cleared by sub_017_005A8, tested by UpdateClock.
+ClockFlag:
 	dc.b	$00
 ; CrashKind - How the aircraft was lost (StateCrashed; 5 tested by StateFlying and the sounds).
 CrashKind:
 	dc.b	$00
-dat_071_0025A:
+; BeepCount - Frames of the cockpit's beep (3; MenuBeep waits for it).
+BeepCount:
 	dc.b	$00
 ; CountermeasureSound - The sound to make for a countermeasure (2 a flare, 1 chaff), played by
 ; UpdateBullets.
@@ -1015,7 +1063,8 @@ ShakeStep:
 ; WarningTickCount - WarningTicker's counter (8 frames).
 WarningTickCount:
 	dc.b	$00
-dat_071_00261:
+; ViewKeyRepeat - Set to -1 by the keypad's view keys (KP1, KP5); SwitchView tests it.
+ViewKeyRepeat:
 	dc.b	$00
 ; WarningRepeat - Frames until the warning sound is repeated (UpdateWarnings).
 WarningRepeat:
@@ -1047,11 +1096,16 @@ SeaView:
 ; ViewTable2Hit - Set by CheckViewTable2 when the view is in its table (used by hunk 28).
 ViewTable2Hit:
 	dc.b	$00
-dat_071_0026D:
+; WaterDrawn - Set when DrawWaterAreas drew the coarse areas this frame.
+WaterDrawn:
 	dc.b	$00
-dat_071_0026E:
+; SkyPolygonReady - Set when MakeSkyPolygon left a sky polygon to fill (cleared when there is
+; none).
+SkyPolygonReady:
 	dc.b	$00
-dat_071_0026F:
+; Hunk24Flag - Set by hunk 24's routines (sub_024_00006, sub_024_0059E), tested by
+; UpdateObject.
+Hunk24Flag:
 	dc.b	$00
 ; FadeLevel - The palette's brightness now (0-15; 15 is the full in-flight palette,
 ; dat_021_00080 row 0), stepped towards FadeTarget by MouseInterrupt.
@@ -1069,7 +1123,8 @@ MouseIntCount:
 ; when it changes).
 PaletteLoadCount:
 	dc.b	$00
-dat_071_00275:
+; FlyByCountdown - The fly-by's countdown (5).
+FlyByCountdown:
 	dc.b	$00
 ; GameMode - The flight chosen at the menu: 1 free flight, 2 training demo, 3-8 missions F1-F6,
 ; 9 qualification, $7D practice maneuvers, $7F demo; -1 the selectable missions page, -2 the
@@ -1082,7 +1137,9 @@ Difficulty:
 ; DifficultySaved - The difficulty as loaded from the flight log.
 DifficultySaved:
 	dc.b	$00
-dat_071_00279:
+; TargetsPlaced - Counts the mission's targets placed (PlaceObjectList, sub_017_014E6; cleared
+; by SetupMode).
+TargetsPlaced:
 	dc.b	$00
 ; MissionTargets - How many targets the mission needs (from the mode's set-up table).
 MissionTargets:
@@ -1109,25 +1166,31 @@ FlyByPhase:
 ; set by the flight and the weapons, taken by CockpitSounds; $FF from the view keys).
 EngineSoundRequest:
 	dc.b	$00
-dat_071_00281:
+; PlayerFlag281 - Cleared by ResetPlayerFlags.
+PlayerFlag281:
 	dc.b	$00
 ; ViewChoice - The view chosen with the keypad (Key_KP1 ... Key_KPDot: 0-9).
 ViewChoice:
 	dc.b	$00
-dat_071_00283:
+; PlayerFlag283 - Cleared by ResetPlayerFlags.
+PlayerFlag283:
 	dc.b	$00
 ; ShootCue - The head-up display's shoot cue: 1 in range (IN RNG / SHOOT, sound 4), 2 closing
 ; too fast; 0 none.
 ShootCue:
 	dc.b	$00
-dat_071_00285:
+; JToggle - Toggled by the J key: LaunchMissile lets the computer aircraft fire twice as often
+; while it is set.
+JToggle:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0028B:
+; ObjectScaled - Set while DrawObjects draws an object scaled by distance (ObjectRecord sets
+; it; DrawFarScenery1 clears it).
+ObjectScaled:
 	dc.b	$00
 ; DrawDetail - The detail to draw the objects with (5, 3 or 1, by the view's turn rates:
 ; sub_008_0052E), put in their drawing entries.
@@ -1137,7 +1200,8 @@ DrawDetail:
 ; DrawSceneryPlain).
 ObjectDrawByte:
 	dc.b	$00
-dat_071_0028E:
+; ClockStep - UpdateClock's step (15 at the start).
+ClockStep:
 	dc.b	$00
 	dc.b	$00
 ; DebriefDelay - Frames before the debriefing (StateTimer for StateDebriefWait), set with the
@@ -1158,7 +1222,8 @@ CompassPos:
 GunFlags:
 	dc.b	$00
 	dc.b	$00
-dat_071_00298:
+; WarningBits4 - Bit 15 tested by UpdateWarnings first (the most urgent warning).
+WarningBits4:
 	dc.b	$00
 	dc.b	$00
 ; FlightBits - Bits of the flight's state: 1 set by SetHeightBand (tested by ShowGLoad), 8 set
@@ -1191,7 +1256,8 @@ FlightBits4:
 FlightBits2:
 	dc.b	$00
 	dc.b	$00
-dat_071_002A4:
+; CrashBits - Bits cleared on a crash (bit 10).
+CrashBits:
 	dc.b	$00
 	dc.b	$00
 ; WarningBits3 - More warning bits (bit 5 tested and cleared by UpdateWarnings).
@@ -1220,7 +1286,8 @@ ViewObjectIndex:
 ViewObject:
 	dc.b	$00
 	dc.b	$00
-dat_071_002B0:
+; BestTime - The best of the times sub_020_006DA measures.
+BestTime:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1233,12 +1300,14 @@ dat_071_002B0:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_002BC:
+; PolygonsDrawn2 - Another count of the polygons filled.
+PolygonsDrawn2:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_002C0:
+; ControlDelay - FlightControls' delay counter (2).
+ControlDelay:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1334,12 +1403,14 @@ LogDiskStatus:
 ViewHeadingSaved:
 	dc.b	$00
 	dc.b	$00
-dat_071_002FC:
+; RecordCount - The flight recording's count (cleared by ResetRecording).
+RecordCount:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00300:
+; ReplayCount - The replay's count (cleared by ResetRecording).
+ReplayCount:
 	dc.b	$00
 	dc.b	$00
 ; ObjectListPointer - DrawObjects' pointer into the object list.
@@ -1359,21 +1430,24 @@ TargetScreenPos:
 SeekerPos:
 	dc.b	$00
 	dc.b	$00
-dat_071_0030C:
+; SeekerPosY - The y word of SeekerPos.
+SeekerPosY:
 	dc.b	$00
 	dc.b	$00
 ; GunPipperPos - Where the gun pipper is on the screen (x, y); x <= 0 for none.
 GunPipperPos:
 	dc.b	$00
 	dc.b	$00
-dat_071_00310:
+; GunPipperPosY - The y word of GunPipperPos.
+GunPipperPosY:
 	dc.b	$00
 	dc.b	$00
 ; TargetBoxPos - Where the head-up display's target box is (x, y), DrawTargetBox.
 TargetBoxPos:
 	dc.b	$00
 	dc.b	$00
-dat_071_00314:
+; TargetBoxPosY - The y word of TargetBoxPos.
+TargetBoxPosY:
 	dc.b	$00
 	dc.b	$00
 ; GLoadValue - The G load (worked out in UpdateAttitude's sub_032_00946; ShowGLoad prints it).
@@ -1396,7 +1470,8 @@ ViewCellX:
 ViewCellZ:
 	dc.b	$00
 	dc.b	$00
-dat_071_00320:
+; StickValue - ReadStick's last value.
+StickValue:
 	dc.b	$00
 	dc.b	$00
 ; TextColour - The colour the page is drawn in (the high nibble of the page's colour byte).
@@ -1420,7 +1495,8 @@ ColourPlaneBits:
 MarkerIndex:
 	dc.b	$00
 	dc.b	$00
-dat_071_0032A:
+; MarkerX - DrawStartPointMarkers' x.
+MarkerX:
 	dc.b	$00
 	dc.b	$00
 ; GridZShown - The position readout's last Z.
@@ -1455,7 +1531,8 @@ FillBoxStart:
 FillBoxSize:
 	dc.b	$00
 	dc.b	$00
-dat_071_00340:
+; FillWork - FillPolygonPlane's work area.
+FillWork:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1474,7 +1551,8 @@ FillBox:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00350:
+; FillTop - The fill's top row (FillPolygonPlane).
+FillTop:
 	dc.b	$00
 	dc.b	$00
 ; FillBottom - The fill's bottom row (FillPolygonPlane, FillPanelPlane).
@@ -1555,7 +1633,8 @@ FuelShownLast:
 BulletHitRange:
 	dc.b	$00
 	dc.b	$00
-dat_071_00378:
+; BulletHitRange2 - A second hit range for bullets ($140).
+BulletHitRange2:
 	dc.b	$00
 	dc.b	$00
 ; LoopIndex - A loop counter shared by several drawing loops (the far scenery lists,
@@ -1582,7 +1661,8 @@ DistanceFactor:
 ; CurrentObject - The number of the object being worked on.
 CurrentObject:
 	dc.b	$00
-dat_071_00385:
+; DistanceBits385 - Bits DistanceScale adds in.
+DistanceBits385:
 	dc.b	$00
 ; CurrentObjectOffset - Its offset in ObjectTable (number << 9).
 CurrentObjectOffset:
@@ -1596,7 +1676,8 @@ BulletHitObject:
 FlyByObject:
 	dc.b	$00
 	dc.b	$00
-dat_071_0038C:
+; DistanceScaleBits - Bits worked out with DistanceScale.
+DistanceScaleBits:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1627,7 +1708,8 @@ RadarListEnd:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0039E:
+; DrawGroupList - A list of groups for the drawing order (sub_009_00740).
+DrawGroupList:
 	dcb.b	96,$00
 ; SceneryListLimit - The end of the scenery list being built (BuildSceneryList,
 ; AddCellScenery): no more entries are added past it.
@@ -1659,7 +1741,8 @@ ShapeNext:
 ScaleFactors:
 	dc.b	$00
 	dc.b	$00
-dat_071_00410:
+; ScaleFactorZ - The last of ScaleFactors ($FC).
+ScaleFactorZ:
 	dc.b	$00
 	dc.b	$00
 ; RadarScale - The radar's scale: $80 for the 10 range, $40 for 20, otherwise 40.
@@ -1678,10 +1761,12 @@ RadarScale:
 ScaledVector:
 	dc.b	$00
 	dc.b	$00
-dat_071_0041E:
+; ScaledVectorY - The y word of ScaledVector.
+ScaledVectorY:
 	dc.b	$00
 	dc.b	$00
-dat_071_00420:
+; ScaledVectorZ - The z word of ScaledVector.
+ScaledVectorZ:
 	dc.b	$00
 	dc.b	$00
 ; HitPointX - The point of a bullet's hit (x, then HitPointY and HitPointZ), for its effects.
@@ -1706,7 +1791,8 @@ HitPointZ:
 ViewCellLast:
 	dc.b	$00
 	dc.b	$00
-dat_071_00430:
+; OutsideCamZoomLast - The outside camera's last zoom value (SetOutsideCamera).
+OutsideCamZoomLast:
 	dc.b	$00
 	dc.b	$00
 ; ViewOffsetX - Minus the camera's x within its map cell (with ViewOffsetY, ViewOffsetZ, set by
@@ -1783,14 +1869,16 @@ OutsideCamPos:
 ViewPitchAngle:
 	dc.b	$00
 	dc.b	$00
-dat_071_0045C:
+; ViewHeadingLong - The view's heading as a long (SetViewOctant).
+ViewHeadingLong:
 	dc.b	$00
 	dc.b	$00
 ; ViewHeadingAngle - The view's heading (see ViewPitchAngle).
 ViewHeadingAngle:
 	dc.b	$00
 	dc.b	$00
-dat_071_00460:
+; ViewHeightLong - The view's height as a long (SetHeightBand).
+ViewHeightLong:
 	dc.b	$00
 	dc.b	$00
 ; ViewRollAngle - The view's roll (see ViewPitchAngle; MakeSkyPolygon tests it against $3840,
@@ -1819,15 +1907,12 @@ OutsideCamHeading:
 FlightScratch:
 	dc.b	$00
 	dc.b	$00
-dat_071_00472:
+; FlightScratch2 - FlyAircraft's working word.
+FlightScratch2:
 	dc.b	$00
 	dc.b	$00
-dat_071_00474:
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
+; FlightScratch3 - FlyAircraft's working word.
+FlightScratch3:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1841,7 +1926,13 @@ dat_071_00474:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00486:
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+; TurnedZ - TurnToView's z result.
+TurnedZ:
 	dc.b	$00
 	dc.b	$00
 ; DistanceShift - How far the object being drawn is scaled down by its distance (a shift, from
@@ -1927,7 +2018,8 @@ WarningSaved:
 TargetReadoutShown:
 	dc.b	$00
 	dc.b	$00
-dat_071_004B6:
+; TimedResult - The result of sub_020_006DA (shown by ShowDebugNumbers).
+TimedResult:
 	dc.b	$00
 	dc.b	$00
 ; BestClock - The smallest of a timed value kept by sub_020_006DA ($7FFF at the start).
@@ -1955,7 +2047,8 @@ TimeMicros:
 ; PlaceRandom - A random word for placing objects (SetupMode, PlaceObjectList).
 PlaceRandom:
 	dc.b	$00
-dat_071_004C9:
+; PlaceRandomLow - The low byte of PlaceRandom.
+PlaceRandomLow:
 	dc.b	$00
 ; ClockStart - A start time kept by UpdateClock (-1 when not running).
 ClockStart:
@@ -1963,7 +2056,8 @@ ClockStart:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_004CE:
+; StartMicros - Microseconds kept by sub_020_006DA.
+StartMicros:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1974,12 +2068,14 @@ ClockLast:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_004D6:
+; ClockMicros - UpdateClock's last microseconds (for its timing).
+ClockMicros:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_004DA:
+; TimedValue - A time measured by sub_020_006DA (at most $7FFF).
+TimedValue:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2000,10 +2096,12 @@ ClockMark:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_004E8:
+; PlaceWork1 - PlaceObjectList's working words.
+PlaceWork1:
 	dc.b	$00
 	dc.b	$00
-dat_071_004EA:
+; PlaceWork2 - PlaceObjectList's working words.
+PlaceWork2:
 	dc.b	$00
 	dc.b	$00
 ; ModeVariant - Which of the mode's three variants (ModeTable) was picked, at random; kept when
@@ -2021,7 +2119,8 @@ BCDIn:
 BCDOut:
 	dc.b	$00
 	dc.b	$00
-dat_071_004F4:
+; BogeyWork - BogeyVector's work area.
+BogeyWork:
 	dc.b	$00
 	dc.b	$00
 ; HUDScaleStep - The step between a HUD scale's numbers (5 on the tapes, 10 on the heading
@@ -2117,7 +2216,8 @@ FlightSoundBits:
 ; the controls and played by CockpitSounds.
 CockpitSoundBits:
 	dc.b	$00
-dat_071_00528:
+; GKeyValue - A long read by the G key (cleared at the start).
+GKeyValue:
 	dc.b	$00
 	dc.b	$00
 ; SoundFlags - Sound flags (bit 2: text201 loaded).
@@ -2191,7 +2291,8 @@ WarningRepeatDefault:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00560:
+; AngleWork - NormaliseAngles' work area (with the longs after it).
+AngleWork:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2210,25 +2311,14 @@ dat_071_00560:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00572:
+; AngleWork2 - NormaliseAngles' work area.
+AngleWork2:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00576:
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-	dc.b	$00
-dat_071_00582:
+; AngleWork4 - NormaliseAngles' work long.
+AngleWork4:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2237,17 +2327,34 @@ dat_071_00582:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0058A:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0058E:
+; AngleWork6 - NormaliseAngles' work long.
+AngleWork6:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00592:
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+; AngleWork3 - NormaliseAngles' work long.
+AngleWork3:
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+; AngleWork5 - NormaliseAngles' work long.
+AngleWork5:
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+	dc.b	$00
+; AngleWork7 - NormaliseAngles' work long.
+AngleWork7:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2497,7 +2604,8 @@ BulletTestKind:
 BulletTestRange:
 	dc.b	$00
 	dc.b	$00
-dat_071_00B52:
+; PolygonsDrawn - Counts the polygons filled this frame (ClipPolygonEdge4; cleared each frame).
+PolygonsDrawn:
 	dc.b	$00
 	dc.b	$00
 ; ObjectTable - The 16 objects (aircraft, missiles, ships...; the player's aircraft is record 0):

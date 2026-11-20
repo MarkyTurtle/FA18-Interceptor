@@ -97,7 +97,7 @@ l_023_000C4:
 ;-------------------------------------------------------------------------------
 BulletHitTest:
         moveq   #$0,d0                          ; 000C6
-        move.b  (dat_071_0018D).l,d1            ; 000C8
+        move.b  (BulletsHeld).l,d1              ; 000C8
         or.b    (WorldFrozen).l,d1              ; 000CE
         bne.b   l_023_000C4                     ; 000D4
         link.w  a6,#$ffa4                       ; 000D6
@@ -118,7 +118,7 @@ BulletHitTest:
         move.w  $c(a0),-$1a(a6)                 ; 00120
         move.l  $10(a0),-$16(a6)                ; 00126
         move.w  $e(a0),-$14(a6)                 ; 0012C
-        move.b  (dat_071_0022E).l,d0            ; 00132
+        move.b  (DistanceCount2).l,d0           ; 00132
         ext.w   d0                              ; 00138
         move.w  d0,-$6(a6)                      ; 0013A
 l_023_0013E:
@@ -329,7 +329,7 @@ l_023_00386:
         add.l   d0,$0(a3)                       ; 0038C
         add.l   d1,$4(a3)                       ; 00390
         add.l   d2,$8(a3)                       ; 00394
-        move.w  (dat_071_00378).l,d7            ; 00398
+        move.w  (BulletHitRange2).l,d7          ; 00398
         ext.l   d7                              ; 0039E
         movem.l $0(a3),d0-d1/d6                 ; 003A0
         asr.l   #$8,d0                          ; 003A6

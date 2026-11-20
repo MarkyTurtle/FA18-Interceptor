@@ -483,7 +483,7 @@ l_037_00560:
         bsr.w   ClipPanelBlit                   ; 0058A
         blt.b   l_037_005B0                     ; 0058E
         move.w  #$30a,d2                        ; 00590
-        tst.b   (dat_071_00285).l               ; 00594
+        tst.b   (JToggle).l                     ; 00594
         beq.b   l_037_005A0                     ; 0059A
         move.w  #$3fa,d2                        ; 0059C
 l_037_005A0:

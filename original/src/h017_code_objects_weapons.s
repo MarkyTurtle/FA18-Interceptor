@@ -334,9 +334,9 @@ l_017_004AE:
 l_017_004C2:
         cmpi.b  #$1,d0                          ; 004C2
         bne.b   l_017_004E4                     ; 004C6
-        move.b  #$3f,(dat_071_0023A).l          ; 004C8
-        move.b  #$78,(dat_071_00239).l          ; 004D0
-        move.b  #$ff,(dat_071_00188).l          ; 004D8
+        move.b  #$3f,(EjectSoundPitch).l        ; 004C8
+        move.b  #$78,(EjectSoundLength).l       ; 004D0
+        move.b  #$ff,(EjectSoundCount).l        ; 004D8
 l_017_004E0:
         moveq   #$0,d0                          ; 004E0
         bra.b   l_017_004F0                     ; 004E2
@@ -428,14 +428,14 @@ sub_017_005A8:
 l_017_005BE:
         cmpi.w  #$4e,d0                         ; 005BE
         blt.b   l_017_005DE                     ; 005C2
-        tst.b   (dat_071_00258).l               ; 005C4
+        tst.b   (ClockFlag).l                   ; 005C4
         bne.b   l_017_005E4                     ; 005CA
-        move.b  #$1,(dat_071_00258).l           ; 005CC
+        move.b  #$1,(ClockFlag).l               ; 005CC
         moveq   #$8,d0                          ; 005D4
         jsr     (BeepPitch).l                   ; 005D6
         bra.b   l_017_005E4                     ; 005DC
 l_017_005DE:
-        clr.b   (dat_071_00258).l               ; 005DE
+        clr.b   (ClockFlag).l                   ; 005DE
 l_017_005E4:
         cmpi.b  #$7d,(GameMode).l               ; 005E4
         bne.w   l_017_006C0                     ; 005EC
@@ -499,7 +499,7 @@ l_017_0064E:
         move.l  d1,$10(a1)                      ; 006B4
         move.b  #$ff,(RedrawFlags).l            ; 006B8
 l_017_006C0:
-        tst.b   (dat_071_0016C).l               ; 006C0
+        tst.b   (TrainingStepFlag).l            ; 006C0
         blt.b   l_017_00728                     ; 006C6
         tst.b   (WorldFrozen).l                 ; 006C8
         bne.b   l_017_00728                     ; 006CE
@@ -518,7 +518,7 @@ l_017_006C0:
         cmpi.w  #$1fd,(a4)                      ; 006FC
         blt.b   l_017_00728                     ; 00700
         move.b  #$ff,(a3)                       ; 00702
-        move.b  #$ff,(dat_071_0016C).l          ; 00706
+        move.b  #$ff,(TrainingStepFlag).l       ; 00706
         move.b  (TrainingStep).l,d0             ; 0070E
         ext.w   d0                              ; 00714
         asl.w   #$2,d0                          ; 00716
@@ -668,7 +668,7 @@ NextManoeuvre:
         move.b  #$1,d0                          ; 00906
 l_017_0090A:
         move.b  d0,(TrainingStep).l             ; 0090A
-        clr.b   (dat_071_00176).l               ; 00910
+        clr.b   (AnglesSet).l                   ; 00910
         clr.w   (TrainingFrame).l               ; 00916
         clr.b   $65(a1)                         ; 0091C
         move.b  (TrainingStep).l,d0             ; 00920
@@ -801,7 +801,7 @@ PlayerLaunch:
 ;-------------------------------------------------------------------------------
 ; LaunchMissile - LaunchMissile(a2 = the launcher, a1 = the new object): fires the launcher's
 ; selected missile, if it has one left (+$5F: low nibble AMRAAMs, high nibble Sidewinders; a
-; computer aircraft only every 8, 6 or 4 frames by Difficulty, while dat_071_00159 allows it).
+; computer aircraft only every 8, 6 or 4 frames by Difficulty, while LaunchFlag allows it).
 ; The missile starts as a copy of the launcher's record (its first $A4 bytes); its type (+$62)
 ; is 1 for an AIM-120 AMRAAM (weapon $30), 0 for an AIM-9L Sidewinder; the player's launches
 ; are counted in the flight log (+$3E AMRAAMs, +$42 Sidewinders fired). It is placed at its
@@ -809,7 +809,7 @@ PlayerLaunch:
 ; velocity plus a push along its nose.
 ;-------------------------------------------------------------------------------
 LaunchMissile:
-        tst.b   (dat_071_00159).l               ; 00AFE
+        tst.b   (LaunchFlag).l                  ; 00AFE
         beq.b   l_017_00AC4                     ; 00B04
         cmpi.b  #$3,(Difficulty).l              ; 00B06
         bge.b   l_017_00B22                     ; 00B0E
@@ -823,7 +823,7 @@ l_017_00B1E:
 l_017_00B22:
         moveq   #$3,d1                          ; 00B22
 l_017_00B24:
-        tst.b   (dat_071_00285).l               ; 00B24
+        tst.b   (JToggle).l                     ; 00B24
         beq.b   l_017_00B2E                     ; 00B2A
         lsr.w   #$1,d1                          ; 00B2C
 l_017_00B2E:
@@ -1051,7 +1051,7 @@ StepObject:
         subq.w  #$1,$4c(a1)                     ; 00E24
         btst    #$4,$0(a1)                      ; 00E28
         beq.b   l_017_00DFA                     ; 00E2E
-        tst.b   (dat_071_0015E).l               ; 00E30
+        tst.b   (StepFlag).l                    ; 00E30
         beq.b   l_017_00DFA                     ; 00E36
         btst    #$1,$20(a1)                     ; 00E38
         beq.b   l_017_00E96                     ; 00E3E
@@ -1640,9 +1640,9 @@ l_017_014CC:
 l_017_014D0:
         move.w  $16(a3),d4                      ; 014D0
         andi.w  #$4,d4                          ; 014D4
-        move.b  d4,(dat_071_0015A).l            ; 014D8
+        move.b  d4,(MissileFlag).l              ; 014D8
 l_017_014DE:
-        tst.b   (dat_071_0015A).l               ; 014DE
+        tst.b   (MissileFlag).l                 ; 014DE
         bra.b   l_017_014F0                     ; 014E4
 sub_017_014E6:
         moveq   #$0,d3                          ; 014E6
@@ -1760,7 +1760,7 @@ l_017_01620:
         btst    #$3,$1(a1)                      ; 01636
         beq.b   l_017_01650                     ; 0163C
         bclr    #$3,$1(a1)                      ; 0163E
-        addq.b  #$1,(dat_071_00279).l           ; 01644
+        addq.b  #$1,(TargetsPlaced).l           ; 01644
         addq.b  #$1,(MissionTargets).l          ; 0164A
 l_017_01650:
         move.b  d0,$5(a1)                       ; 01650

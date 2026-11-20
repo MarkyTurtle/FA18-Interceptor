@@ -181,7 +181,7 @@ l_000_07772:
         move.l  d0,-(a7)                        ; 07778
         jsr     (DrawBullet).l                  ; 0777A
         addq.l  #$4,a7                          ; 07780
-        move.w  (dat_071_00486).l,-$6(a6)       ; 07782
+        move.w  (TurnedZ).l,-$6(a6)             ; 07782
         bra.b   l_000_077D0                     ; 0778A
 l_000_0778C:
         movea.l -$4(a6),a0                      ; 0778C
@@ -551,13 +551,13 @@ BulletDamageAt:
         asl.l   #$3,d0                          ; 07C62
         movea.l (CurrentBullet).l,a0            ; 07C64
         move.l  d0,$c(a0)                       ; 07C6A
-        move.w  (dat_071_0041E).l,d1            ; 07C6E
+        move.w  (ScaledVectorY).l,d1            ; 07C6E
         ext.l   d1                              ; 07C74
         move.l  d1,$c(a7)                       ; 07C76
         asl.l   #$3,d1                          ; 07C7A
         movea.l (CurrentBullet).l,a0            ; 07C7C
         move.l  d1,$10(a0)                      ; 07C82
-        move.w  (dat_071_00420).l,d0            ; 07C86
+        move.w  (ScaledVectorZ).l,d0            ; 07C86
         ext.l   d0                              ; 07C8C
         move.l  d0,$10(a7)                      ; 07C8E
         asl.l   #$3,d0                          ; 07C92
@@ -2028,7 +2028,7 @@ ReadJoystick:
         move.l  d0,-$6(a6)                      ; 09010
         tst.l   d0                              ; 09014
         bne.b   l_000_09020                     ; 09016
-        clr.b   (dat_071_001FD).l               ; 09018
+        clr.b   (JoystickFlag).l                ; 09018
         bra.b   l_000_09066                     ; 0901E
 l_000_09020:
         movea.l (JoystickEventPtr2).l,a0        ; 09020
@@ -2057,14 +2057,14 @@ l_000_09066:
 
 ;-------------------------------------------------------------------------------
 ; ReadStick - Reads JOY1DAT ($DFF00C) directly and turns it into the stick's directions
-; (dat_071_00320).
+; (StickValue).
 ;-------------------------------------------------------------------------------
 ReadStick:
         link.w  a6,#$fff6                       ; 0906C
         move.l  #$dff00c,-$4(a6)                ; 09070
         movea.l -$4(a6),a0                      ; 09078
         move.w  (a0),d0                         ; 0907C
-        move.w  d0,(dat_071_00320).l            ; 0907E
+        move.w  d0,(StickValue).l               ; 0907E
         move.w  d0,-$6(a6)                      ; 09084
         ext.l   d0                              ; 09088
         move.l  d0,$0(a7)                       ; 0908A

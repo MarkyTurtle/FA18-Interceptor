@@ -401,7 +401,7 @@ l_005_00568:
         add.w   d3,d1                           ; 00576
         ext.l   d1                              ; 00578
         move.l  d1,(PanelShakeOffset).l         ; 0057A
-        move.b  #$0,(dat_071_00179).l           ; 00580
+        move.b  #$0,(ViewKeyFlag).l             ; 00580
         bra.w   ApplyViewZoom                   ; 00588
 Key_T:
         jsr     (KeyBeep).l                     ; 0058C
@@ -891,7 +891,7 @@ l_005_00A82:
         bra.w   l_005_01624                     ; 00AA6
 l_005_00AAA:
         bset    #$2,(ViewKeys).l                ; 00AAA
-        move.b  #$ff,(dat_071_00176).l          ; 00AB2
+        move.b  #$ff,(AnglesSet).l              ; 00AB2
         lea.l   (StartPoints).l,a0              ; 00ABA
         move.b  (StartPoint).l,d0               ; 00AC0
         ext.w   d0                              ; 00AC6
@@ -946,7 +946,7 @@ l_005_00B44:
         clr.b   (NewView).l                     ; 00B4A
         tst.b   (OutsideView).l                 ; 00B50
         beq.w   l_005_00A74                     ; 00B56
-        clr.b   (dat_071_00176).l               ; 00B5A
+        clr.b   (AnglesSet).l                   ; 00B5A
         bra.w   l_005_01624                     ; 00B60
 l_005_00B64:
         moveq   #$0,d4                          ; 00B64
@@ -1027,7 +1027,7 @@ l_005_00C48:
         move.b  #$ff,(EngineSoundRequest).l     ; 00C60
         bra.w   l_005_01624                     ; 00C68
 l_005_00C6C:
-        move.b  #$ff,(dat_071_00261).l          ; 00C6C
+        move.b  #$ff,(ViewKeyRepeat).l          ; 00C6C
         bra.w   l_005_01624                     ; 00C74
 l_005_00C78:
         bset    #$7,(ViewKeys2).l               ; 00C78
@@ -1116,8 +1116,8 @@ l_005_00DC2:
         jsr     (StartGunSound).l               ; 00DC2
         move.w  #$ffff,(TargetScreenPos).l      ; 00DC8
         move.b  #$ff,(RedrawFlags).l            ; 00DD0
-        move.b  #$0,(dat_071_00179).l           ; 00DD8
-        move.b  #$ff,(dat_071_00261).l          ; 00DE0
+        move.b  #$0,(ViewKeyFlag).l             ; 00DD8
+        move.b  #$ff,(ViewKeyRepeat).l          ; 00DE0
         lea.l   (ObjectTable).l,a0              ; 00DE8
         adda.w  (ViewObject).l,a0               ; 00DEE
         move.b  $62(a0),d4                      ; 00DF4
@@ -1205,7 +1205,7 @@ l_005_00EF8:
         asl.w   (RadarScale).l                  ; 00F02
 l_005_00F08:
         move.b  #$3,(RadarRangeRedraw).l        ; 00F08
-        move.b  #$ff,(dat_071_00261).l          ; 00F10
+        move.b  #$ff,(ViewKeyRepeat).l          ; 00F10
         move.b  (GroundDetail).l,d4             ; 00F18
         andi.b  #$7f,d4                         ; 00F1E
         bne.b   l_005_00F2C                     ; 00F22
@@ -1220,7 +1220,7 @@ l_005_00F42:
         bra.w   l_005_01624                     ; 00F4A
 Key_KP2Up_KP4Up_KP6Up:
         bset    #$6,(ViewKeys2).l               ; 00F4E
-        move.b  #$5,(dat_071_00261).l           ; 00F56
+        move.b  #$5,(ViewKeyRepeat).l           ; 00F56
         bra.w   l_005_01624                     ; 00F5E
 Key_Return:
         cmpi.b  #$2,(GameMode).l                ; 00F62
@@ -1262,7 +1262,7 @@ Key_G:
         btst    #$7,(Player_03).l               ; 01002
         bne.b   l_005_0102E                     ; 0100A
         bchg    #$7,(Player_7C).l               ; 0100C
-        move.l  (dat_071_00528).l,d4            ; 01014
+        move.l  (GKeyValue).l,d4                ; 01014
         andi.l  #$40,d4                         ; 0101A
         beq.b   l_005_0102E                     ; 01020
         move.b  #$83,(GearSoundCount).l         ; 01022
@@ -1676,11 +1676,11 @@ l_005_0159C:
         move.b  #$1,(QuitRequest).l             ; 015CE
         bra.w   l_005_01624                     ; 015D6
 Key_J:
-        lea.l   (dat_071_00180).l,a0            ; 015DA
+        lea.l   (JToggle2).l,a0                 ; 015DA
         bset    #$3,(ToggleKeys).l              ; 015E0
         move.b  #$3,(JLampRedraw).l             ; 015E8
         jsr     (KeyBeep).l                     ; 015F0
-        lea.l   (dat_071_00285).l,a0            ; 015F6
+        lea.l   (JToggle).l,a0                  ; 015F6
 
 ;-------------------------------------------------------------------------------
 ; ToggleByte - Flips the byte at a0 between 0 and 1 (the keys that switch something on and

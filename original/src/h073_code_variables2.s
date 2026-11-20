@@ -6,7 +6,7 @@
 ; Hunk 73: CODE, $16A8 bytes
 ;===============================================================================
 	CODE_HUNK	h073
-; SmallListTemplate - A block of 11 longs copied to dat_073_0002C by sub_009_008BE (a list's
+; SmallListTemplate - A block of 11 longs copied to SmallList by sub_009_008BE (a list's
 ; starting values).
 SmallListTemplate:
 	dcb.b	44,$00

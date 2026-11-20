@@ -722,7 +722,7 @@ ComputerPilot:
         move.w  $0(a1),d0                       ; 008B2
         andi.w  #$80,d0                         ; 008B6
         beq.b   l_030_00892                     ; 008BA
-        move.b  (dat_071_0017F).l,d0            ; 008BC
+        move.b  (PilotsHeld).l,d0               ; 008BC
         or.b    (WorldFrozen).l,d0              ; 008C2
         bne.b   l_030_00896                     ; 008C8
 l_030_008CA:

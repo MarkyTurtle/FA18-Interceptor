@@ -657,8 +657,8 @@ l_040_00934:
 l_040_00946:
         cmpi.w  #$8,d0                          ; 00946
         bgt.b   l_040_00994                     ; 0094A
-        move.w  (dat_071_0030C).l,d1            ; 0094C
-        sub.w   (dat_071_00310).l,d1            ; 00952
+        move.w  (SeekerPosY).l,d1               ; 0094C
+        sub.w   (GunPipperPosY).l,d1            ; 00952
         bge.b   l_040_0095C                     ; 00958
         neg.w   d1                              ; 0095A
 l_040_0095C:
@@ -1367,7 +1367,7 @@ l_040_011AE:
         sub.w   d3,d2                           ; 011AE
 l_040_011B0:
         move.w  d4,(TargetBoxPos).l             ; 011B0
-        move.w  d2,(dat_071_00314).l            ; 011B6
+        move.w  d2,(TargetBoxPosY).l            ; 011B6
 l_040_011BC:
         tst.w   (Player_56).l                   ; 011BC
         beq.b   l_040_011DC                     ; 011C2

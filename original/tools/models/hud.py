@@ -29,7 +29,7 @@ def char_plane(uc, addr, size, _):
     off = d5 & 0xFFFF
     ch = chr(g.b(uc.reg_read(UC_M68K_REG_A2) - 1))
     x = (off % 40) * 8 + ((uc.reg_read(UC_M68K_REG_D2) >> 12) & 15)
-    c = (x, off // 40, ch, g.b(g['dat_071_00325']) & 15)
+    c = (x, off // 40, ch, g.b(g['PrintColour']) & 15)
     if c not in CHARS:                          # the planes may share an address here
         CHARS.append(c)
 

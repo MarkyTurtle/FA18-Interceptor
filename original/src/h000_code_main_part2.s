@@ -53,7 +53,7 @@ SetHeightBand:
 l_000_04410:
         move.l  (OutsideCamPos).l,d0            ; 04410
         asr.l   #$3,d0                          ; 04416
-        move.l  (dat_071_00460).l,d1            ; 04418
+        move.l  (ViewHeightLong).l,d1           ; 04418
         asr.l   #$3,d1                          ; 0441E
         move.w  d0,-$2(a6)                      ; 04420
         move.w  d1,-$4(a6)                      ; 04424
@@ -382,12 +382,12 @@ l_000_04854:
         tst.l   $1c(a6)                         ; 04854
         bmi.b   l_000_0486C                     ; 04858
         move.b  (CameraSequence).l,d0           ; 0485A
-        move.b  (dat_071_00176).l,d1            ; 04860
+        move.b  (AnglesSet).l,d1                ; 04860
         or.b    d1,d0                           ; 04866
         tst.b   d0                              ; 04868
         bne.b   l_000_04884                     ; 0486A
 l_000_0486C:
-        move.b  #$1,(dat_071_00176).l           ; 0486C
+        move.b  #$1,(AnglesSet).l               ; 0486C
         move.l  -$e(a6),$8(a6)                  ; 04874
         move.l  -$12(a6),$c(a6)                 ; 0487A
         bra.w   l_000_04A84                     ; 04880
@@ -630,7 +630,7 @@ l_000_04B44:
 l_000_04B5A:
         tst.l   (SoundRequests).l               ; 04B5A
         beq.w   l_000_04DD4                     ; 04B60
-        move.b  (dat_071_0025A).l,d0            ; 04B64
+        move.b  (BeepCount).l,d0                ; 04B64
         tst.b   d0                              ; 04B6A
         bgt.w   l_000_04DD4                     ; 04B6C
         btst    #$6,(CockpitSoundBits).l        ; 04B70
@@ -701,7 +701,7 @@ l_000_04C02:
         move.l  d0,-(a7)                        ; 04C2E
         jsr     (PlayEffect).l                  ; 04C30
         lea.l   $24(a7),a7                      ; 04C36
-        move.b  #$3,(dat_071_0025A).l           ; 04C3A
+        move.b  #$3,(BeepCount).l               ; 04C3A
         bra.w   l_000_04DCE                     ; 04C42
 l_000_04C46:
         btst    #$2,(CockpitSoundBits).l        ; 04C46
@@ -840,19 +840,19 @@ l_000_04DB8:
 l_000_04DCE:
         clr.l   (SoundRequests).l               ; 04DCE
 l_000_04DD4:
-        tst.b   (dat_071_00188).l               ; 04DD4
+        tst.b   (EjectSoundCount).l             ; 04DD4
         beq.b   l_000_04E40                     ; 04DDA
-        move.b  (dat_071_00188).l,d0            ; 04DDC
+        move.b  (EjectSoundCount).l,d0          ; 04DDC
         subq.b  #$1,d0                          ; 04DE2
-        move.b  d0,(dat_071_00188).l            ; 04DE4
+        move.b  d0,(EjectSoundCount).l          ; 04DE4
         tst.b   d0                              ; 04DEA
         bgt.b   l_000_04E40                     ; 04DEC
         tst.b   (OutsideView).l                 ; 04DEE
         beq.b   l_000_04E18                     ; 04DF4
-        move.b  (dat_071_0023A).l,d0            ; 04DF6
+        move.b  (EjectSoundPitch).l,d0          ; 04DF6
         ext.w   d0                              ; 04DFC
         ext.l   d0                              ; 04DFE
-        move.b  (dat_071_00239).l,d1            ; 04E00
+        move.b  (EjectSoundLength).l,d1         ; 04E00
         ext.w   d1                              ; 04E06
         ext.l   d1                              ; 04E08
         move.l  d1,-(a7)                        ; 04E0A
@@ -861,11 +861,11 @@ l_000_04DD4:
         addq.l  #$8,a7                          ; 04E14
         bra.b   l_000_04E3A                     ; 04E16
 l_000_04E18:
-        move.b  (dat_071_0023A).l,d0            ; 04E18
+        move.b  (EjectSoundPitch).l,d0          ; 04E18
         ext.w   d0                              ; 04E1E
         ext.l   d0                              ; 04E20
         asr.l   #$1,d0                          ; 04E22
-        move.b  (dat_071_00239).l,d1            ; 04E24
+        move.b  (EjectSoundLength).l,d1         ; 04E24
         ext.w   d1                              ; 04E2A
         ext.l   d1                              ; 04E2C
         move.l  d1,-(a7)                        ; 04E2E
@@ -873,7 +873,7 @@ l_000_04E18:
         jsr     (PlaySweep).l                   ; 04E32
         addq.l  #$8,a7                          ; 04E38
 l_000_04E3A:
-        clr.b   (dat_071_00188).l               ; 04E3A
+        clr.b   (EjectSoundCount).l             ; 04E3A
 l_000_04E40:
         tst.b   -$11(a6)                        ; 04E40
         bne.b   l_000_04E56                     ; 04E44
@@ -1944,10 +1944,10 @@ l_000_05AE8:
         bset    #$5,(CockpitSoundBits).l        ; 05B2E
         bra.b   l_000_05B72                     ; 05B36
 l_000_05B38:
-        move.w  (dat_071_002C0).l,d0            ; 05B38
+        move.w  (ControlDelay).l,d0             ; 05B38
         tst.w   d0                              ; 05B3E
         bpl.b   l_000_05B72                     ; 05B40
-        move.w  #$2,(dat_071_002C0).l           ; 05B42
+        move.w  #$2,(ControlDelay).l            ; 05B42
         bra.b   l_000_05B72                     ; 05B4A
 l_000_05B4C:
         btst    #$7,(ControlBits).l             ; 05B4C
@@ -3334,16 +3334,16 @@ FlyAircraft:
         move.w  $96(a3),d2                      ; 06B54
         move.w  d2,(FlightScratch).l            ; 06B58
         move.w  $9c(a3),d1                      ; 06B5E
-        move.w  d1,(dat_071_00472).l            ; 06B62
+        move.w  d1,(FlightScratch2).l           ; 06B62
         move.w  $a2(a3),d2                      ; 06B68
-        move.w  d2,(dat_071_00474).l            ; 06B6C
+        move.w  d2,(FlightScratch3).l           ; 06B6C
         move.w  $6e(a3),d1                      ; 06B72
         neg.w   d1                              ; 06B76
         move.w  d1,-$22(a6)                     ; 06B78
         ext.l   d1                              ; 06B7C
         move.w  (FlightScratch).l,d3            ; 06B7E
         ext.l   d3                              ; 06B84
-        move.w  (dat_071_00472).l,d4            ; 06B86
+        move.w  (FlightScratch2).l,d4           ; 06B86
         ext.l   d4                              ; 06B8C
         ext.l   d2                              ; 06B8E
         move.l  d2,-(a7)                        ; 06B90
@@ -3356,8 +3356,8 @@ FlyAircraft:
         jsr     (ScaleToLength).l               ; 06BA4
         lea.l   $10(a7),a7                      ; 06BAA
         move.w  (ScaledVector).l,-$2(a6)        ; 06BAE
-        move.w  (dat_071_0041E).l,-$4(a6)       ; 06BB6
-        move.w  (dat_071_00420).l,-$6(a6)       ; 06BBE
+        move.w  (ScaledVectorY).l,-$4(a6)       ; 06BB6
+        move.w  (ScaledVectorZ).l,-$6(a6)       ; 06BBE
         movea.l -$2c(a6),a0                     ; 06BC6
         move.w  (a0),d0                         ; 06BCA
         btst    #$7,d0                          ; 06BCC
@@ -3904,7 +3904,7 @@ l_000_07312:
         movea.l d0,a0                           ; 07322
         adda.l  #Bullets,a0                     ; 07324
         move.l  a0,(CurrentBullet).l            ; 0732A
-        tst.b   (dat_071_0018D).l               ; 07330
+        tst.b   (BulletsHeld).l                 ; 07330
         bne.b   l_000_07350                     ; 07336
         tst.b   (WorldFrozen).l                 ; 07338
         bne.b   l_000_07350                     ; 0733E

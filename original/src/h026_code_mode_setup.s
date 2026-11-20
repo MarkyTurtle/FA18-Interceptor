@@ -16,7 +16,7 @@ l_026_00000:
 ;-------------------------------------------------------------------------------
 SetupMode:
         jsr     (ShowLogDate).l                 ; 00002
-        clr.b   (dat_071_00279).l               ; 00008
+        clr.b   (TargetsPlaced).l               ; 00008
         clr.b   (MissionTargetsDone).l          ; 0000E
         clr.w   (EscortTimer).l                 ; 00014
         move.b  (GameMode).l,d0                 ; 0001A
@@ -441,7 +441,7 @@ l_026_00488:
         add.w   d3,d3                           ; 0049E
         adda.w  d3,a0                           ; 004A0
         move.b  (MissionTargets).l,d3           ; 004A2
-        cmp.b   (dat_071_00279).l,d3            ; 004A8
+        cmp.b   (TargetsPlaced).l,d3            ; 004A8
         ble.b   l_026_004C6                     ; 004AE
         cmpi.b  #$15,$62(a0)                    ; 004B0
         bne.b   l_026_004BE                     ; 004B6
@@ -485,7 +485,7 @@ l_026_004D4:
         andi.b  #$f0,d2                         ; 00520
         cmpi.b  #$10,d2                         ; 00524
         bne.b   l_026_00538                     ; 00528
-        addq.b  #$1,(dat_071_00279).l           ; 0052A
+        addq.b  #$1,(TargetsPlaced).l           ; 0052A
         bra.b   l_026_00538                     ; 00530
 l_026_00532:
         bset    #$3,$1(a0)                      ; 00532
@@ -510,8 +510,8 @@ l_026_00556:
         beq.b   l_026_0058E                     ; 0056A
         swap    d4                              ; 0056C
         move.w  d0,d4                           ; 0056E
-        move.w  (dat_071_004E8).l,d0            ; 00570
-        move.w  (dat_071_004EA).l,d1            ; 00576
+        move.w  (PlaceWork1).l,d0               ; 00570
+        move.w  (PlaceWork2).l,d1               ; 00576
         andi.w  #$80,d4                         ; 0057C
         beq.b   l_026_00586                     ; 00580
         asr.w   #$1,d0                          ; 00582
@@ -525,11 +525,11 @@ l_026_0058E:
         move.w  (PlaceRandom).l,d1              ; 0058E
         lsr.w   #$1,d1                          ; 00594
         andi.w  #$3,d1                          ; 00596
-        btst    #$4,(dat_071_004C9).l           ; 0059A
+        btst    #$4,(PlaceRandomLow).l          ; 0059A
         beq.b   l_026_005A6                     ; 005A2
         neg.w   d1                              ; 005A4
 l_026_005A6:
-        move.w  d1,(dat_071_004E8).l            ; 005A6
+        move.w  d1,(PlaceWork1).l               ; 005A6
         andi.w  #$80,d0                         ; 005AC
         beq.b   l_026_005B4                     ; 005B0
         asr.w   #$1,d1                          ; 005B2
@@ -538,11 +538,11 @@ l_026_005B4:
         move.w  (PlaceRandom).l,d1              ; 005B6
         lsr.w   #$2,d1                          ; 005BC
         andi.w  #$3,d1                          ; 005BE
-        btst    #$5,(dat_071_004C9).l           ; 005C2
+        btst    #$5,(PlaceRandomLow).l          ; 005C2
         beq.b   l_026_005CE                     ; 005CA
         neg.w   d1                              ; 005CC
 l_026_005CE:
-        move.w  d1,(dat_071_004EA).l            ; 005CE
+        move.w  d1,(PlaceWork2).l               ; 005CE
         tst.w   d0                              ; 005D4
         beq.b   l_026_005DA                     ; 005D6
         asr.w   #$1,d1                          ; 005D8
@@ -1210,10 +1210,10 @@ l_026_00DE6:
         cmpi.b  #$6,(CameraSequence).l          ; 00DEE
         blt.b   l_026_00E26                     ; 00DF6
         move.b  #$6,(CameraShotStep).l          ; 00DF8
-        move.b  #$5,(dat_071_00275).l           ; 00E00
+        move.b  #$5,(FlyByCountdown).l          ; 00E00
         move.b  #$0,(CameraFollows).l           ; 00E08
 l_026_00E10:
-        subq.b  #$1,(dat_071_00275).l           ; 00E10
+        subq.b  #$1,(FlyByCountdown).l          ; 00E10
         bgt.b   l_026_00E26                     ; 00E16
         ori.w   #$2,(GunFlags).l                ; 00E18
         clr.b   (CameraSequence).l              ; 00E20

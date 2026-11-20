@@ -213,7 +213,7 @@ l_032_00232:
         asl.w   #$8,d3                          ; 00258
         add.w   d3,d3                           ; 0025A
         lea.l   (ObjectTable).l,a4              ; 0025C
-        tst.b   (dat_071_00285).l               ; 00262
+        tst.b   (JToggle).l                     ; 00262
         beq.b   l_032_0027A                     ; 00268
         cmpi.b  #$1,$62(a1)                     ; 0026A
         beq.b   l_032_0027A                     ; 00270
@@ -253,7 +253,7 @@ l_032_00294:
         asr.w   #$1,d4                          ; 002B8
         move.w  d4,$5a(a1)                      ; 002BA
 l_032_002BE:
-        move.b  (dat_071_0017F).l,d7            ; 002BE
+        move.b  (PilotsHeld).l,d7               ; 002BE
         or.b    (WorldFrozen).l,d7              ; 002C4
         bne.w   l_032_00228                     ; 002CA
         move.b  $62(a1),d3                      ; 002CE
@@ -262,7 +262,7 @@ l_032_002BE:
         bne.b   l_032_002F4                     ; 002DA
         tst.w   (CurrentObject).l               ; 002DC
         bne.b   l_032_002EC                     ; 002E2
-        tst.b   (dat_071_0015F).l               ; 002E4
+        tst.b   (AttitudeFlag).l                ; 002E4
         beq.b   l_032_002F4                     ; 002EA
 l_032_002EC:
         move.w  $6a(a1),d7                      ; 002EC
@@ -597,9 +597,9 @@ l_032_0063E:
         moveq   #$0,d5                          ; 0063E
         move.w  (ViewObject).l,d5               ; 00640
         or.b    (ViewChoice).l,d5               ; 00646
-        cmp.w   (dat_071_00430).l,d5            ; 0064C
+        cmp.w   (OutsideCamZoomLast).l,d5       ; 0064C
         beq.b   l_032_0065E                     ; 00652
-        move.w  d5,(dat_071_00430).l            ; 00654
+        move.w  d5,(OutsideCamZoomLast).l       ; 00654
 l_032_0065A:
         moveq   #-1,d5                          ; 0065A
         bra.b   l_032_00664                     ; 0065C
@@ -691,7 +691,7 @@ l_032_0077E:
         moveq   #$c,d1                          ; 00784
         bra.w   l_032_0083A                     ; 00786
 l_032_0078A:
-        move.b  (dat_071_00181).l,d1            ; 0078A
+        move.b  (CockpitViewKind).l,d1          ; 0078A
         cmpi.b  #$1,d1                          ; 00790
         bgt.b   l_032_007A8                     ; 00794
         movem.w $66(a0),d0/d2/d4                ; 00796
@@ -986,11 +986,11 @@ l_032_00AEC:
         bge.b   l_032_00AF4                     ; 00AEE
         addi.w  #$7080,d4                       ; 00AF0
 l_032_00AF4:
-        lea.l   (dat_071_00560).l,a1            ; 00AF4
+        lea.l   (AngleWork).l,a1                ; 00AF4
         bsr.w   AnglesToMatrix                  ; 00AFA
         lea.l   (a4),a1                         ; 00AFE
-        lea.l   (dat_071_00560).l,a2            ; 00B00
-        lea.l   (dat_071_00572).l,a3            ; 00B06
+        lea.l   (AngleWork).l,a2                ; 00B00
+        lea.l   (AngleWork2).l,a3               ; 00B06
         move.w  (a1),d0                         ; 00B0C
         muls.w  (a2),d0                         ; 00B0E
         move.w  $6(a1),d1                       ; 00B10
@@ -1072,7 +1072,7 @@ l_032_00AF4:
         add.l   d1,d0                           ; 00C08
         add.l   d2,d0                           ; 00C0A
         move.l  d0,(a3)                         ; 00C0C
-        move.l  (dat_071_0058E).l,d0            ; 00C0E
+        move.l  (AngleWork5).l,d0               ; 00C0E
         neg.l   d0                              ; 00C14
         move.l  d0,d1                           ; 00C16
         bge.b   l_032_00C1C                     ; 00C18
@@ -1150,7 +1150,7 @@ l_032_00CCC:
 l_032_00CD0:
         move.w  #$fee2,d3                       ; 00CD0
 l_032_00CD4:
-        move.l  (dat_071_0058A).l,d0            ; 00CD4
+        move.l  (AngleWork3).l,d0               ; 00CD4
         neg.l   d0                              ; 00CDA
         cmpi.w  #$147,d3                        ; 00CDC
         bgt.b   l_032_00CE8                     ; 00CE0
@@ -1187,7 +1187,7 @@ l_032_00D10:
         blt.b   l_032_00D6C                     ; 00D12
         cmpi.w  #$180,d0                        ; 00D14
         ble.b   l_032_00D66                     ; 00D18
-        move.l  (dat_071_00592).l,d0            ; 00D1A
+        move.l  (AngleWork7).l,d0               ; 00D1A
         cmpi.w  #$147,d3                        ; 00D20
         bgt.b   l_032_00D2C                     ; 00D24
         asl.w   #$6,d3                          ; 00D26
@@ -1234,7 +1234,7 @@ l_032_00D6C:
         neg.w   d0                              ; 00D6C
         cmpi.w  #$180,d0                        ; 00D6E
         ble.b   l_032_00DC2                     ; 00D72
-        move.l  (dat_071_00592).l,d0            ; 00D74
+        move.l  (AngleWork7).l,d0               ; 00D74
         cmpi.w  #$147,d3                        ; 00D7A
         bgt.b   l_032_00D86                     ; 00D7E
         asl.w   #$6,d3                          ; 00D80
@@ -1281,9 +1281,9 @@ l_032_00DC6:
         move.w  #$e10,d2                        ; 00DC6
         sub.w   d1,d2                           ; 00DCA
 l_032_00DCC:
-        tst.l   (dat_071_0058A).l               ; 00DCC
+        tst.l   (AngleWork3).l                  ; 00DCC
         blt.b   l_032_00DEA                     ; 00DD2
-        tst.l   (dat_071_00592).l               ; 00DD4
+        tst.l   (AngleWork7).l                  ; 00DD4
         bge.b   l_032_00DFA                     ; 00DDA
         move.w  d2,d1                           ; 00DDC
         cmpi.w  #$708,d1                        ; 00DDE
@@ -1291,7 +1291,7 @@ l_032_00DCC:
         move.w  #$1518,d2                       ; 00DE4
         bra.b   l_032_00DF8                     ; 00DE8
 l_032_00DEA:
-        tst.l   (dat_071_00592).l               ; 00DEA
+        tst.l   (AngleWork7).l                  ; 00DEA
         bge.b   l_032_00DFA                     ; 00DF0
         move.w  d2,d1                           ; 00DF2
 l_032_00DF4:
@@ -1303,7 +1303,7 @@ l_032_00DFA:
         bge.b   l_032_00E00                     ; 00DFC
         neg.w   d5                              ; 00DFE
 l_032_00E00:
-        move.l  (dat_071_00576).l,d0            ; 00E00
+        move.l  (AngleWork4).l,d0               ; 00E00
         neg.l   d0                              ; 00E06
         cmpi.w  #$147,d3                        ; 00E08
         bgt.b   l_032_00E14                     ; 00E0C
@@ -1340,7 +1340,7 @@ l_032_00E3C:
         blt.b   l_032_00E98                     ; 00E3E
         cmpi.w  #$180,d0                        ; 00E40
         ble.b   l_032_00E92                     ; 00E44
-        move.l  (dat_071_00582).l,d0            ; 00E46
+        move.l  (AngleWork6).l,d0               ; 00E46
         cmpi.w  #$147,d3                        ; 00E4C
         bgt.b   l_032_00E58                     ; 00E50
         asl.w   #$6,d3                          ; 00E52
@@ -1387,7 +1387,7 @@ l_032_00E98:
         neg.w   d0                              ; 00E98
         cmpi.w  #$180,d0                        ; 00E9A
         ble.b   l_032_00EEE                     ; 00E9E
-        move.l  (dat_071_00582).l,d0            ; 00EA0
+        move.l  (AngleWork6).l,d0               ; 00EA0
         cmpi.w  #$147,d3                        ; 00EA6
         bgt.b   l_032_00EB2                     ; 00EAA
         asl.w   #$6,d3                          ; 00EAC
@@ -1434,9 +1434,9 @@ l_032_00EF2:
         move.w  #$e10,d6                        ; 00EF2
         sub.w   d1,d6                           ; 00EF6
 l_032_00EF8:
-        tst.l   (dat_071_00576).l               ; 00EF8
+        tst.l   (AngleWork4).l                  ; 00EF8
         blt.b   l_032_00F16                     ; 00EFE
-        tst.l   (dat_071_00582).l               ; 00F00
+        tst.l   (AngleWork6).l                  ; 00F00
         bge.b   l_032_00F26                     ; 00F06
         move.w  d6,d1                           ; 00F08
         cmpi.w  #$708,d1                        ; 00F0A
@@ -1444,7 +1444,7 @@ l_032_00EF8:
         move.w  #$1518,d6                       ; 00F10
         bra.b   l_032_00F24                     ; 00F14
 l_032_00F16:
-        tst.l   (dat_071_00582).l               ; 00F16
+        tst.l   (AngleWork6).l                  ; 00F16
         bge.b   l_032_00F26                     ; 00F1C
         move.w  d6,d1                           ; 00F1E
 l_032_00F20:

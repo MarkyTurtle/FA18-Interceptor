@@ -215,13 +215,13 @@ dat_028_00B5C:
 ;-------------------------------------------------------------------------------
 ; DrawWaterAreas - Frame stage $68: draws the water of the bay - flat polygons
 ; in colour 6 on the ground, by the map block in view - over the land-coloured ground. Skipped
-; when the whole ground is already sea (SeaView), unless dat_071_00180 is set.
+; when the whole ground is already sea (SeaView), unless JToggle2 is set.
 ;-------------------------------------------------------------------------------
 DrawWaterAreas:
         link.w  a6,#$ffba                       ; 00B9C
-        clr.b   (dat_071_0026D).l               ; 00BA0
+        clr.b   (WaterDrawn).l                  ; 00BA0
         clr.w   (PolygonBuffer).l               ; 00BA6
-        tst.b   (dat_071_00180).l               ; 00BAC
+        tst.b   (JToggle2).l                    ; 00BAC
         bne.b   l_028_00BBE                     ; 00BB2
         move.w  #$2,d0                          ; 00BB4
         move.w  #$2,d1                          ; 00BB8
@@ -377,7 +377,7 @@ l_028_00D76:
         bne.b   l_028_00DAA                     ; 00D96
 l_028_00D98:
         lea.l   (dat_028_00DA8).l,a0            ; 00D98
-        move.b  #$1,(dat_071_0026D).l           ; 00D9E
+        move.b  #$1,(WaterDrawn).l              ; 00D9E
         bra.b   l_028_00E00                     ; 00DA6
 dat_028_00DA8:
 	dc.b	$04,$FF
@@ -487,7 +487,7 @@ l_028_00ECA:
         adda.w  d0,a3                           ; 00ED4
         tst.w   (a3)                            ; 00ED6
         bge.b   l_028_00F1C                     ; 00ED8
-        tst.b   (dat_071_00180).l               ; 00EDA
+        tst.b   (JToggle2).l                    ; 00EDA
         bne.b   l_028_00F1C                     ; 00EE0
         bra.w   l_028_00E00                     ; 00EE2
 l_028_00EE6:

@@ -835,7 +835,7 @@ l_019_006C8:
         move.w  d5,(a0)+                        ; 006D2
         dbra    d7,l_019_0069A                  ; 006D4
         jsr     (FillPolygon).l                 ; 006D8
-        addq.w  #$1,(dat_071_00B52).l           ; 006DE
+        addq.w  #$1,(PolygonsDrawn).l           ; 006DE
         unlk    a6                              ; 006E4
         moveq   #$1,d0                          ; 006E6
         rts                                     ; 006E8
@@ -856,7 +856,7 @@ l_019_006FE:
         move.w  #$b3,d4                         ; 006FE
         bra.b   l_019_006C8                     ; 00702
 l_019_00704:
-        addq.w  #$1,(dat_071_002BC).l           ; 00704
+        addq.w  #$1,(PolygonsDrawn2).l          ; 00704
         move.w  #$a,(DebugCheckpoint).l         ; 0070A
         jsr     (Nop).l                         ; 00712
 l_019_00718:

@@ -16,7 +16,7 @@ l_009_00010:
         bra.b   l_009_00010                     ; 0001E
 l_009_00020:
         clr.b   -$2e(a6)                        ; 00020
-        tst.b   (dat_071_00236).l               ; 00024
+        tst.b   (DistanceFlag).l                ; 00024
         bne.b   l_009_00032                     ; 0002A
         movea.l -$24(a6),a0                     ; 0002C
         clr.w   (a0)                            ; 00030
@@ -24,10 +24,10 @@ l_009_00032:
         movea.l (a7)+,a0                        ; 00032
         clr.w   (DistanceCount).l               ; 00034
         movea.l -$14(a6),a2                     ; 0003A
-        lea.l   (dat_071_0039E).l,a5            ; 0003E
-        clr.b   (dat_071_0022C).l               ; 00044
-        clr.b   (dat_071_0022E).l               ; 0004A
-        clr.b   (dat_071_00237).l               ; 00050
+        lea.l   (DrawGroupList).l,a5            ; 0003E
+        clr.b   (DrawGroupCount).l              ; 00044
+        clr.b   (DistanceCount2).l              ; 0004A
+        clr.b   (DistanceFlag237).l             ; 00050
         lea.l   (VertexBuffer).l,a4             ; 00056
 l_009_0005C:
         move.b  (a0)+,d0                        ; 0005C
@@ -56,7 +56,7 @@ l_009_000A2:
         lsl.w   #$8,d2                          ; 000A2
         andi.l  #$ff,d3                         ; 000A4
         add.w   d2,d3                           ; 000AA
-        move.l  d3,(dat_071_0038C).l            ; 000AC
+        move.l  d3,(DistanceScaleBits).l        ; 000AC
         asl.w   #$2,d0                          ; 000B2
         movea.l -$18(a6),a1                     ; 000B4
         movem.w (a1,d0.w),d2-d3                 ; 000B8
@@ -83,7 +83,7 @@ l_009_000E8:
         move.b  (a1,d1.w),d1                    ; 000F8
         move.b  d1,d6                           ; 000FC
         ext.w   d6                              ; 000FE
-        move.w  d6,(dat_071_0038C).l            ; 00100
+        move.w  d6,(DistanceScaleBits).l        ; 00100
         add.w   d6,d6                           ; 00106
         add.w   d6,d6                           ; 00108
         movea.l -$1c(a6),a1                     ; 0010A
@@ -111,7 +111,7 @@ l_009_0013A:
         andi.w  #$ff,d6                         ; 00152
         move.w  d6,(CurrentObject).l            ; 00156
         lsr.w   #$8,d7                          ; 0015C
-        move.b  d7,(dat_071_0022A).l            ; 0015E
+        move.b  d7,(DistanceBits).l             ; 0015E
         lsl.w   #$8,d6                          ; 00164
         blt.w   l_009_00208                     ; 00166
         or.b    d7,d6                           ; 0016A
@@ -162,15 +162,15 @@ l_009_001BE:
         sub.l   d7,d6                           ; 001DC
         add.l   d4,d6                           ; 001DE
         add.l   d2,d6                           ; 001E0
-        move.l  d6,(dat_071_000BE).l            ; 001E2
+        move.l  d6,(DistanceScaleX).l           ; 001E2
         move.l  d6,-(a7)                        ; 001E8
         moveq   #$0,d6                          ; 001EA
-        btst    #$6,(dat_071_0022A).l           ; 001EC
+        btst    #$6,(DistanceBits).l            ; 001EC
         bne.b   l_009_00200                     ; 001F4
-        btst    #$4,(dat_071_0022A).l           ; 001F6
+        btst    #$4,(DistanceBits).l            ; 001F6
         beq.b   l_009_00218                     ; 001FE
 l_009_00200:
-        clr.w   (DistanceScaleBase).l           ; 00200
+        clr.w   (DistanceScaleY).l              ; 00200
         bra.b   l_009_00224                     ; 00206
 l_009_00208:
         move.w  #$26,(DebugCheckpoint).l        ; 00208
@@ -178,7 +178,7 @@ l_009_00208:
         bra.b   l_009_00208                     ; 00216
 l_009_00218:
         movea.l $4(a1),a1                       ; 00218
-        clr.w   (DistanceScaleBase).l           ; 0021C
+        clr.w   (DistanceScaleY).l              ; 0021C
         move.w  (a3)+,d6                        ; 00222
 l_009_00224:
         tst.b   (SceneryDetailed).l             ; 00224
@@ -197,12 +197,12 @@ l_009_00230:
         sub.l   d7,d6                           ; 0024A
         add.l   d5,d6                           ; 0024C
         add.l   d3,d6                           ; 0024E
-        move.l  d6,(dat_071_000C6).l            ; 00250
+        move.l  d6,(DistanceScaleZ).l           ; 00250
         move.l  (a7)+,d7                        ; 00256
         move.w  d0,-(a7)                        ; 00258
-        btst    #$4,(dat_071_0022A).l           ; 0025A
+        btst    #$4,(DistanceBits).l            ; 0025A
         beq.b   l_009_002AC                     ; 00262
-        btst    #$6,(dat_071_0022A).l           ; 00264
+        btst    #$6,(DistanceBits).l            ; 00264
         beq.b   l_009_00280                     ; 0026C
         lea.l   (SmallObjects).l,a1             ; 0026E
         move.w  (CurrentObject).l,d0            ; 00274
@@ -215,7 +215,7 @@ l_009_00280:
         asl.w   #$8,d0                          ; 0028C
         add.w   d0,d0                           ; 0028E
         adda.w  d0,a1                           ; 00290
-        tst.b   (dat_071_00236).l               ; 00292
+        tst.b   (DistanceFlag).l                ; 00292
         bne.b   l_009_002A0                     ; 00298
         bclr    #$2,$1(a1)                      ; 0029A
 l_009_002A0:
@@ -232,9 +232,9 @@ l_009_002AC:
 l_009_002BA:
         asr.l   #$8,d7                          ; 002BA
         asr.l   #$4,d7                          ; 002BC
-        btst    #$6,(dat_071_0022A).l           ; 002BE
+        btst    #$6,(DistanceBits).l            ; 002BE
         bne.b   l_009_002D2                     ; 002C6
-        btst    #$4,(dat_071_0022A).l           ; 002C8
+        btst    #$4,(DistanceBits).l            ; 002C8
         beq.b   l_009_002DE                     ; 002D0
 l_009_002D2:
         move.w  $e(a1),d0                       ; 002D2
@@ -251,9 +251,9 @@ l_009_002EC:
         asr.l   #$8,d6                          ; 002EC
         asr.l   #$4,d6                          ; 002EE
         move.l  (ViewOffsetY8).l,d0             ; 002F0
-        btst    #$6,(dat_071_0022A).l           ; 002F6
+        btst    #$6,(DistanceBits).l            ; 002F6
         bne.b   l_009_0030A                     ; 002FE
-        btst    #$4,(dat_071_0022A).l           ; 00300
+        btst    #$4,(DistanceBits).l            ; 00300
         beq.b   l_009_00316                     ; 00308
 l_009_0030A:
         move.l  $10(a1),d0                      ; 0030A
@@ -308,29 +308,29 @@ DistanceScale:
 	dcb.b	39,$0F
 	dc.b	$42,$46
 l_009_0045A:
-        move.l  (dat_071_000BE).l,d0            ; 0045A
+        move.l  (DistanceScaleX).l,d0           ; 0045A
         asr.l   d6,d0                           ; 00460
         move.w  d0,(a2)+                        ; 00462
-        move.w  (DistanceScaleBase).l,d0        ; 00464
+        move.w  (DistanceScaleY).l,d0           ; 00464
         asr.w   d6,d0                           ; 0046A
         move.w  d0,(a2)+                        ; 0046C
-        move.l  (dat_071_000C6).l,d0            ; 0046E
+        move.l  (DistanceScaleZ).l,d0           ; 0046E
         asr.l   d6,d0                           ; 00474
         move.w  d0,(a2)+                        ; 00476
         move.w  (a7)+,d0                        ; 00478
-        addq.b  #$1,(dat_071_0022E).l           ; 0047A
+        addq.b  #$1,(DistanceCount2).l          ; 0047A
         moveq   #$0,d7                          ; 00480
-        btst    #$6,(dat_071_0022A).l           ; 00482
+        btst    #$6,(DistanceBits).l            ; 00482
         bne.b   l_009_004A4                     ; 0048A
-        btst    #$4,(dat_071_0022A).l           ; 0048C
+        btst    #$4,(DistanceBits).l            ; 0048C
         bne.b   l_009_004A4                     ; 00494
         move.b  d1,d7                           ; 00496
         lsl.w   #$4,d7                          ; 00498
         swap    d7                              ; 0049A
-        or.l    (dat_071_0038C).l,d7            ; 0049C
+        or.l    (DistanceScaleBits).l,d7        ; 0049C
         bra.b   l_009_004B0                     ; 004A2
 l_009_004A4:
-        or.b    (dat_071_00385).l,d7            ; 004A4
+        or.b    (DistanceBits385).l,d7          ; 004A4
         ror.l   #$8,d7                          ; 004AA
         bset    #$1f,d7                         ; 004AC
 l_009_004B0:
@@ -346,10 +346,10 @@ l_009_004C2:
         clr.b   (a2)+                           ; 004C6
         clr.l   (a2)+                           ; 004C8
         swap    d7                              ; 004CA
-        move.w  d7,(dat_071_0038C).l            ; 004CC
+        move.w  d7,(DistanceScaleBits).l        ; 004CC
         swap    d7                              ; 004D2
         addq.w  #$1,(DistanceCount).l           ; 004D4
-        tst.b   (dat_071_00236).l               ; 004DA
+        tst.b   (DistanceFlag).l                ; 004DA
         bne.b   l_009_00524                     ; 004E0
         lea.l   (dat_009_00536).l,a1            ; 004E2
         move.l  (ViewOffsetY8).l,d6             ; 004E8
@@ -384,7 +384,7 @@ dat_009_00536:
 l_009_00546:
         tst.b   (SceneryDetailed).l             ; 00546
         beq.b   l_009_00576                     ; 0054C
-        tst.b   (dat_071_00236).l               ; 0054E
+        tst.b   (DistanceFlag).l                ; 0054E
         bne.b   l_009_00576                     ; 00554
         cmpi.b  #$1,d1                          ; 00556
         bgt.b   l_009_00564                     ; 0055A
@@ -394,7 +394,7 @@ l_009_00564:
         adda.w  #$4,a5                          ; 00564
         move.w  d1,(a5)+                        ; 00568
         move.l  #$ffffffff,(a5)                 ; 0056A
-        addq.b  #$1,(dat_071_0022C).l           ; 00570
+        addq.b  #$1,(DrawGroupCount).l          ; 00570
 l_009_00576:
         subq.b  #$1,d0                          ; 00576
         bgt.w   l_009_000E8                     ; 00578
@@ -402,8 +402,8 @@ l_009_00576:
         bra.w   l_009_0005C                     ; 00580
 l_009_00584:
         move.w  #$ffff,(a2)                     ; 00584
-        move.b  #$1,(dat_071_00175).l           ; 00588
-        move.b  (dat_071_0022C).l,(dat_071_0022D).l ; 00590
+        move.b  #$1,(DrawGroupsReady).l         ; 00588
+        move.b  (DrawGroupCount).l,(DrawGroupIndex).l ; 00590
         tst.b   (SceneryDetailed).l             ; 0059A
         beq.w   l_009_006F8                     ; 005A0
         bra.b   l_009_005B6                     ; 005A4
@@ -419,7 +419,7 @@ l_009_005B6:
         suba.w  #$18,a2                         ; 005C4
         move.l  a2,(DrawListEnd).l              ; 005C8
         clr.b   d0                              ; 005CE
-        clr.b   (dat_071_0022F).l               ; 005D0
+        clr.b   (DistanceCount3).l              ; 005D0
 l_009_005D6:
         move.w  (a2)+,d7                        ; 005D6
         movea.l (a2)+,a1                        ; 005D8
@@ -531,16 +531,16 @@ l_009_006D4:
         cmpi.b  #$b,d0                          ; 006D6
         bge.b   l_009_006F8                     ; 006DA
 l_009_006DC:
-        addq.b  #$1,(dat_071_0022F).l           ; 006DC
-        move.b  (dat_071_0022F).l,d7            ; 006E2
-        cmp.b   (dat_071_0022E).l,d7            ; 006E8
+        addq.b  #$1,(DistanceCount3).l          ; 006DC
+        move.b  (DistanceCount3).l,d7           ; 006E2
+        cmp.b   (DistanceCount2).l,d7           ; 006E8
         bge.b   l_009_006F8                     ; 006EE
         suba.w  #$28,a2                         ; 006F0
         bra.w   l_009_005D6                     ; 006F4
 l_009_006F8:
         tst.b   (SceneryDetailed).l             ; 006F8
         beq.b   l_009_0073C                     ; 006FE
-        tst.b   (dat_071_00236).l               ; 00700
+        tst.b   (DistanceFlag).l                ; 00700
         bne.b   l_009_0073C                     ; 00706
         lea.l   (VisibleObjects).l,a0           ; 00708
         move.w  #$ffff,(a0)                     ; 0070E
@@ -563,11 +563,11 @@ l_009_0073C:
         rts                                     ; 0073E
 sub_009_00740:
         movem.l d0-d7/a0-a5,-(a7)               ; 00740
-        tst.b   (dat_071_00175).l               ; 00744
+        tst.b   (DrawGroupsReady).l             ; 00744
         beq.w   l_009_008B8                     ; 0074A
 l_009_0074E:
-        lea.l   (dat_071_0039E).l,a0            ; 0074E
-        move.b  (dat_071_0022D).l,d0            ; 00754
+        lea.l   (DrawGroupList).l,a0            ; 0074E
+        move.b  (DrawGroupIndex).l,d0           ; 00754
         subq.b  #$1,d0                          ; 0075A
         blt.w   l_009_0089C                     ; 0075C
         ext.w   d0                              ; 00760
@@ -615,7 +615,7 @@ l_009_007C4:
 l_009_007D4:
         addq.w  #$4,a1                          ; 007D4
         movem.w (a1)+,d2-d4                     ; 007D6
-        clr.b   (dat_071_0028B).l               ; 007DA
+        clr.b   (ObjectScaled).l                ; 007DA
         btst    #$4,d1                          ; 007E0
         beq.b   l_009_00840                     ; 007E4
         lea.l   (ObjectTable).l,a0              ; 007E6
@@ -645,7 +645,7 @@ l_009_00804:
         add.l   (ViewOffsetY8).l,d1             ; 0082A
         asr.l   d6,d1                           ; 00830
         move.l  d1,(ObjectViewY).l              ; 00832
-        move.b  #$1,(dat_071_0028B).l           ; 00838
+        move.b  #$1,(ObjectScaled).l            ; 00838
 l_009_00840:
         jsr     (ScaledViewOffset).l            ; 00840
         move.w  (DistanceShift).l,d2            ; 00846
@@ -677,13 +677,13 @@ l_009_00880:
         adda.w  #$18,a1                         ; 00894
         dbra    d7,l_009_00880                  ; 00898
 l_009_0089C:
-        subq.b  #$1,(dat_071_0022D).l           ; 0089C
+        subq.b  #$1,(DrawGroupIndex).l          ; 0089C
         blt.b   l_009_008AE                     ; 008A2
         tst.b   -$2c(a6)                        ; 008A4
         beq.b   l_009_008B8                     ; 008A8
         bra.w   l_009_0074E                     ; 008AA
 l_009_008AE:
-        move.b  (dat_071_0022C).l,(dat_071_0022D).l ; 008AE
+        move.b  (DrawGroupCount).l,(DrawGroupIndex).l ; 008AE
 l_009_008B8:
         movem.l (a7)+,d0-d7/a0-a5               ; 008B8
         rts                                     ; 008BC

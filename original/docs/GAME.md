@@ -303,7 +303,7 @@ met (`MissionTargets`).
 active and undamaged, its target (`+$38`) is still alive, the target lies in its forward cone
 (`+$64` bits 5 and 6) and its pilot is attacking (`+$63` high nibble `$20` or `$30`); `FireNow`
 forces the next launch. `LaunchMissile` then lets a computer aircraft fire only every 8, 6 or 4
-frames by the difficulty (twice as often when `dat_071_00285` is set), and only while it has
+frames by the difficulty (twice as often when `JToggle` is set), and only while it has
 missiles left (`+$5F`).
 
 ## The cockpit

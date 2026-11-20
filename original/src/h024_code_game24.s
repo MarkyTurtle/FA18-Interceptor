@@ -11,7 +11,7 @@ l_024_00000:
         unlk    a6                              ; 00002
         rts                                     ; 00004
 sub_024_00006:
-        clr.b   (dat_071_0026F).l               ; 00006
+        clr.b   (Hunk24Flag).l                  ; 00006
         moveq   #$0,d0                          ; 0000C
         link.w  a6,#$ffa4                       ; 0000E
         lea.l   (ObjectTable).l,a0              ; 00012
@@ -98,7 +98,7 @@ l_024_0010E:
 l_024_0011A:
         cmp.l   a1,d7                           ; 0011A
         bgt.w   l_024_00048                     ; 0011C
-        move.b  #$1,(dat_071_0026F).l           ; 00120
+        move.b  #$1,(Hunk24Flag).l              ; 00120
         ori.w   #$1,$2(a0,d0.w)                 ; 00128
         move.b  $62(a0,d0.w),d7                 ; 0012E
         andi.b  #$f0,d7                         ; 00132
@@ -551,7 +551,7 @@ l_024_0064C:
         adda.w  (CurrentObjectOffset).l,a3      ; 00652
         cmpi.l  #$7fff,$10(a3)                  ; 00658
         bgt.w   l_024_00B04                     ; 00660
-        move.b  (dat_071_0022E).l,d0            ; 00664
+        move.b  (DistanceCount2).l,d0           ; 00664
         ext.w   d0                              ; 0066A
         move.w  d0,-$6(a6)                      ; 0066C
         clr.l   -$a(a6)                         ; 00670
@@ -636,7 +636,7 @@ l_024_00744:
         bge.w   l_024_00AB0                     ; 00754
         bra.w   l_024_0067C                     ; 00758
 l_024_0075C:
-        move.b  #$1,(dat_071_0026F).l           ; 0075C
+        move.b  #$1,(Hunk24Flag).l              ; 0075C
         lea.l   $a(a0),a0                       ; 00764
         lea.l   $a(a1),a1                       ; 00768
 l_024_0076C:

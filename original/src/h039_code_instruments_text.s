@@ -127,7 +127,7 @@ l_039_001F4:
         moveq   #$28,d0                         ; 001F4
 l_039_001F6:
         move.b  #$1,(RadarRangeRedraw).l        ; 001F6
-        btst    #$0,(dat_071_00254).l           ; 001FE
+        btst    #$0,(ClockBlink).l              ; 001FE
         beq.b   l_039_0021A                     ; 00206
         move.w  #$f0a,d6                        ; 00208
         move.w  #$4,d5                          ; 0020C
@@ -158,12 +158,12 @@ l_039_00274:
         rts                                     ; 00274
 
 ;-------------------------------------------------------------------------------
-; ShowDebugNumbers - Prints dat_071_004B6 and, while dat_071_00183 is set, the mouse's X and Y:
+; ShowDebugNumbers - Prints TimedResult and, while DebugNumbersOn is set, the mouse's X and Y:
 ; apparently a programmer's readout.
 ;-------------------------------------------------------------------------------
 ShowDebugNumbers:
         move.w  #$9,(DrawColour).l              ; 00276
-        move.w  (dat_071_004B6).l,d0            ; 0027E
+        move.w  (TimedResult).l,d0              ; 0027E
         ext.l   d0                              ; 00284
         move.l  d0,(BCDIn).l                    ; 00286
         jsr     (BinToBCD).l                    ; 0028C
@@ -174,7 +174,7 @@ ShowDebugNumbers:
         lea.l   $78.w,a4                        ; 002A2
         lea.l   $0.w,a5                         ; 002A6
         bsr.w   PrintNumber                     ; 002AA
-        tst.b   (dat_071_00183).l               ; 002AE
+        tst.b   (DebugNumbersOn).l              ; 002AE
         beq.b   l_039_00274                     ; 002B4
         move.w  (MouseX).l,d0                   ; 002B6
         bge.b   l_039_002C0                     ; 002BC
@@ -525,7 +525,7 @@ l_039_00694:
         move.l  d0,(BCDIn).l                    ; 0069C
         jsr     (BinToBCD).l                    ; 006A2
         moveq   #$3,d0                          ; 006A8
-        lea.l   (dat_071_001CF).l,a2            ; 006AA
+        lea.l   (TextBuffer5).l,a2              ; 006AA
         lea.l   $4(a2),a0                       ; 006B0
         tst.b   (OutsideView).l                 ; 006B4
         beq.b   l_039_006CA                     ; 006BA
@@ -611,7 +611,7 @@ l_039_007B6:
         jsr     (BinToBCD).l                    ; 007BC
         moveq   #$5,d0                          ; 007C2
         lea.l   AltitudePanelPlaces(pc),a1      ; 007C4
-        lea.l   (dat_071_001CE).l,a2            ; 007C8
+        lea.l   (TextBuffer4).l,a2              ; 007C8
         lea.l   $6(a2),a0                       ; 007CE
         tst.b   (OutsideView).l                 ; 007D2
         beq.b   l_039_007E4                     ; 007D8
@@ -882,14 +882,14 @@ l_039_00B3A:
         andi.b  #$3f,(LampBits).l               ; 00B46
         ori.b   #$80,(LampBits).l               ; 00B4E
 l_039_00B56:
-        lea.l   (dat_071_001DE).l,a2            ; 00B56
+        lea.l   (ReadoutText1).l,a2             ; 00B56
 l_039_00B5C:
         move.b  (a1)+,d1                        ; 00B5C
         beq.b   l_039_00B64                     ; 00B5E
         move.b  d1,(a2)+                        ; 00B60
         bra.b   l_039_00B5C                     ; 00B62
 l_039_00B64:
-        lea.l   (dat_071_001E7).l,a2            ; 00B64
+        lea.l   (ReadoutText2).l,a2             ; 00B64
         subq.w  #$1,d0                          ; 00B6A
         bne.b   l_039_00B9E                     ; 00B6C
         lea.l   (TextALT).l,a1                  ; 00B6E
@@ -906,7 +906,7 @@ l_039_00B7C:
         add.l   d0,d0                           ; 00B86
         add.l   d0,d0                           ; 00B88
         add.l   d1,d0                           ; 00B8A
-        lea.l   (dat_071_001F1).l,a2            ; 00B8C
+        lea.l   (ReadoutText3).l,a2             ; 00B8C
         moveq   #$4,d2                          ; 00B92
         moveq   #$0,d4                          ; 00B94
         bsr.w   PutDigits                       ; 00B96
@@ -926,7 +926,7 @@ l_039_00BB0:
         asr.l   #$3,d0                          ; 00BB6
         divu.w  #$a,d0                          ; 00BB8
         ext.l   d0                              ; 00BBC
-        lea.l   (dat_071_001F0).l,a2            ; 00BBE
+        lea.l   (ReadoutText3a).l,a2            ; 00BBE
         moveq   #$2,d2                          ; 00BC4
         moveq   #$1,d4                          ; 00BC6
         bsr.w   PutDigits                       ; 00BC8
@@ -951,7 +951,7 @@ l_039_00BF6:
         ext.l   d0                              ; 00BF6
         divu.w  #$c,d0                          ; 00BF8
         ext.l   d0                              ; 00BFC
-        lea.l   (dat_071_001F0).l,a2            ; 00BFE
+        lea.l   (ReadoutText3a).l,a2            ; 00BFE
         moveq   #$3,d2                          ; 00C04
         moveq   #$0,d4                          ; 00C06
         bsr.w   PutDigits                       ; 00C08
@@ -1727,7 +1727,7 @@ l_039_01414:
         lea.l   (TextPageTable).l,a0            ; 0142A
         move.w  d0,d2                           ; 01430
         bgt.b   l_039_01444                     ; 01432
-        movea.l (dat_071_000D6).l,a4            ; 01434
+        movea.l (PrintTarget).l,a4              ; 01434
         adda.l  #$1b8,a4                        ; 0143A
         andi.w  #$3fff,d0                       ; 01440
 l_039_01444:
@@ -2105,7 +2105,7 @@ MenuBeep:
         moveq   #$2,d0                          ; 01896
         moveq   #$4,d1                          ; 01898
 l_039_0189A:
-        tst.b   (dat_071_0025A).l               ; 0189A
+        tst.b   (BeepCount).l                   ; 0189A
         bgt.b   l_039_018CC                     ; 018A0
         movem.l d0-d7/a0-a4,-(a7)               ; 018A2
 l_039_018A6:

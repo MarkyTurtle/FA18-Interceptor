@@ -41,7 +41,7 @@ InitGameValues:
         move.b  #$f,(FadeLevel).l               ; 00044
         move.b  #$f,(FadeTarget).l              ; 0004C
         move.b  #$1,(KeyMode).l                 ; 00054
-        move.b  #$1,(dat_071_001A4).l           ; 0005C
+        move.b  #$1,(GameStarted).l             ; 0005C
         move.b  #$11,(PlayerAircraftType).l     ; 00064
         rts                                     ; 0006C
 
@@ -85,7 +85,7 @@ l_004_000E4:
         dbra    d0,l_004_000E0                  ; 000EE
         bsr.w   ResetPlayerFlags                ; 000F2
         move.w  #$140,(BulletHitRange).l        ; 000F6
-        move.w  #$140,(dat_071_00378).l         ; 000FE
+        move.w  #$140,(BulletHitRange2).l       ; 000FE
         move.b  #$0,(StartPoint).l              ; 00106
         move.b  #$1,(MarkersOn).l               ; 0010E
         move.w  #$800,(FlameObject).l           ; 00116
@@ -104,11 +104,11 @@ l_004_000E4:
         move.l  d0,(ClockStart).l               ; 0016C
         move.l  d0,(ClockLast).l                ; 00172
         move.b  d0,(ViewOctantShown).l          ; 00178
-        move.b  #$f,(dat_071_0028E).l           ; 0017E
+        move.b  #$f,(ClockStep).l               ; 0017E
         move.w  #$7fff,(BestClock).l            ; 00186
         move.l  #$800000,(FlightValue).l        ; 0018E
         move.w  #$a8,(ScaleFactors).l           ; 00198
-        move.w  #$fc,(dat_071_00410).l          ; 001A0
+        move.w  #$fc,(ScaleFactorZ).l           ; 001A0
         move.w  #$80,(RadarScale).l             ; 001A8
         move.b  #$80,(GroundDetail).l           ; 001B0
         lea.l   (ResetList).l,a0                ; 001B8
@@ -319,7 +319,7 @@ l_004_0033E:
 ;-------------------------------------------------------------------------------
 ResetViewAndRecording:
         clr.b   (OutsideView).l                 ; 00392
-        clr.b   (dat_071_00176).l               ; 00398
+        clr.b   (AnglesSet).l                   ; 00398
         move.b  #$1,(NewView).l                 ; 0039E
         move.b  #$1,(CameraFollows).l           ; 003A6
 
@@ -333,8 +333,8 @@ ResetRecording:
         move.l  (RecordBuffer).l,(ReplayPointer).l ; 003C2
         move.l  (RecordControls).l,(ReplayControlsPointer).l ; 003CC
         addq.l  #$4,(ReplayControlsPointer).l   ; 003D6
-        clr.w   (dat_071_002FC).l               ; 003DC
-        clr.w   (dat_071_00300).l               ; 003E2
+        clr.w   (RecordCount).l                 ; 003DC
+        clr.w   (ReplayCount).l                 ; 003E2
 
 ;-------------------------------------------------------------------------------
 ; ResetPlayer - A new aircraft for the player: everything redrawn, ResetPlayerFlags and
@@ -601,11 +601,11 @@ ResetPlayerFlags:
         move.w  #$1400,$7e(a0)                  ; 0078C
         clr.b   (FlashCount).l                  ; 00792
         clr.b   (NewAircraftReady).l            ; 00798
-        clr.b   (dat_071_00283).l               ; 0079E
-        clr.b   (dat_071_00281).l               ; 007A4
+        clr.b   (PlayerFlag283).l               ; 0079E
+        clr.b   (PlayerFlag281).l               ; 007A4
         clr.b   (CrashKind).l                   ; 007AA
         clr.b   (VisualConfirmTimer).l          ; 007B0
-        clr.b   (dat_071_00285).l               ; 007B6
+        clr.b   (JToggle).l                     ; 007B6
         move.w  #$7fff,(ObjectDistanceSound).l  ; 007BC
         move.b  #$1,(MouseActive).l             ; 007C4
         move.b  #$ff,$71(a0)                    ; 007CC

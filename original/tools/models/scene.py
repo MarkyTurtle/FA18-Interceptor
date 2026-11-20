@@ -85,11 +85,11 @@ def view(start=0, heading=None, pitch=None, mode=1):
 def keep_sky():
     """After DrawSkyAndGround: the background it made by blitter (ClearSkyGround), which the
     emulator does not draw - the ground colour (4 land, 6 sea when SeaView is set) and the sky
-    polygon (colour 5) that MakeSkyPolygon left at dat_072_03000 (dat_071_0026E set)."""
+    polygon (colour 5) that MakeSkyPolygon left at dat_072_03000 (SkyPolygonReady set)."""
     a = g['dat_072_03000']
     SKY['sea'] = g.b(g['SeaView']) != 0
     SKY['poly'] = [(g.w(a + 2 + i * 4), g.w(a + 4 + i * 4)) for i in range(g.w(a))] \
-        if g.b(g['dat_071_0026E']) else []
+        if g.b(g['SkyPolygonReady']) else []
 
 
 def paint(prims, scale=3, horizon=None):
