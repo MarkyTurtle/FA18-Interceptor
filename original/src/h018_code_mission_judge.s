@@ -28,8 +28,8 @@ l_018_00032:
 ;-------------------------------------------------------------------------------
 JudgeMission:
         clr.b   (LaunchRequest).l               ; 00036
-        clr.b   (dat_071_0018B).l               ; 0003C
-        clr.b   (dat_071_0018C).l               ; 00042
+        clr.b   (InstructorFire).l              ; 0003C
+        clr.b   (FireNow).l                     ; 00042
         jsr     (sub_017_00430).l               ; 00048
         btst    #$6,(dat_071_0029D).l           ; 0004E
         beq.b   l_018_000C4                     ; 00056

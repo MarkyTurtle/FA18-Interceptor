@@ -2879,7 +2879,7 @@ l_000_024C4:
         bra.b   l_000_02532                     ; 0250A
 l_000_0250C:
         move.b  #$3,(dat_071_00206).l           ; 0250C
-        clr.w   (dat_073_0162A).l               ; 02514
+        clr.w   (TrainingFrame).l               ; 02514
         clr.b   (dat_071_00158).l               ; 0251A
         move.w  #$5,(StateTimer).l              ; 02520
         lea.l   StateReadyText(pc),a0           ; 02528

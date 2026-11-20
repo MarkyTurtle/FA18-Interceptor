@@ -10,32 +10,32 @@
 ; PilotStates - The computer pilot's state handlers: one routine for each state (+$05) of an
 ; aircraft.
 PilotStates:
-        dc.l    l_030_00992                     ; 00000
-        dc.l    l_030_00696                     ; 00004
-        dc.l    sub_030_0070C                   ; 00008
-        dc.l    sub_030_00710                   ; 0000C
-        dc.l    sub_030_00714                   ; 00010
-        dc.l    l_030_00818                     ; 00014
-        dc.l    sub_030_006EE                   ; 00018
-        dc.l    l_030_00992                     ; 0001C
-        dc.l    sub_030_0071E                   ; 00020
-        dc.l    l_030_00794                     ; 00024
-        dc.l    sub_030_00262                   ; 00028
+        dc.l    PilotFly                        ; 00000
+        dc.l    PilotBank90                     ; 00004
+        dc.l    PilotState3                     ; 00008
+        dc.l    PilotState4                     ; 0000C
+        dc.l    PilotTurnHard                   ; 00010
+        dc.l    PilotLevel                      ; 00014
+        dc.l    PilotPull                       ; 00018
+        dc.l    PilotFly                        ; 0001C
+        dc.l    PilotTurnGentle                 ; 00020
+        dc.l    PilotWait                       ; 00024
+        dc.l    ManAileronRoll                  ; 00028
         dc.l    l_030_0027A                     ; 0002C
         dc.l    l_030_00290                     ; 00030
-        dc.l    sub_030_002E0                   ; 00034
+        dc.l    ManInsideLoop                   ; 00034
         dc.l    l_030_002F8                     ; 00038
         dc.l    l_030_0030E                     ; 0003C
-        dc.l    sub_030_00358                   ; 00040
+        dc.l    ManSplitS                       ; 00040
         dc.l    l_030_0037C                     ; 00044
         dc.l    l_030_00392                     ; 00048
-        dc.l    sub_030_003E4                   ; 0004C
+        dc.l    ManHalfLoop                     ; 0004C
         dc.l    l_030_003F6                     ; 00050
         dc.l    l_030_0040C                     ; 00054
-        dc.l    sub_030_0044A                   ; 00058
+        dc.l    ManBarrelRoll                   ; 00058
         dc.l    l_030_00462                     ; 0005C
         dc.l    l_030_00478                     ; 00060
-        dc.l    sub_030_004D2                   ; 00064
+        dc.l    ManInverted                     ; 00064
         dc.l    l_030_004EA                     ; 00068
         dc.l    l_030_00500                     ; 0006C
         dc.l    l_030_00546                     ; 00070
@@ -44,13 +44,21 @@ PilotStates:
         dc.l    l_030_005D8                     ; 0007C
         dc.l    l_030_005EA                     ; 00080
         dc.l    l_030_00600                     ; 00084
-        dc.l    sub_030_001D0                   ; 00088
-        dc.l    sub_030_00200                   ; 0008C
+        dc.l    ManTakeoff                      ; 00088
+        dc.l    ManClimbOut                     ; 0008C
         dc.l    l_030_00214                     ; 00090
         dc.l    l_030_00252                     ; 00094
-        dc.l    sub_030_00674                   ; 00098
-        dc.l    l_030_00680                     ; 0009C
-dat_030_000A0:
+        dc.l    ManBreakTurn                    ; 00098
+        dc.l    PilotBeforeBreak                ; 0009C
+; CombatReactions - How an enemy aircraft reacts when it finds the player on its tail
+; (CheckOnTail, hunk 17). 16-byte rows, one word pair (a timer for +$4C, then a pilot state:
+; 9 a gentle turn, 5 a harder turn, 2 a break turn) per Difficulty 0-3. The row is chosen by
+; the player's range (+$4A): under $300 rows 0-5, under $C00 rows 6-11, under $1E00 rows 12-17,
+; farther row 18; within the first three bands +2 rows when the two speeds differ by $C0 or
+; more and the enemy is the slower, +4 when it is the faster; +1 row (medium and far bands)
+; when it is the player's locked target and the player has just fired. The close band's +1
+; row ('being shot at') is never used (see hunk 17).
+CombatReactions:
 	dc.b	$00,$28,$00,$09,$00,$28,$00,$05,$00,$28,$00,$05,$00,$28,$00,$05
 	dc.b	$00,$28,$00,$09,$00,$28,$00,$09,$00,$28,$00,$09,$00,$28,$00,$05
 	dc.b	$00,$50,$00,$09,$00,$50,$00,$05,$00,$50,$00,$05,$00,$50,$00,$05
@@ -70,7 +78,12 @@ dat_030_000A0:
 	dc.b	$00,$50,$00,$09,$00,$50,$00,$05,$00,$50,$00,$05,$00,$50,$00,$05
 	dc.b	$00,$50,$00,$09,$00,$50,$00,$05,$00,$50,$00,$05,$00,$50,$00,$05
 	dc.b	$00,$28,$00,$09,$00,$28,$00,$09,$00,$28,$00,$09,$00,$28,$00,$09
-sub_030_001D0:
+
+;-------------------------------------------------------------------------------
+; ManTakeoff - Take-off (state $23): throttle up until the speed flown reaches $840, then
+; (states $24-$26) a timed wait, rotate and climb; back to normal flight above height $240000.
+;-------------------------------------------------------------------------------
+ManTakeoff:
         cmpi.b  #$60,$2b(a1)                    ; 001D0
         bge.b   l_030_001E0                     ; 001D6
         ori.b   #$1,$65(a1)                     ; 001D8
@@ -83,13 +96,19 @@ l_030_001E6:
         move.b  #$24,$5(a1)                     ; 001F0
         move.w  #$3c,$4c(a1)                    ; 001F6
         bra.w   l_030_01128                     ; 001FC
-sub_030_00200:
+
+;-------------------------------------------------------------------------------
+; ManClimbOut - The climb after take-off (states $24-$26): waits for the timer, then (state
+; $25) pitches up until the pitch (+$66) passes $3840 and back to $68B0, then (state $26) flies
+; level until higher than $240000.
+;-------------------------------------------------------------------------------
+ManClimbOut:
         tst.w   $4c(a1)                         ; 00200
         bge.w   l_030_01128                     ; 00204
         bclr    #$4,$20(a1)                     ; 00208
         move.b  #$25,$5(a1)                     ; 0020E
 l_030_00214:
-        lea.l   (dat_030_01148).l,a0            ; 00214
+        lea.l   (PitchRates).l,a0               ; 00214
         moveq   #-40,d3                         ; 0021A
         move.w  $66(a1),d4                      ; 0021C
         btst    #$4,$20(a1)                     ; 00220
@@ -101,18 +120,23 @@ l_030_00234:
         cmpi.w  #$68b0,d4                       ; 00234
         blt.b   l_030_00242                     ; 00238
 l_030_0023A:
-        bsr.w   sub_030_010C4                   ; 0023A
+        bsr.w   PitchTowards                    ; 0023A
         bra.w   l_030_01128                     ; 0023E
 l_030_00242:
         moveq   #$0,d3                          ; 00242
-        bsr.w   sub_030_010C4                   ; 00244
+        bsr.w   PitchTowards                    ; 00244
         clr.b   $65(a1)                         ; 00248
         move.b  #$26,$5(a1)                     ; 0024C
 l_030_00252:
         cmpi.l  #$240000,$18(a1)                ; 00252
         bgt.w   l_030_007A0                     ; 0025A
         bra.w   l_030_01128                     ; 0025E
-sub_030_00262:
+
+;-------------------------------------------------------------------------------
+; ManAileronRoll - The aileron roll (states $0B-$0D): after a 15-frame wait, rolls through a
+; full turn and back to level.
+;-------------------------------------------------------------------------------
+ManAileronRoll:
         bclr    #$3,$20(a1)                     ; 00262
         bclr    #$4,$20(a1)                     ; 00268
         move.b  #$c,$5(a1)                      ; 0026E
@@ -125,7 +149,7 @@ l_030_0027A:
 l_030_0028A:
         move.b  #$d,$5(a1)                      ; 0028A
 l_030_00290:
-        lea.l   (dat_030_0115E).l,a0            ; 00290
+        lea.l   (RollRates).l,a0                ; 00290
         moveq   #$10,d3                         ; 00296
         move.w  (a0,d3.w),d3                    ; 00298
         move.w  $6a(a1),d4                      ; 0029C
@@ -147,9 +171,13 @@ l_030_002C8:
         blt.b   l_030_002D8                     ; 002D4
         moveq   #$0,d3                          ; 002D6
 l_030_002D8:
-        bsr.w   sub_030_00F9A                   ; 002D8
+        bsr.w   RollCommand                     ; 002D8
         bra.w   l_030_01128                     ; 002DC
-sub_030_002E0:
+
+;-------------------------------------------------------------------------------
+; ManInsideLoop - The inside loop (states $0E-$10): pitches up through a full loop.
+;-------------------------------------------------------------------------------
+ManInsideLoop:
         bclr    #$3,$20(a1)                     ; 002E0
         bclr    #$4,$20(a1)                     ; 002E6
         move.b  #$f,$5(a1)                      ; 002EC
@@ -162,7 +190,7 @@ l_030_002F8:
 l_030_00308:
         move.b  #$10,$5(a1)                     ; 00308
 l_030_0030E:
-        lea.l   (dat_030_01148).l,a0            ; 0030E
+        lea.l   (PitchRates).l,a0               ; 0030E
         moveq   #$c,d3                          ; 00314
         move.w  (a0,d3.w),d3                    ; 00316
         neg.w   d3                              ; 0031A
@@ -182,9 +210,14 @@ l_030_00348:
         cmpi.w  #$3840,d4                       ; 00348
         bgt.w   l_030_007A0                     ; 0034C
 l_030_00350:
-        bsr.w   sub_030_010C4                   ; 00350
+        bsr.w   PitchTowards                    ; 00350
         bra.w   l_030_01128                     ; 00354
-sub_030_00358:
+
+;-------------------------------------------------------------------------------
+; ManSplitS - The split-S (states $11-$13), only above height $100000: rolls inverted, then
+; pulls through (as the loop, state $0F).
+;-------------------------------------------------------------------------------
+ManSplitS:
         cmpi.l  #$100000,$18(a1)                ; 00358
         ble.w   l_030_007A0                     ; 00360
         bclr    #$3,$20(a1)                     ; 00364
@@ -199,7 +232,7 @@ l_030_0037C:
 l_030_0038C:
         move.b  #$13,$5(a1)                     ; 0038C
 l_030_00392:
-        lea.l   (dat_030_0115E).l,a0            ; 00392
+        lea.l   (RollRates).l,a0                ; 00392
         moveq   #$10,d3                         ; 00398
         move.w  (a0,d3.w),d3                    ; 0039A
         move.w  $6a(a1),d4                      ; 0039E
@@ -221,9 +254,14 @@ l_030_003CC:
         move.w  #$2,$4c(a1)                     ; 003D2
         bra.w   l_030_002F8                     ; 003D8
 l_030_003DC:
-        bsr.w   sub_030_00F9A                   ; 003DC
+        bsr.w   RollCommand                     ; 003DC
         bra.w   l_030_01128                     ; 003E0
-sub_030_003E4:
+
+;-------------------------------------------------------------------------------
+; ManHalfLoop - The vertical half-loop (states $14-$16): pitches up to inverted, then rolls
+; level (state $0D).
+;-------------------------------------------------------------------------------
+ManHalfLoop:
         bclr    #$3,$20(a1)                     ; 003E4
         move.b  #$15,$5(a1)                     ; 003EA
         move.w  #$f,$4c(a1)                     ; 003F0
@@ -235,7 +273,7 @@ l_030_003F6:
 l_030_00406:
         move.b  #$16,$5(a1)                     ; 00406
 l_030_0040C:
-        lea.l   (dat_030_01148).l,a0            ; 0040C
+        lea.l   (PitchRates).l,a0               ; 0040C
         moveq   #$c,d3                          ; 00412
         move.w  (a0,d3.w),d3                    ; 00414
         neg.w   d3                              ; 00418
@@ -251,9 +289,13 @@ l_030_00432:
         move.b  #$d,$5(a1)                      ; 00438
         bra.w   l_030_00290                     ; 0043E
 l_030_00442:
-        bsr.w   sub_030_010C4                   ; 00442
+        bsr.w   PitchTowards                    ; 00442
         bra.w   l_030_01128                     ; 00446
-sub_030_0044A:
+
+;-------------------------------------------------------------------------------
+; ManBarrelRoll - The barrel roll (states $17-$19): rolls and pitches together.
+;-------------------------------------------------------------------------------
+ManBarrelRoll:
         bclr    #$3,$20(a1)                     ; 0044A
         bclr    #$4,$20(a1)                     ; 00450
         move.b  #$18,$5(a1)                     ; 00456
@@ -266,7 +308,7 @@ l_030_00462:
 l_030_00472:
         move.b  #$19,$5(a1)                     ; 00472
 l_030_00478:
-        lea.l   (dat_030_0115E).l,a0            ; 00478
+        lea.l   (RollRates).l,a0                ; 00478
         moveq   #$e,d3                          ; 0047E
         move.w  (a0,d3.w),d3                    ; 00480
         move.w  $6a(a1),d4                      ; 00484
@@ -285,14 +327,19 @@ l_030_004B0:
         cmpi.w  #$3840,d4                       ; 004B0
         blt.w   l_030_007A0                     ; 004B4
 l_030_004B8:
-        bsr.w   sub_030_00F9A                   ; 004B8
-        lea.l   (dat_030_01148).l,a0            ; 004BC
+        bsr.w   RollCommand                     ; 004B8
+        lea.l   (PitchRates).l,a0               ; 004BC
         moveq   #$e,d3                          ; 004C2
         move.w  (a0,d3.w),d3                    ; 004C4
         neg.w   d3                              ; 004C8
-        bsr.w   sub_030_0108A                   ; 004CA
+        bsr.w   PitchCommandKeep                ; 004CA
         bra.w   l_030_01128                     ; 004CE
-sub_030_004D2:
+
+;-------------------------------------------------------------------------------
+; ManInverted - Inverted flight (states $1A-$22): rolls inverted, flies inverted, then pulls
+; back round.
+;-------------------------------------------------------------------------------
+ManInverted:
         bclr    #$3,$20(a1)                     ; 004D2
         bclr    #$4,$20(a1)                     ; 004D8
         move.b  #$1b,$5(a1)                     ; 004DE
@@ -305,7 +352,7 @@ l_030_004EA:
 l_030_004FA:
         move.b  #$1c,$5(a1)                     ; 004FA
 l_030_00500:
-        lea.l   (dat_030_0115E).l,a0            ; 00500
+        lea.l   (RollRates).l,a0                ; 00500
         moveq   #$10,d3                         ; 00506
         move.w  (a0,d3.w),d3                    ; 00508
         move.w  $6a(a1),d4                      ; 0050C
@@ -325,7 +372,7 @@ l_030_00524:
 l_030_0053A:
         bra.w   l_030_00546                     ; 0053A
 l_030_0053E:
-        bsr.w   sub_030_00F9A                   ; 0053E
+        bsr.w   RollCommand                     ; 0053E
         bra.w   l_030_01128                     ; 00542
 l_030_00546:
         bclr    #$4,$20(a1)                     ; 00546
@@ -339,7 +386,7 @@ l_030_00558:
 l_030_00568:
         move.b  #$1f,$5(a1)                     ; 00568
 l_030_0056E:
-        lea.l   (dat_030_01148).l,a0            ; 0056E
+        lea.l   (PitchRates).l,a0               ; 0056E
         moveq   #$8,d3                          ; 00574
         move.w  (a0,d3.w),d3                    ; 00576
         neg.w   d3                              ; 0057A
@@ -368,11 +415,11 @@ l_030_005C0:
         cmpi.w  #$6720,d4                       ; 005C0
         blt.b   l_030_005CE                     ; 005C4
 l_030_005C6:
-        bsr.w   sub_030_010C4                   ; 005C6
+        bsr.w   PitchTowards                    ; 005C6
         bra.w   l_030_01128                     ; 005CA
 l_030_005CE:
         moveq   #$0,d3                          ; 005CE
-        bsr.w   sub_030_010C4                   ; 005D0
+        bsr.w   PitchTowards                    ; 005D0
         bra.w   l_030_005D8                     ; 005D4
 l_030_005D8:
         bclr    #$4,$20(a1)                     ; 005D8
@@ -386,7 +433,7 @@ l_030_005EA:
 l_030_005FA:
         move.b  #$22,$5(a1)                     ; 005FA
 l_030_00600:
-        lea.l   (dat_030_01148).l,a0            ; 00600
+        lea.l   (PitchRates).l,a0               ; 00600
         moveq   #$8,d3                          ; 00606
         move.w  (a0,d3.w),d3                    ; 00608
         move.w  $66(a1),d4                      ; 0060C
@@ -414,27 +461,41 @@ l_030_00650:
         cmpi.w  #$960,d4                        ; 00650
         bgt.b   l_030_0065E                     ; 00654
 l_030_00656:
-        bsr.w   sub_030_010C4                   ; 00656
+        bsr.w   PitchTowards                    ; 00656
         bra.w   l_030_01128                     ; 0065A
 l_030_0065E:
         moveq   #$0,d3                          ; 0065E
-        bsr.w   sub_030_010C4                   ; 00660
+        bsr.w   PitchTowards                    ; 00660
         bset    #$3,$20(a1)                     ; 00664
         move.b  #$16,$5(a1)                     ; 0066A
         bra.w   l_030_0040C                     ; 00670
-sub_030_00674:
+
+;-------------------------------------------------------------------------------
+; ManBreakTurn - The break turn (state $27): banks 90 degrees (state 2) and pulls hard (state
+; 7).
+;-------------------------------------------------------------------------------
+ManBreakTurn:
         move.b  #$28,$5(a1)                     ; 00674
         move.w  #$f,$4c(a1)                     ; 0067A
-l_030_00680:
+
+;-------------------------------------------------------------------------------
+; PilotBeforeBreak - State $28: keeps +$03 bit 4 set while the timer runs, then becomes state 2
+; (the break turn's 90-degree bank).
+;-------------------------------------------------------------------------------
+PilotBeforeBreak:
         tst.w   $4c(a1)                         ; 00680
         ble.b   l_030_00690                     ; 00684
         bset    #$4,$3(a1)                      ; 00686
         bra.w   l_030_01128                     ; 0068C
 l_030_00690:
         move.b  #$2,$5(a1)                      ; 00690
-l_030_00696:
+
+;-------------------------------------------------------------------------------
+; PilotBank90 - State 2: rolls to a 90-degree bank, then state 7 (pull) for 32 frames.
+;-------------------------------------------------------------------------------
+PilotBank90:
         moveq   #$0,d2                          ; 00696
-        lea.l   (dat_030_0115E).l,a0            ; 00698
+        lea.l   (RollRates).l,a0                ; 00698
         moveq   #$10,d3                         ; 0069E
         move.w  (a0,d3.w),d3                    ; 006A0
         move.w  #$1c20,d0                       ; 006A4
@@ -458,31 +519,51 @@ l_030_006C4:
         beq.b   l_030_006D0                     ; 006CC
         neg.w   d3                              ; 006CE
 l_030_006D0:
-        bsr.w   sub_030_00F9A                   ; 006D0
+        bsr.w   RollCommand                     ; 006D0
         bra.w   l_030_01128                     ; 006D4
 l_030_006D8:
         move.b  #$7,$5(a1)                      ; 006D8
         move.w  #$20,$4c(a1)                    ; 006DE
         andi.b  #$3,$65(a1)                     ; 006E4
         bra.w   l_030_01128                     ; 006EA
-sub_030_006EE:
+
+;-------------------------------------------------------------------------------
+; PilotPull - State 7: pulls (pitch) until the timer runs out.
+;-------------------------------------------------------------------------------
+PilotPull:
         tst.w   $4c(a1)                         ; 006EE
         blt.w   l_030_007A0                     ; 006F2
-        lea.l   (dat_030_01148).l,a0            ; 006F6
+        lea.l   (PitchRates).l,a0               ; 006F6
         moveq   #$8,d3                          ; 006FC
         move.w  (a0,d3.w),d3                    ; 006FE
         neg.w   d3                              ; 00702
-        bsr.w   sub_030_0108E                   ; 00704
+        bsr.w   PitchCommand                    ; 00704
         bra.w   l_030_01128                     ; 00708
-sub_030_0070C:
-        bra.w   l_030_00992                     ; 0070C
-sub_030_00710:
-        bra.w   l_030_00992                     ; 00710
-sub_030_00714:
+
+;-------------------------------------------------------------------------------
+; PilotState3 - State 3: the normal flight (PilotFly).
+;-------------------------------------------------------------------------------
+PilotState3:
+        bra.w   PilotFly                        ; 0070C
+
+;-------------------------------------------------------------------------------
+; PilotState4 - State 4: the normal flight (PilotFly).
+;-------------------------------------------------------------------------------
+PilotState4:
+        bra.w   PilotFly                        ; 00710
+
+;-------------------------------------------------------------------------------
+; PilotTurnHard - State 5: banks about 14 degrees and turns, for the timer's frames.
+;-------------------------------------------------------------------------------
+PilotTurnHard:
         move.w  #$460,d0                        ; 00714
         move.w  #$1e0,d5                        ; 00718
         bra.b   l_030_00726                     ; 0071C
-sub_030_0071E:
+
+;-------------------------------------------------------------------------------
+; PilotTurnGentle - State 9: banks about 8 degrees and turns, for the timer's frames.
+;-------------------------------------------------------------------------------
+PilotTurnGentle:
         move.w  #$280,d0                        ; 0071E
         move.w  #$140,d5                        ; 00722
 l_030_00726:
@@ -491,7 +572,7 @@ l_030_00726:
         tst.w   $4c(a1)                         ; 0072C
         blt.w   l_030_00884                     ; 00730
         moveq   #$0,d2                          ; 00734
-        lea.l   (dat_030_0115E).l,a0            ; 00736
+        lea.l   (RollRates).l,a0                ; 00736
         moveq   #$4,d3                          ; 0073C
         move.w  (a0,d3.w),d3                    ; 0073E
         move.w  $6a(a1),d4                      ; 00742
@@ -514,20 +595,24 @@ l_030_0075A:
         beq.b   l_030_00768                     ; 00764
         neg.w   d3                              ; 00766
 l_030_00768:
-        bsr.w   sub_030_00F9A                   ; 00768
+        bsr.w   RollCommand                     ; 00768
         bra.w   l_030_01128                     ; 0076C
 l_030_00770:
-        bsr.w   sub_030_00FA8                   ; 00770
+        bsr.w   RollNeutral                     ; 00770
         bra.w   l_030_01128                     ; 00774
 l_030_00778:
         move.b  #$a,$5(a1)                      ; 00778
         tst.b   (dat_071_00163).l               ; 0077E
         beq.b   l_030_0078E                     ; 00784
         move.w  #$24,$4c(a1)                    ; 00786
-        bra.b   l_030_00794                     ; 0078C
+        bra.b   PilotWait                       ; 0078C
 l_030_0078E:
         move.w  #$3c,$4c(a1)                    ; 0078E
-l_030_00794:
+
+;-------------------------------------------------------------------------------
+; PilotWait - State 10: waits for the timer.
+;-------------------------------------------------------------------------------
+PilotWait:
         tst.w   $4c(a1)                         ; 00794
         blt.w   l_030_00884                     ; 00798
         bra.w   l_030_0112E                     ; 0079C
@@ -575,7 +660,12 @@ l_030_0080C:
         move.w  #$a,$4c(a1)                     ; 0080C
 l_030_00812:
         move.b  #$6,$5(a1)                      ; 00812
-l_030_00818:
+
+;-------------------------------------------------------------------------------
+; PilotLevel - State 6: flies on for the timer's frames (a reaction delay set by the
+; difficulty: 75, 37, 18 or 4 frames), keeping clear of the ground.
+;-------------------------------------------------------------------------------
+PilotLevel:
         btst    #$1,$20(a1)                     ; 00818
         bne.w   l_030_0112E                     ; 0081E
         btst    #$0,$2(a1)                      ; 00822
@@ -637,7 +727,7 @@ ComputerPilot:
         bne.b   l_030_00896                     ; 008C8
 l_030_008CA:
         move.b  $5(a1),d0                       ; 008CA
-        beq.w   l_030_00992                     ; 008CE
+        beq.w   PilotFly                        ; 008CE
         cmpi.b  #$8,$5(a1)                      ; 008D2
         beq.b   l_030_00916                     ; 008D8
         cmpi.b  #$1,$5(a1)                      ; 008DA
@@ -692,11 +782,16 @@ l_030_00966:
 l_030_00978:
         move.b  #$8,$5(a1)                      ; 00978
         move.w  #$1e,$4c(a1)                    ; 0097E
-        bra.b   l_030_00992                     ; 00984
+        bra.b   PilotFly                        ; 00984
 l_030_00986:
         move.b  #$1,$5(a1)                      ; 00986
         move.w  #$1e,$4c(a1)                    ; 0098C
-l_030_00992:
+
+;-------------------------------------------------------------------------------
+; PilotFly - The normal flight (states 0, 1, 3, 4 and 8): steers towards the destination
+; (+$2C-+$34), with the checks on height and attitude.
+;-------------------------------------------------------------------------------
+PilotFly:
         btst    #$1,$20(a1)                     ; 00992
         bne.b   l_030_009E0                     ; 00998
         cmpi.b  #$8,$5(a1)                      ; 0099A
@@ -1010,7 +1105,7 @@ l_030_00D46:
         andi.b  #$f0,d0                         ; 00D4A
         cmpi.b  #$10,d0                         ; 00D4E
         beq.b   l_030_00DB4                     ; 00D52
-        lea.l   (dat_030_01132).l,a0            ; 00D54
+        lea.l   (TurnRatesOther).l,a0           ; 00D54
         add.w   d3,d3                           ; 00D5A
         move.w  (a0,d3.w),d3                    ; 00D5C
         tst.l   d2                              ; 00D60
@@ -1049,7 +1144,7 @@ l_030_00DB4:
         beq.b   l_030_00DCC                     ; 00DBA
         cmpi.b  #$8,$5(a1)                      ; 00DBC
         beq.b   l_030_00DCC                     ; 00DC2
-        lea.l   (dat_030_0115E).l,a0            ; 00DC4
+        lea.l   (RollRates).l,a0                ; 00DC4
         bra.b   l_030_00DD2                     ; 00DCA
 l_030_00DCC:
         lea.l   (dat_030_0118A).l,a0            ; 00DCC
@@ -1163,7 +1258,7 @@ l_030_00ED2:
         andi.w  #$80,d2                         ; 00EEA
         bne.w   l_030_0112E                     ; 00EEE
 l_030_00EF2:
-        bsr.w   sub_030_00F2E                   ; 00EF2
+        bsr.w   RollTowardsRate                 ; 00EF2
         move.b  $62(a1),d1                      ; 00EF6
         andi.b  #$f0,d1                         ; 00EFA
         cmpi.b  #$10,d1                         ; 00EFE
@@ -1183,21 +1278,26 @@ sub_030_00F1C:
 l_030_00F26:
         move.w  d0,$7e(a1)                      ; 00F26
         bra.w   l_030_0112E                     ; 00F2A
-sub_030_00F2E:
+
+;-------------------------------------------------------------------------------
+; RollTowardsRate - Rolls so the roll rate (+$58) goes towards d3, with limits near level and
+; inverted flight.
+;-------------------------------------------------------------------------------
+RollTowardsRate:
         move.b  $64(a1),d2                      ; 00F2E
         andi.b  #$60,d2                         ; 00F32
         cmpi.b  #$60,d2                         ; 00F36
         bne.b   l_030_00F7A                     ; 00F3A
         tst.w   d3                              ; 00F3C
-        beq.b   sub_030_00FA8                   ; 00F3E
+        beq.b   RollNeutral                     ; 00F3E
         blt.b   l_030_00F4E                     ; 00F40
         cmp.w   $58(a1),d3                      ; 00F42
-        ble.b   sub_030_00FA8                   ; 00F46
+        ble.b   RollNeutral                     ; 00F46
         move.b  #$80,d2                         ; 00F48
         bra.b   l_030_00F58                     ; 00F4C
 l_030_00F4E:
         cmp.w   $58(a1),d3                      ; 00F4E
-        bge.b   sub_030_00FA8                   ; 00F52
+        bge.b   RollNeutral                     ; 00F52
         move.b  #$40,d2                         ; 00F54
 l_030_00F58:
         move.w  $6a(a1),d3                      ; 00F58
@@ -1214,19 +1314,24 @@ l_030_00F6E:
         bra.b   l_030_00FAA                     ; 00F78
 l_030_00F7A:
         btst    #$7,$64(a1)                     ; 00F7A
-        beq.b   sub_030_00F9A                   ; 00F80
+        beq.b   RollCommand                     ; 00F80
         move.w  $6a(a1),d2                      ; 00F82
         cmpi.w  #$3840,d2                       ; 00F86
         bgt.b   l_030_00F94                     ; 00F8A
         cmpi.w  #$190,d2                        ; 00F8C
-        blt.b   sub_030_00F9A                   ; 00F90
+        blt.b   RollCommand                     ; 00F90
         bra.b   l_030_00FA4                     ; 00F92
 l_030_00F94:
         cmpi.w  #$6ef0,d2                       ; 00F94
         ble.b   l_030_00FA0                     ; 00F98
-sub_030_00F9A:
+
+;-------------------------------------------------------------------------------
+; RollCommand - Sets the roll control bits (+$65: $08 one way for d3 > 0, $04 the other, none
+; for 0).
+;-------------------------------------------------------------------------------
+RollCommand:
         tst.w   d3                              ; 00F9A
-        beq.b   sub_030_00FA8                   ; 00F9C
+        beq.b   RollNeutral                     ; 00F9C
         blt.b   l_030_00FA4                     ; 00F9E
 l_030_00FA0:
         moveq   #$8,d2                          ; 00FA0
@@ -1234,7 +1339,11 @@ l_030_00FA0:
 l_030_00FA4:
         moveq   #$4,d2                          ; 00FA4
         bra.b   l_030_00FAA                     ; 00FA6
-sub_030_00FA8:
+
+;-------------------------------------------------------------------------------
+; RollNeutral - Clears the roll control bits.
+;-------------------------------------------------------------------------------
+RollNeutral:
         moveq   #$0,d2                          ; 00FA8
 l_030_00FAA:
         move.b  $65(a1),d1                      ; 00FAA
@@ -1280,15 +1389,15 @@ l_030_0100E:
         andi.b  #$f0,d0                         ; 01012
         cmpi.b  #$10,d0                         ; 01016
         beq.b   l_030_01024                     ; 0101A
-        lea.l   (dat_030_01132).l,a0            ; 0101C
+        lea.l   (TurnRatesOther).l,a0           ; 0101C
         bra.b   l_030_0103A                     ; 01022
 l_030_01024:
         cmpi.b  #$14,$62(a1)                    ; 01024
         beq.b   l_030_01034                     ; 0102A
-        lea.l   (dat_030_01148).l,a0            ; 0102C
+        lea.l   (PitchRates).l,a0               ; 0102C
         bra.b   l_030_0103A                     ; 01032
 l_030_01034:
-        lea.l   (dat_030_01174).l,a0            ; 01034
+        lea.l   (TurnRatesAF1).l,a0             ; 01034
 l_030_0103A:
         add.w   d3,d3                           ; 0103A
         move.w  (a0,d3.w),d3                    ; 0103C
@@ -1306,7 +1415,7 @@ l_030_01046:
         andi.w  #$80,d2                         ; 0105E
         bne.w   l_030_0112E                     ; 01062
 l_030_01066:
-        bsr.w   sub_030_0108E                   ; 01066
+        bsr.w   PitchCommand                    ; 01066
         move.b  $62(a1),d1                      ; 0106A
         andi.b  #$f0,d1                         ; 0106E
         cmpi.b  #$10,d1                         ; 01072
@@ -1315,10 +1424,19 @@ l_030_01066:
         clr.w   $52(a1)                         ; 0107E
         clr.w   $54(a1)                         ; 01082
         bra.w   l_030_0112E                     ; 01086
-sub_030_0108A:
+
+;-------------------------------------------------------------------------------
+; PitchCommandKeep - PitchCommand, keeping the roll bits too.
+;-------------------------------------------------------------------------------
+PitchCommandKeep:
         moveq   #-1,d1                          ; 0108A
         bra.b   l_030_01090                     ; 0108C
-sub_030_0108E:
+
+;-------------------------------------------------------------------------------
+; PitchCommand - Sets the pitch control bits (+$65: $10 or $20) so the pitch rate (+$56) goes
+; towards d3, keeping the throttle bits.
+;-------------------------------------------------------------------------------
+PitchCommand:
         moveq   #$0,d1                          ; 0108E
 l_030_01090:
         tst.w   d3                              ; 01090
@@ -1346,8 +1464,12 @@ l_030_010BC:
         or.b    d2,d1                           ; 010BC
         move.b  d1,$65(a1)                      ; 010BE
         rts                                     ; 010C2
-sub_030_010C4:
-        bra.b   sub_030_0108E                   ; 010C4
+
+;-------------------------------------------------------------------------------
+; PitchTowards - The same as PitchCommand (an alternative entry).
+;-------------------------------------------------------------------------------
+PitchTowards:
+        bra.b   PitchCommand                    ; 010C4
 l_030_010C6:
         move.b  $62(a1),d0                      ; 010C6
         andi.b  #$f0,d0                         ; 010CA
@@ -1385,16 +1507,20 @@ l_030_01128:
 l_030_0112E:
         unlk    a6                              ; 0112E
         rts                                     ; 01130
-dat_030_01132:
+; TurnRatesOther - Turn rates by strength (0-10) for objects that are not aircraft (missiles).
+TurnRatesOther:
 	dc.b	$00,$A0,$01,$40,$01,$E0,$02,$30,$02,$80,$02,$D0,$03,$20,$03,$C0
 	dc.b	$04,$10,$04,$60,$05,$00
-dat_030_01148:
+; PitchRates - Pitch rates by strength (0-10) for the aircraft; the manoeuvres use them too.
+PitchRates:
 	dc.b	$00,$50,$00,$78,$00,$A0,$00,$F0,$01,$40,$01,$40,$01,$90,$01,$E0
 	dc.b	$01,$E0,$02,$30,$02,$80
-dat_030_0115E:
+; RollRates - Roll rates by strength (0-10), used by the manoeuvres.
+RollRates:
 	dc.b	$00,$50,$00,$A0,$00,$F0,$00,$F0,$01,$40,$01,$90,$02,$30,$02,$D0
 	dc.b	$03,$20,$03,$70,$03,$C0
-dat_030_01174:
+; TurnRatesAF1 - The gentle turn rates of Air Force One ($14).
+TurnRatesAF1:
 	dc.b	$00,$08,$00,$10,$00,$18,$00,$20,$00,$28,$00,$30,$00,$38,$00,$40
 	dc.b	$00,$48,$00,$50,$00,$58
 dat_030_0118A:

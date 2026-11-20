@@ -95,9 +95,9 @@ l_017_000F6:
         bne.b   l_017_00148                     ; 00140
         bra.b   l_017_00154                     ; 00142
 l_017_00144:
-        bsr.w   sub_017_00ACC                   ; 00144
+        bsr.w   PlayerLaunch                    ; 00144
 l_017_00148:
-        bsr.w   sub_017_00DFE                   ; 00148
+        bsr.w   StepObject                      ; 00148
         beq.b   l_017_00154                     ; 0014C
         jsr     (UpdateObject).l                ; 0014E
 l_017_00154:
@@ -113,9 +113,9 @@ l_017_00154:
         bne.b   l_017_0018C                     ; 00184
         bra.b   l_017_00198                     ; 00186
 l_017_00188:
-        bsr.w   sub_017_00ACC                   ; 00188
+        bsr.w   PlayerLaunch                    ; 00188
 l_017_0018C:
-        bsr.w   sub_017_00DFE                   ; 0018C
+        bsr.w   StepObject                      ; 0018C
         beq.b   l_017_00198                     ; 00190
         jsr     (UpdateObject).l                ; 00192
 l_017_00198:
@@ -131,9 +131,9 @@ l_017_00198:
         bne.b   l_017_001D0                     ; 001C8
         bra.b   l_017_001DC                     ; 001CA
 l_017_001CC:
-        bsr.w   sub_017_00ACC                   ; 001CC
+        bsr.w   PlayerLaunch                    ; 001CC
 l_017_001D0:
-        bsr.w   sub_017_00DFE                   ; 001D0
+        bsr.w   StepObject                      ; 001D0
         beq.b   l_017_001DC                     ; 001D4
         jsr     (UpdateObject).l                ; 001D6
 l_017_001DC:
@@ -142,8 +142,8 @@ l_017_001DC:
         beq.b   l_017_0020A                     ; 001E8
         move.w  #$4,(CurrentObject).l           ; 001EA
         move.w  #$800,(CurrentObjectOffset).l   ; 001F2
-        bsr.w   sub_017_0072A                   ; 001FA
-        bsr.w   sub_017_00DFE                   ; 001FE
+        bsr.w   TrainingPilot                   ; 001FA
+        bsr.w   StepObject                      ; 001FE
         beq.b   l_017_0020A                     ; 00202
         jsr     (UpdateObject).l                ; 00204
 l_017_0020A:
@@ -153,15 +153,15 @@ l_017_0020A:
         lea.l   (Object4).l,a2                  ; 00220
         btst    #$6,$1(a1)                      ; 00226
         bne.b   l_017_00242                     ; 0022C
-        tst.b   (dat_071_0018B).l               ; 0022E
+        tst.b   (InstructorFire).l              ; 0022E
         bne.b   l_017_0023E                     ; 00234
-        bsr.w   sub_017_00496                   ; 00236
+        bsr.w   CheckEjection                   ; 00236
         bne.b   l_017_00242                     ; 0023A
         bra.b   l_017_0024E                     ; 0023C
 l_017_0023E:
         bsr.w   LaunchMissile                   ; 0023E
 l_017_00242:
-        bsr.w   sub_017_00DFE                   ; 00242
+        bsr.w   StepObject                      ; 00242
         beq.b   l_017_0024E                     ; 00246
         jsr     (UpdateObject).l                ; 00248
 l_017_0024E:
@@ -170,7 +170,7 @@ l_017_0024E:
         beq.b   l_017_00278                     ; 0025A
         move.w  #$6,(CurrentObject).l           ; 0025C
         move.w  #$c00,(CurrentObjectOffset).l   ; 00264
-        bsr.w   sub_017_00DFE                   ; 0026C
+        bsr.w   StepObject                      ; 0026C
         beq.b   l_017_00278                     ; 00270
         jsr     (UpdateObject).l                ; 00272
 l_017_00278:
@@ -184,7 +184,7 @@ l_017_00278:
         beq.b   l_017_002C4                     ; 002A6
         move.w  #$8,(CurrentObject).l           ; 002A8
         move.w  #$1000,(CurrentObjectOffset).l  ; 002B0
-        bsr.w   sub_017_00DFE                   ; 002B8
+        bsr.w   StepObject                      ; 002B8
         beq.b   l_017_002C4                     ; 002BC
         jsr     (UpdateObject).l                ; 002BE
 l_017_002C4:
@@ -194,11 +194,11 @@ l_017_002C4:
         lea.l   (Object8).l,a2                  ; 002DA
         btst    #$6,$1(a1)                      ; 002E0
         bne.b   l_017_002F2                     ; 002E6
-        bsr.w   sub_017_00522                   ; 002E8
+        bsr.w   EnemyMayFire                    ; 002E8
         beq.b   l_017_002FE                     ; 002EC
         bsr.w   LaunchMissile                   ; 002EE
 l_017_002F2:
-        bsr.w   sub_017_00DFE                   ; 002F2
+        bsr.w   StepObject                      ; 002F2
         beq.b   l_017_002FE                     ; 002F6
         jsr     (UpdateObject).l                ; 002F8
 l_017_002FE:
@@ -207,7 +207,7 @@ l_017_002FE:
         beq.b   l_017_00328                     ; 0030A
         move.w  #$a,(CurrentObject).l           ; 0030C
         move.w  #$1400,(CurrentObjectOffset).l  ; 00314
-        bsr.w   sub_017_00DFE                   ; 0031C
+        bsr.w   StepObject                      ; 0031C
         beq.b   l_017_00328                     ; 00320
         jsr     (UpdateObject).l                ; 00322
 l_017_00328:
@@ -217,11 +217,11 @@ l_017_00328:
         lea.l   (Object10).l,a2                 ; 0033E
         btst    #$6,$1(a1)                      ; 00344
         bne.b   l_017_00356                     ; 0034A
-        bsr.w   sub_017_00522                   ; 0034C
+        bsr.w   EnemyMayFire                    ; 0034C
         beq.b   l_017_00362                     ; 00350
         bsr.w   LaunchMissile                   ; 00352
 l_017_00356:
-        bsr.w   sub_017_00DFE                   ; 00356
+        bsr.w   StepObject                      ; 00356
         beq.b   l_017_00362                     ; 0035A
         jsr     (UpdateObject).l                ; 0035C
 l_017_00362:
@@ -230,7 +230,7 @@ l_017_00362:
         beq.b   l_017_0038C                     ; 0036E
         move.w  #$c,(CurrentObject).l           ; 00370
         move.w  #$1800,(CurrentObjectOffset).l  ; 00378
-        bsr.w   sub_017_00DFE                   ; 00380
+        bsr.w   StepObject                      ; 00380
         beq.b   l_017_0038C                     ; 00384
         jsr     (UpdateObject).l                ; 00386
 l_017_0038C:
@@ -240,11 +240,11 @@ l_017_0038C:
         lea.l   (Object12).l,a2                 ; 003A2
         btst    #$6,$1(a1)                      ; 003A8
         bne.b   l_017_003BA                     ; 003AE
-        bsr.w   sub_017_00522                   ; 003B0
+        bsr.w   EnemyMayFire                    ; 003B0
         beq.b   l_017_003C6                     ; 003B4
         bsr.w   LaunchMissile                   ; 003B6
 l_017_003BA:
-        bsr.w   sub_017_00DFE                   ; 003BA
+        bsr.w   StepObject                      ; 003BA
         beq.b   l_017_003C6                     ; 003BE
         jsr     (UpdateObject).l                ; 003C0
 l_017_003C6:
@@ -254,7 +254,7 @@ l_017_003C6:
         bset    #$2,$1(a1)                      ; 003D4
         move.w  #$e,(CurrentObject).l           ; 003DA
         move.w  #$1c00,(CurrentObjectOffset).l  ; 003E2
-        bsr.w   sub_017_00DFE                   ; 003EA
+        bsr.w   StepObject                      ; 003EA
         beq.b   l_017_003F6                     ; 003EE
         jsr     (UpdateObject).l                ; 003F0
 l_017_003F6:
@@ -264,7 +264,7 @@ l_017_003F6:
         bset    #$2,$1(a1)                      ; 00404
         move.w  #$f,(CurrentObject).l           ; 0040A
         move.w  #$1e00,(CurrentObjectOffset).l  ; 00412
-        bsr.w   sub_017_00DFE                   ; 0041A
+        bsr.w   StepObject                      ; 0041A
         beq.b   l_017_00426                     ; 0041E
         jsr     (UpdateObject).l                ; 00420
 l_017_00426:
@@ -306,7 +306,13 @@ EjectAndDrop:
         move.b  d1,$7c(a2)                      ; 0048C
         bsr.w   DropRescuePod                   ; 00490
         bra.b   l_017_004EE                     ; 00494
-sub_017_00496:
+
+;-------------------------------------------------------------------------------
+; CheckEjection - CheckEjection: steps the player's ejection (the player's +$7C low nibble)
+; while object 5 is free: 9 plays the ejection sound (cockpit view only), 1 starts the canopy
+; timers, 3 throws the pilot out (EjectPilot, into object 5) and returns d0 = 1.
+;-------------------------------------------------------------------------------
+CheckEjection:
         move.l  a2,-(a7)                        ; 00496
         tst.w   (EjectedPilot).l                ; 00498
         bne.b   l_017_004E0                     ; 0049E
@@ -354,13 +360,22 @@ EjectSound:
         adda.w  #$24,a7                         ; 0051A
         movea.l (a7)+,a1                        ; 0051E
         rts                                     ; 00520
-sub_017_00522:
+
+;-------------------------------------------------------------------------------
+; EnemyMayFire - EnemyMayFire(a2 = a computer aircraft): returns d0 = 1 (and clears FireNow) if
+; the aircraft should fire its missile this frame. FireNow forces a launch. Otherwise the
+; aircraft must be active (+$01 bit 6), alive (+$01 bit 0), not destroyed or landing (+$00 &
+; $8700, +$20 bit 1), its target (+$38, when negative an object number) still active and alive,
+; its target in its forward cone (+$64 bits 5 and 6 both set), and its pilot attacking (+$63
+; high nibble $20 or $30).
+;-------------------------------------------------------------------------------
+EnemyMayFire:
         move.w  $0(a2),d0                       ; 00522
         andi.w  #$8700,d0                       ; 00526
         bne.b   l_017_0059A                     ; 0052A
         btst    #$1,$20(a2)                     ; 0052C
         bne.b   l_017_0059A                     ; 00532
-        tst.b   (dat_071_0018C).l               ; 00534
+        tst.b   (FireNow).l                     ; 00534
         bne.b   l_017_0059E                     ; 0053A
         btst    #$6,$1(a2)                      ; 0053C
         beq.b   l_017_0059A                     ; 00542
@@ -393,7 +408,7 @@ l_017_0059A:
         moveq   #$0,d0                          ; 0059A
         rts                                     ; 0059C
 l_017_0059E:
-        clr.b   (dat_071_0018C).l               ; 0059E
+        clr.b   (FireNow).l                     ; 0059E
         moveq   #$1,d0                          ; 005A4
         rts                                     ; 005A6
 sub_017_005A8:
@@ -421,7 +436,7 @@ l_017_005E4:
         bne.w   l_017_006C0                     ; 005EC
         bclr    #$3,$2(a1)                      ; 005F0
         beq.w   l_017_006C0                     ; 005F6
-        move.b  (dat_071_00169).l,d0            ; 005FA
+        move.b  (TrainingStep).l,d0             ; 005FA
         cmpi.b  #$ff,(dat_071_0016A).l          ; 00600
         beq.b   l_017_00616                     ; 00608
         addq.b  #$1,d0                          ; 0060A
@@ -429,7 +444,7 @@ l_017_005E4:
         ble.b   l_017_00616                     ; 00610
         move.b  #$1,d0                          ; 00612
 l_017_00616:
-        move.b  d0,(dat_071_00169).l            ; 00616
+        move.b  d0,(TrainingStep).l             ; 00616
         addq.b  #$1,d0                          ; 0061C
         cmpi.b  #$7,d0                          ; 0061E
         ble.b   l_017_00628                     ; 00622
@@ -484,14 +499,14 @@ l_017_006C0:
         tst.b   (dat_071_0017E).l               ; 006C8
         bne.b   l_017_00728                     ; 006CE
         beq.w   l_017_00756                     ; 006D0
-        move.b  (dat_071_00169).l,d0            ; 006D4
+        move.b  (TrainingStep).l,d0             ; 006D4
         ext.w   d0                              ; 006DA
         asl.w   #$2,d0                          ; 006DC
-        lea.l   (dat_017_009EA).l,a3            ; 006DE
+        lea.l   (TrainingSequence).l,a3         ; 006DE
         movea.l (a3,d0.w),a3                    ; 006E4
         movea.l (a3),a3                         ; 006E8
         lea.l   $2(a3),a3                       ; 006EA
-        lea.l   (dat_073_0162A).l,a4            ; 006EE
+        lea.l   (TrainingFrame).l,a4            ; 006EE
         adda.w  (a4),a3                         ; 006F4
         move.b  $65(a1),(a3)                    ; 006F6
         addq.w  #$1,(a4)                        ; 006FA
@@ -499,16 +514,22 @@ l_017_006C0:
         blt.b   l_017_00728                     ; 00700
         move.b  #$ff,(a3)                       ; 00702
         move.b  #$ff,(dat_071_0016C).l          ; 00706
-        move.b  (dat_071_00169).l,d0            ; 0070E
+        move.b  (TrainingStep).l,d0             ; 0070E
         ext.w   d0                              ; 00714
         asl.w   #$2,d0                          ; 00716
-        lea.l   (dat_017_009EA).l,a3            ; 00718
+        lea.l   (TrainingSequence).l,a3         ; 00718
         movea.l (a3,d0.w),a3                    ; 0071E
         movea.l (a3),a3                         ; 00722
         move.w  (a4),$0(a3)                     ; 00724
 l_017_00728:
         rts                                     ; 00728
-sub_017_0072A:
+
+;-------------------------------------------------------------------------------
+; TrainingPilot - The training's control of the instructor's aircraft and of the practice:
+; starts each manoeuvre's state from TrainingSequence, or plays back its recorded control
+; bytes, and shows the "TRIGGER FOR:" messages.
+;-------------------------------------------------------------------------------
+TrainingPilot:
         cmpi.b  #$7d,(GameMode).l               ; 0072A
         bne.b   l_017_00756                     ; 00732
         btst    #$0,$2(a1)                      ; 00734
@@ -517,7 +538,7 @@ sub_017_0072A:
         tst.w   (Player_6E).l                   ; 00740
         beq.w   l_017_008CA                     ; 00746
         bset    #$0,$2(a1)                      ; 0074A
-        clr.w   (dat_073_0162A).l               ; 00750
+        clr.w   (TrainingFrame).l               ; 00750
 l_017_00756:
         tst.b   (dat_071_0017E).l               ; 00756
         bne.w   l_017_008CA                     ; 0075C
@@ -535,15 +556,15 @@ l_017_00756:
         movea.l (a7)+,a1                        ; 00794
         bset    #$0,$2(a1)                      ; 00796
         move.b  #$60,$2b(a1)                    ; 0079C
-        bsr.w   sub_017_008F8                   ; 007A2
-        lea.l   (dat_017_009EA).l,a3            ; 007A6
-        move.b  (dat_071_00169).l,d0            ; 007AC
+        bsr.w   NextManoeuvre                   ; 007A2
+        lea.l   (TrainingSequence).l,a3         ; 007A6
+        move.b  (TrainingStep).l,d0             ; 007AC
         ext.w   d0                              ; 007B2
         asl.w   #$3,d0                          ; 007B4
         bra.b   l_017_007FA                     ; 007B6
 l_017_007B8:
-        lea.l   (dat_017_009EA).l,a3            ; 007B8
-        move.b  (dat_071_00169).l,d0            ; 007BE
+        lea.l   (TrainingSequence).l,a3         ; 007B8
+        move.b  (TrainingStep).l,d0             ; 007BE
         ext.w   d0                              ; 007C4
         asl.w   #$3,d0                          ; 007C6
         bgt.b   l_017_007FA                     ; 007C8
@@ -554,7 +575,7 @@ l_017_007B8:
         move.l  $4(a3,d0.w),d0                  ; 007E2
         beq.w   l_017_008CA                     ; 007E6
         blt.w   l_017_0081C                     ; 007EA
-        cmpi.w  #$14,(dat_073_0162A).l          ; 007EE
+        cmpi.w  #$14,(TrainingFrame).l          ; 007EE
         bgt.b   l_017_0081C                     ; 007F6
         bra.b   l_017_00806                     ; 007F8
 l_017_007FA:
@@ -565,7 +586,7 @@ l_017_00806:
         movea.l d0,a3                           ; 00806
         movea.l (a3),a3                         ; 00808
         lea.l   $2(a3),a3                       ; 0080A
-        lea.l   (dat_073_0162A).l,a4            ; 0080E
+        lea.l   (TrainingFrame).l,a4            ; 0080E
         adda.w  (a4),a3                         ; 00814
         move.b  (a3),d0                         ; 00816
         bge.w   l_017_0089C                     ; 00818
@@ -577,7 +598,7 @@ l_017_0081C:
         tst.b   (dat_071_0016A).l               ; 0082E
         blt.w   l_017_008CA                     ; 00834
         move.b  #$ff,(dat_071_0016A).l          ; 00838
-        move.b  (dat_071_00169).l,d0            ; 00840
+        move.b  (TrainingStep).l,d0             ; 00840
         addq.b  #$1,d0                          ; 00846
         cmpi.b  #$7,d0                          ; 00848
         ble.b   l_017_00852                     ; 0084C
@@ -591,7 +612,7 @@ l_017_00852:
         bra.w   l_017_008CA                     ; 00866
 l_017_0086A:
         clr.b   (dat_071_0016A).l               ; 0086A
-        cmpi.b  #$7,(dat_071_00169).l           ; 00870
+        cmpi.b  #$7,(TrainingStep).l            ; 00870
         blt.b   l_017_00894                     ; 00878
         move.l  a1,-(a7)                        ; 0087A
         clr.w   $0(a1)                          ; 0087C
@@ -600,7 +621,7 @@ l_017_0086A:
         bset    #$0,$2(a1)                      ; 00888
         move.b  #$60,$2b(a1)                    ; 0088E
 l_017_00894:
-        bsr.w   sub_017_008F8                   ; 00894
+        bsr.w   NextManoeuvre                   ; 00894
         bra.w   l_017_007B8                     ; 00898
 l_017_0089C:
         bclr    #$3,$2(a1)                      ; 0089C
@@ -618,7 +639,7 @@ l_017_008C4:
 l_017_008CA:
         rts                                     ; 008CA
 l_017_008CC:
-        tst.w   (dat_073_0162A).l               ; 008CC
+        tst.w   (TrainingFrame).l               ; 008CC
         beq.b   l_017_008E4                     ; 008D2
         tst.b   $5(a1)                          ; 008D4
         bne.b   l_017_008CA                     ; 008D8
@@ -627,20 +648,25 @@ l_017_008CC:
 l_017_008E4:
         bclr    #$3,$2(a1)                      ; 008E4
         move.b  d0,$5(a1)                       ; 008EA
-        move.w  #$1,(dat_073_0162A).l           ; 008EE
+        move.w  #$1,(TrainingFrame).l           ; 008EE
         rts                                     ; 008F6
-sub_017_008F8:
-        move.b  (dat_071_00169).l,d0            ; 008F8
+
+;-------------------------------------------------------------------------------
+; NextManoeuvre - Moves the training on to the next manoeuvre (TrainingStep, wrapping 7 to 1)
+; and sets its view.
+;-------------------------------------------------------------------------------
+NextManoeuvre:
+        move.b  (TrainingStep).l,d0             ; 008F8
         addq.b  #$1,d0                          ; 008FE
         cmpi.b  #$7,d0                          ; 00900
         ble.b   l_017_0090A                     ; 00904
         move.b  #$1,d0                          ; 00906
 l_017_0090A:
-        move.b  d0,(dat_071_00169).l            ; 0090A
+        move.b  d0,(TrainingStep).l             ; 0090A
         clr.b   (dat_071_00176).l               ; 00910
-        clr.w   (dat_073_0162A).l               ; 00916
+        clr.w   (TrainingFrame).l               ; 00916
         clr.b   $65(a1)                         ; 0091C
-        move.b  (dat_071_00169).l,d0            ; 00920
+        move.b  (TrainingStep).l,d0             ; 00920
         bgt.b   l_017_0092A                     ; 00926
         moveq   #$1,d0                          ; 00928
 l_017_0092A:
@@ -650,7 +676,7 @@ l_017_0092A:
         cmp.w   (dat_071_002AC).l,d0            ; 00934
         bne.b   l_017_0094E                     ; 0093A
         asl.w   #$3,d0                          ; 0093C
-        lea.l   (dat_017_009EA).l,a5            ; 0093E
+        lea.l   (TrainingSequence).l,a5         ; 0093E
         adda.w  d0,a5                           ; 00944
         move.l  (a5),d0                         ; 00946
         move.b  d0,(ViewChoice).l               ; 00948
@@ -686,7 +712,13 @@ dat_017_009A2:
 	dc.b	$00,$32,$00,$1B,$00,$00,$00,$00,$00,$33,$00,$2B,$00,$00,$00,$00
 	dc.b	$00,$2F,$00,$18,$00,$00,$00,$00,$00,$34,$00,$1C,$00,$00,$00,$00
 	dc.b	$00,$00,$00,$00,$00,$00,$00,$00
-dat_017_009EA:
+; TrainingSequence - The training's manoeuvres, 8 bytes each: a long for the view (the keypad
+; view, ViewChoice, in the low byte; the outside view's distance in the next), then a long that
+; is either a recording of control bytes (a pointer: the practice) or, with bit 31 set, the
+; instructor's first state: take-off and climb ($23), then the 7 manoeuvres cycled by
+; dat_071_00169 - aileron roll ($0B), break turn ($27), inside loop ($0E), split-S ($11),
+; vertical half-loop ($14), barrel roll ($17), inverted flight ($1A).
+TrainingSequence:
 	dc.b	$00,$00,$01,$03,$80,$00,$00,$23,$00,$00,$01,$03,$80,$00,$00,$0B
 	dc.b	$00,$00,$01,$03,$80,$00,$00,$27,$00,$00,$01,$03,$80,$00,$00,$0E
 	dc.b	$00,$00,$01,$03,$80,$00,$00,$11,$00,$00,$01,$03,$80,$00,$00,$14
@@ -745,7 +777,13 @@ l_017_00AAA:
 l_017_00AC4:
         bclr    #$6,$1(a1)                      ; 00AC4
         rts                                     ; 00ACA
-sub_017_00ACC:
+
+;-------------------------------------------------------------------------------
+; PlayerLaunch - PlayerLaunch(a1 = the new missile): fires the player's selected missile at
+; once (LaunchRequest), with no rate limit: clears the launch warning and requests sound 8 if
+; it was showing, then joins LaunchMissile.
+;-------------------------------------------------------------------------------
+PlayerLaunch:
         clr.b   (LaunchRequest).l               ; 00ACC
         move.b  #$1,(dat_071_00187).l           ; 00AD2
         move.l  (WarningFlags).l,d6             ; 00ADA
@@ -987,7 +1025,14 @@ dat_017_00DD6:
 l_017_00DFA:
         moveq   #$1,d0                          ; 00DFA
         rts                                     ; 00DFC
-sub_017_00DFE:
+
+;-------------------------------------------------------------------------------
+; StepObject - StepObject(a1): moves one object for this frame by its kind (+$62 high nibble):
+; missiles ($00) and pods/parachutes ($30) by their own physics, $20 not at all, and aircraft
+; by their pilot's state (landing, on route, crashed). Returns d0 = 0 when the object has gone
+; and must not be drawn.
+;-------------------------------------------------------------------------------
+StepObject:
         tst.b   (dat_071_0017E).l               ; 00DFE
         bne.b   l_017_00DFA                     ; 00E04
         move.b  $62(a1),d0                      ; 00E06
@@ -1623,7 +1668,7 @@ l_017_014F8:
 l_017_01526:
         btst    #$1,$20(a1)                     ; 01526
         bne.w   l_017_01654                     ; 0152C
-        bsr.w   sub_017_016EA                   ; 01530
+        bsr.w   CheckOnTail                     ; 01530
         move.b  $5(a1),d0                       ; 01534
         beq.b   l_017_01564                     ; 01538
         cmpi.b  #$1,d0                          ; 0153A
@@ -1639,7 +1684,7 @@ l_017_01526:
 l_017_01564:
         btst    #$5,$4(a1)                      ; 01564
         beq.w   l_017_01654                     ; 0156A
-        lea.l   (dat_030_000A0).l,a4            ; 0156E
+        lea.l   (CombatReactions).l,a4          ; 0156E
         move.w  (GunFlags).l,d0                 ; 01574
         moveq   #$0,d2                          ; 0157A
         cmpi.w  #$300,$4a(a3)                   ; 0157C
@@ -1659,6 +1704,9 @@ l_017_01592:
 l_017_015A4:
         andi.w  #$8,d0                          ; 015A4
         bra.b   l_017_01610                     ; 015A8
+; Never reached: 'adda.w #$10,a4 / bra.b l_017_01610'. The andi.w above sets the flags from
+; GunFlags bit 3 but the bra ignores them, so the 'being shot at' row (+$10) of the close
+; CombatReactions rows is never used: probably a beq.b was meant to come between them.
 	dc.b	$D8,$FC,$00,$10,$60,$60
 l_017_015B0:
         adda.w  #$60,a4                         ; 015B0
@@ -1758,7 +1806,14 @@ l_017_016B2:
         bra.w   l_017_01654                     ; 016E4
 l_017_016E8:
         rts                                     ; 016E8
-sub_017_016EA:
+
+;-------------------------------------------------------------------------------
+; CheckOnTail - CheckOnTail(a1 = a computer aircraft, a3 = its target): sets +$04 bit 5 when
+; the target is an aircraft ($1x), within $3000, closing from behind (the line between them
+; against the target's heading) and flying the same way (the two headings agree), the position
+; from which the aircraft reacts as if a missile could be fired at it; clears it otherwise.
+;-------------------------------------------------------------------------------
+CheckOnTail:
         move.b  $39(a1),d0                      ; 016EA
         andi.b  #$f0,d0                         ; 016EE
         cmpi.b  #$10,d0                         ; 016F2

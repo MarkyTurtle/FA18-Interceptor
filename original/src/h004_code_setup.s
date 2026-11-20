@@ -47,7 +47,7 @@ ResetGame:
         bsr.w   sub_004_0020A                   ; 0006E
         bsr.w   sub_004_0023A                   ; 00072
         move.b  (DifficultySaved).l,(Difficulty).l ; 00076
-        clr.w   (dat_073_0162A).l               ; 00080
+        clr.w   (TrainingFrame).l               ; 00080
         clr.w   (dat_073_01628).l               ; 00086
         clr.l   (TextPages).l                   ; 0008C
         moveq   #-1,d0                          ; 00092

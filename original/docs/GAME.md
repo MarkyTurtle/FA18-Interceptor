@@ -241,9 +241,69 @@ the speed from the throttle, and how the fuel is used, are not worked out yet.
   `UpdateMissile` flies it: while the motor burns (its timer at 50 or more) the speed rises by
   `$1E0` a frame up to `$4200`, then it slows towards `$3000`; at 12 it is spent.
 * Computer aircraft fire too, every 8, 6 or 4 frames at the most by the **difficulty** (the
-  flight log's `+$02`).
+  flight log's `+$02`); see below.
 * Falling objects: their velocity is damped horizontally and pulled down vertically (`$3C0`, then
   `$3C`, a frame).
+
+### Computer pilots and combat
+
+**The object slots.** `UpdateAllObjects` (hunk 17) runs the objects in a fixed order, and the
+slots have fixed jobs: 0 is the player; 1-3 take the player's missiles (`PlayerLaunch` when
+`LaunchRequest` is set, with no rate limit), or the ejected pilot / the rescue pod
+(`EjectAndDrop`); 4 is the training instructor (`TrainingPilot`) and 5 his missile, or the
+player's ejection (`CheckEjection`); and the enemies sit in pairs - aircraft 8, 10 and 12, each
+followed by the slot for its missile (9, 11, 13). Every slot is then moved by `StepObject` (by
+kind: missiles, pods and parachutes by their own physics, aircraft by their pilot) and
+`UpdateObject`.
+
+**The pilot's states.** `ComputerPilot` (hunk 30) runs the handler for the aircraft's state
+(`+$05`, `PilotStates`, indexed from state 1). The handlers fly by setting the same control bits
+(`+$65`) a player would (`RollCommand`, `PitchCommand`, `RollTowardsRate`), with strengths
+looked up in `PitchRates` and `RollRates`; most count down the timer `+$4C`.
+
+| State | Handler | What it does |
+|---|---|---|
+| 1, 3, 4, 8 | `PilotFly` | normal flight: steer towards the destination or the route's next waypoint |
+| 2 | `PilotBank90` | roll to a 90-degree bank, then state 7 for 32 frames |
+| 5 | `PilotTurnHard` | bank about 14 degrees and turn, for the timer |
+| 6 | `PilotLevel` | fly on for the timer (a reaction delay) |
+| 7 | `PilotPull` | pull until the timer runs out |
+| 9 | `PilotTurnGentle` | bank about 8 degrees and turn, for the timer |
+| 10 | `PilotWait` | wait for the timer |
+| `$0B`-`$0D` | `ManAileronRoll` | aileron roll |
+| `$0E`-`$10` | `ManInsideLoop` | inside loop |
+| `$11`-`$13` | `ManSplitS` | split-S (only above height `$100000`) |
+| `$14`-`$16` | `ManHalfLoop` | vertical half-loop |
+| `$17`-`$19` | `ManBarrelRoll` | barrel roll |
+| `$1A`-`$22` | `ManInverted` | roll inverted, fly inverted, roll back |
+| `$23` | `ManTakeoff` | throttle up and lift off at speed `$840` |
+| `$24`-`$26` | `ManClimbOut` | climb after take-off, then level above `$240000` |
+| `$27` | `ManBreakTurn` | break turn: states 2 then 7 |
+| `$28` | `PilotBeforeBreak` | hold for the timer, then the break turn |
+
+**The training demo** is the instructor flying these manoeuvres in turn: `TrainingSequence`
+(hunk 17) lists 8-byte steps - a view, then either a flight recording to play or (bit 31 set) a
+pilot state: take-off, aileron roll, break turn, inside loop, split-S, half-loop, barrel roll and
+inverted flight. `TrainingStep` counts through them (`NextManoeuvre`); in practice mode the step
+wraps from 7 back to 1.
+
+**Reacting to the player.** Each frame `CheckOnTail` sets an enemy's `+$04` bit 5 when the player
+is within `$3000`, closing from behind and flying the same way. While it is set the enemy picks a
+reaction from `CombatReactions` (hunk 30): a timer and a state - a gentle turn (9), a harder turn
+(5) or a break turn (2) - by the player's range (under `$300`, `$C00`, `$1E00`, or farther), by
+whether the enemy is slower or faster than the player by `$C0` or more, by whether the player has
+just fired at it as the locked target, and by the **difficulty** (0-3): the harder the game, the
+sooner an enemy breaks hard. At close range a row for "being shot at by the gun" exists but is
+never used: the code tests `GunFlags` and then branches unconditionally past the row. In the
+interception missions an aircraft on its route (state 8) that reacts this way counts as a target
+met (`MissionTargets`).
+
+**Enemy fire.** An enemy fires its missile (`EnemyMayFire`, then `LaunchMissile`) when it is
+active and undamaged, its target (`+$38`) is still alive, the target lies in its forward cone
+(`+$64` bits 5 and 6) and its pilot is attacking (`+$63` high nibble `$20` or `$30`); `FireNow`
+forces the next launch. `LaunchMissile` then lets a computer aircraft fire only every 8, 6 or 4
+frames by the difficulty (twice as often when `dat_071_00285` is set), and only while it has
+missiles left (`+$5F`).
 
 ## The cockpit
 
@@ -567,10 +627,10 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
 * What speed the throttle gives (the target of `+$6C`), the afterburner, the fuel use, and what
   sets `FlightPhysics` (a game option, probably).
 * The countermeasures (flares, chaff), damage, landing on the carrier (the flags the judges test).
-* The computer pilots' states one by one (hunk 30), their attacks and firing; the object
-  records' unknown fields in `ModeTable`.
+* How an enemy decides to attack (who sets `+$63` and the forward-cone bits `+$64`), and the
+  object records' unknown fields in `ModeTable`.
 * The 3D pipeline's special shape operations (hunks 12-15) and the clipping (hunk 19).
 * What each scenery shape is; hunk 12's renderer; the ground and sky.
 * The head-up display and most instruments (hunks 39-40).
-* The views (`OutsideView`, `ViewChoice`, `CameraSequence`) and the training's manoeuvres.
+* The views (`OutsideView`, `ViewChoice`, `CameraSequence`).
 * The rest of the flight log's words, and which sound file is which effect.

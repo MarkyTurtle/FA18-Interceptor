@@ -365,7 +365,9 @@ dat_071_00167:
 ; mission completed (landed); then $F0 back to the menu, $EF qualified.
 MissionResult:
 	dc.b	$00
-dat_071_00169:
+; TrainingStep - The training's current manoeuvre (1-7, TrainingSequence), moved on by Return
+; or when one is done.
+TrainingStep:
 	dc.b	$00
 dat_071_0016A:
 	dc.b	$00
@@ -434,9 +436,13 @@ dat_071_00189:
 ; LaunchRequest - 1: launch the selected missile.
 LaunchRequest:
 	dc.b	$00
-dat_071_0018B:
+; InstructorFire - Set to make the instructor's aircraft (object 4) fire at once (object 5);
+; cleared by JudgeMission.
+InstructorFire:
 	dc.b	$00
-dat_071_0018C:
+; FireNow - Set to make the next computer aircraft that checks (EnemyMayFire) fire at once;
+; cleared after the launch and by JudgeMission.
+FireNow:
 	dc.b	$00
 dat_071_0018D:
 	dc.b	$00

@@ -97,7 +97,8 @@ dat_073_015E6:
 dat_073_01628:
 	dc.b	$00
 	dc.b	$00
-dat_073_0162A:
+; TrainingFrame - The frame reached in a manoeuvre's recorded control bytes.
+TrainingFrame:
 	dc.b	$00
 	dc.b	$00
 ; RecordBuffer - The flight recording's positions (textply).
