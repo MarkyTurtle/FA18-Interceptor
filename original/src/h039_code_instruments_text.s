@@ -314,7 +314,7 @@ l_039_00434:
 
 ;-------------------------------------------------------------------------------
 ; ShowGLoad - Apparently the G meter: the pitch rotation rate (+$56, plus a little of
-; dat_071_00316) / 8, plus or minus 1 g (10 tenths) as the aircraft is upright or not
+; GLoadValue) / 8, plus or minus 1 g (10 tenths) as the aircraft is upright or not
 ; (FlightBits bit 1), with its sign; the F/A-18 ($11) and F-16 cockpits put it in different
 ; places.
 ;-------------------------------------------------------------------------------
@@ -355,13 +355,13 @@ l_039_004E2:
         move.w  d0,d1                           ; 004F8
         asr.w   #$3,d1                          ; 004FA
         add.w   d1,d0                           ; 004FC
-        move.w  (dat_071_00316).l,d6            ; 004FE
+        move.w  (GLoadValue).l,d6               ; 004FE
         bge.b   l_039_00508                     ; 00504
         neg.w   d6                              ; 00506
 l_039_00508:
         cmpi.w  #$1,d6                          ; 00508
         ble.b   l_039_00514                     ; 0050C
-        add.w   (dat_071_00316).l,d0            ; 0050E
+        add.w   (GLoadValue).l,d0               ; 0050E
 l_039_00514:
         asr.w   #$3,d0                          ; 00514
         move.w  (FlightBits).l,d1               ; 00516
@@ -1026,7 +1026,7 @@ l_039_00D16:
         movem.l (a7)+,d0/d6-d7/a1-a2/a4-a5      ; 00D16
         tst.b   (OutsideView).l                 ; 00D1A
         beq.b   l_039_00D3E                     ; 00D20
-        tst.b   (dat_071_00163).l               ; 00D22
+        tst.b   (TrainingReady).l               ; 00D22
         beq.b   l_039_00D78                     ; 00D28
         lea.l   $1b14.w,a4                      ; 00D2A
         lea.l   $c.w,a5                         ; 00D2E
@@ -1046,13 +1046,13 @@ l_039_00D3E:
         move.w  d3,d5                           ; 00D60
 
 ;-------------------------------------------------------------------------------
-; DrawPanelCharsIfShown - DrawPanelChars, in the cockpit, or outside while dat_071_00163 is
+; DrawPanelCharsIfShown - DrawPanelChars, in the cockpit, or outside while TrainingReady is
 ; set.
 ;-------------------------------------------------------------------------------
 DrawPanelCharsIfShown:
         tst.b   (OutsideView).l                 ; 00D62
         beq.w   DrawPanelChars                  ; 00D68
-        tst.b   (dat_071_00163).l               ; 00D6C
+        tst.b   (TrainingReady).l               ; 00D6C
         beq.b   l_039_00D78                     ; 00D72
         bra.w   DrawPanelChars                  ; 00D74
 l_039_00D78:
@@ -1652,7 +1652,7 @@ l_039_0133A:
         move.w  d6,(TextColour).l               ; 01364
 l_039_0136A:
         move.w  #$ffff,(dat_071_00118).l        ; 0136A
-        adda.l  (dat_071_0010E).l,a4            ; 01372
+        adda.l  (TextCursor).l,a4               ; 01372
         andi.w  #$f,d1                          ; 01378
         lea.l   (TextPages).l,a0                ; 0137C
         move.b  (TextPageIndex).l,d0            ; 01382
@@ -1673,7 +1673,7 @@ l_039_013B6:
         clr.l   (TextPages).l                   ; 013BC
         bra.b   l_039_013EC                     ; 013C2
 l_039_013C4:
-        move.l  #$1b8,(dat_071_0010E).l         ; 013C4
+        move.l  #$1b8,(TextCursor).l            ; 013C4
         tst.w   (TextHoldTimer).l               ; 013CE
         ble.b   l_039_013E6                     ; 013D4
         subq.w  #$1,(TextHoldTimer).l           ; 013D6

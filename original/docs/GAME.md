@@ -342,7 +342,8 @@ instruments are drawn over it each frame (stage `$D0`), several only every few f
 * **The head-up display** (hunk 40, `DrawHUD`), drawn only in the cockpit (`OutsideView` 0):
   * fixed symbols (`DrawHUDFixed`): the boresight mark, two horizon bars and the outline of the
     glass; the gun cross below the centre (`DrawGunCross`);
-  * while flying, the height, speed and heading (`HUDAltitude`, `HUDSpeed`, `HUDHeading`). The
+  * while its readouts are on (`HUDOn`: set when the flight starts, toggled by the H key), the
+    height, speed and heading (`HUDAltitude`, `HUDSpeed`, `HUDHeading`). The
     two aircraft differ: the **F/A-18** shows the height (in feet: the height / 1024 x 5) and
     the speed (knots: `+$6E` / 12) as numbers with FT and KT, the **F-16** as moving tapes either
     side with a pointer. Both have a heading scale across the top, numbered every 10 degrees;

@@ -602,7 +602,7 @@ l_030_00770:
         bra.w   l_030_01128                     ; 00774
 l_030_00778:
         move.b  #$a,$5(a1)                      ; 00778
-        tst.b   (dat_071_00163).l               ; 0077E
+        tst.b   (TrainingReady).l               ; 0077E
         beq.b   l_030_0078E                     ; 00784
         move.w  #$24,$4c(a1)                    ; 00786
         bra.b   PilotWait                       ; 0078C

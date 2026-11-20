@@ -241,7 +241,7 @@ l_010_00256:
         move.b  d6,-$64(a6)                     ; 00266
         cmpi.l  #$fffffec0,(ViewOffsetY8).l     ; 0026A
         ble.w   l_010_002AE                     ; 00274
-        tst.b   (dat_071_0023C).l               ; 00278
+        tst.b   (HeightMid).l                   ; 00278
         bne.w   l_010_002AE                     ; 0027E
         andi.b  #$42,d6                         ; 00282
         cmpi.b  #$42,d6                         ; 00286
@@ -300,10 +300,10 @@ l_010_00340:
         move.l  -$20(a6),d0                     ; 00340
         move.l  -$18(a6),d2                     ; 00344
         move.l  (ObjectViewPosL).l,d3           ; 00348
-        move.l  (dat_071_00508).l,d4            ; 0034E
+        move.l  (ObjectViewPosZL).l,d4          ; 0034E
         add.l   d3,d0                           ; 00354
         add.l   d4,d2                           ; 00356
-        move.l  (dat_071_0050C).l,d1            ; 00358
+        move.l  (ObjectViewY).l,d1              ; 00358
         moveq   #$8,d7                          ; 0035E
         sub.w   -$6(a6),d7                      ; 00360
         asr.l   d7,d0                           ; 00364
@@ -708,8 +708,8 @@ l_010_0072C:
         movem.l -$20(a6),d0-d2                  ; 0073A
         exg.l   d1,d2                           ; 00740
         add.l   (ObjectViewPosL).l,d0           ; 00742
-        add.l   (dat_071_00508).l,d1            ; 00748
-        add.l   (dat_071_00504).l,d2            ; 0074E
+        add.l   (ObjectViewPosZL).l,d1          ; 00748
+        add.l   (ObjectViewPosYL).l,d2          ; 0074E
         moveq   #$8,d7                          ; 00754
         sub.w   -$6(a6),d7                      ; 00756
         asr.l   d7,d0                           ; 0075A
@@ -1325,7 +1325,7 @@ l_010_00D5A:
         movem.l -$20(a6),d0-d2                  ; 00D68
         exg.l   d1,d2                           ; 00D6E
         add.l   (ObjectViewPosL).l,d0           ; 00D70
-        add.l   (dat_071_00508).l,d1            ; 00D76
+        add.l   (ObjectViewPosZL).l,d1          ; 00D76
         moveq   #$8,d3                          ; 00D7C
         sub.w   -$6(a6),d3                      ; 00D7E
         asr.l   d3,d0                           ; 00D82

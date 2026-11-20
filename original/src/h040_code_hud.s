@@ -29,8 +29,8 @@ l_040_00062:
 
 ;-------------------------------------------------------------------------------
 ; DrawHUD - The head-up display, in the cockpit only (not OutsideView): the gun cross, the
-; fixed symbols, the target box, the missile seeker and the weapon; while flying, the G load,
-; the height, speed and heading, and the gun sight.
+; fixed symbols, the target box, the missile seeker and the weapon; while HUDOn (the H key),
+; the G load, the height, speed and heading, and the gun sight.
 ;-------------------------------------------------------------------------------
 DrawHUD:
         move.l  #$fffff,(FillPattern).l         ; 00064
@@ -41,7 +41,7 @@ DrawHUD:
         bsr.w   DrawTargetBox                   ; 0007E
         bsr.w   DrawMissileSeeker               ; 00082
         jsr     (ShowWeapon).l                  ; 00086
-        tst.b   (dat_071_00171).l               ; 0008C
+        tst.b   (HUDOn).l                       ; 0008C
         beq.b   l_040_00062                     ; 00092
         jsr     (ShowGLoad).l                   ; 00094
         bsr.w   HUDAltitude                     ; 0009A
@@ -85,7 +85,7 @@ DrawGunCross:
 
 ;-------------------------------------------------------------------------------
 ; HUDAltitude - The head-up display's height, then (falling into HUDSpeed and HUDHeading) the
-; speed and the heading; while flying only. The F/A-18 ($11) shows numbers: the height in feet
+; speed and the heading; only while HUDOn. The F/A-18 ($11) shows numbers: the height in feet
 ; (+$18 / 1024 x 5, or the radar altimeter dat_071_00028 while dat_071_00174 is set, at most
 ; 99,999) with FT at the right, the speed (+$6E / 12) with KT at the left. The F-16 ($10,
 ; ViewObject +$62) shows moving tapes instead, with tick marks every 5 and numbers every 10

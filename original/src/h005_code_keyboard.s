@@ -86,7 +86,7 @@ l_005_00098:
         bclr    #$7,$1(a0)                      ; 00142
         bne.w   l_005_00C78                     ; 00148
 l_005_0014C:
-        clr.b   (dat_071_00249).l               ; 0014C
+        clr.b   (LeftAmigaDown).l               ; 0014C
         clr.b   (dat_071_0024A).l               ; 00152
 l_005_00158:
         rts                                     ; 00158
@@ -345,7 +345,7 @@ l_005_00492:
         bne.b   l_005_004BE                     ; 004AC
         bra.w   Key_LShiftUp_RShiftUp           ; 004AE
 Key_LAmiga:
-        move.b  #$1,(dat_071_00249).l           ; 004B2
+        move.b  #$1,(LeftAmigaDown).l           ; 004B2
         bra.w   Key_LShiftUp_RShiftUp           ; 004BA
 l_005_004BE:
         cmpi.b  #$67,d0                         ; 004BE
@@ -377,7 +377,7 @@ Key_E:
 l_005_00516:
         tst.b   (WorldFrozen).l                 ; 00516
         bne.w   l_005_01624                     ; 0051C
-        move.b  #$8,(dat_071_00212).l           ; 00520
+        move.b  #$8,(PanelIndicatorBlink).l     ; 00520
         lea.l   (dat_071_0017B).l,a0            ; 00528
         bsr.w   ToggleByte                      ; 0052E
         bset    #$5,(JoyEvents).l               ; 00532
@@ -455,13 +455,13 @@ l_005_0062E:
         move.b  #$2,(TargetReadoutRedraw).l     ; 00640
         bra.w   l_005_01624                     ; 00648
 Key_H:
-        move.b  (dat_071_00171).l,d4            ; 0064C
+        move.b  (HUDOn).l,d4                    ; 0064C
         addq.b  #$1,d4                          ; 00652
         cmpi.b  #$1,d4                          ; 00654
         ble.b   l_005_0065C                     ; 00658
         clr.b   d4                              ; 0065A
 l_005_0065C:
-        move.b  d4,(dat_071_00171).l            ; 0065C
+        move.b  d4,(HUDOn).l                    ; 0065C
         bra.w   l_005_01624                     ; 00662
 
 ;-------------------------------------------------------------------------------
@@ -838,7 +838,7 @@ l_005_009AA:
 Key_Backslash_Backspace:
         bsr.w   ResetMouseThrottle              ; 009C4
         jsr     (KeyBeep).l                     ; 009C8
-        bset    #$0,(dat_071_0036B).l           ; 009CE
+        bset    #$0,(ToggleKeys).l              ; 009CE
         move.b  #$3,(dat_071_0020F).l           ; 009D6
         eori.w  #$800,(ObjectTable).l           ; 009DE
         bra.w   l_005_01624                     ; 009E6
@@ -859,7 +859,7 @@ Key_A:
         jsr     (KeyBeep).l                     ; 00A12
         eori.w  #$8000,(Player_02).l            ; 00A18
         bchg    #$7,(dat_071_00217).l           ; 00A20
-        move.b  #$3,(dat_071_00215).l           ; 00A28
+        move.b  #$3,(PanelLampRedraw).l         ; 00A28
         swap    d0                              ; 00A30
         btst    #$7,(Player_02).l               ; 00A32
         beq.b   l_005_00A40                     ; 00A3A
@@ -887,7 +887,7 @@ l_005_00A82:
         move.w  (ViewObject).l,d4               ; 00A88
         move.w  $68(a0,d4.w),(ViewHeadingSaved).l ; 00A8E
         ori.w   #$2,(GunFlags).l                ; 00A96
-        move.b  #$ff,(dat_071_00203).l          ; 00A9E
+        move.b  #$ff,(SavedOutsideView).l       ; 00A9E
         bra.w   l_005_01624                     ; 00AA6
 l_005_00AAA:
         bset    #$2,(ViewKeys).l                ; 00AAA
@@ -1062,20 +1062,20 @@ Key_KP8:
         bne.w   l_005_00B64                     ; 00CEA
 sub_005_00CEE:
         clr.b   d7                              ; 00CEE
-        move.b  #$0,(dat_071_00178).l           ; 00CF0
+        move.b  #$0,(ZoomKeyHeld).l             ; 00CF0
         bra.w   l_005_00DB4                     ; 00CF8
 Key_KP2:
         bset    #$0,(ViewKeys2).l               ; 00CFC
         tst.b   d5                              ; 00D04
         bne.w   sub_005_00B8E                   ; 00D06
         moveq   #$6,d7                          ; 00D0A
-        move.b  #$0,(dat_071_00178).l           ; 00D0C
+        move.b  #$0,(ZoomKeyHeld).l             ; 00D0C
         bra.w   l_005_00DB4                     ; 00D14
 Key_KP4:
         bset    #$2,(ViewKeys2).l               ; 00D18
         tst.b   d5                              ; 00D20
         bne.w   l_005_00B96                     ; 00D22
-        move.b  #$0,(dat_071_00178).l           ; 00D26
+        move.b  #$0,(ZoomKeyHeld).l             ; 00D26
         subq.b  #$1,(ViewZoom).l                ; 00D2E
         blt.b   l_005_00D44                     ; 00D34
         beq.b   sub_005_00CEE                   ; 00D36
@@ -1089,7 +1089,7 @@ Key_KP6:
         bset    #$6,(ViewKeys).l                ; 00D48
         tst.b   d5                              ; 00D50
         bne.w   l_005_00B7E                     ; 00D52
-        move.b  #$0,(dat_071_00178).l           ; 00D56
+        move.b  #$0,(ZoomKeyHeld).l             ; 00D56
         addq.b  #$1,(ViewZoom).l                ; 00D5E
         cmpi.b  #$b,(ViewZoom).l                ; 00D64
         ble.b   l_005_00DC2                     ; 00D6C
@@ -1099,7 +1099,7 @@ Key_KP7:
         tst.b   d5                              ; 00D7A
         bne.w   l_005_00B9A                     ; 00D7C
         moveq   #$c,d7                          ; 00D80
-        move.b  #$0,(dat_071_00178).l           ; 00D82
+        move.b  #$0,(ZoomKeyHeld).l             ; 00D82
         move.b  #$ff,(RedrawFlags).l            ; 00D8A
         bra.b   l_005_00DB4                     ; 00D92
 Key_KP1:
@@ -1107,7 +1107,7 @@ Key_KP1:
         tst.b   d5                              ; 00D9C
         bne.w   l_005_00B92                     ; 00D9E
         moveq   #$d,d7                          ; 00DA2
-        move.b  #$0,(dat_071_00178).l           ; 00DA4
+        move.b  #$0,(ZoomKeyHeld).l             ; 00DA4
         move.b  #$ff,(RedrawFlags).l            ; 00DAC
 l_005_00DB4:
         move.b  d7,(ViewZoom).l                 ; 00DB4
@@ -1275,7 +1275,7 @@ l_005_01038:
         bgt.b   l_005_010B6                     ; 0103C
         tst.b   (GameMode).l                    ; 0103E
         beq.b   l_005_0104E                     ; 01044
-        tst.b   (dat_071_00249).l               ; 01046
+        tst.b   (LeftAmigaDown).l               ; 01046
         beq.b   l_005_010B6                     ; 0104C
 l_005_0104E:
         move.w  d0,d4                           ; 0104E
@@ -1508,7 +1508,7 @@ ViewFollow:
         jsr     (StartGunSound).l               ; 012F8
         tst.b   (OutsideView).l                 ; 012FE
         beq.b   l_005_0131C                     ; 01304
-        move.b  (dat_071_00203).l,(OutsideView).l ; 01306
+        move.b  (SavedOutsideView).l,(OutsideView).l ; 01306
         move.b  #$3,(PanelBlitCount).l          ; 01310
         bra.w   l_005_01624                     ; 01318
 l_005_0131C:
@@ -1610,10 +1610,10 @@ FreezeWorld:
 Key_F:
         tst.b   d6                              ; 014C8
         bne.b   l_005_0150A                     ; 014CA
-        bset    #$1,(dat_071_0036B).l           ; 014CC
+        bset    #$1,(ToggleKeys).l              ; 014CC
         subq.b  #$1,(dat_071_0021D).l           ; 014D4
         ble.b   l_005_014F4                     ; 014DA
-        move.b  #$1e,(dat_071_0021F).l          ; 014DC
+        move.b  #$1e,(FlareTime).l              ; 014DC
         move.w  d0,d4                           ; 014E4
         move.w  #$4026,d0                       ; 014E6
         move.b  #$2,(dat_071_0025B).l           ; 014EA
@@ -1649,10 +1649,10 @@ l_005_0153A:
 l_005_01556:
         bra.w   l_005_01624                     ; 01556
 Key_C:
-        bset    #$2,(dat_071_0036B).l           ; 0155A
+        bset    #$2,(ToggleKeys).l              ; 0155A
         subq.b  #$1,(dat_071_0021C).l           ; 01562
         ble.b   l_005_01582                     ; 01568
-        move.b  #$1e,(dat_071_0021E).l          ; 0156A
+        move.b  #$1e,(ChaffTime).l              ; 0156A
         move.w  d0,d4                           ; 01572
         move.w  #$4028,d0                       ; 01574
         move.b  #$1,(dat_071_0025B).l           ; 01578
@@ -1677,7 +1677,7 @@ l_005_0159C:
         bra.w   l_005_01624                     ; 015D6
 Key_J:
         lea.l   (dat_071_00180).l,a0            ; 015DA
-        bset    #$3,(dat_071_0036B).l           ; 015E0
+        bset    #$3,(ToggleKeys).l              ; 015E0
         move.b  #$3,(dat_071_00210).l           ; 015E8
         jsr     (KeyBeep).l                     ; 015F0
         lea.l   (dat_071_00285).l,a0            ; 015F6
@@ -1731,7 +1731,7 @@ l_005_01652:
         move.b  d0,(a3,d4.w)                    ; 01688
 l_005_0168C:
         clr.b   (dat_071_00248).l               ; 0168C
-        clr.b   (dat_071_00249).l               ; 01692
+        clr.b   (LeftAmigaDown).l               ; 01692
         clr.b   (dat_071_0024A).l               ; 01698
 Key_LShiftUp_RShiftUp:
         rts                                     ; 0169E

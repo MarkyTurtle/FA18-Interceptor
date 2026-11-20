@@ -463,7 +463,7 @@ l_022_0053A:
 l_022_0054C:
         or.b    d0,d1                           ; 0054C
         move.b  d1,$7c(a1)                      ; 0054E
-        move.b  #$3,(dat_071_00215).l           ; 00552
+        move.b  #$3,(PanelLampRedraw).l         ; 00552
 l_022_0055A:
         tst.w   (CurrentObjectOffset).l         ; 0055A
         bne.b   l_022_00586                     ; 00560
@@ -575,8 +575,8 @@ l_022_0069A:
         beq.b   l_022_00710                     ; 006B6
         btst    #$0,(BlinkPhase).l              ; 006B8
         bne.b   l_022_006E6                     ; 006C0
-        move.b  (dat_071_0021F).l,d1            ; 006C2
-        or.b    (dat_071_0021E).l,d1            ; 006C8
+        move.b  (FlareTime).l,d1                ; 006C2
+        or.b    (ChaffTime).l,d1                ; 006C8
         bgt.w   l_022_00816                     ; 006CE
         bset    #$1,$20(a1)                     ; 006D2
         move.w  #$9014,d1                       ; 006D8

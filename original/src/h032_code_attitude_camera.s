@@ -10,7 +10,7 @@
 ;-------------------------------------------------------------------------------
 ; UpdateAttitude - Updates an object's attitude (a1) and calls SetAttitude: for an aircraft
 ; (type '0'-'9') the roll (+$6A) eases back towards level by $7D0 (25 degrees) a step, and the
-; pitch and heading come from VectorToAngles (into dat_071_00490 / 00492); for the others from
+; pitch and heading come from VectorToAngles (into TargetPitch / 00492); for the others from
 ; the control bits (+$64, +$65) and the state (+$05).
 ;-------------------------------------------------------------------------------
 UpdateAttitude:
@@ -50,8 +50,8 @@ l_032_0004E:
         jsr     (VectorToAngles).l              ; 00064
         adda.w  #$18,a7                         ; 0006A
         movea.l (a7)+,a1                        ; 0006E
-        move.w  (dat_071_00490).l,d4            ; 00070
-        move.w  (dat_071_00492).l,d5            ; 00076
+        move.w  (TargetPitch).l,d4              ; 00070
+        move.w  (TargetHeading).l,d5            ; 00076
         move.w  $6a(a1),d6                      ; 0007C
         bra.w   SetAttitude                     ; 00080
 l_032_00084:
@@ -619,8 +619,8 @@ l_032_00686:
         movem.l d0-d5,-(a7)                     ; 00686
         jsr     (VectorToAngles).l              ; 0068A
         adda.w  #$18,a7                         ; 00690
-        move.w  (dat_071_00490).l,(OutsideCamPitch).l ; 00694
-        move.w  (dat_071_00492).l,(OutsideCamHeading).l ; 0069E
+        move.w  (TargetPitch).l,(OutsideCamPitch).l ; 00694
+        move.w  (TargetHeading).l,(OutsideCamHeading).l ; 0069E
 l_032_006A8:
         move.w  (OutsideCamPitch).l,d0          ; 006A8
         move.w  (OutsideCamHeading).l,d2        ; 006AE
@@ -632,7 +632,7 @@ l_032_006A8:
         lea.l   (dat_071_005CC).l,a1            ; 006CE
         bsr.w   HeadingMatrix                   ; 006D4
         movem.w (Player_66).l,d0-d2             ; 006D8
-        movem.l d0-d2,(dat_071_00458).l         ; 006E0
+        movem.l d0-d2,(OutsideCamPos).l         ; 006E0
         rts                                     ; 006E8
 
 ;-------------------------------------------------------------------------------
@@ -695,7 +695,7 @@ l_032_0078A:
         cmpi.b  #$1,d1                          ; 00790
         bgt.b   l_032_007A8                     ; 00794
         movem.w $66(a0),d0/d2/d4                ; 00796
-        movem.l d0/d2/d4,(dat_071_00458).l      ; 0079C
+        movem.l d0/d2/d4,(OutsideCamPos).l      ; 0079C
         bra.w   l_032_00892                     ; 007A4
 l_032_007A8:
         subq.b  #$2,d1                          ; 007A8
@@ -786,7 +786,7 @@ l_032_00862:
         movea.l (a7)+,a0                        ; 00880
         lea.l   $80(a0),a4                      ; 00882
         bsr.w   NormaliseAngles                 ; 00886
-        movem.l d4-d6,(dat_071_00458).l         ; 0088A
+        movem.l d4-d6,(OutsideCamPos).l         ; 0088A
 l_032_00892:
         move.w  (dat_071_0045A).l,d0            ; 00892
         move.w  (dat_071_0045E).l,d2            ; 00898
@@ -943,7 +943,7 @@ l_032_00A76:
         add.w   d5,d2                           ; 00A7C
         tst.w   (CurrentObject).l               ; 00A7E
         bne.b   l_032_00A8C                     ; 00A84
-        move.w  d3,(dat_071_00316).l            ; 00A86
+        move.w  d3,(GLoadValue).l               ; 00A86
 l_032_00A8C:
         rts                                     ; 00A8C
 sub_032_00A8E:

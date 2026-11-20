@@ -50,7 +50,7 @@ def hud(speed=0x400, flying=True, aircraft=0x11, weapon=0, target=None, rng=0x60
     g.setw(g['ViewX'], 0); g.setw(g['ViewY'], 0)      # the cockpit view, not panned
     g.setw(g['ViewShift'], 0)                      # the digits' byte offset to match
     g.setb(rec + 0x62, aircraft)
-    g.setb(g['dat_071_00171'], 1 if flying else 0)
+    g.setb(g['HUDOn'], 1 if flying else 0)
     g.setb(rec + 0x63, weapon)
     if target:
         tgt = rec + 8 * 0x200

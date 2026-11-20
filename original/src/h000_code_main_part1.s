@@ -436,7 +436,7 @@ l_000_00484:
         addq.l  #$4,a7                          ; 00534
         move.l  #$3f0000,d0                     ; 00536
         move.l  d0,(dat_074_000FE).l            ; 0053C
-        move.l  d0,(dat_071_00038).l            ; 00542
+        move.l  d0,(TitleTimer).l               ; 00542
         btst    #$7,(SoundsLoaded).l            ; 00548
         beq.b   l_000_00560                     ; 00550
         moveq   #$32,d0                         ; 00552
@@ -2319,7 +2319,7 @@ l_000_01D2E:
 StateMainMenu:
         link.w  a6,#$fffc                       ; 01D30
         move.l  #TextPages,-$4(a6)              ; 01D34
-        move.l  #$1f0000,(dat_071_00038).l      ; 01D3C
+        move.l  #$1f0000,(TitleTimer).l         ; 01D3C
         btst    #$7,(SoundsLoaded).l            ; 01D46
         beq.b   l_000_01D64                     ; 01D4E
         move.b  (MusicState).l,d0               ; 01D50
@@ -2341,7 +2341,7 @@ l_000_01D64:
         pea.l   (dat_021_00000).l               ; 01D96
         jsr     (SetPalette).l                  ; 01D9C
         addq.l  #$4,a7                          ; 01DA2
-        move.l  #$1e0,(dat_071_0010E).l         ; 01DA4
+        move.l  #$1e0,(TextCursor).l            ; 01DA4
         movea.l -$4(a6),a0                      ; 01DAE
         move.w  #$6,(a0)                        ; 01DB2
         addq.l  #$2,a0                          ; 01DB6
@@ -2396,7 +2396,7 @@ l_000_01E44:
         move.b  (GameMode).l,d0                 ; 01E44
         tst.b   d0                              ; 01E4A
         ble.w   l_000_01F20                     ; 01E4C
-        clr.l   (dat_071_00038).l               ; 01E50
+        clr.l   (TitleTimer).l                  ; 01E50
         bsr.w   ClearTextPages                  ; 01E56
         jsr     (ClearScreen).l                 ; 01E5A
         cmpi.b  #$7f,-$5(a6)                    ; 01E60
@@ -3657,7 +3657,7 @@ StateReadyWait:
         move.b  (GameMode).l,d0                 ; 02E92
         subq.b  #$2,d0                          ; 02E98
         bne.b   l_000_02EA4                     ; 02E9A
-        move.b  #$1,(dat_071_00163).l           ; 02E9C
+        move.b  #$1,(TrainingReady).l           ; 02E9C
 l_000_02EA4:
         jsr     (ReadTime).l                    ; 02EA4
         move.l  (TimeSeconds).l,d0              ; 02EAA
@@ -3677,7 +3677,7 @@ StateGo:
         move.w  (StateTimer).l,d0               ; 02EDA
         tst.w   d0                              ; 02EE0
         bpl.b   l_000_02EFC                     ; 02EE2
-        move.b  #$1,(dat_071_00171).l           ; 02EE4
+        move.b  #$1,(HUDOn).l                   ; 02EE4
         jsr     (l_039_01880).l                 ; 02EEC
         lea.l   StateFlying(pc),a0              ; 02EF2
         move.l  a0,(GameState).l                ; 02EF6
@@ -4075,7 +4075,7 @@ ClearTextPages:
         addq.l  #$2,a0                          ; 03470
         move.w  d0,(a0)                         ; 03472
         addq.l  #$2,a0                          ; 03474
-        move.l  #$1b8,(dat_071_0010E).l         ; 03476
+        move.l  #$1b8,(TextCursor).l            ; 03476
         moveq   #$0,d0                          ; 03480
         move.b  d0,(TextPageIndex).l            ; 03482
         move.b  d0,(dat_071_00193).l            ; 03488
@@ -4192,7 +4192,7 @@ l_000_035C6:
 StateTitleWait:
         tst.b   (KeyPressed).l                  ; 035C8
         beq.b   l_000_03620                     ; 035CE
-        move.l  #$1f0000,(dat_071_00038).l      ; 035D0
+        move.l  #$1f0000,(TitleTimer).l         ; 035D0
         move.b  #$1,(MusicState).l              ; 035DA
         pea.l   (dat_021_00080).l               ; 035E2
         bsr.w   SetPalette                      ; 035E8
@@ -4733,8 +4733,8 @@ l_000_03C8E:
 	dc.b	$00,$00
 
 ;-------------------------------------------------------------------------------
-; WarningTicker - Counts an 8-frame cycle (WarningTickCount) and sets WarningTicks for it ($86 at
-; its start, 6 half way, 4 at the quarters, 0 otherwise): the beat of the warning lights and
+; WarningTicker - Counts an 8-frame cycle (WarningTickCount) and sets WarningTicks for it ($86
+; at its start, 6 half way, 4 at the quarters, 0 otherwise): the beat of the warning lights and
 ; sounds (UpdateWarnings).
 ;-------------------------------------------------------------------------------
 WarningTicker:
@@ -5092,9 +5092,9 @@ l_000_041DE:
 
 ;-------------------------------------------------------------------------------
 ; SwitchView - Stage $08: when GunFlags bit 1 asks (the view key), switches between the cockpit
-; and the outside view (OutsideView from dat_071_00203): going outside shifts what is drawn in
-; the cockpit's place off the screen (ViewShift 50, ViewX 800), coming back puts it at 0; then
-; the gun sound is restarted, everything redrawn and ClipY set ($A7, or $B3 when MapView
+; and the outside view (OutsideView from SavedOutsideView): going outside shifts what is drawn
+; in the cockpit's place off the screen (ViewShift 50, ViewX 800), coming back puts it at 0;
+; then the gun sound is restarted, everything redrawn and ClipY set ($A7, or $B3 when MapView
 ; is set). Under a parachute (+$62 $30) the view is always outside. Outside, GunFlags bit 4
 ; flips dat_071_0017C; in camera sequence 6 below height $24000 the view's bottom returns to
 ; $A7.
@@ -5133,7 +5133,7 @@ l_000_04206:
         move.b  #$1,(dat_071_00205).l           ; 04262
         bra.b   l_000_0427E                     ; 0426A
 l_000_0426C:
-        move.b  (dat_071_00203).l,(OutsideView).l ; 0426C
+        move.b  (SavedOutsideView).l,(OutsideView).l ; 0426C
         move.w  #$32,(ViewShift).l              ; 04276
 l_000_0427E:
         moveq   #$3,d0                          ; 0427E

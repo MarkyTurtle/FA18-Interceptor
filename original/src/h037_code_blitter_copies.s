@@ -494,9 +494,9 @@ l_037_005A0:
 l_037_005AE:
         rts                                     ; 005AE
 l_037_005B0:
-        tst.b   (dat_071_00212).l               ; 005B0
+        tst.b   (PanelIndicatorBlink).l         ; 005B0
         ble.b   l_037_005AE                     ; 005B6
-        subq.b  #$1,(dat_071_00212).l           ; 005B8
+        subq.b  #$1,(PanelIndicatorBlink).l     ; 005B8
         move.l  #$1888,d1                       ; 005BE
         movea.w #$2,a4                          ; 005C4
         move.w  #$202,d6                        ; 005C8
@@ -508,7 +508,7 @@ l_037_005B0:
         move.w  #$30a,d2                        ; 005E0
         tst.b   (dat_071_0017B).l               ; 005E4
         beq.b   l_037_005FA                     ; 005EA
-        btst    #$0,(dat_071_00212).l           ; 005EC
+        btst    #$0,(PanelIndicatorBlink).l     ; 005EC
         beq.b   l_037_005FA                     ; 005F4
         move.w  #$3fa,d2                        ; 005F6
 l_037_005FA:
@@ -566,7 +566,7 @@ sub_037_00674:
         bsr.w   ClipPanelBlit                   ; 00690
         blt.b   l_037_006BE                     ; 00694
         move.w  #$30a,d2                        ; 00696
-        tst.b   (dat_071_00216).l               ; 0069A
+        tst.b   (AfterburnerOn).l               ; 0069A
         ble.b   l_037_006B0                     ; 006A0
         btst    #$1,(BlinkPhase).l              ; 006A2
         beq.b   l_037_006B0                     ; 006AA
@@ -577,9 +577,9 @@ l_037_006B0:
         move.w  #$fffe,d3                       ; 006B6
         bsr.w   BlitBox                         ; 006BA
 l_037_006BE:
-        tst.b   (dat_071_00215).l               ; 006BE
+        tst.b   (PanelLampRedraw).l             ; 006BE
         ble.b   l_037_00672                     ; 006C4
-        subq.b  #$1,(dat_071_00215).l           ; 006C6
+        subq.b  #$1,(PanelLampRedraw).l         ; 006C6
         lea.l   (ObjectTable).l,a1              ; 006CC
         adda.w  (ViewObject).l,a1               ; 006D2
         move.b  $7c(a1),d0                      ; 006D8

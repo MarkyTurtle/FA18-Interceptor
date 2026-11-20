@@ -432,7 +432,7 @@ l_035_003C4:
         moveq   #$0,d0                          ; 003C6
         rts                                     ; 003C8
 l_035_003CA:
-        movem.w (dat_071_00496).l,d3-d5         ; 003CA
+        movem.w (ClipPoint).l,d3-d5             ; 003CA
 l_035_003D2:
         tst.w   d5                              ; 003D2
         ble.b   l_035_00424                     ; 003D4
@@ -590,7 +590,7 @@ l_035_00500:
         move.w  d2,d1                           ; 00512
         neg.w   d1                              ; 00514
 l_035_00516:
-        movem.w d0-d2,(dat_071_00496).l         ; 00516
+        movem.w d0-d2,(ClipPoint).l             ; 00516
         move.w  d2,d5                           ; 0051E
         blt.b   l_035_00538                     ; 00520
         move.w  d2,d6                           ; 00522

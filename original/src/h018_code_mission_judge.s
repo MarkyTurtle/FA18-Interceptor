@@ -143,7 +143,7 @@ l_018_00152:
         bne.b   l_018_00204                     ; 001BC
         move.w  $68(a1),(ViewHeadingSaved).l    ; 001BE
         ori.w   #$2,(GunFlags).l                ; 001C6
-        move.b  #$ff,(dat_071_00203).l          ; 001CE
+        move.b  #$ff,(SavedOutsideView).l       ; 001CE
         bra.b   l_018_00204                     ; 001D6
 l_018_001D8:
         btst    #$6,$1(a1)                      ; 001D8
@@ -374,7 +374,7 @@ l_018_00452:
         bne.b   l_018_0051C                     ; 004BC
         move.w  $68(a1),(ViewHeadingSaved).l    ; 004BE
         ori.w   #$2,(GunFlags).l                ; 004C6
-        move.b  #$3,(dat_071_00203).l           ; 004CE
+        move.b  #$3,(SavedOutsideView).l        ; 004CE
         bra.b   l_018_0051C                     ; 004D6
 l_018_004D8:
         btst    #$1,$20(a1)                     ; 004D8

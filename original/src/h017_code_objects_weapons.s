@@ -12,7 +12,7 @@
 ; UpdateAllObjects - Updates every object for the frame: the small objects' timers count down;
 ; every 16 frames CheckZones; each object's per-frame flag (+$02 bit 0) is cleared; then for
 ; each of the 16 objects in turn (unrolled): its timer (+$4C), sub_017_005A8, UpdateMissile,
-; sub_017_01862 and UpdateObject.
+; AfterburnerAndTrack and UpdateObject.
 ;-------------------------------------------------------------------------------
 UpdateAllObjects:
         move.l  d5,-(a7)                        ; 00000
@@ -61,13 +61,13 @@ l_017_00064:
         and.w   d0,$1c02(a0)                    ; 000A6
         tst.b   (WorldFrozen).l                 ; 000AA
         bne.b   l_017_000CE                     ; 000B0
-        tst.b   (dat_071_0021F).l               ; 000B2
+        tst.b   (FlareTime).l                   ; 000B2
         ble.b   l_017_000C0                     ; 000B8
-        subq.b  #$1,(dat_071_0021F).l           ; 000BA
+        subq.b  #$1,(FlareTime).l               ; 000BA
 l_017_000C0:
-        tst.b   (dat_071_0021E).l               ; 000C0
+        tst.b   (ChaffTime).l                   ; 000C0
         ble.b   l_017_000CE                     ; 000C6
-        subq.b  #$1,(dat_071_0021E).l           ; 000C8
+        subq.b  #$1,(ChaffTime).l               ; 000C8
 l_017_000CE:
         bsr.w   CheckLockedTarget               ; 000CE
         clr.w   (CurrentObject).l               ; 000D2
@@ -81,7 +81,7 @@ l_017_000F6:
         andi.w  #$fffd,$0(a1)                   ; 000F6
         bsr.w   sub_017_005A8                   ; 000FC
         bsr.w   UpdateMissile                   ; 00100
-        bsr.w   sub_017_01862                   ; 00104
+        bsr.w   AfterburnerAndTrack             ; 00104
         jsr     (UpdateObject).l                ; 00108
         move.w  #$1,(CurrentObject).l           ; 0010E
         move.w  #$200,(CurrentObjectOffset).l   ; 00116
@@ -421,7 +421,7 @@ sub_017_005A8:
         move.w  d0,d1                           ; 005AC
         asr.w   #$3,d1                          ; 005AE
         add.w   d1,d0                           ; 005B0
-        add.w   (dat_071_00316).l,d0            ; 005B2
+        add.w   (GLoadValue).l,d0               ; 005B2
         asr.w   #$3,d0                          ; 005B8
         bge.b   l_017_005BE                     ; 005BA
         neg.w   d0                              ; 005BC
@@ -551,7 +551,7 @@ l_017_00756:
         beq.w   l_017_008CA                     ; 00766
         cmpi.b  #$2,(GameMode).l                ; 0076A
         bne.b   l_017_007B8                     ; 00772
-        tst.b   (dat_071_00163).l               ; 00774
+        tst.b   (TrainingReady).l               ; 00774
         beq.w   l_017_008CA                     ; 0077A
         bclr    #$3,(Player_02).l               ; 0077E
         beq.b   l_017_007B8                     ; 00786
@@ -790,7 +790,7 @@ l_017_00AC4:
 ;-------------------------------------------------------------------------------
 PlayerLaunch:
         clr.b   (LaunchRequest).l               ; 00ACC
-        move.b  #$1,(dat_071_00187).l           ; 00AD2
+        move.b  #$1,(JustFired).l               ; 00AD2
         move.l  (WarningFlags).l,d6             ; 00ADA
         andi.l  #$4000,d6                       ; 00AE0
         beq.b   l_017_00B38                     ; 00AE6
@@ -1684,7 +1684,7 @@ l_017_01526:
         bne.b   l_017_01564                     ; 0154C
         cmpi.b  #$5,(GameMode).l                ; 0154E
         bne.w   l_017_01654                     ; 01556
-        tst.b   (dat_071_00187).l               ; 0155A
+        tst.b   (JustFired).l                   ; 0155A
         beq.w   l_017_01654                     ; 01560
 l_017_01564:
         btst    #$5,$4(a1)                      ; 01564
@@ -1740,9 +1740,9 @@ l_017_015EE:
         blt.b   l_017_01610                     ; 015F4
         cmp.w   (CurrentObjectOffset).l,d0      ; 015F6
         bne.b   l_017_01610                     ; 015FC
-        tst.b   (dat_071_00187).l               ; 015FE
+        tst.b   (JustFired).l                   ; 015FE
         beq.b   l_017_01610                     ; 01604
-        clr.b   (dat_071_00187).l               ; 01606
+        clr.b   (JustFired).l                   ; 01606
         adda.w  #$10,a4                         ; 0160C
 l_017_01610:
         move.b  (Difficulty).l,d1               ; 01610
@@ -1765,7 +1765,7 @@ l_017_01620:
 l_017_01650:
         move.b  d0,$5(a1)                       ; 01650
 l_017_01654:
-        clr.b   (dat_071_00187).l               ; 01654
+        clr.b   (JustFired).l                   ; 01654
 l_017_0165A:
         moveq   #$1,d0                          ; 0165A
         rts                                     ; 0165C
@@ -1867,11 +1867,11 @@ l_017_01772:
         bne.b   l_017_017A0                     ; 01784
         cmpi.b  #$0,$62(a1)                     ; 01786
         bne.b   l_017_01798                     ; 0178C
-        move.b  (dat_071_0025C).l,d1            ; 0178E
+        move.b  (BulletHitAircraft).l,d1        ; 0178E
         bne.b   l_017_017D8                     ; 01794
         bra.b   l_017_017A0                     ; 01796
 l_017_01798:
-        move.b  (dat_071_0025D).l,d1            ; 01798
+        move.b  (BulletHitAircraft2).l,d1       ; 01798
         bne.b   l_017_017D8                     ; 0179E
 l_017_017A0:
         lea.l   (ObjectTable).l,a3              ; 017A0
@@ -1941,20 +1941,26 @@ l_017_01850:
 l_017_0185E:
         moveq   #$1,d0                          ; 0185E
         rts                                     ; 01860
-sub_017_01862:
+
+;-------------------------------------------------------------------------------
+; AfterburnerAndTrack - Sets AfterburnerOn from the throttle, then, with a locked target,
+; updates the player's radar track of it at a rate by its range (+$39 counting, every $20 or
+; $50 by +$4A).
+;-------------------------------------------------------------------------------
+AfterburnerAndTrack:
         cmpi.w  #$1200,$6c(a1)                  ; 01862
         blt.b   l_017_0188E                     ; 01868
         move.b  $7c(a1),d1                      ; 0186A
         andi.b  #$70,d1                         ; 0186E
         bne.b   l_017_0188E                     ; 01872
-        tst.b   (dat_071_00216).l               ; 01874
+        tst.b   (AfterburnerOn).l               ; 01874
         bne.b   l_017_01894                     ; 0187A
-        move.b  #$1,(dat_071_00216).l           ; 0187C
+        move.b  #$1,(AfterburnerOn).l           ; 0187C
         moveq   #$4,d0                          ; 01884
         jsr     (BeepPitch).l                   ; 01886
         bra.b   l_017_01894                     ; 0188C
 l_017_0188E:
-        clr.b   (dat_071_00216).l               ; 0188E
+        clr.b   (AfterburnerOn).l               ; 0188E
 l_017_01894:
         move.w  (LockedTarget).l,d0             ; 01894
         ble.b   l_017_018E6                     ; 0189A

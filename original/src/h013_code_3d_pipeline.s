@@ -579,7 +579,7 @@ l_013_005B2:
 l_013_005CE:
         movem.l -$94(a6),d1-d3                  ; 005CE
         move.l  (ObjectViewPosL).l,d4           ; 005D4
-        move.l  (dat_071_00508).l,d5            ; 005DA
+        move.l  (ObjectViewPosZL).l,d5          ; 005DA
         asr.l   d0,d4                           ; 005E0
         asr.l   d0,d5                           ; 005E2
         add.l   d4,d1                           ; 005E4
@@ -1102,7 +1102,7 @@ l_013_00B3E:
 
 ;-------------------------------------------------------------------------------
 ; ShapeSceneryTest - Op $7C: works on the scenery record (CurrentShape) when the view is low
-; (ViewOffsetY8 above -$140) and dat_071_0023C is clear; used with the window grids (not
+; (ViewOffsetY8 above -$140) and HeightMid is clear; used with the window grids (not
 ; worked out).
 ;-------------------------------------------------------------------------------
 ShapeSceneryTest:
@@ -1111,7 +1111,7 @@ ShapeSceneryTest:
         adda.w  (a2)+,a3                        ; 00B4C
         cmpi.l  #$fffffec0,(ViewOffsetY8).l     ; 00B4E
         ble.b   l_013_00B3E                     ; 00B58
-        tst.b   (dat_071_0023C).l               ; 00B5A
+        tst.b   (HeightMid).l                   ; 00B5A
         bne.b   l_013_00B3E                     ; 00B60
 
 ;-------------------------------------------------------------------------------

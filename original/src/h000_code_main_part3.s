@@ -191,22 +191,22 @@ l_000_0778C:
         move.w  $a(a6),d0                       ; 07798
         ext.l   d0                              ; 0779C
         addq.l  #$1,d0                          ; 0779E
-        move.b  (dat_071_0025C).l,d1            ; 077A0
+        move.b  (BulletHitAircraft).l,d1        ; 077A0
         ext.w   d1                              ; 077A6
         ext.l   d1                              ; 077A8
         cmp.l   d0,d1                           ; 077AA
         bne.b   l_000_077B4                     ; 077AC
-        clr.b   (dat_071_0025C).l               ; 077AE
+        clr.b   (BulletHitAircraft).l           ; 077AE
 l_000_077B4:
         move.w  $a(a6),d0                       ; 077B4
         ext.l   d0                              ; 077B8
         addq.l  #$1,d0                          ; 077BA
-        move.b  (dat_071_0025D).l,d1            ; 077BC
+        move.b  (BulletHitAircraft2).l,d1       ; 077BC
         ext.w   d1                              ; 077C2
         ext.l   d1                              ; 077C4
         cmp.l   d0,d1                           ; 077C6
         bne.b   l_000_077D0                     ; 077C8
-        clr.b   (dat_071_0025D).l               ; 077CA
+        clr.b   (BulletHitAircraft2).l          ; 077CA
 l_000_077D0:
         movem.l (a7)+,a2                        ; 077D0
         unlk    a6                              ; 077D4
@@ -272,7 +272,7 @@ l_000_0787A:
         muls.w  d4,d2                           ; 0789E
         add.l   d2,d0                           ; 078A0
         asr.l   #$6,d0                          ; 078A2
-        move.l  d0,(dat_071_00422).l            ; 078A4
+        move.l  d0,(HitPointX).l                ; 078A4
         move.w  (PlayerM21).l,d2                ; 078AA
         muls.w  d1,d2                           ; 078B0
         move.w  (PlayerM22).l,d5                ; 078B2
@@ -282,7 +282,7 @@ l_000_0787A:
         muls.w  d4,d5                           ; 078C2
         add.l   d5,d2                           ; 078C4
         asr.l   #$6,d2                          ; 078C6
-        move.l  d2,(dat_071_00426).l            ; 078C8
+        move.l  d2,(HitPointY).l                ; 078C8
         move.w  (PlayerM31).l,d0                ; 078CE
         muls.w  d0,d1                           ; 078D4
         move.w  (PlayerM32).l,d0                ; 078D6
@@ -292,24 +292,24 @@ l_000_0787A:
         muls.w  d0,d4                           ; 078E6
         add.l   d4,d1                           ; 078E8
         asr.l   #$6,d1                          ; 078EA
-        move.l  d1,(dat_071_0042A).l            ; 078EC
+        move.l  d1,(HitPointZ).l                ; 078EC
         movea.l (CurrentBullet).l,a0            ; 078F2
         move.w  (PlayerCellX).l,$30(a0)         ; 078F8
         movea.l (CurrentBullet).l,a0            ; 07900
         move.w  (PlayerCellZ).l,$32(a0)         ; 07906
         move.l  (PlayerX).l,d0                  ; 0790E
         andi.l  #$3fffff,d0                     ; 07914
-        move.l  (dat_071_00422).l,d1            ; 0791A
+        move.l  (HitPointX).l,d1                ; 0791A
         add.l   d0,d1                           ; 07920
         movea.l (CurrentBullet).l,a0            ; 07922
         move.l  d1,(a0)                         ; 07928
-        move.l  (dat_071_00426).l,d0            ; 0792A
+        move.l  (HitPointY).l,d0                ; 0792A
         add.l   (PlayerY).l,d0                  ; 07930
         movea.l (CurrentBullet).l,a0            ; 07936
         move.l  d0,$4(a0)                       ; 0793C
         move.l  (PlayerZ).l,d0                  ; 07940
         andi.l  #$3fffff,d0                     ; 07946
-        move.l  (dat_071_0042A).l,d1            ; 0794C
+        move.l  (HitPointZ).l,d1                ; 0794C
         add.l   d0,d1                           ; 07952
         movea.l (CurrentBullet).l,a0            ; 07954
         move.l  d1,$8(a0)                       ; 0795A
@@ -349,21 +349,21 @@ l_000_079B6:
         muls.w  d3,d2                           ; 079CC
         add.l   d2,d0                           ; 079CE
         asr.l   #$4,d0                          ; 079D0
-        move.l  d0,(dat_071_00422).l            ; 079D2
+        move.l  d0,(HitPointX).l                ; 079D2
         move.w  (PlayerM22).l,d0                ; 079D8
         muls.w  d1,d0                           ; 079DE
         move.w  (PlayerM23).l,d2                ; 079E0
         muls.w  d3,d2                           ; 079E6
         add.l   d2,d0                           ; 079E8
         asr.l   #$4,d0                          ; 079EA
-        move.l  d0,(dat_071_00426).l            ; 079EC
+        move.l  d0,(HitPointY).l                ; 079EC
         move.w  (PlayerM32).l,d0                ; 079F2
         muls.w  d0,d1                           ; 079F8
         move.w  (PlayerM33).l,d0                ; 079FA
         muls.w  d0,d3                           ; 07A00
         add.l   d3,d1                           ; 07A02
         asr.l   #$4,d1                          ; 07A04
-        move.l  d1,(dat_071_0042A).l            ; 07A06
+        move.l  d1,(HitPointZ).l                ; 07A06
         clr.w   (BulletHitObject).l             ; 07A0C
         move.w  $a(a6),d0                       ; 07A12
         ext.l   d0                              ; 07A16
@@ -412,17 +412,17 @@ BulletHitsObject:
         move.w  $96(a0),d0                      ; 07AB8
         ext.l   d0                              ; 07ABC
         asl.l   #$4,d0                          ; 07ABE
-        move.l  d0,(dat_071_00422).l            ; 07AC0
+        move.l  d0,(HitPointX).l                ; 07AC0
         movea.l (CockpitObject).l,a0            ; 07AC6
         move.w  $9c(a0),d0                      ; 07ACC
         ext.l   d0                              ; 07AD0
         asl.l   #$4,d0                          ; 07AD2
-        move.l  d0,(dat_071_00426).l            ; 07AD4
+        move.l  d0,(HitPointY).l                ; 07AD4
         movea.l (CockpitObject).l,a0            ; 07ADA
         move.w  $a2(a0),d0                      ; 07AE0
         ext.l   d0                              ; 07AE4
         asl.l   #$4,d0                          ; 07AE6
-        move.l  d0,(dat_071_0042A).l            ; 07AE8
+        move.l  d0,(HitPointZ).l                ; 07AE8
         move.w  $a(a6),d0                       ; 07AEE
         ext.l   d0                              ; 07AF2
         move.l  d0,-(a7)                        ; 07AF4
@@ -488,16 +488,16 @@ l_000_07B90:
 l_000_07BA0:
         move.l  (PlayerX).l,d0                  ; 07BA0
         andi.l  #$3fffff,d0                     ; 07BA6
-        move.l  (dat_071_00422).l,d1            ; 07BAC
+        move.l  (HitPointX).l,d1                ; 07BAC
         add.l   d0,d1                           ; 07BB2
         movea.l (CurrentBullet).l,a0            ; 07BB4
         sub.l   (a0),d1                         ; 07BBA
-        move.l  (dat_071_00426).l,d0            ; 07BBC
+        move.l  (HitPointY).l,d0                ; 07BBC
         add.l   (PlayerY).l,d0                  ; 07BC2
         sub.l   $4(a0),d0                       ; 07BC8
         move.l  (PlayerZ).l,d2                  ; 07BCC
         andi.l  #$3fffff,d2                     ; 07BD2
-        move.l  (dat_071_0042A).l,d3            ; 07BD8
+        move.l  (HitPointZ).l,d3                ; 07BD8
         add.l   d2,d3                           ; 07BDE
         sub.l   $8(a0),d3                       ; 07BE0
         move.l  d1,-$a(a6)                      ; 07BE4
@@ -545,7 +545,7 @@ BulletDamageAt:
         move.l  d0,-(a7)                        ; 07C4A
         jsr     (ScaleToLengthStack).l          ; 07C4C
         lea.l   $10(a7),a7                      ; 07C52
-        move.w  (dat_071_0041C).l,d0            ; 07C56
+        move.w  (ScaledVector).l,d0             ; 07C56
         ext.l   d0                              ; 07C5C
         move.l  d0,$8(a7)                       ; 07C5E
         asl.l   #$3,d0                          ; 07C62

@@ -15,7 +15,7 @@ RedrawPanel:
 
 ;-------------------------------------------------------------------------------
 ; RedrawInstruments - Sets every instrument's redraw counter to 3 (PanelBlitCount the panel,
-; PanelRedraw ... dat_071_00215), so each is drawn into both display buffers; and ViewY = 0
+; PanelRedraw ... PanelLampRedraw), so each is drawn into both display buffers; and ViewY = 0
 ; unless ShakeKind is set.
 ;-------------------------------------------------------------------------------
 RedrawInstruments:
@@ -32,7 +32,7 @@ RedrawInstruments:
         move.b  d4,(RadarRangeRedraw).l         ; 00040
         move.b  d4,(StoresRedraw).l             ; 00046
         move.b  d4,(MissilesLeftRedraw).l       ; 0004C
-        move.b  d4,(dat_071_00215).l            ; 00052
+        move.b  d4,(PanelLampRedraw).l          ; 00052
         move.b  d4,(TargetReadoutRedraw).l      ; 00058
         tst.b   (ShakeKind).l                   ; 0005E
         bne.b   l_006_00072                     ; 00064
@@ -137,8 +137,8 @@ ResetPlayerAircraft:
         move.b  #$10,(dat_071_0021C).l          ; 00188
         move.b  #$10,(dat_071_0021D).l          ; 00190
         clr.b   (dat_071_0025B).l               ; 00198
-        clr.b   (dat_071_0025D).l               ; 0019E
-        clr.b   (dat_071_0025C).l               ; 001A4
+        clr.b   (BulletHitAircraft2).l          ; 0019E
+        clr.b   (BulletHitAircraft).l           ; 001A4
         clr.w   (RescuePod).l                   ; 001AA
         movem.l d0/d4/a0-a1,-(a7)               ; 001B0
         lea.l   (ObjectTable).l,a0              ; 001B4

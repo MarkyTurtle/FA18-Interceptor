@@ -247,7 +247,7 @@ l_034_00292:
         move.b  #$1,-$2(a6)                     ; 00298
         bra.b   l_034_002E0                     ; 0029E
 l_034_002A0:
-        movem.w (dat_071_00496).l,d3-d5         ; 002A0
+        movem.w (ClipPoint).l,d3-d5             ; 002A0
         tst.w   d5                              ; 002A8
 l_034_002AA:
         ble.b   l_034_002AA                     ; 002AA
@@ -573,7 +573,7 @@ l_034_004D8:
         move.w  d2,d1                           ; 004DA
         neg.w   d1                              ; 004DC
 l_034_004DE:
-        movem.w d0-d2,(dat_071_00496).l         ; 004DE
+        movem.w d0-d2,(ClipPoint).l             ; 004DE
         move.w  d2,d5                           ; 004E6
         blt.b   l_034_00500                     ; 004E8
         move.w  d2,d6                           ; 004EA

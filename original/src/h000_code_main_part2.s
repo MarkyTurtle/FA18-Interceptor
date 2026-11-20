@@ -39,7 +39,7 @@ l_000_043F0:
 ;-------------------------------------------------------------------------------
 ; SetHeightBand - Sets HeightBand from the view's height (/8): 0 up to $64, 1 to $12C, 2 to
 ; $C80, and 3 between $258 and $C4E (asking for the scenery to be rebuilt, RedrawFlags $0B,
-; when it changes); dat_071_0023C while between $1C2 and $C80. More after (not worked out).
+; when it changes); HeightMid while between $1C2 and $C80. More after (not worked out).
 ;-------------------------------------------------------------------------------
 SetHeightBand:
         link.w  a6,#$fffa                       ; 043F2
@@ -51,7 +51,7 @@ SetHeightBand:
         move.w  d0,-$2(a6)                      ; 0440A
         bra.b   l_000_04428                     ; 0440E
 l_000_04410:
-        move.l  (dat_071_00458).l,d0            ; 04410
+        move.l  (OutsideCamPos).l,d0            ; 04410
         asr.l   #$3,d0                          ; 04416
         move.l  (dat_071_00460).l,d1            ; 04418
         asr.l   #$3,d1                          ; 0441E
@@ -86,10 +86,10 @@ l_000_04484:
         ble.b   l_000_0449E                     ; 0448C
         cmpi.w  #$c80,d0                        ; 0448E
         bge.b   l_000_0449E                     ; 04492
-        move.b  #$1,(dat_071_0023C).l           ; 04494
+        move.b  #$1,(HeightMid).l               ; 04494
         bra.b   l_000_044DE                     ; 0449C
 l_000_0449E:
-        clr.b   (dat_071_0023C).l               ; 0449E
+        clr.b   (HeightMid).l                   ; 0449E
         move.w  -$2(a6),d0                      ; 044A4
         cmpi.w  #$c80,d0                        ; 044A8
         bge.b   l_000_044D8                     ; 044AC
@@ -146,7 +146,7 @@ l_000_04546:
 ;-------------------------------------------------------------------------------
 ; VectorToAngles - VectorToAngles(pitch, heading, dx, dy, dz): the heading and pitch of a
 ; direction (an arctangent: the ratio of two parts (Divide) looked up in ArcTanTable, by
-; octant), into dat_071_00490 (pitch) and dat_071_00492 (heading).
+; octant), into TargetPitch (pitch) and TargetHeading (heading).
 ;-------------------------------------------------------------------------------
 VectorToAngles:
         link.w  a6,#$ffe4                       ; 0454A
@@ -239,7 +239,7 @@ l_000_0464A:
         ext.l   d0                              ; 0466C
         move.l  $10(a6),d1                      ; 0466E
         asl.l   d0,d1                           ; 04672
-        move.l  d1,(dat_071_0049C).l            ; 04674
+        move.l  d1,(DivideWhat).l               ; 04674
         move.w  d2,(DivideBy).l                 ; 0467A
         tst.w   d2                              ; 04680
         beq.b   l_000_046B0                     ; 04682
@@ -264,7 +264,7 @@ l_000_046BA:
         ext.l   d0                              ; 046BE
         move.l  $18(a6),d1                      ; 046C0
         asl.l   d0,d1                           ; 046C4
-        move.l  d1,(dat_071_0049C).l            ; 046C6
+        move.l  d1,(DivideWhat).l               ; 046C6
         move.w  -$4(a6),(DivideBy).l            ; 046CC
         jsr     (Divide).l                      ; 046D4
         move.w  (DivideResult).l,d0             ; 046DA
@@ -327,7 +327,7 @@ l_000_0474C:
         cmp.l   d0,d1                           ; 04796
         bgt.b   l_000_047E0                     ; 04798
         asl.l   #$8,d1                          ; 0479A
-        move.l  d1,(dat_071_0049C).l            ; 0479C
+        move.l  d1,(DivideWhat).l               ; 0479C
         move.w  (AngleScratch).l,d0             ; 047A2
         move.w  d0,(DivideBy).l                 ; 047A8
         tst.w   d0                              ; 047AE
@@ -350,7 +350,7 @@ l_000_047E0:
         move.w  (AngleScratch).l,d0             ; 047E0
         ext.l   d0                              ; 047E6
         asl.l   #$8,d0                          ; 047E8
-        move.l  d0,(dat_071_0049C).l            ; 047EA
+        move.l  d0,(DivideWhat).l               ; 047EA
         move.w  -$2(a6),(DivideBy).l            ; 047F0
         jsr     (Divide).l                      ; 047F8
         move.w  (DivideResult).l,d0             ; 047FE
@@ -561,9 +561,9 @@ l_000_04A7C:
         add.l   d0,$c(a6)                       ; 04A80
 l_000_04A84:
         move.l  $8(a6),d0                       ; 04A84
-        move.w  d0,(dat_071_00490).l            ; 04A88
+        move.w  d0,(TargetPitch).l              ; 04A88
         move.l  $c(a6),d0                       ; 04A8E
-        move.w  d0,(dat_071_00492).l            ; 04A92
+        move.w  d0,(TargetHeading).l            ; 04A92
         movem.l (a7)+,d2                        ; 04A98
         unlk    a6                              ; 04A9C
         rts                                     ; 04A9E
@@ -953,12 +953,12 @@ l_000_04F14:
         move.b  (NewView).l,d0                  ; 04F34
         tst.b   d0                              ; 04F3A
         bne.b   l_000_04F70                     ; 04F3C
-        tst.w   (dat_071_00512).l               ; 04F3E
+        tst.w   (ObjectDistanceSound).l         ; 04F3E
         beq.b   l_000_04F70                     ; 04F44
         move.w  -$6(a6),d0                      ; 04F46
         ext.l   d0                              ; 04F4A
         asl.l   #$5,d0                          ; 04F4C
-        move.w  (dat_071_00512).l,d1            ; 04F4E
+        move.w  (ObjectDistanceSound).l,d1      ; 04F4E
         ext.l   d1                              ; 04F54
         move.l  d0,-$16(a6)                     ; 04F56
         jsr     (CXD33).l                       ; 04F5A
@@ -1350,12 +1350,12 @@ dat_000_0540E:
 	dc.b	$30,$2E,$00,$0A,$48,$C0,$2F,$00,$61,$00,$00,$AE,$58,$8F,$3D,$40
 	dc.b	$00,$0A,$60,$3E,$30,$2E,$00,$0A,$E2,$40,$3D,$40,$00,$0A,$60,$32
 l_000_0544E:
-        tst.w   (dat_071_00512).l               ; 0544E
+        tst.w   (ObjectDistanceSound).l         ; 0544E
         beq.b   l_000_05480                     ; 05454
         move.w  $a(a6),d0                       ; 05456
         ext.l   d0                              ; 0545A
         asl.l   #$5,d0                          ; 0545C
-        move.w  (dat_071_00512).l,d1            ; 0545E
+        move.w  (ObjectDistanceSound).l,d1      ; 0545E
         ext.l   d1                              ; 05464
         move.l  d0,-$6(a6)                      ; 05466
         jsr     (CXD33).l                       ; 0546A
@@ -3303,7 +3303,7 @@ l_000_06AF6:
 ; FlyAircraft - The flight model for one aircraft (CurrentObject; CockpitObject = its record):
 ; the nose's direction is the third column of its +$92 matrix (M13, M23, M33, into
 ; dat_071_00470-00474); ScaleToLength makes it a velocity of the aircraft's speed (+$6E) along
-; the nose (dat_071_0041C-00420); each part of the velocity then moves part of the way there
+; the nose (ScaledVector-00420); each part of the velocity then moves part of the way there
 ; from the present velocity (EaseVelocity), +$76 is added to the vertical part (unless bit 0 of
 ; dat_071_0016F), and the result is the new velocity (+$3E, +$42, +$46). Then the undercarriage
 ; / landing and the rest (dat_071_0016F modes 1 and 3 add or take away $6000 vertically; type
@@ -3355,7 +3355,7 @@ FlyAircraft:
         move.l  a2,-$34(a6)                     ; 06BA0
         jsr     (ScaleToLength).l               ; 06BA4
         lea.l   $10(a7),a7                      ; 06BAA
-        move.w  (dat_071_0041C).l,-$2(a6)       ; 06BAE
+        move.w  (ScaledVector).l,-$2(a6)        ; 06BAE
         move.w  (dat_071_0041E).l,-$4(a6)       ; 06BB6
         move.w  (dat_071_00420).l,-$6(a6)       ; 06BBE
         movea.l -$2c(a6),a0                     ; 06BC6
@@ -3984,7 +3984,7 @@ l_000_0742E:
         move.w  -$10(a6),d0                     ; 07444
         ext.l   d0                              ; 07448
         addq.l  #$1,d0                          ; 0744A
-        move.b  d0,(dat_071_0025D).l            ; 0744C
+        move.b  d0,(BulletHitAircraft2).l       ; 0744C
         bra.b   l_000_0746E                     ; 07452
 l_000_07454:
         movea.l -$14(a6),a0                     ; 07454
@@ -3994,7 +3994,7 @@ l_000_07454:
         move.w  -$10(a6),d0                     ; 07460
         ext.l   d0                              ; 07464
         addq.l  #$1,d0                          ; 07466
-        move.b  d0,(dat_071_0025C).l            ; 07468
+        move.b  d0,(BulletHitAircraft).l        ; 07468
 l_000_0746E:
         clr.b   (dat_071_0025B).l               ; 0746E
         bra.b   l_000_074EE                     ; 07474

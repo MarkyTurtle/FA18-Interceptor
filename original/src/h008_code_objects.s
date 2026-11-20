@@ -928,7 +928,7 @@ l_008_00AEA:
         move.l  d3,d0                           ; 00B00
         add.l   (ViewOffsetY).l,d0              ; 00B02
         asr.l   d6,d0                           ; 00B08
-        move.l  d0,(dat_071_0050C).l            ; 00B0A
+        move.l  d0,(ObjectViewY).l              ; 00B0A
         move.b  #$1,(dat_071_0028B).l           ; 00B10
         asr.l   d6,d2                           ; 00B18
         asr.l   d6,d3                           ; 00B1A
@@ -1052,7 +1052,7 @@ l_008_00C92:
         bne.b   l_008_00CC8                     ; 00CC2
         move.w  #$7fff,d1                       ; 00CC4
 l_008_00CC8:
-        move.w  d1,(dat_071_00512).l            ; 00CC8
+        move.w  d1,(ObjectDistanceSound).l      ; 00CC8
 l_008_00CCE:
         movea.l (a1)+,a2                        ; 00CCE
         movea.l (a1)+,a0                        ; 00CD0
@@ -1190,7 +1190,7 @@ l_008_00DFE:
         asr.l   d6,d3                           ; 00E2A
         add.l   (ViewOffsetY).l,d1              ; 00E2C
         asr.l   d6,d1                           ; 00E32
-        move.l  d1,(dat_071_0050C).l            ; 00E34
+        move.l  d1,(ObjectViewY).l              ; 00E34
         move.b  #$1,(dat_071_0028B).l           ; 00E3A
         rts                                     ; 00E42
 
@@ -1811,7 +1811,7 @@ ScaledViewOffset:
 l_008_0167A:
         tst.b   (dat_071_0028B).l               ; 0167A
         beq.b   l_008_0168C                     ; 01680
-        move.l  (dat_071_0050C).l,d3            ; 01682
+        move.l  (ObjectViewY).l,d3              ; 01682
         asr.l   #$8,d3                          ; 01688
         bra.b   l_008_01690                     ; 0168A
 l_008_0168C:

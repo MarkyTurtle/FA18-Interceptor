@@ -61,7 +61,7 @@ ResetGame:
         move.b  d0,(TextStatus).l               ; 0009A
         move.b  d0,(CameraSequence).l           ; 000A0
         move.w  #$5,(StateTimer).l              ; 000A6
-        move.l  #$1b8,(dat_071_0010E).l         ; 000AE
+        move.l  #$1b8,(TextCursor).l            ; 000AE
         jsr     (ClearScreen).l                 ; 000B8
         lea.l   (ObjectTable).l,a0              ; 000BE
         moveq   #$f,d0                          ; 000C4
@@ -396,7 +396,7 @@ l_004_0046C:
         clr.b   (dat_071_00217).l               ; 004D2
         clr.b   (dat_071_00240).l               ; 004D8
         clr.b   (dat_071_0017B).l               ; 004DE
-        clr.b   (dat_071_00212).l               ; 004E4
+        clr.b   (PanelIndicatorBlink).l         ; 004E4
 l_004_004EA:
         lea.l   (StartPoints).l,a0              ; 004EA
         move.b  (StartPoint).l,d0               ; 004F0
@@ -606,7 +606,7 @@ ResetPlayerFlags:
         clr.b   (dat_071_00259).l               ; 007AA
         clr.b   (VisualConfirmTimer).l          ; 007B0
         clr.b   (dat_071_00285).l               ; 007B6
-        move.w  #$7fff,(dat_071_00512).l        ; 007BC
+        move.w  #$7fff,(ObjectDistanceSound).l  ; 007BC
         move.b  #$1,(dat_071_001A8).l           ; 007C4
         move.b  #$ff,$71(a0)                    ; 007CC
         move.w  #$ffff,(LockedTarget).l         ; 007D2

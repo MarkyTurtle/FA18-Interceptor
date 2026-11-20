@@ -155,7 +155,7 @@ l_026_00168:
         adda.w  #$18,a7                         ; 00184
         movea.l (a7)+,a0                        ; 00188
         moveq   #$0,d0                          ; 0018A
-        move.w  (dat_071_00492).l,d2            ; 0018C
+        move.w  (TargetHeading).l,d2            ; 0018C
         moveq   #$0,d4                          ; 00192
         move.w  d0,d4                           ; 00194
         move.w  d2,d5                           ; 00196

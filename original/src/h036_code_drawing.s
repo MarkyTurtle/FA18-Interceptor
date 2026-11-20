@@ -1510,7 +1510,7 @@ l_036_00F04:
         sub.w   d0,d7                           ; 00F2E
         lsl.w   #$6,d7                          ; 00F30
         add.w   d6,d7                           ; 00F32
-        move.w  d7,(dat_071_0033E).l            ; 00F34
+        move.w  d7,(FillBoxSize).l              ; 00F34
         moveq   #-1,d0                          ; 00F3A
         lea.l   (CUSTOM).l,a0                    ; 00F3C
 l_036_00F42:
@@ -1539,7 +1539,7 @@ FillPatterned:
         movea.l (DrawPlanes).l,a2               ; 00F7C
         move.l  $4(a2),d2                       ; 00F82
         move.l  (a2),d3                         ; 00F86
-        move.w  (dat_071_0033E).l,d0            ; 00F88
+        move.w  (FillBoxSize).l,d0              ; 00F88
         move.l  (dat_071_00338).l,d1            ; 00F8E
         add.l   d1,d2                           ; 00F94
         add.l   d1,d3                           ; 00F96
@@ -1571,7 +1571,7 @@ PlaneOpUnderFill:
         lsr.w   (ColourBits).l                  ; 00FD6
         movea.l (DrawPlanes).l,a2               ; 00FDC
         move.l  (a2,d0.w),d2                    ; 00FE2
-        move.w  (dat_071_0033E).l,d0            ; 00FE6
+        move.w  (FillBoxSize).l,d0              ; 00FE6
         move.l  (dat_071_00338).l,d1            ; 00FEC
         add.l   d2,d1                           ; 00FF2
         move.l  (dat_071_00334).l,d2            ; 00FF4
@@ -1595,7 +1595,7 @@ l_036_0100E:
 ; a fill.
 ;-------------------------------------------------------------------------------
 ClearFillPlane:
-        move.w  (dat_071_0033E).l,d0            ; 01022
+        move.w  (FillBoxSize).l,d0              ; 01022
         move.l  (dat_071_00330).l,d2            ; 01028
         move.l  d2,d1                           ; 0102E
         lea.l   (CUSTOM).l,a0                    ; 01030
@@ -1625,7 +1625,7 @@ l_036_01052:
 FillPanelPlane:
         movea.l (DrawPlanes).l,a2               ; 0106A
         move.l  (a2,d0.w),d2                    ; 01070
-        move.w  (dat_071_0033E).l,d0            ; 01074
+        move.w  (FillBoxSize).l,d0              ; 01074
         move.l  (dat_071_00338).l,d1            ; 0107A
         add.l   d2,d1                           ; 01080
         move.l  (dat_071_00334).l,d2            ; 01082

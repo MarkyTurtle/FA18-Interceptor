@@ -644,7 +644,7 @@ l_009_00804:
         asr.l   d6,d3                           ; 00828
         add.l   (ViewOffsetY8).l,d1             ; 0082A
         asr.l   d6,d1                           ; 00830
-        move.l  d1,(dat_071_0050C).l            ; 00832
+        move.l  d1,(ObjectViewY).l              ; 00832
         move.b  #$1,(dat_071_0028B).l           ; 00838
 l_009_00840:
         jsr     (ScaledViewOffset).l            ; 00840

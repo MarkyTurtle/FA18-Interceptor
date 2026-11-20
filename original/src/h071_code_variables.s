@@ -78,7 +78,8 @@ dat_071_00034:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00038:
+; TitleTimer - The title and menu screens' timer (TimeSeconds-based; $1F0000 to wait).
+TitleTimer:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -285,7 +286,9 @@ ModeObjects:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0010E:
+; TextCursor - Where text is printed next (a byte offset in the planes; $1B8 at the top of a
+; page).
+TextCursor:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -377,7 +380,9 @@ AircraftChosen:
 ; MenuOption - A second choice with a menu key: 1 next mission/save log, 2 clear log.
 MenuOption:
 	dc.b	$00
-dat_071_00163:
+; TrainingReady - Set when the flight is ready; the training's instructor and TargetReadout
+; test it.
+TrainingReady:
 	dc.b	$00
 	dc.b	$00
 ; FlightScreen - Set while the screen shows the flight (the 3D view and the cockpit), so
@@ -411,7 +416,9 @@ dat_071_0016F:
 	dc.b	$00
 dat_071_00170:
 	dc.b	$00
-dat_071_00171:
+; HUDOn - Whether the head-up display shows its readouts (the G load, height, speed, heading
+; and gun sight): set when the flight starts, toggled by the H key.
+HUDOn:
 	dc.b	$00
 dat_071_00172:
 	dc.b	$00
@@ -429,7 +436,8 @@ dat_071_00176:
 ; cleared when the view changes; DrawModel draws more detail when it is 3 or less.
 ViewZoom:
 	dc.b	$00
-dat_071_00178:
+; ZoomKeyHeld - Cleared by the keypad's view keys (KP1, 2, 4, 6, 7) and sub_005_00CEE.
+ZoomKeyHeld:
 	dc.b	$00
 dat_071_00179:
 	dc.b	$00
@@ -468,7 +476,9 @@ NewView:
 ; CameraShotStep - Which shot of the camera sequence is on (set by the CameraShots steps).
 CameraShotStep:
 	dc.b	$00
-dat_071_00187:
+; JustFired - Set when the player fires a missile (PlayerLaunch); the computer pilots'
+; reactions read and clear it.
+JustFired:
 	dc.b	$00
 dat_071_00188:
 	dc.b	$00
@@ -692,7 +702,9 @@ dat_071_00201:
 	dc.b	$00
 dat_071_00202:
 	dc.b	$00
-dat_071_00203:
+; SavedOutsideView - The outside view to go back to (SwitchView sets OutsideView from it); -1
+; from the Enter key and the judges.
+SavedOutsideView:
 	dc.b	$00
 dat_071_00204:
 	dc.b	$00
@@ -733,7 +745,8 @@ dat_071_00210:
 	dc.b	$00
 dat_071_00211:
 	dc.b	$00
-dat_071_00212:
+; PanelIndicatorBlink - Frames of blinking for sub_037_0049C's indicator (8 from the E key).
+PanelIndicatorBlink:
 	dc.b	$00
 ; StoresRedraw - Frames left to redraw the stores display (DrawStores): set to 3 when a weapon
 ; is fired or selected.
@@ -742,9 +755,14 @@ StoresRedraw:
 ; MissilesLeftRedraw - Frames left to redraw the missiles left (ShowMissilesLeft).
 MissilesLeftRedraw:
 	dc.b	$00
-dat_071_00215:
+; PanelLampRedraw - Frames left to redraw sub_037_00674's lamp (3 from the A key and
+; UpdateObject).
+PanelLampRedraw:
 	dc.b	$00
-dat_071_00216:
+; AfterburnerOn - AfterburnerOn - Set (with a beep) while the player's throttle setting (+$6C)
+; is $1200 or more and he has not ejected: probably the afterburner, whose lamp on the panel
+; blinks (sub_037_00674).
+AfterburnerOn:
 	dc.b	$00
 dat_071_00217:
 	dc.b	$00
@@ -764,9 +782,12 @@ dat_071_0021C:
 	dc.b	$00
 dat_071_0021D:
 	dc.b	$00
-dat_071_0021E:
+; ChaffTime - Frames left of the chaff just dropped (30 from the C key), as FlareTime.
+ChaffTime:
 	dc.b	$00
-dat_071_0021F:
+; FlareTime - Frames left of the flare just dropped (30 from the F key): while it lasts,
+; missiles may be drawn off (UpdateObject).
+FlareTime:
 	dc.b	$00
 ; ViewPlace - Which part of its map cell the view is in (UpdateViewCell): used to pick the
 ; scenery and by the view tables (LookupViewTable).
@@ -840,7 +861,9 @@ dat_071_0023A:
 ; scenery is drawn (the ground dots, the shadow, the shapes' operations).
 HeightBand:
 	dc.b	$00
-dat_071_0023C:
+; HeightMid - Set by SetHeightBand while the view is between heights $1C2 and $C80 (x 8);
+; tested by the scenery drawing.
+HeightMid:
 	dc.b	$00
 ; RadarBlipBits - Bits set by DrawRadarBlips for the kinds of blip drawn this frame.
 RadarBlipBits:
@@ -864,7 +887,8 @@ dat_071_00241:
 	dc.b	$00
 dat_071_00248:
 	dc.b	$00
-dat_071_00249:
+; LeftAmigaDown - Set while the left Amiga key is held.
+LeftAmigaDown:
 	dc.b	$00
 dat_071_0024A:
 	dc.b	$00
@@ -894,9 +918,12 @@ dat_071_0025A:
 	dc.b	$00
 dat_071_0025B:
 	dc.b	$00
-dat_071_0025C:
+; BulletHitAircraft - Which aircraft (number + 1) a bullet hit this frame, kept for
+; CheckOnTail's reaction; cleared by MoveBullet.
+BulletHitAircraft:
 	dc.b	$00
-dat_071_0025D:
+; BulletHitAircraft2 - As BulletHitAircraft, for the other kind of hit.
+BulletHitAircraft2:
 	dc.b	$00
 ; WarningTicks - The warning beat of this frame (WarningTicker): bits for every 8th, 4th and
 ; 2nd frame.
@@ -1248,7 +1275,8 @@ TargetBoxPos:
 dat_071_00314:
 	dc.b	$00
 	dc.b	$00
-dat_071_00316:
+; GLoadValue - The G load (worked out in UpdateAttitude's sub_032_00946; ShowGLoad prints it).
+GLoadValue:
 	dc.b	$00
 	dc.b	$00
 ; ViewBlockX - The view's cell X / 4: its block on the coarse scenery grid (SceneryMap0 and 1).
@@ -1316,7 +1344,8 @@ dat_071_00338:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0033E:
+; FillBoxSize - The fill's box size for the blitter (BLTSIZE), worked out by FillPolygonPlane.
+FillBoxSize:
 	dc.b	$00
 	dc.b	$00
 dat_071_00340:
@@ -1383,7 +1412,9 @@ FrameEvents2:
 ; JoyEvents - Joystick button events waiting for ReadControls (bit 2 fire down, bit 3 fire up).
 JoyEvents:
 	dc.b	$00
-dat_071_0036B:
+; ToggleKeys - Keys pressed this frame that switch something (bits: 0 backslash, 1 F, 2 C, 3
+; J), for the recording.
+ToggleKeys:
 	dc.b	$00
 ; ViewKeys - The view keys pressed since the last frame (bits: 0 M, 1-2 Enter, 3 KP5, 4 KP8, 5
 ; KP9, 6 KP6, 7 KP3), passed on each frame by ReadControls (FrameEvents2).
@@ -1523,7 +1554,8 @@ RadarScale:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0041C:
+; ScaledVector - ScaleToLength's result (x, y, z words).
+ScaledVector:
 	dc.b	$00
 	dc.b	$00
 dat_071_0041E:
@@ -1532,17 +1564,20 @@ dat_071_0041E:
 dat_071_00420:
 	dc.b	$00
 	dc.b	$00
-dat_071_00422:
+; HitPointX - The point of a bullet's hit (x, then HitPointY and HitPointZ), for its effects.
+HitPointX:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00426:
+; HitPointY - The hit's height (see HitPointX).
+HitPointY:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0042A:
+; HitPointZ - The hit's z (see HitPointX).
+HitPointZ:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1614,7 +1649,9 @@ dat_071_00454:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00458:
+; OutsideCamPos - The outside camera's position (x, y, z longs; SetOutsideCamera,
+; CockpitViewMatrix).
+OutsideCamPos:
 	dc.b	$00
 	dc.b	$00
 dat_071_0045A:
@@ -1633,7 +1670,7 @@ dat_071_00462:
 	dc.b	$00
 	dc.b	$00
 ; OutsideCamPitch - The outside camera's pitch (90 degrees, $1C20, looking straight down for
-; the map view); with OutsideCamHeading, from dat_071_00490 / 00492 when it follows.
+; the map view); with OutsideCamHeading, from TargetPitch / 00492 when it follows.
 OutsideCamPitch:
 	dc.b	$00
 	dc.b	$00
@@ -1689,15 +1726,20 @@ dat_071_0048A:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00490:
+; TargetPitch - The pitch worked out by VectorToAngles (with TargetHeading).
+TargetPitch:
 	dc.b	$00
 	dc.b	$00
-dat_071_00492:
+; TargetHeading - A heading worked out by VectorToAngles (the direction to something), used by
+; BogeyVector, AimObject and UpdateAttitude.
+TargetHeading:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00496:
+; ClipPoint - A point (three words) worked out by the clipping (the line clips, the horizon's
+; crossings).
+ClipPoint:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1707,7 +1749,8 @@ dat_071_00496:
 ClipSwitch:
 	dc.b	$00
 	dc.b	$00
-dat_071_0049C:
+; DivideWhat - Divide's dividend (a long).
+DivideWhat:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1866,17 +1909,21 @@ ObjectViewPosL:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00504:
+; ObjectViewPosYL - The y long of ObjectViewPosL.
+ObjectViewPosYL:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00508:
+; ObjectViewPosZL - The z long of ObjectViewPosL.
+ObjectViewPosZL:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0050C:
+; ObjectViewY - The drawn object's height relative to the camera (a long), used by DrawModel as
+; its y.
+ObjectViewY:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1886,7 +1933,9 @@ dat_071_0050C:
 ObjectDistance:
 	dc.b	$00
 	dc.b	$00
-dat_071_00512:
+; ObjectDistanceSound - A distance kept by DrawObjects for the cockpit sounds ($7FFF when
+; none).
+ObjectDistanceSound:
 	dc.b	$00
 	dc.b	$00
 ; TargetRangeLast - The locked target's range (+$4A) the last time it was measured, for

@@ -222,7 +222,7 @@ l_020_00236:
 sub_020_00238:
         tst.b   (MusicState).l                  ; 00238
         beq.b   l_020_00236                     ; 0023E
-        move.l  (dat_071_00038).l,d0            ; 00240
+        move.l  (TitleTimer).l,d0               ; 00240
         move.l  (dat_074_000FE).l,d1            ; 00246
         cmp.l   d0,d1                           ; 0024C
         beq.b   l_020_00236                     ; 0024E
@@ -293,7 +293,7 @@ l_020_002CC:
         movem.l d0-d5,-(a7)                     ; 00324
         jsr     (VectorToAngles).l              ; 00328
         adda.w  #$18,a7                         ; 0032E
-        move.w  (dat_071_00492).l,d0            ; 00332
+        move.w  (TargetHeading).l,d0            ; 00332
         ext.l   d0                              ; 00338
         divu.w  #$50,d0                         ; 0033A
         ext.l   d0                              ; 0033E
@@ -869,7 +869,7 @@ ScaleToLengthD0:
 
 ;-------------------------------------------------------------------------------
 ; ScaleToLength - ScaleToLength(length, x, y, z): the vector (x, y, z) made length long (its
-; size from VectorLength), into dat_071_0041C, 0041E, 00420.
+; size from VectorLength), into ScaledVector, 0041E, 00420.
 ;-------------------------------------------------------------------------------
 ScaleToLength:
         link.w  a6,#$fffc                       ; 009A4
@@ -928,7 +928,7 @@ l_020_009F2:
         neg.w   d6                              ; 00A0E
         neg.w   d7                              ; 00A10
 l_020_00A12:
-        movem.w d5-d7,(dat_071_0041C).l         ; 00A12
+        movem.w d5-d7,(ScaledVector).l          ; 00A12
         ext.l   d5                              ; 00A1A
         ext.l   d6                              ; 00A1C
         ext.l   d7                              ; 00A1E
@@ -1001,7 +1001,7 @@ l_020_00A82:
         neg.w   d6                              ; 00A9E
         neg.w   d7                              ; 00AA0
 l_020_00AA2:
-        movem.w d5-d7,(dat_071_0041C).l         ; 00AA2
+        movem.w d5-d7,(ScaledVector).l          ; 00AA2
         ext.l   d5                              ; 00AAA
         ext.l   d6                              ; 00AAC
         ext.l   d7                              ; 00AAE
@@ -1120,11 +1120,11 @@ l_020_00BCE:
         rts                                     ; 00BCE
 
 ;-------------------------------------------------------------------------------
-; Divide - DivideResult = dat_071_0049C (long) / DivideBy (word), rounded.
+; Divide - DivideResult = DivideWhat (long) / DivideBy (word), rounded.
 ;-------------------------------------------------------------------------------
 Divide:
         movem.l d0-d2,-(a7)                     ; 00BD0
-        move.l  (dat_071_0049C).l,d0            ; 00BD4
+        move.l  (DivideWhat).l,d0               ; 00BD4
         move.w  (DivideBy).l,d1                 ; 00BDA
         move.w  d1,d2                           ; 00BE0
         bge.b   l_020_00BE6                     ; 00BE2
