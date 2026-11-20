@@ -756,10 +756,10 @@ l_036_006D2:
         move.w  d6,d5                           ; 006FC
         tst.w   (DrawXor).l                     ; 006FE
         blt.b   l_036_00710                     ; 00704
-        btst    #$0,(dat_071_000B9).l           ; 00706
+        btst    #$0,(FillPatternBits).l         ; 00706
         bra.b   l_036_00718                     ; 0070E
 l_036_00710:
-        btst    #$0,(dat_071_00327).l           ; 00710
+        btst    #$0,(ColourPlaneBits).l         ; 00710
 l_036_00718:
         beq.b   l_036_00720                     ; 00718
         addi.w  #$fa,d5                         ; 0071A
@@ -790,10 +790,10 @@ l_036_0075A:
         move.w  d6,d5                           ; 00764
         tst.w   (DrawXor).l                     ; 00766
         blt.b   l_036_00778                     ; 0076C
-        btst    #$1,(dat_071_000B9).l           ; 0076E
+        btst    #$1,(FillPatternBits).l         ; 0076E
         bra.b   l_036_00780                     ; 00776
 l_036_00778:
-        btst    #$1,(dat_071_00327).l           ; 00778
+        btst    #$1,(ColourPlaneBits).l         ; 00778
 l_036_00780:
         beq.b   l_036_00788                     ; 00780
         addi.w  #$fa,d5                         ; 00782
@@ -824,10 +824,10 @@ l_036_007C2:
         move.w  d6,d5                           ; 007CC
         tst.w   (DrawXor).l                     ; 007CE
         blt.b   l_036_007E0                     ; 007D4
-        btst    #$2,(dat_071_000B9).l           ; 007D6
+        btst    #$2,(FillPatternBits).l         ; 007D6
         bra.b   l_036_007E8                     ; 007DE
 l_036_007E0:
-        btst    #$2,(dat_071_00327).l           ; 007E0
+        btst    #$2,(ColourPlaneBits).l         ; 007E0
 l_036_007E8:
         beq.b   l_036_007F0                     ; 007E8
         addi.w  #$fa,d5                         ; 007EA
@@ -858,10 +858,10 @@ l_036_0082A:
         move.w  d6,d5                           ; 00834
         tst.w   (DrawXor).l                     ; 00836
         blt.b   l_036_00848                     ; 0083C
-        btst    #$3,(dat_071_000B9).l           ; 0083E
+        btst    #$3,(FillPatternBits).l         ; 0083E
         bra.b   l_036_00850                     ; 00846
 l_036_00848:
-        btst    #$3,(dat_071_00327).l           ; 00848
+        btst    #$3,(ColourPlaneBits).l         ; 00848
 l_036_00850:
         beq.b   l_036_00858                     ; 00850
         addi.w  #$fa,d5                         ; 00852
@@ -1496,13 +1496,13 @@ l_036_00F00:
         moveq   #$0,d0                          ; 00F00
         moveq   #$0,d7                          ; 00F02
 l_036_00F04:
-        move.l  d1,(dat_071_00338).l            ; 00F04
+        move.l  d1,(FillBoxStart).l             ; 00F04
         move.l  d2,d1                           ; 00F0A
         add.l   (FillPlane).l,d1                ; 00F0C
         sub.l   d7,d1                           ; 00F12
         move.l  d1,(dat_071_00330).l            ; 00F14
         move.l  d1,d2                           ; 00F1A
-        move.l  d1,(dat_071_00334).l            ; 00F1C
+        move.l  d1,(FillBoxModulo).l            ; 00F1C
         sub.w   (dat_071_00350).l,d5            ; 00F22
         addq.w  #$1,d5                          ; 00F28
         move.w  d5,d7                           ; 00F2A
@@ -1540,10 +1540,10 @@ FillPatterned:
         move.l  $4(a2),d2                       ; 00F82
         move.l  (a2),d3                         ; 00F86
         move.w  (FillBoxSize).l,d0              ; 00F88
-        move.l  (dat_071_00338).l,d1            ; 00F8E
+        move.l  (FillBoxStart).l,d1             ; 00F8E
         add.l   d1,d2                           ; 00F94
         add.l   d1,d3                           ; 00F96
-        move.l  (dat_071_00334).l,d1            ; 00F98
+        move.l  (FillBoxModulo).l,d1            ; 00F98
         lea.l   (CUSTOM).l,a0                    ; 00F9E
         move.w  #$fca,d4                        ; 00FA4
 l_036_00FA8:
@@ -1572,9 +1572,9 @@ PlaneOpUnderFill:
         movea.l (DrawPlanes).l,a2               ; 00FDC
         move.l  (a2,d0.w),d2                    ; 00FE2
         move.w  (FillBoxSize).l,d0              ; 00FE6
-        move.l  (dat_071_00338).l,d1            ; 00FEC
+        move.l  (FillBoxStart).l,d1             ; 00FEC
         add.l   d2,d1                           ; 00FF2
-        move.l  (dat_071_00334).l,d2            ; 00FF4
+        move.l  (FillBoxModulo).l,d2            ; 00FF4
         lea.l   (CUSTOM).l,a0                    ; 00FFA
 l_036_01000:
         btst    #$6,DMACONR(a0)                 ; 01000
@@ -1626,9 +1626,9 @@ FillPanelPlane:
         movea.l (DrawPlanes).l,a2               ; 0106A
         move.l  (a2,d0.w),d2                    ; 01070
         move.w  (FillBoxSize).l,d0              ; 01074
-        move.l  (dat_071_00338).l,d1            ; 0107A
+        move.l  (FillBoxStart).l,d1             ; 0107A
         add.l   d2,d1                           ; 01080
-        move.l  (dat_071_00334).l,d2            ; 01082
+        move.l  (FillBoxModulo).l,d2            ; 01082
         move.w  (dat_071_00352).l,d6            ; 01088
         sub.w   (ViewY).l,d6                    ; 0108E
         subi.w  #$b7,d6                         ; 01094

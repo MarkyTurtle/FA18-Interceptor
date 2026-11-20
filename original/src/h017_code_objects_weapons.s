@@ -287,7 +287,7 @@ CheckLockedTarget:
         beq.b   l_017_00466                     ; 0044E
 l_017_00450:
         move.w  #$ffff,(LockedTarget).l         ; 00450
-        clr.b   (dat_071_00238).l               ; 00458
+        clr.b   (RadarLockState).l              ; 00458
         move.w  #$ffff,(SeekerPos).l            ; 0045E
 l_017_00466:
         rts                                     ; 00466
@@ -442,7 +442,7 @@ l_017_005E4:
         bclr    #$3,$2(a1)                      ; 005F0
         beq.w   l_017_006C0                     ; 005F6
         move.b  (TrainingStep).l,d0             ; 005FA
-        cmpi.b  #$ff,(dat_071_0016A).l          ; 00600
+        cmpi.b  #$ff,(TrainingWaitKey).l        ; 00600
         beq.b   l_017_00616                     ; 00608
         addq.b  #$1,d0                          ; 0060A
         cmpi.b  #$7,d0                          ; 0060C
@@ -460,7 +460,7 @@ l_017_00628:
         lea.l   (dat_017_009A2).l,a5            ; 0062C
         move.w  (a5,d0.w),d0                    ; 00632
         jsr     (StartWarning).l                ; 00636
-        move.b  #$fe,(dat_071_0016A).l          ; 0063C
+        move.b  #$fe,(TrainingWaitKey).l        ; 0063C
         move.b  $63(a1),d1                      ; 00644
         lea.l   (a2),a4                         ; 00648
         lea.l   (a1),a5                         ; 0064A
@@ -600,9 +600,9 @@ l_017_0081C:
         beq.b   l_017_0086A                     ; 00824
         bclr    #$3,$2(a1)                      ; 00826
         bne.b   l_017_0086A                     ; 0082C
-        tst.b   (dat_071_0016A).l               ; 0082E
+        tst.b   (TrainingWaitKey).l             ; 0082E
         blt.w   l_017_008CA                     ; 00834
-        move.b  #$ff,(dat_071_0016A).l          ; 00838
+        move.b  #$ff,(TrainingWaitKey).l        ; 00838
         move.b  (TrainingStep).l,d0             ; 00840
         addq.b  #$1,d0                          ; 00846
         cmpi.b  #$7,d0                          ; 00848
@@ -616,7 +616,7 @@ l_017_00852:
         jsr     (StartWarning).l                ; 00860
         bra.w   l_017_008CA                     ; 00866
 l_017_0086A:
-        clr.b   (dat_071_0016A).l               ; 0086A
+        clr.b   (TrainingWaitKey).l             ; 0086A
         cmpi.b  #$7,(TrainingStep).l            ; 00870
         blt.b   l_017_00894                     ; 00878
         move.l  a1,-(a7)                        ; 0087A
@@ -846,7 +846,7 @@ l_017_00B54:
         subi.l  #ObjectTable,d0                 ; 00B5A
         cmp.w   (ViewObject).l,d0               ; 00B60
         bne.b   l_017_00B78                     ; 00B66
-        move.b  #$8,(dat_071_00167).l           ; 00B68
+        move.b  #$8,(EngineSoundHold).l         ; 00B68
         move.b  #$fb,(EngineSoundRequest).l     ; 00B70
 l_017_00B78:
         lea.l   (a2),a4                         ; 00B78
@@ -1293,7 +1293,7 @@ l_017_010FE:
         moveq   #$1,d0                          ; 010FE
         rts                                     ; 01100
 l_017_01102:
-        move.b  (dat_071_00158).l,d1            ; 01102
+        move.b  (ObjectsHeld).l,d1              ; 01102
         or.b    (WorldFrozen).l,d1              ; 01108
         bne.b   l_017_010FE                     ; 0110E
         move.w  $0(a1),d1                       ; 01110
@@ -1373,7 +1373,7 @@ l_017_011EE:
         cmp.w   (ViewObjectIndex).l,d1          ; 01200
         beq.b   l_017_0121A                     ; 01206
         jsr     (ViewFollow).l                  ; 01208
-        clr.b   (dat_071_001A9).l               ; 0120E
+        clr.b   (ReadoutsDrawn).l               ; 0120E
         jsr     (sub_005_00B8E).l               ; 01214
 l_017_0121A:
         movem.l (a7)+,d0-d2                     ; 0121A
@@ -1464,7 +1464,7 @@ l_017_012C8:
 l_017_012CA:
         btst    #$6,$1(a1)                      ; 012CA
         beq.b   l_017_012C8                     ; 012D0
-        move.b  (dat_071_00158).l,d1            ; 012D2
+        move.b  (ObjectsHeld).l,d1              ; 012D2
         or.b    (WorldFrozen).l,d1              ; 012D8
         bne.b   l_017_012E6                     ; 012DE
         subq.w  #$1,$4c(a1)                     ; 012E0

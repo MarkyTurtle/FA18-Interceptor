@@ -2290,7 +2290,7 @@ l_000_0934A:
         ble.b   l_000_0935A                     ; 09352
         subi.w  #$100,-$c(a6)                   ; 09354
 l_000_0935A:
-        move.b  (dat_071_001A8).l,d0            ; 0935A
+        move.b  (MouseActive).l,d0              ; 0935A
         tst.b   d0                              ; 09360
         bne.b   l_000_09374                     ; 09362
         tst.w   -$c(a6)                         ; 09364
@@ -3424,7 +3424,7 @@ PlaySweep:
         bra.b   l_000_0A188                     ; 0A176
 l_000_0A178:
         move.b  #$fa,(EngineSoundRequest).l     ; 0A178
-        move.b  #$2,(dat_071_00167).l           ; 0A180
+        move.b  #$2,(EngineSoundHold).l         ; 0A180
 l_000_0A188:
         unlk    a6                              ; 0A188
         rts                                     ; 0A18A

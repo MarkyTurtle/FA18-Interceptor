@@ -25,8 +25,8 @@ RedrawInstruments:
         move.b  d4,(dat_071_00209).l            ; 00016
         move.b  d4,(dat_071_0020A).l            ; 0001C
         move.b  d4,(PanelIndicatorRedraw).l     ; 00022
-        move.b  d4,(dat_071_0020F).l            ; 00028
-        move.b  d4,(dat_071_00210).l            ; 0002E
+        move.b  d4,(BackslashLampRedraw).l      ; 00028
+        move.b  d4,(JLampRedraw).l              ; 0002E
         move.b  d4,(dat_071_00211).l            ; 00034
         move.b  d4,(WeaponRangeRedraw).l        ; 0003A
         move.b  d4,(RadarRangeRedraw).l         ; 00040
@@ -63,7 +63,7 @@ FirePressed:
         bne.b   l_006_000B4                     ; 00098
         cmpi.b  #$7d,(GameMode).l               ; 0009A
         bne.b   l_006_000B6                     ; 000A2
-        tst.b   (dat_071_0016A).l               ; 000A4
+        tst.b   (TrainingWaitKey).l             ; 000A4
         bge.b   l_006_000B4                     ; 000AA
         bset    #$3,(Object4_02).l              ; 000AC
 l_006_000B4:
@@ -136,7 +136,7 @@ ResetPlayerAircraft:
         move.b  #$3,(MissilesLeftRedraw).l      ; 00180
         move.b  #$10,(dat_071_0021C).l          ; 00188
         move.b  #$10,(dat_071_0021D).l          ; 00190
-        clr.b   (dat_071_0025B).l               ; 00198
+        clr.b   (CountermeasureSound).l         ; 00198
         clr.b   (BulletHitAircraft2).l          ; 0019E
         clr.b   (BulletHitAircraft).l           ; 001A4
         clr.w   (RescuePod).l                   ; 001AA

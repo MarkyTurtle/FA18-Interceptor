@@ -868,13 +868,13 @@ ShapeSkipWord:
         rts                                     ; 00904
 
 ;-------------------------------------------------------------------------------
-; ShapeSelectVariant - Op $134: skips (dat_071_00217 & $7F) x $12 bytes: picks one of several
+; ShapeSelectVariant - Op $134: skips (ModelVariant & $7F) x $12 bytes: picks one of several
 ; variants.
 ;-------------------------------------------------------------------------------
 ShapeSelectVariant:
         lea.l   (ObjectTable).l,a3              ; 00906
         adda.w  (CurrentObjectOffset).l,a3      ; 0090C
-        move.b  (dat_071_00217).l,d1            ; 00912
+        move.b  (ModelVariant).l,d1             ; 00912
         bclr    #$7,d1                          ; 00918
         ext.w   d1                              ; 0091C
         add.w   d1,d1                           ; 0091E

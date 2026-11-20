@@ -189,7 +189,7 @@ DrawRadarBlips:
         add.w   (ViewY).l,d1                    ; 0025E
         jsr     (Plot).l                        ; 00264
 l_038_0026A:
-        tst.b   (dat_071_00208).l               ; 0026A
+        tst.b   (ObjectsDrawnCount).l           ; 0026A
         beq.w   l_038_000FC                     ; 00270
         lea.l   (RadarBlips).l,a2               ; 00274
         tst.w   (DisplayBuffer).l               ; 0027A
@@ -220,7 +220,7 @@ l_038_002B8:
         dbra    d2,l_038_00290                  ; 002BC
 l_038_002C0:
         moveq   #$0,d7                          ; 002C0
-        addq.b  #$1,(dat_071_00253).l           ; 002C2
+        addq.b  #$1,(BlinkCounter).l            ; 002C2
         clr.b   (RadarBlipBits).l               ; 002C8
         lea.l   (RadarList).l,a0                ; 002CE
         moveq   #$1,d6                          ; 002D4
@@ -402,7 +402,7 @@ l_038_004BE:
         add.w   d4,d4                           ; 00518
         cmp.w   (LockedTarget).l,d4             ; 0051A
         bne.b   l_038_0052E                     ; 00520
-        btst    #$0,(dat_071_00253).l           ; 00522
+        btst    #$0,(BlinkCounter).l            ; 00522
         beq.w   l_038_005E6                     ; 0052A
 l_038_0052E:
         move.l  a0,-(a7)                        ; 0052E
@@ -519,7 +519,7 @@ l_038_0066E:
 l_038_0067A:
         ori.l   #$2,(SoundRequests).l           ; 0067A
 l_038_00684:
-        move.b  #$18,(dat_071_00257).l          ; 00684
+        move.b  #$18,(RadarBlipTimer).l         ; 00684
         bra.b   l_038_006DE                     ; 0068C
 l_038_0068E:
         btst    #$1,d0                          ; 0068E
@@ -594,18 +594,18 @@ l_038_00736:
         bne.b   l_038_007B4                     ; 00780
         move.w  d2,(LockedTarget).l             ; 00782
         move.w  #$1,(TargetReadoutMode).l       ; 00788
-        move.b  #$1,(dat_071_00256).l           ; 00790
-        move.b  #$ff,(dat_071_00257).l          ; 00798
+        move.b  #$1,(TargetReadoutCount).l      ; 00790
+        move.b  #$ff,(RadarBlipTimer).l         ; 00798
         asr.w   #$4,d0                          ; 007A0
         addq.b  #$1,d0                          ; 007A2
-        move.b  d0,(dat_071_00238).l            ; 007A4
+        move.b  d0,(RadarLockState).l           ; 007A4
         andi.w  #$dfff,(WarningBits).l          ; 007AA
         bra.b   l_038_007CC                     ; 007B2
 l_038_007B4:
         addi.w  #$10,d0                         ; 007B4
         bra.w   l_038_00736                     ; 007B8
 l_038_007BC:
-        move.b  #$0,(dat_071_00238).l           ; 007BC
+        move.b  #$0,(RadarLockState).l          ; 007BC
         move.w  #$ffff,(LockedTarget).l         ; 007C4
 l_038_007CC:
         rts                                     ; 007CC

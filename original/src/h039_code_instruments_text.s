@@ -435,7 +435,7 @@ l_039_005B4:
 ShowHeadingText:
         tst.b   (OutsideView).l                 ; 005B6
         beq.w   l_039_00648                     ; 005BC
-        tst.b   (dat_071_001A9).l               ; 005C0
+        tst.b   (ReadoutsDrawn).l               ; 005C0
         beq.b   l_039_005B4                     ; 005C6
         btst    #$6,(dat_071_0029D).l           ; 005C8
         beq.b   l_039_005B4                     ; 005D0
@@ -491,7 +491,7 @@ ShowSpeed:
 l_039_0066A:
         tst.b   (OutsideView).l                 ; 0066A
         beq.b   l_039_00686                     ; 00670
-        tst.b   (dat_071_001A9).l               ; 00672
+        tst.b   (ReadoutsDrawn).l               ; 00672
         beq.b   l_039_00692                     ; 00678
         btst    #$6,(dat_071_0029D).l           ; 0067A
         beq.b   l_039_00692                     ; 00682
@@ -545,7 +545,7 @@ l_039_006EA:
 ; in another mode).
 ;-------------------------------------------------------------------------------
 ShowAltitude:
-        tst.b   (dat_071_00174).l               ; 0071A
+        tst.b   (RadarAltimeterOn).l            ; 0071A
         beq.b   l_039_00738                     ; 00720
         move.l  (dat_071_0002C).l,d0            ; 00722
         cmpi.l  #$1869f,d0                      ; 00728
@@ -565,7 +565,7 @@ l_039_00738:
 l_039_00754:
         tst.b   (OutsideView).l                 ; 00754
         beq.b   l_039_00770                     ; 0075A
-        tst.b   (dat_071_001A9).l               ; 0075C
+        tst.b   (ReadoutsDrawn).l               ; 0075C
         beq.b   l_039_00790                     ; 00762
         btst    #$6,(dat_071_0029D).l           ; 00764
         beq.b   l_039_00790                     ; 0076C
@@ -701,7 +701,7 @@ l_039_0090A:
         move.w  d0,(GridZShown).l               ; 0090A
         move.b  #$2,(dat_071_00209).l           ; 00910
 l_039_00918:
-        tst.b   (dat_071_00174).l               ; 00918
+        tst.b   (RadarAltimeterOn).l            ; 00918
         bne.b   l_039_0092E                     ; 0091E
         ext.l   d0                              ; 00920
         move.l  d0,(BCDIn).l                    ; 00922
@@ -743,7 +743,7 @@ l_039_00998:
         move.w  d0,(GridXShown).l               ; 00998
         move.b  #$2,(dat_071_0020A).l           ; 0099E
 l_039_009A6:
-        tst.b   (dat_071_00174).l               ; 009A6
+        tst.b   (RadarAltimeterOn).l            ; 009A6
         bne.b   l_039_009BC                     ; 009AC
         ext.l   d0                              ; 009AE
         move.l  d0,(BCDIn).l                    ; 009B0
@@ -776,20 +776,20 @@ TargetReadout:
         move.w  (StatusBits).l,d3               ; 009F8
         andi.w  #$81,d3                         ; 009FE
         bne.w   l_039_00C10                     ; 00A02
-        subq.b  #$1,(dat_071_00257).l           ; 00A06
+        subq.b  #$1,(RadarBlipTimer).l          ; 00A06
         bge.w   l_039_00C10                     ; 00A0C
-        move.b  #$ff,(dat_071_00257).l          ; 00A10
+        move.b  #$ff,(RadarBlipTimer).l         ; 00A10
         lea.l   (ObjectTable).l,a1              ; 00A18
         tst.b   (TargetReadoutRedraw).l         ; 00A1E
         bgt.b   l_039_00A6A                     ; 00A24
-        tst.b   (dat_071_00256).l               ; 00A26
+        tst.b   (TargetReadoutCount).l          ; 00A26
         blt.b   l_039_00A40                     ; 00A2C
-        btst    #$0,(dat_071_00256).l           ; 00A2E
+        btst    #$0,(TargetReadoutCount).l      ; 00A2E
         beq.b   l_039_009EC                     ; 00A36
         move.w  (TargetReadoutMode).l,d0        ; 00A38
         bra.b   l_039_00A58                     ; 00A3E
 l_039_00A40:
-        move.b  #$1,(dat_071_00256).l           ; 00A40
+        move.b  #$1,(TargetReadoutCount).l      ; 00A40
         move.w  (TargetReadoutMode).l,d0        ; 00A48
         addq.w  #$1,d0                          ; 00A4E
         cmpi.w  #$3,d0                          ; 00A50
@@ -1680,7 +1680,7 @@ l_039_013C4:
         bgt.b   l_039_013E6                     ; 013DC
         ori.b   #$80,(TextStatus).l             ; 013DE
 l_039_013E6:
-        clr.b   (dat_071_00193).l               ; 013E6
+        clr.b   (TextShowing).l                 ; 013E6
 l_039_013EC:
         rts                                     ; 013EC
 
@@ -1704,7 +1704,7 @@ PrintText:
         bne.b   l_039_01414                     ; 0140C
         move.w  d0,(TextPageShown).l            ; 0140E
 l_039_01414:
-        tst.b   (dat_071_00193).l               ; 01414
+        tst.b   (TextShowing).l                 ; 01414
         bne.w   l_039_0151A                     ; 0141A
         clr.b   (InputPos).l                    ; 0141E
         lea.l   (TextColumns).l,a1              ; 01424
@@ -1761,7 +1761,7 @@ l_039_014C4:
         move.b  #$1,(PrintDelay).l              ; 014C4
         move.b  #$1,(dat_071_001AF).l           ; 014CC
 l_039_014D4:
-        move.b  #$1,(dat_071_00193).l           ; 014D4
+        move.b  #$1,(TextShowing).l             ; 014D4
         move.b  (a2)+,(PageFlags).l             ; 014DC
         move.b  (a2)+,d1                        ; 014E2
         move.b  d1,d6                           ; 014E4

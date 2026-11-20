@@ -178,7 +178,9 @@ DrawMask:
 ; DrawXor - >= 0: XOR the planes in DrawXorMask.
 DrawXor:
 	dc.b	$00
-dat_071_000B9:
+; FillPatternBits - The low byte of FillPattern's second word: DrawLine draws in the planes
+; whose bits are set.
+FillPatternBits:
 	dc.b	$00
 ; FillPattern2 - The second long of FillPattern.
 FillPattern2:
@@ -352,11 +354,15 @@ FlightPhysics:
 ; 5 steps it.
 OutsideView:
 	dc.b	$00
-dat_071_00156:
+; HeightBandChanged - Set by SetHeightBand when the height band changes, so that the scenery
+; lists are rebuilt.
+HeightBandChanged:
 	dc.b	$00
 dat_071_00157:
 	dc.b	$00
-dat_071_00158:
+; ObjectsHeld - Set (with WorldFrozen) to hold the objects still while the flight is being
+; readied.
+ObjectsHeld:
 	dc.b	$00
 dat_071_00159:
 	dc.b	$00
@@ -392,7 +398,9 @@ FlightScreen:
 ; BriefingLastKey - The key last seen on the briefing screens (to act on a new press only).
 BriefingLastKey:
 	dc.b	$00
-dat_071_00167:
+; EngineSoundHold - Frames for which the engine sound is held back while another sound plays
+; (set by the engine, missiles and PlaySweep).
+EngineSoundHold:
 	dc.b	$00
 ; MissionResult - $FF objective achieved, $FE mission failed, $FD Air Force One shot down, $FC
 ; mission completed (landed); then $F0 back to the menu, $EF qualified.
@@ -402,7 +410,9 @@ MissionResult:
 ; or when one is done.
 TrainingStep:
 	dc.b	$00
-dat_071_0016A:
+; TrainingWaitKey - The training instructor waiting for the player ($FF / $FE, TrainingPilot):
+; Return and fire are tested against it.
+TrainingWaitKey:
 	dc.b	$00
 	dc.b	$00
 dat_071_0016C:
@@ -426,7 +436,9 @@ dat_071_00172:
 ; during the start).
 KeyPressed:
 	dc.b	$00
-dat_071_00174:
+; RadarAltimeterOn - Set when the height shown is the radar altimeter's (dat_071_00028) rather
+; than the height above the sea.
+RadarAltimeterOn:
 	dc.b	$00
 dat_071_00175:
 	dc.b	$00
@@ -508,7 +520,9 @@ ShakeKind:
 dat_071_00191:
 	dc.b	$00
 	dc.b	$00
-dat_071_00193:
+; TextShowing - Set while a text screen is up (ClearTextPages and the text states); StateFlying
+; tests it.
+TextShowing:
 	dc.b	$00
 	dc.b	$00
 ; ConfigChanged - Set when the flight log (ConfigBuffer) has changed and must be saved
@@ -548,9 +562,13 @@ dat_071_001A6:
 ; (PlayTitleMusic); MenuBeep and PrintNumber stay quiet while it plays.
 MusicState:
 	dc.b	$00
-dat_071_001A8:
+; MouseActive - Set when the mouse is used for the controls (ResetPlayerFlags; EngineAndSpeed
+; and MouseInterrupt test it).
+MouseActive:
 	dc.b	$00
-dat_071_001A9:
+; ReadoutsDrawn - Set by GameFrame when the panel's readouts have been drawn this frame
+; (cleared by UpdateMissile; tested by the readouts).
+ReadoutsDrawn:
 	dc.b	$00
 	dc.b	$00
 ; TypeDelay - Frames between characters as a page is typed (the low nibble of the page's colour
@@ -719,7 +737,8 @@ PanelBlitCount:
 ; only every fourth frame, in turn); RedrawInstruments sets it and GameFrame counts it down.
 PanelRedraw:
 	dc.b	$00
-dat_071_00208:
+; ObjectsDrawnCount - How many objects DrawObjects drew this frame (the radar tests it).
+ObjectsDrawnCount:
 	dc.b	$00
 dat_071_00209:
 	dc.b	$00
@@ -739,9 +758,12 @@ RadarRangeRedraw:
 ; by the controls and the engine).
 PanelIndicatorRedraw:
 	dc.b	$00
-dat_071_0020F:
+; BackslashLampRedraw - Frames left to redraw the lamp of the backslash key's function (it
+; flips the player's +$00 bit 11).
+BackslashLampRedraw:
 	dc.b	$00
-dat_071_00210:
+; JLampRedraw - Frames left to redraw the lamp of the J key's function.
+JLampRedraw:
 	dc.b	$00
 dat_071_00211:
 	dc.b	$00
@@ -764,7 +786,9 @@ PanelLampRedraw:
 ; blinks (sub_037_00674).
 AfterburnerOn:
 	dc.b	$00
-dat_071_00217:
+; ModelVariant - Which variant of the model to draw (ShapeSelectVariant; bit 7 flipped by the A
+; key).
+ModelVariant:
 	dc.b	$00
 ; StartPoint - Where the flight starts: an entry of StartPoints (chosen by key in free flight;
 ; 3, on the carrier, by default; 0 in mission F1).
@@ -809,7 +833,9 @@ ViewOctantShown:
 	dc.b	$00
 dat_071_00226:
 	dc.b	$00
-dat_071_00227:
+; MarkersOn - Set while the start points' markers are drawn (the start point's choice, the
+; clearance; DrawStartPointMarkers and the map's markers test it).
+MarkersOn:
 	dc.b	$00
 ; RedrawFlags - What must be drawn again (set when the view moves into another map cell...).
 RedrawFlags:
@@ -851,7 +877,8 @@ dat_071_00236:
 	dc.b	$00
 dat_071_00237:
 	dc.b	$00
-dat_071_00238:
+; RadarLockState - The radar's lock state (DrawRadarBlips; cleared when the lock is lost).
+RadarLockState:
 	dc.b	$00
 dat_071_00239:
 	dc.b	$00
@@ -875,7 +902,9 @@ StatusLights:
 ; view; negative when the confirmation is done.
 VisualConfirmTimer:
 	dc.b	$00
-dat_071_00240:
+; GearState - Probably the landing gear's movement (the G key sets it, with a count to $0C;
+; EngineAndSpeed and the controls use it).
+GearState:
 	dc.b	$00
 dat_071_00241:
 	dc.b	$00
@@ -900,23 +929,31 @@ dat_071_0024A:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00253:
+; BlinkCounter - A counter whose low bit makes the start markers and radar blips blink.
+BlinkCounter:
 	dc.b	$00
 dat_071_00254:
 	dc.b	$00
-dat_071_00255:
+; GearSoundCount - The gear's sound counter ($83 from the G key, counted by CockpitSounds).
+GearSoundCount:
 	dc.b	$00
-dat_071_00256:
+; TargetReadoutCount - A count for the target readout (5 from the Y key, 1 when the radar finds
+; a blip).
+TargetReadoutCount:
 	dc.b	$00
-dat_071_00257:
+; RadarBlipTimer - A timer for the radar's blip ($18; the target readout counts it down).
+RadarBlipTimer:
 	dc.b	$00
 dat_071_00258:
 	dc.b	$00
-dat_071_00259:
+; CrashKind - How the aircraft was lost (StateCrashed; 5 tested by StateFlying and the sounds).
+CrashKind:
 	dc.b	$00
 dat_071_0025A:
 	dc.b	$00
-dat_071_0025B:
+; CountermeasureSound - The sound to make for a countermeasure (2 a flare, 1 chaff), played by
+; UpdateBullets.
+CountermeasureSound:
 	dc.b	$00
 ; BulletHitAircraft - Which aircraft (number + 1) a bullet hit this frame, kept for
 ; CheckOnTail's reaction; cleared by MoveBullet.
@@ -937,9 +974,11 @@ WarningTickCount:
 	dc.b	$00
 dat_071_00261:
 	dc.b	$00
-dat_071_00262:
+; WarningRepeat - Frames until the warning sound is repeated (UpdateWarnings).
+WarningRepeat:
 	dc.b	$00
-dat_071_00263:
+; WarningRepeatTime - The repeat time for the warning now sounding (copied to WarningRepeat).
+WarningRepeatTime:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -954,7 +993,9 @@ CodeTries:
 ; counts; $28 when hit).
 FlashCount:
 	dc.b	$00
-dat_071_0026A:
+; NewAircraftReady - Set when a new aircraft is ready to fly (StateFlying, StateNewAircraft;
+; FlyAircraft tests it).
+NewAircraftReady:
 	dc.b	$00
 ; SeaView - Set (CheckSeaView) when the ground under the horizon is drawn as sea (colour 6)
 ; instead of land (colour 4).
@@ -1016,7 +1057,8 @@ KeyMode:
 ; aircraft, 5 choosing the start, 6 into the cockpit, 0 done.
 CameraSequence:
 	dc.b	$00
-dat_071_0027F:
+; FlyByPhase - The fly-by's phase (FlyBySetup, CameraShot7, the map's markers).
+FlyByPhase:
 	dc.b	$00
 ; EngineSoundRequest - Which engine or cockpit sound to start next ($FE, $FD, $FC, $FA, $FB...:
 ; set by the flight and the weapons, taken by CockpitSounds; $FF from the view keys).
@@ -1042,9 +1084,13 @@ dat_071_00285:
 	dc.b	$00
 dat_071_0028B:
 	dc.b	$00
-dat_071_0028C:
+; DrawDetail - The detail to draw the objects with (5, 3 or 1, by the view's turn rates:
+; sub_008_0052E), put in their drawing entries.
+DrawDetail:
 	dc.b	$00
-dat_071_0028D:
+; ObjectDrawByte - The drawn object's entry's byte +$07 (DrawObjects; its low two bits for
+; DrawSceneryPlain).
+ObjectDrawByte:
 	dc.b	$00
 dat_071_0028E:
 	dc.b	$00
@@ -1100,7 +1146,8 @@ FlightBits2:
 dat_071_002A4:
 	dc.b	$00
 	dc.b	$00
-dat_071_002A6:
+; WarningBits3 - More warning bits (bit 5 tested and cleared by UpdateWarnings).
+WarningBits3:
 	dc.b	$00
 	dc.b	$00
 ; ViewY - The y offset of what is drawn with PlotInView.
@@ -1311,7 +1358,8 @@ dat_071_00325:
 ; plane as the line and fill routines go through the planes.
 ColourBits:
 	dc.b	$00
-dat_071_00327:
+; ColourPlaneBits - The low byte of ColourBits: DrawLine sets or clears each plane by its bit.
+ColourPlaneBits:
 	dc.b	$00
 dat_071_00328:
 	dc.b	$00
@@ -1332,12 +1380,14 @@ dat_071_00330:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00334:
+; FillBoxModulo - The fill's box modulo or second offset for the blitter (FillPolygonPlane).
+FillBoxModulo:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00338:
+; FillBoxStart - The fill's box start offset in the plane (FillPolygonPlane).
+FillBoxStart:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1475,7 +1525,8 @@ CurrentObjectOffset:
 BulletHitObject:
 	dc.b	$00
 	dc.b	$00
-dat_071_0038A:
+; FlyByObject - The object the fly-by shows (FlyBySetup).
+FlyByObject:
 	dc.b	$00
 	dc.b	$00
 dat_071_0038C:
@@ -1719,7 +1770,8 @@ dat_071_00486:
 DistanceShift:
 	dc.b	$00
 	dc.b	$00
-dat_071_0048A:
+; ObjectDrawWord - The drawn object's entry's word +$08 (DrawObjects, for DrawSceneryPlain).
+ObjectDrawWord:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1822,7 +1874,8 @@ dat_071_004C8:
 	dc.b	$00
 dat_071_004C9:
 	dc.b	$00
-dat_071_004CA:
+; ClockStart - A start time kept by UpdateClock (-1 when not running).
+ClockStart:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1832,7 +1885,8 @@ dat_071_004CE:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_004D2:
+; ClockLast - UpdateClock's last time read (-1 to start again).
+ClockLast:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -1988,10 +2042,12 @@ SoundsLoaded:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0052E:
+; ControlScratch2 - FlightControls' working word.
+ControlScratch2:
 	dc.b	$00
 	dc.b	$00
-dat_071_00530:
+; ControlScratch3 - FlightControls' working word.
+ControlScratch3:
 	dc.b	$00
 	dc.b	$00
 ; ControlScratch - FlightControls' working word.
@@ -2233,12 +2289,14 @@ CameraCellOffset:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_00606:
+; CameraCellOffsetY - The y long of CameraCellOffset.
+CameraCellOffsetY:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0060A:
+; CameraCellOffsetZ - The z long of CameraCellOffset.
+CameraCellOffsetZ:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
@@ -2261,7 +2319,9 @@ CameraZ:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-dat_071_0061A:
+; CameraVelocity - The camera's movement (x, y, z longs; cleared for the map view and by
+; ResetGame).
+CameraVelocity:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00

@@ -21,7 +21,7 @@ DrawStartPointMarkers:
         blt.b   l_029_00000                     ; 00014
         cmpi.l  #$fe800000,(ViewOffsetY).l      ; 00016
         bge.b   l_029_00000                     ; 00020
-        addq.b  #$1,(dat_071_00253).l           ; 00022
+        addq.b  #$1,(BlinkCounter).l            ; 00022
         tst.b   (OutsideView).l                 ; 00028
         beq.b   l_029_00038                     ; 0002E
         lea.l   (CameraX).l,a4                  ; 00030
@@ -44,9 +44,9 @@ l_029_00056:
         cmpi.b  #$6,(CameraSequence).l          ; 00076
         beq.b   l_029_00094                     ; 0007E
 l_029_00080:
-        move.b  (dat_071_00227).l,d0            ; 00080
+        move.b  (MarkersOn).l,d0                ; 00080
         beq.b   l_029_000A0                     ; 00086
-        move.b  (dat_071_00253).l,d0            ; 00088
+        move.b  (BlinkCounter).l,d0             ; 00088
         andi.b  #$1,d0                          ; 0008E
         bne.b   l_029_000A0                     ; 00092
 l_029_00094:
@@ -370,7 +370,7 @@ dat_029_0055E:
 ; MapMarkerPoint - DrawMapMarkers' mark at a point (dat_072_04202), in colour 3.
 ;-------------------------------------------------------------------------------
 MapMarkerPoint:
-        tst.b   (dat_071_00227).l               ; 00568
+        tst.b   (MarkersOn).l                   ; 00568
         blt.b   l_029_00590                     ; 0056E
         movem.w (dat_072_04202).l,d0-d2         ; 00570
         jsr     (ProjectPoint).l                ; 00578
@@ -396,14 +396,14 @@ MapMarkerObject:
         movem.w (dat_072_04202).l,d0-d2         ; 005B0
         jsr     (ProjectPoint).l                ; 005B8
         bge.b   l_029_005C8                     ; 005BE
-        clr.b   (dat_071_0027F).l               ; 005C0
+        clr.b   (FlyByPhase).l                  ; 005C0
         bra.b   l_029_00590                     ; 005C6
 l_029_005C8:
         move.l  a0,d7                           ; 005C8
         subi.l  #ObjectTable,d7                 ; 005CA
-        cmp.w   (dat_071_0038A).l,d7            ; 005D0
+        cmp.w   (FlyByObject).l,d7              ; 005D0
         bne.b   l_029_00600                     ; 005D6
-        tst.b   (dat_071_0027F).l               ; 005D8
+        tst.b   (FlyByPhase).l                  ; 005D8
         blt.b   l_029_005F8                     ; 005DE
         cmpi.w  #$14,d0                         ; 005E0
         blt.b   l_029_00600                     ; 005E4
@@ -414,12 +414,12 @@ l_029_005C8:
         cmpi.w  #$ba,d1                         ; 005F2
         bgt.b   l_029_00600                     ; 005F6
 l_029_005F8:
-        move.b  #$1,(dat_071_0027F).l           ; 005F8
+        move.b  #$1,(FlyByPhase).l              ; 005F8
 l_029_00600:
         tst.b   (NewView).l                     ; 00600
         bne.w   l_029_0068E                     ; 00606
         move.w  (FrameCount).l,d7               ; 0060A
-        move.b  (dat_071_00227).l,d6            ; 00610
+        move.b  (MarkersOn).l,d6                ; 00610
         blt.w   l_029_00590                     ; 00616
         beq.b   l_029_00624                     ; 0061A
         ext.w   d6                              ; 0061C

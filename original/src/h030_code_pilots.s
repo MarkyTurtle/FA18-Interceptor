@@ -619,7 +619,7 @@ PilotWait:
 l_030_007A0:
         btst    #$0,$2(a1)                      ; 007A0
         beq.b   l_030_007B2                     ; 007A6
-        tst.b   (dat_071_0016A).l               ; 007A8
+        tst.b   (TrainingWaitKey).l             ; 007A8
         bge.b   l_030_00778                     ; 007AE
         bra.b   l_030_0080C                     ; 007B0
 l_030_007B2:
@@ -689,7 +689,7 @@ l_030_0085A:
         blt.w   l_030_00986                     ; 00866
         bra.w   l_030_0112E                     ; 0086A
 l_030_0086E:
-        tst.b   (dat_071_0016A).l               ; 0086E
+        tst.b   (TrainingWaitKey).l             ; 0086E
         blt.w   l_030_0112E                     ; 00874
         tst.w   $4c(a1)                         ; 00878
         blt.w   l_030_00978                     ; 0087C
@@ -798,7 +798,7 @@ PilotFly:
         bne.b   l_030_009F4                     ; 009A0
         btst    #$0,$2(a1)                      ; 009A2
         beq.b   l_030_009BC                     ; 009A8
-        tst.b   (dat_071_0016A).l               ; 009AA
+        tst.b   (TrainingWaitKey).l             ; 009AA
         bge.w   l_030_0112E                     ; 009B0
         tst.w   $4c(a1)                         ; 009B4
         blt.w   l_030_00804                     ; 009B8

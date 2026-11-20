@@ -1614,7 +1614,7 @@ l_000_013EE:
 l_000_013F8:
         tst.b   (OutsideView).l                 ; 013F8
         beq.b   l_000_0142C                     ; 013FE
-        move.b  #$1,(dat_071_001A9).l           ; 01400
+        move.b  #$1,(ReadoutsDrawn).l           ; 01400
         jsr     (ShowSpeed).l                   ; 01408
         jsr     (ShowAltitude).l                ; 0140E
         jsr     (ShowHeadingText).l             ; 01414
@@ -2036,7 +2036,7 @@ l_000_0199E:
         clr.b   (GameMode).l                    ; 0199E
         moveq   #-1,d0                          ; 019A4
         move.b  d0,(MapView).l                  ; 019A6
-        move.b  d0,(dat_071_00227).l            ; 019AC
+        move.b  d0,(MarkersOn).l                ; 019AC
         move.w  #$3,(StateTimer).l              ; 019B2
         move.l  #StateTitle,(GameState).l       ; 019BA
         lea.l   (dat_064_00340).l,a0            ; 019C4
@@ -2884,7 +2884,7 @@ l_000_024C4:
 l_000_0250C:
         move.b  #$3,(PanelBlitCount).l          ; 0250C
         clr.w   (TrainingFrame).l               ; 02514
-        clr.b   (dat_071_00158).l               ; 0251A
+        clr.b   (ObjectsHeld).l                 ; 0251A
         move.w  #$5,(StateTimer).l              ; 02520
         lea.l   StateReadyText(pc),a0           ; 02528
         move.l  a0,(GameState).l                ; 0252C
@@ -2920,7 +2920,7 @@ StateBriefingFadeWait:
         move.b  d0,(FlightScreen).l             ; 0257A
         move.b  #$ff,(RedrawFlags).l            ; 02580
         move.b  d0,(MapView).l                  ; 02588
-        move.b  d0,(dat_071_00227).l            ; 0258E
+        move.b  d0,(MarkersOn).l                ; 0258E
         move.w  #$9,(StateTimer).l              ; 02594
         lea.l   StateBriefingIntro(pc),a0       ; 0259C
         move.l  a0,(GameState).l                ; 025A0
@@ -2950,7 +2950,7 @@ l_000_025EE:
         move.w  (StateTimer).l,d0               ; 025EE
         tst.w   d0                              ; 025F4
         bpl.b   l_000_02610                     ; 025F6
-        clr.b   (dat_071_00227).l               ; 025F8
+        clr.b   (MarkersOn).l                   ; 025F8
         move.w  #$1,(StateTimer).l              ; 025FE
         lea.l   StateBriefing(pc),a0            ; 02606
         move.l  a0,(GameState).l                ; 0260A
@@ -3060,7 +3060,7 @@ StateFlyByStart:
         bpl.b   l_000_02774                     ; 0274C
         moveq   #$1,d0                          ; 0274E
         move.b  d0,(MapView).l                  ; 02750
-        move.b  d0,(dat_071_00227).l            ; 02756
+        move.b  d0,(MarkersOn).l                ; 02756
         move.w  #$1,(StateTimer).l              ; 0275C
         jsr     (FlyBySetup).l                  ; 02764
         lea.l   StateFlyBy(pc),a0               ; 0276A
@@ -3091,7 +3091,7 @@ StateFlyByWait:
         bne.b   l_000_027C6                     ; 027A4
         moveq   #$0,d0                          ; 027A6
         move.b  d0,(NewView).l                  ; 027A8
-        move.b  d0,(dat_071_00227).l            ; 027AE
+        move.b  d0,(MarkersOn).l                ; 027AE
         move.w  #$2,(StateTimer).l              ; 027B4
         lea.l   StateSecurityCheck(pc),a0       ; 027BC
         move.l  a0,(GameState).l                ; 027C0
@@ -3162,7 +3162,7 @@ StateSecurityInput:
         subq.b  #$1,d0                          ; 02884
         bne.b   l_000_028A8                     ; 02886
         move.w  #$4,(TextPages).l               ; 02888
-        clr.b   (dat_071_00193).l               ; 02890
+        clr.b   (TextShowing).l                 ; 02890
         move.b  #$3,(TextStatus).l              ; 02896
         lea.l   StateSecurityEntered(pc),a0     ; 0289E
         move.l  a0,(GameState).l                ; 028A2
@@ -3322,7 +3322,7 @@ l_000_02A60:
         bpl.b   l_000_02A90                     ; 02A68
         move.b  #$1,(FlightScreen).l            ; 02A6A
         bsr.w   ClearTextPages                  ; 02A72
-        move.b  #$1,(dat_071_00227).l           ; 02A76
+        move.b  #$1,(MarkersOn).l               ; 02A76
         move.w  #$3,(StateTimer).l              ; 02A7E
         lea.l   StateLaunchView(pc),a0          ; 02A86
         move.l  a0,(GameState).l                ; 02A8A
@@ -3364,7 +3364,7 @@ l_000_02AD0:
         bne.b   l_000_02AFA                     ; 02AD8
         moveq   #$0,d0                          ; 02ADA
         move.b  d0,(NewView).l                  ; 02ADC
-        move.b  d0,(dat_071_00227).l            ; 02AE2
+        move.b  d0,(MarkersOn).l                ; 02AE2
         move.w  #$2,(StateTimer).l              ; 02AE8
         lea.l   StateStartPoint(pc),a0          ; 02AF0
         move.l  a0,(GameState).l                ; 02AF4
@@ -3398,11 +3398,11 @@ l_000_02B30:
         bne.b   l_000_02B5A                     ; 02B40
         move.w  #$7,(TextPages).l               ; 02B42
         move.b  #$5,(CameraSequence).l          ; 02B4A
-        move.b  #$1,(dat_071_00227).l           ; 02B52
+        move.b  #$1,(MarkersOn).l               ; 02B52
 l_000_02B5A:
         moveq   #$0,d0                          ; 02B5A
         move.b  d0,(KeyMode).l                  ; 02B5C
-        move.b  d0,(dat_071_00193).l            ; 02B62
+        move.b  d0,(TextShowing).l              ; 02B62
         lea.l   StateChooseStart(pc),a0         ; 02B68
         move.l  a0,(GameState).l                ; 02B6C
 l_000_02B72:
@@ -3436,7 +3436,7 @@ l_000_02B84:
         lea.l   StateAircraftSelect(pc),a0      ; 02BC0
         move.l  a0,(GameState).l                ; 02BC4
         move.b  #$1,(AircraftChosen).l          ; 02BCA
-        clr.b   (dat_071_00227).l               ; 02BD2
+        clr.b   (MarkersOn).l                   ; 02BD2
         move.b  #$6,(CameraSequence).l          ; 02BD8
         bra.b   l_000_02C00                     ; 02BE0
 l_000_02BE2:
@@ -3463,7 +3463,7 @@ StateAircraftSelect:
         moveq   #$0,d0                          ; 02C14
         move.b  d0,(FlightScreen).l             ; 02C16
         move.w  #$4b,(TextPages).l              ; 02C1C
-        move.b  d0,(dat_071_00193).l            ; 02C24
+        move.b  d0,(TextShowing).l              ; 02C24
         lea.l   StateAircraftSelectWait(pc),a0  ; 02C2A
         move.l  a0,(GameState).l                ; 02C2E
 l_000_02C34:
@@ -3480,7 +3480,7 @@ StateAircraftSelectWait:
         move.b  #$1,(FlightScreen).l            ; 02C48
         bsr.w   ClearTextPages                  ; 02C50
         moveq   #$1,d0                          ; 02C54
-        move.b  d0,(dat_071_00227).l            ; 02C56
+        move.b  d0,(MarkersOn).l                ; 02C56
         move.b  d0,(KeyMode).l                  ; 02C5C
         lea.l   StateToCockpit(pc),a0           ; 02C62
         move.l  a0,(GameState).l                ; 02C66
@@ -3549,11 +3549,11 @@ SkipToCockpit:
         move.b  d0,(WorldFrozen).l              ; 02D1C
         move.b  d0,(NewView).l                  ; 02D22
         moveq   #$1,d0                          ; 02D28
-        move.b  d0,(dat_071_00227).l            ; 02D2A
+        move.b  d0,(MarkersOn).l                ; 02D2A
         move.b  d0,(CameraFollows).l            ; 02D30
         moveq   #$0,d0                          ; 02D36
         move.b  d0,(KeyMode).l                  ; 02D38
-        move.b  d0,(dat_071_00158).l            ; 02D3E
+        move.b  d0,(ObjectsHeld).l              ; 02D3E
         move.w  #$5,(StateTimer).l              ; 02D44
         lea.l   StateReadyText(pc),a0           ; 02D4C
         move.l  a0,(GameState).l                ; 02D50
@@ -3570,7 +3570,7 @@ StateReady:
         moveq   #$0,d0                          ; 02D6A
         move.b  d0,(CameraSequence).l           ; 02D6C
         move.b  d0,(KeyMode).l                  ; 02D72
-        move.b  d0,(dat_071_00158).l            ; 02D78
+        move.b  d0,(ObjectsHeld).l              ; 02D78
         move.w  #$5,(StateTimer).l              ; 02D7E
         lea.l   StateReadyText(pc),a0           ; 02D86
         move.l  a0,(GameState).l                ; 02D8A
@@ -3721,7 +3721,7 @@ StateFlying:
         move.b  (OutsideView).l,d0              ; 02F80
         tst.b   d0                              ; 02F86
         bne.b   l_000_02FB6                     ; 02F88
-        move.b  #$1,(dat_071_0026A).l           ; 02F8A
+        move.b  #$1,(NewAircraftReady).l        ; 02F8A
         clr.l   (PlayerVelY).l                  ; 02F92
         move.b  #$28,(FlashCount).l             ; 02F98
         jsr     (StopAllSounds).l               ; 02FA0
@@ -3758,7 +3758,7 @@ l_000_0301E:
         bgt.w   l_000_03118                     ; 03026
         cmpi.b  #$fc,d0                         ; 0302A
         blt.w   l_000_03118                     ; 0302E
-        tst.b   (dat_071_00193).l               ; 03032
+        tst.b   (TextShowing).l                 ; 03032
         beq.w   l_000_03118                     ; 03038
         tst.b   (TextStatus).l                  ; 0303C
         beq.w   l_000_03118                     ; 03042
@@ -3833,7 +3833,7 @@ l_000_03166:
         move.b  (OutsideView).l,d0              ; 03170
         tst.b   d0                              ; 03176
         bne.b   l_000_03190                     ; 03178
-        move.b  (dat_071_00259).l,d0            ; 0317A
+        move.b  (CrashKind).l,d0                ; 0317A
         cmpi.b  #$5,d0                          ; 03180
         ble.b   l_000_03190                     ; 03184
         move.b  #$2,(FadeTarget).l              ; 03186
@@ -4078,7 +4078,7 @@ ClearTextPages:
         move.l  #$1b8,(TextCursor).l            ; 03476
         moveq   #$0,d0                          ; 03480
         move.b  d0,(TextPageIndex).l            ; 03482
-        move.b  d0,(dat_071_00193).l            ; 03488
+        move.b  d0,(TextShowing).l              ; 03488
         move.b  d0,(TextStatus).l               ; 0348E
         move.b  d0,(dat_071_00241).l            ; 03494
         unlk    a6                              ; 0349A
@@ -4306,7 +4306,7 @@ StateWelcome:
         addq.l  #$4,a7                          ; 03738
         moveq   #$0,d0                          ; 0373A
         move.b  d0,(TextStatus).l               ; 0373C
-        move.b  d0,(dat_071_00193).l            ; 03742
+        move.b  d0,(TextShowing).l              ; 03742
         movea.l (ConfigBuffer).l,a0             ; 03748
         move.w  $4(a0),d0                       ; 0374E
         cmpi.w  #$0,d0                          ; 03752
@@ -4392,7 +4392,7 @@ StateNewTour:
         cmpi.w  #$0,d0                          ; 03836
         bhi.b   l_000_03866                     ; 0383A
         move.w  #$3,(TextPages).l               ; 0383C
-        clr.b   (dat_071_00193).l               ; 03844
+        clr.b   (TextShowing).l                 ; 03844
         move.b  #$2,(TextStatus).l              ; 0384A
         move.b  #$14,(InputLength).l            ; 03852
         lea.l   StateFirstTourWait(pc),a0       ; 0385A
@@ -4458,7 +4458,7 @@ l_000_03902:
         jsr     (ResetPlayer).l                 ; 0391C
         move.b  #$f,(FadeTarget).l              ; 03922
         moveq   #$0,d0                          ; 0392A
-        move.b  d0,(dat_071_00259).l            ; 0392C
+        move.b  d0,(CrashKind).l                ; 0392C
         move.w  (dat_071_002A4).l,d0            ; 03932
         andi.w  #$fbff,d0                       ; 03938
         move.w  d0,(dat_071_002A4).l            ; 0393C
@@ -4484,7 +4484,7 @@ l_000_0397E:
 ;-------------------------------------------------------------------------------
 StateNewAircraft:
         moveq   #$0,d0                          ; 03980
-        move.b  d0,(dat_071_0026A).l            ; 03982
+        move.b  d0,(NewAircraftReady).l         ; 03982
         move.w  (Player_02).l,d0                ; 03988
         ori.w   #$2,d0                          ; 0398E
         move.w  d0,(Player_02).l                ; 03992
@@ -4798,7 +4798,7 @@ l_000_03D48:
 ;-------------------------------------------------------------------------------
 ; UpdateWarnings - Stage $C0: picks the warning to sound (CurrentWarning, a sound word with
 ; flags) from what is wrong - by priority, special cases first (dat_071_00298 bit 15,
-; dat_071_002A6 bit 5), then the warnings (WarningFlags) and the status lights (StatusLights
+; WarningBits3 bit 5), then the warnings (WarningFlags) and the status lights (StatusLights
 ; bits 4, 5...) - and plays it on the beat of WarningTicks (not worked out in detail).
 ;-------------------------------------------------------------------------------
 UpdateWarnings:
@@ -4819,7 +4819,7 @@ UpdateWarnings:
         move.w  #$9c06,-$4(a6)                  ; 03D8A
         bra.w   l_000_03EEA                     ; 03D90
 l_000_03D94:
-        move.w  (dat_071_002A6).l,d0            ; 03D94
+        move.w  (WarningBits3).l,d0             ; 03D94
         btst    #$5,d0                          ; 03D9A
         beq.b   l_000_03DAA                     ; 03D9E
         move.w  #$4000,-$4(a6)                  ; 03DA0
@@ -4947,7 +4947,7 @@ l_000_03EEA:
         move.b  (a0),(dat_071_00233).l          ; 03F76
         move.b  (LampBits).l,d0                 ; 03F7C
         andi.b  #$3f,d0                         ; 03F82
-        move.b  d0,(dat_071_00263).l            ; 03F86
+        move.b  d0,(WarningRepeatTime).l        ; 03F86
 l_000_03F8C:
         move.w  (CurrentWarning).l,d0           ; 03F8C
         andi.w  #$8000,d0                       ; 03F92
@@ -4958,13 +4958,13 @@ l_000_03F8C:
         bne.b   l_000_03FD4                     ; 03FA6
         ori.w   #$2000,d0                       ; 03FA8
         move.w  d0,(WarningBits).l              ; 03FAC
-        move.w  (dat_071_002A6).l,d0            ; 03FB2
+        move.w  (WarningBits3).l,d0             ; 03FB2
         btst    #$5,d0                          ; 03FB8
         bne.b   l_000_03FCA                     ; 03FBC
-        move.b  (dat_071_00263).l,(dat_071_00262).l ; 03FBE
+        move.b  (WarningRepeatTime).l,(WarningRepeat).l ; 03FBE
         bra.b   l_000_03FD4                     ; 03FC8
 l_000_03FCA:
-        move.b  (dat_071_00544).l,(dat_071_00262).l ; 03FCA
+        move.b  (dat_071_00544).l,(WarningRepeat).l ; 03FCA
 l_000_03FD4:
         move.w  (CurrentWarning).l,d0           ; 03FD4
         btst    #$c,d0                          ; 03FDA
@@ -5011,11 +5011,11 @@ l_000_04060:
         beq.b   l_000_0408A                     ; 04080
         bset    #$2,(CockpitSoundBits).l        ; 04082
 l_000_0408A:
-        tst.b   (dat_071_00263).l               ; 0408A
+        tst.b   (WarningRepeatTime).l           ; 0408A
         beq.w   l_000_041B6                     ; 04090
-        move.b  (dat_071_00262).l,d0            ; 04094
+        move.b  (WarningRepeat).l,d0            ; 04094
         subq.b  #$1,d0                          ; 0409A
-        move.b  d0,(dat_071_00262).l            ; 0409C
+        move.b  d0,(WarningRepeat).l            ; 0409C
         tst.b   d0                              ; 040A2
         bpl.w   l_000_041B6                     ; 040A4
         move.w  (WarningPlaying).l,d0           ; 040A8
@@ -5026,9 +5026,9 @@ l_000_0408A:
         move.w  (WarningBits).l,d0              ; 040C4
         andi.w  #$dfff,d0                       ; 040CA
         move.w  d0,(WarningBits).l              ; 040CE
-        move.w  (dat_071_002A6).l,d0            ; 040D4
+        move.w  (WarningBits3).l,d0             ; 040D4
         andi.w  #$ffdf,d0                       ; 040DA
-        move.w  d0,(dat_071_002A6).l            ; 040DE
+        move.w  d0,(WarningBits3).l             ; 040DE
         move.w  (StatusBits).l,d0               ; 040E4
         andi.w  #$fffe,d0                       ; 040EA
         move.w  d0,(StatusBits).l               ; 040EE
@@ -5043,22 +5043,22 @@ l_000_040F8:
         move.w  (WarningBits).l,d0              ; 04112
         ori.w   #$2000,d0                       ; 04118
         move.w  d0,(WarningBits).l              ; 0411C
-        move.w  (dat_071_002A6).l,d0            ; 04122
+        move.w  (WarningBits3).l,d0             ; 04122
         btst    #$5,d0                          ; 04128
         bne.b   l_000_0413A                     ; 0412C
-        move.b  (dat_071_00263).l,(dat_071_00262).l ; 0412E
+        move.b  (WarningRepeatTime).l,(WarningRepeat).l ; 0412E
         bra.b   l_000_04144                     ; 04138
 l_000_0413A:
-        move.b  (dat_071_00544).l,(dat_071_00262).l ; 0413A
+        move.b  (dat_071_00544).l,(WarningRepeat).l ; 0413A
 l_000_04144:
         move.w  (CurrentWarning).l,(WarningPlaying).l ; 04144
 l_000_0414E:
         move.b  (WarningTicks).l,d0             ; 0414E
         btst    #$1,d0                          ; 04154
         beq.b   l_000_041B6                     ; 04158
-        move.b  (dat_071_00262).l,d0            ; 0415A
+        move.b  (WarningRepeat).l,d0            ; 0415A
         subq.b  #$1,d0                          ; 04160
-        move.b  d0,(dat_071_00262).l            ; 04162
+        move.b  d0,(WarningRepeat).l            ; 04162
         tst.b   d0                              ; 04168
         bpl.b   l_000_041B6                     ; 0416A
         moveq   #$0,d0                          ; 0416C
@@ -5067,9 +5067,9 @@ l_000_0414E:
         move.w  (WarningBits).l,d0              ; 0417A
         andi.w  #$dfff,d0                       ; 04180
         move.w  d0,(WarningBits).l              ; 04184
-        move.w  (dat_071_002A6).l,d0            ; 0418A
+        move.w  (WarningBits3).l,d0             ; 0418A
         andi.w  #$ffdf,d0                       ; 04190
-        move.w  d0,(dat_071_002A6).l            ; 04194
+        move.w  d0,(WarningBits3).l             ; 04194
         move.w  (StatusBits).l,d0               ; 0419A
         andi.w  #$fffe,d0                       ; 041A0
         move.w  d0,(StatusBits).l               ; 041A4

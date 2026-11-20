@@ -761,7 +761,7 @@ l_013_00774:
         jsr     (ClipFillPolygon).l             ; 007AA
         or.w    d0,-$7e(a6)                     ; 007B0
         move.w  -$5e(a6),(DrawColour).l         ; 007B4
-        tst.b   (dat_071_00156).l               ; 007BC
+        tst.b   (HeightBandChanged).l           ; 007BC
         beq.w   l_013_0089C                     ; 007C2
         lea.l   (dat_072_03C04).l,a0            ; 007C6
         lea.l   (VertexBuffer).l,a3             ; 007CC
@@ -804,7 +804,7 @@ l_013_00816:
         jsr     (ClipFillPolygon).l             ; 00840
         or.w    d0,-$7e(a6)                     ; 00846
         move.w  -$5e(a6),(DrawColour).l         ; 0084A
-        tst.b   (dat_071_00156).l               ; 00852
+        tst.b   (HeightBandChanged).l           ; 00852
         beq.b   l_013_0089C                     ; 00858
         lea.l   (dat_072_03C04).l,a0            ; 0085A
         lea.l   (VertexBuffer).l,a3             ; 00860

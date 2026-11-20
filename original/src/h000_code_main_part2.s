@@ -63,20 +63,20 @@ l_000_04428:
         ble.b   l_000_04466                     ; 04430
         cmpi.w  #$c4e,d0                        ; 04432
         bge.b   l_000_04466                     ; 04436
-        move.b  (dat_071_00156).l,d0            ; 04438
+        move.b  (HeightBandChanged).l,d0        ; 04438
         tst.b   d0                              ; 0443E
         bne.w   l_000_044DE                     ; 04440
         addq.b  #$1,d0                          ; 04444
-        move.b  d0,(dat_071_00156).l            ; 04446
+        move.b  d0,(HeightBandChanged).l        ; 04446
         move.b  (RedrawFlags).l,d0              ; 0444C
         ori.b   #$b,d0                          ; 04452
         move.b  d0,(RedrawFlags).l              ; 04456
         move.b  #$3,(HeightBand).l              ; 0445C
         bra.b   l_000_044DE                     ; 04464
 l_000_04466:
-        tst.b   (dat_071_00156).l               ; 04466
+        tst.b   (HeightBandChanged).l           ; 04466
         beq.b   l_000_04484                     ; 0446C
-        clr.b   (dat_071_00156).l               ; 0446E
+        clr.b   (HeightBandChanged).l           ; 0446E
         move.b  (RedrawFlags).l,d0              ; 04474
         ori.b   #$b,d0                          ; 0447A
         move.b  d0,(RedrawFlags).l              ; 0447E
@@ -599,7 +599,7 @@ CockpitSounds:
         bne.w   l_000_052BE                     ; 04AF0
         tst.b   (FlightScreen).l                ; 04AF4
         beq.w   l_000_052BE                     ; 04AFA
-        move.b  (dat_071_00255).l,d0            ; 04AFE
+        move.b  (GearSoundCount).l,d0           ; 04AFE
         tst.b   d0                              ; 04B04
         bpl.b   l_000_04B44                     ; 04B06
         tst.b   (OutsideView).l                 ; 04B08
@@ -617,16 +617,16 @@ l_000_04B26:
         jsr     (PlayGearSound).l               ; 04B2A
         addq.l  #$4,a7                          ; 04B30
 l_000_04B32:
-        move.b  (dat_071_00255).l,d0            ; 04B32
+        move.b  (GearSoundCount).l,d0           ; 04B32
         andi.b  #$7f,d0                         ; 04B38
-        move.b  d0,(dat_071_00255).l            ; 04B3C
+        move.b  d0,(GearSoundCount).l           ; 04B3C
         bra.b   l_000_04B5A                     ; 04B42
 l_000_04B44:
-        move.b  (dat_071_00255).l,d0            ; 04B44
+        move.b  (GearSoundCount).l,d0           ; 04B44
         subq.b  #$1,d0                          ; 04B4A
         bne.b   l_000_04B5A                     ; 04B4C
         jsr     (StopChannel2).l                ; 04B4E
-        clr.b   (dat_071_00255).l               ; 04B54
+        clr.b   (GearSoundCount).l              ; 04B54
 l_000_04B5A:
         tst.l   (SoundRequests).l               ; 04B5A
         beq.w   l_000_04DD4                     ; 04B60
@@ -1156,7 +1156,7 @@ l_000_0518E:
         addq.l  #$8,a7                          ; 051AA
         bra.w   l_000_05284                     ; 051AC
 l_000_051B0:
-        tst.b   (dat_071_00167).l               ; 051B0
+        tst.b   (EngineSoundHold).l             ; 051B0
         beq.b   l_000_051FE                     ; 051B6
         btst    #$0,(SoundsLoaded).l            ; 051B8
         beq.b   l_000_051E0                     ; 051C0
@@ -1233,11 +1233,11 @@ l_000_05274:
 l_000_05284:
         clr.b   (EngineSoundRequest).l          ; 05284
 l_000_0528A:
-        move.b  (dat_071_00167).l,d0            ; 0528A
+        move.b  (EngineSoundHold).l,d0          ; 0528A
         tst.b   d0                              ; 05290
         ble.b   l_000_052BE                     ; 05292
         subq.b  #$1,d0                          ; 05294
-        move.b  d0,(dat_071_00167).l            ; 05296
+        move.b  d0,(EngineSoundHold).l          ; 05296
         tst.b   d0                              ; 0529C
         bne.b   l_000_052BE                     ; 0529E
         move.b  (OutsideView).l,d0              ; 052A0
@@ -1261,7 +1261,7 @@ sub_000_052C6:
         move.l  d0,-(a7)                        ; 052DA
         jsr     (PlayEffect2).l                 ; 052DC
         addq.l  #$4,a7                          ; 052E2
-        clr.b   (dat_071_00167).l               ; 052E4
+        clr.b   (EngineSoundHold).l             ; 052E4
         bra.b   l_000_0530A                     ; 052EA
 l_000_052EC:
         move.w  $a(a6),d0                       ; 052EC
@@ -1280,7 +1280,7 @@ sub_000_0530E:
         link.w  a6,#$fffa                       ; 0530E
         tst.w   $a(a6)                          ; 05312
         beq.w   l_000_054C0                     ; 05316
-        tst.b   (dat_071_00167).l               ; 0531A
+        tst.b   (EngineSoundHold).l             ; 0531A
         beq.b   l_000_0532A                     ; 05320
         move.w  #$3f,$a(a6)                     ; 05322
         bra.b   l_000_05354                     ; 05328
@@ -1377,7 +1377,7 @@ l_000_0549A:
         move.w  #$1,$a(a6)                      ; 054A0
         bra.b   l_000_054DC                     ; 054A6
 l_000_054A8:
-        move.b  (dat_071_00259).l,d0            ; 054A8
+        move.b  (CrashKind).l,d0                ; 054A8
         cmpi.b  #$5,d0                          ; 054AE
         ble.b   l_000_054DC                     ; 054B2
         move.w  $a(a6),d0                       ; 054B4
@@ -1576,7 +1576,7 @@ l_000_056FC:
         adda.l  d0,a0                           ; 05716
         move.w  (a0),d0                         ; 05718
         neg.w   d0                              ; 0571A
-        move.w  d0,(dat_071_0052E).l            ; 0571C
+        move.w  d0,(ControlScratch2).l          ; 0571C
         bra.b   l_000_05738                     ; 05722
 l_000_05724:
         move.w  -$18(a6),d0                     ; 05724
@@ -1584,13 +1584,13 @@ l_000_05724:
         asl.l   #$1,d0                          ; 0572A
         movea.l -$6(a6),a0                      ; 0572C
         adda.l  d0,a0                           ; 05730
-        move.w  (a0),(dat_071_0052E).l          ; 05732
+        move.w  (a0),(ControlScratch2).l        ; 05732
 l_000_05738:
         movea.l -$a(a6),a0                      ; 05738
         move.w  (a0),d0                         ; 0573C
         btst    #$7,d0                          ; 0573E
         bne.b   l_000_05758                     ; 05742
-        move.w  (dat_071_0052E).l,d0            ; 05744
+        move.w  (ControlScratch2).l,d0          ; 05744
         ext.l   d0                              ; 0574A
         move.l  d0,-(a7)                        ; 0574C
         bsr.w   sub_000_05CF0                   ; 0574E
@@ -1665,7 +1665,7 @@ l_000_057F0:
         bra.b   l_000_0586E                     ; 0580C
 l_000_0580E:
         moveq   #$0,d0                          ; 0580E
-        move.w  d0,(dat_071_0052E).l            ; 05810
+        move.w  d0,(ControlScratch2).l          ; 05810
         movea.l -$a(a6),a0                      ; 05816
         move.w  (a0),d1                         ; 0581A
         move.w  d0,-$18(a6)                     ; 0581C
@@ -1712,7 +1712,7 @@ l_000_0586E:
         adda.l  d0,a0                           ; 05886
         move.w  (a0),d0                         ; 05888
         neg.w   d0                              ; 0588A
-        move.w  d0,(dat_071_00530).l            ; 0588C
+        move.w  d0,(ControlScratch3).l          ; 0588C
         bra.b   l_000_058A8                     ; 05892
 l_000_05894:
         move.w  -$1a(a6),d0                     ; 05894
@@ -1720,7 +1720,7 @@ l_000_05894:
         asl.l   #$1,d0                          ; 0589A
         movea.l -$6(a6),a0                      ; 0589C
         adda.l  d0,a0                           ; 058A0
-        move.w  (a0),(dat_071_00530).l          ; 058A2
+        move.w  (a0),(ControlScratch3).l        ; 058A2
 l_000_058A8:
         movea.l (CockpitObject).l,a0            ; 058A8
         move.b  $4(a0),d0                       ; 058AE
@@ -1728,7 +1728,7 @@ l_000_058A8:
         bne.b   l_000_058D0                     ; 058B6
         tst.w   $6e(a0)                         ; 058B8
         beq.b   l_000_058D0                     ; 058BC
-        move.w  (dat_071_00530).l,d0            ; 058BE
+        move.w  (ControlScratch3).l,d0          ; 058BE
         ext.l   d0                              ; 058C4
         move.l  d0,-(a7)                        ; 058C6
         bsr.w   sub_000_05D5A                   ; 058C8
@@ -1750,7 +1750,7 @@ l_000_058E0:
         bne.b   l_000_05912                     ; 058F0
 l_000_058F2:
         moveq   #$0,d0                          ; 058F2
-        move.w  d0,(dat_071_00530).l            ; 058F4
+        move.w  d0,(ControlScratch3).l          ; 058F4
         move.w  d0,-$1a(a6)                     ; 058FA
         movea.l -$12(a6),a0                     ; 058FE
         tst.w   (a0)                            ; 05902
@@ -2242,7 +2242,7 @@ l_000_05E80:
 sub_000_05E84:
         tst.l   (PlayerFuel).l                  ; 05E84
         beq.b   l_000_05ED2                     ; 05E8A
-        tst.b   (dat_071_001A8).l               ; 05E8C
+        tst.b   (MouseActive).l                 ; 05E8C
         beq.b   l_000_05ED2                     ; 05E92
         move.w  (dat_071_00150).l,d0            ; 05E94
         andi.w  #$3,d0                          ; 05E9A
@@ -2254,10 +2254,10 @@ sub_000_05E84:
         move.b  (Player_2B).l,d0                ; 05EAE
         cmpi.b  #$78,d0                         ; 05EB4
         blt.b   l_000_05ECC                     ; 05EB8
-        move.b  #$79,(dat_071_00240).l          ; 05EBA
+        move.b  #$79,(GearState).l              ; 05EBA
         bra.b   l_000_05ECC                     ; 05EC2
 l_000_05EC4:
-        move.b  #$77,(dat_071_00240).l          ; 05EC4
+        move.b  #$77,(GearState).l              ; 05EC4
 l_000_05ECC:
         clr.w   (dat_071_00150).l               ; 05ECC
 l_000_05ED2:
@@ -2397,7 +2397,7 @@ l_000_05FF0:
         cmp.w   d0,d1                           ; 06052
         bne.b   l_000_0608C                     ; 06054
         move.b  #$fd,(EngineSoundRequest).l     ; 06056
-        move.b  #$6,(dat_071_00167).l           ; 0605E
+        move.b  #$6,(EngineSoundHold).l         ; 0605E
         bra.b   l_000_0608C                     ; 06066
 l_000_06068:
         movea.l -$30(a6),a0                     ; 06068
@@ -2410,7 +2410,7 @@ l_000_06068:
         move.b  d0,(a0)                         ; 0607E
         tst.w   -$32(a6)                        ; 06080
         bne.b   l_000_0608C                     ; 06084
-        clr.b   (dat_071_00240).l               ; 06086
+        clr.b   (GearState).l                   ; 06086
 l_000_0608C:
         movea.l -$4(a6),a0                      ; 0608C
         move.b  #$78,(a0)                       ; 06090
@@ -2494,7 +2494,7 @@ l_000_06158:
         bpl.b   l_000_06172                     ; 0616C
         clr.w   -$24(a6)                        ; 0616E
 l_000_06172:
-        tst.b   (dat_071_001A8).l               ; 06172
+        tst.b   (MouseActive).l                 ; 06172
         beq.b   l_000_061BC                     ; 06178
         move.w  (MouseY).l,d0                   ; 0617A
         cmpi.w  #$3c0,d0                        ; 06180
@@ -2523,7 +2523,7 @@ l_000_061BC:
         move.b  (GameMode).l,d0                 ; 061C4
         subq.b  #$2,d0                          ; 061CA
         beq.w   l_000_0629E                     ; 061CC
-        tst.b   (dat_071_001A8).l               ; 061D0
+        tst.b   (MouseActive).l                 ; 061D0
         beq.w   l_000_0629E                     ; 061D6
         move.w  (MouseY).l,d0                   ; 061DA
         cmpi.w  #$3c0,d0                        ; 061E0
@@ -2535,7 +2535,7 @@ l_000_061F0:
         tst.w   d0                              ; 061F6
         bpl.b   l_000_0620A                     ; 061F8
         clr.w   (MouseY).l                      ; 061FA
-        move.b  #$ff,(dat_071_00240).l          ; 06200
+        move.b  #$ff,(GearState).l              ; 06200
         bra.b   l_000_06264                     ; 06208
 l_000_0620A:
         movea.l -$30(a6),a0                     ; 0620A
@@ -2547,7 +2547,7 @@ l_000_0620A:
         cmpi.l  #$360,d0                        ; 0621E
         bge.b   l_000_06264                     ; 06224
         asr.l   #$3,d0                          ; 06226
-        move.b  d0,(dat_071_00240).l            ; 06228
+        move.b  d0,(GearState).l                ; 06228
         bra.b   l_000_06264                     ; 0622E
 l_000_06230:
         tst.w   (MouseY).l                      ; 06230
@@ -2564,7 +2564,7 @@ l_000_06254:
         move.w  (MouseY).l,d0                   ; 06254
         ext.l   d0                              ; 0625A
         asr.l   #$3,d0                          ; 0625C
-        move.b  d0,(dat_071_00240).l            ; 0625E
+        move.b  d0,(GearState).l                ; 0625E
 l_000_06264:
         move.w  (MouseY).l,(ThrottleMouseY).l   ; 06264
         bra.b   l_000_0629E                     ; 0626E
@@ -2573,7 +2573,7 @@ l_000_06270:
         clr.b   (a0)                            ; 06274
         tst.w   -$32(a6)                        ; 06276
         bne.b   l_000_06292                     ; 0627A
-        tst.b   (dat_071_001A8).l               ; 0627C
+        tst.b   (MouseActive).l                 ; 0627C
         beq.b   l_000_06292                     ; 06282
         moveq   #$0,d0                          ; 06284
         move.w  d0,(ThrottleMouseY).l           ; 06286
@@ -3051,7 +3051,7 @@ l_000_06812:
         move.w  d0,(FlightBits2).l              ; 06838
         move.b  #$3,(ShakeKind).l               ; 0683E
         move.b  #$fa,(EngineSoundRequest).l     ; 06846
-        move.b  #$2,(dat_071_00167).l           ; 0684E
+        move.b  #$2,(EngineSoundHold).l         ; 0684E
         bra.b   l_000_06868                     ; 06856
 l_000_06858:
         move.w  (FlightBits2).l,d0              ; 06858
@@ -3638,7 +3638,7 @@ l_000_06F30:
         move.b  d0,(ShakeKind).l                ; 06F7E
         cmpi.w  #$240,-$4(a6)                   ; 06F84
         blt.b   l_000_06FCE                     ; 06F8A
-        move.b  (dat_071_0026A).l,d0            ; 06F8C
+        move.b  (NewAircraftReady).l,d0         ; 06F8C
         tst.b   d0                              ; 06F92
         bne.w   l_000_07178                     ; 06F94
         movea.l -$28(a6),a0                     ; 06F98
@@ -3923,7 +3923,7 @@ l_000_07350:
         btst    #$3,d0                          ; 0736E
         bne.b   l_000_0737E                     ; 07372
 l_000_07374:
-        tst.b   (dat_071_0025B).l               ; 07374
+        tst.b   (CountermeasureSound).l         ; 07374
         beq.w   l_000_0750C                     ; 0737A
 l_000_0737E:
         movea.l -$14(a6),a0                     ; 0737E
@@ -3962,7 +3962,7 @@ l_000_0737E:
         movea.l (CurrentBullet).l,a0            ; 073FE
         clr.w   $2e(a0)                         ; 07404
         move.b  d0,-$d(a6)                      ; 07408
-        tst.b   (dat_071_0025B).l               ; 0740C
+        tst.b   (CountermeasureSound).l         ; 0740C
         beq.b   l_000_07476                     ; 07412
         move.b  (MapView).l,d0                  ; 07414
         tst.b   d0                              ; 0741A
@@ -3974,7 +3974,7 @@ l_000_0737E:
         jsr     (PlaySweep).l                   ; 07426
         addq.l  #$8,a7                          ; 0742C
 l_000_0742E:
-        move.b  (dat_071_0025B).l,d0            ; 0742E
+        move.b  (CountermeasureSound).l,d0      ; 0742E
         subq.b  #$1,d0                          ; 07434
         bne.b   l_000_07454                     ; 07436
         movea.l -$14(a6),a0                     ; 07438
@@ -3996,7 +3996,7 @@ l_000_07454:
         addq.l  #$1,d0                          ; 07466
         move.b  d0,(BulletHitAircraft).l        ; 07468
 l_000_0746E:
-        clr.b   (dat_071_0025B).l               ; 0746E
+        clr.b   (CountermeasureSound).l         ; 0746E
         bra.b   l_000_074EE                     ; 07474
 l_000_07476:
         move.b  (MapView).l,d0                  ; 07476

@@ -87,12 +87,12 @@ l_004_000E4:
         move.w  #$140,(dat_071_00376).l         ; 000F6
         move.w  #$140,(dat_071_00378).l         ; 000FE
         move.b  #$0,(StartPoint).l              ; 00106
-        move.b  #$1,(dat_071_00227).l           ; 0010E
+        move.b  #$1,(MarkersOn).l               ; 0010E
         move.w  #$800,(dat_073_0165A).l         ; 00116
         bsr.w   BayCentre                       ; 0011E
         bsr.w   SetCameraAt                     ; 00122
         move.l  #$3000000,(dat_071_00034).l     ; 00126
-        clr.l   (dat_071_0061A).l               ; 00130
+        clr.l   (CameraVelocity).l              ; 00130
         clr.l   (dat_071_0061E).l               ; 00136
         clr.l   (dat_071_00622).l               ; 0013C
         move.w  #$1c20,(OutsideCamPitch).l      ; 00142
@@ -101,8 +101,8 @@ l_004_000E4:
         move.w  #$32,(ViewShift).l              ; 0015A
         move.w  #$320,(ViewX).l                 ; 00162
         moveq   #-1,d0                          ; 0016A
-        move.l  d0,(dat_071_004CA).l            ; 0016C
-        move.l  d0,(dat_071_004D2).l            ; 00172
+        move.l  d0,(ClockStart).l               ; 0016C
+        move.l  d0,(ClockLast).l                ; 00172
         move.b  d0,(ViewOctantShown).l          ; 00178
         move.b  #$f,(dat_071_0028E).l           ; 0017E
         move.w  #$7fff,(dat_071_004B8).l        ; 00186
@@ -225,8 +225,8 @@ SetCameraAt:
         neg.l   d1                              ; 002C2
         neg.l   d2                              ; 002C4
         move.l  d0,(CameraCellOffset).l         ; 002C6
-        move.l  d1,(dat_071_00606).l            ; 002CC
-        move.l  d2,(dat_071_0060A).l            ; 002D2
+        move.l  d1,(CameraCellOffsetY).l        ; 002CC
+        move.l  d2,(CameraCellOffsetZ).l        ; 002D2
         rts                                     ; 002D8
 
 ;-------------------------------------------------------------------------------
@@ -393,8 +393,8 @@ l_004_0046C:
         bclr    #$2,$20(a1)                     ; 004C0
         bclr    #$1,$20(a1)                     ; 004C6
         move.b  #$0,$7c(a1)                     ; 004CC
-        clr.b   (dat_071_00217).l               ; 004D2
-        clr.b   (dat_071_00240).l               ; 004D8
+        clr.b   (ModelVariant).l                ; 004D2
+        clr.b   (GearState).l                   ; 004D8
         clr.b   (dat_071_0017B).l               ; 004DE
         clr.b   (PanelIndicatorBlink).l         ; 004E4
 l_004_004EA:
@@ -600,17 +600,17 @@ ResetPlayerFlags:
         ori.w   #$1080,$0(a0)                   ; 00786
         move.w  #$1400,$7e(a0)                  ; 0078C
         clr.b   (FlashCount).l                  ; 00792
-        clr.b   (dat_071_0026A).l               ; 00798
+        clr.b   (NewAircraftReady).l            ; 00798
         clr.b   (dat_071_00283).l               ; 0079E
         clr.b   (dat_071_00281).l               ; 007A4
-        clr.b   (dat_071_00259).l               ; 007AA
+        clr.b   (CrashKind).l                   ; 007AA
         clr.b   (VisualConfirmTimer).l          ; 007B0
         clr.b   (dat_071_00285).l               ; 007B6
         move.w  #$7fff,(ObjectDistanceSound).l  ; 007BC
-        move.b  #$1,(dat_071_001A8).l           ; 007C4
+        move.b  #$1,(MouseActive).l             ; 007C4
         move.b  #$ff,$71(a0)                    ; 007CC
         move.w  #$ffff,(LockedTarget).l         ; 007D2
-        clr.b   (dat_071_00238).l               ; 007DA
+        clr.b   (RadarLockState).l              ; 007DA
         tst.b   (MissionResult).l               ; 007E0
         beq.b   l_004_007F0                     ; 007E6
         move.b  #$4,(MissionResult).l           ; 007E8

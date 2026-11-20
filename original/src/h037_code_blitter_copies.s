@@ -447,9 +447,9 @@ l_037_004F6:
 l_037_004FE:
         jsr     (DrawLine199).l                 ; 004FE
 l_037_00504:
-        tst.b   (dat_071_0020F).l               ; 00504
+        tst.b   (BackslashLampRedraw).l         ; 00504
         ble.b   l_037_00560                     ; 0050A
-        subq.b  #$1,(dat_071_0020F).l           ; 0050C
+        subq.b  #$1,(BackslashLampRedraw).l     ; 0050C
         move.l  #$1a68,d1                       ; 00512
         movea.w #$3,a4                          ; 00518
         move.w  #$1c3,d6                        ; 0051C
@@ -471,9 +471,9 @@ l_037_00552:
         move.w  #$8000,d3                       ; 00558
         bsr.w   BlitBox                         ; 0055C
 l_037_00560:
-        tst.b   (dat_071_00210).l               ; 00560
+        tst.b   (JLampRedraw).l                 ; 00560
         ble.b   l_037_005B0                     ; 00566
-        subq.b  #$1,(dat_071_00210).l           ; 00568
+        subq.b  #$1,(JLampRedraw).l             ; 00568
         move.l  #$1a14,d1                       ; 0056E
         movea.w #$2,a4                          ; 00574
         move.w  #$1c2,d6                        ; 00578

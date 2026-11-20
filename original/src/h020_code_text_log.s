@@ -490,7 +490,7 @@ l_020_004DE:
 ;-------------------------------------------------------------------------------
 UpdateClock:
         jsr     (ReadTime).l                    ; 00562
-        move.l  (dat_071_004D2).l,d1            ; 00568
+        move.l  (ClockLast).l,d1                ; 00568
         blt.w   l_020_005F4                     ; 0056E
         move.w  (WarningBits).l,d0              ; 00572
         andi.w  #$100,d0                        ; 00578
@@ -522,11 +522,11 @@ l_020_005D2:
         add.l   d1,(dat_071_004E4).l            ; 005EE
 l_020_005F4:
         move.l  (TimeSeconds).l,d0              ; 005F4
-        cmp.l   (dat_071_004D2).l,d0            ; 005FA
+        cmp.l   (ClockLast).l,d0                ; 005FA
         beq.b   l_020_00666                     ; 00600
-        move.l  d0,(dat_071_004D2).l            ; 00602
+        move.l  d0,(ClockLast).l                ; 00602
         subq.b  #$1,(dat_071_00254).l           ; 00608
-        lea.l   (dat_071_00255).l,a0            ; 0060E
+        lea.l   (GearSoundCount).l,a0           ; 0060E
         tst.b   (a0)                            ; 00614
         beq.b   l_020_00622                     ; 00616
         bclr    #$7,(a0)                        ; 00618
@@ -534,13 +534,13 @@ l_020_005F4:
         bge.b   l_020_00622                     ; 0061E
         clr.b   (a0)                            ; 00620
 l_020_00622:
-        lea.l   (dat_071_00256).l,a0            ; 00622
+        lea.l   (TargetReadoutCount).l,a0       ; 00622
         bsr.w   CountDownByte                   ; 00628
         lea.l   (dat_071_00261).l,a0            ; 0062C
         bsr.w   CountDownByte                   ; 00632
         lea.l   (dat_071_0025A).l,a0            ; 00636
         bsr.w   CountDownByte                   ; 0063C
-        move.b  (dat_071_00259).l,d1            ; 00640
+        move.b  (CrashKind).l,d1                ; 00640
         tst.b   (dat_071_00258).l               ; 00646
         beq.b   l_020_0065A                     ; 0064C
         addq.b  #$1,d1                          ; 0064E
@@ -553,12 +553,12 @@ l_020_0065A:
         blt.b   l_020_00666                     ; 0065C
         subq.b  #$1,d1                          ; 0065E
 l_020_00660:
-        move.b  d1,(dat_071_00259).l            ; 00660
+        move.b  d1,(CrashKind).l                ; 00660
 l_020_00666:
         move.l  (TimeMicros).l,(dat_071_004D6).l ; 00666
 l_020_00670:
         jsr     (ReadTime).l                    ; 00670
-        move.l  (dat_071_004CA).l,d1            ; 00676
+        move.l  (ClockStart).l,d1               ; 00676
         blt.b   l_020_006D0                     ; 0067C
         sub.l   (TimeSeconds).l,d1              ; 0067E
         neg.l   d1                              ; 00684
@@ -595,7 +595,7 @@ CountDownByte:
 l_020_006D8:
         rts                                     ; 006D8
 sub_020_006DA:
-        tst.l   (dat_071_004CA).l               ; 006DA
+        tst.l   (ClockStart).l                  ; 006DA
         blt.b   l_020_00722                     ; 006E0
         move.l  (dat_071_004DA).l,d1            ; 006E2
         cmpi.l  #$7fff,d1                       ; 006E8
@@ -615,7 +615,7 @@ l_020_0070E:
 l_020_0071C:
         move.w  d0,(dat_071_004B6).l            ; 0071C
 l_020_00722:
-        move.l  (TimeSeconds).l,(dat_071_004CA).l ; 00722
+        move.l  (TimeSeconds).l,(ClockStart).l  ; 00722
         move.l  (TimeMicros).l,(dat_071_004CE).l ; 0072C
         rts                                     ; 00736
 

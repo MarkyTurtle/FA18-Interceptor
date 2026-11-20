@@ -363,7 +363,7 @@ l_009_004C2:
 l_009_00502:
         add.l   d6,d6                           ; 00502
         add.l   d6,d6                           ; 00504
-        tst.b   (dat_071_00156).l               ; 00506
+        tst.b   (HeightBandChanged).l           ; 00506
         beq.b   l_009_00510                     ; 0050C
         addq.w  #$2,d6                          ; 0050E
 l_009_00510:

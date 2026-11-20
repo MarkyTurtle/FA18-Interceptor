@@ -107,7 +107,7 @@ UpdateObject:
         moveq   #$0,d0                          ; 000FE
         tst.w   (CurrentObject).l               ; 00100
         beq.b   l_022_00110                     ; 00106
-        or.b    (dat_071_00158).l,d0            ; 00108
+        or.b    (ObjectsHeld).l,d0              ; 00108
         bne.b   l_022_000BA                     ; 0010E
 l_022_00110:
         or.b    (WorldFrozen).l,d0              ; 00110
@@ -467,7 +467,7 @@ l_022_0054C:
 l_022_0055A:
         tst.w   (CurrentObjectOffset).l         ; 0055A
         bne.b   l_022_00586                     ; 00560
-        move.b  (dat_071_00217).l,d1            ; 00562
+        move.b  (ModelVariant).l,d1             ; 00562
         blt.b   l_022_00570                     ; 00568
         ble.b   l_022_00586                     ; 0056A
         subq.b  #$1,d1                          ; 0056C
@@ -479,7 +479,7 @@ l_022_00570:
         addq.b  #$1,d1                          ; 0057A
         bset    #$7,d1                          ; 0057C
 l_022_00580:
-        move.b  d1,(dat_071_00217).l            ; 00580
+        move.b  d1,(ModelVariant).l             ; 00580
 l_022_00586:
         btst    #$2,$0(a1)                      ; 00586
         beq.b   l_022_00596                     ; 0058C
@@ -569,7 +569,7 @@ l_022_0069A:
         bset    #$7,$0(a1)                      ; 0069A
         cmpi.w  #$3c0,d2                        ; 006A0
         ble.w   l_022_00816                     ; 006A4
-        tst.b   (dat_071_0026A).l               ; 006A8
+        tst.b   (NewAircraftReady).l            ; 006A8
         bne.w   l_022_00816                     ; 006AE
         btst    #$6,d0                          ; 006B2
         beq.b   l_022_00710                     ; 006B6

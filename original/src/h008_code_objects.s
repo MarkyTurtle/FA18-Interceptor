@@ -23,7 +23,7 @@ sub_008_00000:
 l_008_00032:
         asr.l   #$8,d2                          ; 00032
         move.l  $18(a0),d3                      ; 00034
-        add.l   (dat_071_00606).l,d3            ; 00038
+        add.l   (CameraCellOffsetY).l,d3        ; 00038
         bge.b   l_008_00046                     ; 0003E
         neg.l   d3                              ; 00040
         bset    #$1,d0                          ; 00042
@@ -31,7 +31,7 @@ l_008_00046:
         asr.l   #$8,d3                          ; 00046
         move.l  $1c(a0),d4                      ; 00048
         andi.l  #$3fffff,d4                     ; 0004C
-        add.l   (dat_071_0060A).l,d4            ; 00052
+        add.l   (CameraCellOffsetZ).l,d4        ; 00052
         bge.b   l_008_00060                     ; 00058
         neg.l   d4                              ; 0005A
         bset    #$2,d0                          ; 0005C
@@ -116,8 +116,8 @@ l_008_0010C:
         neg.l   d4                              ; 00112
 l_008_00114:
         move.l  (CameraCellOffset).l,d0         ; 00114
-        move.l  (dat_071_00606).l,d1            ; 0011A
-        move.l  (dat_071_0060A).l,d5            ; 00120
+        move.l  (CameraCellOffsetY).l,d1        ; 0011A
+        move.l  (CameraCellOffsetZ).l,d5        ; 00120
         add.l   d0,d2                           ; 00126
         add.l   d1,d3                           ; 00128
         add.l   d5,d4                           ; 0012A
@@ -341,7 +341,7 @@ UpdateViewCell:
         cmp.b   (ViewOctantShown).l,d0          ; 0037E
         beq.b   l_008_00398                     ; 00384
         move.b  d0,(ViewOctantShown).l          ; 00386
-        tst.b   (dat_071_00156).l               ; 0038C
+        tst.b   (HeightBandChanged).l           ; 0038C
         bne.b   l_008_00398                     ; 00392
         ori.b   #$b,d5                          ; 00394
 l_008_00398:
@@ -499,16 +499,16 @@ l_008_0055E:
 l_008_0056C:
         cmpi.w  #$1000,d1                       ; 0056C
         bgt.b   l_008_00582                     ; 00570
-        move.b  #$5,(dat_071_0028C).l           ; 00572
+        move.b  #$5,(DrawDetail).l              ; 00572
         rts                                     ; 0057A
 l_008_0057C:
         cmpi.w  #$c0,d0                         ; 0057C
         bgt.b   l_008_0058C                     ; 00580
 l_008_00582:
-        move.b  #$3,(dat_071_0028C).l           ; 00582
+        move.b  #$3,(DrawDetail).l              ; 00582
         rts                                     ; 0058A
 l_008_0058C:
-        move.b  #$1,(dat_071_0028C).l           ; 0058C
+        move.b  #$1,(DrawDetail).l              ; 0058C
         rts                                     ; 00594
 l_008_00596:
         rts                                     ; 00596
@@ -607,7 +607,7 @@ l_008_00718:
         movem.l (a7)+,d0-d5/a0                  ; 00718
         tst.b   (ViewZoom).l                    ; 0071C
         bne.b   l_008_0075E                     ; 00722
-        tst.b   (dat_071_00174).l               ; 00724
+        tst.b   (RadarAltimeterOn).l            ; 00724
         beq.b   l_008_0075E                     ; 0072A
         move.w  #$72,d0                         ; 0072C
         move.w  #$a0,d1                         ; 00730
@@ -795,14 +795,14 @@ l_008_0095E:
         jsr     (ScaledViewOffset).l            ; 00966
         move.w  d1,$4(a0)                       ; 0096C
 l_008_00970:
-        move.w  $8(a0),(dat_071_0048A).l        ; 00970
+        move.w  $8(a0),(ObjectDrawWord).l       ; 00970
         bge.b   l_008_00988                     ; 00978
         subq.b  #$1,$6(a0)                      ; 0097A
         bge.b   l_008_009E6                     ; 0097E
-        move.b  (dat_071_0028C).l,$6(a0)        ; 00980
+        move.b  (DrawDetail).l,$6(a0)           ; 00980
 l_008_00988:
         subq.b  #$1,$7(a0)                      ; 00988
-        move.b  $7(a0),(dat_071_0028D).l        ; 0098C
+        move.b  $7(a0),(ObjectDrawByte).l       ; 0098C
         move.w  $4(a0),d1                       ; 00994
         move.w  d1,(ObjectDistance).l           ; 00998
         cmp.w   (dat_071_00382).l,d1            ; 0099E
@@ -843,8 +843,8 @@ l_008_009F2:
 DrawObjects:
         move.b  #$1,(SceneryDetailed).l         ; 009F4
         move.b  #$4,(ObjectDrawFlags).l         ; 009FC
-        clr.b   (dat_071_0028D).l               ; 00A04
-        clr.w   (dat_071_0048A).l               ; 00A0A
+        clr.b   (ObjectDrawByte).l              ; 00A04
+        clr.w   (ObjectDrawWord).l              ; 00A0A
         clr.l   (dat_071_00302).l               ; 00A10
         clr.w   (LoopIndex).l                   ; 00A16
 l_008_00A1C:
@@ -1033,14 +1033,14 @@ l_008_00C6E:
         bne.b   l_008_00C92                     ; 00C72
         btst    #$4,d7                          ; 00C74
         bne.b   l_008_00C92                     ; 00C78
-        move.w  $8(a0),(dat_071_0048A).l        ; 00C7A
+        move.w  $8(a0),(ObjectDrawWord).l       ; 00C7A
         bge.b   l_008_00C92                     ; 00C82
         subq.b  #$1,$6(a0)                      ; 00C84
         bge.b   l_008_00CF6                     ; 00C88
-        move.b  (dat_071_0028C).l,$6(a0)        ; 00C8A
+        move.b  (DrawDetail).l,$6(a0)           ; 00C8A
 l_008_00C92:
         subq.b  #$1,$7(a0)                      ; 00C92
-        move.b  $7(a0),(dat_071_0028D).l        ; 00C96
+        move.b  $7(a0),(ObjectDrawByte).l       ; 00C96
         move.w  $4(a0),d1                       ; 00C9E
         move.w  d1,(ObjectDistance).l           ; 00CA2
         andi.w  #$ff00,d7                       ; 00CA8
@@ -1074,7 +1074,7 @@ l_008_00CF6:
 	dc.b	$60,$00,$FE,$6E
 l_008_00D0E:
         clr.b   (dat_071_00205).l               ; 00D0E
-        clr.b   (dat_071_00208).l               ; 00D14
+        clr.b   (ObjectsDrawnCount).l           ; 00D14
         tst.b   (OutsideView).l                 ; 00D1A
         bne.w   l_008_00DDA                     ; 00D20
         cmpi.b  #$1,(PanelRedraw).l             ; 00D24
@@ -1083,13 +1083,13 @@ l_008_00D0E:
         move.w  d0,d1                           ; 00D34
         andi.w  #$2,d1                          ; 00D36
         bne.b   l_008_00D42                     ; 00D3A
-        addq.b  #$1,(dat_071_00208).l           ; 00D3C
+        addq.b  #$1,(ObjectsDrawnCount).l       ; 00D3C
 l_008_00D42:
         andi.w  #$3,d0                          ; 00D42
         bne.w   l_008_00DDA                     ; 00D46
         bra.b   l_008_00D52                     ; 00D4A
 l_008_00D4C:
-        addq.b  #$1,(dat_071_00208).l           ; 00D4C
+        addq.b  #$1,(ObjectsDrawnCount).l       ; 00D4C
 l_008_00D52:
         clr.w   (LoopIndex).l                   ; 00D52
         lea.l   (ObjectTable).l,a1              ; 00D58
@@ -1204,7 +1204,7 @@ BuildSceneryList:
         clr.b   (dat_071_00226).l               ; 00E48
         tst.b   (SceneryDetailed).l             ; 00E4E
         beq.w   l_008_00EBE                     ; 00E54
-        tst.b   (dat_071_00156).l               ; 00E58
+        tst.b   (HeightBandChanged).l           ; 00E58
         beq.b   l_008_00E6A                     ; 00E5E
         move.l  #dat_065_0011E,-$c(a6)          ; 00E60
         bra.b   l_008_00E72                     ; 00E68
@@ -1231,7 +1231,7 @@ l_008_00EBE:
         addq.b  #$1,(dat_071_00226).l           ; 00EE2
         bra.b   l_008_00EFA                     ; 00EE8
 l_008_00EEA:
-        tst.b   (dat_071_00156).l               ; 00EEA
+        tst.b   (HeightBandChanged).l           ; 00EEA
         beq.b   l_008_00EFA                     ; 00EF0
         move.l  #dat_065_0011E,-$c(a6)          ; 00EF2
 l_008_00EFA:
@@ -1286,7 +1286,7 @@ l_008_00FBA:
         lea.l   (dat_065_00070).l,a0            ; 00FD0
         move.b  (a0,d0.w),d0                    ; 00FD6
         ext.w   d0                              ; 00FDA
-        tst.b   (dat_071_00156).l               ; 00FDC
+        tst.b   (HeightBandChanged).l           ; 00FDC
         bne.b   l_008_01034                     ; 00FE2
         asl.w   #$4,d0                          ; 00FE4
         move.b  (ViewOctant).l,d1               ; 00FE6

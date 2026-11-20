@@ -451,7 +451,7 @@ Key_Y:
 l_005_0062E:
         bset    #$f,d0                          ; 0062E
         move.w  d0,(TargetReadoutMode).l        ; 00632
-        move.b  #$5,(dat_071_00256).l           ; 00638
+        move.b  #$5,(TargetReadoutCount).l      ; 00638
         move.b  #$2,(TargetReadoutRedraw).l     ; 00640
         bra.w   l_005_01624                     ; 00648
 Key_H:
@@ -468,7 +468,7 @@ l_005_0065C:
 ; PlayerFrameControls - The player's controls for the frame: in the replay modes (RecordMode
 ; 1-3) the control byte and the event words come from the recording (ReplayPointer,
 ; ReplayControlsPointer; it ends at three $FF bytes or at the end of the buffer, and starts
-; again); then the throttle (+$2B) is moved towards dat_071_00240 (ThrottleUp / 008BC /
+; again); then the throttle (+$2B) is moved towards GearState (ThrottleUp / 008BC /
 ; 008C6)...
 ;-------------------------------------------------------------------------------
 PlayerFrameControls:
@@ -525,7 +525,7 @@ l_005_00728:
         bne.w   l_005_007F6                     ; 00730
         tst.b   (WorldFrozen).l                 ; 00734
         bne.b   l_005_007B4                     ; 0073A
-        move.b  (dat_071_00240).l,d0            ; 0073C
+        move.b  (GearState).l,d0                ; 0073C
         beq.b   l_005_007B4                     ; 00742
         bgt.b   l_005_00748                     ; 00744
         clr.b   d0                              ; 00746
@@ -704,10 +704,10 @@ ThrottleDown:
         bra.b   l_005_008C8                     ; 008BE
 
 ;-------------------------------------------------------------------------------
-; ThrottleHoldReset - Clears dat_071_00240, then ThrottleHold.
+; ThrottleHoldReset - Clears GearState, then ThrottleHold.
 ;-------------------------------------------------------------------------------
 ThrottleHoldReset:
-        clr.b   (dat_071_00240).l               ; 008C0
+        clr.b   (GearState).l                   ; 008C0
 
 ;-------------------------------------------------------------------------------
 ; ThrottleHold - Clears PlayerControls' throttle bits (neither up nor down).
@@ -839,16 +839,16 @@ Key_Backslash_Backspace:
         bsr.w   ResetMouseThrottle              ; 009C4
         jsr     (KeyBeep).l                     ; 009C8
         bset    #$0,(ToggleKeys).l              ; 009CE
-        move.b  #$3,(dat_071_0020F).l           ; 009D6
+        move.b  #$3,(BackslashLampRedraw).l     ; 009D6
         eori.w  #$800,(ObjectTable).l           ; 009DE
         bra.w   l_005_01624                     ; 009E6
 
 ;-------------------------------------------------------------------------------
-; ResetMouseThrottle - Clears dat_071_00240 and the mouse's throttle positions (MouseY,
+; ResetMouseThrottle - Clears GearState and the mouse's throttle positions (MouseY,
 ; ThrottleMouseY).
 ;-------------------------------------------------------------------------------
 ResetMouseThrottle:
-        clr.b   (dat_071_00240).l               ; 009EA
+        clr.b   (GearState).l                   ; 009EA
         clr.w   (MouseY).l                      ; 009F0
         clr.w   (ThrottleMouseY).l              ; 009F6
         rts                                     ; 009FC
@@ -858,7 +858,7 @@ Key_A:
         bne.w   l_005_01624                     ; 00A0E
         jsr     (KeyBeep).l                     ; 00A12
         eori.w  #$8000,(Player_02).l            ; 00A18
-        bchg    #$7,(dat_071_00217).l           ; 00A20
+        bchg    #$7,(ModelVariant).l            ; 00A20
         move.b  #$3,(PanelLampRedraw).l         ; 00A28
         swap    d0                              ; 00A30
         btst    #$7,(Player_02).l               ; 00A32
@@ -1227,7 +1227,7 @@ Key_Return:
         beq.b   l_005_00F7E                     ; 00F6A
         cmpi.b  #$7d,(GameMode).l               ; 00F6C
         bne.b   l_005_00FA2                     ; 00F74
-        tst.b   (dat_071_0016A).l               ; 00F76
+        tst.b   (TrainingWaitKey).l             ; 00F76
         bge.b   l_005_00F90                     ; 00F7C
 l_005_00F7E:
         jsr     (KeyBeep).l                     ; 00F7E
@@ -1265,7 +1265,7 @@ Key_G:
         move.l  (dat_071_00528).l,d4            ; 01014
         andi.l  #$40,d4                         ; 0101A
         beq.b   l_005_0102E                     ; 01020
-        move.b  #$83,(dat_071_00255).l          ; 01022
+        move.b  #$83,(GearSoundCount).l         ; 01022
         bra.w   l_005_01624                     ; 0102A
 l_005_0102E:
         jsr     (KeyBeep).l                     ; 0102E
@@ -1337,15 +1337,15 @@ l_005_010E2:
         subi.w  #$4f,d4                         ; 010EE
         cmpi.w  #$1,d4                          ; 010F2
         bne.b   l_005_01120                     ; 010F6
-        tst.b   (dat_071_00240).l               ; 010F8
+        tst.b   (GearState).l                   ; 010F8
         bne.b   l_005_0110A                     ; 010FE
         cmpi.b  #$c,(Player_2B).l               ; 01100
         beq.b   l_005_01114                     ; 01108
 l_005_0110A:
-        cmpi.b  #$c,(dat_071_00240).l           ; 0110A
+        cmpi.b  #$c,(GearState).l               ; 0110A
         bne.b   l_005_01120                     ; 01112
 l_005_01114:
-        move.b  #$ff,(dat_071_00240).l          ; 01114
+        move.b  #$ff,(GearState).l              ; 01114
         bra.w   l_005_01624                     ; 0111C
 l_005_01120:
         add.b   d4,d4                           ; 01120
@@ -1357,8 +1357,8 @@ l_005_01120:
         blt.b   l_005_01132                     ; 0112E
         addq.b  #$1,d4                          ; 01130
 l_005_01132:
-        move.b  d4,(dat_071_00240).l            ; 01132
-        tst.b   (dat_071_001A8).l               ; 01138
+        move.b  d4,(GearState).l                ; 01132
+        tst.b   (MouseActive).l                 ; 01138
         beq.w   l_005_01624                     ; 0113E
         ext.w   d4                              ; 01142
         asl.w   #$3,d4                          ; 01144
@@ -1551,9 +1551,9 @@ l_005_0139C:
         neg.l   d1                              ; 013D8
         neg.l   d2                              ; 013DA
         move.l  d4,(CameraCellOffset).l         ; 013DC
-        move.l  d1,(dat_071_00606).l            ; 013E2
-        move.l  d2,(dat_071_0060A).l            ; 013E8
-        clr.l   (dat_071_0061A).l               ; 013EE
+        move.l  d1,(CameraCellOffsetY).l        ; 013E2
+        move.l  d2,(CameraCellOffsetZ).l        ; 013E8
+        clr.l   (CameraVelocity).l              ; 013EE
         clr.l   (dat_071_0061E).l               ; 013F4
         clr.l   (dat_071_00622).l               ; 013FA
         move.w  #$1c20,(OutsideCamPitch).l      ; 01400
@@ -1616,7 +1616,7 @@ Key_F:
         move.b  #$1e,(FlareTime).l              ; 014DC
         move.w  d0,d4                           ; 014E4
         move.w  #$4026,d0                       ; 014E6
-        move.b  #$2,(dat_071_0025B).l           ; 014EA
+        move.b  #$2,(CountermeasureSound).l     ; 014EA
         bra.b   l_005_014FE                     ; 014F2
 l_005_014F4:
         clr.b   (dat_071_0021D).l               ; 014F4
@@ -1655,7 +1655,7 @@ Key_C:
         move.b  #$1e,(ChaffTime).l              ; 0156A
         move.w  d0,d4                           ; 01572
         move.w  #$4028,d0                       ; 01574
-        move.b  #$1,(dat_071_0025B).l           ; 01578
+        move.b  #$1,(CountermeasureSound).l     ; 01578
         bra.b   l_005_0158C                     ; 01580
 l_005_01582:
         clr.b   (dat_071_0021C).l               ; 01582
@@ -1678,7 +1678,7 @@ l_005_0159C:
 Key_J:
         lea.l   (dat_071_00180).l,a0            ; 015DA
         bset    #$3,(ToggleKeys).l              ; 015E0
-        move.b  #$3,(dat_071_00210).l           ; 015E8
+        move.b  #$3,(JLampRedraw).l             ; 015E8
         jsr     (KeyBeep).l                     ; 015F0
         lea.l   (dat_071_00285).l,a0            ; 015F6
 

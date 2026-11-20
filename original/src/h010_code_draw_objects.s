@@ -246,9 +246,9 @@ l_010_00256:
         andi.b  #$42,d6                         ; 00282
         cmpi.b  #$42,d6                         ; 00286
         bne.b   l_010_002AE                     ; 0028A
-        tst.w   (dat_071_0048A).l               ; 0028C
+        tst.w   (ObjectDrawWord).l              ; 0028C
         ble.b   l_010_002A0                     ; 00292
-        move.b  (dat_071_0028D).l,d0            ; 00294
+        move.b  (ObjectDrawByte).l,d0           ; 00294
         andi.b  #$3,d0                          ; 0029A
         bne.b   l_010_002AE                     ; 0029E
 l_010_002A0:

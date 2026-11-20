@@ -86,7 +86,7 @@ DrawGunCross:
 ;-------------------------------------------------------------------------------
 ; HUDAltitude - The head-up display's height, then (falling into HUDSpeed and HUDHeading) the
 ; speed and the heading; only while HUDOn. The F/A-18 ($11) shows numbers: the height in feet
-; (+$18 / 1024 x 5, or the radar altimeter dat_071_00028 while dat_071_00174 is set, at most
+; (+$18 / 1024 x 5, or the radar altimeter dat_071_00028 while RadarAltimeterOn is set, at most
 ; 99,999) with FT at the right, the speed (+$6E / 12) with KT at the left. The F-16 ($10,
 ; ViewObject +$62) shows moving tapes instead, with tick marks every 5 and numbers every 10
 ; (HUDTapeTicks) and a pointer at the middle (HUDTapePointer).
@@ -95,7 +95,7 @@ HUDAltitude:
         move.w  #$d,(DrawColour).l              ; 00118
         lea.l   (ObjectTable).l,a0              ; 00120
         adda.w  (ViewObject).l,a0               ; 00126
-        tst.b   (dat_071_00174).l               ; 0012C
+        tst.b   (RadarAltimeterOn).l            ; 0012C
         beq.b   l_040_0014A                     ; 00132
         move.l  (dat_071_00028).l,d0            ; 00134
         cmpi.l  #$1869f,d0                      ; 0013A

@@ -1038,7 +1038,7 @@ CameraShot5:
 ; CameraShot7 - Camera sequence step 7 (CameraShots).
 ;-------------------------------------------------------------------------------
 CameraShot7:
-        tst.b   (dat_071_0027F).l               ; 00BDA
+        tst.b   (FlyByPhase).l                  ; 00BDA
         bgt.b   l_026_00C06                     ; 00BE0
         moveq   #$e,d4                          ; 00BE2
         cmpi.l  #$800000,d3                     ; 00BE4
@@ -1073,8 +1073,8 @@ CameraShot8:
 ; StateFlyByStart).
 ;-------------------------------------------------------------------------------
 FlyBySetup:
-        move.b  #$1,(dat_071_0027F).l           ; 00C48
-        clr.w   (dat_071_0038A).l               ; 00C50
+        move.b  #$1,(FlyByPhase).l              ; 00C48
+        clr.w   (FlyByObject).l                 ; 00C50
         move.b  #$7,(CameraShotStep).l          ; 00C56
         lea.l   (ObjectTable).l,a0              ; 00C5E
         movea.l (ModeObjects).l,a2              ; 00C64
@@ -1091,20 +1091,20 @@ l_026_00C6A:
         bne.b   l_026_00C6A                     ; 00C86
         btst    #$6,$1(a0,d3.w)                 ; 00C88
         beq.b   l_026_00C6A                     ; 00C8E
-        move.w  d3,(dat_071_0038A).l            ; 00C90
+        move.w  d3,(FlyByObject).l              ; 00C90
         btst    #$3,$1(a0,d3.w)                 ; 00C96
         beq.b   l_026_00CBE                     ; 00C9C
         bra.b   l_026_00C6A                     ; 00C9E
 l_026_00CA0:
-        tst.w   (dat_071_0038A).l               ; 00CA0
+        tst.w   (FlyByObject).l                 ; 00CA0
         bne.b   l_026_00CBE                     ; 00CA6
         move.w  #$3e,(DebugCheckpoint).l        ; 00CA8
         jsr     (Nop).l                         ; 00CB0
         jsr     (BayCentre).l                   ; 00CB6
         bra.b   l_026_00CE0                     ; 00CBC
 l_026_00CBE:
-        move.w  (dat_071_0038A).l,d3            ; 00CBE
-        move.b  #$ff,(dat_071_0027F).l          ; 00CC4
+        move.w  (FlyByObject).l,d3              ; 00CBE
+        move.b  #$ff,(FlyByPhase).l             ; 00CC4
         move.l  $14(a0,d3.w),d0                 ; 00CCC
         move.l  $1c(a0,d3.w),d2                 ; 00CD0
         move.l  (CameraY).l,d1                  ; 00CD4
@@ -1238,7 +1238,7 @@ l_026_00E3A:
         asl.l   d4,d5                           ; 00E4E
         asl.l   d4,d6                           ; 00E50
         asl.l   d4,d7                           ; 00E52
-        movem.l (dat_071_0061A).l,d0-d2         ; 00E54
+        movem.l (CameraVelocity).l,d0-d2        ; 00E54
         move.l  d0,d3                           ; 00E5C
         or.l    d1,d3                           ; 00E5E
         or.l    d2,d3                           ; 00E60
@@ -1254,7 +1254,7 @@ l_026_00E3A:
         add.l   d1,d6                           ; 00E74
         add.l   d2,d7                           ; 00E76
 l_026_00E78:
-        movem.l d5-d7,(dat_071_0061A).l         ; 00E78
+        movem.l d5-d7,(CameraVelocity).l        ; 00E78
         movem.l (CameraX).l,d0-d2               ; 00E80
         add.l   d0,d5                           ; 00E88
         add.l   d1,d6                           ; 00E8A
