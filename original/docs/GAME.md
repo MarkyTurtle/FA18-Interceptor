@@ -320,7 +320,7 @@ emulator, are in [`MODELS.md`](MODELS.md).
   | `$78`, `$8C` | MiG (one shape for both) | 51 |
   | `$A0`, `$B4` | the carrier (always object 14) | 52 |
   | `$C8` | the cruise missile | 55 |
-  | `$DC` | a box (animated; perhaps the rescue pod) | 58 |
+  | `$DC` | the rescue pod: a box under a parachute (animated) | 58 |
   | `$F0` | a ship like the carrier (object 15 of F6) | 53 |
 
 * **A model** (`DrawModel`, hunk 10) starts with a list choosing the shape by distance - the
