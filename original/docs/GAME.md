@@ -27,7 +27,7 @@ Two programming styles show in the code. The C modules use stack frames (`link a
 the stack and results in `d0`, and call the library for 32-bit multiply / divide (`CXM33`,
 `CXD33`) and for floating point. The assembly modules pass values in registers and keep their
 state in fixed global variables (hunk 71), often passing data through them (`BCDIn` /
-`BCDOut`, `dat_071_0049C` / `004A0` for `Divide`...).
+`BCDOut`, `DivideWhat` / `004A0` for `Divide`...).
 
 ## Start-up
 
@@ -84,7 +84,7 @@ stages (`?` = not worked out yet):
 | `$C0` | `UpdateWarnings`, `CockpitSounds` | the warning sounds (on `WarningTicks`), the cockpit's sounds |
 | `$D0` | `DrawPanel`, `DrawPanelPiece`, `DrawRadar`, `DrawHUD`, `DrawStatusLights`, `DrawCompass`, hunk 39 (several, some every 4th / 8th / 16th frame) | **the cockpit**: the instrument panel and the instruments |
 | `$1A0` | `DrawPanelLamp`, hunks 37 and 39 | ? (the head-up display) |
-| `$1D0`, `$1D4` | hunk 39, `CheckViewObjectGone`, `DrawMapMarkers`, `sub_020_00562` (the time: `ReadTime`), and every 8 / 16 / 32 frames more | ? (the outside views; the clock) |
+| `$1D0`, `$1D4` | hunk 39, `CheckViewObjectGone`, `DrawMapMarkers`, `UpdateClock` (the time: `ReadTime`), and every 8 / 16 / 32 frames more | ? (the outside views; the clock) |
 | `$210`-`$220` | `DrawBufferMark`, `ShowDebugNumbers`, `PrintText` (the flight log page, `SaveConfig`) | the menus and pages |
 
 ## Input
@@ -200,7 +200,7 @@ Each frame `UpdateObject` (hunk 22) does one object's work:
 * for the player, `PlayerFrameControls`: the control bits from the stick, or from the recording
   in a replay; and the warnings from the attitude and sink rate;
 * `UpdateAttitude` (hunk 32): an aircraft (type `$1x`) turns by **rotation rates**: its matrix
-  (`+$80`) is turned each frame by its three rates (`+$56`, `+$58`, `+$5A`; `sub_032_00AD8`). The
+  (`+$80`) is turned each frame by its three rates (`+$56`, `+$58`, `+$5A`; `NormaliseAngles`). The
   player's rates come from `FlightControls`: the stick deflection (`+$28`-`+$2A`, which builds
   up from the control bits) is looked up in a response table (`ControlResponse`, hunk 60) - so
   the stick sets how fast the aircraft rolls and pitches, not its angles. A computer aircraft
@@ -394,7 +394,7 @@ polygons (`DrawWaterAreas`, hunk 28), and a small orange mark in a fixed directi
 the sun (`DrawSun`). The same sky polygon, made with the instrument's own matrix and shrunk into
 its box, is the panel's **attitude indicator** (`DrawAttitudeIndicator`). The in-flight palette
 is the first row of `dat_021_00080` (16 rows, darker each row, stepped through to fade in and
-out); `dat_021_00040` is the all-yellow palette flashed while `dat_071_00269` counts down.
+out); `dat_021_00040` is the all-yellow palette flashed while `FlashCount` counts down.
 
 * The **camera** (`SetupCamera`) is the cockpit, or in the outside views a point near the viewed
   object (`SetOutsideCamera`); `CameraX`, `CameraY`, `CameraZ` and the viewer's cell are what
@@ -674,7 +674,7 @@ start-up (at most 125,000 / 16 frames); `LoadDemoRecording` loads the disk's rec
   object records' unknown fields in `ModeTable`.
 * The clipping (hunk 19), the runway's view-dependent operations ($1C-$28) in detail, and op
   `$7C`.
-* What each scenery shape is; the operations no shape uses; what `dat_071_002A2` bit `$2000` (a whole-sky
+* What each scenery shape is; the operations no shape uses; what `FlightBits2` bit `$2000` (a whole-sky
   view) and the second view table (`CheckViewTable2`) are for.
 * Some of the instruments (hunk 39) and the panel's blitter-drawn gauges (hunk 37); the
   head-up display's target box in detail; the outside views' extra drawing (`DrawMapMarkers`)

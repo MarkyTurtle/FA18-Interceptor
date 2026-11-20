@@ -30,7 +30,7 @@ def cap_point(gm):
     return 0
 
 
-g.hook('sub_019_00018', cap_poly)   # ClipFillPolygon's second entry, used by most operations
+g.hook('ClipFillPolygonBuffer', cap_poly)   # ClipFillPolygon's second entry, used by most operations
 g.hook('ClipDrawLine3D', cap_line)
 g.hook('PlotPoint3D', cap_point)
 for nm in ('Nop',):
@@ -73,15 +73,15 @@ def draw(entry, yaw=0.6, pitch=0.35, roll=0.0, dist=0x40000, lod=16, obj=1, mode
     # the object's position relative to the camera: R^T (0, 0, dist), so it ends up ahead
     px, py, pz = (int(round(m[2][k] * dist)) for k in range(3))
     g.setl(g['ViewOffsetX'], px); g.setl(g['ViewOffsetY'], py); g.setl(g['ViewOffsetZ'], pz)
-    for v in ('ObjectViewPosL', 'dat_071_00504', 'dat_071_00508', 'dat_071_0050C'):
+    for v in ('ObjectViewPosL', 'ObjectViewPosYL', 'ObjectViewPosZL', 'ObjectViewY'):
         if v in g.sym: g.setl(g[v], 0)
-    g.setl(g['dat_071_0050C'], py)            # the height offset the drawing uses
+    g.setl(g['ObjectViewY'], py)            # the height offset the drawing uses
     if shift is None:                         # as the game: DistanceScale by the distance
         shift = g.b(g['DistanceScale'] + min(dist >> 13, 0xEF))
     g.setw(g['DistanceShift'], shift)
-    g.setw(g['dat_071_00510'], lod)
+    g.setw(g['ObjectDistance'], lod)
     g.setb(g['GroundDetail'], 1)
-    g.setb(g['dat_071_0023C'], 1)
+    g.setb(g['HeightMid'], 1)
     g.setb(g['ObjectDrawFlags'], 0x10)
     g.setw(g['CurrentObject'], obj)
     g.setw(g['CurrentObjectOffset'], obj * 512)

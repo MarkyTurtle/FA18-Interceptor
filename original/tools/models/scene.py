@@ -11,7 +11,7 @@ import drawmodel as dm, render
 
 g = dm.g
 OUT = []
-for name in ('sub_019_00018', 'ClipDrawLine3D', 'PlotPoint3D'):   # let the game draw these itself
+for name in ('ClipFillPolygonBuffer', 'ClipDrawLine3D', 'PlotPoint3D'):   # let the game draw these itself
     g.hooks.pop(g[name], None)
 
 
