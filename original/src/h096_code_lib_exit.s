@@ -11,11 +11,16 @@
 ; exit - exit(code): closes every stdio stream (fclose on the 20 _iob entries) and every low-
 ; level file, then _exit(code).
 ;-------------------------------------------------------------------------------
+; exit's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+exit_Code               rs.l    1               ; the exit code
+exit_Extra              rs.l    1               ; passed on to _exit (callers push only the code)
+exit_I                  equ     -$4             ; the stream, then the file, being closed
 exit:
         link.w  a6,#$fffc                       ; 00000
-        clr.l   -$4(a6)                         ; 00004
+        clr.l   exit_I(a6)                      ; 00004
 l_096_00008:
-        move.l  -$4(a6),d0                      ; 00008
+        move.l  exit_I(a6),d0                   ; 00008
         cmpi.l  #$14,d0                         ; 0000C
         bge.b   l_096_00034                     ; 00012
         moveq   #$18,d1                         ; 00014
@@ -25,22 +30,22 @@ l_096_00008:
         move.l  a0,-(a7)                        ; 00024
         jsr     (fclose).l                      ; 00026
         addq.l  #$4,a7                          ; 0002C
-        addq.l  #$1,-$4(a6)                     ; 0002E
+        addq.l  #$1,exit_I(a6)                  ; 0002E
         bra.b   l_096_00008                     ; 00032
 l_096_00034:
-        clr.l   -$4(a6)                         ; 00034
+        clr.l   exit_I(a6)                      ; 00034
 l_096_00038:
-        move.l  -$4(a6),d0                      ; 00038
+        move.l  exit_I(a6),d0                   ; 00038
         cmp.l   (_nufbs).l,d0                   ; 0003C
         bge.b   l_096_00054                     ; 00042
         move.l  d0,-(a7)                        ; 00044
         jsr     (close).l                       ; 00046
         addq.l  #$4,a7                          ; 0004C
-        addq.l  #$1,-$4(a6)                     ; 0004E
+        addq.l  #$1,exit_I(a6)                  ; 0004E
         bra.b   l_096_00038                     ; 00052
 l_096_00054:
-        move.l  $c(a6),-(a7)                    ; 00054
-        move.l  $8(a6),-(a7)                    ; 00058
+        move.l  exit_Extra(a6),-(a7)            ; 00054
+        move.l  exit_Code(a6),-(a7)             ; 00058
         jsr     (_exit).l                       ; 0005C
         addq.l  #$8,a7                          ; 00062
         unlk    a6                              ; 00064

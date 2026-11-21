@@ -151,3 +151,18 @@ MEMF_PUBLIC		equ	1
 MEMF_CHIP		equ	2
 MEMF_FAST		equ	4
 MEMF_CLEAR		equ	$10000
+
+; Lattice C library: a stdio FILE (_iob holds 20)
+iob_Ptr			equ	0	; the next character in the buffer
+iob_RCnt			equ	4	; characters left to read in it
+iob_WCnt			equ	8	; room left to write in it
+iob_Base			equ	$C	; the buffer
+iob_Flag			equ	$10	; (byte) bit 0 reading, 1 writing, 2 unbuffered, 4 EOF, 5 error...
+iob_File			equ	$11	; (byte) the low-level file number
+iob_Size			equ	$12	; the buffer's size
+FILE_SIZE		equ	$18
+
+; Lattice C library: a low-level file (_ufbs holds _nufbs)
+ufb_Flags		equ	0	; (byte) 0 = free; bit 2: not to be closed, bit 3: append
+ufb_Handle		equ	2	; the AmigaDOS file handle
+UFB_SIZE		equ	6

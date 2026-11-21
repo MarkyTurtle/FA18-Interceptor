@@ -35,7 +35,8 @@ IFFReadBytes:
 A word argument gets an `rs.w` for the long's unused high half first, so its name is the
 address read. The names are `Routine_Name`, so each is unique. Structures the routines point
 at are `rs` structures too: the IFF reader's `GroupContext` (`gc_...`) and `BitMapHeader`
-(`bmh_...`) above `LoadPicture`, and the system's (`bm_...`) in `f18_os.i`. With `-no-opt`
+(`bmh_...`) above `LoadPicture`; the system's (`bm_` BitMap, `io_` IOStdReq, `mp_`/`ln_`
+MsgPort, `ie_` InputEvent) and the C library's (`iob_` FILE, `ufb_` low-level file) in `f18_os.i`. With `-no-opt`
 a named offset assembles to the same bytes as the number, so the build stays byte-identical.
 
 ## How it runs

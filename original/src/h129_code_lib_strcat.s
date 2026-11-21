@@ -10,52 +10,63 @@
 ;-------------------------------------------------------------------------------
 ; strcat - strcat(dst, src).
 ;-------------------------------------------------------------------------------
+; strcat's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+strcat_Dest             rs.l    1               ; the string added to (returned)
+strcat_Src              rs.l    1               ; the string added
+strcat_End              equ     -$4             ; the next byte of Dest
 strcat:
         link.w  a6,#$fffc                       ; 00000
-        move.l  $8(a6),-(a7)                    ; 00004
+        move.l  strcat_Dest(a6),-(a7)           ; 00004
         jsr     (strlen).l                      ; 00008
         addq.l  #$4,a7                          ; 0000E
-        movea.l $8(a6),a0                       ; 00010
+        movea.l strcat_Dest(a6),a0              ; 00010
         adda.l  d0,a0                           ; 00014
-        move.l  a0,-$4(a6)                      ; 00016
+        move.l  a0,strcat_End(a6)               ; 00016
 l_129_0001A:
-        movea.l -$4(a6),a0                      ; 0001A
-        addq.l  #$1,-$4(a6)                     ; 0001E
-        movea.l $c(a6),a1                       ; 00022
+        movea.l strcat_End(a6),a0               ; 0001A
+        addq.l  #$1,strcat_End(a6)              ; 0001E
+        movea.l strcat_Src(a6),a1               ; 00022
         move.b  (a1),d0                         ; 00026
         move.b  d0,(a0)                         ; 00028
-        addq.l  #$1,$c(a6)                      ; 0002A
+        addq.l  #$1,strcat_Src(a6)              ; 0002A
         tst.b   d0                              ; 0002E
         bne.b   l_129_0001A                     ; 00030
-        move.l  $8(a6),d0                       ; 00032
+        move.l  strcat_Dest(a6),d0              ; 00032
         unlk    a6                              ; 00036
         rts                                     ; 00038
+; strncat's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+strncat_Dest            rs.l    1               ; the string added to (returned)
+strncat_Src             rs.l    1               ; the string added
+strncat_Count           rs.l    1               ; at most this many characters
+strncat_End             equ     -$4             ; the next byte of Dest
 strncat:
         link.w  a6,#$fffc                       ; 0003A
-        move.l  $8(a6),-(a7)                    ; 0003E
+        move.l  strncat_Dest(a6),-(a7)          ; 0003E
         jsr     (strlen).l                      ; 00042
         addq.l  #$4,a7                          ; 00048
-        movea.l $8(a6),a0                       ; 0004A
+        movea.l strncat_Dest(a6),a0             ; 0004A
         adda.l  d0,a0                           ; 0004E
-        move.l  a0,-$4(a6)                      ; 00050
+        move.l  a0,strncat_End(a6)              ; 00050
 l_129_00054:
-        move.l  $10(a6),d0                      ; 00054
-        subq.l  #$1,$10(a6)                     ; 00058
+        move.l  strncat_Count(a6),d0            ; 00054
+        subq.l  #$1,strncat_Count(a6)           ; 00058
         tst.l   d0                              ; 0005C
         ble.b   l_129_0007A                     ; 0005E
-        movea.l $c(a6),a0                       ; 00060
+        movea.l strncat_Src(a6),a0              ; 00060
         move.b  (a0),d0                         ; 00064
-        movea.l -$4(a6),a1                      ; 00066
+        movea.l strncat_End(a6),a1              ; 00066
         move.b  d0,(a1)                         ; 0006A
-        addq.l  #$1,$c(a6)                      ; 0006C
+        addq.l  #$1,strncat_Src(a6)             ; 0006C
         tst.b   d0                              ; 00070
         beq.b   l_129_0007A                     ; 00072
-        addq.l  #$1,-$4(a6)                     ; 00074
+        addq.l  #$1,strncat_End(a6)             ; 00074
         bra.b   l_129_00054                     ; 00078
 l_129_0007A:
-        movea.l -$4(a6),a0                      ; 0007A
+        movea.l strncat_End(a6),a0              ; 0007A
         clr.b   (a0)                            ; 0007E
-        move.l  $8(a6),d0                       ; 00080
+        move.l  strncat_Dest(a6),d0             ; 00080
         unlk    a6                              ; 00084
         rts                                     ; 00086
 h129_end:

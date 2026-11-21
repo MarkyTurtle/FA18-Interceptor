@@ -12,33 +12,37 @@
 ; (_MemList) so XCEXIT can free everything; returns the memory after the 12-byte header
 ; (next, prev, size).
 ;-------------------------------------------------------------------------------
+; AllocMemTracked's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+AllocMemTracked_Size    rs.l    1               ; the bytes wanted
+AllocMemTracked_Block   equ     -$4             ; the block (with its 12-byte header)
 AllocMemTracked:
         link.w  a6,#$fffc                       ; 00000
-        move.l  $8(a6),d0                       ; 00004
+        move.l  AllocMemTracked_Size(a6),d0     ; 00004
         addi.l  #$c,d0                          ; 00008
         clr.l   -(a7)                           ; 0000E
         move.l  d0,-(a7)                        ; 00010
         jsr     (_AllocMem).l                   ; 00012
         addq.l  #$8,a7                          ; 00018
-        move.l  d0,-$4(a6)                      ; 0001A
+        move.l  d0,AllocMemTracked_Block(a6)    ; 0001A
         tst.l   d0                              ; 0001E
         bne.b   l_123_00028                     ; 00020
         moveq   #$0,d0                          ; 00022
         unlk    a6                              ; 00024
         rts                                     ; 00026
 l_123_00028:
-        movea.l -$4(a6),a0                      ; 00028
+        movea.l AllocMemTracked_Block(a6),a0    ; 00028
         exg.l   d0,a0                           ; 0002C
         andi.w  #$fffe,d0                       ; 0002E
         exg.l   d0,a0                           ; 00032
-        move.l  $8(a6),d0                       ; 00034
+        move.l  AllocMemTracked_Size(a6),d0     ; 00034
         addi.l  #$c,d0                          ; 00038
         move.l  d0,$8(a0)                       ; 0003E
-        move.l  -$4(a6),-(a7)                   ; 00042
+        move.l  AllocMemTracked_Block(a6),-(a7) ; 00042
         pea.l   (_MemList).l                    ; 00046
         bsr.w   ListAddTail                     ; 0004C
         addq.l  #$8,a7                          ; 00050
-        movea.l -$4(a6),a0                      ; 00052
+        movea.l AllocMemTracked_Block(a6),a0    ; 00052
         adda.w  #$c,a0                          ; 00056
         move.l  a0,d0                           ; 0005A
         unlk    a6                              ; 0005C
@@ -47,12 +51,16 @@ l_123_00028:
 ;-------------------------------------------------------------------------------
 ; sbrk - sbrk(size): AllocMemTracked(size), or -1.
 ;-------------------------------------------------------------------------------
+; sbrk's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+sbrk_Size               rs.l    1               ; the bytes wanted
+sbrk_Block              equ     -$4             ; what AllocMemTracked returned
 sbrk:
         link.w  a6,#$fffc                       ; 00060
-        move.l  $8(a6),-(a7)                    ; 00064
+        move.l  sbrk_Size(a6),-(a7)             ; 00064
         bsr.b   AllocMemTracked                 ; 00068
         addq.l  #$4,a7                          ; 0006A
-        move.l  d0,-$4(a6)                      ; 0006C
+        move.l  d0,sbrk_Block(a6)               ; 0006C
         tst.l   d0                              ; 00070
         beq.b   l_123_00078                     ; 00072
         unlk    a6                              ; 00074
@@ -102,22 +110,26 @@ l_123_000E4:
 ;-------------------------------------------------------------------------------
 ; ListAddTail - Adds a node to the end of a (head, tail) list.
 ;-------------------------------------------------------------------------------
+; ListAddTail's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+ListAddTail_List        rs.l    1               ; the list (head, tail)
+ListAddTail_Node        rs.l    1               ; the node to add
 ListAddTail:
         link.w  a6,#$0                          ; 000E8
-        movea.l $8(a6),a1                       ; 000EC
+        movea.l ListAddTail_List(a6),a1         ; 000EC
         movea.l $4(a1),a0                       ; 000F0
-        movea.l $c(a6),a1                       ; 000F4
+        movea.l ListAddTail_Node(a6),a1         ; 000F4
         move.l  a0,$4(a1)                       ; 000F8
         suba.l  a0,a0                           ; 000FC
         move.l  a0,(a1)                         ; 000FE
-        movea.l $8(a6),a0                       ; 00100
+        movea.l ListAddTail_List(a6),a0         ; 00100
         tst.l   $4(a0)                          ; 00104
         beq.b   l_123_00110                     ; 00108
         movea.l $4(a0),a0                       ; 0010A
         move.l  a1,(a0)                         ; 0010E
 l_123_00110:
-        movea.l $c(a6),a0                       ; 00110
-        movea.l $8(a6),a1                       ; 00114
+        movea.l ListAddTail_Node(a6),a0         ; 00110
+        movea.l ListAddTail_List(a6),a1         ; 00114
         move.l  a0,$4(a1)                       ; 00118
         tst.l   (a1)                            ; 0011C
         bne.b   l_123_00122                     ; 0011E
@@ -129,27 +141,31 @@ l_123_00122:
 ;-------------------------------------------------------------------------------
 ; ListRemove - Removes a node from a (head, tail) list.
 ;-------------------------------------------------------------------------------
+; ListRemove's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+ListRemove_List         rs.l    1               ; the list (head, tail)
+ListRemove_Node         rs.l    1               ; the node to remove
 ListRemove:
         link.w  a6,#$0                          ; 00126
-        movea.l $c(a6),a0                       ; 0012A
+        movea.l ListRemove_Node(a6),a0          ; 0012A
         tst.l   (a0)                            ; 0012E
         bne.b   l_123_0013E                     ; 00130
-        movea.l $8(a6),a1                       ; 00132
+        movea.l ListRemove_List(a6),a1          ; 00132
         move.l  $4(a0),$4(a1)                   ; 00136
         bra.b   l_123_0014A                     ; 0013C
 l_123_0013E:
-        movea.l $c(a6),a1                       ; 0013E
+        movea.l ListRemove_Node(a6),a1          ; 0013E
         movea.l (a1),a0                         ; 00142
         move.l  $4(a1),$4(a0)                   ; 00144
 l_123_0014A:
-        movea.l $c(a6),a0                       ; 0014A
+        movea.l ListRemove_Node(a6),a0          ; 0014A
         tst.l   $4(a0)                          ; 0014E
         bne.b   l_123_0015C                     ; 00152
-        movea.l $8(a6),a1                       ; 00154
+        movea.l ListRemove_List(a6),a1          ; 00154
         move.l  (a0),(a1)                       ; 00158
         bra.b   l_123_00166                     ; 0015A
 l_123_0015C:
-        movea.l $c(a6),a1                       ; 0015C
+        movea.l ListRemove_Node(a6),a1          ; 0015C
         movea.l $4(a1),a0                       ; 00160
         move.l  (a1),(a0)                       ; 00164
 l_123_00166:

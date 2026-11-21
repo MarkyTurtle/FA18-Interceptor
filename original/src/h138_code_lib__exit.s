@@ -11,6 +11,10 @@
 ; _exit - _exit(code): closes the AmigaDOS file of every open low-level file (_ufbs) and leaves
 ; through XCEXIT.
 ;-------------------------------------------------------------------------------
+; _exit's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+_exit_Code              rs.l    1               ; the exit code
+_exit_Extra             rs.l    1               ; passed on to XCEXIT
 _exit:
         link.w  a6,#$fffa                       ; 00000
         movem.l d5-d7,-(a7)                     ; 00004
@@ -33,15 +37,15 @@ l_138_00010:
         muls.w  #$6,d0                          ; 00032
         movea.l d0,a0                           ; 00036
         adda.l  #_ufbs,a0                       ; 00038
-        move.l  $2(a0),-(a7)                    ; 0003E
+        move.l  ufb_Handle(a0),-(a7)            ; 0003E
         jsr     (_Close).l                      ; 00042
         addq.l  #$4,a7                          ; 00048
 l_138_0004A:
         addq.w  #$1,d7                          ; 0004A
         bra.b   l_138_00010                     ; 0004C
 l_138_0004E:
-        move.l  $c(a6),-(a7)                    ; 0004E
-        move.l  $8(a6),-(a7)                    ; 00052
+        move.l  _exit_Extra(a6),-(a7)           ; 0004E
+        move.l  _exit_Code(a6),-(a7)            ; 00052
         jsr     (XCEXIT).l                      ; 00056
         addq.l  #$8,a7                          ; 0005C
         movem.l (a7)+,d5-d7                     ; 0005E

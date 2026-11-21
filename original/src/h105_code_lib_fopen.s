@@ -11,29 +11,34 @@
 ; fopen - fopen(name, mode): takes the first free FILE of _iob (20, 24 bytes each) and opens it
 ; with freopen.
 ;-------------------------------------------------------------------------------
+; fopen's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+fopen_Name              rs.l    1               ; the file's name
+fopen_Mode              rs.l    1               ; the mode string ("r", "w", "a"...)
+fopen_FP                equ     -$4             ; the free FILE found
 fopen:
         link.w  a6,#$fff8                       ; 00000
-        move.l  #_iob,-$4(a6)                   ; 00004
+        move.l  #_iob,fopen_FP(a6)              ; 00004
 l_105_0000C:
-        movea.l -$4(a6),a0                      ; 0000C
+        movea.l fopen_FP(a6),a0                 ; 0000C
         cmpa.l  #h143_end,a0                    ; 00010
         bcc.b   l_105_0002A                     ; 00016
         move.b  $10(a0),d0                      ; 00018
         tst.b   d0                              ; 0001C
         beq.b   l_105_0002A                     ; 0001E
-        addi.l  #$18,-$4(a6)                    ; 00020
+        addi.l  #$18,fopen_FP(a6)               ; 00020
         bra.b   l_105_0000C                     ; 00028
 l_105_0002A:
-        movea.l -$4(a6),a0                      ; 0002A
+        movea.l fopen_FP(a6),a0                 ; 0002A
         cmpa.l  #h143_end,a0                    ; 0002E
         bne.b   l_105_0003C                     ; 00034
         moveq   #$0,d0                          ; 00036
         unlk    a6                              ; 00038
         rts                                     ; 0003A
 l_105_0003C:
-        move.l  -$4(a6),-(a7)                   ; 0003C
-        move.l  $c(a6),-(a7)                    ; 00040
-        move.l  $8(a6),-(a7)                    ; 00044
+        move.l  fopen_FP(a6),-(a7)              ; 0003C
+        move.l  fopen_Mode(a6),-(a7)            ; 00040
+        move.l  fopen_Name(a6),-(a7)            ; 00044
         bsr.b   freopen                         ; 00048
         lea.l   $c(a7),a7                       ; 0004A
         unlk    a6                              ; 0004E
@@ -43,17 +48,22 @@ l_105_0003C:
 ; freopen - freopen(name, mode, fp): mode r/w/a, + and b; opens the file with open() and fills
 ; in the FILE.
 ;-------------------------------------------------------------------------------
+; freopen's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+freopen_Name            rs.l    1               ; the file's name
+freopen_Mode            rs.l    1               ; the mode string
+freopen_FP              rs.l    1               ; the FILE to open it on
 freopen:
         link.w  a6,#$ffea                       ; 00052
-        movea.l $10(a6),a0                      ; 00056
-        tst.b   $10(a0)                         ; 0005A
+        movea.l freopen_FP(a6),a0               ; 00056
+        tst.b   iob_Flag(a0)                    ; 0005A
         beq.b   l_105_00068                     ; 0005E
         move.l  a0,-(a7)                        ; 00060
         bsr.w   fclose                          ; 00062
         addq.l  #$4,a7                          ; 00066
 l_105_00068:
-        move.l  (FreopenData1).l,-$c(a6)        ; 00068
-        move.l  $c(a6),-$10(a6)                 ; 00070
+        move.l  (FreopenData1).l,-$C(a6)        ; 00068
+        move.l  freopen_Mode(a6),-$10(a6)       ; 00070
         moveq   #$0,d0                          ; 00076
         movea.l -$10(a6),a0                     ; 00078
         move.b  $1(a0),d0                       ; 0007C
@@ -61,10 +71,10 @@ l_105_00068:
         beq.b   l_105_00096                     ; 00086
         cmpi.l  #$61,d0                         ; 00088
         bne.b   l_105_000A2                     ; 0008E
-        clr.l   -$c(a6)                         ; 00090
+        clr.l   -$C(a6)                         ; 00090
         bra.b   l_105_0009E                     ; 00094
 l_105_00096:
-        move.l  #$8000,-$c(a6)                  ; 00096
+        move.l  #$8000,-$C(a6)                  ; 00096
 l_105_0009E:
         addq.l  #$1,-$10(a6)                    ; 0009E
 l_105_000A2:
@@ -76,7 +86,7 @@ l_105_000A2:
         ext.w   d1                              ; 000B2
         ext.l   d1                              ; 000B4
         moveq   #$0,d0                          ; 000B6
-        movea.l $c(a6),a0                       ; 000B8
+        movea.l freopen_Mode(a6),a0             ; 000B8
         move.b  (a0),d0                         ; 000BC
         move.b  d1,-$11(a6)                     ; 000BE
         cmpi.l  #$77,d0                         ; 000C2
@@ -85,7 +95,7 @@ l_105_000A2:
         beq.w   l_105_00156                     ; 000D2
         cmpi.l  #$61,d0                         ; 000D6
         bne.w   l_105_001F2                     ; 000DC
-        move.l  -$c(a6),d0                      ; 000E0
+        move.l  -$C(a6),d0                      ; 000E0
         ori.l   #$8,d0                          ; 000E4
         move.l  d0,$0(a7)                       ; 000EA
         tst.b   -$11(a6)                        ; 000EE
@@ -100,7 +110,7 @@ l_105_000FA:
         ori.l   #$100,d0                        ; 00100
         move.l  #$1a4,-(a7)                     ; 00106
         move.l  d0,-(a7)                        ; 0010C
-        move.l  $8(a6),-(a7)                    ; 0010E
+        move.l  freopen_Name(a6),-(a7)          ; 0010E
         jsr     (open).l                        ; 00112
         lea.l   $c(a7),a7                       ; 00118
         move.l  d0,-$8(a6)                      ; 0011C
@@ -133,10 +143,10 @@ l_105_00156:
 l_105_00160:
         moveq   #$0,d0                          ; 00160
 l_105_00162:
-        move.l  -$c(a6),d1                      ; 00162
+        move.l  -$C(a6),d1                      ; 00162
         or.l    d0,d1                           ; 00166
         move.l  d1,-(a7)                        ; 00168
-        move.l  $8(a6),-(a7)                    ; 0016A
+        move.l  freopen_Name(a6),-(a7)          ; 0016A
         jsr     (open).l                        ; 0016E
         addq.l  #$8,a7                          ; 00174
         move.l  d0,-$8(a6)                      ; 00176
@@ -163,13 +173,13 @@ l_105_0019A:
 l_105_001A4:
         moveq   #$1,d0                          ; 001A4
 l_105_001A6:
-        move.l  -$c(a6),d1                      ; 001A6
+        move.l  -$C(a6),d1                      ; 001A6
         or.l    d0,d1                           ; 001AA
         ori.l   #$100,d1                        ; 001AC
         ori.l   #$200,d1                        ; 001B2
         move.l  #$1a4,-(a7)                     ; 001B8
         move.l  d1,-(a7)                        ; 001BE
-        move.l  $8(a6),-(a7)                    ; 001C0
+        move.l  freopen_Name(a6),-(a7)          ; 001C0
         jsr     (open).l                        ; 001C4
         lea.l   $c(a7),a7                       ; 001CA
         move.l  d0,-$8(a6)                      ; 001CE
@@ -201,24 +211,24 @@ l_105_001F8:
         tst.b   $1(a0)                          ; 0020C
         beq.b   l_105_0022A                     ; 00210
         bset    #$2,-$1(a6)                     ; 00212
-        movea.l $10(a6),a0                      ; 00218
+        movea.l freopen_FP(a6),a0               ; 00218
         adda.w  #$16,a0                         ; 0021C
-        movea.l $10(a6),a1                      ; 00220
-        move.l  a0,$c(a1)                       ; 00224
+        movea.l freopen_FP(a6),a1               ; 00220
+        move.l  a0,iob_Base(a1)                 ; 00224
         bra.b   l_105_00232                     ; 00228
 l_105_0022A:
-        movea.l $10(a6),a0                      ; 0022A
-        clr.l   $c(a0)                          ; 0022E
+        movea.l freopen_FP(a6),a0               ; 0022A
+        clr.l   iob_Base(a0)                    ; 0022E
 l_105_00232:
         move.l  -$8(a6),d0                      ; 00232
-        movea.l $10(a6),a0                      ; 00236
-        move.b  d0,$11(a0)                      ; 0023A
-        move.l  $c(a0),(a0)                     ; 0023E
+        movea.l freopen_FP(a6),a0               ; 00236
+        move.b  d0,iob_File(a0)                 ; 0023A
+        move.l  iob_Base(a0),(a0)               ; 0023E
         moveq   #$0,d0                          ; 00242
-        move.l  d0,$8(a0)                       ; 00244
-        move.l  d0,$4(a0)                       ; 00248
+        move.l  d0,iob_WCnt(a0)                 ; 00244
+        move.l  d0,iob_RCnt(a0)                 ; 00248
         move.l  -$4(a6),d0                      ; 0024C
-        move.b  d0,$10(a0)                      ; 00250
+        move.b  d0,iob_Flag(a0)                 ; 00250
         move.l  a0,d0                           ; 00254
         unlk    a6                              ; 00256
         rts                                     ; 00258
@@ -226,10 +236,13 @@ l_105_00232:
 ;-------------------------------------------------------------------------------
 ; fclose - fclose(fp): flushes the buffer, closes the file and frees the buffer.
 ;-------------------------------------------------------------------------------
+; fclose's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+fclose_FP               rs.l    1               ; the stream
 fclose:
         link.w  a6,#$0                          ; 0025A
-        movea.l $8(a6),a0                       ; 0025E
-        move.b  $10(a0),d0                      ; 00262
+        movea.l fclose_FP(a6),a0                ; 0025E
+        move.b  iob_Flag(a0),d0                 ; 00262
         btst    #$1,d0                          ; 00266
         beq.b   l_105_0027A                     ; 0026A
         move.l  a0,-(a7)                        ; 0026C
@@ -238,25 +251,25 @@ fclose:
         jsr     (_flsbuf).l                     ; 00272
         addq.l  #$8,a7                          ; 00278
 l_105_0027A:
-        movea.l $8(a6),a0                       ; 0027A
-        move.b  $10(a0),d0                      ; 0027E
+        movea.l fclose_FP(a6),a0                ; 0027A
+        move.b  iob_Flag(a0),d0                 ; 0027E
         andi.b  #$c,d0                          ; 00282
         tst.b   d0                              ; 00286
         bne.b   l_105_002A0                     ; 00288
-        tst.l   $12(a0)                         ; 0028A
+        tst.l   iob_Size(a0)                    ; 0028A
         beq.b   l_105_002A0                     ; 0028E
-        move.l  $12(a0),-(a7)                   ; 00290
-        move.l  $c(a0),-(a7)                    ; 00294
+        move.l  iob_Size(a0),-(a7)              ; 00290
+        move.l  iob_Base(a0),-(a7)              ; 00294
         jsr     (free).l                        ; 00298
         addq.l  #$8,a7                          ; 0029E
 l_105_002A0:
         suba.l  a0,a0                           ; 002A0
-        movea.l $8(a6),a1                       ; 002A2
-        move.l  a0,$c(a1)                       ; 002A6
-        move.l  a0,$12(a1)                      ; 002AA
-        clr.b   $10(a1)                         ; 002AE
+        movea.l fclose_FP(a6),a1                ; 002A2
+        move.l  a0,iob_Base(a1)                 ; 002A6
+        move.l  a0,iob_Size(a1)                 ; 002AA
+        clr.b   iob_Flag(a1)                    ; 002AE
         moveq   #$0,d0                          ; 002B2
-        move.b  $11(a1),d0                      ; 002B4
+        move.b  iob_File(a1),d0                 ; 002B4
         move.l  d0,-(a7)                        ; 002B8
         jsr     (close).l                       ; 002BA
         addq.l  #$4,a7                          ; 002C0

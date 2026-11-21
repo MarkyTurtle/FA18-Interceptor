@@ -12,13 +12,16 @@
 ; "Error: non-terminated quoted string"), sets up stdin, stdout and stderr (the CLI's
 ; Input()/Output(), or a con: window), and calls main(argc, argv), then exit().
 ;-------------------------------------------------------------------------------
+; __main's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+__main_CmdLine          rs.l    1               ; the command line
 __main:
         link.w  a6,#$fffa                       ; 00000
 l_167_00004:
         cmpi.l  #$20,(MainData14).l             ; 00004
         bge.w   l_167_00116                     ; 0000E
 l_167_00012:
-        movea.l $8(a6),a0                       ; 00012
+        movea.l __main_CmdLine(a6),a0           ; 00012
         move.b  (a0),d0                         ; 00016
         ext.w   d0                              ; 00018
         ext.l   d0                              ; 0001A
@@ -28,14 +31,14 @@ l_167_00012:
         move.b  (a1),d0                         ; 00026
         btst    #$3,d0                          ; 00028
         beq.b   l_167_00034                     ; 0002C
-        addq.l  #$1,$8(a6)                      ; 0002E
+        addq.l  #$1,__main_CmdLine(a6)          ; 0002E
         bra.b   l_167_00012                     ; 00032
 l_167_00034:
-        movea.l $8(a6),a0                       ; 00034
+        movea.l __main_CmdLine(a6),a0           ; 00034
         move.b  (a0),d0                         ; 00038
         tst.b   d0                              ; 0003A
         beq.w   l_167_00116                     ; 0003C
-        movea.l $8(a6),a0                       ; 00040
+        movea.l __main_CmdLine(a6),a0           ; 00040
         move.b  (a0),d0                         ; 00044
         cmpi.b  #$22,d0                         ; 00046
         bne.b   l_167_000BC                     ; 0004A
@@ -46,18 +49,18 @@ l_167_00034:
         adda.l  #MainData15,a1                  ; 0005C
         addq.l  #$1,a0                          ; 00062
         move.l  a0,(a1)                         ; 00064
-        move.l  a0,$8(a6)                       ; 00066
+        move.l  a0,__main_CmdLine(a6)           ; 00066
 l_167_0006A:
-        movea.l $8(a6),a0                       ; 0006A
+        movea.l __main_CmdLine(a6),a0           ; 0006A
         move.b  (a0),d0                         ; 0006E
         tst.b   d0                              ; 00070
         beq.b   l_167_00080                     ; 00072
         cmpi.b  #$22,d0                         ; 00074
         beq.b   l_167_00080                     ; 00078
-        addq.l  #$1,$8(a6)                      ; 0007A
+        addq.l  #$1,__main_CmdLine(a6)          ; 0007A
         bra.b   l_167_0006A                     ; 0007E
 l_167_00080:
-        movea.l $8(a6),a0                       ; 00080
+        movea.l __main_CmdLine(a6),a0           ; 00080
         move.b  (a0),d0                         ; 00084
         tst.b   d0                              ; 00086
         bne.b   l_167_000AE                     ; 00088
@@ -71,9 +74,9 @@ l_167_00080:
         addq.l  #$4,a7                          ; 000A8
         bra.w   l_167_00004                     ; 000AA
 l_167_000AE:
-        movea.l $8(a6),a0                       ; 000AE
+        movea.l __main_CmdLine(a6),a0           ; 000AE
         clr.b   (a0)                            ; 000B2
-        addq.l  #$1,$8(a6)                      ; 000B4
+        addq.l  #$1,__main_CmdLine(a6)          ; 000B4
         bra.w   l_167_00004                     ; 000B8
 l_167_000BC:
         move.l  (MainData14).l,d0               ; 000BC
@@ -81,9 +84,9 @@ l_167_000BC:
         addq.l  #$1,(MainData14).l              ; 000C4
         movea.l d0,a0                           ; 000CA
         adda.l  #MainData15,a0                  ; 000CC
-        move.l  $8(a6),(a0)                     ; 000D2
+        move.l  __main_CmdLine(a6),(a0)         ; 000D2
 l_167_000D6:
-        movea.l $8(a6),a0                       ; 000D6
+        movea.l __main_CmdLine(a6),a0           ; 000D6
         move.b  (a0),d0                         ; 000DA
         ext.w   d0                              ; 000DC
         ext.l   d0                              ; 000DE
@@ -95,18 +98,18 @@ l_167_000D6:
         move.b  (a1),d0                         ; 000EE
         btst    #$3,d0                          ; 000F0
         bne.b   l_167_000FC                     ; 000F4
-        addq.l  #$1,$8(a6)                      ; 000F6
+        addq.l  #$1,__main_CmdLine(a6)          ; 000F6
         bra.b   l_167_000D6                     ; 000FA
 l_167_000FC:
-        movea.l $8(a6),a0                       ; 000FC
+        movea.l __main_CmdLine(a6),a0           ; 000FC
         move.b  (a0),d0                         ; 00100
         tst.b   d0                              ; 00102
         bne.b   l_167_00108                     ; 00104
         bra.b   l_167_00116                     ; 00106
 l_167_00108:
-        movea.l $8(a6),a0                       ; 00108
+        movea.l __main_CmdLine(a6),a0           ; 00108
         clr.b   (a0)                            ; 0010C
-        addq.l  #$1,$8(a6)                      ; 0010E
+        addq.l  #$1,__main_CmdLine(a6)          ; 0010E
         bra.w   l_167_00004                     ; 00112
 l_167_00116:
         clr.b   (MainData7).l                   ; 00116

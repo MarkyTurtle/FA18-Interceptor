@@ -16,11 +16,15 @@ MemUsed:
         asl.l   #$3,d0                          ; 0000A
         unlk    a6                              ; 0000C
         rts                                     ; 0000E
+; malloc's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+malloc_Size             rs.l    1               ; the bytes wanted
+malloc_Size2            equ     -$4             ; the size (kept)
 malloc:
         link.w  a6,#$fffc                       ; 00010
-        move.l  $8(a6),d0                       ; 00014
+        move.l  malloc_Size(a6),d0              ; 00014
         move.l  d0,-(a7)                        ; 00018
-        move.l  d0,-$4(a6)                      ; 0001A
+        move.l  d0,malloc_Size2(a6)             ; 0001A
         bsr.b   _malloc                         ; 0001E
         addq.l  #$4,a7                          ; 00020
         unlk    a6                              ; 00022
@@ -30,15 +34,18 @@ malloc:
 ; _malloc - The allocator: first fit from the free list (8-byte units); grows the heap by
 ; _MSTEP with AllocMemTracked when nothing fits.
 ;-------------------------------------------------------------------------------
+; _malloc's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+_malloc_Size            rs.l    1               ; the bytes wanted
 _malloc:
         link.w  a6,#$ffec                       ; 00026
-        tst.l   $8(a6)                          ; 0002A
+        tst.l   _malloc_Size(a6)                ; 0002A
         bgt.b   l_126_00036                     ; 0002E
         moveq   #$0,d0                          ; 00030
         unlk    a6                              ; 00032
         rts                                     ; 00034
 l_126_00036:
-        move.l  $8(a6),d0                       ; 00036
+        move.l  _malloc_Size(a6),d0             ; 00036
         addq.l  #$7,d0                          ; 0003A
         moveq   #$8,d1                          ; 0003C
         jsr     (CXD33).l                       ; 0003E
@@ -91,14 +98,14 @@ l_126_000B4:
         move.l  d0,-$14(a6)                     ; 000D8
         jsr     (AllocMemTracked).l             ; 000DC
         addq.l  #$4,a7                          ; 000E2
-        move.l  d0,-$c(a6)                      ; 000E4
+        move.l  d0,-$C(a6)                      ; 000E4
         tst.l   d0                              ; 000E8
         beq.b   l_126_00104                     ; 000EA
         move.l  -$14(a6),-(a7)                  ; 000EC
         move.l  d0,-(a7)                        ; 000F0
         bsr.b   free                            ; 000F2
         addq.l  #$8,a7                          ; 000F4
-        move.l  $8(a6),-(a7)                    ; 000F6
+        move.l  _malloc_Size(a6),-(a7)          ; 000F6
         bsr.w   _malloc                         ; 000FA
         addq.l  #$4,a7                          ; 000FE
         unlk    a6                              ; 00100
@@ -111,12 +118,17 @@ l_126_00104:
 ;-------------------------------------------------------------------------------
 ; free - free(block, size).
 ;-------------------------------------------------------------------------------
+; free's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+free_Block              rs.l    1               ; the block
+free_Size               rs.l    1               ; its size
+free_Size2              equ     -$4             ; the size (kept)
 free:
         link.w  a6,#$fffc                       ; 0010A
-        move.l  $c(a6),d0                       ; 0010E
+        move.l  free_Size(a6),d0                ; 0010E
         move.l  d0,-(a7)                        ; 00112
-        move.l  $8(a6),-(a7)                    ; 00114
-        move.l  d0,-$4(a6)                      ; 00118
+        move.l  free_Block(a6),-(a7)            ; 00114
+        move.l  d0,free_Size2(a6)               ; 00118
         bsr.b   _free                           ; 0011C
         addq.l  #$8,a7                          ; 0011E
         unlk    a6                              ; 00120
@@ -125,30 +137,34 @@ free:
 ;-------------------------------------------------------------------------------
 ; _free - Puts a block back on the free list, merging it with its neighbours.
 ;-------------------------------------------------------------------------------
+; _free's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+_free_Block             rs.l    1               ; the block
+_free_Size              rs.l    1               ; its size
 _free:
         link.w  a6,#$ffe4                       ; 00124
-        tst.l   $c(a6)                          ; 00128
+        tst.l   _free_Size(a6)                  ; 00128
         bgt.b   l_126_00134                     ; 0012C
         moveq   #-1,d0                          ; 0012E
         unlk    a6                              ; 00130
         rts                                     ; 00132
 l_126_00134:
-        movea.l $8(a6),a0                       ; 00134
+        movea.l _free_Block(a6),a0              ; 00134
         exg.l   d0,a0                           ; 00138
         andi.w  #$fffe,d0                       ; 0013A
         exg.l   d0,a0                           ; 0013E
-        move.l  $c(a6),d0                       ; 00140
+        move.l  _free_Size(a6),d0               ; 00140
         addq.l  #$7,d0                          ; 00144
         moveq   #$8,d1                          ; 00146
         jsr     (CXD33).l                       ; 00148
-        move.l  d0,-$1c(a6)                     ; 0014E
+        move.l  d0,-$1C(a6)                     ; 0014E
         asl.l   #$3,d0                          ; 00152
         move.l  a0,-$14(a6)                     ; 00154
         adda.l  d0,a0                           ; 00158
-        move.l  -$1c(a6),d0                     ; 0015A
+        move.l  -$1C(a6),d0                     ; 0015A
         add.l   d0,(MemoryUsed).l               ; 0015E
-        move.l  #RbrkData6,-$c(a6)              ; 00164
-        movea.l -$c(a6),a1                      ; 0016C
+        move.l  #RbrkData6,-$C(a6)              ; 00164
+        movea.l -$C(a6),a1                      ; 0016C
         move.l  (a1),-$4(a6)                    ; 00170
         move.l  a0,-$18(a6)                     ; 00174
 l_126_00178:
@@ -164,8 +180,8 @@ l_126_00178:
         bls.b   l_126_001B2                     ; 00198
         movea.l -$14(a6),a1                     ; 0019A
         move.l  a0,(a1)                         ; 0019E
-        move.l  -$1c(a6),$4(a1)                 ; 001A0
-        movea.l -$c(a6),a0                      ; 001A6
+        move.l  -$1C(a6),$4(a1)                 ; 001A0
+        movea.l -$C(a6),a0                      ; 001A6
         move.l  a1,(a0)                         ; 001AA
         moveq   #$0,d0                          ; 001AC
         unlk    a6                              ; 001AE
@@ -176,10 +192,10 @@ l_126_001B2:
         bne.b   l_126_001DA                     ; 001BA
         movea.l -$14(a6),a1                     ; 001BC
         move.l  (a0),(a1)                       ; 001C0
-        move.l  -$1c(a6),d0                     ; 001C2
+        move.l  -$1C(a6),d0                     ; 001C2
         add.l   $4(a0),d0                       ; 001C6
         move.l  d0,$4(a1)                       ; 001CA
-        movea.l -$c(a6),a0                      ; 001CE
+        movea.l -$C(a6),a0                      ; 001CE
         move.l  a1,(a0)                         ; 001D2
         moveq   #$0,d0                          ; 001D4
         unlk    a6                              ; 001D6
@@ -188,7 +204,7 @@ l_126_001DA:
         movea.l -$14(a6),a0                     ; 001DA
         cmpa.l  -$8(a6),a0                      ; 001DE
         bcc.b   l_126_001F4                     ; 001E2
-        move.l  -$1c(a6),d0                     ; 001E4
+        move.l  -$1C(a6),d0                     ; 001E4
         sub.l   d0,(MemoryUsed).l               ; 001E8
         moveq   #-1,d0                          ; 001EE
         unlk    a6                              ; 001F0
@@ -204,13 +220,13 @@ l_126_001F4:
         movea.l -$4(a6),a1                      ; 0020A
         cmpa.l  (a1),a0                         ; 0020E
         bls.b   l_126_00222                     ; 00210
-        move.l  -$1c(a6),d0                     ; 00212
+        move.l  -$1C(a6),d0                     ; 00212
         sub.l   d0,(MemoryUsed).l               ; 00216
         moveq   #-1,d0                          ; 0021C
         unlk    a6                              ; 0021E
         rts                                     ; 00220
 l_126_00222:
-        move.l  -$1c(a6),d0                     ; 00222
+        move.l  -$1C(a6),d0                     ; 00222
         movea.l -$4(a6),a0                      ; 00226
         add.l   d0,$4(a0)                       ; 0022A
         tst.l   (a0)                            ; 0022E
@@ -227,18 +243,18 @@ l_126_00248:
         unlk    a6                              ; 0024A
         rts                                     ; 0024C
 l_126_0024E:
-        move.l  -$4(a6),-$c(a6)                 ; 0024E
+        move.l  -$4(a6),-$C(a6)                 ; 0024E
         move.l  -$8(a6),-$10(a6)                ; 00254
         movea.l -$4(a6),a0                      ; 0025A
         move.l  (a0),-$4(a6)                    ; 0025E
         bra.w   l_126_00178                     ; 00262
 l_126_00266:
-        movea.l -$c(a6),a0                      ; 00266
+        movea.l -$C(a6),a0                      ; 00266
         move.l  -$14(a6),(a0)                   ; 0026A
         suba.l  a0,a0                           ; 0026E
         movea.l -$14(a6),a1                     ; 00270
         move.l  a0,(a1)                         ; 00274
-        move.l  -$1c(a6),$4(a1)                 ; 00276
+        move.l  -$1C(a6),$4(a1)                 ; 00276
         move.l  a0,d0                           ; 0027C
         unlk    a6                              ; 0027E
         rts                                     ; 00280

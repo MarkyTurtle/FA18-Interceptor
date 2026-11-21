@@ -10,9 +10,12 @@
 ;-------------------------------------------------------------------------------
 ; SetFPErr - Sets _FPERR (the floating-point error: 1 underflow, 2 overflow, 3 divide by zero).
 ;-------------------------------------------------------------------------------
+; SetFPErr's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+SetFPErr_Error          rs.l    1               ; 1 underflow, 2 overflow, 3 divide by zero
 SetFPErr:
         link.w  a6,#$0                          ; 00000
-        move.l  $8(a6),(_FPERR).l               ; 00004
+        move.l  SetFPErr_Error(a6),(_FPERR).l   ; 00004
         unlk    a6                              ; 0000C
         rts                                     ; 0000E
 h155_end:

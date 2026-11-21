@@ -11,15 +11,18 @@
 ; chkufb - chkufb(fd): checks for CTRL-C and returns the low-level file's entry in _ufbs (6
 ; bytes each: flags.w, AmigaDOS handle.l), or 0 with errno = EBADF.
 ;-------------------------------------------------------------------------------
+; chkufb's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+chkufb_FD               rs.l    1               ; the file number
 chkufb:
         link.w  a6,#$0                          ; 00000
         tst.l   (Enable_Abort).l                ; 00004
         beq.b   l_117_00012                     ; 0000A
         jsr     (Chk_Abort).l                   ; 0000C
 l_117_00012:
-        tst.l   $8(a6)                          ; 00012
+        tst.l   chkufb_FD(a6)                   ; 00012
         bmi.b   l_117_0003C                     ; 00016
-        move.l  $8(a6),d0                       ; 00018
+        move.l  chkufb_FD(a6),d0                ; 00018
         cmp.l   (_nufbs).l,d0                   ; 0001C
         bge.b   l_117_0003C                     ; 00022
         moveq   #$6,d1                          ; 00024
@@ -36,7 +39,7 @@ l_117_0003C:
         unlk    a6                              ; 00046
         rts                                     ; 00048
 l_117_0004A:
-        move.l  $8(a6),d0                       ; 0004A
+        move.l  chkufb_FD(a6),d0                ; 0004A
         moveq   #$6,d1                          ; 0004E
         jsr     (CXM33).l                       ; 00050
         movea.l d0,a0                           ; 00056
@@ -50,6 +53,11 @@ l_117_0004A:
 ; with MODE_OLDFILE / MODE_NEWFILE (O_CREAT, O_TRUNC deletes it first, O_APPEND seeks to the
 ; end). Returns the file number or -1 (errno).
 ;-------------------------------------------------------------------------------
+; open's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+open_Name               rs.l    1               ; the file's name
+open_Mode               rs.l    1               ; O_RDONLY, O_WRONLY, O_RDWR, with O_CREAT, O_TRUNC, O_APPEND...
+open_Prot               rs.l    1               ; the protection (not used)
 open:
         link.w  a6,#$fff4                       ; 00064
         clr.l   -$4(a6)                         ; 00068
@@ -83,10 +91,10 @@ l_117_000AE:
         adda.l  #_ufbs,a0                       ; 000BC
         move.l  (OpenData1).l,d0                ; 000C2
         andi.l  #$8000,d0                       ; 000C8
-        move.l  $c(a6),d1                       ; 000CE
+        move.l  open_Mode(a6),d1                ; 000CE
         eor.l   d1,d0                           ; 000D2
-        move.l  d0,$c(a6)                       ; 000D4
-        move.l  a0,-$c(a6)                      ; 000D8
+        move.l  d0,open_Mode(a6)                ; 000D4
+        move.l  a0,-$C(a6)                      ; 000D8
         btst    #$f,d0                          ; 000DC
         beq.b   l_117_000E6                     ; 000E0
         moveq   #$10,d0                         ; 000E2
@@ -95,9 +103,9 @@ l_117_000E6:
         moveq   #$0,d0                          ; 000E6
 l_117_000E8:
         ori.l   #$80,d0                         ; 000E8
-        movea.l -$c(a6),a0                      ; 000EE
+        movea.l -$C(a6),a0                      ; 000EE
         move.b  d0,(a0)                         ; 000F2
-        move.l  $c(a6),d0                       ; 000F4
+        move.l  open_Mode(a6),d0                ; 000F4
         andi.l  #$3,d0                          ; 000F8
         cmpi.l  #$2,d0                          ; 000FE
         beq.b   l_117_00142                     ; 00104
@@ -105,13 +113,13 @@ l_117_000E8:
         beq.b   l_117_00120                     ; 0010C
         tst.l   d0                              ; 0010E
         bne.b   l_117_00164                     ; 00110
-        movea.l -$c(a6),a0                      ; 00112
+        movea.l -$C(a6),a0                      ; 00112
         move.b  (a0),d0                         ; 00116
         ori.b   #$40,d0                         ; 00118
         move.b  d0,(a0)                         ; 0011C
         bra.b   l_117_00178                     ; 0011E
 l_117_00120:
-        btst    #$3,$f(a6)                      ; 00120
+        btst    #$3,open_Mode+3(a6)             ; 00120
         beq.b   l_117_0012C                     ; 00126
         moveq   #$8,d0                          ; 00128
         bra.b   l_117_0012E                     ; 0012A
@@ -120,13 +128,13 @@ l_117_0012C:
 l_117_0012E:
         ori.l   #$20,d0                         ; 0012E
         moveq   #$0,d1                          ; 00134
-        movea.l -$c(a6),a0                      ; 00136
+        movea.l -$C(a6),a0                      ; 00136
         move.b  (a0),d1                         ; 0013A
         or.l    d0,d1                           ; 0013C
         move.b  d1,(a0)                         ; 0013E
         bra.b   l_117_00178                     ; 00140
 l_117_00142:
-        btst    #$3,$f(a6)                      ; 00142
+        btst    #$3,open_Mode+3(a6)             ; 00142
         beq.b   l_117_0014E                     ; 00148
         moveq   #$8,d0                          ; 0014A
         bra.b   l_117_00150                     ; 0014C
@@ -135,13 +143,13 @@ l_117_0014E:
 l_117_00150:
         ori.l   #$60,d0                         ; 00150
         moveq   #$0,d1                          ; 00156
-        movea.l -$c(a6),a0                      ; 00158
+        movea.l -$C(a6),a0                      ; 00158
         move.b  (a0),d1                         ; 0015C
         or.l    d0,d1                           ; 0015E
         move.b  d1,(a0)                         ; 00160
         bra.b   l_117_00178                     ; 00162
 l_117_00164:
-        movea.l -$c(a6),a0                      ; 00164
+        movea.l -$C(a6),a0                      ; 00164
         clr.b   (a0)                            ; 00168
         moveq   #$16,d0                         ; 0016A
         move.l  d0,(errno).l                    ; 0016C
@@ -149,13 +157,13 @@ l_117_00164:
         unlk    a6                              ; 00174
         rts                                     ; 00176
 l_117_00178:
-        btst    #$1,$e(a6)                      ; 00178
+        btst    #$1,open_Mode+2(a6)             ; 00178
         beq.b   l_117_0018C                     ; 0017E
-        move.l  $8(a6),-(a7)                    ; 00180
+        move.l  open_Name(a6),-(a7)             ; 00180
         jsr     (_DeleteFile).l                 ; 00184
         addq.l  #$4,a7                          ; 0018A
 l_117_0018C:
-        move.l  $c(a6),d0                       ; 0018C
+        move.l  open_Mode(a6),d0                ; 0018C
         andi.l  #$300,d0                        ; 00190
         tst.l   d0                              ; 00196
         beq.b   l_117_001A4                     ; 00198
@@ -165,10 +173,10 @@ l_117_001A4:
         move.l  #$3ed,-$8(a6)                   ; 001A4
 l_117_001AC:
         move.l  -$8(a6),-(a7)                   ; 001AC
-        move.l  $8(a6),-(a7)                    ; 001B0
+        move.l  open_Name(a6),-(a7)             ; 001B0
         jsr     (_Open).l                       ; 001B4
         addq.l  #$8,a7                          ; 001BA
-        movea.l -$c(a6),a0                      ; 001BC
+        movea.l -$C(a6),a0                      ; 001BC
         move.l  d0,$2(a0)                       ; 001C0
         tst.l   d0                              ; 001C4
         bne.b   l_117_001E8                     ; 001C6
@@ -176,7 +184,7 @@ l_117_001AC:
         move.l  d0,(_OSERR).l                   ; 001CE
         moveq   #$2,d0                          ; 001D4
         move.l  d0,(errno).l                    ; 001D6
-        movea.l -$c(a6),a0                      ; 001DC
+        movea.l -$C(a6),a0                      ; 001DC
         clr.b   (a0)                            ; 001E0
         moveq   #-1,d0                          ; 001E2
         unlk    a6                              ; 001E4
@@ -189,16 +197,20 @@ l_117_001E8:
 ;-------------------------------------------------------------------------------
 ; creat - creat(name, prot): open(name, O_WRONLY|O_CREAT|O_TRUNC, prot).
 ;-------------------------------------------------------------------------------
+; creat's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+creat_Name              rs.l    1               ; the file's name
+creat_Prot              rs.l    1               ; the protection
 creat:
         link.w  a6,#$0                          ; 001F0
-        move.l  $c(a6),d0                       ; 001F4
+        move.l  creat_Prot(a6),d0               ; 001F4
         andi.l  #$8000,d0                       ; 001F8
         ori.l   #$301,d0                        ; 001FE
-        move.l  $c(a6),d1                       ; 00204
+        move.l  creat_Prot(a6),d1               ; 00204
         andi.l  #$ffff7fff,d1                   ; 00208
         move.l  d1,-(a7)                        ; 0020E
         move.l  d0,-(a7)                        ; 00210
-        move.l  $8(a6),-(a7)                    ; 00212
+        move.l  creat_Name(a6),-(a7)            ; 00212
         bsr.w   open                            ; 00216
         lea.l   $c(a7),a7                       ; 0021A
         unlk    a6                              ; 0021E
@@ -207,14 +219,21 @@ creat:
 ;-------------------------------------------------------------------------------
 ; read - read(fd, buf, n): AmigaDOS Read; -1 and errno/_OSERR on error.
 ;-------------------------------------------------------------------------------
+; read's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+read_FD                 rs.l    1               ; the file number
+read_Buffer             rs.l    1               ; where the bytes go
+read_Count              rs.l    1               ; how many
+read_Result             equ     -$4             ; the bytes read, or -1
+read_UFB                equ     -$8             ; the file's _ufbs entry
 read:
         link.w  a6,#$fff8                       ; 00222
-        tst.l   $10(a6)                         ; 00226
+        tst.l   read_Count(a6)                  ; 00226
         bmi.b   l_117_0023E                     ; 0022A
-        move.l  $8(a6),-(a7)                    ; 0022C
+        move.l  read_FD(a6),-(a7)               ; 0022C
         bsr.w   chkufb                          ; 00230
         addq.l  #$4,a7                          ; 00234
-        move.l  d0,-$8(a6)                      ; 00236
+        move.l  d0,read_UFB(a6)                 ; 00236
         tst.l   d0                              ; 0023A
         bne.b   l_117_0024C                     ; 0023C
 l_117_0023E:
@@ -224,13 +243,13 @@ l_117_0023E:
         unlk    a6                              ; 00248
         rts                                     ; 0024A
 l_117_0024C:
-        move.l  $10(a6),-(a7)                   ; 0024C
-        move.l  $c(a6),-(a7)                    ; 00250
-        movea.l -$8(a6),a0                      ; 00254
-        move.l  $2(a0),-(a7)                    ; 00258
+        move.l  read_Count(a6),-(a7)            ; 0024C
+        move.l  read_Buffer(a6),-(a7)           ; 00250
+        movea.l read_UFB(a6),a0                 ; 00254
+        move.l  ufb_Handle(a0),-(a7)            ; 00258
         jsr     (_Read).l                       ; 0025C
         lea.l   $c(a7),a7                       ; 00262
-        move.l  d0,-$4(a6)                      ; 00266
+        move.l  d0,read_Result(a6)              ; 00266
         addq.l  #$1,d0                          ; 0026A
         bne.b   l_117_00282                     ; 0026C
         jsr     (_IoErr).l                      ; 0026E
@@ -238,21 +257,28 @@ l_117_0024C:
         moveq   #$5,d0                          ; 0027A
         move.l  d0,(errno).l                    ; 0027C
 l_117_00282:
-        move.l  -$4(a6),d0                      ; 00282
+        move.l  read_Result(a6),d0              ; 00282
         unlk    a6                              ; 00286
         rts                                     ; 00288
 
 ;-------------------------------------------------------------------------------
 ; write - write(fd, buf, n): AmigaDOS Write (seeking to the end first in append mode).
 ;-------------------------------------------------------------------------------
+; write's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+write_FD                rs.l    1               ; the file number
+write_Buffer            rs.l    1               ; the bytes
+write_Count             rs.l    1               ; how many
+write_Result            equ     -$4             ; the bytes written, or -1
+write_UFB               equ     -$8             ; the file's _ufbs entry
 write:
         link.w  a6,#$fff8                       ; 0028A
-        tst.l   $10(a6)                         ; 0028E
+        tst.l   write_Count(a6)                 ; 0028E
         bmi.b   l_117_002A6                     ; 00292
-        move.l  $8(a6),-(a7)                    ; 00294
+        move.l  write_FD(a6),-(a7)              ; 00294
         bsr.w   chkufb                          ; 00298
         addq.l  #$4,a7                          ; 0029C
-        move.l  d0,-$8(a6)                      ; 0029E
+        move.l  d0,write_UFB(a6)                ; 0029E
         tst.l   d0                              ; 002A2
         bne.b   l_117_002B4                     ; 002A4
 l_117_002A6:
@@ -262,24 +288,24 @@ l_117_002A6:
         unlk    a6                              ; 002B0
         rts                                     ; 002B2
 l_117_002B4:
-        movea.l -$8(a6),a0                      ; 002B4
+        movea.l write_UFB(a6),a0                ; 002B4
         move.b  (a0),d0                         ; 002B8
         btst    #$3,d0                          ; 002BA
         beq.b   l_117_002D0                     ; 002BE
         moveq   #$2,d0                          ; 002C0
         move.l  d0,-(a7)                        ; 002C2
         clr.l   -(a7)                           ; 002C4
-        move.l  $8(a6),-(a7)                    ; 002C6
+        move.l  write_FD(a6),-(a7)              ; 002C6
         bsr.b   lseek                           ; 002CA
         lea.l   $c(a7),a7                       ; 002CC
 l_117_002D0:
-        move.l  $10(a6),-(a7)                   ; 002D0
-        move.l  $c(a6),-(a7)                    ; 002D4
-        movea.l -$8(a6),a0                      ; 002D8
-        move.l  $2(a0),-(a7)                    ; 002DC
+        move.l  write_Count(a6),-(a7)           ; 002D0
+        move.l  write_Buffer(a6),-(a7)          ; 002D4
+        movea.l write_UFB(a6),a0                ; 002D8
+        move.l  ufb_Handle(a0),-(a7)            ; 002DC
         jsr     (_Write).l                      ; 002E0
         lea.l   $c(a7),a7                       ; 002E6
-        move.l  d0,-$4(a6)                      ; 002EA
+        move.l  d0,write_Result(a6)             ; 002EA
         addq.l  #$1,d0                          ; 002EE
         bne.b   l_117_00306                     ; 002F0
         jsr     (_IoErr).l                      ; 002F2
@@ -287,22 +313,28 @@ l_117_002D0:
         moveq   #$5,d0                          ; 002FE
         move.l  d0,(errno).l                    ; 00300
 l_117_00306:
-        move.l  -$4(a6),d0                      ; 00306
+        move.l  write_Result(a6),d0             ; 00306
         unlk    a6                              ; 0030A
         rts                                     ; 0030C
 
 ;-------------------------------------------------------------------------------
 ; lseek - lseek(fd, offset, mode): AmigaDOS Seek; returns the new position.
 ;-------------------------------------------------------------------------------
+; lseek's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+lseek_FD                rs.l    1               ; the file number
+lseek_Offset            rs.l    1               ; how far
+lseek_Whence            rs.l    1               ; 0 from the start, 1 from here, 2 from the end
+lseek_UFB               equ     -$4             ; the file's _ufbs entry
 lseek:
         link.w  a6,#$fffc                       ; 0030E
-        move.l  $8(a6),-(a7)                    ; 00312
+        move.l  lseek_FD(a6),-(a7)              ; 00312
         bsr.w   chkufb                          ; 00316
         addq.l  #$4,a7                          ; 0031A
-        move.l  d0,-$4(a6)                      ; 0031C
+        move.l  d0,lseek_UFB(a6)                ; 0031C
         tst.l   d0                              ; 00320
         beq.b   l_117_0032E                     ; 00322
-        cmpi.l  #$2,$10(a6)                     ; 00324
+        cmpi.l  #$2,lseek_Whence(a6)            ; 00324
         bls.b   l_117_0033C                     ; 0032C
 l_117_0032E:
         moveq   #$16,d0                         ; 0032E
@@ -311,14 +343,14 @@ l_117_0032E:
         unlk    a6                              ; 00338
         rts                                     ; 0033A
 l_117_0033C:
-        move.l  $10(a6),d0                      ; 0033C
+        move.l  lseek_Whence(a6),d0             ; 0033C
         asl.l   #$2,d0                          ; 00340
         movea.l d0,a0                           ; 00342
         adda.l  #LseekData1,a0                  ; 00344
         move.l  (a0),-(a7)                      ; 0034A
-        move.l  $c(a6),-(a7)                    ; 0034C
-        movea.l -$4(a6),a1                      ; 00350
-        move.l  $2(a1),-(a7)                    ; 00354
+        move.l  lseek_Offset(a6),-(a7)          ; 0034C
+        movea.l lseek_UFB(a6),a1                ; 00350
+        move.l  ufb_Handle(a1),-(a7)            ; 00354
         jsr     (_Seek).l                       ; 00358
         lea.l   $c(a7),a7                       ; 0035E
         addq.l  #$1,d0                          ; 00362
@@ -331,8 +363,8 @@ l_117_0037A:
         moveq   #$0,d0                          ; 0037A
         move.l  d0,-(a7)                        ; 0037C
         move.l  d0,-(a7)                        ; 0037E
-        movea.l -$4(a6),a0                      ; 00380
-        move.l  $2(a0),-(a7)                    ; 00384
+        movea.l lseek_UFB(a6),a0                ; 00380
+        move.l  ufb_Handle(a0),-(a7)            ; 00384
         jsr     (_Seek).l                       ; 00388
         lea.l   $c(a7),a7                       ; 0038E
         unlk    a6                              ; 00392
@@ -341,12 +373,17 @@ l_117_0037A:
 ;-------------------------------------------------------------------------------
 ; close - close(fd): AmigaDOS Close, and frees the _ufbs entry.
 ;-------------------------------------------------------------------------------
+; close's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+close_FD                rs.l    1               ; the file number
+close_Result            equ     -$4             ; 0, or -1
+close_UFB               equ     -$8             ; the file's _ufbs entry
 close:
         link.w  a6,#$fff8                       ; 00396
-        move.l  $8(a6),-(a7)                    ; 0039A
+        move.l  close_FD(a6),-(a7)              ; 0039A
         bsr.w   chkufb                          ; 0039E
         addq.l  #$4,a7                          ; 003A2
-        move.l  d0,-$8(a6)                      ; 003A4
+        move.l  d0,close_UFB(a6)                ; 003A4
         tst.l   d0                              ; 003A8
         bne.b   l_117_003B2                     ; 003AA
         moveq   #-1,d0                          ; 003AC
@@ -354,30 +391,33 @@ close:
         rts                                     ; 003B0
 l_117_003B2:
         moveq   #$0,d0                          ; 003B2
-        movea.l -$8(a6),a0                      ; 003B4
+        movea.l close_UFB(a6),a0                ; 003B4
         move.b  (a0),d1                         ; 003B8
-        move.l  d0,-$4(a6)                      ; 003BA
+        move.l  d0,close_Result(a6)             ; 003BA
         btst    #$2,d1                          ; 003BE
         beq.b   l_117_003C8                     ; 003C2
         unlk    a6                              ; 003C4
         rts                                     ; 003C6
 l_117_003C8:
-        movea.l -$8(a6),a0                      ; 003C8
-        move.l  $2(a0),-(a7)                    ; 003CC
+        movea.l close_UFB(a6),a0                ; 003C8
+        move.l  ufb_Handle(a0),-(a7)            ; 003CC
         jsr     (_Close).l                      ; 003D0
         addq.l  #$4,a7                          ; 003D6
-        movea.l -$8(a6),a0                      ; 003D8
+        movea.l close_UFB(a6),a0                ; 003D8
         clr.b   (a0)                            ; 003DC
-        move.l  -$4(a6),d0                      ; 003DE
+        move.l  close_Result(a6),d0             ; 003DE
         unlk    a6                              ; 003E2
         rts                                     ; 003E4
 
 ;-------------------------------------------------------------------------------
 ; unlink - unlink(name): AmigaDOS DeleteFile.
 ;-------------------------------------------------------------------------------
+; unlink's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+unlink_Name             rs.l    1               ; the file's name
 unlink:
         link.w  a6,#$0                          ; 003E6
-        move.l  $8(a6),-(a7)                    ; 003EA
+        move.l  unlink_Name(a6),-(a7)           ; 003EA
         jsr     (_DeleteFile).l                 ; 003EE
         addq.l  #$4,a7                          ; 003F4
         tst.l   d0                              ; 003F6
@@ -397,9 +437,12 @@ l_117_00414:
 ;-------------------------------------------------------------------------------
 ; remove - remove(name): unlink(name).
 ;-------------------------------------------------------------------------------
+; remove's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+remove_Name             rs.l    1               ; the file's name
 remove:
         link.w  a6,#$0                          ; 0041A
-        move.l  $8(a6),-(a7)                    ; 0041E
+        move.l  remove_Name(a6),-(a7)           ; 0041E
         bsr.b   unlink                          ; 00422
         addq.l  #$4,a7                          ; 00424
         unlk    a6                              ; 00426
@@ -408,10 +451,14 @@ remove:
 ;-------------------------------------------------------------------------------
 ; rename - rename(old, new): AmigaDOS Rename.
 ;-------------------------------------------------------------------------------
+; rename's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+rename_Old              rs.l    1               ; the file's name
+rename_New              rs.l    1               ; its new name
 rename:
         link.w  a6,#$0                          ; 0042A
-        move.l  $c(a6),-(a7)                    ; 0042E
-        move.l  $8(a6),-(a7)                    ; 00432
+        move.l  rename_New(a6),-(a7)            ; 0042E
+        move.l  rename_Old(a6),-(a7)            ; 00432
         jsr     (_Rename).l                     ; 00436
         addq.l  #$8,a7                          ; 0043C
         tst.l   d0                              ; 0043E
@@ -496,6 +543,10 @@ l_117_00506:
 ;-------------------------------------------------------------------------------
 ; putch - Writes the character (4(sp)) to the console window.
 ;-------------------------------------------------------------------------------
+; putch's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+                rs.b    3                       ; (pushed as a long: the high part)
+putch_Char              rs.b    1               ; the character
 putch:
         link.w  a6,#$0                          ; 0050E
         tst.l   (Enable_Abort).l                ; 00512
@@ -508,18 +559,21 @@ l_117_00520:
 l_117_0052C:
         moveq   #$1,d0                          ; 0052C
         move.l  d0,-(a7)                        ; 0052E
-        pea.l   $b(a6)                          ; 00530
+        pea.l   putch_Char(a6)                  ; 00530
         move.l  (_ConsoleHandle).l,-(a7)        ; 00534
         jsr     (_Write).l                      ; 0053A
         lea.l   $c(a7),a7                       ; 00540
         moveq   #$0,d0                          ; 00544
-        move.b  $b(a6),d0                       ; 00546
+        move.b  putch_Char(a6),d0               ; 00546
         unlk    a6                              ; 0054A
         rts                                     ; 0054C
 
 ;-------------------------------------------------------------------------------
 ; TestBreakFlag - -1 if the break flag is set.
 ;-------------------------------------------------------------------------------
+; TestBreakFlag's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+TestBreakFlag_Flag      rs.l    1               ; the flag to set, if it isn't set already
 TestBreakFlag:
         link.w  a6,#$0                          ; 0054E
         tst.b   (BreakFlag).l                   ; 00552
@@ -528,7 +582,7 @@ TestBreakFlag:
         unlk    a6                              ; 0055C
         rts                                     ; 0055E
 l_117_00560:
-        move.l  $8(a6),d0                       ; 00560
+        move.l  TestBreakFlag_Flag(a6),d0       ; 00560
         move.b  d0,(BreakFlag).l                ; 00564
         unlk    a6                              ; 0056A
         rts                                     ; 0056C
@@ -536,6 +590,10 @@ l_117_00560:
 ;-------------------------------------------------------------------------------
 ; cgets - Reads a line from the console window.
 ;-------------------------------------------------------------------------------
+; cgets's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+cgets_Buffer            rs.l    1               ; where the line goes (255 bytes at most)
+cgets_Length            equ     -$4             ; the bytes read
 cgets:
         link.w  a6,#$fffc                       ; 0056E
         tst.l   (Enable_Abort).l                ; 00572
@@ -547,25 +605,28 @@ l_117_00580:
         bsr.w   OpenConsole                     ; 00588
 l_117_0058C:
         move.l  #$ff,-(a7)                      ; 0058C
-        move.l  $8(a6),-(a7)                    ; 00592
+        move.l  cgets_Buffer(a6),-(a7)          ; 00592
         move.l  (_ConsoleHandle).l,-(a7)        ; 00596
         jsr     (_Read).l                       ; 0059C
         lea.l   $c(a7),a7                       ; 005A2
-        move.l  d0,-$4(a6)                      ; 005A6
+        move.l  d0,cgets_Length(a6)             ; 005A6
         tst.l   d0                              ; 005AA
         bpl.b   l_117_005B2                     ; 005AC
-        clr.l   -$4(a6)                         ; 005AE
+        clr.l   cgets_Length(a6)                ; 005AE
 l_117_005B2:
-        movea.l $8(a6),a0                       ; 005B2
-        adda.l  -$4(a6),a0                      ; 005B6
+        movea.l cgets_Buffer(a6),a0             ; 005B2
+        adda.l  cgets_Length(a6),a0             ; 005B6
         clr.b   (a0)                            ; 005BA
-        move.l  $8(a6),d0                       ; 005BC
+        move.l  cgets_Buffer(a6),d0             ; 005BC
         unlk    a6                              ; 005C0
         rts                                     ; 005C2
 
 ;-------------------------------------------------------------------------------
 ; cputs - Writes a string to the console window.
 ;-------------------------------------------------------------------------------
+; cputs's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+cputs_String            rs.l    1               ; the text
 cputs:
         link.w  a6,#$0                          ; 005C4
         tst.l   (Enable_Abort).l                ; 005C8
@@ -576,11 +637,11 @@ l_117_005D6:
         bne.b   l_117_005E2                     ; 005DC
         bsr.w   OpenConsole                     ; 005DE
 l_117_005E2:
-        move.l  $8(a6),-(a7)                    ; 005E2
+        move.l  cputs_String(a6),-(a7)          ; 005E2
         jsr     (strlen).l                      ; 005E6
         addq.l  #$4,a7                          ; 005EC
         move.l  d0,-(a7)                        ; 005EE
-        move.l  $8(a6),-(a7)                    ; 005F0
+        move.l  cputs_String(a6),-(a7)          ; 005F0
         move.l  (_ConsoleHandle).l,-(a7)        ; 005F4
         jsr     (_Write).l                      ; 005FA
         lea.l   $c(a7),a7                       ; 00600
