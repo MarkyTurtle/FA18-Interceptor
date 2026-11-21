@@ -2976,14 +2976,17 @@ l_000_09C54:
 ;-------------------------------------------------------------------------------
 ; StopSound - StopSound(channel): clears the channel's sound and stops it.
 ;-------------------------------------------------------------------------------
+; StopSound's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+StopSound_Channel       rs.l    1               ; the audio channel (0-3)
 StopSound:
         link.w  a6,#$0                          ; 09C58
-        move.l  $8(a6),d0                       ; 09C5C
+        move.l  StopSound_Channel(a6),d0        ; 09C5C
         asl.l   #$2,d0                          ; 09C60
         movea.l d0,a0                           ; 09C62
         adda.l  #ChannelSound,a0                ; 09C64
         clr.l   (a0)                            ; 09C6A
-        move.l  $8(a6),-(a7)                    ; 09C6C
+        move.l  StopSound_Channel(a6),-(a7)     ; 09C6C
         jsr     (AudioIntAck).l                 ; 09C70
         addq.l  #$4,a7                          ; 09C76
         unlk    a6                              ; 09C78
@@ -2993,35 +2996,40 @@ StopSound:
 ; PlaySound - PlaySound(sound, channel): starts sound (a slot of SoundTable) on an audio
 ; channel.
 ;-------------------------------------------------------------------------------
+; PlaySound's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+PlaySound_Sound         rs.l    1               ; the slot in SoundTable
+PlaySound_Channel       rs.l    1               ; the audio channel (0-3)
+PlaySound_Volume        rs.l    1               ; 0-63
 PlaySound:
         link.w  a6,#$0                          ; 09C7C
         movem.l d2,-(a7)                        ; 09C80
-        move.l  $8(a6),d0                       ; 09C84
+        move.l  PlaySound_Sound(a6),d0          ; 09C84
         asl.l   #$2,d0                          ; 09C88
         movea.l d0,a0                           ; 09C8A
         adda.l  #SoundTable,a0                  ; 09C8C
         tst.l   (a0)                            ; 09C92
         beq.b   l_000_09CDE                     ; 09C94
-        move.l  $c(a6),-(a7)                    ; 09C96
+        move.l  PlaySound_Channel(a6),-(a7)     ; 09C96
         bsr.b   StopSound                       ; 09C9A
         addq.l  #$4,a7                          ; 09C9C
-        move.l  $8(a6),d0                       ; 09C9E
+        move.l  PlaySound_Sound(a6),d0          ; 09C9E
         asl.l   #$2,d0                          ; 09CA2
         movea.l d0,a0                           ; 09CA4
         adda.l  #SoundTable,a0                  ; 09CA6
         movea.l (a0),a1                         ; 09CAC
         moveq   #$10,d1                         ; 09CAE
-        move.l  $10(a6),d2                      ; 09CB0
+        move.l  PlaySound_Volume(a6),d2         ; 09CB0
         asl.l   d1,d2                           ; 09CB4
         move.l  d2,$c(a1)                       ; 09CB6
-        move.l  $c(a6),d1                       ; 09CBA
+        move.l  PlaySound_Channel(a6),d1        ; 09CBA
         asl.l   #$2,d1                          ; 09CBE
         movea.l d1,a0                           ; 09CC0
         adda.l  #ChannelSound,a0                ; 09CC2
         movea.l d0,a1                           ; 09CC8
         adda.l  #SoundTable,a1                  ; 09CCA
         move.l  (a1),(a0)                       ; 09CD0
-        move.l  $c(a6),-(a7)                    ; 09CD2
+        move.l  PlaySound_Channel(a6),-(a7)     ; 09CD2
         jsr     (AudioIntAck).l                 ; 09CD6
         addq.l  #$4,a7                          ; 09CDC
 l_000_09CDE:
@@ -3033,6 +3041,9 @@ l_000_09CDE:
 ; PlayTitleMusic - Starts the title music (if the music samples were loaded, SoundsLoaded bit
 ; 7), unless MusicState says it is already playing.
 ;-------------------------------------------------------------------------------
+; PlayTitleMusic's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+PlayTitleMusic_Volume   rs.l    1               ; 0-63
 PlayTitleMusic:
         link.w  a6,#$0                          ; 09CE6
         move.b  (MusicState).l,d0               ; 09CEA
@@ -3061,13 +3072,13 @@ PlayTitleMusic:
 l_000_09D36:
         btst    #$2,(SoundFlags).l              ; 09D36
         beq.b   l_000_09D70                     ; 09D3E
-        move.l  $8(a6),-(a7)                    ; 09D40
+        move.l  PlayTitleMusic_Volume(a6),-(a7) ; 09D40
         clr.l   -(a7)                           ; 09D44
         moveq   #$23,d0                         ; 09D46
         move.l  d0,-(a7)                        ; 09D48
         bsr.w   PlaySound                       ; 09D4A
         lea.l   $c(a7),a7                       ; 09D4E
-        move.l  $8(a6),-(a7)                    ; 09D52
+        move.l  PlayTitleMusic_Volume(a6),-(a7) ; 09D52
         moveq   #$1,d0                          ; 09D56
         move.l  d0,-(a7)                        ; 09D58
         moveq   #$24,d0                         ; 09D5A
@@ -3086,17 +3097,20 @@ l_000_09D76:
 ; PlayStartSound - Plays sound $23 on channels 0 and 1 (if SoundFlags bit 2): at the start and
 ; when a flight is set up.
 ;-------------------------------------------------------------------------------
+; PlayStartSound's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+PlayStartSound_Volume   rs.l    1               ; 0-63
 PlayStartSound:
         link.w  a6,#$0                          ; 09D7A
         btst    #$2,(SoundFlags).l              ; 09D7E
         beq.b   l_000_09DAE                     ; 09D86
-        move.l  $8(a6),-(a7)                    ; 09D88
+        move.l  PlayStartSound_Volume(a6),-(a7) ; 09D88
         clr.l   -(a7)                           ; 09D8C
         moveq   #$23,d0                         ; 09D8E
         move.l  d0,-(a7)                        ; 09D90
         bsr.w   PlaySound                       ; 09D92
         lea.l   $c(a7),a7                       ; 09D96
-        move.l  $8(a6),-(a7)                    ; 09D9A
+        move.l  PlayStartSound_Volume(a6),-(a7) ; 09D9A
         moveq   #$1,d0                          ; 09D9E
         move.l  d0,-(a7)                        ; 09DA0
         moveq   #$24,d0                         ; 09DA2
@@ -3110,6 +3124,10 @@ l_000_09DAE:
 ;-------------------------------------------------------------------------------
 ; PlayCatapultSound - Plays CatapultSample (if loaded) on two channels.
 ;-------------------------------------------------------------------------------
+; PlayCatapultSound's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+PlayCatapultSound_Period rs.l    1              ; the sample's period
+PlayCatapultSound_Volume rs.l    1              ; 0-63
 PlayCatapultSound:
         link.w  a6,#$0                          ; 09DB2
         btst    #$0,(SoundsLoaded).l            ; 09DB6
@@ -3125,22 +3143,22 @@ PlayCatapultSound:
         movea.l (SoundTable).l,a1               ; 09DE2
         move.l  d0,$18(a1)                      ; 09DE8
         moveq   #$10,d0                         ; 09DEC
-        move.l  $8(a6),d1                       ; 09DEE
+        move.l  PlayCatapultSound_Period(a6),d1 ; 09DEE
         asl.l   d0,d1                           ; 09DF2
         movea.l (SoundTable).l,a1               ; 09DF4
         move.l  d1,$8(a1)                       ; 09DFA
-        move.l  $8(a6),d0                       ; 09DFE
+        move.l  PlayCatapultSound_Period(a6),d0 ; 09DFE
         addq.l  #$2,d0                          ; 09E02
         moveq   #$10,d1                         ; 09E04
         asl.l   d1,d0                           ; 09E06
         move.l  d0,$8(a0)                       ; 09E08
-        move.l  $c(a6),-(a7)                    ; 09E0C
+        move.l  PlayCatapultSound_Volume(a6),-(a7) ; 09E0C
         moveq   #$0,d0                          ; 09E10
         move.l  d0,-(a7)                        ; 09E12
         move.l  d0,-(a7)                        ; 09E14
         bsr.w   PlaySound                       ; 09E16
         lea.l   $c(a7),a7                       ; 09E1A
-        move.l  $c(a6),-(a7)                    ; 09E1E
+        move.l  PlayCatapultSound_Volume(a6),-(a7) ; 09E1E
         moveq   #$1,d0                          ; 09E22
         move.l  d0,-(a7)                        ; 09E24
         move.l  d0,-(a7)                        ; 09E26
@@ -3148,10 +3166,10 @@ PlayCatapultSound:
         lea.l   $c(a7),a7                       ; 09E2C
         bra.b   l_000_09E42                     ; 09E30
 l_000_09E32:
-        move.l  $c(a6),d0                       ; 09E32
+        move.l  PlayCatapultSound_Volume(a6),d0 ; 09E32
         asr.l   #$2,d0                          ; 09E36
         move.l  d0,-(a7)                        ; 09E38
-        move.l  $8(a6),-(a7)                    ; 09E3A
+        move.l  PlayCatapultSound_Period(a6),-(a7) ; 09E3A
         bsr.b   PlayEngineSound                 ; 09E3E
         addq.l  #$8,a7                          ; 09E40
 l_000_09E42:
@@ -3162,6 +3180,10 @@ l_000_09E42:
 ; PlayEngineSound - Plays the engine sound (if loaded, SoundsLoaded bit 1) on two channels at
 ; the period on the stack, the second slightly detuned, at the volume given.
 ;-------------------------------------------------------------------------------
+; PlayEngineSound's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+PlayEngineSound_Period  rs.l    1               ; the sample's period (the second channel's is 2 more)
+PlayEngineSound_Volume  rs.l    1               ; 0-63
 PlayEngineSound:
         link.w  a6,#$0                          ; 09E46
         btst    #$1,(SoundsLoaded).l            ; 09E4A
@@ -3176,21 +3198,21 @@ PlayEngineSound:
         move.l  d0,$18(a1)                      ; 09E72
         move.l  d0,$18(a0)                      ; 09E76
         moveq   #$10,d0                         ; 09E7A
-        move.l  $8(a6),d1                       ; 09E7C
+        move.l  PlayEngineSound_Period(a6),d1   ; 09E7C
         asl.l   d0,d1                           ; 09E80
         move.l  d1,$8(a0)                       ; 09E82
-        move.l  $8(a6),d0                       ; 09E86
+        move.l  PlayEngineSound_Period(a6),d0   ; 09E86
         addq.l  #$2,d0                          ; 09E8A
         moveq   #$10,d1                         ; 09E8C
         asl.l   d1,d0                           ; 09E8E
         move.l  d0,$8(a1)                       ; 09E90
-        move.l  $c(a6),-(a7)                    ; 09E94
+        move.l  PlayEngineSound_Volume(a6),-(a7) ; 09E94
         clr.l   -(a7)                           ; 09E98
         moveq   #$2,d0                          ; 09E9A
         move.l  d0,-(a7)                        ; 09E9C
         bsr.w   PlaySound                       ; 09E9E
         lea.l   $c(a7),a7                       ; 09EA2
-        move.l  $c(a6),-(a7)                    ; 09EA6
+        move.l  PlayEngineSound_Volume(a6),-(a7) ; 09EA6
         moveq   #$1,d0                          ; 09EAA
         move.l  d0,-(a7)                        ; 09EAC
         moveq   #$3,d0                          ; 09EAE
@@ -3205,22 +3227,27 @@ l_000_09EBA:
 ; EngineSoundUpdate - The engine's sound each frame: its pitch (EnginePitch) if the sound is
 ; loaded, otherwise a simpler sound.
 ;-------------------------------------------------------------------------------
+; EngineSoundUpdate's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+EngineSoundUpdate_Period rs.l    1              ; the period to slide to
+EngineSoundUpdate_Volume rs.l    1              ; the volume to slide to
+EngineSoundUpdate_Frames rs.l    1              ; how many frames the slide takes
 EngineSoundUpdate:
         link.w  a6,#$0                          ; 09EBE
         btst    #$0,(SoundsLoaded).l            ; 09EC2
         beq.b   l_000_09EE0                     ; 09ECA
-        move.l  $10(a6),-(a7)                   ; 09ECC
-        move.l  $c(a6),-(a7)                    ; 09ED0
-        move.l  $8(a6),-(a7)                    ; 09ED4
+        move.l  EngineSoundUpdate_Frames(a6),-(a7) ; 09ECC
+        move.l  EngineSoundUpdate_Volume(a6),-(a7) ; 09ED0
+        move.l  EngineSoundUpdate_Period(a6),-(a7) ; 09ED4
         bsr.b   EnginePitch                     ; 09ED8
         lea.l   $c(a7),a7                       ; 09EDA
         bra.b   l_000_09EF6                     ; 09EDE
 l_000_09EE0:
-        move.l  $c(a6),d0                       ; 09EE0
+        move.l  EngineSoundUpdate_Volume(a6),d0 ; 09EE0
         asr.l   #$2,d0                          ; 09EE4
-        move.l  $10(a6),-(a7)                   ; 09EE6
+        move.l  EngineSoundUpdate_Frames(a6),-(a7) ; 09EE6
         move.l  d0,-(a7)                        ; 09EEA
-        move.l  $8(a6),-(a7)                    ; 09EEC
+        move.l  EngineSoundUpdate_Period(a6),-(a7) ; 09EEC
         bsr.b   EnginePitch                     ; 09EF0
         lea.l   $c(a7),a7                       ; 09EF2
 l_000_09EF6:
@@ -3231,6 +3258,11 @@ l_000_09EF6:
 ; EnginePitch - Sets the engine sound's period from the value on the stack (if loaded,
 ; SoundsLoaded bit 1).
 ;-------------------------------------------------------------------------------
+; EnginePitch's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+EnginePitch_Period      rs.l    1               ; the period to slide to
+EnginePitch_Volume      rs.l    1               ; the volume to slide to
+EnginePitch_Frames      rs.l    1               ; how many frames the slide takes
 EnginePitch:
         link.w  a6,#$0                          ; 09EFA
         movem.l d2,-(a7)                        ; 09EFE
@@ -3240,31 +3272,31 @@ EnginePitch:
         beq.b   l_000_09F92                     ; 09F14
         movea.l (EnginePitchData1).l,a0         ; 09F16
         moveq   #$10,d0                         ; 09F1C
-        move.l  $8(a6),d1                       ; 09F1E
+        move.l  EnginePitch_Period(a6),d1       ; 09F1E
         asl.l   d0,d1                           ; 09F22
         movea.l (ChannelSound).l,a1             ; 09F24
         sub.l   $8(a1),d1                       ; 09F2A
         move.l  d1,d0                           ; 09F2E
-        move.l  $10(a6),d1                      ; 09F30
+        move.l  EnginePitch_Frames(a6),d1       ; 09F30
         jsr     (CXD33).l                       ; 09F34
         move.l  d0,$18(a0)                      ; 09F3A
         movea.l (ChannelSound).l,a1             ; 09F3E
         move.l  d0,$18(a1)                      ; 09F44
-        move.l  $10(a6),d0                      ; 09F48
+        move.l  EnginePitch_Frames(a6),d0       ; 09F48
         move.l  d0,$38(a0)                      ; 09F4C
         movea.l (ChannelSound).l,a1             ; 09F50
         move.l  d0,$38(a1)                      ; 09F56
         moveq   #$10,d1                         ; 09F5A
-        move.l  $c(a6),d2                       ; 09F5C
+        move.l  EnginePitch_Volume(a6),d2       ; 09F5C
         asl.l   d1,d2                           ; 09F60
         sub.l   $c(a1),d2                       ; 09F62
         move.l  d2,d0                           ; 09F66
-        move.l  $10(a6),d1                      ; 09F68
+        move.l  EnginePitch_Frames(a6),d1       ; 09F68
         jsr     (CXD33).l                       ; 09F6C
         move.l  d0,$1c(a0)                      ; 09F72
         movea.l (ChannelSound).l,a1             ; 09F76
         move.l  d0,$1c(a1)                      ; 09F7C
-        move.l  $10(a6),d0                      ; 09F80
+        move.l  EnginePitch_Frames(a6),d0       ; 09F80
         move.l  d0,$3c(a0)                      ; 09F84
         movea.l (ChannelSound).l,a1             ; 09F88
         move.l  d0,$3c(a1)                      ; 09F8E
@@ -3277,6 +3309,9 @@ l_000_09F92:
 ; PlayWindSound - Plays the wind's sound (if loaded, SoundsLoaded bit 4) at a level from the
 ; speed.
 ;-------------------------------------------------------------------------------
+; PlayWindSound's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+PlayWindSound_Volume    rs.l    1               ; 0-63
 PlayWindSound:
         link.w  a6,#$fffc                       ; 09F9A
         btst    #$4,(SoundsLoaded).l            ; 09F9E
@@ -3305,13 +3340,13 @@ PlayWindSound:
         asl.l   d1,d0                           ; 09FFA
         movea.l $0(a7),a0                       ; 09FFC
         move.l  d0,$8(a0)                       ; 0A000
-        move.l  $8(a6),-(a7)                    ; 0A004
+        move.l  PlayWindSound_Volume(a6),-(a7)  ; 0A004
         clr.l   -(a7)                           ; 0A008
         moveq   #$8,d0                          ; 0A00A
         move.l  d0,-(a7)                        ; 0A00C
         bsr.w   PlaySound                       ; 0A00E
         lea.l   $c(a7),a7                       ; 0A012
-        move.l  $8(a6),-(a7)                    ; 0A016
+        move.l  PlayWindSound_Volume(a6),-(a7)  ; 0A016
         moveq   #$1,d0                          ; 0A01A
         move.l  d0,-(a7)                        ; 0A01C
         moveq   #$9,d0                          ; 0A01E
@@ -3336,6 +3371,17 @@ l_000_0A03E:
 ; volume and length given on the stack (into EffectParams_04 and on): stops what the channel was
 ; playing first. Used by the cockpit sounds, the ejection and the menu beep.
 ;-------------------------------------------------------------------------------
+; PlayEffect's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+PlayEffect_Period       rs.l    1               ; the period (into EffectParams_14)
+PlayEffect_Volume       rs.l    1               ; the volume (EffectParams_1C)
+PlayEffect_Time         rs.l    1               ; how long, in frames (EffectParams_24)
+PlayEffect_Period2      rs.l    1               ; then this period (EffectParams_2C)
+PlayEffect_Volume2      rs.l    1               ; and volume (EffectParams_34)
+PlayEffect_Time2        rs.l    1               ; for so long (EffectParams_3C)
+PlayEffect_Param28      rs.l    1               ; into EffectParams_0C (the sound record's +$28)
+PlayEffect_Param24      rs.l    1               ; into EffectParams_04 (the sound record's +$24)
+PlayEffect_Param4C      rs.l    1               ; into EffectParams_4C
 PlayEffect:
         link.w  a6,#$0                          ; 0A042
         tst.l   (EffectSound).l                 ; 0A046
@@ -3344,24 +3390,24 @@ PlayEffect:
         move.l  d0,-(a7)                        ; 0A052
         bsr.w   StopSound                       ; 0A054
         addq.l  #$4,a7                          ; 0A058
-        move.l  $24(a6),(EffectParams_04).l     ; 0A05A
-        move.l  $20(a6),(EffectParams_0C).l     ; 0A062
+        move.l  PlayEffect_Param24(a6),(EffectParams_04).l ; 0A05A
+        move.l  PlayEffect_Param28(a6),(EffectParams_0C).l ; 0A062
         moveq   #$10,d0                         ; 0A06A
-        move.l  $8(a6),d1                       ; 0A06C
+        move.l  PlayEffect_Period(a6),d1        ; 0A06C
         asl.l   d0,d1                           ; 0A070
         move.l  d1,(EffectParams_14).l          ; 0A072
-        move.l  $c(a6),d1                       ; 0A078
+        move.l  PlayEffect_Volume(a6),d1        ; 0A078
         asl.l   d0,d1                           ; 0A07C
         move.l  d1,(EffectParams_1C).l          ; 0A07E
-        move.l  $10(a6),(EffectParams_24).l     ; 0A084
-        move.l  $14(a6),d1                      ; 0A08C
+        move.l  PlayEffect_Time(a6),(EffectParams_24).l ; 0A084
+        move.l  PlayEffect_Period2(a6),d1       ; 0A08C
         asl.l   d0,d1                           ; 0A090
         move.l  d1,(EffectParams_2C).l          ; 0A092
-        move.l  $18(a6),d1                      ; 0A098
+        move.l  PlayEffect_Volume2(a6),d1       ; 0A098
         asl.l   d0,d1                           ; 0A09C
         move.l  d1,(EffectParams_34).l          ; 0A09E
-        move.l  $1c(a6),(EffectParams_3C).l     ; 0A0A4
-        move.l  $28(a6),(EffectParams_4C).l     ; 0A0AC
+        move.l  PlayEffect_Time2(a6),(EffectParams_3C).l ; 0A0A4
+        move.l  PlayEffect_Param4C(a6),(EffectParams_4C).l ; 0A0AC
         movea.l (EffectSound).l,a0              ; 0A0B4
         moveq   #$0,d0                          ; 0A0BA
         move.l  d0,$34(a0)                      ; 0A0BC
@@ -3383,6 +3429,10 @@ l_000_0A0D8:
 ; stack: SweepParams_04 and on): explosions, flares and the like (if sounds are on, SoundFlags
 ; bit 0).
 ;-------------------------------------------------------------------------------
+; PlaySweep's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+PlaySweep_Period        rs.l    1               ; the period it starts at
+PlaySweep_Frames        rs.l    1               ; how many frames it slides for
 PlaySweep:
         link.w  a6,#$fffc                       ; 0A0DC
         btst    #$0,(SoundFlags).l              ; 0A0E0
@@ -3394,15 +3444,15 @@ PlaySweep:
         bsr.w   StopSound                       ; 0A0FA
         addq.l  #$4,a7                          ; 0A0FE
         moveq   #$10,d0                         ; 0A100
-        move.l  $8(a6),d1                       ; 0A102
+        move.l  PlaySweep_Period(a6),d1         ; 0A102
         asl.l   d0,d1                           ; 0A106
         move.l  d1,(SweepParams_04).l           ; 0A108
         neg.l   d1                              ; 0A10E
         move.l  d1,d0                           ; 0A110
-        move.l  $c(a6),d1                       ; 0A112
+        move.l  PlaySweep_Frames(a6),d1         ; 0A112
         jsr     (CXD33).l                       ; 0A116
         move.l  d0,(SweepParams_0C).l           ; 0A11C
-        move.l  $c(a6),(SweepParams_14).l       ; 0A122
+        move.l  PlaySweep_Frames(a6),(SweepParams_14).l ; 0A122
         movea.l (SweepSound).l,a0               ; 0A12A
         clr.l   $34(a0)                         ; 0A130
         moveq   #$b,d0                          ; 0A134
@@ -3438,6 +3488,9 @@ l_000_0A188:
 ; PlayTireSound - Plays TireSample (if loaded), only for the viewed object: on touching the
 ; ground.
 ;-------------------------------------------------------------------------------
+; PlayTireSound's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+PlayTireSound_Volume    rs.l    1               ; 0-63
 PlayTireSound:
         link.w  a6,#$0                          ; 0A18C
         btst    #$2,(SoundsLoaded).l            ; 0A190
@@ -3453,7 +3506,7 @@ PlayTireSound:
         move.l  #$fffe0000,$18(a0)              ; 0A1C0
         moveq   #$1,d0                          ; 0A1C8
         move.l  d0,$10(a0)                      ; 0A1CA
-        move.l  $8(a6),-(a7)                    ; 0A1CE
+        move.l  PlayTireSound_Volume(a6),-(a7)  ; 0A1CE
         moveq   #$2,d0                          ; 0A1D2
         move.l  d0,-(a7)                        ; 0A1D4
         moveq   #$5,d0                          ; 0A1D6
@@ -3467,6 +3520,9 @@ l_000_0A1E2:
 ;-------------------------------------------------------------------------------
 ; PlayGearSound - Plays GearSample (if loaded), only for the viewed object.
 ;-------------------------------------------------------------------------------
+; PlayGearSound's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+PlayGearSound_Volume    rs.l    1               ; 0-63
 PlayGearSound:
         link.w  a6,#$0                          ; 0A1E6
         btst    #$6,(SoundsLoaded).l            ; 0A1EA
@@ -3488,7 +3544,7 @@ PlayGearSound:
         move.l  d0,$34(a0)                      ; 0A22A
         moveq   #$1,d0                          ; 0A22E
         move.l  d0,$2c(a0)                      ; 0A230
-        move.l  $8(a6),-(a7)                    ; 0A234
+        move.l  PlayGearSound_Volume(a6),-(a7)  ; 0A234
         moveq   #$2,d0                          ; 0A238
         move.l  d0,-(a7)                        ; 0A23A
         moveq   #$b,d0                          ; 0A23C
@@ -3513,6 +3569,9 @@ StopChannel2:
 ; PlayEffect2 - Plays EffectSound2 on channel 2 at the period on the stack (if SoundFlags bit
 ; 1).
 ;-------------------------------------------------------------------------------
+; PlayEffect2's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+PlayEffect2_Period      rs.l    1               ; the period it starts at
 PlayEffect2:
         link.w  a6,#$fffc                       ; 0A258
         btst    #$1,(SoundFlags).l              ; 0A25C
@@ -3524,10 +3583,10 @@ PlayEffect2:
         bsr.w   StopSound                       ; 0A274
         addq.l  #$4,a7                          ; 0A278
         moveq   #$10,d0                         ; 0A27A
-        move.l  $8(a6),d1                       ; 0A27C
+        move.l  PlayEffect2_Period(a6),d1       ; 0A27C
         asl.l   d0,d1                           ; 0A280
         move.l  d1,(Effect2Params_1C).l         ; 0A282
-        move.l  $8(a6),d0                       ; 0A288
+        move.l  PlayEffect2_Period(a6),d0       ; 0A288
         subq.l  #$1,d0                          ; 0A28C
         moveq   #$10,d1                         ; 0A28E
         asl.l   d1,d0                           ; 0A290
@@ -3564,6 +3623,10 @@ l_000_0A2EC:
 ;-------------------------------------------------------------------------------
 ; PlayGunSound - Plays the gun's sound (GunSoundCopy) on channel 2.
 ;-------------------------------------------------------------------------------
+; PlayGunSound's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+PlayGunSound_Param24    rs.l    1               ; into GunParams_04 (the sound record's +$24)
+PlayGunSound_Volume     rs.l    1               ; 0-63
 PlayGunSound:
         link.w  a6,#$0                          ; 0A2F0
         tst.l   (GunSoundCopy).l                ; 0A2F4
@@ -3575,9 +3638,9 @@ PlayGunSound:
         movea.l (GunSoundCopy).l,a0             ; 0A306
         moveq   #$0,d0                          ; 0A30C
         move.l  d0,$2c(a0)                      ; 0A30E
-        move.l  $8(a6),(GunParams_04).l         ; 0A312
+        move.l  PlayGunSound_Param24(a6),(GunParams_04).l ; 0A312
         moveq   #$10,d0                         ; 0A31A
-        move.l  $c(a6),d1                       ; 0A31C
+        move.l  PlayGunSound_Volume(a6),d1      ; 0A31C
         asl.l   d0,d1                           ; 0A320
         move.l  d1,(GunParams_0C).l             ; 0A322
         moveq   #$0,d0                          ; 0A328

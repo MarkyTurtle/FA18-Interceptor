@@ -1256,11 +1256,17 @@ l_000_052BE:
 ;-------------------------------------------------------------------------------
 ; CockpitEffectSound - Plays a cockpit sound effect (PlayEffect2) if sounds are on.
 ;-------------------------------------------------------------------------------
+; CockpitEffectSound's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+                rs.w    1                       ; (pushed as a long: the high part)
+CockpitEffectSound_Period rs.w    1             ; the engine sound's period less 22 (when effects are off)
+                rs.w    1                       ; (pushed as a long: the high part)
+CockpitEffectSound_Value rs.w    1              ; PlayEffect2's period, or the engine sound's volume
 CockpitEffectSound:
         link.w  a6,#$0                          ; 052C6
         btst    #$1,(SoundFlags).l              ; 052CA
         beq.b   l_000_052EC                     ; 052D2
-        move.w  $e(a6),d0                       ; 052D4
+        move.w  CockpitEffectSound_Value(a6),d0 ; 052D4
         ext.l   d0                              ; 052D8
         move.l  d0,-(a7)                        ; 052DA
         jsr     (PlayEffect2).l                 ; 052DC
@@ -1268,10 +1274,10 @@ CockpitEffectSound:
         clr.b   (EngineSoundHold).l             ; 052E4
         bra.b   l_000_0530A                     ; 052EA
 l_000_052EC:
-        move.w  $a(a6),d0                       ; 052EC
+        move.w  CockpitEffectSound_Period(a6),d0 ; 052EC
         ext.l   d0                              ; 052F0
         addi.l  #$16,d0                         ; 052F2
-        move.w  $e(a6),d1                       ; 052F8
+        move.w  CockpitEffectSound_Value(a6),d1 ; 052F8
         ext.l   d1                              ; 052FC
         move.l  d1,-(a7)                        ; 052FE
         move.l  d0,-(a7)                        ; 05300
@@ -1284,16 +1290,22 @@ l_000_0530A:
 ;-------------------------------------------------------------------------------
 ; CockpitEngineVolume - Sets the engine sound's volume (EngineSoundHold, the speed...).
 ;-------------------------------------------------------------------------------
+; CockpitEngineVolume's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+                rs.w    1                       ; (pushed as a long: the high part)
+CockpitEngineVolume_Level rs.w    1             ; the engine's level; becomes the volume returned
+CockpitEngineVolume_View equ     -$2            ; the outside view's kind, folded to 0-4
+CockpitEngineVolume_Scaled equ     -$6          ; the level x 32 (for the divide by ObjectDistanceSound)
 CockpitEngineVolume:
         link.w  a6,#$fffa                       ; 0530E
-        tst.w   $a(a6)                          ; 05312
+        tst.w   CockpitEngineVolume_Level(a6)   ; 05312
         beq.w   l_000_054C0                     ; 05316
         tst.b   (EngineSoundHold).l             ; 0531A
         beq.b   l_000_0532A                     ; 05320
-        move.w  #$3f,$a(a6)                     ; 05322
+        move.w  #$3f,CockpitEngineVolume_Level(a6) ; 05322
         bra.b   l_000_05354                     ; 05328
 l_000_0532A:
-        move.w  $a(a6),d0                       ; 0532A
+        move.w  CockpitEngineVolume_Level(a6),d0 ; 0532A
         cmpi.w  #$8,d0                          ; 0532E
         ble.b   l_000_05344                     ; 05332
         moveq   #$78,d1                         ; 05334
@@ -1301,48 +1313,72 @@ l_000_0532A:
         asr.w   #$2,d1                          ; 05338
         moveq   #$3f,d0                         ; 0533A
         sub.w   d1,d0                           ; 0533C
-        move.w  d0,$a(a6)                       ; 0533E
+        move.w  d0,CockpitEngineVolume_Level(a6) ; 0533E
         bra.b   l_000_05354                     ; 05342
 l_000_05344:
         moveq   #$78,d0                         ; 05344
-        sub.w   $a(a6),d0                       ; 05346
+        sub.w   CockpitEngineVolume_Level(a6),d0 ; 05346
         asr.w   #$1,d0                          ; 0534A
         moveq   #$3c,d1                         ; 0534C
         sub.w   d0,d1                           ; 0534E
-        move.w  d1,$a(a6)                       ; 05350
+        move.w  d1,CockpitEngineVolume_Level(a6) ; 05350
 l_000_05354:
         tst.b   (OutsideView).l                 ; 05354
         beq.w   l_000_054A8                     ; 0535A
-        tst.w   $a(a6)                          ; 0535E
+        tst.w   CockpitEngineVolume_Level(a6)   ; 0535E
         beq.w   l_000_054DC                     ; 05362
         tst.b   (NewView).l                     ; 05366
         beq.w   l_000_0544E                     ; 0536C
         move.b  (ViewChoice).l,d0               ; 05370
         ext.w   d0                              ; 05376
-        move.w  d0,-$2(a6)                      ; 05378
+        move.w  d0,CockpitEngineVolume_View(a6) ; 05378
         cmpi.w  #$4,d0                          ; 0537C
         ble.b   l_000_05392                     ; 05380
         moveq   #$8,d1                          ; 05382
         sub.w   d0,d1                           ; 05384
-        move.w  d1,-$2(a6)                      ; 05386
+        move.w  d1,CockpitEngineVolume_View(a6) ; 05386
         tst.w   d1                              ; 0538A
         bpl.b   l_000_05392                     ; 0538C
-        clr.w   -$2(a6)                         ; 0538E
+        clr.w   CockpitEngineVolume_View(a6)    ; 0538E
 l_000_05392:
-        move.w  -$2(a6),d0                      ; 05392
+        move.w  CockpitEngineVolume_View(a6),d0 ; 05392
         ext.l   d0                              ; 05396
         cmpi.l  #$4,d0                          ; 05398
         bcc.b   l_000_053EC                     ; 0539E
         asl.l   #$1,d0                          ; 053A0
         jmp     EngineVolumeJumps(pc,d0.l)      ; 053A2
-; EngineVolumeJumps - CockpitEngineVolume's jump table.
+; EngineVolumeJumps - CockpitEngineVolume's jump table on a new outside view (View, 0-3): the
+; level x 5/8, x 5/8, less 1/4, less 1/8.
 EngineVolumeJumps:
-	dc.b	$60,$06,$60,$18
-	dc.b	'`*`40.'
-	dc.b	$00,$0A,$48,$C0,$2F,$00,$61,$00,$01,$2E,$58,$8F,$3D,$40,$00,$0A
-	dc.b	$60,$2A,$30,$2E,$00,$0A,$48,$C0,$2F,$00,$61,$00,$01,$1A,$58,$8F
-	dc.b	$3D,$40,$00,$0A,$60,$16,$30,$2E,$00,$0A,$E4,$40,$91,$6E,$00,$0A
-	dc.b	$60,$0A,$30,$2E,$00,$0A,$E6,$40,$91,$6E,$00,$0A
+        bra.b   l_000_053AE                     ; 053A6
+        bra.b   l_000_053C2                     ; 053A8
+        bra.b   l_000_053D6                     ; 053AA
+        bra.b   l_000_053E2                     ; 053AC
+l_000_053AE:
+        move.w  CockpitEngineVolume_Level(a6),d0 ; 053AE
+        ext.l   d0                              ; 053B2
+        move.l  d0,-(a7)                        ; 053B4
+        bsr.w   FiveEighths                     ; 053B6
+        addq.l  #$4,a7                          ; 053BA
+        move.w  d0,CockpitEngineVolume_Level(a6) ; 053BC
+        bra.b   l_000_053EC                     ; 053C0
+l_000_053C2:
+        move.w  CockpitEngineVolume_Level(a6),d0 ; 053C2
+        ext.l   d0                              ; 053C6
+        move.l  d0,-(a7)                        ; 053C8
+        bsr.w   FiveEighths                     ; 053CA
+        addq.l  #$4,a7                          ; 053CE
+        move.w  d0,CockpitEngineVolume_Level(a6) ; 053D0
+        bra.b   l_000_053EC                     ; 053D4
+l_000_053D6:
+        move.w  CockpitEngineVolume_Level(a6),d0 ; 053D6
+        asr.w   #$2,d0                          ; 053DA
+        sub.w   d0,CockpitEngineVolume_Level(a6) ; 053DC
+        bra.b   l_000_053EC                     ; 053E0
+l_000_053E2:
+        move.w  CockpitEngineVolume_Level(a6),d0 ; 053E2
+        asr.w   #$3,d0                          ; 053E6
+        sub.w   d0,CockpitEngineVolume_Level(a6) ; 053E8
 l_000_053EC:
         move.b  (OutsideView).l,d0              ; 053EC
         ext.w   d0                              ; 053F2
@@ -1353,46 +1389,70 @@ l_000_053EC:
         bge.b   l_000_05480                     ; 05406
         asl.l   #$1,d0                          ; 05408
         jmp     EngineVolumeJumps2(pc,d0.l)     ; 0540A
-; EngineVolumeJumps2 - A second jump table reached from EngineVolumeJumps.
+; EngineVolumeJumps2 - CockpitEngineVolume's jump table on OutsideView 1-4: the level less 1/8,
+; less 1/4, x 5/8, x 1/2.
 EngineVolumeJumps2:
-	dc.b	$60,$06,$60,$10,$60,$1A,$60,$2C,$30,$2E,$00,$0A,$E6,$40,$91,$6E
-	dc.b	$00,$0A,$60,$5E,$30,$2E,$00,$0A,$E4,$40,$91,$6E,$00,$0A,$60,$52
-	dc.b	$30,$2E,$00,$0A,$48,$C0,$2F,$00,$61,$00,$00,$AE,$58,$8F,$3D,$40
-	dc.b	$00,$0A,$60,$3E,$30,$2E,$00,$0A,$E2,$40,$3D,$40,$00,$0A,$60,$32
+        bra.b   l_000_05416                     ; 0540E
+        bra.b   l_000_05422                     ; 05410
+        bra.b   l_000_0542E                     ; 05412
+        bra.b   l_000_05442                     ; 05414
+l_000_05416:
+        move.w  CockpitEngineVolume_Level(a6),d0 ; 05416
+        asr.w   #$3,d0                          ; 0541A
+        sub.w   d0,CockpitEngineVolume_Level(a6) ; 0541C
+        bra.b   l_000_05480                     ; 05420
+l_000_05422:
+        move.w  CockpitEngineVolume_Level(a6),d0 ; 05422
+        asr.w   #$2,d0                          ; 05426
+        sub.w   d0,CockpitEngineVolume_Level(a6) ; 05428
+        bra.b   l_000_05480                     ; 0542C
+l_000_0542E:
+        move.w  CockpitEngineVolume_Level(a6),d0 ; 0542E
+        ext.l   d0                              ; 05432
+        move.l  d0,-(a7)                        ; 05434
+        bsr.w   FiveEighths                     ; 05436
+        addq.l  #$4,a7                          ; 0543A
+        move.w  d0,CockpitEngineVolume_Level(a6) ; 0543C
+        bra.b   l_000_05480                     ; 05440
+l_000_05442:
+        move.w  CockpitEngineVolume_Level(a6),d0 ; 05442
+        asr.w   #$1,d0                          ; 05446
+        move.w  d0,CockpitEngineVolume_Level(a6) ; 05448
+        bra.b   l_000_05480                     ; 0544C
 l_000_0544E:
         tst.w   (ObjectDistanceSound).l         ; 0544E
         beq.b   l_000_05480                     ; 05454
-        move.w  $a(a6),d0                       ; 05456
+        move.w  CockpitEngineVolume_Level(a6),d0 ; 05456
         ext.l   d0                              ; 0545A
         asl.l   #$5,d0                          ; 0545C
         move.w  (ObjectDistanceSound).l,d1      ; 0545E
         ext.l   d1                              ; 05464
-        move.l  d0,-$6(a6)                      ; 05466
+        move.l  d0,CockpitEngineVolume_Scaled(a6) ; 05466
         jsr     (CXD33).l                       ; 0546A
-        move.w  d0,$a(a6)                       ; 05470
+        move.w  d0,CockpitEngineVolume_Level(a6) ; 05470
         cmpi.w  #$54,d0                         ; 05474
         ble.b   l_000_05480                     ; 05478
-        move.w  #$54,$a(a6)                     ; 0547A
+        move.w  #$54,CockpitEngineVolume_Level(a6) ; 0547A
 l_000_05480:
         movea.l (CockpitObject).l,a0            ; 05480
         move.w  $2(a0),d0                       ; 05486
         btst    #$3,d0                          ; 0548A
         bne.b   l_000_0549A                     ; 0548E
-        move.w  $a(a6),d0                       ; 05490
+        move.w  CockpitEngineVolume_Level(a6),d0 ; 05490
         asr.w   #$2,d0                          ; 05494
-        sub.w   d0,$a(a6)                       ; 05496
+        sub.w   d0,CockpitEngineVolume_Level(a6) ; 05496
 l_000_0549A:
-        tst.w   $a(a6)                          ; 0549A
+        tst.w   CockpitEngineVolume_Level(a6)   ; 0549A
         bgt.b   l_000_054DC                     ; 0549E
-        move.w  #$1,$a(a6)                      ; 054A0
+        move.w  #$1,CockpitEngineVolume_Level(a6) ; 054A0
         bra.b   l_000_054DC                     ; 054A6
 l_000_054A8:
         move.b  (CrashKind).l,d0                ; 054A8
         cmpi.b  #$5,d0                          ; 054AE
         ble.b   l_000_054DC                     ; 054B2
-        move.w  $a(a6),d0                       ; 054B4
+        move.w  CockpitEngineVolume_Level(a6),d0 ; 054B4
         asr.w   #$1,d0                          ; 054B8
-        move.w  d0,$a(a6)                       ; 054BA
+        move.w  d0,CockpitEngineVolume_Level(a6) ; 054BA
         bra.b   l_000_054DC                     ; 054BE
 l_000_054C0:
         movea.l (CockpitObject).l,a0            ; 054C0
@@ -1401,9 +1461,9 @@ l_000_054C0:
         beq.b   l_000_054DC                     ; 054CE
         tst.w   $6e(a0)                         ; 054D0
         beq.b   l_000_054DC                     ; 054D4
-        move.w  #$c,$a(a6)                      ; 054D6
+        move.w  #$c,CockpitEngineVolume_Level(a6) ; 054D6
 l_000_054DC:
-        move.w  $a(a6),d0                       ; 054DC
+        move.w  CockpitEngineVolume_Level(a6),d0 ; 054DC
         ext.l   d0                              ; 054E0
         unlk    a6                              ; 054E2
         rts                                     ; 054E4
@@ -2032,6 +2092,11 @@ l_000_05BDA:
 ;-------------------------------------------------------------------------------
 ; StepPitchAngle - FlightControls' step of the pitch (+$66) by its rate (+$56), with limits.
 ;-------------------------------------------------------------------------------
+; StepPitchAngle's frame: arguments from 8(a6), locals below a6 (after its link)
+StepPitchAngle_Shift    equ     -$2             ; how fast (1 at speed $6C0 or more, else 0)
+StepPitchAngle_Pitch    equ     -$6             ; the cockpit object's pitch (+$66)
+StepPitchAngle_Rate     equ     -$A             ; the cockpit object's pitch rate (+$56)
+StepPitchAngle_Target   equ     -$C             ; the rate to move to (-$40 below $3840, else $40)
 StepPitchAngle:
         link.w  a6,#$fff2                       ; 05BDE
         movea.l (CockpitObject).l,a0            ; 05BE2
@@ -2039,8 +2104,8 @@ StepPitchAngle:
         movea.l (CockpitObject).l,a1            ; 05BEC
         adda.w  #$56,a1                         ; 05BF2
         move.w  (a0),d0                         ; 05BF6
-        move.l  a0,-$6(a6)                      ; 05BF8
-        move.l  a1,-$a(a6)                      ; 05BFC
+        move.l  a0,StepPitchAngle_Pitch(a6)     ; 05BF8
+        move.l  a1,StepPitchAngle_Rate(a6)      ; 05BFC
         tst.w   d0                              ; 05C00
         ble.w   l_000_05CA6                     ; 05C02
         cmpi.w  #$190,d0                        ; 05C06
@@ -2064,7 +2129,7 @@ StepPitchAngle:
         jsr     (PlayTireSound).l               ; 05C44
         addq.l  #$4,a7                          ; 05C4A
 l_000_05C4C:
-        movea.l -$a(a6),a0                      ; 05C4C
+        movea.l StepPitchAngle_Rate(a6),a0      ; 05C4C
         clr.w   (a0)                            ; 05C50
         bra.b   l_000_05CA6                     ; 05C52
 l_000_05C54:
@@ -2072,25 +2137,25 @@ l_000_05C54:
         move.w  $6c(a0),d0                      ; 05C5A
         cmpi.w  #$6c0,d0                        ; 05C5E
         bge.b   l_000_05C6A                     ; 05C62
-        clr.w   -$2(a6)                         ; 05C64
+        clr.w   StepPitchAngle_Shift(a6)        ; 05C64
         bra.b   l_000_05C70                     ; 05C68
 l_000_05C6A:
-        move.w  #$1,-$2(a6)                     ; 05C6A
+        move.w  #$1,StepPitchAngle_Shift(a6)    ; 05C6A
 l_000_05C70:
-        movea.l -$6(a6),a0                      ; 05C70
+        movea.l StepPitchAngle_Pitch(a6),a0     ; 05C70
         move.w  (a0),d0                         ; 05C74
         cmpi.w  #$3840,d0                       ; 05C76
         bge.b   l_000_05C84                     ; 05C7A
-        move.w  #$ffc0,-$c(a6)                  ; 05C7C
+        move.w  #$ffc0,StepPitchAngle_Target(a6) ; 05C7C
         bra.b   l_000_05C8A                     ; 05C82
 l_000_05C84:
-        move.w  #$40,-$c(a6)                    ; 05C84
+        move.w  #$40,StepPitchAngle_Target(a6)  ; 05C84
 l_000_05C8A:
-        movea.l -$a(a6),a0                      ; 05C8A
+        movea.l StepPitchAngle_Rate(a6),a0      ; 05C8A
         move.w  (a0),d0                         ; 05C8E
         move.w  d0,$0(a7)                       ; 05C90
-        sub.w   -$c(a6),d0                      ; 05C94
-        move.w  -$2(a6),d1                      ; 05C98
+        sub.w   StepPitchAngle_Target(a6),d0    ; 05C94
+        move.w  StepPitchAngle_Shift(a6),d1     ; 05C98
         asr.w   d1,d0                           ; 05C9C
         move.w  $0(a7),d1                       ; 05C9E
         sub.w   d0,d1                           ; 05CA2
@@ -2102,14 +2167,17 @@ l_000_05CA6:
 ;-------------------------------------------------------------------------------
 ; StepRollAngle - FlightControls' step of the roll (+$6A) by its rate (+$5A).
 ;-------------------------------------------------------------------------------
+; StepRollAngle's frame: arguments from 8(a6), locals below a6 (after its link)
+StepRollAngle_Roll      equ     -$4             ; the cockpit object's roll (+$6A)
+StepRollAngle_Rate      equ     -$8             ; the cockpit object's roll rate (+$5A)
 StepRollAngle:
         link.w  a6,#$fff8                       ; 05CAA
         movea.l (CockpitObject).l,a0            ; 05CAE
         adda.w  #$6a,a0                         ; 05CB4
         movea.l (CockpitObject).l,a1            ; 05CB8
         adda.w  #$5a,a1                         ; 05CBE
-        move.l  a0,-$4(a6)                      ; 05CC2
-        move.l  a1,-$8(a6)                      ; 05CC6
+        move.l  a0,StepRollAngle_Roll(a6)       ; 05CC2
+        move.l  a1,StepRollAngle_Rate(a6)       ; 05CC6
         tst.w   (a0)                            ; 05CCA
         beq.b   l_000_05CE6                     ; 05CCC
         move.w  (a0),d0                         ; 05CCE
@@ -2118,11 +2186,11 @@ StepRollAngle:
         move.w  #$20,(a1)                       ; 05CD6
         bra.b   l_000_05CEC                     ; 05CDA
 l_000_05CDC:
-        movea.l -$8(a6),a0                      ; 05CDC
+        movea.l StepRollAngle_Rate(a6),a0       ; 05CDC
         move.w  #$ffe0,(a0)                     ; 05CE0
         bra.b   l_000_05CEC                     ; 05CE4
 l_000_05CE6:
-        movea.l -$8(a6),a0                      ; 05CE6
+        movea.l StepRollAngle_Rate(a6),a0       ; 05CE6
         clr.w   (a0)                            ; 05CEA
 l_000_05CEC:
         unlk    a6                              ; 05CEC
@@ -2131,6 +2199,11 @@ l_000_05CEC:
 ;-------------------------------------------------------------------------------
 ; StepYawRate - FlightControls' step of the yaw (+$26).
 ;-------------------------------------------------------------------------------
+; StepYawRate's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+                rs.w    1                       ; (pushed as a long: the high part)
+StepYawRate_Input       rs.w    1               ; the yaw input
+StepYawRate_Rate        equ     -$4             ; the cockpit object's yaw rate (+$56)
 StepYawRate:
         link.w  a6,#$fffa                       ; 05CF0
         movea.l (CockpitObject).l,a0            ; 05CF4
@@ -2140,28 +2213,28 @@ StepYawRate:
         move.w  $26(a0),d0                      ; 05D04
         tst.w   d0                              ; 05D08
         beq.b   l_000_05D12                     ; 05D0A
-        tst.w   $a(a6)                          ; 05D0C
+        tst.w   StepYawRate_Input(a6)           ; 05D0C
         ble.b   l_000_05D56                     ; 05D10
 l_000_05D12:
         movea.l (CockpitObject).l,a0            ; 05D12
         move.b  $20(a0),d0                      ; 05D18
         btst    #$2,d0                          ; 05D1C
         beq.b   l_000_05D2C                     ; 05D20
-        move.w  $a(a6),d0                       ; 05D22
+        move.w  StepYawRate_Input(a6),d0        ; 05D22
         asr.w   #$1,d0                          ; 05D26
-        move.w  d0,$a(a6)                       ; 05D28
+        move.w  d0,StepYawRate_Input(a6)        ; 05D28
 l_000_05D2C:
         movea.l (CockpitObject).l,a0            ; 05D2C
         adda.w  #$56,a0                         ; 05D32
         move.w  (a0),d0                         ; 05D36
         move.w  d0,$0(a7)                       ; 05D38
-        sub.w   $a(a6),d0                       ; 05D3C
+        sub.w   StepYawRate_Input(a6),d0        ; 05D3C
         asr.w   #$2,d0                          ; 05D40
         move.w  $0(a7),d1                       ; 05D42
         sub.w   d0,d1                           ; 05D46
         move.w  d1,(a0)                         ; 05D48
         move.l  a0,-(a7)                        ; 05D4A
-        move.l  a0,-$4(a6)                      ; 05D4C
+        move.l  a0,StepYawRate_Rate(a6)         ; 05D4C
         bsr.w   InputBySpeed                    ; 05D50
         addq.l  #$4,a7                          ; 05D54
 l_000_05D56:
@@ -2172,32 +2245,37 @@ l_000_05D56:
 ; ScalePitchInput - Scales the pitch input (x 5/8; halved when the aircraft is damaged, +$20
 ; bit 2).
 ;-------------------------------------------------------------------------------
+; ScalePitchInput's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+                rs.w    1                       ; (pushed as a long: the high part)
+ScalePitchInput_Input   rs.w    1               ; the pitch input
+ScalePitchInput_Rate    equ     -$4             ; the cockpit object's pitch rate (+$58)
 ScalePitchInput:
         link.w  a6,#$fffa                       ; 05D5A
-        move.w  $a(a6),d0                       ; 05D5E
+        move.w  ScalePitchInput_Input(a6),d0    ; 05D5E
         asr.w   #$1,d0                          ; 05D62
-        move.w  $a(a6),d1                       ; 05D64
+        move.w  ScalePitchInput_Input(a6),d1    ; 05D64
         asr.w   #$3,d1                          ; 05D68
         add.w   d1,d0                           ; 05D6A
         movea.l (CockpitObject).l,a0            ; 05D6C
         move.b  $20(a0),d1                      ; 05D72
-        move.w  d0,$a(a6)                       ; 05D76
+        move.w  d0,ScalePitchInput_Input(a6)    ; 05D76
         btst    #$2,d1                          ; 05D7A
         beq.b   l_000_05D86                     ; 05D7E
         asr.w   #$1,d0                          ; 05D80
-        move.w  d0,$a(a6)                       ; 05D82
+        move.w  d0,ScalePitchInput_Input(a6)    ; 05D82
 l_000_05D86:
         movea.l (CockpitObject).l,a0            ; 05D86
         adda.w  #$58,a0                         ; 05D8C
         move.w  (a0),d0                         ; 05D90
         move.w  d0,$0(a7)                       ; 05D92
-        sub.w   $a(a6),d0                       ; 05D96
+        sub.w   ScalePitchInput_Input(a6),d0    ; 05D96
         asr.w   #$2,d0                          ; 05D9A
         move.w  $0(a7),d1                       ; 05D9C
         sub.w   d0,d1                           ; 05DA0
         move.w  d1,(a0)                         ; 05DA2
         move.l  a0,-(a7)                        ; 05DA4
-        move.l  a0,-$4(a6)                      ; 05DA6
+        move.l  a0,ScalePitchInput_Rate(a6)     ; 05DA6
         bsr.w   InputBySpeed                    ; 05DAA
         addq.l  #$4,a7                          ; 05DAE
         unlk    a6                              ; 05DB0
@@ -2206,42 +2284,48 @@ l_000_05D86:
 ;-------------------------------------------------------------------------------
 ; ScaleRollInput - Scales the roll input (x 5/8; halved when damaged).
 ;-------------------------------------------------------------------------------
+; ScaleRollInput's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+                rs.w    1                       ; (pushed as a long: the high part)
+ScaleRollInput_Input    rs.w    1               ; the roll input
+ScaleRollInput_Rate     equ     -$4             ; the cockpit object's roll rate (+$5A)
+ScaleRollInput_Shift    equ     -$6             ; how fast the rate follows the input (2 for object kind $14, else 1)
 ScaleRollInput:
         link.w  a6,#$fff8                       ; 05DB4
-        move.w  $a(a6),d0                       ; 05DB8
+        move.w  ScaleRollInput_Input(a6),d0     ; 05DB8
         asr.w   #$1,d0                          ; 05DBC
-        move.w  $a(a6),d1                       ; 05DBE
+        move.w  ScaleRollInput_Input(a6),d1     ; 05DBE
         asr.w   #$3,d1                          ; 05DC2
         add.w   d1,d0                           ; 05DC4
         movea.l (CockpitObject).l,a0            ; 05DC6
         move.b  $20(a0),d1                      ; 05DCC
-        move.w  d0,$a(a6)                       ; 05DD0
+        move.w  d0,ScaleRollInput_Input(a6)     ; 05DD0
         btst    #$2,d1                          ; 05DD4
         beq.b   l_000_05DE0                     ; 05DD8
         asr.w   #$1,d0                          ; 05DDA
-        move.w  d0,$a(a6)                       ; 05DDC
+        move.w  d0,ScaleRollInput_Input(a6)     ; 05DDC
 l_000_05DE0:
         movea.l (CockpitObject).l,a0            ; 05DE0
         move.b  $62(a0),d0                      ; 05DE6
         cmpi.b  #$14,d0                         ; 05DEA
         bne.b   l_000_05DF8                     ; 05DEE
-        move.w  #$2,-$6(a6)                     ; 05DF0
+        move.w  #$2,ScaleRollInput_Shift(a6)    ; 05DF0
         bra.b   l_000_05DFE                     ; 05DF6
 l_000_05DF8:
-        move.w  #$1,-$6(a6)                     ; 05DF8
+        move.w  #$1,ScaleRollInput_Shift(a6)    ; 05DF8
 l_000_05DFE:
         movea.l (CockpitObject).l,a0            ; 05DFE
         adda.w  #$5a,a0                         ; 05E04
         move.w  (a0),d0                         ; 05E08
         move.w  d0,$0(a7)                       ; 05E0A
-        sub.w   $a(a6),d0                       ; 05E0E
-        move.w  -$6(a6),d1                      ; 05E12
+        sub.w   ScaleRollInput_Input(a6),d0     ; 05E0E
+        move.w  ScaleRollInput_Shift(a6),d1     ; 05E12
         asr.w   d1,d0                           ; 05E16
         move.w  $0(a7),d1                       ; 05E18
         sub.w   d0,d1                           ; 05E1C
         move.w  d1,(a0)                         ; 05E1E
         move.l  a0,-(a7)                        ; 05E20
-        move.l  a0,-$4(a6)                      ; 05E22
+        move.l  a0,ScaleRollInput_Rate(a6)      ; 05E22
         bsr.b   InputBySpeed                    ; 05E26
         addq.l  #$4,a7                          ; 05E28
         unlk    a6                              ; 05E2A
@@ -2250,35 +2334,39 @@ l_000_05DFE:
 ;-------------------------------------------------------------------------------
 ; InputBySpeed - Scales a control input by the speed (+$6C / 128).
 ;-------------------------------------------------------------------------------
+; InputBySpeed's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+InputBySpeed_Value      rs.l    1               ; the input word to change
+InputBySpeed_Step       equ     -$2             ; the speed / 128 (0 near the centre)
 InputBySpeed:
         link.w  a6,#$fffe                       ; 05E2E
         movea.l (CockpitObject).l,a0            ; 05E32
         move.w  $6c(a0),d0                      ; 05E38
         asr.w   #$7,d0                          ; 05E3C
-        movea.l $8(a6),a0                       ; 05E3E
+        movea.l InputBySpeed_Value(a6),a0       ; 05E3E
         move.w  (a0),d1                         ; 05E42
-        move.w  d0,-$2(a6)                      ; 05E44
+        move.w  d0,InputBySpeed_Step(a6)        ; 05E44
         tst.w   d1                              ; 05E48
         bmi.b   l_000_05E64                     ; 05E4A
         cmpi.w  #$500,d1                        ; 05E4C
         bge.b   l_000_05E56                     ; 05E50
-        clr.w   -$2(a6)                         ; 05E52
+        clr.w   InputBySpeed_Step(a6)           ; 05E52
 l_000_05E56:
-        movea.l $8(a6),a0                       ; 05E56
+        movea.l InputBySpeed_Value(a6),a0       ; 05E56
         move.w  (a0),d0                         ; 05E5A
-        add.w   -$2(a6),d0                      ; 05E5C
+        add.w   InputBySpeed_Step(a6),d0        ; 05E5C
         move.w  d0,(a0)                         ; 05E60
         bra.b   l_000_05E80                     ; 05E62
 l_000_05E64:
-        movea.l $8(a6),a0                       ; 05E64
+        movea.l InputBySpeed_Value(a6),a0       ; 05E64
         move.w  (a0),d0                         ; 05E68
         cmpi.w  #$fb00,d0                       ; 05E6A
         ble.b   l_000_05E74                     ; 05E6E
-        clr.w   -$2(a6)                         ; 05E70
+        clr.w   InputBySpeed_Step(a6)           ; 05E70
 l_000_05E74:
-        movea.l $8(a6),a0                       ; 05E74
+        movea.l InputBySpeed_Value(a6),a0       ; 05E74
         move.w  (a0),d0                         ; 05E78
-        sub.w   -$2(a6),d0                      ; 05E7A
+        sub.w   InputBySpeed_Step(a6),d0        ; 05E7A
         move.w  d0,(a0)                         ; 05E7E
 l_000_05E80:
         unlk    a6                              ; 05E80
@@ -3236,12 +3324,16 @@ l_000_0699C:
 ;-------------------------------------------------------------------------------
 ; EaseYaw - Moves the cockpit object's +$26 towards the value given by 1/8.
 ;-------------------------------------------------------------------------------
+; EaseYaw's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+                rs.w    1                       ; (pushed as a long: the high part)
+EaseYaw_Target          rs.w    1               ; the yaw value to move towards
 EaseYaw:
         link.w  a6,#$fffe                       ; 069C6
         movea.l (CockpitObject).l,a0            ; 069CA
         move.w  $26(a0),d0                      ; 069D0
         move.w  d0,$0(a7)                       ; 069D4
-        sub.w   $a(a6),d0                       ; 069D8
+        sub.w   EaseYaw_Target(a6),d0           ; 069D8
         asr.w   #$3,d0                          ; 069DC
         move.w  $0(a7),d1                       ; 069DE
         sub.w   d0,d1                           ; 069E2

@@ -1,9 +1,9 @@
 """Turn a data region of the source that is really code into instructions, then check the build.
 
-  python3 tools/decode.py LABEL [--to OFFSET]
+  python3 tools/decode.py LABEL [--to OFFSET] [--at OFFSET]
 
 LABEL starts the region (a label in f18_main.s or src/*.s); it runs to the next label, or to
-OFFSET (hex, in the hunk) with --to. Its bytes (the dc.b / dc.w / dcb.b lines, and dc.l lines
+OFFSET (hex, in the hunk) with --to. --at gives the region's offset when nothing in it says. Its bytes (the dc.b / dc.w / dcb.b lines, and dc.l lines
 that hold a relocated address) are disassembled from the start (capstone, 68000). Relocated
 longs become the labels they were; branches inside the region get new labels l_HHH_OOOOO, and
 branches outside it use the label there or hHHH+$offset. The region is replaced in the file
@@ -59,6 +59,7 @@ def num(tok):
 def main():
     label = sys.argv[1]
     to = int(sys.argv[sys.argv.index('--to') + 1], 16) if '--to' in sys.argv else None
+    at = int(sys.argv[sys.argv.index('--at') + 1], 16) if '--at' in sys.argv else None
     for f in files():
         L = open(f, encoding='utf-8').read().split('\n')
         if f'{label}:' in (l.split(';')[0].strip() for l in L):
@@ -104,6 +105,8 @@ def main():
         if to is not None and off0 is not None and off0 + len(data) >= to:
             break
     end = i
+    if off0 is None and at is not None:
+        off0 = at
     if off0 is None:
         m = re.match(r'^\w+_(\d{3})_([0-9A-F]{5})$', label)
         if not m:
