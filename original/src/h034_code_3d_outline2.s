@@ -13,19 +13,23 @@
 ; (ClipCorners) against the horizon and puts the crossing points into ScreenPolygon
 ; (HorizonCrossTop, Bottom, Left, Right).
 ;-------------------------------------------------------------------------------
+; FindHorizonEdges's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+FindHorizonEdges_Last   rs.l    1               ; (no argument is pushed: the word above the return address, used for 7, the last corner)
+FindHorizonEdges_Skip   equ     -$2             ; set to skip the next corner
 FindHorizonEdges:
         link.w  a6,#$fffc                       ; 00000
-        clr.b   -$2(a6)                         ; 00004
+        clr.b   FindHorizonEdges_Skip(a6)       ; 00004
         lea.l   (ClipCorners).l,a0              ; 00008
         lea.l   (ScreenPolygon).l,a1            ; 0000E
         clr.w   d0                              ; 00014
-        move.w  #$7,$8(a6)                      ; 00016
+        move.w  #$7,FindHorizonEdges_Last(a6)   ; 00016
 l_034_0001C:
         btst    #$0,d0                          ; 0001C
         beq.b   l_034_00034                     ; 00020
         move.w  d0,d3                           ; 00022
         addq.w  #$1,d3                          ; 00024
-        cmp.w   $8(a6),d3                       ; 00026
+        cmp.w   FindHorizonEdges_Last(a6),d3    ; 00026
         ble.b   l_034_0002E                     ; 0002A
         clr.w   d3                              ; 0002C
 l_034_0002E:
@@ -36,7 +40,7 @@ l_034_00034:
         move.w  d0,d3                           ; 00034
         move.w  d0,d1                           ; 00036
         addq.w  #$2,d1                          ; 00038
-        cmp.w   $8(a6),d1                       ; 0003A
+        cmp.w   FindHorizonEdges_Last(a6),d1    ; 0003A
         ble.b   l_034_00042                     ; 0003E
         clr.w   d1                              ; 00040
 l_034_00042:
@@ -44,9 +48,9 @@ l_034_00042:
         move.w  d0,d6                           ; 00044
         asl.w   #$3,d6                          ; 00046
         lea.l   (a0,d6.w),a3                    ; 00048
-        tst.b   -$2(a6)                         ; 0004C
+        tst.b   FindHorizonEdges_Skip(a6)       ; 0004C
         beq.b   l_034_0005A                     ; 00050
-        clr.b   -$2(a6)                         ; 00052
+        clr.b   FindHorizonEdges_Skip(a6)       ; 00052
         bra.w   l_034_002E0                     ; 00056
 l_034_0005A:
         asl.w   #$4,d3                          ; 0005A
@@ -244,7 +248,7 @@ l_034_00284:
 l_034_00292:
         btst    #$0,d0                          ; 00292
         beq.b   l_034_002E0                     ; 00296
-        move.b  #$1,-$2(a6)                     ; 00298
+        move.b  #$1,FindHorizonEdges_Skip(a6)   ; 00298
         bra.b   l_034_002E0                     ; 0029E
 l_034_002A0:
         movem.w (ClipPoint).l,d3-d5             ; 002A0
@@ -276,7 +280,7 @@ l_034_002DC:
         movem.w d3-d4,(a3)                      ; 002DC
 l_034_002E0:
         addq.w  #$1,d0                          ; 002E0
-        cmp.w   $8(a6),d0                       ; 002E2
+        cmp.w   FindHorizonEdges_Last(a6),d0    ; 002E2
         ble.w   l_034_0001C                     ; 002E6
         unlk    a6                              ; 002EA
         rts                                     ; 002EC

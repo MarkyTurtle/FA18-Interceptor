@@ -25,12 +25,12 @@ l_023_0001A:
         moveq   #$0,d0                          ; 0001A
         rts                                     ; 0001C
 l_023_0001E:
-        btst    #$5,$26(a0)                     ; 0001E
+        btst    #$5,blt_Flags(a0)               ; 0001E
         bne.b   l_023_0002E                     ; 00024
         tst.b   (OutsideView).l                 ; 00026
         beq.b   l_023_0001A                     ; 0002C
 l_023_0002E:
-        move.w  $2e(a0),d1                      ; 0002E
+        move.w  blt_Owner(a0),d1                ; 0002E
         asl.w   #$8,d1                          ; 00032
         add.w   d1,d1                           ; 00034
         lea.l   (ObjectTable).l,a1              ; 00036
@@ -105,7 +105,7 @@ BulletHitTest:
         asl.w   #$6,d0                          ; 000DE
         lea.l   (Bullets).l,a3                  ; 000E0
         adda.w  d0,a3                           ; 000E6
-        movem.l $c(a3),d0-d2                    ; 000E8
+        movem.l blt_VelX(a3),d0-d2              ; 000E8
         asr.l   #$8,d0                          ; 000EE
         asr.l   #$8,d1                          ; 000F0
         asr.l   #$8,d2                          ; 000F2
@@ -138,17 +138,17 @@ l_023_0014A:
         addq.w  #$1,-$a(a6)                     ; 00174
         move.b  -$2(a6),d0                      ; 00178
         ext.w   d0                              ; 0017C
-        cmp.w   $2e(a3),d0                      ; 0017E
+        cmp.w   blt_Owner(a3),d0                ; 0017E
         beq.w   l_023_002E8                     ; 00182
         move.w  d0,d2                           ; 00186
         asl.w   #$8,d0                          ; 00188
         add.w   d0,d0                           ; 0018A
         lea.l   (ObjectTable).l,a0              ; 0018C
         move.w  $6(a0,d0.w),d1                  ; 00192
-        cmp.w   $30(a3),d1                      ; 00196
+        cmp.w   blt_CellX(a3),d1                ; 00196
         bne.w   l_023_002E8                     ; 0019A
         move.w  $8(a0,d0.w),d1                  ; 0019E
-        cmp.w   $32(a3),d1                      ; 001A2
+        cmp.w   blt_CellZ(a3),d1                ; 001A2
         bne.w   l_023_002E8                     ; 001A6
         lea.l   (ObjectTable).l,a1              ; 001AA
         move.w  (a0,d0.w),d1                    ; 001B0
@@ -175,7 +175,7 @@ l_023_001F6:
         move.w  (BulletHitRange).l,d7           ; 001F6
 l_023_001FC:
         ext.l   d7                              ; 001FC
-        movem.l $0(a3),d0-d1/d6                 ; 001FE
+        movem.l blt_X(a3),d0-d1/d6              ; 001FE
         asr.l   #$8,d0                          ; 00204
         sub.w   d0,d2                           ; 00206
         bge.b   l_023_0020C                     ; 00208
@@ -213,7 +213,7 @@ l_023_00232:
         adda.w  d0,a1                           ; 00258
         addq.w  #$2,a1                          ; 0025A
         moveq   #$0,d0                          ; 0025C
-        move.w  $30(a3),d0                      ; 0025E
+        move.w  blt_CellX(a3),d0                ; 0025E
         move.b  (a1)+,d2                        ; 00262
         ext.w   d2                              ; 00264
         sub.w   d2,d0                           ; 00266
@@ -223,7 +223,7 @@ l_023_00232:
 l_023_0026E:
         cmpi.w  #$1,d2                          ; 0026E
         bgt.b   l_023_002E8                     ; 00272
-        move.w  $32(a3),d1                      ; 00274
+        move.w  blt_CellZ(a3),d1                ; 00274
         move.b  (a1)+,d2                        ; 00278
         ext.w   d2                              ; 0027A
         sub.w   d2,d1                           ; 0027C
@@ -241,7 +241,7 @@ l_023_00284:
         asr.l   #$2,d1                          ; 00294
         move.l  d0,-$38(a6)                     ; 00296
         move.l  d1,-$3c(a6)                     ; 0029A
-        movem.l $0(a3),d0-d2                    ; 0029E
+        movem.l blt_X(a3),d0-d2                 ; 0029E
         asr.l   #$8,d1                          ; 002A4
         cmpi.l  #$7fff,d1                       ; 002A6
         bgt.b   l_023_002E8                     ; 002AC
@@ -281,7 +281,7 @@ l_023_00302:
         blt.w   l_023_003DA                     ; 0030A
         move.w  (BulletHitRange).l,d7           ; 0030E
         ext.l   d7                              ; 00314
-        movem.l $0(a3),d0-d1/d6                 ; 00316
+        movem.l blt_X(a3),d0-d1/d6              ; 00316
         asr.l   #$8,d0                          ; 0031C
         sub.w   -$1a(a6),d0                     ; 0031E
         bge.b   l_023_00326                     ; 00322
@@ -305,12 +305,12 @@ l_023_00346:
         bge.w   l_023_003DA                     ; 00348
         moveq   #$8,d5                          ; 0034C
 l_023_0034E:
-        movem.l $18(a3),d0-d2                   ; 0034E
+        movem.l blt_DriftX(a3),d0-d2            ; 0034E
         subi.l  #$20,d1                         ; 00354
         moveq   #$6,d4                          ; 0035A
-        btst    #$4,$26(a3)                     ; 0035C
+        btst    #$4,blt_Flags(a3)               ; 0035C
         bne.b   l_023_0037A                     ; 00362
-        btst    #$5,$26(a3)                     ; 00364
+        btst    #$5,blt_Flags(a3)               ; 00364
         beq.b   l_023_00386                     ; 0036A
         addi.l  #$20,d1                         ; 0036C
         moveq   #$2,d4                          ; 00372
@@ -325,13 +325,13 @@ l_023_0037A:
         asr.l   d4,d3                           ; 00382
         sub.l   d3,d2                           ; 00384
 l_023_00386:
-        movem.l d0-d2,$18(a3)                   ; 00386
-        add.l   d0,$0(a3)                       ; 0038C
-        add.l   d1,$4(a3)                       ; 00390
-        add.l   d2,$8(a3)                       ; 00394
+        movem.l d0-d2,blt_DriftX(a3)            ; 00386
+        add.l   d0,blt_X(a3)                    ; 0038C
+        add.l   d1,blt_Y(a3)                    ; 00390
+        add.l   d2,blt_Z(a3)                    ; 00394
         move.w  (BulletHitRange2).l,d7          ; 00398
         ext.l   d7                              ; 0039E
-        movem.l $0(a3),d0-d1/d6                 ; 003A0
+        movem.l blt_X(a3),d0-d1/d6              ; 003A0
         asr.l   #$8,d0                          ; 003A6
         sub.w   -$1a(a6),d0                     ; 003A8
         bge.b   l_023_003B0                     ; 003AC
@@ -358,12 +358,12 @@ l_023_003D2:
         bgt.w   l_023_0034E                     ; 003D4
         bra.b   l_023_00434                     ; 003D8
 l_023_003DA:
-        movem.l $c(a3),d0-d2                    ; 003DA
+        movem.l blt_VelX(a3),d0-d2              ; 003DA
         subi.l  #$100,d1                        ; 003E0
         moveq   #$6,d4                          ; 003E6
-        btst    #$4,$26(a3)                     ; 003E8
+        btst    #$4,blt_Flags(a3)               ; 003E8
         bne.b   l_023_00406                     ; 003EE
-        btst    #$5,$26(a3)                     ; 003F0
+        btst    #$5,blt_Flags(a3)               ; 003F0
         beq.b   l_023_00414                     ; 003F6
         addi.l  #$100,d1                        ; 003F8
         moveq   #$2,d4                          ; 003FE
@@ -379,15 +379,15 @@ l_023_00406:
         asr.l   d4,d3                           ; 00410
         sub.l   d3,d2                           ; 00412
 l_023_00414:
-        movem.l d0-d2,$c(a3)                    ; 00414
+        movem.l d0-d2,blt_VelX(a3)              ; 00414
         tst.w   $24(a3)                         ; 0041A
         bne.b   l_023_00428                     ; 0041E
         move.w  #$1,$24(a3)                     ; 00420
         bra.b   l_023_00434                     ; 00426
 l_023_00428:
-        add.l   d0,$0(a3)                       ; 00428
-        add.l   d1,$4(a3)                       ; 0042C
-        add.l   d2,$8(a3)                       ; 00430
+        add.l   d0,blt_X(a3)                    ; 00428
+        add.l   d1,blt_Y(a3)                    ; 0042C
+        add.l   d2,blt_Z(a3)                    ; 00430
 l_023_00434:
         bra.w   l_023_0067A                     ; 00434
 
@@ -624,10 +624,10 @@ BulletHitGround:
         asl.w   #$6,d0                          ; 00692
         lea.l   (Bullets).l,a3                  ; 00694
         adda.w  d0,a3                           ; 0069A
-        movem.l $c(a3),d0-d2                    ; 0069C
+        movem.l blt_VelX(a3),d0-d2              ; 0069C
         asr.l   #$8,d1                          ; 006A2
         beq.b   l_023_006D4                     ; 006A4
-        move.l  $4(a3),d3                       ; 006A6
+        move.l  blt_Y(a3),d3                    ; 006A6
         asr.l   #$8,d3                          ; 006AA
         neg.w   d3                              ; 006AC
         asl.l   #$4,d0                          ; 006AE
@@ -638,9 +638,9 @@ BulletHitGround:
         muls.w  d3,d2                           ; 006B8
         asr.l   #$4,d0                          ; 006BA
         asr.l   #$4,d2                          ; 006BC
-        add.l   d0,$0(a3)                       ; 006BE
-        clr.l   $4(a3)                          ; 006C2
-        add.l   d2,$8(a3)                       ; 006C6
+        add.l   d0,blt_X(a3)                    ; 006BE
+        clr.l   blt_Y(a3)                       ; 006C2
+        add.l   d2,blt_Z(a3)                    ; 006C6
         asr.l   #$8,d0                          ; 006CA
         asr.l   #$8,d2                          ; 006CC
         moveq   #$0,d0                          ; 006CE

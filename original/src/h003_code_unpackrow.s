@@ -6,17 +6,25 @@
 ; Hunk 3: CODE, $94 bytes
 ;===============================================================================
 	CODE_HUNK	h003
+; _UnPackRow's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+_UnPackRow_Source       rs.l    1               ; a pointer to the compressed bytes' pointer (moved on)
+_UnPackRow_Dest         rs.l    1               ; a pointer to the row's pointer (moved on)
+_UnPackRow_SrcBytes     rs.l    1               ; the compressed bytes there are
+_UnPackRow_DstBytes     rs.l    1               ; the row's length
+_UnPackRow_Error        equ     -$E             ; 1 until the row is done (returned: 0 = OK)
+_UnPackRow_NoOp         equ     -$F             ; $80, the ByteRun1 code that does nothing
 _UnPackRow:
         link.w  a6,#$fff0                       ; 00000
         movem.l d4-d7/a4-a5,-(a7)               ; 00004
-        movea.l $8(a6),a0                       ; 00008
+        movea.l _UnPackRow_Source(a6),a0        ; 00008
         movea.l (a0),a5                         ; 0000C
-        movea.l $c(a6),a0                       ; 0000E
+        movea.l _UnPackRow_Dest(a6),a0          ; 0000E
         movea.l (a0),a4                         ; 00012
-        move.l  $10(a6),d5                      ; 00014
-        move.l  $14(a6),d4                      ; 00018
-        move.w  #$1,-$e(a6)                     ; 0001C
-        move.b  #$80,-$f(a6)                    ; 00022
+        move.l  _UnPackRow_SrcBytes(a6),d5      ; 00014
+        move.l  _UnPackRow_DstBytes(a6),d4      ; 00018
+        move.w  #$1,_UnPackRow_Error(a6)        ; 0001C
+        move.b  #$80,_UnPackRow_NoOp(a6)        ; 00022
 UN1:
         tst.b   d4                              ; 00028
         ble.b   UN5                             ; 0002A
@@ -40,7 +48,7 @@ UN2:
         bgt.b   UN2                             ; 0004C
         bra.b   UN1                             ; 0004E
 UN3:
-        move.b  -$f(a6),d0                      ; 00050
+        move.b  _UnPackRow_NoOp(a6),d0          ; 00050
         cmp.b   d7,d0                           ; 00054
         beq.b   UN1                             ; 00056
         move.l  d7,d0                           ; 00058
@@ -61,13 +69,13 @@ UN4:
         bgt.b   UN4                             ; 00074
         bra.b   UN1                             ; 00076
 UN5:
-        clr.w   -$e(a6)                         ; 00078
+        clr.w   _UnPackRow_Error(a6)            ; 00078
 UN6:
-        movea.l $8(a6),a0                       ; 0007C
+        movea.l _UnPackRow_Source(a6),a0        ; 0007C
         move.l  a5,(a0)                         ; 00080
-        movea.l $c(a6),a0                       ; 00082
+        movea.l _UnPackRow_Dest(a6),a0          ; 00082
         move.l  a4,(a0)                         ; 00086
-        move.w  -$e(a6),d0                      ; 00088
+        move.w  _UnPackRow_Error(a6),d0         ; 00088
         movem.l (a7)+,d4-d7/a4-a5               ; 0008C
         unlk    a6                              ; 00090
         rts                                     ; 00092

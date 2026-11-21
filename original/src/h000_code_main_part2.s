@@ -148,96 +148,111 @@ l_000_04546:
 ; direction (an arctangent: the ratio of two parts (Divide) looked up in ArcTanTable, by
 ; octant), into TargetPitch (pitch) and TargetHeading (heading).
 ;-------------------------------------------------------------------------------
+; VectorToAngles's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+VectorToAngles_Pitch    rs.l    1               ; the pitch: in, the current one; out, moved to the direction's
+VectorToAngles_Heading  rs.l    1               ; the heading, the same way
+VectorToAngles_DX       rs.l    1               ; the direction
+VectorToAngles_DY       rs.l    1
+VectorToAngles_DZ       rs.l    1
+VectorToAngles_MaxTurn  rs.l    1               ; -1: set the angles; else each moves 1/4 of the way there, at most this far
+VectorToAngles_Signs    equ     -$9             ; bits 0-2: DX, DY, DZ were negative
+VectorToAngles_PitchTo  equ     -$E             ; the direction's pitch
+VectorToAngles_HeadingTo equ     -$12           ; the direction's heading
+VectorToAngles_Largest  equ     -$16            ; the largest part (to scale them by)
+VectorToAngles_Shift    equ     -$18            ; how far the parts are shifted down
+VectorToAngles_Scale    equ     -$1A            ; how far the dividend is shifted up
+VectorToAngles_Ease     equ     -$1C            ; 2: the turn's 1/4
 VectorToAngles:
         link.w  a6,#$ffe4                       ; 0454A
         movem.l d2,-(a7)                        ; 0454E
-        move.w  #$2,-$1c(a6)                    ; 04552
+        move.w  #$2,VectorToAngles_Ease(a6)     ; 04552
         moveq   #$0,d0                          ; 04558
-        move.b  d0,-$9(a6)                      ; 0455A
-        tst.l   $10(a6)                         ; 0455E
+        move.b  d0,VectorToAngles_Signs(a6)     ; 0455A
+        tst.l   VectorToAngles_DX(a6)           ; 0455E
         bpl.b   l_000_04570                     ; 04562
-        neg.l   $10(a6)                         ; 04564
+        neg.l   VectorToAngles_DX(a6)           ; 04564
         bset    #$0,d0                          ; 04568
-        move.b  d0,-$9(a6)                      ; 0456C
+        move.b  d0,VectorToAngles_Signs(a6)     ; 0456C
 l_000_04570:
-        tst.l   $14(a6)                         ; 04570
+        tst.l   VectorToAngles_DY(a6)           ; 04570
         bpl.b   l_000_04580                     ; 04574
-        neg.l   $14(a6)                         ; 04576
-        bset    #$1,-$9(a6)                     ; 0457A
+        neg.l   VectorToAngles_DY(a6)           ; 04576
+        bset    #$1,VectorToAngles_Signs(a6)    ; 0457A
 l_000_04580:
-        tst.l   $18(a6)                         ; 04580
+        tst.l   VectorToAngles_DZ(a6)           ; 04580
         bpl.b   l_000_04590                     ; 04584
-        neg.l   $18(a6)                         ; 04586
-        bset    #$2,-$9(a6)                     ; 0458A
+        neg.l   VectorToAngles_DZ(a6)           ; 04586
+        bset    #$2,VectorToAngles_Signs(a6)    ; 0458A
 l_000_04590:
-        move.l  $10(a6),d0                      ; 04590
-        cmp.l   $14(a6),d0                      ; 04594
+        move.l  VectorToAngles_DX(a6),d0        ; 04590
+        cmp.l   VectorToAngles_DY(a6),d0        ; 04594
         ble.b   l_000_045AE                     ; 04598
-        cmp.l   $18(a6),d0                      ; 0459A
+        cmp.l   VectorToAngles_DZ(a6),d0        ; 0459A
         ble.b   l_000_045A6                     ; 0459E
-        move.l  d0,-$16(a6)                     ; 045A0
+        move.l  d0,VectorToAngles_Largest(a6)   ; 045A0
         bra.b   l_000_045C4                     ; 045A4
 l_000_045A6:
-        move.l  $18(a6),-$16(a6)                ; 045A6
+        move.l  VectorToAngles_DZ(a6),VectorToAngles_Largest(a6) ; 045A6
         bra.b   l_000_045C4                     ; 045AC
 l_000_045AE:
-        move.l  $14(a6),d0                      ; 045AE
-        cmp.l   $18(a6),d0                      ; 045B2
+        move.l  VectorToAngles_DY(a6),d0        ; 045AE
+        cmp.l   VectorToAngles_DZ(a6),d0        ; 045B2
         ble.b   l_000_045BE                     ; 045B6
-        move.l  d0,-$16(a6)                     ; 045B8
+        move.l  d0,VectorToAngles_Largest(a6)   ; 045B8
         bra.b   l_000_045C4                     ; 045BC
 l_000_045BE:
-        move.l  $18(a6),-$16(a6)                ; 045BE
+        move.l  VectorToAngles_DZ(a6),VectorToAngles_Largest(a6) ; 045BE
 l_000_045C4:
-        cmpi.l  #$10000000,-$16(a6)             ; 045C4
+        cmpi.l  #$10000000,VectorToAngles_Largest(a6) ; 045C4
         ble.b   l_000_045F8                     ; 045CC
-        move.l  $10(a6),d0                      ; 045CE
+        move.l  VectorToAngles_DX(a6),d0        ; 045CE
         asr.l   #$3,d0                          ; 045D2
-        move.l  $14(a6),d1                      ; 045D4
+        move.l  VectorToAngles_DY(a6),d1        ; 045D4
         asr.l   #$3,d1                          ; 045D8
-        move.l  $18(a6),d2                      ; 045DA
+        move.l  VectorToAngles_DZ(a6),d2        ; 045DA
         asr.l   #$3,d2                          ; 045DE
-        move.w  #$e,-$18(a6)                    ; 045E0
-        clr.w   -$1a(a6)                        ; 045E6
-        move.l  d0,$10(a6)                      ; 045EA
-        move.l  d1,$14(a6)                      ; 045EE
-        move.l  d2,$18(a6)                      ; 045F2
+        move.w  #$e,VectorToAngles_Shift(a6)    ; 045E0
+        clr.w   VectorToAngles_Scale(a6)        ; 045E6
+        move.l  d0,VectorToAngles_DX(a6)        ; 045EA
+        move.l  d1,VectorToAngles_DY(a6)        ; 045EE
+        move.l  d2,VectorToAngles_DZ(a6)        ; 045F2
         bra.b   l_000_0464A                     ; 045F6
 l_000_045F8:
-        cmpi.l  #$2000000,-$16(a6)              ; 045F8
+        cmpi.l  #$2000000,VectorToAngles_Largest(a6) ; 045F8
         ble.b   l_000_0460E                     ; 04600
-        move.w  #$e,-$18(a6)                    ; 04602
-        clr.w   -$1a(a6)                        ; 04608
+        move.w  #$e,VectorToAngles_Shift(a6)    ; 04602
+        clr.w   VectorToAngles_Scale(a6)        ; 04608
         bra.b   l_000_0464A                     ; 0460C
 l_000_0460E:
-        cmpi.l  #$800000,-$16(a6)               ; 0460E
+        cmpi.l  #$800000,VectorToAngles_Largest(a6) ; 0460E
         ble.b   l_000_04626                     ; 04616
-        move.w  #$c,-$18(a6)                    ; 04618
-        move.w  #$2,-$1a(a6)                    ; 0461E
+        move.w  #$c,VectorToAngles_Shift(a6)    ; 04618
+        move.w  #$2,VectorToAngles_Scale(a6)    ; 0461E
         bra.b   l_000_0464A                     ; 04624
 l_000_04626:
-        cmpi.l  #$200000,-$16(a6)               ; 04626
+        cmpi.l  #$200000,VectorToAngles_Largest(a6) ; 04626
         ble.b   l_000_0463E                     ; 0462E
-        move.w  #$a,-$18(a6)                    ; 04630
-        move.w  #$4,-$1a(a6)                    ; 04636
+        move.w  #$a,VectorToAngles_Shift(a6)    ; 04630
+        move.w  #$4,VectorToAngles_Scale(a6)    ; 04636
         bra.b   l_000_0464A                     ; 0463C
 l_000_0463E:
-        move.w  #$8,-$18(a6)                    ; 0463E
-        move.w  #$6,-$1a(a6)                    ; 04644
+        move.w  #$8,VectorToAngles_Shift(a6)    ; 0463E
+        move.w  #$6,VectorToAngles_Scale(a6)    ; 04644
 l_000_0464A:
-        move.w  -$18(a6),d0                     ; 0464A
+        move.w  VectorToAngles_Shift(a6),d0     ; 0464A
         ext.l   d0                              ; 0464E
-        move.l  $10(a6),d1                      ; 04650
+        move.l  VectorToAngles_DX(a6),d1        ; 04650
         asr.l   d0,d1                           ; 04654
-        move.l  $18(a6),d2                      ; 04656
+        move.l  VectorToAngles_DZ(a6),d2        ; 04656
         asr.l   d0,d2                           ; 0465A
         move.w  d1,-$4(a6)                      ; 0465C
         move.w  d2,-$6(a6)                      ; 04660
         cmp.w   d2,d1                           ; 04664
         bgt.b   l_000_046BA                     ; 04666
-        move.w  -$1a(a6),d0                     ; 04668
+        move.w  VectorToAngles_Scale(a6),d0     ; 04668
         ext.l   d0                              ; 0466C
-        move.l  $10(a6),d1                      ; 0466E
+        move.l  VectorToAngles_DX(a6),d1        ; 0466E
         asl.l   d0,d1                           ; 04672
         move.l  d1,(DivideWhat).l               ; 04674
         move.w  d2,(DivideBy).l                 ; 0467A
@@ -254,15 +269,15 @@ l_000_0464A:
         move.w  (a0),d0                         ; 046A4
         ext.l   d0                              ; 046A6
         asl.l   #$3,d0                          ; 046A8
-        move.l  d0,-$12(a6)                     ; 046AA
+        move.l  d0,VectorToAngles_HeadingTo(a6) ; 046AA
         bra.b   l_000_04706                     ; 046AE
 l_000_046B0:
-        move.l  #$e10,-$12(a6)                  ; 046B0
+        move.l  #$e10,VectorToAngles_HeadingTo(a6) ; 046B0
         bra.b   l_000_04706                     ; 046B8
 l_000_046BA:
-        move.w  -$1a(a6),d0                     ; 046BA
+        move.w  VectorToAngles_Scale(a6),d0     ; 046BA
         ext.l   d0                              ; 046BE
-        move.l  $18(a6),d1                      ; 046C0
+        move.l  VectorToAngles_DZ(a6),d1        ; 046C0
         asl.l   d0,d1                           ; 046C4
         move.l  d1,(DivideWhat).l               ; 046C6
         move.w  -$4(a6),(DivideBy).l            ; 046CC
@@ -279,46 +294,46 @@ l_000_046BA:
         move.l  #$384,d1                        ; 046F8
         sub.l   d0,d1                           ; 046FE
         asl.l   #$3,d1                          ; 04700
-        move.l  d1,-$12(a6)                     ; 04702
+        move.l  d1,VectorToAngles_HeadingTo(a6) ; 04702
 l_000_04706:
-        move.b  -$9(a6),d0                      ; 04706
+        move.b  VectorToAngles_Signs(a6),d0     ; 04706
         andi.b  #$5,d0                          ; 0470A
-        move.b  d0,-$a(a6)                      ; 0470E
+        move.b  d0,-$A(a6)                      ; 0470E
         subq.b  #$5,d0                          ; 04712
         bne.b   l_000_04726                     ; 04714
         move.l  #$3840,d0                       ; 04716
-        sub.l   -$12(a6),d0                     ; 0471C
-        move.l  d0,-$12(a6)                     ; 04720
+        sub.l   VectorToAngles_HeadingTo(a6),d0 ; 0471C
+        move.l  d0,VectorToAngles_HeadingTo(a6) ; 04720
         bra.b   l_000_0474C                     ; 04724
 l_000_04726:
-        cmpi.b  #$4,-$a(a6)                     ; 04726
+        cmpi.b  #$4,-$A(a6)                     ; 04726
         bne.b   l_000_04738                     ; 0472C
-        addi.l  #$3840,-$12(a6)                 ; 0472E
+        addi.l  #$3840,VectorToAngles_HeadingTo(a6) ; 0472E
         bra.b   l_000_0474C                     ; 04736
 l_000_04738:
-        tst.b   -$a(a6)                         ; 04738
+        tst.b   -$A(a6)                         ; 04738
         bne.b   l_000_0474C                     ; 0473C
         move.l  #$7080,d0                       ; 0473E
-        sub.l   -$12(a6),d0                     ; 04744
-        move.l  d0,-$12(a6)                     ; 04748
+        sub.l   VectorToAngles_HeadingTo(a6),d0 ; 04744
+        move.l  d0,VectorToAngles_HeadingTo(a6) ; 04748
 l_000_0474C:
-        move.w  -$18(a6),d0                     ; 0474C
+        move.w  VectorToAngles_Shift(a6),d0     ; 0474C
         ext.l   d0                              ; 04750
-        move.l  $18(a6),d1                      ; 04752
+        move.l  VectorToAngles_DZ(a6),d1        ; 04752
         asr.l   d0,d1                           ; 04756
         move.w  d1,-$8(a6)                      ; 04758
         muls.w  d1,d1                           ; 0475C
-        move.l  $10(a6),d2                      ; 0475E
+        move.l  VectorToAngles_DX(a6),d2        ; 0475E
         asr.l   d0,d2                           ; 04762
         move.w  d2,-$8(a6)                      ; 04764
         muls.w  d2,d2                           ; 04768
-        move.l  d1,-$16(a6)                     ; 0476A
+        move.l  d1,VectorToAngles_Largest(a6)   ; 0476A
         add.l   d2,d1                           ; 0476E
         move.l  d1,(AngleDistance).l            ; 04770
         jsr     (AngleBySize).l                 ; 04776
-        move.w  -$18(a6),d0                     ; 0477C
+        move.w  VectorToAngles_Shift(a6),d0     ; 0477C
         ext.l   d0                              ; 04780
-        move.l  $14(a6),d1                      ; 04782
+        move.l  VectorToAngles_DY(a6),d1        ; 04782
         asr.l   d0,d1                           ; 04786
         move.w  d1,-$2(a6)                      ; 04788
         ext.l   d1                              ; 0478C
@@ -341,10 +356,10 @@ l_000_0474C:
         move.w  (a0),d0                         ; 047CA
         ext.l   d0                              ; 047CC
         asl.l   #$3,d0                          ; 047CE
-        move.l  d0,-$e(a6)                      ; 047D0
+        move.l  d0,VectorToAngles_PitchTo(a6)   ; 047D0
         bra.b   l_000_04822                     ; 047D4
 l_000_047D6:
-        move.l  #$e10,-$e(a6)                   ; 047D6
+        move.l  #$e10,VectorToAngles_PitchTo(a6) ; 047D6
         bra.b   l_000_04822                     ; 047DE
 l_000_047E0:
         move.w  (AngleScratch).l,d0             ; 047E0
@@ -363,23 +378,23 @@ l_000_047E0:
         move.l  #$384,d1                        ; 04814
         sub.l   d0,d1                           ; 0481A
         asl.l   #$3,d1                          ; 0481C
-        move.l  d1,-$e(a6)                      ; 0481E
+        move.l  d1,VectorToAngles_PitchTo(a6)   ; 0481E
 l_000_04822:
-        btst    #$1,-$9(a6)                     ; 04822
+        btst    #$1,VectorToAngles_Signs(a6)    ; 04822
         bne.b   l_000_04838                     ; 04828
         move.l  #$7080,d0                       ; 0482A
-        sub.l   -$e(a6),d0                      ; 04830
-        move.l  d0,-$e(a6)                      ; 04834
+        sub.l   VectorToAngles_PitchTo(a6),d0   ; 04830
+        move.l  d0,VectorToAngles_PitchTo(a6)   ; 04834
 l_000_04838:
-        cmpi.l  #$7080,-$e(a6)                  ; 04838
+        cmpi.l  #$7080,VectorToAngles_PitchTo(a6) ; 04838
         blt.b   l_000_04846                     ; 04840
-        clr.l   -$e(a6)                         ; 04842
+        clr.l   VectorToAngles_PitchTo(a6)      ; 04842
 l_000_04846:
-        cmpi.l  #$7080,-$12(a6)                 ; 04846
+        cmpi.l  #$7080,VectorToAngles_HeadingTo(a6) ; 04846
         blt.b   l_000_04854                     ; 0484E
-        clr.l   -$12(a6)                        ; 04850
+        clr.l   VectorToAngles_HeadingTo(a6)    ; 04850
 l_000_04854:
-        tst.l   $1c(a6)                         ; 04854
+        tst.l   VectorToAngles_MaxTurn(a6)      ; 04854
         bmi.b   l_000_0486C                     ; 04858
         move.b  (CameraSequence).l,d0           ; 0485A
         move.b  (AnglesSet).l,d1                ; 04860
@@ -388,181 +403,181 @@ l_000_04854:
         bne.b   l_000_04884                     ; 0486A
 l_000_0486C:
         move.b  #$1,(AnglesSet).l               ; 0486C
-        move.l  -$e(a6),$8(a6)                  ; 04874
-        move.l  -$12(a6),$c(a6)                 ; 0487A
+        move.l  VectorToAngles_PitchTo(a6),VectorToAngles_Pitch(a6) ; 04874
+        move.l  VectorToAngles_HeadingTo(a6),VectorToAngles_Heading(a6) ; 0487A
         bra.w   l_000_04A84                     ; 04880
 l_000_04884:
-        move.l  -$e(a6),d0                      ; 04884
-        sub.l   $8(a6),d0                       ; 04888
-        move.l  d0,-$e(a6)                      ; 0488C
+        move.l  VectorToAngles_PitchTo(a6),d0   ; 04884
+        sub.l   VectorToAngles_Pitch(a6),d0     ; 04888
+        move.l  d0,VectorToAngles_PitchTo(a6)   ; 0488C
         tst.l   d0                              ; 04890
         bpl.b   l_000_0490E                     ; 04892
         cmpi.l  #$ffffc7c0,d0                   ; 04894
         bge.b   l_000_048E6                     ; 0489A
         addi.l  #$7080,d0                       ; 0489C
         moveq   #$0,d1                          ; 048A2
-        move.w  -$1c(a6),d1                     ; 048A4
+        move.w  VectorToAngles_Ease(a6),d1      ; 048A4
         asr.l   d1,d0                           ; 048A8
-        move.l  d0,-$e(a6)                      ; 048AA
-        move.l  $1c(a6),d1                      ; 048AE
+        move.l  d0,VectorToAngles_PitchTo(a6)   ; 048AA
+        move.l  VectorToAngles_MaxTurn(a6),d1   ; 048AE
         cmp.l   d1,d0                           ; 048B2
         ble.b   l_000_048BA                     ; 048B4
-        move.l  d1,-$e(a6)                      ; 048B6
+        move.l  d1,VectorToAngles_PitchTo(a6)   ; 048B6
 l_000_048BA:
-        move.l  -$e(a6),d0                      ; 048BA
-        add.l   $8(a6),d0                       ; 048BE
-        move.l  d0,-$e(a6)                      ; 048C2
+        move.l  VectorToAngles_PitchTo(a6),d0   ; 048BA
+        add.l   VectorToAngles_Pitch(a6),d0     ; 048BE
+        move.l  d0,VectorToAngles_PitchTo(a6)   ; 048C2
         cmpi.l  #$7080,d0                       ; 048C6
         blt.b   l_000_048DC                     ; 048CC
         subi.l  #$7080,d0                       ; 048CE
-        move.l  d0,$8(a6)                       ; 048D4
+        move.l  d0,VectorToAngles_Pitch(a6)     ; 048D4
         bra.w   l_000_04984                     ; 048D8
 l_000_048DC:
-        move.l  -$e(a6),$8(a6)                  ; 048DC
+        move.l  VectorToAngles_PitchTo(a6),VectorToAngles_Pitch(a6) ; 048DC
         bra.w   l_000_04984                     ; 048E2
 l_000_048E6:
-        move.l  -$e(a6),d0                      ; 048E6
+        move.l  VectorToAngles_PitchTo(a6),d0   ; 048E6
         neg.l   d0                              ; 048EA
         moveq   #$0,d1                          ; 048EC
-        move.w  -$1c(a6),d1                     ; 048EE
+        move.w  VectorToAngles_Ease(a6),d1      ; 048EE
         asr.l   d1,d0                           ; 048F2
-        move.l  d0,-$e(a6)                      ; 048F4
-        move.l  $1c(a6),d1                      ; 048F8
+        move.l  d0,VectorToAngles_PitchTo(a6)   ; 048F4
+        move.l  VectorToAngles_MaxTurn(a6),d1   ; 048F8
         cmp.l   d1,d0                           ; 048FC
         ble.b   l_000_04904                     ; 048FE
-        move.l  d1,-$e(a6)                      ; 04900
+        move.l  d1,VectorToAngles_PitchTo(a6)   ; 04900
 l_000_04904:
-        move.l  -$e(a6),d0                      ; 04904
-        sub.l   d0,$8(a6)                       ; 04908
+        move.l  VectorToAngles_PitchTo(a6),d0   ; 04904
+        sub.l   d0,VectorToAngles_Pitch(a6)     ; 04908
         bra.b   l_000_04984                     ; 0490C
 l_000_0490E:
-        move.l  -$e(a6),d0                      ; 0490E
+        move.l  VectorToAngles_PitchTo(a6),d0   ; 0490E
         cmpi.l  #$3840,d0                       ; 04912
         ble.b   l_000_04960                     ; 04918
         move.l  #$7080,d1                       ; 0491A
         sub.l   d0,d1                           ; 04920
         moveq   #$0,d0                          ; 04922
-        move.w  -$1c(a6),d0                     ; 04924
+        move.w  VectorToAngles_Ease(a6),d0      ; 04924
         asr.l   d0,d1                           ; 04928
-        move.l  d1,-$e(a6)                      ; 0492A
-        move.l  $1c(a6),d0                      ; 0492E
+        move.l  d1,VectorToAngles_PitchTo(a6)   ; 0492A
+        move.l  VectorToAngles_MaxTurn(a6),d0   ; 0492E
         cmp.l   d0,d1                           ; 04932
         ble.b   l_000_0493A                     ; 04934
-        move.l  d0,-$e(a6)                      ; 04936
+        move.l  d0,VectorToAngles_PitchTo(a6)   ; 04936
 l_000_0493A:
-        move.l  -$e(a6),d0                      ; 0493A
-        move.l  $8(a6),d1                       ; 0493E
+        move.l  VectorToAngles_PitchTo(a6),d0   ; 0493A
+        move.l  VectorToAngles_Pitch(a6),d1     ; 0493E
         sub.l   d0,d1                           ; 04942
-        move.l  d1,-$e(a6)                      ; 04944
+        move.l  d1,VectorToAngles_PitchTo(a6)   ; 04944
         tst.l   d1                              ; 04948
         bpl.b   l_000_04958                     ; 0494A
         addi.l  #$7080,d1                       ; 0494C
-        move.l  d1,$8(a6)                       ; 04952
+        move.l  d1,VectorToAngles_Pitch(a6)     ; 04952
         bra.b   l_000_04984                     ; 04956
 l_000_04958:
-        move.l  -$e(a6),$8(a6)                  ; 04958
+        move.l  VectorToAngles_PitchTo(a6),VectorToAngles_Pitch(a6) ; 04958
         bra.b   l_000_04984                     ; 0495E
 l_000_04960:
         moveq   #$0,d0                          ; 04960
-        move.w  -$1c(a6),d0                     ; 04962
-        move.l  -$e(a6),d1                      ; 04966
+        move.w  VectorToAngles_Ease(a6),d0      ; 04962
+        move.l  VectorToAngles_PitchTo(a6),d1   ; 04966
         asr.l   d0,d1                           ; 0496A
-        move.l  d1,-$e(a6)                      ; 0496C
-        move.l  $1c(a6),d0                      ; 04970
+        move.l  d1,VectorToAngles_PitchTo(a6)   ; 0496C
+        move.l  VectorToAngles_MaxTurn(a6),d0   ; 04970
         cmp.l   d0,d1                           ; 04974
         ble.b   l_000_0497C                     ; 04976
-        move.l  d0,-$e(a6)                      ; 04978
+        move.l  d0,VectorToAngles_PitchTo(a6)   ; 04978
 l_000_0497C:
-        move.l  -$e(a6),d0                      ; 0497C
-        add.l   d0,$8(a6)                       ; 04980
+        move.l  VectorToAngles_PitchTo(a6),d0   ; 0497C
+        add.l   d0,VectorToAngles_Pitch(a6)     ; 04980
 l_000_04984:
-        move.l  -$12(a6),d0                     ; 04984
-        sub.l   $c(a6),d0                       ; 04988
-        move.l  d0,-$12(a6)                     ; 0498C
+        move.l  VectorToAngles_HeadingTo(a6),d0 ; 04984
+        sub.l   VectorToAngles_Heading(a6),d0   ; 04988
+        move.l  d0,VectorToAngles_HeadingTo(a6) ; 0498C
         tst.l   d0                              ; 04990
         bpl.b   l_000_04A0E                     ; 04992
         cmpi.l  #$ffffc7c0,d0                   ; 04994
         bge.b   l_000_049E6                     ; 0499A
         addi.l  #$7080,d0                       ; 0499C
         moveq   #$0,d1                          ; 049A2
-        move.w  -$1c(a6),d1                     ; 049A4
+        move.w  VectorToAngles_Ease(a6),d1      ; 049A4
         asr.l   d1,d0                           ; 049A8
-        move.l  d0,-$12(a6)                     ; 049AA
-        move.l  $1c(a6),d1                      ; 049AE
+        move.l  d0,VectorToAngles_HeadingTo(a6) ; 049AA
+        move.l  VectorToAngles_MaxTurn(a6),d1   ; 049AE
         cmp.l   d1,d0                           ; 049B2
         ble.b   l_000_049BA                     ; 049B4
-        move.l  d1,-$12(a6)                     ; 049B6
+        move.l  d1,VectorToAngles_HeadingTo(a6) ; 049B6
 l_000_049BA:
-        move.l  -$12(a6),d0                     ; 049BA
-        add.l   $c(a6),d0                       ; 049BE
-        move.l  d0,-$12(a6)                     ; 049C2
+        move.l  VectorToAngles_HeadingTo(a6),d0 ; 049BA
+        add.l   VectorToAngles_Heading(a6),d0   ; 049BE
+        move.l  d0,VectorToAngles_HeadingTo(a6) ; 049C2
         cmpi.l  #$7080,d0                       ; 049C6
         blt.b   l_000_049DC                     ; 049CC
         subi.l  #$7080,d0                       ; 049CE
-        move.l  d0,$c(a6)                       ; 049D4
+        move.l  d0,VectorToAngles_Heading(a6)   ; 049D4
         bra.w   l_000_04A84                     ; 049D8
 l_000_049DC:
-        move.l  -$12(a6),$c(a6)                 ; 049DC
+        move.l  VectorToAngles_HeadingTo(a6),VectorToAngles_Heading(a6) ; 049DC
         bra.w   l_000_04A84                     ; 049E2
 l_000_049E6:
-        move.l  -$12(a6),d0                     ; 049E6
+        move.l  VectorToAngles_HeadingTo(a6),d0 ; 049E6
         neg.l   d0                              ; 049EA
         moveq   #$0,d1                          ; 049EC
-        move.w  -$1c(a6),d1                     ; 049EE
+        move.w  VectorToAngles_Ease(a6),d1      ; 049EE
         asr.l   d1,d0                           ; 049F2
-        move.l  d0,-$12(a6)                     ; 049F4
-        move.l  $1c(a6),d1                      ; 049F8
+        move.l  d0,VectorToAngles_HeadingTo(a6) ; 049F4
+        move.l  VectorToAngles_MaxTurn(a6),d1   ; 049F8
         cmp.l   d1,d0                           ; 049FC
         ble.b   l_000_04A04                     ; 049FE
-        move.l  d1,-$12(a6)                     ; 04A00
+        move.l  d1,VectorToAngles_HeadingTo(a6) ; 04A00
 l_000_04A04:
-        move.l  -$12(a6),d0                     ; 04A04
-        sub.l   d0,$c(a6)                       ; 04A08
+        move.l  VectorToAngles_HeadingTo(a6),d0 ; 04A04
+        sub.l   d0,VectorToAngles_Heading(a6)   ; 04A08
         bra.b   l_000_04A84                     ; 04A0C
 l_000_04A0E:
-        move.l  -$12(a6),d0                     ; 04A0E
+        move.l  VectorToAngles_HeadingTo(a6),d0 ; 04A0E
         cmpi.l  #$3840,d0                       ; 04A12
         ble.b   l_000_04A60                     ; 04A18
         move.l  #$7080,d1                       ; 04A1A
         sub.l   d0,d1                           ; 04A20
         moveq   #$0,d0                          ; 04A22
-        move.w  -$1c(a6),d0                     ; 04A24
+        move.w  VectorToAngles_Ease(a6),d0      ; 04A24
         asr.l   d0,d1                           ; 04A28
-        move.l  d1,-$12(a6)                     ; 04A2A
-        move.l  $1c(a6),d0                      ; 04A2E
+        move.l  d1,VectorToAngles_HeadingTo(a6) ; 04A2A
+        move.l  VectorToAngles_MaxTurn(a6),d0   ; 04A2E
         cmp.l   d0,d1                           ; 04A32
         ble.b   l_000_04A3A                     ; 04A34
-        move.l  d0,-$12(a6)                     ; 04A36
+        move.l  d0,VectorToAngles_HeadingTo(a6) ; 04A36
 l_000_04A3A:
-        move.l  -$12(a6),d0                     ; 04A3A
-        move.l  $c(a6),d1                       ; 04A3E
+        move.l  VectorToAngles_HeadingTo(a6),d0 ; 04A3A
+        move.l  VectorToAngles_Heading(a6),d1   ; 04A3E
         sub.l   d0,d1                           ; 04A42
-        move.l  d1,-$12(a6)                     ; 04A44
+        move.l  d1,VectorToAngles_HeadingTo(a6) ; 04A44
         tst.l   d1                              ; 04A48
         bpl.b   l_000_04A58                     ; 04A4A
         addi.l  #$7080,d1                       ; 04A4C
-        move.l  d1,$c(a6)                       ; 04A52
+        move.l  d1,VectorToAngles_Heading(a6)   ; 04A52
         bra.b   l_000_04A84                     ; 04A56
 l_000_04A58:
-        move.l  -$12(a6),$c(a6)                 ; 04A58
+        move.l  VectorToAngles_HeadingTo(a6),VectorToAngles_Heading(a6) ; 04A58
         bra.b   l_000_04A84                     ; 04A5E
 l_000_04A60:
         moveq   #$0,d0                          ; 04A60
-        move.w  -$1c(a6),d0                     ; 04A62
-        move.l  -$12(a6),d1                     ; 04A66
+        move.w  VectorToAngles_Ease(a6),d0      ; 04A62
+        move.l  VectorToAngles_HeadingTo(a6),d1 ; 04A66
         asr.l   d0,d1                           ; 04A6A
-        move.l  d1,-$12(a6)                     ; 04A6C
-        move.l  $1c(a6),d0                      ; 04A70
+        move.l  d1,VectorToAngles_HeadingTo(a6) ; 04A6C
+        move.l  VectorToAngles_MaxTurn(a6),d0   ; 04A70
         cmp.l   d0,d1                           ; 04A74
         ble.b   l_000_04A7C                     ; 04A76
-        move.l  d0,-$12(a6)                     ; 04A78
+        move.l  d0,VectorToAngles_HeadingTo(a6) ; 04A78
 l_000_04A7C:
-        move.l  -$12(a6),d0                     ; 04A7C
-        add.l   d0,$c(a6)                       ; 04A80
+        move.l  VectorToAngles_HeadingTo(a6),d0 ; 04A7C
+        add.l   d0,VectorToAngles_Heading(a6)   ; 04A80
 l_000_04A84:
-        move.l  $8(a6),d0                       ; 04A84
+        move.l  VectorToAngles_Pitch(a6),d0     ; 04A84
         move.w  d0,(TargetPitch).l              ; 04A88
-        move.l  $c(a6),d0                       ; 04A8E
+        move.l  VectorToAngles_Heading(a6),d0   ; 04A8E
         move.w  d0,(TargetHeading).l            ; 04A92
         movem.l (a7)+,d2                        ; 04A98
         unlk    a6                              ; 04A9C

@@ -14,15 +14,23 @@
 ; ($C560 for the original picture: only then does the title sequence play) and keeps the panel
 ; and front pictures' sums too.
 ;-------------------------------------------------------------------------------
+; ChecksumPlanes's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+ChecksumPlanes_Plane0   rs.l    1               ; the four bitplanes
+ChecksumPlanes_Plane1   rs.l    1
+ChecksumPlanes_Plane2   rs.l    1
+ChecksumPlanes_Plane3   rs.l    1
+ChecksumPlanes_Width    rs.l    1               ; in pixels
+ChecksumPlanes_Height   rs.l    1               ; in rows
 ChecksumPlanes:
         link.w  a6,#$0                          ; 00000
-        movea.l $8(a6),a0                       ; 00004
-        movea.l $c(a6),a1                       ; 00008
-        movea.l $10(a6),a2                      ; 0000C
-        movea.l $14(a6),a3                      ; 00010
-        move.l  $18(a6),d1                      ; 00014
+        movea.l ChecksumPlanes_Plane0(a6),a0    ; 00004
+        movea.l ChecksumPlanes_Plane1(a6),a1    ; 00008
+        movea.l ChecksumPlanes_Plane2(a6),a2    ; 0000C
+        movea.l ChecksumPlanes_Plane3(a6),a3    ; 00010
+        move.l  ChecksumPlanes_Width(a6),d1     ; 00014
         lsr.w   #$4,d1                          ; 00018
-        move.l  $1c(a6),d2                      ; 0001A
+        move.l  ChecksumPlanes_Height(a6),d2    ; 0001A
         mulu.w  d2,d1                           ; 0001E
         subq.w  #$1,d1                          ; 00020
         move.w  d1,d2                           ; 00022
@@ -197,19 +205,24 @@ PutNumber:
 ; SetTextPage - SetTextPage(group, slot, index): puts the text page TextGroups[group-3] [index]
 ; into TextPages[slot].
 ;-------------------------------------------------------------------------------
+; SetTextPage's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+SetTextPage_Group       rs.l    1               ; the text group (3 and up)
+SetTextPage_Slot        rs.l    1               ; the slot in TextPages
+SetTextPage_Index       rs.l    1               ; the page in the group
 SetTextPage:
         link.w  a6,#$0                          ; 001F4
         lea.l   (TextPageTable).l,a0            ; 001F8
         lea.l   (TextGroups).l,a1               ; 001FE
-        move.l  $8(a6),d0                       ; 00204
+        move.l  SetTextPage_Group(a6),d0        ; 00204
         subq.w  #$3,d0                          ; 00208
         add.w   d0,d0                           ; 0020A
         lea.l   (a0),a2                         ; 0020C
         adda.w  (a1,d0.w),a2                    ; 0020E
-        move.l  $10(a6),d0                      ; 00212
+        move.l  SetTextPage_Index(a6),d0        ; 00212
         add.w   d0,d0                           ; 00216
         move.w  (a2,d0.w),d1                    ; 00218
-        move.l  $c(a6),d0                       ; 0021C
+        move.l  SetTextPage_Slot(a6),d0         ; 0021C
         add.w   d0,d0                           ; 00220
         lea.l   (TextPages).l,a2                ; 00222
         move.w  d1,(a2,d0.w)                    ; 00228

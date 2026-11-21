@@ -11,33 +11,36 @@
 ; DrawBullet - Draws a bullet (its number on the stack) as an orange point (colour 9) at its
 ; place relative to the camera.
 ;-------------------------------------------------------------------------------
+; DrawBullet's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+DrawBullet_Bullet       rs.l    1               ; the bullet's number
 DrawBullet:
         link.w  a6,#$ffc2                       ; 00000
-        move.l  $8(a6),d0                       ; 00004
+        move.l  DrawBullet_Bullet(a6),d0        ; 00004
         asl.w   #$6,d0                          ; 00008
         lea.l   (Bullets).l,a3                  ; 0000A
         adda.w  d0,a3                           ; 00010
         move.w  #$9,(DrawColour).l              ; 00012
 l_031_0001A:
-        move.w  $30(a3),d3                      ; 0001A
+        move.w  blt_CellX(a3),d3                ; 0001A
         sub.w   (ViewCellX).l,d3                ; 0001E
         asl.w   #$8,d3                          ; 00024
         asl.w   #$6,d3                          ; 00026
         ext.l   d3                              ; 00028
-        move.w  $32(a3),d5                      ; 0002A
+        move.w  blt_CellZ(a3),d5                ; 0002A
         sub.w   (ViewCellZ).l,d5                ; 0002E
         asl.w   #$8,d5                          ; 00034
         asl.w   #$6,d5                          ; 00036
         ext.l   d5                              ; 00038
-        move.l  $0(a3),d4                       ; 0003A
+        move.l  blt_X(a3),d4                    ; 0003A
         asr.l   #$8,d4                          ; 0003E
         add.w   d4,d3                           ; 00040
         add.w   (ViewOffsetX8).l,d3             ; 00042
-        move.l  $8(a3),d4                       ; 00048
+        move.l  blt_Z(a3),d4                    ; 00048
         asr.l   #$8,d4                          ; 0004C
         add.w   d4,d5                           ; 0004E
         add.w   (ViewOffsetZ8).l,d5             ; 00050
-        move.l  $4(a3),d4                       ; 00056
+        move.l  blt_Y(a3),d4                    ; 00056
         add.l   (ViewOffsetY).l,d4              ; 0005A
         asr.l   #$8,d4                          ; 00060
         bsr.w   TurnToView                      ; 00062
@@ -59,33 +62,36 @@ l_031_00084:
 ; DrawBulletSmoke - Draws a bullet's smoke: a grey puff (colour 13) growing as its timer (+$28)
 ; runs down from $3A, at most 12 (DrawPuff).
 ;-------------------------------------------------------------------------------
+; DrawBulletSmoke's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+DrawBulletSmoke_Bullet  rs.l    1               ; the bullet's number
 DrawBulletSmoke:
         link.w  a6,#$ffc2                       ; 00088
-        move.l  $8(a6),d0                       ; 0008C
+        move.l  DrawBulletSmoke_Bullet(a6),d0   ; 0008C
         asl.w   #$6,d0                          ; 00090
         lea.l   (Bullets).l,a3                  ; 00092
         adda.w  d0,a3                           ; 00098
         move.w  #$d,(DrawColour).l              ; 0009A
-        cmpi.w  #$3a,$28(a3)                    ; 000A2
+        cmpi.w  #$3a,blt_Timer(a3)              ; 000A2
         bgt.w   l_031_0001A                     ; 000A8
-        move.w  $30(a3),d3                      ; 000AC
+        move.w  blt_CellX(a3),d3                ; 000AC
         sub.w   (ViewCellX).l,d3                ; 000B0
         asl.w   #$8,d3                          ; 000B6
         asl.w   #$6,d3                          ; 000B8
         ext.l   d3                              ; 000BA
-        move.w  $32(a3),d5                      ; 000BC
+        move.w  blt_CellZ(a3),d5                ; 000BC
         sub.w   (ViewCellZ).l,d5                ; 000C0
         asl.w   #$8,d5                          ; 000C6
         asl.w   #$6,d5                          ; 000C8
         ext.l   d5                              ; 000CA
-        movem.l $0(a3),d0-d2                    ; 000CC
+        movem.l blt_X(a3),d0-d2                 ; 000CC
         asr.l   #$8,d0                          ; 000D2
         asr.l   #$8,d1                          ; 000D4
         asr.l   #$8,d2                          ; 000D6
         add.l   d3,d0                           ; 000D8
         add.l   d5,d2                           ; 000DA
         moveq   #$3a,d3                         ; 000DC
-        sub.w   $28(a3),d3                      ; 000DE
+        sub.w   blt_Timer(a3),d3                ; 000DE
         cmpi.w  #$c,d3                          ; 000E2
         ble.b   l_031_000EA                     ; 000E6
         moveq   #$c,d3                          ; 000E8
@@ -99,35 +105,38 @@ l_031_000EA:
 ; DrawBulletHit - Draws a bullet's hit: three small orange 3D crosses (DrawBulletHitData1) round
 ; where it struck.
 ;-------------------------------------------------------------------------------
+; DrawBulletHit's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+DrawBulletHit_Bullet    rs.l    1               ; the bullet's number
 DrawBulletHit:
         link.w  a6,#$ffc2                       ; 000F4
-        move.l  $8(a6),d0                       ; 000F8
+        move.l  DrawBulletHit_Bullet(a6),d0     ; 000F8
         asl.w   #$6,d0                          ; 000FC
         lea.l   (Bullets).l,a3                  ; 000FE
         adda.w  d0,a3                           ; 00104
-        move.w  $30(a3),d3                      ; 00106
+        move.w  blt_CellX(a3),d3                ; 00106
         sub.w   (ViewCellX).l,d3                ; 0010A
         asl.w   #$8,d3                          ; 00110
         asl.w   #$6,d3                          ; 00112
         ext.l   d3                              ; 00114
-        move.w  $32(a3),d5                      ; 00116
+        move.w  blt_CellZ(a3),d5                ; 00116
         sub.w   (ViewCellZ).l,d5                ; 0011A
         asl.w   #$8,d5                          ; 00120
         asl.w   #$6,d5                          ; 00122
         ext.l   d5                              ; 00124
-        move.l  $0(a3),d4                       ; 00126
+        move.l  blt_X(a3),d4                    ; 00126
         asr.l   #$8,d4                          ; 0012A
         add.w   d4,d3                           ; 0012C
         add.w   (ViewOffsetX8).l,d3             ; 0012E
-        move.l  $8(a3),d4                       ; 00134
+        move.l  blt_Z(a3),d4                    ; 00134
         asr.l   #$8,d4                          ; 00138
         add.w   d4,d5                           ; 0013A
         add.w   (ViewOffsetZ8).l,d5             ; 0013C
-        move.l  $4(a3),d4                       ; 00142
+        move.l  blt_Y(a3),d4                    ; 00142
         add.l   (ViewOffsetY).l,d4              ; 00146
         asr.l   #$8,d4                          ; 0014C
         movem.w d3-d5,-$8(a6)                   ; 0014E
-        move.w  #$3,-$a(a6)                     ; 00154
+        move.w  #$3,-$A(a6)                     ; 00154
         move.w  #$f,(FillPattern).l             ; 0015A
         move.w  #$ffff,(DrawXor).l              ; 00162
         clr.l   (FillPattern2).l                ; 0016A
@@ -151,7 +160,7 @@ l_031_0018C:
         move.l  a2,-(a7)                        ; 001AA
         jsr     (ProjectDrawLine).l             ; 001AC
         movea.l (a7)+,a2                        ; 001B2
-        subq.w  #$1,-$a(a6)                     ; 001B4
+        subq.w  #$1,-$A(a6)                     ; 001B4
         bgt.b   l_031_00186                     ; 001B8
         unlk    a6                              ; 001BA
         rts                                     ; 001BC

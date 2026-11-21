@@ -1907,15 +1907,15 @@ l_017_017D8:
         adda.w  d1,a3                           ; 017E4
         moveq   #$0,d3                          ; 017E6
         moveq   #$0,d5                          ; 017E8
-        move.w  $30(a3),d3                      ; 017EA
-        move.w  $32(a3),d5                      ; 017EE
+        move.w  blt_CellX(a3),d3                ; 017EA
+        move.w  blt_CellZ(a3),d5                ; 017EE
         move.w  d3,$2c(a1)                      ; 017F2
         move.w  d5,$2e(a1)                      ; 017F6
         asl.w   #$6,d3                          ; 017FA
         asl.w   #$6,d5                          ; 017FC
         swap    d3                              ; 017FE
         swap    d5                              ; 01800
-        movem.l $0(a3),d0-d2                    ; 01802
+        movem.l blt_X(a3),d0-d2                 ; 01802
         add.l   d0,d3                           ; 01808
         add.l   d2,d5                           ; 0180A
         move.l  d1,d4                           ; 0180C
