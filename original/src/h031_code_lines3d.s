@@ -136,7 +136,7 @@ DrawBulletHit:
         add.l   (ViewOffsetY).l,d4              ; 00146
         asr.l   #$8,d4                          ; 0014C
         movem.w d3-d5,-$8(a6)                   ; 0014E
-        move.w  #$3,-$A(a6)                     ; 00154
+        move.w  #$3,-$a(a6)                     ; 00154
         move.w  #$f,(FillPattern).l             ; 0015A
         move.w  #$ffff,(DrawXor).l              ; 00162
         clr.l   (FillPattern2).l                ; 0016A
@@ -160,7 +160,7 @@ l_031_0018C:
         move.l  a2,-(a7)                        ; 001AA
         jsr     (ProjectDrawLine).l             ; 001AC
         movea.l (a7)+,a2                        ; 001B2
-        subq.w  #$1,-$A(a6)                     ; 001B4
+        subq.w  #$1,-$a(a6)                     ; 001B4
         bgt.b   l_031_00186                     ; 001B8
         unlk    a6                              ; 001BA
         rts                                     ; 001BC

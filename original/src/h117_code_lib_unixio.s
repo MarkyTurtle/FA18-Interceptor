@@ -58,11 +58,13 @@ l_117_0004A:
 open_Name               rs.l    1               ; the file's name
 open_Mode               rs.l    1               ; O_RDONLY, O_WRONLY, O_RDWR, with O_CREAT, O_TRUNC, O_APPEND...
 open_Prot               rs.l    1               ; the protection (not used)
+open_FD                 equ     -$4             ; the file number (the _ufbs entry)
+open_DOSMode            equ     -$8             ; MODE_OLDFILE or MODE_NEWFILE
 open:
         link.w  a6,#$fff4                       ; 00064
-        clr.l   -$4(a6)                         ; 00068
+        clr.l   open_FD(a6)                     ; 00068
 l_117_0006C:
-        move.l  -$4(a6),d0                      ; 0006C
+        move.l  open_FD(a6),d0                  ; 0006C
         cmp.l   (_nufbs).l,d0                   ; 00070
         bge.b   l_117_00094                     ; 00076
         moveq   #$6,d1                          ; 00078
@@ -72,10 +74,10 @@ l_117_0006C:
         move.b  (a0),d0                         ; 00088
         tst.b   d0                              ; 0008A
         beq.b   l_117_00094                     ; 0008C
-        addq.l  #$1,-$4(a6)                     ; 0008E
+        addq.l  #$1,open_FD(a6)                 ; 0008E
         bra.b   l_117_0006C                     ; 00092
 l_117_00094:
-        move.l  -$4(a6),d0                      ; 00094
+        move.l  open_FD(a6),d0                  ; 00094
         cmp.l   (_nufbs).l,d0                   ; 00098
         bne.b   l_117_000AE                     ; 0009E
         moveq   #$18,d0                         ; 000A0
@@ -84,7 +86,7 @@ l_117_00094:
         unlk    a6                              ; 000AA
         rts                                     ; 000AC
 l_117_000AE:
-        move.l  -$4(a6),d0                      ; 000AE
+        move.l  open_FD(a6),d0                  ; 000AE
         moveq   #$6,d1                          ; 000B2
         jsr     (CXM33).l                       ; 000B4
         movea.l d0,a0                           ; 000BA
@@ -94,7 +96,7 @@ l_117_000AE:
         move.l  open_Mode(a6),d1                ; 000CE
         eor.l   d1,d0                           ; 000D2
         move.l  d0,open_Mode(a6)                ; 000D4
-        move.l  a0,-$C(a6)                      ; 000D8
+        move.l  a0,-$c(a6)                      ; 000D8
         btst    #$f,d0                          ; 000DC
         beq.b   l_117_000E6                     ; 000E0
         moveq   #$10,d0                         ; 000E2
@@ -103,7 +105,7 @@ l_117_000E6:
         moveq   #$0,d0                          ; 000E6
 l_117_000E8:
         ori.l   #$80,d0                         ; 000E8
-        movea.l -$C(a6),a0                      ; 000EE
+        movea.l -$c(a6),a0                      ; 000EE
         move.b  d0,(a0)                         ; 000F2
         move.l  open_Mode(a6),d0                ; 000F4
         andi.l  #$3,d0                          ; 000F8
@@ -113,7 +115,7 @@ l_117_000E8:
         beq.b   l_117_00120                     ; 0010C
         tst.l   d0                              ; 0010E
         bne.b   l_117_00164                     ; 00110
-        movea.l -$C(a6),a0                      ; 00112
+        movea.l -$c(a6),a0                      ; 00112
         move.b  (a0),d0                         ; 00116
         ori.b   #$40,d0                         ; 00118
         move.b  d0,(a0)                         ; 0011C
@@ -128,7 +130,7 @@ l_117_0012C:
 l_117_0012E:
         ori.l   #$20,d0                         ; 0012E
         moveq   #$0,d1                          ; 00134
-        movea.l -$C(a6),a0                      ; 00136
+        movea.l -$c(a6),a0                      ; 00136
         move.b  (a0),d1                         ; 0013A
         or.l    d0,d1                           ; 0013C
         move.b  d1,(a0)                         ; 0013E
@@ -143,13 +145,13 @@ l_117_0014E:
 l_117_00150:
         ori.l   #$60,d0                         ; 00150
         moveq   #$0,d1                          ; 00156
-        movea.l -$C(a6),a0                      ; 00158
+        movea.l -$c(a6),a0                      ; 00158
         move.b  (a0),d1                         ; 0015C
         or.l    d0,d1                           ; 0015E
         move.b  d1,(a0)                         ; 00160
         bra.b   l_117_00178                     ; 00162
 l_117_00164:
-        movea.l -$C(a6),a0                      ; 00164
+        movea.l -$c(a6),a0                      ; 00164
         clr.b   (a0)                            ; 00168
         moveq   #$16,d0                         ; 0016A
         move.l  d0,(errno).l                    ; 0016C
@@ -167,16 +169,16 @@ l_117_0018C:
         andi.l  #$300,d0                        ; 00190
         tst.l   d0                              ; 00196
         beq.b   l_117_001A4                     ; 00198
-        move.l  #$3ee,-$8(a6)                   ; 0019A
+        move.l  #MODE_NEWFILE,open_DOSMode(a6)  ; 0019A
         bra.b   l_117_001AC                     ; 001A2
 l_117_001A4:
-        move.l  #$3ed,-$8(a6)                   ; 001A4
+        move.l  #MODE_OLDFILE,open_DOSMode(a6)  ; 001A4
 l_117_001AC:
-        move.l  -$8(a6),-(a7)                   ; 001AC
+        move.l  open_DOSMode(a6),-(a7)          ; 001AC
         move.l  open_Name(a6),-(a7)             ; 001B0
         jsr     (_Open).l                       ; 001B4
         addq.l  #$8,a7                          ; 001BA
-        movea.l -$C(a6),a0                      ; 001BC
+        movea.l -$c(a6),a0                      ; 001BC
         move.l  d0,$2(a0)                       ; 001C0
         tst.l   d0                              ; 001C4
         bne.b   l_117_001E8                     ; 001C6
@@ -184,13 +186,13 @@ l_117_001AC:
         move.l  d0,(_OSERR).l                   ; 001CE
         moveq   #$2,d0                          ; 001D4
         move.l  d0,(errno).l                    ; 001D6
-        movea.l -$C(a6),a0                      ; 001DC
+        movea.l -$c(a6),a0                      ; 001DC
         clr.b   (a0)                            ; 001E0
         moveq   #-1,d0                          ; 001E2
         unlk    a6                              ; 001E4
         rts                                     ; 001E6
 l_117_001E8:
-        move.l  -$4(a6),d0                      ; 001E8
+        move.l  open_FD(a6),d0                  ; 001E8
         unlk    a6                              ; 001EC
         rts                                     ; 001EE
 

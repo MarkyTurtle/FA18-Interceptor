@@ -37,6 +37,9 @@ malloc:
 ; _malloc's frame: arguments from 8(a6), locals below a6 (after its link)
                 rsset   8
 _malloc_Size            rs.l    1               ; the bytes wanted
+_malloc_Block           equ     -$4             ; the free block looked at
+_malloc_Prev            equ     -$8             ; the one before it
+_malloc_Units           equ     -$10            ; the size wanted, in 8-byte units
 _malloc:
         link.w  a6,#$ffec                       ; 00026
         tst.l   _malloc_Size(a6)                ; 0002A
@@ -49,44 +52,44 @@ l_126_00036:
         addq.l  #$7,d0                          ; 0003A
         moveq   #$8,d1                          ; 0003C
         jsr     (CXD33).l                       ; 0003E
-        move.l  #RbrkData6,-$8(a6)              ; 00044
-        movea.l -$8(a6),a0                      ; 0004C
-        move.l  (a0),-$4(a6)                    ; 00050
-        move.l  d0,-$10(a6)                     ; 00054
+        move.l  #RbrkData6,_malloc_Prev(a6)     ; 00044
+        movea.l _malloc_Prev(a6),a0             ; 0004C
+        move.l  (a0),_malloc_Block(a6)          ; 00050
+        move.l  d0,_malloc_Units(a6)            ; 00054
 l_126_00058:
-        tst.l   -$4(a6)                         ; 00058
+        tst.l   _malloc_Block(a6)               ; 00058
         beq.b   l_126_000B4                     ; 0005C
-        move.l  -$10(a6),d0                     ; 0005E
-        movea.l -$4(a6),a0                      ; 00062
+        move.l  _malloc_Units(a6),d0            ; 0005E
+        movea.l _malloc_Block(a6),a0            ; 00062
         move.l  $4(a0),d1                       ; 00066
         cmp.l   d0,d1                           ; 0006A
         bcs.b   l_126_000A4                     ; 0006C
         cmp.l   d0,d1                           ; 0006E
         bne.b   l_126_0007A                     ; 00070
-        movea.l -$8(a6),a1                      ; 00072
+        movea.l _malloc_Prev(a6),a1             ; 00072
         move.l  (a0),(a1)                       ; 00076
         bra.b   l_126_00090                     ; 00078
 l_126_0007A:
-        movea.l -$4(a6),a0                      ; 0007A
+        movea.l _malloc_Block(a6),a0            ; 0007A
         move.l  $4(a0),d0                       ; 0007E
-        sub.l   -$10(a6),d0                     ; 00082
+        sub.l   _malloc_Units(a6),d0            ; 00082
         move.l  d0,$4(a0)                       ; 00086
         asl.l   #$3,d0                          ; 0008A
-        add.l   d0,-$4(a6)                      ; 0008C
+        add.l   d0,_malloc_Block(a6)            ; 0008C
 l_126_00090:
-        move.l  -$10(a6),d0                     ; 00090
+        move.l  _malloc_Units(a6),d0            ; 00090
         sub.l   d0,(MemoryUsed).l               ; 00094
-        movea.l -$4(a6),a0                      ; 0009A
+        movea.l _malloc_Block(a6),a0            ; 0009A
         move.l  a0,d0                           ; 0009E
         unlk    a6                              ; 000A0
         rts                                     ; 000A2
 l_126_000A4:
-        move.l  -$4(a6),-$8(a6)                 ; 000A4
-        movea.l -$4(a6),a0                      ; 000AA
-        move.l  (a0),-$4(a6)                    ; 000AE
+        move.l  _malloc_Block(a6),_malloc_Prev(a6) ; 000A4
+        movea.l _malloc_Block(a6),a0            ; 000AA
+        move.l  (a0),_malloc_Block(a6)          ; 000AE
         bra.b   l_126_00058                     ; 000B2
 l_126_000B4:
-        move.l  -$10(a6),d0                     ; 000B4
+        move.l  _malloc_Units(a6),d0            ; 000B4
         asl.l   #$3,d0                          ; 000B8
         move.l  (_MSTEP).l,d1                   ; 000BA
         add.l   d1,d0                           ; 000C0
@@ -98,7 +101,7 @@ l_126_000B4:
         move.l  d0,-$14(a6)                     ; 000D8
         jsr     (AllocMemTracked).l             ; 000DC
         addq.l  #$4,a7                          ; 000E2
-        move.l  d0,-$C(a6)                      ; 000E4
+        move.l  d0,-$c(a6)                      ; 000E4
         tst.l   d0                              ; 000E8
         beq.b   l_126_00104                     ; 000EA
         move.l  -$14(a6),-(a7)                  ; 000EC
@@ -157,14 +160,14 @@ l_126_00134:
         addq.l  #$7,d0                          ; 00144
         moveq   #$8,d1                          ; 00146
         jsr     (CXD33).l                       ; 00148
-        move.l  d0,-$1C(a6)                     ; 0014E
+        move.l  d0,-$1c(a6)                     ; 0014E
         asl.l   #$3,d0                          ; 00152
         move.l  a0,-$14(a6)                     ; 00154
         adda.l  d0,a0                           ; 00158
-        move.l  -$1C(a6),d0                     ; 0015A
+        move.l  -$1c(a6),d0                     ; 0015A
         add.l   d0,(MemoryUsed).l               ; 0015E
-        move.l  #RbrkData6,-$C(a6)              ; 00164
-        movea.l -$C(a6),a1                      ; 0016C
+        move.l  #RbrkData6,-$c(a6)              ; 00164
+        movea.l -$c(a6),a1                      ; 0016C
         move.l  (a1),-$4(a6)                    ; 00170
         move.l  a0,-$18(a6)                     ; 00174
 l_126_00178:
@@ -180,8 +183,8 @@ l_126_00178:
         bls.b   l_126_001B2                     ; 00198
         movea.l -$14(a6),a1                     ; 0019A
         move.l  a0,(a1)                         ; 0019E
-        move.l  -$1C(a6),$4(a1)                 ; 001A0
-        movea.l -$C(a6),a0                      ; 001A6
+        move.l  -$1c(a6),$4(a1)                 ; 001A0
+        movea.l -$c(a6),a0                      ; 001A6
         move.l  a1,(a0)                         ; 001AA
         moveq   #$0,d0                          ; 001AC
         unlk    a6                              ; 001AE
@@ -192,10 +195,10 @@ l_126_001B2:
         bne.b   l_126_001DA                     ; 001BA
         movea.l -$14(a6),a1                     ; 001BC
         move.l  (a0),(a1)                       ; 001C0
-        move.l  -$1C(a6),d0                     ; 001C2
+        move.l  -$1c(a6),d0                     ; 001C2
         add.l   $4(a0),d0                       ; 001C6
         move.l  d0,$4(a1)                       ; 001CA
-        movea.l -$C(a6),a0                      ; 001CE
+        movea.l -$c(a6),a0                      ; 001CE
         move.l  a1,(a0)                         ; 001D2
         moveq   #$0,d0                          ; 001D4
         unlk    a6                              ; 001D6
@@ -204,7 +207,7 @@ l_126_001DA:
         movea.l -$14(a6),a0                     ; 001DA
         cmpa.l  -$8(a6),a0                      ; 001DE
         bcc.b   l_126_001F4                     ; 001E2
-        move.l  -$1C(a6),d0                     ; 001E4
+        move.l  -$1c(a6),d0                     ; 001E4
         sub.l   d0,(MemoryUsed).l               ; 001E8
         moveq   #-1,d0                          ; 001EE
         unlk    a6                              ; 001F0
@@ -220,13 +223,13 @@ l_126_001F4:
         movea.l -$4(a6),a1                      ; 0020A
         cmpa.l  (a1),a0                         ; 0020E
         bls.b   l_126_00222                     ; 00210
-        move.l  -$1C(a6),d0                     ; 00212
+        move.l  -$1c(a6),d0                     ; 00212
         sub.l   d0,(MemoryUsed).l               ; 00216
         moveq   #-1,d0                          ; 0021C
         unlk    a6                              ; 0021E
         rts                                     ; 00220
 l_126_00222:
-        move.l  -$1C(a6),d0                     ; 00222
+        move.l  -$1c(a6),d0                     ; 00222
         movea.l -$4(a6),a0                      ; 00226
         add.l   d0,$4(a0)                       ; 0022A
         tst.l   (a0)                            ; 0022E
@@ -243,18 +246,18 @@ l_126_00248:
         unlk    a6                              ; 0024A
         rts                                     ; 0024C
 l_126_0024E:
-        move.l  -$4(a6),-$C(a6)                 ; 0024E
+        move.l  -$4(a6),-$c(a6)                 ; 0024E
         move.l  -$8(a6),-$10(a6)                ; 00254
         movea.l -$4(a6),a0                      ; 0025A
         move.l  (a0),-$4(a6)                    ; 0025E
         bra.w   l_126_00178                     ; 00262
 l_126_00266:
-        movea.l -$C(a6),a0                      ; 00266
+        movea.l -$c(a6),a0                      ; 00266
         move.l  -$14(a6),(a0)                   ; 0026A
         suba.l  a0,a0                           ; 0026E
         movea.l -$14(a6),a1                     ; 00270
         move.l  a0,(a1)                         ; 00274
-        move.l  -$1C(a6),$4(a1)                 ; 00276
+        move.l  -$1c(a6),$4(a1)                 ; 00276
         move.l  a0,d0                           ; 0027C
         unlk    a6                              ; 0027E
         rts                                     ; 00280

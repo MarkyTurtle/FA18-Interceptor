@@ -59,7 +59,7 @@ l_108_00066:
         addq.l  #$8,a7                          ; 00074
         bra.b   l_108_00010                     ; 00076
 l_108_00078:
-        pea.l   -$C(a6)                         ; 00078
+        pea.l   -$c(a6)                         ; 00078
         pea.l   -$14(a6)                        ; 0007C
         pea.l   -$114(a6)                       ; 00080
         move.l  fprintf_Format(a6),-(a7)        ; 00084
@@ -72,7 +72,7 @@ l_108_00078:
         move.l  d0,fprintf_Format(a6)           ; 000A0
 l_108_000A4:
         move.l  -$4(a6),d0                      ; 000A4
-        cmp.l   -$C(a6),d0                      ; 000A8
+        cmp.l   -$c(a6),d0                      ; 000A8
         bge.w   l_108_00010                     ; 000AC
         movea.l fprintf_FP(a6),a0               ; 000B0
         move.l  iob_WCnt(a0),d1                 ; 000B4

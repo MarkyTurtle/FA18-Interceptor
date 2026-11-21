@@ -89,19 +89,22 @@ rbrk:
 ;-------------------------------------------------------------------------------
 ; FreeAllTracked - FreeMem every block in the tracked list.
 ;-------------------------------------------------------------------------------
+; FreeAllTracked's frame: arguments from 8(a6), locals below a6 (after its link)
+FreeAllTracked_Block    equ     -$4             ; the block being freed
+FreeAllTracked_Next     equ     -$8             ; the next one
 FreeAllTracked:
         link.w  a6,#$fff8                       ; 000B4
-        move.l  (_MemList).l,-$4(a6)            ; 000B8
+        move.l  (_MemList).l,FreeAllTracked_Block(a6) ; 000B8
 l_123_000C0:
-        tst.l   -$4(a6)                         ; 000C0
+        tst.l   FreeAllTracked_Block(a6)        ; 000C0
         beq.b   l_123_000E4                     ; 000C4
-        movea.l -$4(a6),a0                      ; 000C6
-        move.l  (a0),-$8(a6)                    ; 000CA
+        movea.l FreeAllTracked_Block(a6),a0     ; 000C6
+        move.l  (a0),FreeAllTracked_Next(a6)    ; 000CA
         move.l  $8(a0),-(a7)                    ; 000CE
         move.l  a0,-(a7)                        ; 000D2
         jsr     (_FreeMem).l                    ; 000D4
         addq.l  #$8,a7                          ; 000DA
-        move.l  -$8(a6),-$4(a6)                 ; 000DC
+        move.l  FreeAllTracked_Next(a6),FreeAllTracked_Block(a6) ; 000DC
         bra.b   l_123_000C0                     ; 000E2
 l_123_000E4:
         unlk    a6                              ; 000E4

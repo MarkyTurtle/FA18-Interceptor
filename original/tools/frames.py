@@ -1,4 +1,4 @@
-"""frames.py [NAME...]: the stack frames of the C-style routines (those that start with
+"""frames.py [NAME...] | --todo | --name SPEC: the stack frames of the C-style routines (those that start with
 `link.w a6,#-n`): which argument and local offsets each uses, with what sizes, and how many bytes
 of arguments its callers push (the addq / lea that tidies the stack after the call).
 With no names, a one-line summary of every such routine.
@@ -9,7 +9,7 @@ below a6, from -n up to -1."""
 import re, glob, sys, collections, os
 
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-OFF = re.compile(r'(-?)\$([0-9a-f]+)\(a6\)|(-?)([0-9]+)\(a6\)')
+OFF = re.compile(r'(?<![\w$])(-?)\$([0-9a-f]+)\(a6[,)]|(?<![\w$])(-?)([0-9]+)\(a6[,)]')
 SIZE = re.compile(r'^\s*\w+\.(b|w|l)\b')
 
 
@@ -105,7 +105,8 @@ def uses(body, names=None):
 #
 # and replaces the numbers in the routine's body: $8(a6) -> IFFReadBytes_Context(a6), a word
 # argument's low half $A(a6) -> IFFReadBytes_Context+2(a6). Run it again to change a name or a
-# description: the block is rewritten and the old names are replaced too.
+# description: the block is rewritten and the old names are replaced too. A spec adds to the
+# names a routine has already (offsets it does not give keep theirs).
 
 COL = 48
 BLOCK = re.compile(r"^; (\w+)'s frame: ")
@@ -211,6 +212,15 @@ def apply(spec):
             else:
                 j = i
             old = old_names(L[j:i])
+            # a spec adds to the names already there (by offset): keep the others
+            have = {f[0] for f in fields}
+            for x in L[j:i]:
+                mm = re.match(r'^(%s_(\w+))\s.*?(?:;\s*(.*))?$' % name, x)
+                if mm and mm.group(1) in old and old[mm.group(1)] not in have:
+                    d = (mm.group(3) or '').strip()
+                    sz = re.search(r' \((\d+) bytes\)$', d)
+                    if sz: d = d[:sz.start()]
+                    fields = fields + [(old[mm.group(1)], int(sz.group(1)) if sz else None, mm.group(2), d)]
             new = block(name, fields)
             L[j:i] = new
             i = j + len(new)
@@ -238,7 +248,9 @@ def apply(spec):
                         v = num(tok)
                     else:
                         return mo.group(0)
-                    return (byoff.get(v) or hexs(v)) + '(a6' + mo.group(2)
+                    if v in byoff:
+                        return byoff[v] + '(a6' + mo.group(2)
+                    return mo.group(0) if not (base and base.group(1) in old) else hexs(v).lower() + '(a6' + mo.group(2)
                 nc = re.sub(r'(?<![\w$])(-?\$?[0-9a-fA-F]+|\w+(?:\+\d+)?)\(a6([,)])', sub, code)
                 if nc != code:
                     L[k] = pad(nc.rstrip(), sep + cmt) if sep else nc.rstrip()
@@ -257,7 +269,32 @@ if __name__ == '__main__' and len(sys.argv) > 2 and sys.argv[1] == '--name':
     apply(read_spec(sys.argv[2]))
 
 
-if __name__ == '__main__' and sys.argv[1:2] != ['--name']:
+def todo():
+    """the routines with arguments or locals still unnamed: (name, file, args, locals)."""
+    nm = named()
+    out = []
+    for f, name, frame, body in routines():
+        u = uses(body, nm)
+        mine = {v for k, v in nm.items() if k.startswith(name + '_')}
+        covered = set()
+        for k, v in nm.items():   # an array local covers the bytes after it
+            if k.startswith(name + '_'):
+                covered |= {v + i for i in range(4)}
+        left = [o for o in u if o not in mine and o not in covered]
+        a = [o for o in left if o >= 8]; l = [o for o in left if o < 0]
+        if a or l:
+            out.append((name, f[4:], a, l))
+    return out
+
+
+if __name__ == '__main__' and sys.argv[1:2] == ['--todo']:
+    t = todo()
+    for name, f, a, l in t:
+        print('%-26s %-30s args %-12s locals %s' % (name, f, ' '.join(map(hexs, sorted(a))) or '-',
+                                                     ' '.join(map(hexs, sorted(l)))))
+    print(len(t), 'routines;', sum(len(a) for _, _, a, _ in t), 'arguments and',
+          sum(len(l) for _, _, _, l in t), 'locals unnamed')
+elif __name__ == '__main__' and sys.argv[1:2] != ['--name']:
     want = set(sys.argv[1:])
     cl = callers()
     nm = named()

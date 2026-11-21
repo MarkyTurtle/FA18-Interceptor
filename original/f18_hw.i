@@ -4,6 +4,7 @@ CUSTOM		equ	$DFF000		; the custom chips
 
 DMACONR     equ	$002
 JOY0DAT     equ	$00A
+JOY1DAT     equ	$00C
 POTGOR      equ	$016
 BLTCON0     equ	$040
 BLTCON1     equ	$042

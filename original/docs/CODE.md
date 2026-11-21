@@ -114,7 +114,10 @@ before each. Some parts run only every 2nd, 4th, 8th, 16th or 32nd frame (`Frame
   uses (with their sizes and names), and how many bytes its callers pop. `tools/frames.py --name
   SPEC` writes the frame blocks above and puts the names into the routines' code; SPEC has a
   routine's name, then a line per offset (`  $8  Context  the IFF context`; an array local takes
-  its size, `-$34/36`). Running it again with new names renames them.
+  its size, `-$34/36`). A spec adds to the names a routine has; giving an offset a new name
+  renames it. `tools/frames.py --todo` lists the offsets still unnamed: every argument has a
+  name; the locals of the larger routines (the flight model, the scenery and HUD drawing...)
+  are still numbers.
 * `tools/decode.py LABEL` turns a `dc.b` region that turns out to be code into instructions
   (relocated longs stay labels), then runs `build.py`; the file is put back if the build differs.
 

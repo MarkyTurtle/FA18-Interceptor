@@ -1296,13 +1296,15 @@ l_000_0865E:
 ; LoadDemoRecording - Loads the recorded flight: textply (RecordLength bytes) into RecordBuffer
 ; and textctl (4 * RecordLength) into RecordControls; makes empty files if they are not there.
 ;-------------------------------------------------------------------------------
+; LoadDemoRecording's frame: arguments from 8(a6), locals below a6 (after its link)
+LoadDemoRecording_File  equ     -$4             ; the open file
 LoadDemoRecording:
         link.w  a6,#$fffc                       ; 08668
         move.l  #$3ed,-(a7)                     ; 0866C
         pea.l   (StrTextTextply).l              ; 08672
         jsr     (_Open).l                       ; 08678
         addq.l  #$8,a7                          ; 0867E
-        move.l  d0,-$4(a6)                      ; 08680
+        move.l  d0,LoadDemoRecording_File(a6)   ; 08680
         tst.l   d0                              ; 08684
         ble.b   l_000_086AC                     ; 08686
         move.l  (RecordLength).l,-(a7)          ; 08688
@@ -1317,16 +1319,16 @@ l_000_086AC:
         pea.l   (StrTextTextply2).l             ; 086B2
         jsr     (_Open).l                       ; 086B8
         addq.l  #$8,a7                          ; 086BE
-        move.l  d0,-$4(a6)                      ; 086C0
+        move.l  d0,LoadDemoRecording_File(a6)   ; 086C0
 l_000_086C4:
-        move.l  -$4(a6),-(a7)                   ; 086C4
+        move.l  LoadDemoRecording_File(a6),-(a7) ; 086C4
         jsr     (_Close).l                      ; 086C8
         addq.l  #$4,a7                          ; 086CE
         move.l  #$3ed,-(a7)                     ; 086D0
         pea.l   (StrTextTextctl).l              ; 086D6
         jsr     (_Open).l                       ; 086DC
         addq.l  #$8,a7                          ; 086E2
-        move.l  d0,-$4(a6)                      ; 086E4
+        move.l  d0,LoadDemoRecording_File(a6)   ; 086E4
         tst.l   d0                              ; 086E8
         ble.b   l_000_0870A                     ; 086EA
         move.l  (RecordLength).l,d1             ; 086EC
@@ -1342,9 +1344,9 @@ l_000_0870A:
         pea.l   (StrTextTextctl2).l             ; 08710
         jsr     (_Open).l                       ; 08716
         addq.l  #$8,a7                          ; 0871C
-        move.l  d0,-$4(a6)                      ; 0871E
+        move.l  d0,LoadDemoRecording_File(a6)   ; 0871E
 l_000_08722:
-        move.l  -$4(a6),-(a7)                   ; 08722
+        move.l  LoadDemoRecording_File(a6),-(a7) ; 08722
         jsr     (_Close).l                      ; 08726
         addq.l  #$4,a7                          ; 0872C
         unlk    a6                              ; 0872E
@@ -1354,13 +1356,15 @@ l_000_08722:
 ; SaveRecording - Writes the flight recording: RecordBuffer to textply, RecordControls to
 ; textctl.
 ;-------------------------------------------------------------------------------
+; SaveRecording's frame: arguments from 8(a6), locals below a6 (after its link)
+SaveRecording_File      equ     -$4             ; the open file
 SaveRecording:
         link.w  a6,#$fffc                       ; 08732
         move.l  #$3ed,-(a7)                     ; 08736
         pea.l   (StrTextTextply3).l             ; 0873C
         jsr     (_Open).l                       ; 08742
         addq.l  #$8,a7                          ; 08748
-        move.l  d0,-$4(a6)                      ; 0874A
+        move.l  d0,SaveRecording_File(a6)       ; 0874A
         tst.l   d0                              ; 0874E
         ble.b   l_000_0876A                     ; 08750
         move.l  (RecordLength).l,-(a7)          ; 08752
@@ -1369,14 +1373,14 @@ SaveRecording:
         jsr     (_Write).l                      ; 08760
         lea.l   $c(a7),a7                       ; 08766
 l_000_0876A:
-        move.l  -$4(a6),-(a7)                   ; 0876A
+        move.l  SaveRecording_File(a6),-(a7)    ; 0876A
         jsr     (_Close).l                      ; 0876E
         addq.l  #$4,a7                          ; 08774
         move.l  #$3ed,-(a7)                     ; 08776
         pea.l   (StrTextTextctl3).l             ; 0877C
         jsr     (_Open).l                       ; 08782
         addq.l  #$8,a7                          ; 08788
-        move.l  d0,-$4(a6)                      ; 0878A
+        move.l  d0,SaveRecording_File(a6)       ; 0878A
         tst.l   d0                              ; 0878E
         ble.b   l_000_087AE                     ; 08790
         move.l  (RecordLength).l,d1             ; 08792
@@ -1387,7 +1391,7 @@ l_000_0876A:
         jsr     (_Write).l                      ; 087A4
         lea.l   $c(a7),a7                       ; 087AA
 l_000_087AE:
-        move.l  -$4(a6),-(a7)                   ; 087AE
+        move.l  SaveRecording_File(a6),-(a7)    ; 087AE
         jsr     (_Close).l                      ; 087B2
         addq.l  #$4,a7                          ; 087B8
         unlk    a6                              ; 087BA
@@ -1396,13 +1400,15 @@ l_000_087AE:
 ;-------------------------------------------------------------------------------
 ; LoadRecording - Reads the flight recording back (textply, textctl) to replay it.
 ;-------------------------------------------------------------------------------
+; LoadRecording's frame: arguments from 8(a6), locals below a6 (after its link)
+LoadRecording_File      equ     -$4             ; the open file
 LoadRecording:
         link.w  a6,#$fffc                       ; 087BE
         move.l  #$3ed,-(a7)                     ; 087C2
         pea.l   (StrTextTextply4).l             ; 087C8
         jsr     (_Open).l                       ; 087CE
         addq.l  #$8,a7                          ; 087D4
-        move.l  d0,-$4(a6)                      ; 087D6
+        move.l  d0,LoadRecording_File(a6)       ; 087D6
         tst.l   d0                              ; 087DA
         ble.b   l_000_08800                     ; 087DC
         move.l  (RecordLength).l,-(a7)          ; 087DE
@@ -1412,14 +1418,14 @@ LoadRecording:
         lea.l   $c(a7),a7                       ; 087F2
         move.l  (RecordBuffer).l,(RecordPointer).l ; 087F6
 l_000_08800:
-        move.l  -$4(a6),-(a7)                   ; 08800
+        move.l  LoadRecording_File(a6),-(a7)    ; 08800
         jsr     (_Close).l                      ; 08804
         addq.l  #$4,a7                          ; 0880A
         move.l  #$3ed,-(a7)                     ; 0880C
         pea.l   (StrTextTextctl4).l             ; 08812
         jsr     (_Open).l                       ; 08818
         addq.l  #$8,a7                          ; 0881E
-        move.l  d0,-$4(a6)                      ; 08820
+        move.l  d0,LoadRecording_File(a6)       ; 08820
         tst.l   d0                              ; 08824
         ble.b   l_000_08844                     ; 08826
         move.l  (RecordLength).l,d1             ; 08828
@@ -1430,7 +1436,7 @@ l_000_08800:
         jsr     (_Read).l                       ; 0883A
         lea.l   $c(a7),a7                       ; 08840
 l_000_08844:
-        move.l  -$4(a6),-(a7)                   ; 08844
+        move.l  LoadRecording_File(a6),-(a7)    ; 08844
         jsr     (_Close).l                      ; 08848
         addq.l  #$4,a7                          ; 0884E
         unlk    a6                              ; 08850
@@ -1664,6 +1670,8 @@ l_000_08AD0:
 ;-------------------------------------------------------------------------------
 ; AllocGameBuffers - Allocates the game's display buffers (chip RAM); exit if that fails.
 ;-------------------------------------------------------------------------------
+; AllocGameBuffers's frame: arguments from 8(a6), locals below a6 (after its link)
+AllocGameBuffers_Buffer equ     -$4             ; the buffer allocated
 AllocGameBuffers:
         link.w  a6,#$fffc                       ; 08AD2
         movem.l a2,-(a7)                        ; 08AD6
@@ -1705,7 +1713,7 @@ l_000_08B3C:
         lsr.l   #$3,d0                          ; 08B8A
         move.l  #$10002,-(a7)                   ; 08B8C
         move.l  d0,-(a7)                        ; 08B92
-        move.l  d0,-$4(a6)                      ; 08B94
+        move.l  d0,AllocGameBuffers_Buffer(a6)  ; 08B94
         jsr     (_AllocMem).l                   ; 08B98
         addq.l  #$8,a7                          ; 08B9E
         move.l  d0,(PanelPieceMask).l           ; 08BA0
@@ -1732,7 +1740,7 @@ l_000_08BB8:
         move.l  (PanelPiecePlane2).l,-(a7)      ; 08C00
         move.l  (PanelPiecePlane1).l,-(a7)      ; 08C06
         move.l  (PanelPiecePlane0).l,-(a7)      ; 08C0C
-        move.l  -$4(a6),-(a7)                   ; 08C12
+        move.l  AllocGameBuffers_Buffer(a6),-(a7) ; 08C12
         bsr.b   CopyAndOr3                      ; 08C16
         lea.l   $18(a7),a7                      ; 08C18
         movem.l (a7)+,a2                        ; 08C1C
@@ -1865,12 +1873,15 @@ OpenKeyboard:
 ; ReadKeyEvent - If the keyboard request has come back: takes the event's raw key code
 ; (ie_Code), queues the request again and returns the code; 0 if no key.
 ;-------------------------------------------------------------------------------
+; ReadKeyEvent's frame: arguments from 8(a6), locals below a6 (after its link)
+ReadKeyEvent_Code       equ     -$1             ; the raw key code (returned)
+ReadKeyEvent_Message    equ     -$6             ; what GetMsg returned
 ReadKeyEvent:
         link.w  a6,#$fffa                       ; 08D42
         move.l  (KeyboardPort).l,-(a7)          ; 08D46
         jsr     (_GetMsg).l                     ; 08D4C
         addq.l  #$4,a7                          ; 08D52
-        move.l  d0,-$6(a6)                      ; 08D54
+        move.l  d0,ReadKeyEvent_Message(a6)     ; 08D54
         tst.l   d0                              ; 08D58
         bne.b   l_000_08D62                     ; 08D5A
         moveq   #$0,d0                          ; 08D5C
@@ -1881,10 +1892,10 @@ l_000_08D62:
         move.w  ie_Code(a0),d0                  ; 08D68
         clr.w   ie_Code(a0)                     ; 08D6C
         move.l  (KeyboardIO).l,-(a7)            ; 08D70
-        move.b  d0,-$1(a6)                      ; 08D76
+        move.b  d0,ReadKeyEvent_Code(a6)        ; 08D76
         jsr     (_SendIO).l                     ; 08D7A
         addq.l  #$4,a7                          ; 08D80
-        move.b  -$1(a6),d0                      ; 08D82
+        move.b  ReadKeyEvent_Code(a6),d0        ; 08D82
         unlk    a6                              ; 08D86
         rts                                     ; 08D88
 
@@ -1909,6 +1920,9 @@ PushKey:
 ; or it is one of the special codes $70-$7F. A key press is returned as its raw key code, a
 ; release with $80 added.
 ;-------------------------------------------------------------------------------
+; GetKey's frame: arguments from 8(a6), locals below a6 (after its link)
+GetKey_Code             equ     -$1             ; the key's code
+GetKey_Key              equ     -$2             ; what ReadKeyEvent returned
 GetKey:
         link.w  a6,#$fffc                       ; 08DA6
         tst.w   (KeyWaiting).l                  ; 08DAA
@@ -1919,16 +1933,16 @@ GetKey:
         rts                                     ; 08DC0
 l_000_08DC2:
         bsr.w   ReadKeyEvent                    ; 08DC2
-        move.b  d0,-$2(a6)                      ; 08DC6
+        move.b  d0,GetKey_Key(a6)               ; 08DC6
         tst.b   d0                              ; 08DCA
         bne.b   l_000_08DD6                     ; 08DCC
         move.w  #$ff,d0                         ; 08DCE
         unlk    a6                              ; 08DD2
         rts                                     ; 08DD4
 l_000_08DD6:
-        move.b  -$2(a6),d0                      ; 08DD6
+        move.b  GetKey_Key(a6),d0               ; 08DD6
         andi.b  #$7f,d0                         ; 08DDA
-        move.b  d0,-$1(a6)                      ; 08DDE
+        move.b  d0,GetKey_Code(a6)              ; 08DDE
         andi.b  #$70,d0                         ; 08DE2
         cmpi.b  #$70,d0                         ; 08DE6
         bne.b   l_000_08DF4                     ; 08DEA
@@ -1936,7 +1950,7 @@ l_000_08DD6:
         unlk    a6                              ; 08DF0
         rts                                     ; 08DF2
 l_000_08DF4:
-        move.b  -$2(a6),d0                      ; 08DF4
+        move.b  GetKey_Key(a6),d0               ; 08DF4
         andi.b  #$80,d0                         ; 08DF8
         seq.b   d1                              ; 08DFC
         neg.b   d1                              ; 08DFE
@@ -1945,13 +1959,13 @@ l_000_08DF4:
         move.w  d1,-$4(a6)                      ; 08E04
         tst.w   d1                              ; 08E08
         bne.b   l_000_08E1E                     ; 08E0A
-        move.b  -$1(a6),d0                      ; 08E0C
+        move.b  GetKey_Code(a6),d0              ; 08E0C
         ext.w   d0                              ; 08E10
         ext.l   d0                              ; 08E12
         addi.l  #$80,d0                         ; 08E14
-        move.b  d0,-$1(a6)                      ; 08E1A
+        move.b  d0,GetKey_Code(a6)              ; 08E1A
 l_000_08E1E:
-        move.b  -$1(a6),d0                      ; 08E1E
+        move.b  GetKey_Code(a6),d0              ; 08E1E
         ext.w   d0                              ; 08E22
         unlk    a6                              ; 08E24
         rts                                     ; 08E26
@@ -1959,6 +1973,8 @@ l_000_08E1E:
 ;-------------------------------------------------------------------------------
 ; OpenTimer - Opens timer.device (UNIT_MICROHZ) into TimerRequest.
 ;-------------------------------------------------------------------------------
+; OpenTimer's frame: arguments from 8(a6), locals below a6 (after its link)
+OpenTimer_Error         equ     -$2             ; what OpenDevice returned
 OpenTimer:
         link.w  a6,#$fffe                       ; 08E28
         moveq   #$0,d0                          ; 08E2C
@@ -1968,7 +1984,7 @@ OpenTimer:
         pea.l   (StrTimerDevice).l              ; 08E38
         jsr     (_OpenDevice).l                 ; 08E3E
         lea.l   $10(a7),a7                      ; 08E44
-        move.w  d0,-$2(a6)                      ; 08E48
+        move.w  d0,OpenTimer_Error(a6)          ; 08E48
         tst.w   d0                              ; 08E4C
         nop                                     ; 08E4E
         unlk    a6                              ; 08E50
@@ -1997,6 +2013,8 @@ ReadTime:
 ; (exit -1/-2/-3 on failure), sets it to an absolute joystick (SetJoystickType 3) and its
 ; trigger (SetJoystickTrigger), and queues a GPD_READEVENT.
 ;-------------------------------------------------------------------------------
+; OpenJoystick's frame: arguments from 8(a6), locals below a6 (after its link)
+OpenJoystick_Error      equ     -$2             ; what OpenDevice returned
 OpenJoystick:
         link.w  a6,#$fffe                       ; 08E9C
         move.l  #JoystickEvent,(JoystickEventPtr).l ; 08EA0
@@ -2034,7 +2052,7 @@ l_000_08F00:
         pea.l   (StrGameportDevice).l           ; 08F0C
         jsr     (_OpenDevice).l                 ; 08F12
         lea.l   $10(a7),a7                      ; 08F18
-        move.w  d0,-$2(a6)                      ; 08F1C
+        move.w  d0,OpenJoystick_Error(a6)       ; 08F1C
         tst.w   d0                              ; 08F20
         beq.b   l_000_08F4C                     ; 08F22
         move.l  (JoystickRequest).l,-(a7)       ; 08F24
@@ -2101,12 +2119,15 @@ l_000_08FBC:
 ; IECODE_LBUTTON) -> FirePressed, up ($E8) -> FireReleased; queues the request again; then
 ; reads the stick itself (ReadStick).
 ;-------------------------------------------------------------------------------
+; ReadJoystick's frame: arguments from 8(a6), locals below a6 (after its link)
+ReadJoystick_Code       equ     -$2             ; the event's ie_Code
+ReadJoystick_Message    equ     -$6             ; what GetMsg returned
 ReadJoystick:
         link.w  a6,#$fffa                       ; 08FFE
         move.l  (JoystickPort).l,-(a7)          ; 09002
         jsr     (_GetMsg).l                     ; 09008
         addq.l  #$4,a7                          ; 0900E
-        move.l  d0,-$6(a6)                      ; 09010
+        move.l  d0,ReadJoystick_Message(a6)     ; 09010
         tst.l   d0                              ; 09014
         bne.b   l_000_09020                     ; 09016
         clr.b   (JoystickFlag).l                ; 09018
@@ -2114,7 +2135,7 @@ ReadJoystick:
 l_000_09020:
         movea.l (JoystickEventPtr2).l,a0        ; 09020
         move.w  ie_Code(a0),d0                  ; 09026
-        move.w  d0,-$2(a6)                      ; 0902A
+        move.w  d0,ReadJoystick_Code(a6)        ; 0902A
         tst.w   d0                              ; 0902E
         beq.b   l_000_0904E                     ; 09030
         cmpi.w  #IECODE_LBUTTON,d0              ; 09032
@@ -2122,7 +2143,7 @@ l_000_09020:
         jsr     (FirePressed).l                 ; 09038
         bra.b   l_000_0904E                     ; 0903E
 l_000_09040:
-        cmpi.w  #IECODE_LBUTTON|IECODE_UP_PREFIX,-$2(a6) ; 09040
+        cmpi.w  #IECODE_LBUTTON|IECODE_UP_PREFIX,ReadJoystick_Code(a6) ; 09040
         bne.b   l_000_0904E                     ; 09046
         jsr     (FireReleased).l                ; 09048
 l_000_0904E:
@@ -2140,13 +2161,16 @@ l_000_09066:
 ; ReadStick - Reads JOY1DAT ($DFF00C) directly and turns it into the stick's directions
 ; (StickValue).
 ;-------------------------------------------------------------------------------
+; ReadStick's frame: arguments from 8(a6), locals below a6 (after its link)
+ReadStick_Register      equ     -$4             ; JOY1DAT
+ReadStick_Value         equ     -$6             ; its value (the low byte at -$5)
 ReadStick:
         link.w  a6,#$fff6                       ; 0906C
-        move.l  #$dff00c,-$4(a6)                ; 09070
-        movea.l -$4(a6),a0                      ; 09078
+        move.l  #CUSTOM+JOY1DAT,ReadStick_Register(a6) ; 09070
+        movea.l ReadStick_Register(a6),a0       ; 09078
         move.w  (a0),d0                         ; 0907C
         move.w  d0,(StickValue).l               ; 0907E
-        move.w  d0,-$6(a6)                      ; 09084
+        move.w  d0,ReadStick_Value(a6)          ; 09084
         ext.l   d0                              ; 09088
         move.l  d0,$0(a7)                       ; 0908A
         andi.l  #$200,d0                        ; 0908E
@@ -2160,7 +2184,7 @@ ReadStick:
         move.b  #$1,(StickXMoved).l             ; 090AC
         bra.b   l_000_090FC                     ; 090B4
 l_000_090B6:
-        move.w  -$6(a6),d0                      ; 090B6
+        move.w  ReadStick_Value(a6),d0          ; 090B6
         ext.l   d0                              ; 090BA
         move.l  d0,$0(a7)                       ; 090BC
         andi.l  #$2,d0                          ; 090C0
@@ -2179,7 +2203,7 @@ l_000_090E8:
         jsr     (StickPitchCentre).l            ; 090F0
         clr.b   (StickXMoved).l                 ; 090F6
 l_000_090FC:
-        btst    #$1,-$6(a6)                     ; 090FC
+        btst    #$1,ReadStick_Value(a6)         ; 090FC
         beq.b   l_000_09114                     ; 09102
         jsr     (StickLeft).l                   ; 09104
         move.b  #$1,(StickYMoved).l             ; 0910A
@@ -2311,12 +2335,14 @@ SetMouseLimits:
 ; InitMouse - Reads the mouse counters (JOY0DAT, $DFF00A) as the starting point and installs
 ; the vertical blank interrupt that follows the mouse (AddMouseInterrupt).
 ;-------------------------------------------------------------------------------
+; InitMouse's frame: arguments from 8(a6), locals below a6 (after its link)
+InitMouse_Counters      equ     -$2             ; JOY0DAT (the mouse's counters)
 InitMouse:
         link.w  a6,#$fffe                       ; 0927C
         move.w  (CUSTOM+JOY0DAT).l,d0           ; 09280
-        move.w  d0,-$2(a6)                      ; 09286
+        move.w  d0,InitMouse_Counters(a6)       ; 09286
         andi.w  #$ff,d0                         ; 0928A
-        move.w  -$2(a6),d1                      ; 0928E
+        move.w  InitMouse_Counters(a6),d1       ; 0928E
         asr.w   #$8,d1                          ; 09292
         andi.w  #$ff,d1                         ; 09294
         move.w  d0,(MouseLastX).l               ; 09298
@@ -2899,9 +2925,11 @@ l_000_099C2:
 ; LoadEngineSounds - Loads the engine, gear, wind and other sound effects (textegn, textegn2,
 ; texttre, textger, textcpt, textwnd) into their sound slots.
 ;-------------------------------------------------------------------------------
+; LoadEngineSounds's frame: arguments from 8(a6), locals below a6 (after its link)
+LoadEngineSounds_Loaded equ     -$2             ; 1 if a sound loaded
 LoadEngineSounds:
         link.w  a6,#$fffe                       ; 099CA
-        clr.w   -$2(a6)                         ; 099CE
+        clr.w   LoadEngineSounds_Loaded(a6)     ; 099CE
         moveq   #$2,d0                          ; 099D2
         move.l  d0,-(a7)                        ; 099D4
         pea.l   (StrTextTextegn).l              ; 099D6
@@ -2909,7 +2937,7 @@ LoadEngineSounds:
         addq.l  #$8,a7                          ; 099E2
         tst.l   d0                              ; 099E4
         beq.b   l_000_099F0                     ; 099E6
-        move.w  #$1,-$2(a6)                     ; 099E8
+        move.w  #$1,LoadEngineSounds_Loaded(a6) ; 099E8
         bra.b   l_000_09A0C                     ; 099EE
 l_000_099F0:
         moveq   #$2,d0                          ; 099F0
@@ -2919,9 +2947,9 @@ l_000_099F0:
         addq.l  #$8,a7                          ; 09A00
         tst.l   d0                              ; 09A02
         beq.b   l_000_09A0C                     ; 09A04
-        move.w  #$1,-$2(a6)                     ; 09A06
+        move.w  #$1,LoadEngineSounds_Loaded(a6) ; 09A06
 l_000_09A0C:
-        tst.w   -$2(a6)                         ; 09A0C
+        tst.w   LoadEngineSounds_Loaded(a6)     ; 09A0C
         beq.b   l_000_09A64                     ; 09A10
         moveq   #$3,d0                          ; 09A12
         move.l  d0,-(a7)                        ; 09A14
@@ -3378,9 +3406,9 @@ EnginePitch:
         movem.l d2,-(a7)                        ; 09EFE
         btst    #$1,(SoundsLoaded).l            ; 09F02
         beq.w   l_000_09F92                     ; 09F0A
-        tst.l   (ChannelSound1).l            ; 09F0E
+        tst.l   (ChannelSound1).l               ; 09F0E
         beq.b   l_000_09F92                     ; 09F14
-        movea.l (ChannelSound1).l,a0         ; 09F16
+        movea.l (ChannelSound1).l,a0            ; 09F16
         moveq   #$10,d0                         ; 09F1C
         move.l  EnginePitch_Period(a6),d1       ; 09F1E
         asl.l   d0,d1                           ; 09F22
@@ -3506,17 +3534,17 @@ PlayEffect:
         moveq   #$10,d0                         ; 0A06A
         move.l  PlayEffect_Period(a6),d1        ; 0A06C
         asl.l   d0,d1                           ; 0A070
-        move.l  d1,(EffectPeriod).l          ; 0A072
+        move.l  d1,(EffectPeriod).l             ; 0A072
         move.l  PlayEffect_Volume(a6),d1        ; 0A078
         asl.l   d0,d1                           ; 0A07C
-        move.l  d1,(EffectVolume).l          ; 0A07E
+        move.l  d1,(EffectVolume).l             ; 0A07E
         move.l  PlayEffect_Time(a6),(EffectTime).l ; 0A084
         move.l  PlayEffect_Period2(a6),d1       ; 0A08C
         asl.l   d0,d1                           ; 0A090
-        move.l  d1,(EffectPeriod2).l          ; 0A092
+        move.l  d1,(EffectPeriod2).l            ; 0A092
         move.l  PlayEffect_Volume2(a6),d1       ; 0A098
         asl.l   d0,d1                           ; 0A09C
-        move.l  d1,(EffectVolume2).l          ; 0A09E
+        move.l  d1,(EffectVolume2).l            ; 0A09E
         move.l  PlayEffect_Time2(a6),(EffectTime2).l ; 0A0A4
         move.l  PlayEffect_Time3(a6),(EffectTime3).l ; 0A0AC
         movea.l (EffectSound).l,a0              ; 0A0B4
@@ -3557,12 +3585,12 @@ PlaySweep:
         moveq   #$10,d0                         ; 0A100
         move.l  PlaySweep_Volume(a6),d1         ; 0A102
         asl.l   d0,d1                           ; 0A106
-        move.l  d1,(SweepVolume).l           ; 0A108
+        move.l  d1,(SweepVolume).l              ; 0A108
         neg.l   d1                              ; 0A10E
         move.l  d1,d0                           ; 0A110
         move.l  PlaySweep_Frames(a6),d1         ; 0A112
         jsr     (CXD33).l                       ; 0A116
-        move.l  d0,(SweepVolumeStep).l           ; 0A11C
+        move.l  d0,(SweepVolumeStep).l          ; 0A11C
         move.l  PlaySweep_Frames(a6),(SweepTime).l ; 0A122
         movea.l (SweepSound).l,a0               ; 0A12A
         clr.l   snd_ScriptPos(a0)               ; 0A130
@@ -3697,7 +3725,7 @@ PlayEffect2:
         moveq   #$10,d0                         ; 0A27A
         move.l  PlayEffect2_Volume(a6),d1       ; 0A27C
         asl.l   d0,d1                           ; 0A280
-        move.l  d1,(Effect2Volume).l         ; 0A282
+        move.l  d1,(Effect2Volume).l            ; 0A282
         move.l  PlayEffect2_Volume(a6),d0       ; 0A288
         subq.l  #$1,d0                          ; 0A28C
         moveq   #$10,d1                         ; 0A28E
@@ -3705,7 +3733,7 @@ PlayEffect2:
         neg.l   d0                              ; 0A292
         moveq   #$3c,d1                         ; 0A294
         jsr     (CXD33).l                       ; 0A296
-        move.l  d0,(Effect2VolumeStep).l         ; 0A29C
+        move.l  d0,(Effect2VolumeStep).l        ; 0A29C
         movea.l (EffectSound2).l,a0             ; 0A2A2
         clr.l   snd_ScriptPos(a0)               ; 0A2A8
         moveq   #$3,d0                          ; 0A2AC
@@ -3755,7 +3783,7 @@ PlayGunSound:
         moveq   #$10,d0                         ; 0A31A
         move.l  PlayGunSound_Volume(a6),d1      ; 0A31C
         asl.l   d0,d1                           ; 0A320
-        move.l  d1,(GunVolume).l             ; 0A322
+        move.l  d1,(GunVolume).l                ; 0A322
         moveq   #$0,d0                          ; 0A328
         move.l  d0,snd_ScriptPos(a0)            ; 0A32A
         moveq   #$1,d0                          ; 0A32E

@@ -1480,24 +1480,27 @@ l_000_00FA4:
 ; bytes for the positions (RecordBuffer) and 4 * that + 8 for the controls (RecordControls).
 ; Returns 1 if both were allocated, else 0 (no recording).
 ;-------------------------------------------------------------------------------
+; AllocRecordBuffers's frame: arguments from 8(a6), locals below a6 (after its link)
+AllocRecordBuffers_OK   equ     -$2             ; 1 if the buffers were allocated
+AllocRecordBuffers_Size equ     -$6             ; the size worked out
 AllocRecordBuffers:
         link.w  a6,#$fffa                       ; 00FAC
-        clr.w   -$2(a6)                         ; 00FB0
+        clr.w   AllocRecordBuffers_OK(a6)       ; 00FB0
         move.l  #$10001,-(a7)                   ; 00FB4
         jsr     (_AvailMem).l                   ; 00FBA
         addq.l  #$4,a7                          ; 00FC0
-        move.l  d0,-$6(a6)                      ; 00FC2
+        move.l  d0,AllocRecordBuffers_Size(a6)  ; 00FC2
         asr.l   #$1,d0                          ; 00FC6
-        move.l  -$6(a6),d1                      ; 00FC8
+        move.l  AllocRecordBuffers_Size(a6),d1  ; 00FC8
         sub.l   d0,d1                           ; 00FCC
-        move.l  d1,-$6(a6)                      ; 00FCE
+        move.l  d1,AllocRecordBuffers_Size(a6)  ; 00FCE
         cmpi.l  #$1e848,d1                      ; 00FD2
         ble.b   l_000_00FE2                     ; 00FD8
-        move.l  #$1e848,-$6(a6)                 ; 00FDA
+        move.l  #$1e848,AllocRecordBuffers_Size(a6) ; 00FDA
 l_000_00FE2:
-        move.l  -$6(a6),d0                      ; 00FE2
+        move.l  AllocRecordBuffers_Size(a6),d0  ; 00FE2
         asr.l   #$4,d0                          ; 00FE6
-        move.l  d0,-$6(a6)                      ; 00FE8
+        move.l  d0,AllocRecordBuffers_Size(a6)  ; 00FE8
         addq.l  #$2,d0                          ; 00FEC
         move.l  #$10001,-(a7)                   ; 00FEE
         move.l  d0,-(a7)                        ; 00FF4
@@ -1506,10 +1509,10 @@ l_000_00FE2:
         move.l  d0,(RecordBuffer).l             ; 00FFE
         tst.l   d0                              ; 01004
         beq.b   l_000_0103A                     ; 01006
-        move.l  -$6(a6),d0                      ; 01008
+        move.l  AllocRecordBuffers_Size(a6),d0  ; 01008
         move.l  d0,(RecordLength).l             ; 0100C
         asl.l   #$2,d0                          ; 01012
-        move.l  d0,-$6(a6)                      ; 01014
+        move.l  d0,AllocRecordBuffers_Size(a6)  ; 01014
         addq.l  #$8,d0                          ; 01018
         move.l  #$10001,-(a7)                   ; 0101A
         move.l  d0,-(a7)                        ; 01020
@@ -1518,15 +1521,15 @@ l_000_00FE2:
         move.l  d0,(RecordControls).l           ; 0102A
         tst.l   d0                              ; 01030
         beq.b   l_000_0103A                     ; 01032
-        move.w  #$1,-$2(a6)                     ; 01034
+        move.w  #$1,AllocRecordBuffers_OK(a6)   ; 01034
 l_000_0103A:
-        tst.w   -$2(a6)                         ; 0103A
+        tst.w   AllocRecordBuffers_OK(a6)       ; 0103A
         bne.b   l_000_0104E                     ; 0103E
         suba.l  a0,a0                           ; 01040
         move.l  a0,(RecordBuffer).l             ; 01042
         move.l  a0,(RecordControls).l           ; 01048
 l_000_0104E:
-        move.w  -$2(a6),d0                      ; 0104E
+        move.w  AllocRecordBuffers_OK(a6),d0    ; 0104E
         ext.l   d0                              ; 01052
         unlk    a6                              ; 01054
         rts                                     ; 01056
@@ -1603,9 +1606,11 @@ l_000_0111A:
 ; recording, in a fixed order; FrameStage is set before each part (so a crash says where it
 ; was).
 ;-------------------------------------------------------------------------------
+; GameFrame's frame: arguments from 8(a6), locals below a6 (after its link)
+GameFrame_Frame         equ     -$2             ; FrameCount
 GameFrame:
         link.w  a6,#$fffe                       ; 01124
-        move.w  (FrameCount).l,-$2(a6)          ; 01128
+        move.w  (FrameCount).l,GameFrame_Frame(a6) ; 01128
         bsr.w   ReadControls                    ; 01130
         jsr     (RunGameState).l                ; 01134
         jsr     (WarningTicker).l               ; 0113A
@@ -1697,7 +1702,7 @@ l_000_012CC:
         move.b  (PanelRedraw).l,d0              ; 012F0
         tst.b   d0                              ; 012F6
         bgt.b   l_000_01308                     ; 012F8
-        move.w  -$2(a6),d0                      ; 012FA
+        move.w  GameFrame_Frame(a6),d0          ; 012FA
         andi.w  #$3,d0                          ; 012FE
         cmpi.w  #$1,d0                          ; 01302
         ble.b   l_000_01314                     ; 01306
@@ -1708,7 +1713,7 @@ l_000_01314:
         move.b  (PanelRedraw).l,d0              ; 01314
         tst.b   d0                              ; 0131A
         bgt.b   l_000_0132C                     ; 0131C
-        move.w  -$2(a6),d0                      ; 0131E
+        move.w  GameFrame_Frame(a6),d0          ; 0131E
         andi.w  #$3,d0                          ; 01322
         cmpi.w  #$2,d0                          ; 01326
         bge.b   l_000_01332                     ; 0132A
@@ -1718,7 +1723,7 @@ l_000_01332:
         move.b  (PanelRedraw).l,d0              ; 01332
         tst.b   d0                              ; 01338
         bgt.b   l_000_01356                     ; 0133A
-        move.w  -$2(a6),d0                      ; 0133C
+        move.w  GameFrame_Frame(a6),d0          ; 0133C
         andi.w  #$3,d0                          ; 01340
         cmpi.w  #$2,d0                          ; 01344
         blt.b   l_000_01356                     ; 01348
@@ -1730,7 +1735,7 @@ l_000_0135C:
         move.b  (PanelRedraw).l,d0              ; 0135C
         tst.b   d0                              ; 01362
         bgt.b   l_000_01374                     ; 01364
-        move.w  -$2(a6),d0                      ; 01366
+        move.w  GameFrame_Frame(a6),d0          ; 01366
         andi.w  #$7,d0                          ; 0136A
         cmpi.w  #$2,d0                          ; 0136E
         bge.b   l_000_0137A                     ; 01372
@@ -1740,7 +1745,7 @@ l_000_0137A:
         move.b  (PanelRedraw).l,d0              ; 0137A
         tst.b   d0                              ; 01380
         bgt.b   l_000_01392                     ; 01382
-        move.w  -$2(a6),d0                      ; 01384
+        move.w  GameFrame_Frame(a6),d0          ; 01384
         andi.w  #$f,d0                          ; 01388
         cmpi.w  #$2,d0                          ; 0138C
         bge.b   l_000_01398                     ; 01390
@@ -1784,13 +1789,13 @@ l_000_0142C:
         jsr     (EmptyReadout).l                ; 0143A
         jsr     (DrawMapMarkers).l              ; 01440
         jsr     (UpdateClock).l                 ; 01446
-        move.w  -$2(a6),d0                      ; 0144C
+        move.w  GameFrame_Frame(a6),d0          ; 0144C
         andi.w  #$7,d0                          ; 01450
         subq.w  #$7,d0                          ; 01454
         bne.b   l_000_0145E                     ; 01456
         jsr     (TimeSomething).l               ; 01458
 l_000_0145E:
-        move.w  -$2(a6),d0                      ; 0145E
+        move.w  GameFrame_Frame(a6),d0          ; 0145E
         andi.w  #$f,d0                          ; 01462
         subq.w  #$4,d0                          ; 01466
         bne.b   l_000_01474                     ; 01468
@@ -1798,7 +1803,7 @@ l_000_0145E:
         jsr     (_FreeSprite).l                 ; 0146C
         addq.l  #$4,a7                          ; 01472
 l_000_01474:
-        move.w  -$2(a6),d0                      ; 01474
+        move.w  GameFrame_Frame(a6),d0          ; 01474
         andi.w  #$1f,d0                         ; 01478
         subq.w  #$8,d0                          ; 0147C
         bne.b   l_000_01488                     ; 0147E
@@ -1808,7 +1813,7 @@ l_000_01488:
         move.b  (CameraSequence).l,d0           ; 01488
         tst.b   d0                              ; 0148E
         bne.b   l_000_014A6                     ; 01490
-        move.w  -$2(a6),d0                      ; 01492
+        move.w  GameFrame_Frame(a6),d0          ; 01492
         andi.w  #$1f,d0                         ; 01496
         cmpi.w  #$10,d0                         ; 0149A
         bne.b   l_000_014A6                     ; 0149E
@@ -1936,6 +1941,8 @@ StopAllSounds:
 ; InitInput - Opens the input: the timer, the keyboard, the joystick (gameport), the mouse
 ; interrupt; raises the task's priority (SetTaskPri) and installs the input.device handler.
 ;-------------------------------------------------------------------------------
+; InitInput's frame: arguments from 8(a6), locals below a6 (after its link)
+InitInput_Result        equ     -$4             ; what the last open returned
 InitInput:
         link.w  a6,#$fffc                       ; 01628
         jsr     (OpenTimer).l                   ; 0162C
@@ -1946,7 +1953,7 @@ InitInput:
         moveq   #-128,d1                        ; 01646
         move.l  d1,-(a7)                        ; 01648
         move.l  d0,-(a7)                        ; 0164A
-        move.l  d0,-$4(a6)                      ; 0164C
+        move.l  d0,InitInput_Result(a6)         ; 0164C
         jsr     (_SetTaskPri).l                 ; 01650
         addq.l  #$8,a7                          ; 01656
         jsr     (OpenJoystick).l                ; 01658
@@ -2040,6 +2047,8 @@ l_000_01744:
 ; the mission's objective done, StateDebriefWait) once QuitDelay has run out; counts StateTimer
 ; down by one; then calls the current state (GameState).
 ;-------------------------------------------------------------------------------
+; RunGameState's frame: arguments from 8(a6), locals below a6 (after its link)
+RunGameState_Elapsed    equ     -$4             ; the time since the start, less the pauses
 RunGameState:
         link.w  a6,#$fffc                       ; 01748
         move.b  (CodeTries).l,d0                ; 0174C
@@ -2061,27 +2070,27 @@ RunGameState:
         move.l  (TimeSeconds).l,d0              ; 01790
         sub.l   (MissionStartTime).l,d0         ; 01796
         sub.l   (PausedTotal).l,d0              ; 0179C
-        move.l  d0,-$4(a6)                      ; 017A2
+        move.l  d0,RunGameState_Elapsed(a6)     ; 017A2
         tst.l   (PauseStartTime).l              ; 017A6
         beq.b   l_000_017BE                     ; 017AC
         move.l  (TimeSeconds).l,d1              ; 017AE
         sub.l   (PauseStartTime).l,d1           ; 017B4
-        sub.l   d1,-$4(a6)                      ; 017BA
+        sub.l   d1,RunGameState_Elapsed(a6)     ; 017BA
 l_000_017BE:
-        move.l  -$4(a6),d0                      ; 017BE
+        move.l  RunGameState_Elapsed(a6),d0     ; 017BE
         sub.l   (FlightTimeExtra).l,d0          ; 017C2
-        move.l  d0,-$4(a6)                      ; 017C8
+        move.l  d0,RunGameState_Elapsed(a6)     ; 017C8
         tst.l   (FlightStartTime).l             ; 017CC
         beq.b   l_000_017E4                     ; 017D2
         move.l  (TimeSeconds).l,d1              ; 017D4
         sub.l   (FlightStartTime).l,d1          ; 017DA
-        sub.l   d1,-$4(a6)                      ; 017E0
+        sub.l   d1,RunGameState_Elapsed(a6)     ; 017E0
 l_000_017E4:
-        tst.l   -$4(a6)                         ; 017E4
+        tst.l   RunGameState_Elapsed(a6)        ; 017E4
         bmi.b   l_000_0180C                     ; 017E8
-        cmpi.l  #$4650,-$4(a6)                  ; 017EA
+        cmpi.l  #$4650,RunGameState_Elapsed(a6) ; 017EA
         bge.b   l_000_0180C                     ; 017F2
-        move.l  -$4(a6),d0                      ; 017F4
+        move.l  RunGameState_Elapsed(a6),d0     ; 017F4
         movea.l (ConfigBuffer).l,a0             ; 017F8
         add.l   d0,$8(a0)                       ; 017FE
         move.b  #$1,(ConfigChanged).l           ; 01802
@@ -2479,9 +2488,11 @@ l_000_01D2E:
 ; $64-$6D (1 demo, 2 free flight, 3 training demo, 4 practice, 5 qualification, 6 selectable
 ; missions, 7 next advanced mission, 8 flight log, Esc, Shift+Esc); then StateMenuChoice.
 ;-------------------------------------------------------------------------------
+; StateMainMenu's frame: arguments from 8(a6), locals below a6 (after its link)
+StateMainMenu_Page      equ     -$4             ; the next TextPages entry
 StateMainMenu:
         link.w  a6,#$fffc                       ; 01D30
-        move.l  #TextPages,-$4(a6)              ; 01D34
+        move.l  #TextPages,StateMainMenu_Page(a6) ; 01D34
         move.l  #$1f0000,(TitleTimer).l         ; 01D3C
         btst    #$7,(SoundsLoaded).l            ; 01D46
         beq.b   l_000_01D64                     ; 01D4E
@@ -2505,7 +2516,7 @@ l_000_01D64:
         jsr     (SetPalette).l                  ; 01D9C
         addq.l  #$4,a7                          ; 01DA2
         move.l  #$1e0,(TextCursor).l            ; 01DA4
-        movea.l -$4(a6),a0                      ; 01DAE
+        movea.l StateMainMenu_Page(a6),a0       ; 01DAE
         move.w  #$6,(a0)                        ; 01DB2
         addq.l  #$2,a0                          ; 01DB6
         move.w  #$64,(a0)                       ; 01DB8
@@ -2541,10 +2552,13 @@ l_000_01D64:
 ; flight log page (ShowFlightLog, page $57) and StateFlightLogPage. Esc returns to
 ; StateMainMenu.
 ;-------------------------------------------------------------------------------
+; StateMenuChoice's frame: arguments from 8(a6), locals below a6 (after its link)
+StateMenuChoice_Page    equ     -$4             ; the next TextPages entry
+StateMenuChoice_Mode    equ     -$5             ; GameMode
 StateMenuChoice:
         link.w  a6,#$fffa                       ; 01E04
-        move.l  #TextPages,-$4(a6)              ; 01E08
-        move.b  (GameMode).l,-$5(a6)            ; 01E10
+        move.l  #TextPages,StateMenuChoice_Page(a6) ; 01E08
+        move.b  (GameMode).l,StateMenuChoice_Mode(a6) ; 01E10
         tst.b   (QuitRequest).l                 ; 01E18
         beq.b   l_000_01E44                     ; 01E1E
         clr.b   (QuitRequest).l                 ; 01E20
@@ -2562,49 +2576,49 @@ l_000_01E44:
         clr.l   (TitleTimer).l                  ; 01E50
         bsr.w   ClearTextPages                  ; 01E56
         jsr     (ClearScreen).l                 ; 01E5A
-        cmpi.b  #$7f,-$5(a6)                    ; 01E60
+        cmpi.b  #$7f,StateMenuChoice_Mode(a6)   ; 01E60
         bne.b   l_000_01E76                     ; 01E66
-        movea.l -$4(a6),a0                      ; 01E68
+        movea.l StateMenuChoice_Page(a6),a0     ; 01E68
         move.w  #$65,(a0)                       ; 01E6C
-        addq.l  #$2,-$4(a6)                     ; 01E70
+        addq.l  #$2,StateMenuChoice_Page(a6)    ; 01E70
         bra.b   l_000_01EE8                     ; 01E74
 l_000_01E76:
-        cmpi.b  #$1,-$5(a6)                     ; 01E76
+        cmpi.b  #$1,StateMenuChoice_Mode(a6)    ; 01E76
         bne.b   l_000_01E8C                     ; 01E7C
-        movea.l -$4(a6),a0                      ; 01E7E
+        movea.l StateMenuChoice_Page(a6),a0     ; 01E7E
         move.w  #$66,(a0)                       ; 01E82
-        addq.l  #$2,-$4(a6)                     ; 01E86
+        addq.l  #$2,StateMenuChoice_Page(a6)    ; 01E86
         bra.b   l_000_01EE8                     ; 01E8A
 l_000_01E8C:
-        cmpi.b  #$2,-$5(a6)                     ; 01E8C
+        cmpi.b  #$2,StateMenuChoice_Mode(a6)    ; 01E8C
         bne.b   l_000_01EA2                     ; 01E92
-        movea.l -$4(a6),a0                      ; 01E94
+        movea.l StateMenuChoice_Page(a6),a0     ; 01E94
         move.w  #$67,(a0)                       ; 01E98
-        addq.l  #$2,-$4(a6)                     ; 01E9C
+        addq.l  #$2,StateMenuChoice_Page(a6)    ; 01E9C
         bra.b   l_000_01EE8                     ; 01EA0
 l_000_01EA2:
-        cmpi.b  #$7d,-$5(a6)                    ; 01EA2
+        cmpi.b  #$7d,StateMenuChoice_Mode(a6)   ; 01EA2
         bne.b   l_000_01EB8                     ; 01EA8
-        movea.l -$4(a6),a0                      ; 01EAA
+        movea.l StateMenuChoice_Page(a6),a0     ; 01EAA
         move.w  #$68,(a0)                       ; 01EAE
-        addq.l  #$2,-$4(a6)                     ; 01EB2
+        addq.l  #$2,StateMenuChoice_Page(a6)    ; 01EB2
         bra.b   l_000_01EE8                     ; 01EB6
 l_000_01EB8:
-        cmpi.b  #$9,-$5(a6)                     ; 01EB8
+        cmpi.b  #$9,StateMenuChoice_Mode(a6)    ; 01EB8
         bne.b   l_000_01ECE                     ; 01EBE
-        movea.l -$4(a6),a0                      ; 01EC0
+        movea.l StateMenuChoice_Page(a6),a0     ; 01EC0
         move.w  #$69,(a0)                       ; 01EC4
-        addq.l  #$2,-$4(a6)                     ; 01EC8
+        addq.l  #$2,StateMenuChoice_Page(a6)    ; 01EC8
         bra.b   l_000_01EE8                     ; 01ECC
 l_000_01ECE:
         tst.b   (MenuOption).l                  ; 01ECE
         beq.b   l_000_01EE8                     ; 01ED4
-        movea.l -$4(a6),a0                      ; 01ED6
+        movea.l StateMenuChoice_Page(a6),a0     ; 01ED6
         move.w  #$6b,(a0)                       ; 01EDA
-        addq.l  #$2,-$4(a6)                     ; 01EDE
+        addq.l  #$2,StateMenuChoice_Page(a6)    ; 01EDE
         clr.b   (MenuOption).l                  ; 01EE2
 l_000_01EE8:
-        movea.l -$4(a6),a0                      ; 01EE8
+        movea.l StateMenuChoice_Page(a6),a0     ; 01EE8
         clr.w   (a0)                            ; 01EEC
         move.b  (RestartMission).l,d0           ; 01EEE
         tst.b   d0                              ; 01EF4
@@ -2634,10 +2648,10 @@ l_000_01F20:
 l_000_01F4C:
         jsr     (ClearScreen).l                 ; 01F4C
         jsr     (ShowFlightLog).l               ; 01F52
-        movea.l -$4(a6),a0                      ; 01F58
+        movea.l StateMenuChoice_Page(a6),a0     ; 01F58
         move.w  #$57,(a0)                       ; 01F5C
-        addq.l  #$2,-$4(a6)                     ; 01F60
-        movea.l -$4(a6),a0                      ; 01F64
+        addq.l  #$2,StateMenuChoice_Page(a6)    ; 01F60
+        movea.l StateMenuChoice_Page(a6),a0     ; 01F64
         clr.w   (a0)                            ; 01F68
         lea.l   StateFlightLogPage(pc),a0       ; 01F6A
         move.l  a0,(GameState).l                ; 01F6E
@@ -2702,12 +2716,14 @@ l_000_02016:
 ; and qualification StateFadeIn; training demo (watching the instructor, object 4) and practice
 ; StateTrainingFadeIn; missions F1-F6 StateBriefingFade.
 ;-------------------------------------------------------------------------------
+; StateFlightSetup's frame: arguments from 8(a6), locals below a6 (after its link)
+StateFlightSetup_Timer  equ     -$2             ; StateTimer
 StateFlightSetup:
         link.w  a6,#$fffe                       ; 0201E
         move.b  (GameMode).l,d0                 ; 02022
         ext.w   d0                              ; 02028
         move.w  (StateTimer).l,d1               ; 0202A
-        move.w  d0,-$2(a6)                      ; 02030
+        move.w  d0,StateFlightSetup_Timer(a6)   ; 02030
         tst.w   d1                              ; 02034
         bpl.w   l_000_022CA                     ; 02036
         clr.b   (MusicState).l                  ; 0203A
@@ -2719,7 +2735,7 @@ StateFlightSetup:
         jsr     (StopSound).l                   ; 0204E
         addq.l  #$4,a7                          ; 02054
         move.l  #$3f0000,(AudioPeriodMin).l     ; 02056
-        move.w  -$2(a6),d0                      ; 02060
+        move.w  StateFlightSetup_Timer(a6),d0   ; 02060
         cmpi.w  #$3,d0                          ; 02064
         bcs.b   l_000_0207E                     ; 02068
         cmpi.w  #$8,d0                          ; 0206A
@@ -2760,7 +2776,7 @@ l_000_020A8:
         move.b  #$3,(StartPoint).l              ; 02102
         move.b  #$11,(PlayerAircraftType).l     ; 0210A
         moveq   #$0,d0                          ; 02112
-        move.w  -$2(a6),d0                      ; 02114
+        move.w  StateFlightSetup_Timer(a6),d0   ; 02114
         moveq   #$30,d1                         ; 02118
 l_000_0211A:
         subi.l  #$8,d1                          ; 0211A
@@ -2861,17 +2877,21 @@ l_000_022CA:
 ; StateMissionList - The selectable missions page: page $40 and a line ($4D-$51, F2-F6) for
 ; each mission the log has flown (ConfigBuffer+$12+mode), then StateMenuChoice for F1-F6.
 ;-------------------------------------------------------------------------------
+; StateMissionList's frame: arguments from 8(a6), locals below a6 (after its link)
+StateMissionList_Page   equ     -$4             ; the next TextPages entry
+StateMissionList_From   equ     -$8             ; the next MissionListPage entry
+StateMissionList_I      equ     -$9             ; the entry count
 StateMissionList:
         link.w  a6,#$fff6                       ; 022CE
         jsr     (ClearScreen).l                 ; 022D2
         lea.l   (TextPages).l,a0                ; 022D8
         move.w  #$40,(a0)                       ; 022DE
         addq.l  #$2,a0                          ; 022E2
-        move.l  #MissionListPage,-$8(a6)        ; 022E4
-        move.b  #$3,-$9(a6)                     ; 022EC
-        move.l  a0,-$4(a6)                      ; 022F2
+        move.l  #MissionListPage,StateMissionList_From(a6) ; 022E4
+        move.b  #$3,StateMissionList_I(a6)      ; 022EC
+        move.l  a0,StateMissionList_Page(a6)    ; 022F2
 l_000_022F6:
-        move.b  -$9(a6),d0                      ; 022F6
+        move.b  StateMissionList_I(a6),d0       ; 022F6
         cmpi.b  #$9,d0                          ; 022FA
         bge.b   l_000_0232C                     ; 022FE
         ext.w   d0                              ; 02300
@@ -2881,19 +2901,19 @@ l_000_022F6:
         adda.l  d0,a0                           ; 0230E
         tst.b   (a0)                            ; 02310
         beq.b   l_000_02326                     ; 02312
-        movea.l -$8(a6),a0                      ; 02314
-        movea.l -$4(a6),a1                      ; 02318
+        movea.l StateMissionList_From(a6),a0    ; 02314
+        movea.l StateMissionList_Page(a6),a1    ; 02318
         move.w  (a0),(a1)                       ; 0231C
-        addq.l  #$2,-$8(a6)                     ; 0231E
-        addq.l  #$2,-$4(a6)                     ; 02322
+        addq.l  #$2,StateMissionList_From(a6)   ; 0231E
+        addq.l  #$2,StateMissionList_Page(a6)   ; 02322
 l_000_02326:
-        addq.b  #$1,-$9(a6)                     ; 02326
+        addq.b  #$1,StateMissionList_I(a6)      ; 02326
         bra.b   l_000_022F6                     ; 0232A
 l_000_0232C:
-        movea.l -$4(a6),a0                      ; 0232C
+        movea.l StateMissionList_Page(a6),a0    ; 0232C
         move.w  #$806e,(a0)                     ; 02330
-        addq.l  #$2,-$4(a6)                     ; 02334
-        movea.l -$4(a6),a0                      ; 02338
+        addq.l  #$2,StateMissionList_Page(a6)   ; 02334
+        movea.l StateMissionList_Page(a6),a0    ; 02338
         clr.w   (a0)                            ; 0233C
         lea.l   StateMenuChoice(pc),a0          ; 0233E
         move.l  a0,(GameState).l                ; 02342
@@ -2987,9 +3007,11 @@ StateTraining:
 ; StateTrainingText - Shows Basic flight maneuvers part 1 (page 9, training demo) or part 2
 ; (page $A, practice), then StateTrainingStart.
 ;-------------------------------------------------------------------------------
+; StateTrainingText's frame: arguments from 8(a6), locals below a6 (after its link)
+StateTrainingText_Page  equ     -$4             ; the next TextPages entry
 StateTrainingText:
         link.w  a6,#$fffc                       ; 02452
-        move.l  #TextPages,-$4(a6)              ; 02456
+        move.l  #TextPages,StateTrainingText_Page(a6) ; 02456
         tst.b   (KeyPressed).l                  ; 0245E
         beq.b   l_000_0246A                     ; 02464
         bsr.b   l_000_024B2                     ; 02466
@@ -3002,14 +3024,14 @@ l_000_0246A:
         move.b  (GameMode).l,d0                 ; 0247A
         subq.b  #$2,d0                          ; 02480
         bne.b   l_000_02492                     ; 02482
-        movea.l -$4(a6),a0                      ; 02484
+        movea.l StateTrainingText_Page(a6),a0   ; 02484
         move.w  #$9,(a0)                        ; 02488
-        addq.l  #$2,-$4(a6)                     ; 0248C
+        addq.l  #$2,StateTrainingText_Page(a6)  ; 0248C
         bra.b   l_000_024A4                     ; 02490
 l_000_02492:
-        movea.l -$4(a6),a0                      ; 02492
+        movea.l StateTrainingText_Page(a6),a0   ; 02492
         move.w  #$a,(a0)                        ; 02496
-        addq.l  #$2,-$4(a6)                     ; 0249A
+        addq.l  #$2,StateTrainingText_Page(a6)  ; 0249A
         clr.b   (KeyMode).l                     ; 0249E
 l_000_024A4:
         lea.l   StateTrainingStart(pc),a0       ; 024A4
@@ -3267,6 +3289,8 @@ l_000_027C6:
 ; security countercode" ($47) with a new random question (MakeSecurityCode);
 ; StateSecurityInput.
 ;-------------------------------------------------------------------------------
+; StateSecurityCheck's frame: arguments from 8(a6), locals below a6 (after its link)
+StateSecurityCheck_Page equ     -$4             ; the next TextPages entry
 StateSecurityCheck:
         link.w  a6,#$fffa                       ; 027C8
         move.w  (StateTimer).l,d0               ; 027CC
@@ -3284,7 +3308,7 @@ StateSecurityCheck:
 l_000_0280A:
         move.b  (GameMode).l,d0                 ; 0280A
         ext.w   d0                              ; 02810
-        move.l  #TextPages,-$4(a6)              ; 02812
+        move.l  #TextPages,StateSecurityCheck_Page(a6) ; 02812
         move.b  (BriefingLastKey).l,d1          ; 0281A
         move.w  d0,-$6(a6)                      ; 02820
         tst.b   d1                              ; 02824
@@ -3295,20 +3319,20 @@ l_000_0280A:
         bhi.b   l_000_02852                     ; 02832
         subq.w  #$3,d0                          ; 02834
         bne.b   l_000_02846                     ; 02836
-        movea.l -$4(a6),a0                      ; 02838
+        movea.l StateSecurityCheck_Page(a6),a0  ; 02838
         move.w  #$5f,(a0)                       ; 0283C
-        addq.l  #$2,-$4(a6)                     ; 02840
+        addq.l  #$2,StateSecurityCheck_Page(a6) ; 02840
         bra.b   l_000_02852                     ; 02844
 l_000_02846:
-        movea.l -$4(a6),a0                      ; 02846
+        movea.l StateSecurityCheck_Page(a6),a0  ; 02846
         move.w  #$60,(a0)                       ; 0284A
-        addq.l  #$2,-$4(a6)                     ; 0284E
+        addq.l  #$2,StateSecurityCheck_Page(a6) ; 0284E
 l_000_02852:
         clr.b   (BriefingLastKey).l             ; 02852
-        movea.l -$4(a6),a0                      ; 02858
+        movea.l StateSecurityCheck_Page(a6),a0  ; 02858
         move.w  #$47,(a0)                       ; 0285C
-        addq.l  #$2,-$4(a6)                     ; 02860
-        movea.l -$4(a6),a0                      ; 02864
+        addq.l  #$2,StateSecurityCheck_Page(a6) ; 02860
+        movea.l StateSecurityCheck_Page(a6),a0  ; 02864
         clr.w   (a0)                            ; 02868
         jsr     (MakeSecurityCode).l            ; 0286A
         lea.l   StateSecurityInput(pc),a0       ; 02870
@@ -3356,6 +3380,8 @@ l_000_028D8:
 ; qualification StateQualifyBriefing. Wrong (< 0): another try (StateSecurityCheck) until
 ; CodeTries runs out, then StateSecurityFailed.
 ;-------------------------------------------------------------------------------
+; StateSecurityResult's frame: arguments from 8(a6), locals below a6 (after its link)
+StateSecurityResult_Result equ     -$2          ; CodeResult
 StateSecurityResult:
         link.w  a6,#$fffe                       ; 028DA
         move.w  (StateTimer).l,d0               ; 028DE
@@ -3364,7 +3390,7 @@ StateSecurityResult:
         move.b  (GameMode).l,d0                 ; 028EA
         ext.w   d0                              ; 028F0
         move.b  (CodeResult).l,d1               ; 028F2
-        move.w  d0,-$2(a6)                      ; 028F8
+        move.w  d0,StateSecurityResult_Result(a6) ; 028F8
         tst.b   d1                              ; 028FC
         ble.w   l_000_029DA                     ; 028FE
         lea.l   StateClearance(pc),a0           ; 02902
@@ -3375,7 +3401,7 @@ StateSecurityResult:
         bhi.b   l_000_0295C                     ; 02916
         move.w  #$5d,(TextPages).l              ; 02918
         moveq   #$0,d1                          ; 02920
-        move.w  -$2(a6),d1                      ; 02922
+        move.w  StateSecurityResult_Result(a6),d1 ; 02922
         moveq   #$3,d0                          ; 02926
         move.l  d0,-(a7)                        ; 02928
         moveq   #$1,d0                          ; 0292A
@@ -3392,7 +3418,7 @@ StateSecurityResult:
         bra.w   l_000_02A26                     ; 02958
 l_000_0295C:
         moveq   #$0,d0                          ; 0295C
-        move.w  -$2(a6),d0                      ; 0295E
+        move.w  StateSecurityResult_Result(a6),d0 ; 0295E
         moveq   #$20,d1                         ; 02962
 l_000_02964:
         subi.l  #$8,d1                          ; 02964
@@ -3753,6 +3779,8 @@ l_000_02DB6:
 ; is a target; then "ready for takeoff" ($59) or, on the carrier, "ready to launch" ($5A); then
 ; StateReadyWait.
 ;-------------------------------------------------------------------------------
+; StateReadyText's frame: arguments from 8(a6), locals below a6 (after its link)
+StateReadyText_Page     equ     -$4             ; the next TextPages entry
 StateReadyText:
         link.w  a6,#$fffa                       ; 02DB8
         move.w  (StateTimer).l,d0               ; 02DBC
@@ -3760,7 +3788,7 @@ StateReadyText:
         bpl.w   l_000_02E4A                     ; 02DC4
         move.b  (GameMode).l,d0                 ; 02DC8
         clr.b   (FlightScreen).l                ; 02DCE
-        move.l  #TextPages,-$4(a6)              ; 02DD4
+        move.l  #TextPages,StateReadyText_Page(a6) ; 02DD4
         move.b  d0,-$5(a6)                      ; 02DDC
         cmpi.b  #$3,d0                          ; 02DE0
         blt.b   l_000_02E02                     ; 02DE4
@@ -3769,28 +3797,28 @@ StateReadyText:
         jsr     (BogeyVector).l                 ; 02DEC
         tst.l   d0                              ; 02DF2
         bmi.b   l_000_02E02                     ; 02DF4
-        movea.l -$4(a6),a0                      ; 02DF6
+        movea.l StateReadyText_Page(a6),a0      ; 02DF6
         move.w  #$58,(a0)                       ; 02DFA
-        addq.l  #$2,-$4(a6)                     ; 02DFE
+        addq.l  #$2,StateReadyText_Page(a6)     ; 02DFE
 l_000_02E02:
         cmpi.b  #$2,-$5(a6)                     ; 02E02
         beq.b   l_000_02E32                     ; 02E08
         move.b  (Player_04).l,d0                ; 02E0A
         btst    #$3,d0                          ; 02E10
         beq.b   l_000_02E24                     ; 02E14
-        movea.l -$4(a6),a0                      ; 02E16
+        movea.l StateReadyText_Page(a6),a0      ; 02E16
         move.w  #$5a,(a0)                       ; 02E1A
-        addq.l  #$2,-$4(a6)                     ; 02E1E
+        addq.l  #$2,StateReadyText_Page(a6)     ; 02E1E
         bra.b   l_000_02E3A                     ; 02E22
 l_000_02E24:
-        movea.l -$4(a6),a0                      ; 02E24
+        movea.l StateReadyText_Page(a6),a0      ; 02E24
         move.w  #$59,(a0)                       ; 02E28
-        addq.l  #$2,-$4(a6)                     ; 02E2C
+        addq.l  #$2,StateReadyText_Page(a6)     ; 02E2C
         bra.b   l_000_02E3A                     ; 02E30
 l_000_02E32:
         move.b  #$ff,(TextStatus).l             ; 02E32
 l_000_02E3A:
-        movea.l -$4(a6),a0                      ; 02E3A
+        movea.l StateReadyText_Page(a6),a0      ; 02E3A
         clr.w   (a0)                            ; 02E3E
         lea.l   StateReadyWait(pc),a0           ; 02E40
         move.l  a0,(GameState).l                ; 02E44
@@ -3853,9 +3881,11 @@ l_000_02EFC:
 ; (MissionResult $FF/$FE/$FC: the end of the mission is shown), Shift+Esc and MissionResult $F0
 ; (StateMissionOver) and $EF (StateQualified).
 ;-------------------------------------------------------------------------------
+; StateFlying's frame: arguments from 8(a6), locals below a6 (after its link)
+StateFlying_Result      equ     -$1             ; MissionResult
 StateFlying:
         link.w  a6,#$fffe                       ; 02EFE
-        move.b  (MissionResult).l,-$1(a6)       ; 02F02
+        move.b  (MissionResult).l,StateFlying_Result(a6) ; 02F02
         move.w  (ObjectTable).l,d0              ; 02F0A
         btst    #$9,d0                          ; 02F10
         beq.w   l_000_02FE6                     ; 02F14
@@ -3916,7 +3946,7 @@ l_000_02FE6:
         move.l  #StatePause,(GameState).l       ; 03010
         bra.w   l_000_03198                     ; 0301A
 l_000_0301E:
-        move.b  -$1(a6),d0                      ; 0301E
+        move.b  StateFlying_Result(a6),d0       ; 0301E
         cmpi.b  #$ff,d0                         ; 03022
         bgt.w   l_000_03118                     ; 03026
         cmpi.b  #$fc,d0                         ; 0302A
@@ -3930,12 +3960,12 @@ l_000_0301E:
         move.b  #$1,(MissionResult).l           ; 0304C
         bra.b   l_000_03078                     ; 03054
 l_000_03056:
-        cmpi.b  #$fe,-$1(a6)                    ; 03056
+        cmpi.b  #$fe,StateFlying_Result(a6)     ; 03056
         bne.b   l_000_03068                     ; 0305C
         move.b  #$2,(MissionResult).l           ; 0305E
         bra.b   l_000_03078                     ; 03066
 l_000_03068:
-        cmpi.b  #$fc,-$1(a6)                    ; 03068
+        cmpi.b  #$fc,StateFlying_Result(a6)     ; 03068
         bne.b   l_000_03078                     ; 0306E
         move.b  #$4,(MissionResult).l           ; 03070
 l_000_03078:
@@ -3980,12 +4010,12 @@ l_000_03118:
         move.l  #StateMissionOver,(GameState).l ; 03132
         bra.b   l_000_03198                     ; 0313C
 l_000_0313E:
-        cmpi.b  #$f0,-$1(a6)                    ; 0313E
+        cmpi.b  #$f0,StateFlying_Result(a6)     ; 0313E
         bne.b   l_000_03152                     ; 03144
         move.l  #StateMissionOver,(GameState).l ; 03146
         bra.b   l_000_03198                     ; 03150
 l_000_03152:
-        cmpi.b  #$ef,-$1(a6)                    ; 03152
+        cmpi.b  #$ef,StateFlying_Result(a6)     ; 03152
         bne.b   l_000_03166                     ; 03158
         move.l  #StateQualified,(GameState).l   ; 0315A
         bra.b   l_000_03198                     ; 03164
@@ -4048,6 +4078,8 @@ l_000_031F2:
 ; ($4C). $FC: "your log now reflects this completed mission" ($54), MissionCompleted and
 ; SaveConfig. Back to StateFlying to show it.
 ;-------------------------------------------------------------------------------
+; StateDebrief's frame: arguments from 8(a6), locals below a6 (after its link)
+StateDebrief_Page       equ     -$6             ; the next TextPages entry
 StateDebrief:
         link.w  a6,#$fffa                       ; 031F4
         move.w  (StateTimer).l,d0               ; 031F8
@@ -4055,7 +4087,7 @@ StateDebrief:
         bpl.w   l_000_0345E                     ; 03200
         move.b  (GameMode).l,d0                 ; 03204
         ext.w   d0                              ; 0320A
-        move.l  #TextPages,-$6(a6)              ; 0320C
+        move.l  #TextPages,StateDebrief_Page(a6) ; 0320C
         clr.b   (FlightScreen).l                ; 03214
         lea.l   StateFlying(pc),a0              ; 0321A
         move.l  a0,(GameState).l                ; 0321E
@@ -4077,18 +4109,18 @@ StateDebrief:
         move.l  d1,-(a7)                        ; 03256
         jsr     (SetTextPage).l                 ; 03258
         lea.l   $c(a7),a7                       ; 0325E
-        movea.l -$6(a6),a0                      ; 03262
+        movea.l StateDebrief_Page(a6),a0        ; 03262
         addq.l  #$2,a0                          ; 03266
-        move.l  a0,-$6(a6)                      ; 03268
+        move.l  a0,StateDebrief_Page(a6)        ; 03268
         cmpi.w  #$3,-$2(a6)                     ; 0326C
         bne.b   l_000_03280                     ; 03272
         move.w  #$8055,(a0)                     ; 03274
-        addq.l  #$2,-$6(a6)                     ; 03278
+        addq.l  #$2,StateDebrief_Page(a6)       ; 03278
         bra.w   l_000_0342C                     ; 0327C
 l_000_03280:
-        movea.l -$6(a6),a0                      ; 03280
+        movea.l StateDebrief_Page(a6),a0        ; 03280
         move.w  #$8056,(a0)                     ; 03284
-        addq.l  #$2,-$6(a6)                     ; 03288
+        addq.l  #$2,StateDebrief_Page(a6)       ; 03288
         bra.w   l_000_0342C                     ; 0328C
 l_000_03290:
         move.b  (GameMode).l,d0                 ; 03290
@@ -4098,28 +4130,28 @@ l_000_03290:
         beq.b   l_000_032C2                     ; 032A0
         cmpi.l  #$7d,d0                         ; 032A2
         bne.b   l_000_032FA                     ; 032A8
-        movea.l -$6(a6),a0                      ; 032AA
+        movea.l StateDebrief_Page(a6),a0        ; 032AA
         move.w  #$48,(a0)                       ; 032AE
-        addq.l  #$2,-$6(a6)                     ; 032B2
+        addq.l  #$2,StateDebrief_Page(a6)       ; 032B2
         move.b  #$f0,(MissionResult).l          ; 032B6
         bra.w   l_000_0342C                     ; 032BE
 l_000_032C2:
         movea.l (ConfigBuffer).l,a0             ; 032C2
         move.w  #$1,(a0)                        ; 032C8
         jsr     (SaveConfig).l                  ; 032CC
-        movea.l -$6(a6),a0                      ; 032D2
+        movea.l StateDebrief_Page(a6),a0        ; 032D2
         move.w  #$4a,(a0)                       ; 032D6
         addq.l  #$2,a0                          ; 032DA
         move.w  #$8053,(a0)                     ; 032DC
         addq.l  #$2,a0                          ; 032E0
         move.b  #$1,(RestartMission).l          ; 032E2
         move.b  #$ef,(MissionResult).l          ; 032EA
-        move.l  a0,-$6(a6)                      ; 032F2
+        move.l  a0,StateDebrief_Page(a6)        ; 032F2
         bra.w   l_000_0342C                     ; 032F6
 l_000_032FA:
-        movea.l -$6(a6),a0                      ; 032FA
+        movea.l StateDebrief_Page(a6),a0        ; 032FA
         move.w  #$41,(a0)                       ; 032FE
-        addq.l  #$2,-$6(a6)                     ; 03302
+        addq.l  #$2,StateDebrief_Page(a6)       ; 03302
         bra.w   l_000_0342C                     ; 03306
 l_000_0330A:
         move.b  (MissionResult).l,d0            ; 0330A
@@ -4142,58 +4174,58 @@ l_000_03344:
         move.w  (FrameCount).l,d0               ; 03344
         btst    #$0,d0                          ; 0334A
         beq.b   l_000_0335E                     ; 0334E
-        movea.l -$6(a6),a0                      ; 03350
+        movea.l StateDebrief_Page(a6),a0        ; 03350
         move.w  #$24,(a0)                       ; 03354
-        addq.l  #$2,-$6(a6)                     ; 03358
+        addq.l  #$2,StateDebrief_Page(a6)       ; 03358
         bra.b   l_000_033D6                     ; 0335C
 l_000_0335E:
-        movea.l -$6(a6),a0                      ; 0335E
+        movea.l StateDebrief_Page(a6),a0        ; 0335E
         move.w  #$25,(a0)                       ; 03362
-        addq.l  #$2,-$6(a6)                     ; 03366
+        addq.l  #$2,StateDebrief_Page(a6)       ; 03366
         bra.b   l_000_033D6                     ; 0336A
 l_000_0336C:
-        movea.l -$6(a6),a0                      ; 0336C
+        movea.l StateDebrief_Page(a6),a0        ; 0336C
         move.w  #$2c,(a0)                       ; 03370
-        addq.l  #$2,-$6(a6)                     ; 03374
+        addq.l  #$2,StateDebrief_Page(a6)       ; 03374
         move.b  #$f0,(MissionResult).l          ; 03378
         bra.b   l_000_033D6                     ; 03380
 l_000_03382:
-        movea.l -$6(a6),a0                      ; 03382
+        movea.l StateDebrief_Page(a6),a0        ; 03382
         move.w  #$33,(a0)                       ; 03386
-        addq.l  #$2,-$6(a6)                     ; 0338A
+        addq.l  #$2,StateDebrief_Page(a6)       ; 0338A
         bra.b   l_000_033D6                     ; 0338E
 l_000_03390:
-        movea.l -$6(a6),a0                      ; 03390
+        movea.l StateDebrief_Page(a6),a0        ; 03390
         move.w  #$39,(a0)                       ; 03394
         addq.l  #$2,a0                          ; 03398
         move.w  (FrameCount).l,d0               ; 0339A
-        move.l  a0,-$6(a6)                      ; 033A0
+        move.l  a0,StateDebrief_Page(a6)        ; 033A0
         btst    #$0,d0                          ; 033A4
         beq.b   l_000_033BC                     ; 033A8
         move.w  #$803a,(a0)                     ; 033AA
-        addq.l  #$2,-$6(a6)                     ; 033AE
+        addq.l  #$2,StateDebrief_Page(a6)       ; 033AE
         move.b  #$f0,(MissionResult).l          ; 033B2
         bra.b   l_000_033D6                     ; 033BA
 l_000_033BC:
-        movea.l -$6(a6),a0                      ; 033BC
+        movea.l StateDebrief_Page(a6),a0        ; 033BC
         move.w  #$805c,(a0)                     ; 033C0
-        addq.l  #$2,-$6(a6)                     ; 033C4
+        addq.l  #$2,StateDebrief_Page(a6)       ; 033C4
         bra.b   l_000_033D6                     ; 033C8
 l_000_033CA:
-        movea.l -$6(a6),a0                      ; 033CA
+        movea.l StateDebrief_Page(a6),a0        ; 033CA
         move.w  #$42,(a0)                       ; 033CE
-        addq.l  #$2,-$6(a6)                     ; 033D2
+        addq.l  #$2,StateDebrief_Page(a6)       ; 033D2
 l_000_033D6:
         move.b  (MissionResult).l,d0            ; 033D6
         cmpi.b  #$f0,d0                         ; 033DC
         beq.b   l_000_0342C                     ; 033E0
-        movea.l -$6(a6),a0                      ; 033E2
+        movea.l StateDebrief_Page(a6),a0        ; 033E2
         addq.l  #$2,a0                          ; 033E6
         move.w  #$8056,(a0)                     ; 033E8
         addq.l  #$2,a0                          ; 033EC
         move.w  #$8053,(a0)                     ; 033EE
         addq.l  #$2,a0                          ; 033F2
-        move.l  a0,-$6(a6)                      ; 033F4
+        move.l  a0,StateDebrief_Page(a6)        ; 033F4
         bra.b   l_000_0342C                     ; 033F8
 l_000_033FA:
         move.b  (MissionResult).l,d0            ; 033FA
@@ -4204,24 +4236,24 @@ l_000_033FA:
         ext.l   d0                              ; 0340E
         cmpi.l  #$4,d0                          ; 03410
         bne.b   l_000_0342C                     ; 03416
-        movea.l -$6(a6),a0                      ; 03418
+        movea.l StateDebrief_Page(a6),a0        ; 03418
         move.w  #$4c,(a0)                       ; 0341C
-        addq.l  #$2,-$6(a6)                     ; 03420
+        addq.l  #$2,StateDebrief_Page(a6)       ; 03420
         move.b  #$f0,(MissionResult).l          ; 03424
 l_000_0342C:
         move.b  (MissionResult).l,d0            ; 0342C
         cmpi.b  #$fc,d0                         ; 03432
         bne.b   l_000_03458                     ; 03436
-        movea.l -$6(a6),a0                      ; 03438
+        movea.l StateDebrief_Page(a6),a0        ; 03438
         move.w  #$54,(a0)                       ; 0343C
         addq.l  #$2,a0                          ; 03440
         move.w  #$8053,(a0)                     ; 03442
         addq.l  #$2,a0                          ; 03446
-        move.l  a0,-$6(a6)                      ; 03448
+        move.l  a0,StateDebrief_Page(a6)        ; 03448
         jsr     (MissionCompleted).l            ; 0344C
         jsr     (SaveConfig).l                  ; 03452
 l_000_03458:
-        movea.l -$6(a6),a0                      ; 03458
+        movea.l StateDebrief_Page(a6),a0        ; 03458
         clr.w   (a0)                            ; 0345C
 l_000_0345E:
         unlk    a6                              ; 0345E
@@ -4253,6 +4285,8 @@ ClearTextPages:
 ; (ConfigBuffer+$06) and its rating (+$07), missions completed (+$38) and the times the mission
 ; was completed (+$12+mode, at most 3); raises the difficulty by one (at most 3).
 ;-------------------------------------------------------------------------------
+; MissionCompleted's frame: arguments from 8(a6), locals below a6 (after its link)
+MissionCompleted_Record equ     -$4             ; the mission's record
 MissionCompleted:
         link.w  a6,#$fffc                       ; 034A0
         move.b  (GameMode).l,d0                 ; 034A4
@@ -4261,11 +4295,11 @@ MissionCompleted:
         movea.l (ConfigBuffer).l,a0             ; 034AE
         adda.w  #$12,a0                         ; 034B4
         adda.l  d0,a0                           ; 034B8
-        move.l  a0,-$4(a6)                      ; 034BA
+        move.l  a0,MissionCompleted_Record(a6)  ; 034BA
         jsr     (PutDifficulty).l               ; 034BE
         movea.l (ConfigBuffer).l,a0             ; 034C4
         move.b  (GameMode).l,$6(a0)             ; 034CA
-        movea.l -$4(a6),a0                      ; 034D2
+        movea.l MissionCompleted_Record(a6),a0  ; 034D2
         movea.l (ConfigBuffer).l,a1             ; 034D6
         move.b  (a0),$7(a1)                     ; 034DC
         movea.l (ConfigBuffer).l,a0             ; 034E0
@@ -4280,7 +4314,7 @@ MissionCompleted:
         ble.b   l_000_03512                     ; 03508
         move.b  #$3,(Difficulty).l              ; 0350A
 l_000_03512:
-        movea.l -$4(a6),a0                      ; 03512
+        movea.l MissionCompleted_Record(a6),a0  ; 03512
         move.b  (a0),d0                         ; 03516
         addq.b  #$1,d0                          ; 03518
         move.b  d0,(a0)                         ; 0351A
@@ -4377,6 +4411,8 @@ l_000_03620:
 ; disk" ($5E), then StateLogDiskWait; with a good disk, or once the player goes on without one,
 ; StateWelcome.
 ;-------------------------------------------------------------------------------
+; StateLogDisk's frame: arguments from 8(a6), locals below a6 (after its link)
+StateLogDisk_Page       equ     -$4             ; the next TextPages entry
 StateLogDisk:
         link.w  a6,#$fffc                       ; 03622
         jsr     (ClearScreen).l                 ; 03626
@@ -4403,32 +4439,32 @@ l_000_03676:
         addq.l  #$4,a7                          ; 03680
         lea.l   (TextPages).l,a0                ; 03682
         move.w  (LogDiskStatus).l,d0            ; 03688
-        move.l  a0,-$4(a6)                      ; 0368E
+        move.l  a0,StateLogDisk_Page(a6)        ; 0368E
         subq.w  #$1,d0                          ; 03692
         bne.b   l_000_036A0                     ; 03694
         move.w  #$44,(a0)                       ; 03696
-        addq.l  #$2,-$4(a6)                     ; 0369A
+        addq.l  #$2,StateLogDisk_Page(a6)       ; 0369A
         bra.b   l_000_036CE                     ; 0369E
 l_000_036A0:
         move.w  (LogDiskStatus).l,d0            ; 036A0
         subq.w  #$2,d0                          ; 036A6
         bne.b   l_000_036B8                     ; 036A8
-        movea.l -$4(a6),a0                      ; 036AA
+        movea.l StateLogDisk_Page(a6),a0        ; 036AA
         move.w  #$45,(a0)                       ; 036AE
-        addq.l  #$2,-$4(a6)                     ; 036B2
+        addq.l  #$2,StateLogDisk_Page(a6)       ; 036B2
         bra.b   l_000_036CE                     ; 036B6
 l_000_036B8:
         move.w  (LogDiskStatus).l,d0            ; 036B8
         subq.w  #$3,d0                          ; 036BE
         bne.b   l_000_036CE                     ; 036C0
-        movea.l -$4(a6),a0                      ; 036C2
+        movea.l StateLogDisk_Page(a6),a0        ; 036C2
         move.w  #$46,(a0)                       ; 036C6
-        addq.l  #$2,-$4(a6)                     ; 036CA
+        addq.l  #$2,StateLogDisk_Page(a6)       ; 036CA
 l_000_036CE:
-        movea.l -$4(a6),a0                      ; 036CE
+        movea.l StateLogDisk_Page(a6),a0        ; 036CE
         move.w  #$5e,(a0)                       ; 036D2
-        addq.l  #$2,-$4(a6)                     ; 036D6
-        movea.l -$4(a6),a0                      ; 036DA
+        addq.l  #$2,StateLogDisk_Page(a6)       ; 036D6
+        movea.l StateLogDisk_Page(a6),a0        ; 036DA
         clr.w   (a0)                            ; 036DE
         lea.l   StateLogDiskWait(pc),a0         ; 036E0
         move.l  a0,(GameState).l                ; 036E4
@@ -4455,6 +4491,10 @@ l_000_03708:
 ; continuing tour of duty" with the callsign (ConfigBuffer+$1E, up to 24 letters) copied in,
 ; StateWelcomeBack.
 ;-------------------------------------------------------------------------------
+; StateWelcome's frame: arguments from 8(a6), locals below a6 (after its link)
+StateWelcome_I          equ     -$2             ; the character count
+StateWelcome_To         equ     -$6             ; where the next character goes
+StateWelcome_From       equ     -$A             ; the next character
 StateWelcome:
         link.w  a6,#$fff6                       ; 0370A
         move.w  (LogDiskStatus).l,d0            ; 0370E
@@ -4481,26 +4521,26 @@ StateWelcome:
 l_000_0376C:
         move.w  #$2,(TextPages).l               ; 0376C
         lea.l   (TextWelcome).l,a0              ; 03774
-        move.l  a0,-$6(a6)                      ; 0377A
+        move.l  a0,StateWelcome_To(a6)          ; 0377A
         adda.w  #$a,a0                          ; 0377E
         movea.l (ConfigBuffer).l,a1             ; 03782
         adda.w  #$1e,a1                         ; 03788
-        clr.w   -$2(a6)                         ; 0378C
-        move.l  a0,-$6(a6)                      ; 03790
-        move.l  a1,-$a(a6)                      ; 03794
+        clr.w   StateWelcome_I(a6)              ; 0378C
+        move.l  a0,StateWelcome_To(a6)          ; 03790
+        move.l  a1,StateWelcome_From(a6)        ; 03794
 l_000_03798:
-        cmpi.w  #$18,-$2(a6)                    ; 03798
+        cmpi.w  #$18,StateWelcome_I(a6)         ; 03798
         bge.b   l_000_037C2                     ; 0379E
-        movea.l -$a(a6),a0                      ; 037A0
+        movea.l StateWelcome_From(a6),a0        ; 037A0
         move.b  (a0),d0                         ; 037A4
         tst.b   d0                              ; 037A6
         beq.b   l_000_037C2                     ; 037A8
-        movea.l -$a(a6),a0                      ; 037AA
-        movea.l -$6(a6),a1                      ; 037AE
+        movea.l StateWelcome_From(a6),a0        ; 037AA
+        movea.l StateWelcome_To(a6),a1          ; 037AE
         move.b  (a0),(a1)                       ; 037B2
-        addq.l  #$1,-$a(a6)                     ; 037B4
-        addq.l  #$1,-$6(a6)                     ; 037B8
-        addq.w  #$1,-$2(a6)                     ; 037BC
+        addq.l  #$1,StateWelcome_From(a6)       ; 037B4
+        addq.l  #$1,StateWelcome_To(a6)         ; 037B8
+        addq.w  #$1,StateWelcome_I(a6)          ; 037BC
         bra.b   l_000_03798                     ; 037C0
 l_000_037C2:
         lea.l   StateWelcomeBack(pc),a0         ; 037C2
@@ -4883,18 +4923,21 @@ l_000_03C52:
 ;-------------------------------------------------------------------------------
 ; BlackPalette - Clears the palette (all colours black).
 ;-------------------------------------------------------------------------------
+; BlackPalette's frame: arguments from 8(a6), locals below a6 (after its link)
+BlackPalette_I          equ     -$2             ; the long being cleared
+BlackPalette_To         equ     -$6             ; the next place in LivePalette
 BlackPalette:
         link.w  a6,#$fffa                       ; 03C5E
         move.b  #$2,(PaletteLoadCount).l        ; 03C62
-        move.l  (LivePalette).l,-$6(a6)         ; 03C6A
-        clr.w   -$2(a6)                         ; 03C72
+        move.l  (LivePalette).l,BlackPalette_To(a6) ; 03C6A
+        clr.w   BlackPalette_I(a6)              ; 03C72
 l_000_03C76:
-        cmpi.w  #$10,-$2(a6)                    ; 03C76
+        cmpi.w  #$10,BlackPalette_I(a6)         ; 03C76
         bge.b   l_000_03C8E                     ; 03C7C
-        movea.l -$6(a6),a0                      ; 03C7E
+        movea.l BlackPalette_To(a6),a0          ; 03C7E
         clr.l   (a0)                            ; 03C82
-        addq.l  #$4,-$6(a6)                     ; 03C84
-        addq.w  #$1,-$2(a6)                     ; 03C88
+        addq.l  #$4,BlackPalette_To(a6)         ; 03C84
+        addq.w  #$1,BlackPalette_I(a6)          ; 03C88
         bra.b   l_000_03C76                     ; 03C8C
 l_000_03C8E:
         unlk    a6                              ; 03C8E

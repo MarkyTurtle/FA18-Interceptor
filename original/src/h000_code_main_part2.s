@@ -298,7 +298,7 @@ l_000_046BA:
 l_000_04706:
         move.b  VectorToAngles_Signs(a6),d0     ; 04706
         andi.b  #$5,d0                          ; 0470A
-        move.b  d0,-$A(a6)                      ; 0470E
+        move.b  d0,-$a(a6)                      ; 0470E
         subq.b  #$5,d0                          ; 04712
         bne.b   l_000_04726                     ; 04714
         move.l  #$3840,d0                       ; 04716
@@ -306,12 +306,12 @@ l_000_04706:
         move.l  d0,VectorToAngles_HeadingTo(a6) ; 04720
         bra.b   l_000_0474C                     ; 04724
 l_000_04726:
-        cmpi.b  #$4,-$A(a6)                     ; 04726
+        cmpi.b  #$4,-$a(a6)                     ; 04726
         bne.b   l_000_04738                     ; 0472C
         addi.l  #$3840,VectorToAngles_HeadingTo(a6) ; 0472E
         bra.b   l_000_0474C                     ; 04736
 l_000_04738:
-        tst.b   -$A(a6)                         ; 04738
+        tst.b   -$a(a6)                         ; 04738
         bne.b   l_000_0474C                     ; 0473C
         move.l  #$7080,d0                       ; 0473E
         sub.l   VectorToAngles_HeadingTo(a6),d0 ; 04744
@@ -1507,6 +1507,8 @@ FiveEighths:
 ; EngineSoundLevel - The engine sound's level from the cockpit object's speed (+$6E; 16 under a
 ; parachute).
 ;-------------------------------------------------------------------------------
+; EngineSoundLevel's frame: arguments from 8(a6), locals below a6 (after its link)
+EngineSoundLevel_Level  equ     -$2             ; the level (1-63)
 EngineSoundLevel:
         link.w  a6,#$fffe                       ; 05502
         movea.l (CockpitObject).l,a0            ; 05506
@@ -1514,36 +1516,36 @@ EngineSoundLevel:
         andi.b  #$f0,d0                         ; 05510
         cmpi.b  #$30,d0                         ; 05514
         bne.b   l_000_05522                     ; 05518
-        move.w  #$10,-$2(a6)                    ; 0551A
+        move.w  #$10,EngineSoundLevel_Level(a6) ; 0551A
         bra.b   l_000_05570                     ; 05520
 l_000_05522:
         movea.l (CockpitObject).l,a0            ; 05522
         move.w  $6e(a0),d0                      ; 05528
-        move.w  d0,-$2(a6)                      ; 0552C
+        move.w  d0,EngineSoundLevel_Level(a6)   ; 0552C
         tst.w   d0                              ; 05530
         bpl.b   l_000_05538                     ; 05532
-        neg.w   -$2(a6)                         ; 05534
+        neg.w   EngineSoundLevel_Level(a6)      ; 05534
 l_000_05538:
         moveq   #$9,d0                          ; 05538
-        move.w  -$2(a6),d1                      ; 0553A
+        move.w  EngineSoundLevel_Level(a6),d1   ; 0553A
         asr.w   d0,d1                           ; 0553E
-        move.w  d1,-$2(a6)                      ; 05540
+        move.w  d1,EngineSoundLevel_Level(a6)   ; 05540
         cmpi.w  #$3f,d1                         ; 05544
         ble.b   l_000_05550                     ; 05548
-        move.w  #$3f,-$2(a6)                    ; 0554A
+        move.w  #$3f,EngineSoundLevel_Level(a6) ; 0554A
 l_000_05550:
         move.b  (OutsideView).l,d0              ; 05550
         tst.b   d0                              ; 05556
         bne.b   l_000_05564                     ; 05558
-        move.w  -$2(a6),d0                      ; 0555A
+        move.w  EngineSoundLevel_Level(a6),d0   ; 0555A
         asr.w   #$1,d0                          ; 0555E
-        move.w  d0,-$2(a6)                      ; 05560
+        move.w  d0,EngineSoundLevel_Level(a6)   ; 05560
 l_000_05564:
-        tst.w   -$2(a6)                         ; 05564
+        tst.w   EngineSoundLevel_Level(a6)      ; 05564
         bne.b   l_000_05570                     ; 05568
-        move.w  #$1,-$2(a6)                     ; 0556A
+        move.w  #$1,EngineSoundLevel_Level(a6)  ; 0556A
 l_000_05570:
-        move.w  -$2(a6),d0                      ; 05570
+        move.w  EngineSoundLevel_Level(a6),d0   ; 05570
         ext.l   d0                              ; 05574
         unlk    a6                              ; 05576
         rts                                     ; 05578
