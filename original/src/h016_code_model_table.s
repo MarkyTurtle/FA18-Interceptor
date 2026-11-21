@@ -641,7 +641,7 @@ DrawAircraft:
 l_016_00AB6:
         jmp     (DrawModel).l                   ; 00AB6
 l_016_00ABC:
-        cmpi.b  #$5,$7a(a1)                     ; 00ABC
+        cmpi.b  #$5,obj_Attack(a1)              ; 00ABC
         beq.b   l_016_00AD0                     ; 00AC2
         tst.w   obj_Timer(a1)                   ; 00AC4
         bge.b   l_016_00AD0                     ; 00AC8

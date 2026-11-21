@@ -940,7 +940,7 @@ l_022_00B36:
         btst    #$4,obj_Flags2(a1)              ; 00B3C
         bne.b   l_022_00B5C                     ; 00B42
 l_022_00B44:
-        move.b  $3d(a1),d0                      ; 00B44
+        move.b  obj_FlameLength(a1),d0          ; 00B44
         beq.b   l_022_00B4E                     ; 00B48
         subq.b  #$1,d0                          ; 00B4A
         bgt.b   l_022_00B6E                     ; 00B4C
@@ -955,7 +955,7 @@ l_022_00B5C:
         blt.b   l_022_00B6E                     ; 00B68
         move.b  #$4,d0                          ; 00B6A
 l_022_00B6E:
-        move.b  d0,$3d(a1)                      ; 00B6E
+        move.b  d0,obj_FlameLength(a1)          ; 00B6E
         rts                                     ; 00B72
 h022_end:
 	ifnd	HUNKEXE				; the hunk's tables, as in the original file

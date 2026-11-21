@@ -18,7 +18,7 @@ l_024_00000:
 ; ObjectCollisions's frame: arguments from 8(a6), locals below a6 (after its link)
 ObjectCollisions_Flags  equ     -$14            ; the current object's obj_Flags (its low byte at Flags+1) (2 bytes)
 ObjectCollisions_Flags2 equ     -$16            ; its obj_Flags2
-ObjectCollisions_Zone5E equ     -$1A            ; its +$5E (compared with the others')
+ObjectCollisions_Group  equ     -$1A            ; its obj_Group (objects with the same are not tested)
 ObjectCollisions_Class  equ     -$22            ; the other object's type & $F0
 ObjectCollisions_I      equ     -$30            ; the count
 ObjectCollisions_Count  equ     -$32            ; the number of them
@@ -32,7 +32,7 @@ ObjectCollisions:
         link.w  a6,#$ffa4                       ; 0000E
         lea.l   (ObjectTable).l,a0              ; 00012
         move.w  (CurrentObjectOffset).l,d0      ; 00018
-        move.b  $5e(a0,d0.w),ObjectCollisions_Zone5E(a6) ; 0001E
+        move.b  obj_Group(a0,d0.w),ObjectCollisions_Group(a6) ; 0001E
         andi.b  #$3f,obj_Bits(a0,d0.w)          ; 00024
         move.w  (a0,d0.w),ObjectCollisions_Flags(a6) ; 0002A
         move.w  obj_Flags2(a0,d0.w),ObjectCollisions_Flags2(a6) ; 00030
@@ -51,8 +51,8 @@ l_024_00048:
         beq.b   l_024_00048                     ; 0005E
         andi.w  #$600,d5                        ; 00060
         bne.b   l_024_00048                     ; 00064
-        move.b  $5e(a0,d0.w),d5                 ; 00066
-        cmp.b   ObjectCollisions_Zone5E(a6),d5  ; 0006A
+        move.b  obj_Group(a0,d0.w),d5           ; 00066
+        cmp.b   ObjectCollisions_Group(a6),d5  ; 0006A
         beq.b   l_024_00048                     ; 0006E
         btst    #$3,ObjectCollisions_Flags+1(a6) ; 00070
         bne.b   l_024_00080                     ; 00076
@@ -695,15 +695,15 @@ l_024_007A6:
         lea.l   $e(a4),a1                       ; 007BC
         move.w  (a0)+,-$1e(a6)                  ; 007C0
         move.b  obj_Scale(a3),d3                ; 007C4
-        move.w  $a4(a3),d6                      ; 007C8
+        move.w  obj_Vertices(a3),d6             ; 007C8
         andi.w  #$f,d3                          ; 007CC
         asr.w   d3,d6                           ; 007D0
         ext.l   d6                              ; 007D2
         add.l   d6,d0                           ; 007D4
-        move.w  $a6(a3),d4                      ; 007D6
+        move.w  obj_Vertices+2(a3),d4           ; 007D6
         asr.w   d3,d4                           ; 007DA
         add.w   d4,d1                           ; 007DC
-        move.w  $a8(a3),d6                      ; 007DE
+        move.w  obj_Vertices+4(a3),d6           ; 007DE
         asr.w   d3,d6                           ; 007E2
         ext.l   d6                              ; 007E4
         add.l   d6,d2                           ; 007E6
@@ -830,9 +830,9 @@ l_024_00936:
         move.w  (a0)+,-$1e(a6)                  ; 0093E
         move.b  obj_Scale(a3),d3                ; 00942
         andi.w  #$f,d3                          ; 00946
-        move.w  $aa(a3),d0                      ; 0094A
-        move.w  $ac(a3),d1                      ; 0094E
-        move.w  $ae(a3),d2                      ; 00952
+        move.w  obj_Vertices+6(a3),d0           ; 0094A
+        move.w  obj_Vertices+8(a3),d1           ; 0094E
+        move.w  obj_Vertices+10(a3),d2          ; 00952
         asr.w   d3,d0                           ; 00956
         asr.w   d3,d1                           ; 00958
         asr.w   d3,d2                           ; 0095A
@@ -873,9 +873,9 @@ l_024_009A8:
         move.w  (a0)+,-$1e(a6)                  ; 009B0
         move.b  obj_Scale(a3),d3                ; 009B4
         andi.w  #$f,d3                          ; 009B8
-        move.w  $b0(a3),d0                      ; 009BC
-        move.w  $b2(a3),d1                      ; 009C0
-        move.w  $b4(a3),d2                      ; 009C4
+        move.w  obj_Vertices+12(a3),d0          ; 009BC
+        move.w  obj_Vertices+14(a3),d1          ; 009C0
+        move.w  obj_Vertices+16(a3),d2          ; 009C4
         asr.w   d3,d0                           ; 009C8
         asr.w   d3,d1                           ; 009CA
         asr.w   d3,d2                           ; 009CC
@@ -918,7 +918,7 @@ l_024_00A1E:
         adda.w  (CurrentObjectOffset).l,a1      ; 00A24
         btst    #$3,obj_Flags+1(a1)             ; 00A2A
         beq.b   l_024_00A7E                     ; 00A30
-        tst.b   $5e(a1)                         ; 00A32
+        tst.b   obj_Group(a1)                   ; 00A32
         bne.b   l_024_00A68                     ; 00A36
         movea.l (ConfigBuffer).l,a2             ; 00A38
         cmpi.b  #$0,obj_Type(a1)                ; 00A3E
@@ -957,7 +957,7 @@ l_024_00AAA:
 l_024_00AB0:
         move.l  obj_Y8(a3),d1                   ; 00AB0
         move.l  d1,d2                           ; 00AB4
-        move.b  $7b(a3),d0                      ; 00AB6
+        move.b  obj_ShapeFlag(a3),d0            ; 00AB6
         blt.b   l_024_00B00                     ; 00ABA
         move.b  obj_Type(a3),d7                 ; 00ABC
         andi.b  #$f0,d7                         ; 00AC0
@@ -965,19 +965,19 @@ l_024_00AB0:
         bne.b   l_024_00B00                     ; 00AC8
         andi.w  #$f,d0                          ; 00ACA
         bne.b   l_024_00B00                     ; 00ACE
-        move.w  $a6(a3),d1                      ; 00AD0
+        move.w  obj_Vertices+2(a3),d1           ; 00AD0
         move.b  obj_Scale(a3),d3                ; 00AD4
         andi.w  #$f,d3                          ; 00AD8
         asr.w   d3,d1                           ; 00ADC
         ext.l   d1                              ; 00ADE
         add.l   d2,d1                           ; 00AE0
         blt.b   l_024_00B0A                     ; 00AE2
-        move.w  $ac(a3),d1                      ; 00AE4
+        move.w  obj_Vertices+8(a3),d1           ; 00AE4
         asr.w   d3,d1                           ; 00AE8
         ext.l   d1                              ; 00AEA
         add.l   d2,d1                           ; 00AEC
         blt.b   l_024_00B0A                     ; 00AEE
-        move.w  $b2(a3),d1                      ; 00AF0
+        move.w  obj_Vertices+14(a3),d1          ; 00AF0
         asr.w   d3,d1                           ; 00AF4
         ext.l   d1                              ; 00AF6
         add.l   d2,d1                           ; 00AF8

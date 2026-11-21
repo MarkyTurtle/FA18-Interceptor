@@ -111,7 +111,7 @@ DrawObjectFlame:
         move.b  (FlameStep2).l,d0               ; 000E4
 l_015_000EA:
         move.b  d0,-$20(a6)                     ; 000EA
-        move.b  $3d(a1),-$a(a6)                 ; 000EE
+        move.b  obj_FlameLength(a1),-$a(a6)     ; 000EE
         ble.w   l_015_00394                     ; 000F4
         cmpi.b  #$6,(FlameStep).l               ; 000F8
         bge.b   l_015_00106                     ; 00100
@@ -144,7 +144,7 @@ l_015_00132:
         bge.b   l_015_00160                     ; 0015C
         subq.b  #$1,d0                          ; 0015E
 l_015_00160:
-        add.b   $3d(a1),d0                      ; 00160
+        add.b   obj_FlameLength(a1),d0          ; 00160
         bge.b   l_015_0016C                     ; 00164
         add.b   (FlameStep).l,d0                ; 00166
 l_015_0016C:
@@ -252,7 +252,7 @@ l_015_00278:
 l_015_0027C:
         tst.w   -$26(a6)                        ; 0027C
         blt.w   l_015_00340                     ; 00280
-        cmpi.b  #$1,$3d(a1)                     ; 00284
+        cmpi.b  #$1,obj_FlameLength(a1)         ; 00284
         ble.w   l_015_00340                     ; 0028A
         movem.w d0-d2/d6/a3,-(a7)               ; 0028E
         movem.w -$2c(a6),d3-d5/d7/a4            ; 00292

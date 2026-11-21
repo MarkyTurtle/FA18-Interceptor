@@ -1205,9 +1205,9 @@ l_030_00E4E:
         bge.b   l_030_00E58                     ; 00E52
         move.w  #$1800,d0                       ; 00E54
 l_030_00E58:
-        cmpi.b  #$3,$7a(a1)                     ; 00E58
+        cmpi.b  #$3,obj_Attack(a1)              ; 00E58
         beq.b   l_030_00E68                     ; 00E5E
-        cmpi.b  #$4,$7a(a1)                     ; 00E60
+        cmpi.b  #$4,obj_Attack(a1)              ; 00E60
         bne.b   l_030_00ED2                     ; 00E66
 l_030_00E68:
         tst.w   d3                              ; 00E68

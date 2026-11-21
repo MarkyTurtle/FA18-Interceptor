@@ -2651,7 +2651,8 @@ obj_Z                   rs.l    1
 obj_Status              rs.b    1               ; what has happened to it: bit 1 destroyed, 2
                                                 ; damaged, 6 signature confirmed, 7 hit by the
                                                 ; player
-                        rs.b    1
+obj_Status2             rs.b    1               ; bit 0: landed (the flight time counted;
+                                                ; PlayerParked)
 obj_Weight              rs.w    1               ; (a weight-like term in the stall check)
                         rs.w    1
 obj_Response            rs.w    1               ; responsiveness (at most 15; a missile: $14 at
@@ -2670,7 +2671,9 @@ obj_Target              rs.b    1               ; its target ($80 + an object; c
 obj_ThrottleStep        rs.b    1               ; low nibble: the throttle's step
 obj_Route               rs.b    1               ; the route (Routes)
                         rs.b    1
-                        rs.w    1
+                        rs.b    1
+obj_FlameLength         rs.b    1               ; the flame's length (0-4: grows while it burns,
+                                                ; Flags2 bit 4)
 obj_VelX                rs.l    1               ; its velocity
 obj_VelY                rs.l    1
 obj_VelZ                rs.l    1
@@ -2687,7 +2690,8 @@ obj_YawRate             rs.w    1               ; the rudder this one,
 obj_RollRate            rs.w    1               ; the roll stick this one
                         rs.b    1
 obj_Zone                rs.b    1               ; its zone (Zones, for KeepInZone)
-                        rs.b    1
+obj_Group               rs.b    1               ; objects with the same don't collide (a missile:
+                                                ; its launcher's number)
 obj_Missiles            rs.b    1               ; missiles left: low nibble AMRAAMs, high nibble
                                                 ; Sidewinders
 obj_Rounds              rs.w    1               ; cannon rounds left
@@ -2704,13 +2708,18 @@ obj_Heading             rs.w    1
 obj_Roll                rs.w    1
 obj_Speed               rs.w    1               ; its speed
 obj_SpeedFlown          rs.w    1               ; the speed flown (obj_Speed + obj_ClimbSpeed)
-                        rs.b    1
-                        rs.b    1
+obj_MapSnap             rs.b    1               ; the map mark's last place (the low nibbles of x
+                                                ; and y)
+obj_MapDir              rs.b    1               ; the map mark's direction (the heading in 16ths;
+                                                ; -1: not yet)
 obj_Fuel                rs.l    1               ; fuel (6,400,000 at the start)
 obj_Lift                rs.w    1               ; lift / sink (vertical velocity)
 obj_ClimbSpeed          rs.w    1               ; speed lost climbing / gained diving
                                                 ; (ClimbDivePhysics)
-                        rs.w    1
+obj_Attack              rs.b    1               ; 3 attacking, 4 attacking close (obj_Range <
+                                                ; $1E00), 5 broken off (sent on its route)
+obj_ShapeFlag           rs.b    1               ; the shape drawn's flag byte (DrawSceneryPlain;
+                                                ; negative: none)
 obj_Ejection            rs.b    1               ; the ejection: low nibble its step, bit 7
                                                 ; (SetObjectBit7C)
 obj_Scale               rs.b    1               ; low nibble: a scale shift

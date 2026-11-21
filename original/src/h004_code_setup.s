@@ -593,7 +593,7 @@ ResetPlayerMotion:
 ;-------------------------------------------------------------------------------
 ResetPlayerFlags:
         lea.l   (ObjectTable).l,a0              ; 00768
-        bclr    #$0,$21(a0)                     ; 0076E
+        bclr    #$0,obj_Status2(a0)             ; 0076E
         move.b  #$d,obj_Weapon(a0)              ; 00774
         jsr     (ResetPlayerAircraft).l         ; 0077A
         move.w  #$148,obj_Flags(a0)             ; 00780
@@ -608,7 +608,7 @@ ResetPlayerFlags:
         clr.b   (JToggle).l                     ; 007B6
         move.w  #$7fff,(ObjectDistanceSound).l  ; 007BC
         move.b  #$1,(MouseActive).l             ; 007C4
-        move.b  #$ff,$71(a0)                    ; 007CC
+        move.b  #$ff,obj_MapDir(a0)             ; 007CC
         move.w  #$ffff,(LockedTarget).l         ; 007D2
         clr.b   (RadarLockState).l              ; 007DA
         tst.b   (MissionResult).l               ; 007E0

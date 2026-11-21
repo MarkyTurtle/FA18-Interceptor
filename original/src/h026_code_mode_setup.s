@@ -218,7 +218,7 @@ l_026_001CA:
         move.w  #$ffff,obj_DestCellX(a1)        ; 00252
         clr.b   obj_State(a1)                   ; 00258
         move.w  (CurrentObject).l,d0            ; 0025C
-        move.b  d0,$5e(a1)                      ; 00262
+        move.b  d0,obj_Group(a1)                ; 00262
         clr.b   (FlameStep).l                   ; 00266
         clr.b   (FlameStep2).l                  ; 0026C
         rts                                     ; 00272
@@ -300,12 +300,12 @@ l_026_00324:
         andi.w  #$ff00,d1                       ; 00326
         bne.b   l_026_0035A                     ; 0032A
 l_026_0032C:
-        cmpi.b  #$3,$7a(a0)                     ; 0032C
+        cmpi.b  #$3,obj_Attack(a0)              ; 0032C
         beq.b   l_026_0033C                     ; 00332
-        cmpi.b  #$4,$7a(a0)                     ; 00334
+        cmpi.b  #$4,obj_Attack(a0)              ; 00334
         bne.b   l_026_00342                     ; 0033A
 l_026_0033C:
-        move.b  #$5,$7a(a0)                     ; 0033C
+        move.b  #$5,obj_Attack(a0)              ; 0033C
 l_026_00342:
         move.w  (a4)+,d6                        ; 00342
         ext.l   d6                              ; 00344
@@ -345,7 +345,7 @@ l_026_00386:
         ori.b   #$80,d5                         ; 003C6
         move.b  d5,obj_Target(a0)               ; 003CA
 l_026_003CE:
-        move.b  #$3,$7a(a0)                     ; 003CE
+        move.b  #$3,obj_Attack(a0)              ; 003CE
 l_026_003D4:
         nop                                     ; 003D4
 l_026_003D6:
@@ -461,18 +461,18 @@ l_026_004CE:
 l_026_004D4:
         clr.l   (a1)+                           ; 004D4
         dbra    d3,l_026_004D4                  ; 004D6
-        move.b  $7d(a0),d2                      ; 004DA
+        move.b  obj_Scale(a0),d2                ; 004DA
         andi.b  #$f0,d2                         ; 004DE
         or.b    d4,d2                           ; 004E2
-        move.b  d2,$7d(a0)                      ; 004E4
-        move.b  d0,$62(a0)                      ; 004E8
+        move.b  d2,obj_Scale(a0)                ; 004E4
+        move.b  d0,obj_Type(a0)                 ; 004E8
         swap    d0                              ; 004EC
-        move.b  d1,$5e(a0)                      ; 004EE
+        move.b  d1,obj_Group(a0)                ; 004EE
         move.w  (a2)+,d1                        ; 004F2
         move.w  d1,d2                           ; 004F4
         andi.w  #$7f00,d2                       ; 004F6
         lsr.w   #$8,d2                          ; 004FA
-        move.b  d2,$3a(a0)                      ; 004FC
+        move.b  d2,obj_Route(a0)                ; 004FC
         move.w  (a2)+,d2                        ; 00500
         lea.l   (Routes).l,a4                   ; 00502
         adda.w  (a4,d2.w),a4                    ; 00508
@@ -480,26 +480,26 @@ l_026_004D4:
         move.w  d2,d3                           ; 0050E
         andi.w  #$8000,d2                       ; 00510
         bne.b   l_026_00532                     ; 00514
-        bclr    #$3,$1(a0)                      ; 00516
-        move.b  $62(a0),d2                      ; 0051C
+        bclr    #$3,obj_Flags+1(a0)             ; 00516
+        move.b  obj_Type(a0),d2                 ; 0051C
         andi.b  #$f0,d2                         ; 00520
         cmpi.b  #$10,d2                         ; 00524
         bne.b   l_026_00538                     ; 00528
         addq.b  #$1,(TargetsPlaced).l           ; 0052A
         bra.b   l_026_00538                     ; 00530
 l_026_00532:
-        bset    #$3,$1(a0)                      ; 00532
+        bset    #$3,obj_Flags+1(a0)             ; 00532
 l_026_00538:
         move.w  d3,d2                           ; 00538
         andi.w  #$4000,d3                       ; 0053A
         beq.b   l_026_00546                     ; 0053E
-        move.b  #$8,$5(a0)                      ; 00540
+        move.b  #$8,obj_State(a0)               ; 00540
 l_026_00546:
         swap    d1                              ; 00546
         move.w  d2,d1                           ; 00548
         andi.w  #$2000,d2                       ; 0054A
         beq.b   l_026_00556                     ; 0054E
-        bset    #$0,$1(a0)                      ; 00550
+        bset    #$0,obj_Flags+1(a0)             ; 00550
 l_026_00556:
         movem.w (a4)+,d2-d6                     ; 00556
         swap    d0                              ; 0055A
@@ -552,13 +552,13 @@ l_026_005DC:
         swap    d1                              ; 005DC
         swap    d0                              ; 005DE
         addq.b  #$1,d7                          ; 005E0
-        move.b  d7,$5d(a0)                      ; 005E2
-        move.b  #$3,$7a(a0)                     ; 005E6
-        move.b  $62(a0),d7                      ; 005EC
+        move.b  d7,obj_Zone(a0)                 ; 005E2
+        move.b  #$3,obj_Attack(a0)              ; 005E6
+        move.b  obj_Type(a0),d7                 ; 005EC
         andi.b  #$f0,d7                         ; 005F0
         cmpi.b  #$20,d7                         ; 005F4
         beq.b   l_026_00600                     ; 005F8
-        ori.w   #$1080,$0(a0)                   ; 005FA
+        ori.w   #$1080,obj_Flags(a0)            ; 005FA
 l_026_00600:
         tst.w   d1                              ; 00600
         bge.b   l_026_00634                     ; 00602
@@ -567,13 +567,13 @@ l_026_00600:
         asr.w   #$7,d1                          ; 0060A
         lea.l   (Routes).l,a4                   ; 0060C
         adda.w  (a4,d1.w),a4                    ; 00612
-        move.w  (a4)+,$2c(a0)                   ; 00616
-        move.w  (a4)+,$2e(a0)                   ; 0061A
-        move.w  (a4)+,$30(a0)                   ; 0061E
-        move.w  (a4)+,$32(a0)                   ; 00622
+        move.w  (a4)+,obj_DestCellX(a0)         ; 00616
+        move.w  (a4)+,obj_DestCellZ(a0)         ; 0061A
+        move.w  (a4)+,obj_DestX(a0)             ; 0061E
+        move.w  (a4)+,obj_DestZ(a0)             ; 00622
         move.w  (a4),d1                         ; 00626
         ext.l   d1                              ; 00628
-        move.l  d1,$34(a0)                      ; 0062A
+        move.l  d1,obj_DestY(a0)                ; 0062A
 l_026_0062E:
         move.b  #$ff,d1                         ; 0062E
         bra.b   l_026_0063E                     ; 00632
@@ -582,12 +582,12 @@ l_026_00634:
         lsr.w   #$8,d1                          ; 00638
         ori.b   #$80,d1                         ; 0063A
 l_026_0063E:
-        move.b  d1,$38(a0)                      ; 0063E
-        move.w  d2,$6(a0)                       ; 00642
-        move.w  d3,$8(a0)                       ; 00646
-        move.w  d4,$c(a0)                       ; 0064A
-        move.w  d5,$e(a0)                       ; 0064E
-        move.l  d6,$10(a0)                      ; 00652
+        move.b  d1,obj_Target(a0)               ; 0063E
+        move.w  d2,obj_CellX(a0)                ; 00642
+        move.w  d3,obj_CellZ(a0)                ; 00646
+        move.w  d4,obj_X8(a0)                   ; 0064A
+        move.w  d5,obj_Z8(a0)                   ; 0064E
+        move.l  d6,obj_Y8(a0)                   ; 00652
         ext.l   d4                              ; 00656
         ext.l   d5                              ; 00658
         asl.l   #$8,d4                          ; 0065A
@@ -595,20 +595,20 @@ l_026_0063E:
         asl.l   #$8,d5                          ; 0065E
         tst.l   d6                              ; 00660
         beq.b   l_026_0067C                     ; 00662
-        bset    #$7,$7c(a0)                     ; 00664
-        ori.b   #$60,$7c(a0)                    ; 0066A
-        move.w  #$2000,$6c(a0)                  ; 00670
-        move.w  #$2000,$6e(a0)                  ; 00676
+        bset    #$7,obj_Ejection(a0)            ; 00664
+        ori.b   #$60,obj_Ejection(a0)           ; 0066A
+        move.w  #$2000,obj_Speed(a0)            ; 00670
+        move.w  #$2000,obj_SpeedFlown(a0)       ; 00676
 l_026_0067C:
-        ori.w   #$140,$0(a0)                    ; 0067C
-        andi.w  #$7fff,$0(a0)                   ; 00682
-        move.b  #$44,$5f(a0)                    ; 00688
-        move.w  #$1f4,$60(a0)                   ; 0068E
-        move.l  #$61a800,$72(a0)                ; 00694
-        move.b  #$3d,$63(a0)                    ; 0069C
-        move.b  #$ff,$71(a0)                    ; 006A2
-        move.b  #$6,$64(a0)                     ; 006A8
-        move.b  #$10,$64(a0)                    ; 006AE
+        ori.w   #$140,obj_Flags(a0)             ; 0067C
+        andi.w  #$7fff,obj_Flags(a0)            ; 00682
+        move.b  #$44,obj_Missiles(a0)           ; 00688
+        move.w  #$1f4,obj_Rounds(a0)            ; 0068E
+        move.l  #$61a800,obj_Fuel(a0)           ; 00694
+        move.b  #$3d,obj_Weapon(a0)             ; 0069C
+        move.b  #$ff,obj_MapDir(a0)             ; 006A2
+        move.b  #$6,obj_Controls2(a0)           ; 006A8
+        move.b  #$10,obj_Controls2(a0)          ; 006AE
         ext.l   d2                              ; 006B4
         ext.l   d3                              ; 006B6
         swap    d2                              ; 006B8
@@ -617,9 +617,9 @@ l_026_0067C:
         asl.l   #$6,d3                          ; 006BE
         add.l   d4,d2                           ; 006C0
         add.l   d5,d3                           ; 006C2
-        move.l  d2,$14(a0)                      ; 006C4
-        move.l  d6,$18(a0)                      ; 006C8
-        move.l  d3,$1c(a0)                      ; 006CC
+        move.l  d2,obj_X(a0)                    ; 006C4
+        move.l  d6,obj_Y(a0)                    ; 006C8
+        move.l  d3,obj_Z(a0)                    ; 006CC
         moveq   #$0,d4                          ; 006D0
         moveq   #$0,d5                          ; 006D2
         moveq   #$0,d6                          ; 006D4
@@ -682,7 +682,7 @@ KeepInZone:
         blt.b   l_026_007A0                     ; 00762
         cmp.w   d4,d6                           ; 00764
         bgt.b   l_026_007A0                     ; 00766
-        cmpi.b  #$5,$7a(a0)                     ; 00768
+        cmpi.b  #$5,obj_Attack(a0)              ; 00768
         bne.b   l_026_0079E                     ; 0076E
         move.w  (a3)+,d0                        ; 00770
         subq.w  #$1,d0                          ; 00772
@@ -718,12 +718,12 @@ l_026_007A6:
         andi.w  #$7f,d1                         ; 007BC
         cmp.w   (CurrentObject).l,d1            ; 007C0
         bne.b   l_026_007F0                     ; 007C6
-        cmpi.b  #$3,$7a(a0)                     ; 007C8
+        cmpi.b  #$3,obj_Attack(a0)              ; 007C8
         beq.b   l_026_007D8                     ; 007CE
-        cmpi.b  #$4,$7a(a0)                     ; 007D0
+        cmpi.b  #$4,obj_Attack(a0)              ; 007D0
         bne.b   l_026_007DE                     ; 007D6
 l_026_007D8:
-        move.b  #$5,$7a(a0)                     ; 007D8
+        move.b  #$5,obj_Attack(a0)              ; 007D8
 l_026_007DE:
         andi.w  #$fffe,obj_Flags(a0)            ; 007DE
         bsr.w   SetDestination                  ; 007E4

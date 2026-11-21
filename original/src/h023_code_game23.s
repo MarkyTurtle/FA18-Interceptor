@@ -746,7 +746,7 @@ BulletTestCell2:
         add.w   d0,d0                           ; 007CA
         adda.w  d0,a0                           ; 007CC
         lea.l   (Mig_00744).l,a3                ; 007CE
-        move.b  $7b(a0),d0                      ; 007D4
+        move.b  obj_ShapeFlag(a0),d0            ; 007D4
         blt.w   l_023_008B8                     ; 007D8
         move.b  obj_Scale(a0),d2                ; 007DC
         andi.w  #$f,d2                          ; 007E0
@@ -757,7 +757,7 @@ BulletTestCell2:
         moveq   #$0,d2                          ; 007EE
 l_023_007F0:
         move.w  d2,-$3e(a6)                     ; 007F0
-        move.b  $7b(a0),d0                      ; 007F4
+        move.b  obj_ShapeFlag(a0),d0            ; 007F4
         andi.w  #$f,d0                          ; 007F8
         ext.w   d0                              ; 007FC
         add.w   d0,d0                           ; 007FE

@@ -428,10 +428,10 @@ l_029_00600:
         and.w   d6,d7                           ; 0061E
         beq.w   l_029_0068E                     ; 00620
 l_029_00624:
-        tst.b   $71(a0)                         ; 00624
+        tst.b   obj_MapDir(a0)                  ; 00624
         blt.w   l_029_0068E                     ; 00628
         moveq   #$0,d7                          ; 0062C
-        move.b  $70(a0),d7                      ; 0062E
+        move.b  obj_MapSnap(a0),d7              ; 0062E
         move.b  d7,d6                           ; 00632
         lsr.b   #$4,d6                          ; 00634
         andi.b  #$f,d7                          ; 00636
@@ -467,7 +467,7 @@ l_029_00680:
         neg.b   d3                              ; 00680
         ext.w   d3                              ; 00682
         add.w   d3,d1                           ; 00684
-        move.b  $71(a0),d4                      ; 00686
+        move.b  obj_MapDir(a0),d4               ; 00686
         bra.w   l_029_006DA                     ; 0068A
 l_029_0068E:
         move.w  obj_Heading(a0),d7              ; 0068E
@@ -486,14 +486,14 @@ l_029_006A0:
 l_029_006AE:
         moveq   #$0,d4                          ; 006AE
 l_029_006B0:
-        move.b  d4,$71(a0)                      ; 006B0
+        move.b  d4,obj_MapDir(a0)               ; 006B0
         move.w  d0,d6                           ; 006B4
         move.w  d1,d7                           ; 006B6
         andi.b  #$f,d6                          ; 006B8
         andi.b  #$f,d7                          ; 006BC
         asl.b   #$4,d6                          ; 006C0
         or.b    d6,d7                           ; 006C2
-        move.b  d7,$70(a0)                      ; 006C4
+        move.b  d7,obj_MapSnap(a0)              ; 006C4
         tst.b   (NewView).l                     ; 006C8
         beq.b   l_029_0072E                     ; 006CE
         btst    #$0,(BlinkPhase).l              ; 006D0

@@ -474,7 +474,7 @@ l_017_0064E:
         move.l  (a4)+,(a5)+                     ; 0064E
         dbra    d0,l_017_0064E                  ; 00650
         move.b  d1,obj_Weapon(a1)               ; 00654
-        clr.b   $5e(a1)                         ; 00658
+        clr.b   obj_Group(a1)                   ; 00658
         move.b  #$11,obj_Type(a1)               ; 0065C
         bclr    #$0,obj_Flags2(a1)              ; 00662
         clr.b   obj_State(a1)                   ; 00668
@@ -1555,9 +1555,9 @@ l_017_013D2:
         moveq   #$1,d0                          ; 013D2
         rts                                     ; 013D4
 l_017_013D6:
-        cmpi.b  #$5,$7a(a1)                     ; 013D6
+        cmpi.b  #$5,obj_Attack(a1)              ; 013D6
         bne.b   l_017_013E4                     ; 013DC
-        move.b  #$3,$7a(a1)                     ; 013DE
+        move.b  #$3,obj_Attack(a1)              ; 013DE
 l_017_013E4:
         btst    #$6,obj_Flags+1(a3)             ; 013E4
         beq.w   l_017_0165E                     ; 013EA
@@ -2065,14 +2065,14 @@ l_017_0195E:
         bgt.b   l_017_019D2                     ; 01984
         cmpi.w  #$1e00,d1                       ; 01986
         bgt.b   l_017_0199C                     ; 0198A
-        cmpi.b  #$3,$7a(a1)                     ; 0198C
+        cmpi.b  #$3,obj_Attack(a1)              ; 0198C
         bne.b   l_017_019AA                     ; 01992
-        move.b  #$4,$7a(a1)                     ; 01994
+        move.b  #$4,obj_Attack(a1)              ; 01994
         bra.b   l_017_019AA                     ; 0199A
 l_017_0199C:
-        cmpi.b  #$4,$7a(a1)                     ; 0199C
+        cmpi.b  #$4,obj_Attack(a1)              ; 0199C
         bne.b   l_017_019AA                     ; 019A2
-        move.b  #$3,$7a(a1)                     ; 019A4
+        move.b  #$3,obj_Attack(a1)              ; 019A4
 l_017_019AA:
         tst.w   (CurrentObjectOffset).l         ; 019AA
         beq.b   l_017_019E0                     ; 019B0

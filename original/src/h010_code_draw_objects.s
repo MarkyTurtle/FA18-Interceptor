@@ -275,7 +275,7 @@ l_010_002AE:
         move.w  obj_Flags(a0),d1                ; 002D4
         btst    #$6,d1                          ; 002D8
         beq.w   l_010_00168                     ; 002DC
-        move.b  DrawSceneryPlain_ShapeFlag(a6),$7b(a0) ; 002E0
+        move.b  DrawSceneryPlain_ShapeFlag(a6),obj_ShapeFlag(a0) ; 002E0
         andi.w  #$400,d1                        ; 002E6
         beq.b   l_010_00340                     ; 002EA
         move.w  obj_Timer(a0),d1                ; 002EC

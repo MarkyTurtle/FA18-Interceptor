@@ -4047,10 +4047,10 @@ l_000_071DC:
         add.l   d1,(FlightTimeExtra).l          ; 071FC
         clr.l   (FlightStartTime).l             ; 07202
         movea.l (CockpitObject).l,a0            ; 07208
-        move.b  $21(a0),d0                      ; 0720E
+        move.b  obj_Status2(a0),d0              ; 0720E
         ori.b   #$1,d0                          ; 07212
         movea.l (CockpitObject).l,a0            ; 07216
-        move.b  d0,$21(a0)                      ; 0721C
+        move.b  d0,obj_Status2(a0)              ; 0721C
         movea.l FlyAircraft_Flags(a6),a0        ; 07220
         move.w  (a0),d0                         ; 07224
         andi.w  #$efff,d0                       ; 07226
