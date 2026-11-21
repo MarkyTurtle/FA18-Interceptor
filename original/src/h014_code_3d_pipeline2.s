@@ -789,8 +789,8 @@ l_014_007B4:
         rts                                     ; 00866
 
 ;-------------------------------------------------------------------------------
-; ShapeEjectionStep - Picks part of the list by the ejection's step (+$7C low nibble, up to 6)
-; of the object drawn.
+; ShapeEjectionStep - Picks part of the list by the ejection's step (obj_Ejection low nibble,
+; up to 6) of the object drawn.
 ;-------------------------------------------------------------------------------
 ShapeEjectionStep:
         lea.l   (ObjectTable).l,a3              ; 00868
@@ -824,8 +824,8 @@ l_014_008B0:
         rts                                     ; 008B4
 
 ;-------------------------------------------------------------------------------
-; ShapeSkipDuringEjection - Op $108: skips 8 bytes while the ejection (+$7C low nibble) is at
-; steps 3-6.
+; ShapeSkipDuringEjection - Op $108: skips 8 bytes while the ejection (obj_Ejection low nibble)
+; is at steps 3-6.
 ;-------------------------------------------------------------------------------
 ShapeSkipDuringEjection:
         lea.l   (ObjectTable).l,a3              ; 008B6
@@ -844,7 +844,8 @@ l_014_008DA:
         rts                                     ; 008DE
 
 ;-------------------------------------------------------------------------------
-; ShapeSkipUnlessFlag3 - Op $CC: a byte count: skipped unless the object's +$02 bit 3 is set.
+; ShapeSkipUnlessFlag3 - Op $CC: a byte count: skipped unless the object's obj_Flags2 bit 3 is
+; set.
 ;-------------------------------------------------------------------------------
 ShapeSkipUnlessFlag3:
         move.w  (a2)+,d2                        ; 008E0
@@ -886,8 +887,8 @@ ShapeSelectVariant:
         rts                                     ; 0092A
 
 ;-------------------------------------------------------------------------------
-; ShapeSkipBeforeEjection - Op $D8: skips a word unless the ejection (+$7C bits 4-6) has
-; reached step 6.
+; ShapeSkipBeforeEjection - Op $D8: skips a word unless the ejection (obj_Ejection bits 4-6)
+; has reached step 6.
 ;-------------------------------------------------------------------------------
 ShapeSkipBeforeEjection:
         lea.l   (ObjectTable).l,a3              ; 0092C

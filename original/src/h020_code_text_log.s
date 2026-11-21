@@ -1068,8 +1068,8 @@ ClearRadarList:
         rts                                     ; 00AC4
 
 ;-------------------------------------------------------------------------------
-; AddRadarObject - Adds an object's position, turned by the player's matrix (PanelMatrixHeading)
-; into the aircraft's axes, to RadarList.
+; AddRadarObject - Adds an object's position, turned by the player's matrix
+; (PanelMatrixHeading) into the aircraft's axes, to RadarList.
 ;-------------------------------------------------------------------------------
 AddRadarObject:
         move.w  d7,d5                           ; 00AC6

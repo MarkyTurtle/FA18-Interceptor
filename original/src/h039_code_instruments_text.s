@@ -68,8 +68,8 @@ DebugNumberPlaces:
 	dc.b	$00,$02,$C0,$00,$00,$04,$00,$00
 
 ;-------------------------------------------------------------------------------
-; ShowWeaponRange - The selected weapon's range on the panel (2, 10 or 40 by the weapon: +$63
-; low nibble 9, $B or other), while WeaponRangeRedraw counts down.
+; ShowWeaponRange - The selected weapon's range on the panel (2, 10 or 40 by the weapon:
+; obj_Weapon low nibble 9, $B or other), while WeaponRangeRedraw counts down.
 ;-------------------------------------------------------------------------------
 ShowWeaponRange:
         tst.b   (WeaponRangeRedraw).l           ; 00164
@@ -241,9 +241,9 @@ l_039_0035E:
         rts                                     ; 0035E
 
 ;-------------------------------------------------------------------------------
-; ShowWeapon - The selected weapon and what is left: GUN and the rounds (+$60) for weapon $1x,
-; SW and the Sidewinders (+$5F high nibble) for $2x, AM and the AMRAAMs (+$5F low nibble) for
-; $3x.
+; ShowWeapon - The selected weapon and what is left: GUN and the rounds (obj_Rounds) for weapon
+; $1x, SW and the Sidewinders (obj_Missiles high nibble) for $2x, AM and the AMRAAMs
+; (obj_Missiles low nibble) for $3x.
 ;-------------------------------------------------------------------------------
 ShowWeapon:
         move.w  #$d,(DrawColour).l              ; 00360
@@ -328,7 +328,7 @@ l_039_00434:
         rts                                     ; 00462
 
 ;-------------------------------------------------------------------------------
-; ShowGLoad - Apparently the G meter: the pitch rotation rate (+$56, plus a little of
+; ShowGLoad - Apparently the G meter: the pitch rotation rate (obj_PitchRate, plus a little of
 ; GLoadValue) / 8, plus or minus 1 g (10 tenths) as the aircraft is upright or not
 ; (FlightBits bit 1), with its sign; the F/A-18 ($11) and F-16 cockpits put it in different
 ; places.
@@ -445,8 +445,8 @@ l_039_005B4:
         rts                                     ; 005B4
 
 ;-------------------------------------------------------------------------------
-; ShowHeadingText - In an outside view (OutsideView): "HDG" and the heading in degrees (+$68
-; / 80).
+; ShowHeadingText - In an outside view (OutsideView): "HDG" and the heading in degrees
+; (obj_Heading / 80).
 ;-------------------------------------------------------------------------------
 ShowHeadingText:
         tst.b   (OutsideView).l                 ; 005B6
@@ -493,7 +493,8 @@ EmptyReadout:
         rts                                     ; 0064A
 
 ;-------------------------------------------------------------------------------
-; ShowSpeed - The speed readout: the speed flown (+$6E) / 12; 0 for a destroyed aircraft.
+; ShowSpeed - The speed readout: the speed flown (obj_SpeedFlown) / 12; 0 for a destroyed
+; aircraft.
 ;-------------------------------------------------------------------------------
 ShowSpeed:
         lea.l   (ObjectTable).l,a1              ; 0064C
@@ -557,7 +558,7 @@ l_039_006EA:
         bra.w   PanelDigitsD0                   ; 00716
 
 ;-------------------------------------------------------------------------------
-; ShowAltitude - The altitude readout from the height (+$18), at most 99,999 (or AltitudeValue
+; ShowAltitude - The altitude readout from the height (obj_Y), at most 99,999 (or AltitudeValue
 ; in another mode).
 ;-------------------------------------------------------------------------------
 ShowAltitude:
@@ -640,7 +641,7 @@ l_039_00800:
         bra.w   PanelDigitsD0                   ; 00826
 
 ;-------------------------------------------------------------------------------
-; ShowFuel - The fuel readout: the viewed aircraft's fuel (+$72) / 256, five digits.
+; ShowFuel - The fuel readout: the viewed aircraft's fuel (obj_Fuel) / 256, five digits.
 ;-------------------------------------------------------------------------------
 ShowFuel:
         lea.l   (ObjectTable).l,a1              ; 0082A
@@ -665,7 +666,7 @@ l_039_0084A:
         bra.w   DrawPanelDigits                 ; 00874
 
 ;-------------------------------------------------------------------------------
-; ShowThrottle - The throttle readout in percent: +$2B (0-120) x 256 / $133.
+; ShowThrottle - The throttle readout in percent: obj_Throttle (0-120) x 256 / $133.
 ;-------------------------------------------------------------------------------
 ShowThrottle:
         lea.l   (ObjectTable).l,a1              ; 00878
@@ -696,7 +697,7 @@ l_039_008A4:
         bra.w   l_039_00E3C                     ; 008CE
 
 ;-------------------------------------------------------------------------------
-; ShowGridZ - The position readout's Z: (+$1C - $10000000) / 256 / $7000 + $177, three digits;
+; ShowGridZ - The position readout's Z: (obj_Z - $10000000) / 256 / $7000 + $177, three digits;
 ; drawn only when it changes (twice, for both display buffers).
 ;-------------------------------------------------------------------------------
 ShowGridZ:
@@ -739,7 +740,7 @@ l_039_0095E:
         rts                                     ; 0095E
 
 ;-------------------------------------------------------------------------------
-; ShowGridX - The position readout's X, worked out as ShowGridZ from +$14.
+; ShowGridX - The position readout's X, worked out as ShowGridZ from obj_X.
 ;-------------------------------------------------------------------------------
 ShowGridX:
         lea.l   (ObjectTable).l,a1              ; 00960
@@ -783,8 +784,8 @@ l_039_009EC:
 ;-------------------------------------------------------------------------------
 ; TargetReadout - The locked target's readout on the panel (twice a frame stage, every few
 ; frames): its type - MIG-29 ($12), MIG-25 ($13), AF-1 ($14), 707 ($16), 767 ($17), F-16 ($10),
-; CRUISE ($15) - or NO SIG until its signature is confirmed (+$20 bit 6), then in turn its
-; altitude (ALT:), heading (HDG:, degrees) and speed (SPD:).
+; CRUISE ($15) - or NO SIG until its signature is confirmed (obj_Status bit 6), then in turn
+; its altitude (ALT:), heading (HDG:, degrees) and speed (SPD:).
 ;-------------------------------------------------------------------------------
 TargetReadout:
         move.w  (LockedTarget).l,d2             ; 009EE
@@ -1332,8 +1333,8 @@ l_039_00FA6:
         rts                                     ; 00FA6
 
 ;-------------------------------------------------------------------------------
-; ShowMissilesLeft - The number of missiles left (+$5F) by the weapon's type on the panel,
-; while MissilesLeftRedraw counts down.
+; ShowMissilesLeft - The number of missiles left (obj_Missiles) by the weapon's type on the
+; panel, while MissilesLeftRedraw counts down.
 ;-------------------------------------------------------------------------------
 ShowMissilesLeft:
         tst.b   (MissilesLeftRedraw).l          ; 00FA8

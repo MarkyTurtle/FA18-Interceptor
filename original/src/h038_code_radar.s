@@ -13,7 +13,7 @@ l_038_00000:
 ;-------------------------------------------------------------------------------
 ; DrawStatusLights - The panel's small status lights beside the radar: pairs of big dots, each
 ; lit in its colour while a bit of StatusLights is set (and one while the viewed object has
-; +$20 bit 2).
+; obj_Status bit 2).
 ;-------------------------------------------------------------------------------
 DrawStatusLights:
         move.l  #$fffff,(FillPattern).l         ; 00002
@@ -158,8 +158,8 @@ l_038_001E6:
 ; DrawRadarBlips - The player's mark at the scope's centre; erases the last frame's blips
 ; (RadarBlips, one list per display buffer) and plots each object of RadarList that is in range
 ; ($1B either side, $16 ahead and $10 behind, in units of $2000). An aircraft that comes within
-; $10000 has its signature confirmed (+$20 bit 6, the target readout then names it); in mission
-; F1 any aircraft (type $1x) held there counts down VisualConfirmTimer.
+; $10000 has its signature confirmed (obj_Status bit 6, the target readout then names it); in
+; mission F1 any aircraft (type $1x) held there counts down VisualConfirmTimer.
 ;-------------------------------------------------------------------------------
 DrawRadarBlips:
         move.w  #$9d,d0                         ; 001EA

@@ -1082,7 +1082,7 @@ l_013_00AF0:
 
 ;-------------------------------------------------------------------------------
 ; ShapeCockpitFlag - Op $84: sets the drawing's flag -$7A(a6) when the view is from the cockpit
-; and the viewed object's +$04 bit 6 is set (the carrier models).
+; and the viewed object's obj_Bits bit 6 is set (the carrier models).
 ;-------------------------------------------------------------------------------
 ShapeCockpitFlag:
         tst.b   (OutsideView).l                 ; 00B16

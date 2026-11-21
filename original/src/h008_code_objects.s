@@ -255,8 +255,8 @@ l_008_00278:
 
 ;-------------------------------------------------------------------------------
 ; SetCockpitEye - In the cockpit (not OutsideView): the pilot's eye, a point fixed in the
-; viewed aircraft turned by its matrix (+$92): (0, 5, $14) in the F/A-18 ($11), (0, 4, $12) in
-; the others, (0, 1, -5) under a parachute ($30); the camera is placed there.
+; viewed aircraft turned by its matrix (obj_Inverse): (0, 5, $14) in the F/A-18 ($11), (0, 4,
+; $12) in the others, (0, 1, -5) under a parachute ($30); the camera is placed there.
 ;-------------------------------------------------------------------------------
 SetCockpitEye:
         tst.b   (OutsideView).l                 ; 00286
@@ -470,8 +470,8 @@ l_008_00526:
         rts                                     ; 0052C
 
 ;-------------------------------------------------------------------------------
-; DetailByTurnRate - Sets DrawDetail (5, 3 or 1) from how fast the viewed object turns (+$56,
-; +$58): less detail while the view swings.
+; DetailByTurnRate - Sets DrawDetail (5, 3 or 1) from how fast the viewed object turns
+; (obj_PitchRate, obj_YawRate): less detail while the view swings.
 ;-------------------------------------------------------------------------------
 DetailByTurnRate:
         move.w  obj_PitchRate(a3),d0            ; 0052E

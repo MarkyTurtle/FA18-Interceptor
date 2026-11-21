@@ -479,7 +479,7 @@ l_005_0065C:
 ; PlayerFrameControls - The player's controls for the frame: in the replay modes (RecordMode
 ; 1-3) the control byte and the event words come from the recording (ReplayPointer,
 ; ReplayControlsPointer; it ends at three $FF bytes or at the end of the buffer, and starts
-; again); then the throttle (+$2B) is moved towards GearState (ThrottleUp / 008BC /
+; again); then the throttle (obj_Throttle) is moved towards GearState (ThrottleUp / 008BC /
 ; 008C6)...
 ;-------------------------------------------------------------------------------
 PlayerFrameControls:

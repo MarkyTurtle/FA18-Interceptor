@@ -104,7 +104,7 @@ l_018_000F2:
 ;-------------------------------------------------------------------------------
 ; JudgeF2 - Emergency defense, Air Force One (object 4): success ($FF) when it is down and slow
 ; (speed at most $320) and the attackers (objects 8 and 10) are gone; if it is destroyed, $FD
-; when the player shot it (its +$20 bit 7), else $FE.
+; when the player shot it (its obj_Status bit 7), else $FE.
 ;-------------------------------------------------------------------------------
 JudgeF2:
         tst.b   (MissionResult).l               ; 000F4
@@ -341,7 +341,7 @@ l_018_0040E:
 
 ;-------------------------------------------------------------------------------
 ; JudgeF5 - Intercept the cruise missile (object 4): when it is gone, success ($FF) if it was
-; shot down (its +$20 bit 1), otherwise it exploded: the view goes to it, failure ($FE).
+; shot down (its obj_Status bit 1), otherwise it exploded: the view goes to it, failure ($FE).
 ;-------------------------------------------------------------------------------
 JudgeF5:
         tst.b   (MissionResult).l               ; 00410
@@ -404,7 +404,7 @@ l_018_0051E:
 
 ;-------------------------------------------------------------------------------
 ; JudgeQualification - The carrier landing: success ($FF) when the player's aircraft is down on
-; the carrier (flags +$02 bits $C080 all set) and stopped (+$6E = 0).
+; the carrier (flags obj_Flags2 bits $C080 all set) and stopped (obj_SpeedFlown = 0).
 ;-------------------------------------------------------------------------------
 JudgeQualification:
         tst.b   (MissionResult).l               ; 00520
@@ -487,9 +487,9 @@ l_018_00618:
 
 ;-------------------------------------------------------------------------------
 ; PlayerParked - Returns 0 when the player's aircraft is down at home and stopped: on the
-; ground (+$21 bit 0, +$03 bit 7), on the carrier (+$04 bits 6-7) or the airfield (+$04 bit 2)
-; by StartPoint, speed flown 0. After a success ($FF) this turns the result into $FC, the
-; mission completed.
+; ground (obj_Status2 bit 0, +$03 bit 7), on the carrier (obj_Bits bits 6-7) or the airfield
+; (obj_Bits bit 2) by StartPoint, speed flown 0. After a success ($FF) this turns the result
+; into $FC, the mission completed.
 ;-------------------------------------------------------------------------------
 PlayerParked:
         lea.l   (ObjectTable).l,a0              ; 0061A

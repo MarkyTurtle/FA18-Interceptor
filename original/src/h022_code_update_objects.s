@@ -98,7 +98,7 @@ l_022_000FC:
 
 ;-------------------------------------------------------------------------------
 ; UpdateObject - Updates one object (a1) for the frame: its destroyed / crashed states (flags
-; in +$00, the timer +$4C), the computer pilot for objects other than the player
+; in obj_Flags, the timer obj_Timer), the computer pilot for objects other than the player
 ; (ComputerPilot, while bit 6 of StatusBits is set), the player's controls or replay
 ; (PlayerFrameControls), and for the player the warnings from its attitude and sink rate
 ; (SoundRequests, the message CurrentWarning)...
@@ -714,7 +714,7 @@ l_022_008B6:
         bra.w   l_022_00816                     ; 008B6
 
 ;-------------------------------------------------------------------------------
-; ObjectHeightCheck - Compares an object's height (+$18) with the ground (d5-d7)
+; ObjectHeightCheck - Compares an object's height (obj_Y) with the ground (d5-d7)
 ; (UpdateObject).
 ;-------------------------------------------------------------------------------
 ObjectHeightCheck:
@@ -789,9 +789,9 @@ l_022_009B6:
 
 ;-------------------------------------------------------------------------------
 ; ClimbDivePhysics - Only when FlightPhysics is set: the speed lost climbing and gained diving
-; (+$78: from the speed (+$6C / 128, 0-30) in ClimbDiveTable, times a term from the sine of the
-; pitch (+$66)), and the lift / sink (+$76, added to the vertical velocity by FlyAircraft) from
-; the speed flown (+$6E / 128) in LiftTable.
+; (obj_ClimbSpeed: from the speed (obj_Speed / 128, 0-30) in ClimbDiveTable, times a term from
+; the sine of the pitch (obj_Pitch)), and the lift / sink (obj_Lift, added to the vertical
+; velocity by FlyAircraft) from the speed flown (obj_SpeedFlown / 128) in LiftTable.
 ;-------------------------------------------------------------------------------
 ClimbDivePhysics:
         lea.l   (ObjectTable).l,a1              ; 009C0

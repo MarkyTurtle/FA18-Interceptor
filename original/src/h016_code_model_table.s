@@ -650,8 +650,8 @@ l_016_00AD0:
         rts                                     ; 00AD0
 
 ;-------------------------------------------------------------------------------
-; DrawAnimated - Draws hunk 58's animated object, its shape chosen by the timer (+$4C): 5 and
-; over, 3-4, 1-2, 0, negative.
+; DrawAnimated - Draws hunk 58's animated object, its shape chosen by the timer (obj_Timer): 5
+; and over, 3-4, 1-2, 0, negative.
 ;-------------------------------------------------------------------------------
 DrawAnimated:
         lea.l   (ObjectTable).l,a1              ; 00AD2
@@ -688,7 +688,7 @@ l_016_00B5A:
 
 ;-------------------------------------------------------------------------------
 ; DrawParachute - Draws the ejected pilot (hunk 58 at $2A6), the shape chosen by the timer
-; (+$4C) and the ejection's step (+$7C).
+; (obj_Timer) and the ejection's step (obj_Ejection).
 ;-------------------------------------------------------------------------------
 DrawParachute:
         lea.l   (ObjectTable).l,a1              ; 00B72

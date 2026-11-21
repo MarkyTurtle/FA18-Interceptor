@@ -102,8 +102,8 @@ l_031_000EA:
         bra.w   DrawPuff                        ; 000F0
 
 ;-------------------------------------------------------------------------------
-; DrawBulletHit - Draws a bullet's hit: three small orange 3D crosses (DrawBulletHitData1) round
-; where it struck.
+; DrawBulletHit - Draws a bullet's hit: three small orange 3D crosses (DrawBulletHitData1)
+; round where it struck.
 ;-------------------------------------------------------------------------------
 ; DrawBulletHit's frame: arguments from 8(a6), locals below a6 (after its link)
                 rsset   8

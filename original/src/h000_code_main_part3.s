@@ -2410,8 +2410,8 @@ l_000_092D4:
 ; MouseInterrupt - The vertical blank interrupt server's code: the mouse counters' change
 ; (JOY0DAT) added to the pointer position, clamped to SetMouseLimits; then a step of a fade
 ; (FadeLevel towards FadeTarget, every 2 or 3 frames: LoadRGB4 from FlightPalette's rows, and
-; the copper lists of the buffer not shown, 1 - DisplayBuffer); at its end the colours are copied
-; to LivePalette; and TitleMusicStep.
+; the copper lists of the buffer not shown, 1 - DisplayBuffer); at its end the colours are
+; copied to LivePalette; and TitleMusicStep.
 ;-------------------------------------------------------------------------------
 ; MouseInterrupt's frame: arguments from 8(a6), locals below a6 (after its link)
 MouseInterrupt_I        equ     -$2             ; the colour count

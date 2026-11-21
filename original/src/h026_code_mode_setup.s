@@ -645,8 +645,9 @@ l_026_00706:
         rts                                     ; 00706
 
 ;-------------------------------------------------------------------------------
-; KeepInZone - For a computer aircraft (type $1x, not landing) that belongs to a zone (+$5D):
-; when it has left its zone's rectangle, it is turned back (a new destination, SetDestination).
+; KeepInZone - For a computer aircraft (type $1x, not landing) that belongs to a zone
+; (obj_Zone): when it has left its zone's rectangle, it is turned back (a new destination,
+; SetDestination).
 ;-------------------------------------------------------------------------------
 KeepInZone:
         lea.l   (ObjectTable).l,a0              ; 00708

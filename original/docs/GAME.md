@@ -118,21 +118,21 @@ the player's F/A-18 (named `Player...` where the code reaches its fields directl
 aircraft, missiles and other objects. `SmallObjects` are 16 more of 32 bytes. An object's
 record holds (the `Object` structure above `ObjectTable` names all that is known, `obj_...`):
 
-* whether it exists (`+$01` bit 6), its type (`+$62`, below), its state (`+$05`) and a timer
-  (`+$4C`);
-* what has happened to it (`+$20`): bit 1 destroyed, bit 6 its signature confirmed (seen up
+* whether it exists (`+$01` bit 6), its type (`obj_Type`, below), its state (`obj_State`) and a timer
+  (`obj_Timer`);
+* what has happened to it (`obj_Status`): bit 1 destroyed, bit 6 its signature confirmed (seen up
   close, so the radar's readout names it), bit 7 hit by the player;
-* its position: a map cell (`+$06` X, `+$08` Z) and a 32-bit position (`+$14` X, `+$18` Y, `+$1C` Z)
+* its position: a map cell (`obj_CellX` X, `obj_CellZ` Z) and a 32-bit position (`obj_X` X, `obj_Y` Y, `obj_Z` Z)
   whose low 22 bits are the position inside the cell; Y is height, positive upwards (`$708` on
   a runway; the game's own frame, drawn in the emulator, shows this);
-* its velocity (`+$3E`, `+$42`, `+$46`) and speed (`+$6C`, `+$6E`);
-* its attitude: pitch, heading, roll (`+$66`, `+$68`, `+$6A`) and two rotation matrices made from
-  them (`+$80`, and `+$92` from the negated angles, whose third column is the nose's direction);
-* its weapons: the selected weapon (`+$63`) and missiles left (`+$5F`: 4 AMRAAMs and 2 Sidewinders
+* its velocity (`obj_VelX`, `obj_VelY`, `obj_VelZ`) and speed (`obj_Speed`, `obj_SpeedFlown`);
+* its attitude: pitch, heading, roll (`obj_Pitch`, `obj_Heading`, `obj_Roll`) and two rotation matrices made from
+  them (`obj_Matrix`, and `obj_Inverse` from the negated angles, whose third column is the nose's direction);
+* its weapons: the selected weapon (`obj_Weapon`) and missiles left (`obj_Missiles`: 4 AMRAAMs and 2 Sidewinders
   for the player at the start);
-* its control bits (`+$64`, `+$65`) and the throttle (probably `+$2B`).
+* its control bits (`obj_Controls2`, `obj_Controls`) and the throttle (probably `obj_Throttle`).
 
-The types (`+$62`) seen so far:
+The types (`obj_Type`) seen so far:
 
 | Type | Object |
 |---|---|

@@ -5344,7 +5344,7 @@ l_000_041DE:
 ; and the outside view (OutsideView from SavedOutsideView): going outside shifts what is drawn
 ; in the cockpit's place off the screen (ViewShift 50, ViewX 800), coming back puts it at 0;
 ; then the gun sound is restarted, everything redrawn and ClipY set ($A7, or $B3 when MapView
-; is set). Under a parachute (+$62 $30) the view is always outside. Outside, GunFlags bit 4
+; is set). Under a parachute (obj_Type $30) the view is always outside. Outside, GunFlags bit 4
 ; flips ViewSide; in camera sequence 6 below height $24000 the view's bottom returns to
 ; $A7.
 ;-------------------------------------------------------------------------------

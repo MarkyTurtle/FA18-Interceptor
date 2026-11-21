@@ -9,9 +9,9 @@
 
 ;-------------------------------------------------------------------------------
 ; UpdateAttitude - Updates an object's attitude (a1) and calls SetAttitude: for an aircraft
-; (type '0'-'9') the roll (+$6A) eases back towards level by $7D0 (25 degrees) a step, and the
-; pitch and heading come from VectorToAngles (into TargetPitch / 00492); for the others from
-; the control bits (+$64, +$65) and the state (+$05).
+; (type '0'-'9') the roll (obj_Roll) eases back towards level by $7D0 (25 degrees) a step, and
+; the pitch and heading come from VectorToAngles (into TargetPitch / 00492); for the others
+; from the control bits (obj_Controls2, obj_Controls) and the state (obj_State).
 ;-------------------------------------------------------------------------------
 UpdateAttitude:
         move.b  obj_Type(a1),d0                 ; 00000
@@ -486,7 +486,7 @@ l_032_00546:
 
 ;-------------------------------------------------------------------------------
 ; SetAttitude - SetAttitude(a1 = an object, d4-d6 = its three attitude angles): stores the
-; angles (+$66, +$68, +$6A), makes its matrix at +$80 from them (AnglesToMatrix), then the
+; angles (obj_Pitch, +$68, +$6A), makes its matrix at +$80 from them (AnglesToMatrix), then the
 ; matrix at +$92 from the negated angles ($7080 - each: the opposite rotation;
 ; SetInverseMatrix).
 ;-------------------------------------------------------------------------------
@@ -637,7 +637,7 @@ l_032_006A8:
 
 ;-------------------------------------------------------------------------------
 ; CameraHeadingMatrix - The matrix for turning to the viewed object's heading (360 degrees -
-; +$68).
+; obj_Heading).
 ;-------------------------------------------------------------------------------
 CameraHeadingMatrix:
         lea.l   (ObjectTable).l,a0              ; 006EA
@@ -653,8 +653,8 @@ l_032_00704:
         rts                                     ; 0070E
 
 ;-------------------------------------------------------------------------------
-; CockpitViewMatrix - The view's matrices from the viewed object's attitude (+$68...) - the
-; panel's (PanelMatrixHeading) and, in the cockpit, the view's.
+; CockpitViewMatrix - The view's matrices from the viewed object's attitude (obj_Heading...) -
+; the panel's (PanelMatrixHeading) and, in the cockpit, the view's.
 ;-------------------------------------------------------------------------------
 CockpitViewMatrix:
         lea.l   (ObjectTable).l,a0              ; 00710
@@ -955,7 +955,7 @@ l_032_00A8C:
         rts                                     ; 00A8C
 
 ;-------------------------------------------------------------------------------
-; ClearPlus50 - Clears the object's +$50.
+; ClearPlus50 - Clears the object's obj_AimRate1.
 ;-------------------------------------------------------------------------------
 ClearPlus50:
         tst.w   obj_AimRate1(a1)                ; 00A8E
@@ -964,7 +964,7 @@ ClearPlus50:
         rts                                     ; 00A98
 
 ;-------------------------------------------------------------------------------
-; SetPlus50 - Sets the object's +$50 to -1.
+; SetPlus50 - Sets the object's obj_AimRate1 to -1.
 ;-------------------------------------------------------------------------------
 SetPlus50:
         tst.w   obj_AimRate1(a1)                ; 00A9A

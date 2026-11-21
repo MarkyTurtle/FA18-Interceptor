@@ -591,8 +591,8 @@ l_000_04A84:
 ;-------------------------------------------------------------------------------
 ; CockpitSounds - The cockpit's sounds for the frame: each request bit of SoundRequests
 ; (warnings and events, set by the rest of the game) starts its tone (PlayEffect, nine
-; parameters each) and the requests are cleared; the engine's sound follows the throttle (+$2B,
-; 0-120)...
+; parameters each) and the requests are cleared; the engine's sound follows the throttle
+; (obj_Throttle, 0-120)...
 ;-------------------------------------------------------------------------------
 ; CockpitSounds's frame: arguments from 8(a6), locals below a6 (after its link)
 CockpitSounds_Throttle  equ     -$2             ; the throttle (0-120), eased
@@ -1519,8 +1519,8 @@ FiveEighths:
         rts                                     ; 05500
 
 ;-------------------------------------------------------------------------------
-; EngineSoundLevel - The engine sound's level from the cockpit object's speed (+$6E; 16 under a
-; parachute).
+; EngineSoundLevel - The engine sound's level from the cockpit object's speed (obj_SpeedFlown;
+; 16 under a parachute).
 ;-------------------------------------------------------------------------------
 ; EngineSoundLevel's frame: arguments from 8(a6), locals below a6 (after its link)
 EngineSoundLevel_Level  equ     -$2             ; the level (1-63)
@@ -1568,11 +1568,12 @@ l_000_05570:
 
 ;-------------------------------------------------------------------------------
 ; FlightControls - The flight controls of an aircraft (CurrentObject): its stick deflection
-; (+$28 pitch, +$29 and +$2A the other two axes, signed bytes; the last two zero on the ground,
-; +$04 bit 3) is looked up in a response table (ControlResponse, or ControlResponse2 with flag
-; $100) to give its rotation rates (obj_PitchRate, obj_YawRate, obj_RollRate; StepPitchRate...), the pitch limited at
-; low speed (+$6C <= $300). For the player it also checks the fuel (PlayerFuel): the warning
-; bits of WarningFlags below 768,000 and 460,800, and out of fuel at 0.
+; (obj_StickPitch pitch, obj_Rudder and obj_StickRoll the other two axes, signed bytes; the
+; last two zero on the ground, obj_Bits bit 3) is looked up in a response table
+; (ControlResponse, or ControlResponse2 with flag $100) to give its rotation rates
+; (obj_PitchRate, obj_YawRate, obj_RollRate; StepPitchRate...), the pitch limited at low speed
+; (obj_Speed <= $300). For the player it also checks the fuel (PlayerFuel): the warning bits of
+; WarningFlags below 768,000 and 460,800, and out of fuel at 0.
 ;-------------------------------------------------------------------------------
 ; FlightControls's frame: arguments from 8(a6), locals below a6 (after its link)
 FlightControls_Object   equ     -$2             ; CurrentObject (0: the player)
@@ -2135,7 +2136,8 @@ l_000_05BDA:
         rts                                     ; 05BDC
 
 ;-------------------------------------------------------------------------------
-; StepPitchAngle - FlightControls' step of the pitch (+$66) by its rate (+$56), with limits.
+; StepPitchAngle - FlightControls' step of the pitch (obj_Pitch) by its rate (obj_PitchRate),
+; with limits.
 ;-------------------------------------------------------------------------------
 ; StepPitchAngle's frame: arguments from 8(a6), locals below a6 (after its link)
 StepPitchAngle_Shift    equ     -$2             ; how fast (1 at speed $6C0 or more, else 0)
@@ -2210,7 +2212,7 @@ l_000_05CA6:
         rts                                     ; 05CA8
 
 ;-------------------------------------------------------------------------------
-; StepRollAngle - FlightControls' step of the roll (+$6A) by its rate (+$5A).
+; StepRollAngle - FlightControls' step of the roll (obj_Roll) by its rate (obj_RollRate).
 ;-------------------------------------------------------------------------------
 ; StepRollAngle's frame: arguments from 8(a6), locals below a6 (after its link)
 StepRollAngle_Roll      equ     -$4             ; the cockpit object's obj_Roll
@@ -2379,7 +2381,7 @@ l_000_05DFE:
         rts                                     ; 05E2C
 
 ;-------------------------------------------------------------------------------
-; InputBySpeed - Scales a control input by the speed (+$6C / 128).
+; InputBySpeed - Scales a control input by the speed (obj_Speed / 128).
 ;-------------------------------------------------------------------------------
 ; InputBySpeed's frame: arguments from 8(a6), locals below a6 (after its link)
                 rsset   8
@@ -2448,12 +2450,13 @@ l_000_05ED2:
 
 ;-------------------------------------------------------------------------------
 ; EngineAndSpeed - An aircraft's engine and speed for the frame (CurrentObject), while it has
-; fuel (+$72): the throttle bits of its control byte (+$65: 1 up, 2 down) move the throttle
-; (+$2B, 0-120) by a step that grows while the bit is held (+$39's low nibble, up to 8,
-; halved); at 120 a held throttle-up sets flag $2000 and a further one flag $8 (probably the
-; afterburner); throttle-down clears them. For the player the mouse's vertical movement
-; (ThrottleMouseY - MouseY) is read too. The speed (+$6C) then changes towards what the
-; throttle gives (through Decay); ClimbDivePhysics; and the speed flown (+$6E) = +$6C + +$78.
+; fuel (obj_Fuel): the throttle bits of its control byte (obj_Controls: 1 up, 2 down) move the
+; throttle (obj_Throttle, 0-120) by a step that grows while the bit is held (obj_ThrottleStep's
+; low nibble, up to 8, halved); at 120 a held throttle-up sets flag $2000 and a further one
+; flag $8 (probably the afterburner); throttle-down clears them. For the player the mouse's
+; vertical movement (ThrottleMouseY - MouseY) is read too. The speed (obj_Speed) then changes
+; towards what the throttle gives (through Decay); ClimbDivePhysics; and the speed flown
+; (obj_SpeedFlown) = obj_Speed + obj_ClimbSpeed.
 ;-------------------------------------------------------------------------------
 ; EngineAndSpeed's frame: arguments from 8(a6), locals below a6 (after its link)
 EngineAndSpeed_Throttle equ     -$4             ; the object's obj_Throttle
@@ -3385,7 +3388,7 @@ l_000_0699C:
         rts                                     ; 069C4
 
 ;-------------------------------------------------------------------------------
-; EaseYaw - Moves the cockpit object's +$26 towards the value given by 1/8.
+; EaseYaw - Moves the cockpit object's obj_Response towards the value given by 1/8.
 ;-------------------------------------------------------------------------------
 ; EaseYaw's frame: arguments from 8(a6), locals below a6 (after its link)
                 rsset   8
@@ -3445,7 +3448,7 @@ l_000_06A2E:
         rts                                     ; 06A30
 
 ;-------------------------------------------------------------------------------
-; PitchEffect - The effect of the pitch (+$66) on the engine and speed (EngineAndSpeed).
+; PitchEffect - The effect of the pitch (obj_Pitch) on the engine and speed (EngineAndSpeed).
 ;-------------------------------------------------------------------------------
 ; PitchEffect's frame: arguments from 8(a6), locals below a6 (after its link)
 PitchEffect_Pitch       equ     -$2             ; the pitch (+$66, folded), / 2
@@ -3525,12 +3528,12 @@ l_000_06AF6:
 ;-------------------------------------------------------------------------------
 ; FlyAircraft - The flight model for one aircraft (CurrentObject; CockpitObject = its record):
 ; the nose's direction is the third column of its +$92 matrix (M13, M23, M33, into
-; FlightScratch-00474); ScaleToLength makes it a velocity of the aircraft's speed (+$6E) along
-; the nose (ScaledVector-00420); each part of the velocity then moves part of the way there
-; from the present velocity (EaseVelocity), +$76 is added to the vertical part (unless bit 0 of
-; FlightStep), and the result is the new velocity (+$3E, +$42, +$46). Then the undercarriage
-; / landing and the rest (FlightStep modes 1 and 3 add or take away $6000 vertically; type
-; $14 uses +$4E)...
+; FlightScratch-00474); ScaleToLength makes it a velocity of the aircraft's speed
+; (obj_SpeedFlown) along the nose (ScaledVector-00420); each part of the velocity then moves
+; part of the way there from the present velocity (EaseVelocity), obj_Lift is added to the
+; vertical part (unless bit 0 of FlightStep), and the result is the new velocity (obj_VelX,
+; obj_VelY, obj_VelZ). Then the undercarriage / landing and the rest (FlightStep modes 1 and 3
+; add or take away $6000 vertically; type $14 uses +$4E)...
 ;-------------------------------------------------------------------------------
 ; FlyAircraft's frame: arguments from 8(a6), locals below a6 (after its link)
 FlyAircraft_VelX        equ     -$2             ; the velocity along the nose (ScaledVector), eased (EaseVelocity)

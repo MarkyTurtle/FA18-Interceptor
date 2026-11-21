@@ -562,8 +562,9 @@ l_004_00700:
         rts                                     ; 00706
 
 ;-------------------------------------------------------------------------------
-; ResetPlayerMotion - Clears the player's speeds, forces, rates and the like (ObjectTable +$6C,
-; +$6E, +$78, +$3E-$49, +$50, +$56-$5B).
+; ResetPlayerMotion - Clears the player's speeds, forces, rates and the like (ObjectTable
+; obj_Speed, obj_SpeedFlown, obj_ClimbSpeed, obj_VelX to obj_VelZ, obj_AimRate1,
+; obj_PitchRate to obj_RollRate).
 ;-------------------------------------------------------------------------------
 ResetPlayerMotion:
         lea.l   (ObjectTable).l,a1              ; 00708
@@ -588,8 +589,9 @@ ResetPlayerMotion:
         rts                                     ; 00766
 
 ;-------------------------------------------------------------------------------
-; ResetPlayerFlags - Resets the player's record: the weapons (+$63 $0D, ResetPlayerAircraft),
-; its flags (+$00 = $1148), +$7E $1400, and the flash and warning counters.
+; ResetPlayerFlags - Resets the player's record: the weapons (obj_Weapon $0D,
+; ResetPlayerAircraft), its flags (obj_Flags = $1148), obj_PilotTimer $1400, and the flash and
+; warning counters.
 ;-------------------------------------------------------------------------------
 ResetPlayerFlags:
         lea.l   (ObjectTable).l,a0              ; 00768

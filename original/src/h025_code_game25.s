@@ -9,8 +9,8 @@
 
 ;-------------------------------------------------------------------------------
 ; DrawGroundDots - Stage $90: when low enough (the limit by HeightBand), dots in colour 3
-; scattered on the ground round the viewer (patterns from DrawGroundDotsData2 and on), so that height
-; and speed can be judged over plain ground.
+; scattered on the ground round the viewer (patterns from DrawGroundDotsData2 and on), so that
+; height and speed can be judged over plain ground.
 ;-------------------------------------------------------------------------------
 ; DrawGroundDots's frame: arguments from 8(a6), locals below a6 (after its link)
 DrawGroundDots_Z        equ     -$2             ; the view's position / 256 (ViewOffsetX8, ViewOffsetZ8), snapped to the dots' grid

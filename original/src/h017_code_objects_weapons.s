@@ -10,9 +10,9 @@
 
 ;-------------------------------------------------------------------------------
 ; UpdateAllObjects - Updates every object for the frame: the small objects' timers count down;
-; every 16 frames CheckZones; each object's per-frame flag (+$02 bit 0) is cleared; then for
-; each of the 16 objects in turn (unrolled): its timer (+$4C), TrainingAndGLimit, UpdateMissile,
-; AfterburnerAndTrack and UpdateObject.
+; every 16 frames CheckZones; each object's per-frame flag (obj_Flags2 bit 0) is cleared; then
+; for each of the 16 objects in turn (unrolled): its timer (obj_Timer), TrainingAndGLimit,
+; UpdateMissile, AfterburnerAndTrack and UpdateObject.
 ;-------------------------------------------------------------------------------
 UpdateAllObjects:
         move.l  d5,-(a7)                        ; 00000
@@ -274,7 +274,7 @@ l_017_00426:
 
 ;-------------------------------------------------------------------------------
 ; CheckLockedTarget - Drops the radar lock (LockedTarget -1, the seeker cleared) when the
-; locked object no longer exists or has been destroyed (+$20 bit 1).
+; locked object no longer exists or has been destroyed (obj_Status bit 1).
 ;-------------------------------------------------------------------------------
 CheckLockedTarget:
         move.w  (LockedTarget).l,d0             ; 00430
@@ -293,9 +293,9 @@ l_017_00466:
         rts                                     ; 00466
 
 ;-------------------------------------------------------------------------------
-; EjectAndDrop - Steps the player's ejection or drop (+$7C low nibble, set by Shift+E to $A, by
-; Shift+F in mission F4 to $F): $E-$F drops the rescue pod (DropRescuePod); 9 the ejection
-; sound; 3 the pilot leaves the aircraft (EjectPilot).
+; EjectAndDrop - Steps the player's ejection or drop (obj_Ejection low nibble, set by Shift+E
+; to $A, by Shift+F in mission F4 to $F): $E-$F drops the rescue pod (DropRescuePod); 9 the
+; ejection sound; 3 the pilot leaves the aircraft (EjectPilot).
 ;-------------------------------------------------------------------------------
 EjectAndDrop:
         move.l  a2,-(a7)                        ; 00468
@@ -313,7 +313,7 @@ EjectAndDrop:
         bra.b   l_017_004EE                     ; 00494
 
 ;-------------------------------------------------------------------------------
-; CheckEjection - Steps the player's ejection (the player's +$7C low nibble)
+; CheckEjection - Steps the player's ejection (the player's obj_Ejection low nibble)
 ; while object 5 is free: 9 plays the ejection sound (cockpit view only), 1 starts the canopy
 ; timers, 3 throws the pilot out (EjectPilot, into object 5) and returns d0 = 1.
 ;-------------------------------------------------------------------------------
@@ -370,10 +370,10 @@ EjectSound:
 ;-------------------------------------------------------------------------------
 ; EnemyMayFire - EnemyMayFire(a2 = a computer aircraft): returns d0 = 1 (and clears FireNow) if
 ; the aircraft should fire its missile this frame. FireNow forces a launch. Otherwise the
-; aircraft must be active (+$01 bit 6), alive (+$01 bit 0), not destroyed or landing (+$00 &
-; $8700, +$20 bit 1), its target (+$38, when negative an object number) still active and alive,
-; its target in its forward cone (+$64 bits 5 and 6 both set), and its pilot attacking (+$63
-; high nibble $20 or $30).
+; aircraft must be active (+$01 bit 6), alive (+$01 bit 0), not destroyed or landing (obj_Flags
+; & $8700, obj_Status bit 1), its target (obj_Target, when negative an object number) still
+; active and alive, its target in its forward cone (obj_Controls2 bits 5 and 6 both set), and
+; its pilot attacking (obj_Weapon high nibble $20 or $30).
 ;-------------------------------------------------------------------------------
 EnemyMayFire:
         move.w  obj_Flags(a2),d0                ; 00522
@@ -419,7 +419,8 @@ l_017_0059E:
         rts                                     ; 005A6
 
 ;-------------------------------------------------------------------------------
-; TrainingAndGLimit - The training's steps and the G limit (a test of +$56 and GLoadValue).
+; TrainingAndGLimit - The training's steps and the G limit (a test of obj_PitchRate and
+; GLoadValue).
 ;-------------------------------------------------------------------------------
 TrainingAndGLimit:
         move.w  obj_PitchRate(a1),d0            ; 005A8
@@ -806,13 +807,13 @@ PlayerLaunch:
 
 ;-------------------------------------------------------------------------------
 ; LaunchMissile - LaunchMissile(a2 = the launcher, a1 = the new object): fires the launcher's
-; selected missile, if it has one left (+$5F: low nibble AMRAAMs, high nibble Sidewinders; a
-; computer aircraft only every 8, 6 or 4 frames by Difficulty, while LaunchFlag allows it).
-; The missile starts as a copy of the launcher's record (its first $A4 bytes); its type (+$62)
-; is 1 for an AIM-120 AMRAAM (weapon $30), 0 for an AIM-9L Sidewinder; the player's launches
-; are counted in the flight log (+$3E AMRAAMs, +$42 Sidewinders fired). It is placed at its
-; pylon (PylonOffsets, turned by the launcher's orientation +$92) and given the launcher's
-; velocity plus a push along its nose.
+; selected missile, if it has one left (obj_Missiles: low nibble AMRAAMs, high nibble
+; Sidewinders; a computer aircraft only every 8, 6 or 4 frames by Difficulty, while LaunchFlag
+; allows it). The missile starts as a copy of the launcher's record (its first $A4 bytes); its
+; type (obj_Type) is 1 for an AIM-120 AMRAAM (weapon $30), 0 for an AIM-9L Sidewinder; the
+; player's launches are counted in the flight log (obj_VelX AMRAAMs, obj_VelY Sidewinders
+; fired). It is placed at its pylon (PylonOffsets, turned by the launcher's orientation
+; obj_Inverse) and given the launcher's velocity plus a push along its nose.
 ;-------------------------------------------------------------------------------
 LaunchMissile:
         tst.b   (LaunchFlag).l                  ; 00AFE
@@ -1040,10 +1041,10 @@ l_017_00DFA:
         rts                                     ; 00DFC
 
 ;-------------------------------------------------------------------------------
-; StepObject - StepObject(a1): moves one object for this frame by its kind (+$62 high nibble):
-; missiles ($00) and pods/parachutes ($30) by their own physics, $20 not at all, and aircraft
-; by their pilot's state (landing, on route, crashed). Returns d0 = 0 when the object has gone
-; and must not be drawn.
+; StepObject - StepObject(a1): moves one object for this frame by its kind (obj_Type high
+; nibble): missiles ($00) and pods/parachutes ($30) by their own physics, $20 not at all, and
+; aircraft by their pilot's state (landing, on route, crashed). Returns d0 = 0 when the object
+; has gone and must not be drawn.
 ;-------------------------------------------------------------------------------
 StepObject:
         tst.b   (WorldFrozen).l                 ; 00DFE
@@ -1228,9 +1229,10 @@ l_017_01018:
         move.b  d0,obj_Controls(a1)             ; 01022
 
 ;-------------------------------------------------------------------------------
-; UpdateMissile - Updates a missile (a1): its timer (+$4C) counts down; while the motor burns
-; (timer >= 50) its speed (+$6C, +$6E) rises by $1E0 a frame to at most $4200, then it eases
-; towards $3000 ($240 a frame); at 12 it is spent (flag $400 in +$00)...
+; UpdateMissile - Updates a missile (a1): its timer (obj_Timer) counts down; while the motor
+; burns (timer >= 50) its speed (obj_Speed, obj_SpeedFlown) rises by $1E0 a frame to at most
+; $4200, then it eases towards $3000 ($240 a frame); at 12 it is spent (flag $400 in
+; obj_Flags)...
 ;-------------------------------------------------------------------------------
 UpdateMissile:
         tst.b   (WorldFrozen).l                 ; 01026
@@ -1825,10 +1827,11 @@ l_017_016E8:
         rts                                     ; 016E8
 
 ;-------------------------------------------------------------------------------
-; CheckOnTail - CheckOnTail(a1 = a computer aircraft, a3 = its target): sets +$04 bit 5 when
-; the target is an aircraft ($1x), within $3000, closing from behind (the line between them
-; against the target's heading) and flying the same way (the two headings agree), the position
-; from which the aircraft reacts as if a missile could be fired at it; clears it otherwise.
+; CheckOnTail - CheckOnTail(a1 = a computer aircraft, a3 = its target): sets obj_Bits bit 5
+; when the target is an aircraft ($1x), within $3000, closing from behind (the line between
+; them against the target's heading) and flying the same way (the two headings agree), the
+; position from which the aircraft reacts as if a missile could be fired at it; clears it
+; otherwise.
 ;-------------------------------------------------------------------------------
 CheckOnTail:
         move.b  obj_ThrottleStep(a1),d0         ; 016EA
@@ -1956,8 +1959,8 @@ l_017_0185E:
 
 ;-------------------------------------------------------------------------------
 ; AfterburnerAndTrack - Sets AfterburnerOn from the throttle, then, with a locked target,
-; updates the player's radar track of it at a rate by its range (+$39 counting, every $20 or
-; $50 by +$4A).
+; updates the player's radar track of it at a rate by its range (obj_ThrottleStep counting,
+; every $20 or $50 by obj_Range).
 ;-------------------------------------------------------------------------------
 AfterburnerAndTrack:
         cmpi.w  #$1200,obj_Speed(a1)            ; 01862
@@ -2002,8 +2005,8 @@ l_017_018E6:
         rts                                     ; 018E6
 
 ;-------------------------------------------------------------------------------
-; MissileTrackRate - A missile's tracking rate by its range (+$39 counting, every $20 or $50 by
-; +$4A).
+; MissileTrackRate - A missile's tracking rate by its range (obj_ThrottleStep counting, every
+; $20 or $50 by obj_Range).
 ;-------------------------------------------------------------------------------
 MissileTrackRate:
         addi.b  #$10,obj_ThrottleStep(a1)       ; 018E8

@@ -411,8 +411,8 @@ l_012_003D6:
         rts                                     ; 003DE
 
 ;-------------------------------------------------------------------------------
-; CheckViewTable2 - Sets ViewTable2Hit from the view table at CheckViewTable2Data1 (LookupViewTable),
-; every other frame; used by hunk 28.
+; CheckViewTable2 - Sets ViewTable2Hit from the view table at CheckViewTable2Data1
+; (LookupViewTable), every other frame; used by hunk 28.
 ;-------------------------------------------------------------------------------
 CheckViewTable2:
         lea.l   (CheckViewTable2Data1).l,a0     ; 003E0

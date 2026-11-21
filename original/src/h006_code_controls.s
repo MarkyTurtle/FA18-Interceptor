@@ -92,8 +92,8 @@ FireReleased:
         rts                                     ; 000F4
 
 ;-------------------------------------------------------------------------------
-; SetObjectBit7C - Sets the current object's +$7C bit 7 (the entry after it, written as data,
-; clears it), unless its +$03 bit 7 is set.
+; SetObjectBit7C - Sets the current object's obj_Ejection bit 7 (the entry after it, written as
+; data, clears it), unless its +$03 bit 7 is set.
 ;-------------------------------------------------------------------------------
 SetObjectBit7C:
         movem.l d4/d7/a1,-(a7)                  ; 000F6

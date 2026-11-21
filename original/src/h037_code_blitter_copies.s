@@ -849,7 +849,7 @@ l_037_009E8:
         rts                                     ; 009E8
 
 ;-------------------------------------------------------------------------------
-; CompassPosition - From the viewed object's heading (+$68): the heading in tens
+; CompassPosition - From the viewed object's heading (obj_Heading): the heading in tens
 ; (HeadingTens) and the compass strip's position (CompassPos, 0-$5F, wrapping).
 ;-------------------------------------------------------------------------------
 CompassPosition:

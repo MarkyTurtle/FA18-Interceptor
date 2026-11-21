@@ -99,8 +99,8 @@ l_030_001E6:
 
 ;-------------------------------------------------------------------------------
 ; ManClimbOut - The climb after take-off (states $24-$26): waits for the timer, then (state
-; $25) pitches up until the pitch (+$66) passes $3840 and back to $68B0, then (state $26) flies
-; level until higher than $240000.
+; $25) pitches up until the pitch (obj_Pitch) passes $3840 and back to $68B0, then (state $26)
+; flies level until higher than $240000.
 ;-------------------------------------------------------------------------------
 ManClimbOut:
         tst.w   obj_Timer(a1)                   ; 00200
@@ -706,11 +706,12 @@ l_030_00896:
 
 ;-------------------------------------------------------------------------------
 ; ComputerPilot - Flies a computer aircraft (a1) for the frame, by setting its control bits:
-; its state (+$05) chooses what it does, through PilotStates (state - 1). It steers towards its
-; destination: map cell +$2C / +$2E, position in the cell +$30 / +$32, height +$34. In mission
-; F3 (GameMode 5, the stolen aircraft) an aircraft follows a route (Routes, number +$3A): each
-; waypoint is loaded into the destination in turn (state 8). An aircraft sinking too near the
-; ground for its speed (height under speed x 64) goes into state 1 for 30 frames (pulls up).
+; its state (obj_State) chooses what it does, through PilotStates (state - 1). It steers
+; towards its destination: map cell obj_DestCellX / +$2E, position in the cell +$30 / +$32,
+; height obj_DestY. In mission F3 (GameMode 5, the stolen aircraft) an aircraft follows a route
+; (Routes, number obj_Route): each waypoint is loaded into the destination in turn (state 8).
+; An aircraft sinking too near the ground for its speed (height under speed x 64) goes into
+; state 1 for 30 frames (pulls up).
 ;-------------------------------------------------------------------------------
 ComputerPilot:
         link.w  a6,#$ffd4                       ; 0089A
@@ -789,7 +790,7 @@ l_030_00986:
 
 ;-------------------------------------------------------------------------------
 ; PilotFly - The normal flight (states 0, 1, 3, 4 and 8): steers towards the destination
-; (+$2C-+$34), with the checks on height and attitude.
+; (obj_DestCellX-obj_DestY), with the checks on height and attitude.
 ;-------------------------------------------------------------------------------
 PilotFly:
         btst    #$1,obj_Status(a1)              ; 00992
@@ -983,7 +984,8 @@ l_030_00C0C:
         bra.b   l_030_00C1E                     ; 00C12
 
 ;-------------------------------------------------------------------------------
-; PilotAim - A computer pilot steering towards its target when it is in front (+$64 bits 1-2).
+; PilotAim - A computer pilot steering towards its target when it is in front (obj_Controls2
+; bits 1-2).
 ;-------------------------------------------------------------------------------
 PilotAim:
         move.b  obj_Controls2(a1),d0            ; 00C14
@@ -1277,7 +1279,7 @@ l_030_00F10:
         bra.b   l_030_00F26                     ; 00F1A
 
 ;-------------------------------------------------------------------------------
-; SetPilotTimer - Sets the pilot's +$7E (halved for type $14).
+; SetPilotTimer - Sets the pilot's obj_PilotTimer (halved for type $14).
 ;-------------------------------------------------------------------------------
 SetPilotTimer:
         cmpi.b  #$14,obj_Type(a1)               ; 00F1C
@@ -1288,8 +1290,8 @@ l_030_00F26:
         bra.w   l_030_0112E                     ; 00F2A
 
 ;-------------------------------------------------------------------------------
-; RollTowardsRate - Rolls so the roll rate (+$58) goes towards d3, with limits near level and
-; inverted flight.
+; RollTowardsRate - Rolls so the roll rate (obj_YawRate) goes towards d3, with limits near
+; level and inverted flight.
 ;-------------------------------------------------------------------------------
 RollTowardsRate:
         move.b  obj_Controls2(a1),d2            ; 00F2E
@@ -1441,8 +1443,8 @@ PitchCommandKeep:
         bra.b   l_030_01090                     ; 0108C
 
 ;-------------------------------------------------------------------------------
-; PitchCommand - Sets the pitch control bits (+$65: $10 or $20) so the pitch rate (+$56) goes
-; towards d3, keeping the throttle bits.
+; PitchCommand - Sets the pitch control bits (obj_Controls: $10 or $20) so the pitch rate
+; (obj_PitchRate) goes towards d3, keeping the throttle bits.
 ;-------------------------------------------------------------------------------
 PitchCommand:
         moveq   #$0,d1                          ; 0108E

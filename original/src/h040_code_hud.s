@@ -93,9 +93,9 @@ DrawGunCross:
 ;-------------------------------------------------------------------------------
 ; HUDAltitude - The head-up display's height, then (falling into HUDSpeed and HUDHeading) the
 ; speed and the heading; only while HUDOn. The F/A-18 ($11) shows numbers: the height in feet
-; (+$18 / 1024 x 5, or the radar altimeter RadarAltitude while RadarAltimeterOn is set, at most
-; 99,999) with FT at the right, the speed (+$6E / 12) with KT at the left. The F-16 ($10,
-; ViewObject +$62) shows moving tapes instead, with tick marks every 5 and numbers every 10
+; (obj_Y / 1024 x 5, or the radar altimeter RadarAltitude while RadarAltimeterOn is set, at
+; most 99,999) with FT at the right, the speed (+$6E / 12) with KT at the left. The F-16 ($10,
+; ViewObject obj_Type) shows moving tapes instead, with tick marks every 5 and numbers every 10
 ; (HUDTapeTicks) and a pointer at the middle (HUDTapePointer).
 ;-------------------------------------------------------------------------------
 HUDAltitude:
@@ -267,8 +267,8 @@ l_040_0034A:
         bsr.w   HUDTapePointer                  ; 0035A
 
 ;-------------------------------------------------------------------------------
-; HUDSpeed - The speed (+$6E / 12, 0 when the aircraft has crashed): a number with KT on the
-; F/A-18, a tape on the left on the F-16.
+; HUDSpeed - The speed (obj_SpeedFlown / 12, 0 when the aircraft has crashed): a number with KT
+; on the F/A-18, a tape on the left on the F-16.
 ;-------------------------------------------------------------------------------
 HUDSpeed:
         lea.l   (ObjectTable).l,a0              ; 0035E
@@ -629,9 +629,10 @@ l_040_008DE:
 ; DrawGunSight - The gun sight, while RadarScale is $80 (as when the gun is selected): the
 ; pipper (a circle, DrawHUDShape, from PipperCircle) where the bullets will be (GunPipperPos,
 ; from ComputeGunPipper), on the locked target or at (159, 91) without one; and on a target the
-; range bar (DrawRangeArc: the target's range +$4A x $4C / $8CA0) and its closure
-; (ShowClosure). With the gun selected (+$63 $1x), the target within 8 pixels of the pipper
-; and closer than $900, it gives the shoot cue: ShootCue set, sound 4 and SHOOT (ShowShootCue).
+; range bar (DrawRangeArc: the target's range obj_Range x $4C / $8CA0) and its closure
+; (ShowClosure). With the gun selected (obj_Weapon $1x), the target within 8 pixels of the
+; pipper and closer than $900, it gives the shoot cue: ShootCue set, sound 4 and SHOOT
+; (ShowShootCue).
 ;-------------------------------------------------------------------------------
 DrawGunSight:
         cmpi.w  #$80,(RadarScale).l             ; 008E0
@@ -826,10 +827,10 @@ l_040_00B6E:
         rts                                     ; 00B6E
 
 ;-------------------------------------------------------------------------------
-; DrawMissileSeeker - The missile seeker, with a missile selected (+$63 $20 Sidewinder, $30
-; AMRAAM) and a locked target in the head-up display's middle: when the seeker (SeekerPos) is
-; within 5 pixels of the target box it has the target (WarningFlags $4000, the lock tone); then
-; within range ($1800 for the Sidewinder, $2700 for the AMRAAM) it gives the shoot cue
+; DrawMissileSeeker - The missile seeker, with a missile selected (obj_Weapon $20 Sidewinder,
+; $30 AMRAAM) and a locked target in the head-up display's middle: when the seeker (SeekerPos)
+; is within 5 pixels of the target box it has the target (WarningFlags $4000, the lock tone);
+; then within range ($1800 for the Sidewinder, $2700 for the AMRAAM) it gives the shoot cue
 ; (ShootCue 1, sound 4, IN RNG) or, closing too fast (Closure below -$2A3), ShootCue 2 and
 ; sound $10. Without the target, WarningFlags $200 and sound $100 (probably the search tone).
 ; Draws the seeker symbol (DrawSeekerSymbol).
@@ -964,8 +965,8 @@ HUDDigits2:
         bra.b   l_040_00D4A                     ; 00D30
 
 ;-------------------------------------------------------------------------------
-; HUDDigits2Alt - Draws two digits (PrintNumberHUD) with the places in AltTapeDigitPlaces, for the
-; F-16's altitude tape.
+; HUDDigits2Alt - Draws two digits (PrintNumberHUD) with the places in AltTapeDigitPlaces, for
+; the F-16's altitude tape.
 ;-------------------------------------------------------------------------------
 HUDDigits2Alt:
         moveq   #$1,d4                          ; 00D32
