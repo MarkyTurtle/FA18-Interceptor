@@ -298,17 +298,18 @@ JoystickPort:
 ; (AddMouseInterrupt).
 MouseInterruptNode:
         ds.b    $8                              ; 029E8
-; AddMouseInterruptData1 - Data used by AddMouseInterrupt.
-AddMouseInterruptData1:
+; MouseInterruptType - MouseInterruptNode's ln_Type (NT_INTERRUPT, AddMouseInterrupt).
+MouseInterruptType:
         ds.b    $1                              ; 029F0
-; AddMouseInterruptData2 - Data used by AddMouseInterrupt.
-AddMouseInterruptData2:
+; MouseInterruptPri - MouseInterruptNode's ln_Pri (0).
+MouseInterruptPri:
         ds.b    $1                              ; 029F1
-; AddMouseInterruptData3 - Data used by AddMouseInterrupt.
-AddMouseInterruptData3:
+; MouseInterruptNamePtr - MouseInterruptNode's ln_Name (MouseInterruptName), then its is_Data
+; (not used).
+MouseInterruptNamePtr:
         ds.b    $8                              ; 029F2
-; AddMouseInterruptData4 - Data used by AddMouseInterrupt.
-AddMouseInterruptData4:
+; MouseInterruptCode - MouseInterruptNode's is_Code (MouseInterrupt).
+MouseInterruptCode:
         ds.b    $4                              ; 029FA
 ; MouseLastX - The mouse counter's last X (MouseInterrupt).
 MouseLastX:

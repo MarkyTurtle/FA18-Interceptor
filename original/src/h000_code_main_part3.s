@@ -655,6 +655,14 @@ l_000_07D3E:
 ; display, then loops for ever: SelectDrawBuffer, OwnBlitter, GameFrame, DisownBlitter,
 ; ShowDisplay.
 ;-------------------------------------------------------------------------------
+; RunGame's frame: arguments from 8(a6), locals below a6 (after its link)
+RunGame_I               equ     -$2             ; the colour count
+RunGame_Step            equ     -$4             ; the fade's step (of 16)
+RunGame_RGB             equ     -$6             ; the colour
+RunGame_Red             equ     -$8             ; its red, one step down (at least 0)
+RunGame_Green           equ     -$A             ; its green, the same
+RunGame_Blue            equ     -$C             ; its blue, the same
+RunGame_Colour          equ     -$10            ; the next colour register in GameColorMap's table
 RunGame:
         link.w  a6,#$fff0                       ; 07D48
         jsr     (FreeTitlePictures).l           ; 07D4C
@@ -697,49 +705,49 @@ l_000_07DC6:
         jsr     (BusyWait).l                    ; 07DE0
         addq.l  #$4,a7                          ; 07DE6
 l_000_07DE8:
-        clr.w   -$4(a6)                         ; 07DE8
+        clr.w   RunGame_Step(a6)                ; 07DE8
 l_000_07DEC:
-        cmpi.w  #$10,-$4(a6)                    ; 07DEC
+        cmpi.w  #$10,RunGame_Step(a6)           ; 07DEC
         bge.w   l_000_07EB8                     ; 07DF2
         movea.l (GameColorMap).l,a0             ; 07DF6
-        move.l  $4(a0),-$10(a6)                 ; 07DFC
-        clr.w   -$2(a6)                         ; 07E02
+        move.l  $4(a0),RunGame_Colour(a6)       ; 07DFC
+        clr.w   RunGame_I(a6)                   ; 07E02
 l_000_07E06:
-        cmpi.w  #$20,-$2(a6)                    ; 07E06
+        cmpi.w  #$20,RunGame_I(a6)              ; 07E06
         bge.b   l_000_07E76                     ; 07E0C
-        movea.l -$10(a6),a0                     ; 07E0E
+        movea.l RunGame_Colour(a6),a0           ; 07E0E
         move.w  (a0),d0                         ; 07E12
-        move.w  d0,-$6(a6)                      ; 07E14
+        move.w  d0,RunGame_RGB(a6)              ; 07E14
         andi.w  #$f00,d0                        ; 07E18
         subi.w  #$100,d0                        ; 07E1C
-        move.w  d0,-$8(a6)                      ; 07E20
+        move.w  d0,RunGame_Red(a6)              ; 07E20
         tst.w   d0                              ; 07E24
         bpl.b   l_000_07E2C                     ; 07E26
-        clr.w   -$8(a6)                         ; 07E28
+        clr.w   RunGame_Red(a6)                 ; 07E28
 l_000_07E2C:
-        move.w  -$6(a6),d0                      ; 07E2C
+        move.w  RunGame_RGB(a6),d0              ; 07E2C
         andi.w  #$f0,d0                         ; 07E30
         subi.w  #$10,d0                         ; 07E34
-        move.w  d0,-$a(a6)                      ; 07E38
+        move.w  d0,RunGame_Green(a6)            ; 07E38
         tst.w   d0                              ; 07E3C
         bpl.b   l_000_07E44                     ; 07E3E
-        clr.w   -$a(a6)                         ; 07E40
+        clr.w   RunGame_Green(a6)               ; 07E40
 l_000_07E44:
-        move.w  -$6(a6),d0                      ; 07E44
+        move.w  RunGame_RGB(a6),d0              ; 07E44
         andi.w  #$f,d0                          ; 07E48
         subq.w  #$1,d0                          ; 07E4C
-        move.w  d0,-$c(a6)                      ; 07E4E
+        move.w  d0,RunGame_Blue(a6)             ; 07E4E
         tst.w   d0                              ; 07E52
         bpl.b   l_000_07E5A                     ; 07E54
-        clr.w   -$c(a6)                         ; 07E56
+        clr.w   RunGame_Blue(a6)                ; 07E56
 l_000_07E5A:
-        move.w  -$8(a6),d0                      ; 07E5A
-        or.w    -$a(a6),d0                      ; 07E5E
-        or.w    -$c(a6),d0                      ; 07E62
-        movea.l -$10(a6),a0                     ; 07E66
+        move.w  RunGame_Red(a6),d0              ; 07E5A
+        or.w    RunGame_Green(a6),d0            ; 07E5E
+        or.w    RunGame_Blue(a6),d0             ; 07E62
+        movea.l RunGame_Colour(a6),a0           ; 07E66
         move.w  d0,(a0)                         ; 07E6A
-        addq.l  #$2,-$10(a6)                    ; 07E6C
-        addq.w  #$1,-$2(a6)                     ; 07E70
+        addq.l  #$2,RunGame_Colour(a6)          ; 07E6C
+        addq.w  #$1,RunGame_I(a6)               ; 07E70
         bra.b   l_000_07E06                     ; 07E74
 l_000_07E76:
         pea.l   (GameViewPort).l                ; 07E76
@@ -755,7 +763,7 @@ l_000_07E76:
         move.l  #$a00,-(a7)                     ; 07EA2
         jsr     (BusyWait).l                    ; 07EA8
         addq.l  #$4,a7                          ; 07EAE
-        addq.w  #$1,-$4(a6)                     ; 07EB0
+        addq.w  #$1,RunGame_Step(a6)            ; 07EB0
         bra.w   l_000_07DEC                     ; 07EB4
 l_000_07EB8:
         bsr.w   MakeDisplay                     ; 07EB8
@@ -782,6 +790,9 @@ l_000_07EE6:
 ; 320 x 200 (5 planes for the display, 4 for the second), their RastPorts, and allocates their
 ; planes ($1F40 bytes each, chip RAM).
 ;-------------------------------------------------------------------------------
+; InitDisplay's frame: arguments from 8(a6), locals below a6 (after its link)
+InitDisplay_Colour      equ     -$4             ; the next colour register in GameColorMap's table
+InitDisplay_I           equ     -$8             ; the colour count
 InitDisplay:
         link.w  a6,#$fff4                       ; 07F04
         moveq   #$1d,d0                         ; 07F08
@@ -921,19 +932,19 @@ l_000_08110:
         addq.l  #$8,a7                          ; 08196
         move.l  d0,(LivePalette).l              ; 08198
         movea.l (GameColorMap).l,a0             ; 0819E
-        move.l  $4(a0),-$4(a6)                  ; 081A4
-        clr.l   -$8(a6)                         ; 081AA
+        move.l  $4(a0),InitDisplay_Colour(a6)   ; 081A4
+        clr.l   InitDisplay_I(a6)               ; 081AA
 l_000_081AE:
-        move.l  -$8(a6),d0                      ; 081AE
+        move.l  InitDisplay_I(a6),d0            ; 081AE
         cmpi.l  #$20,d0                         ; 081B2
         bge.b   l_000_081D4                     ; 081B8
         asl.l   #$1,d0                          ; 081BA
         movea.l d0,a0                           ; 081BC
         adda.l  #PictureColours,a0              ; 081BE
-        movea.l -$4(a6),a1                      ; 081C4
+        movea.l InitDisplay_Colour(a6),a1       ; 081C4
         move.w  (a0),(a1)                       ; 081C8
-        addq.l  #$2,-$4(a6)                     ; 081CA
-        addq.l  #$1,-$8(a6)                     ; 081CE
+        addq.l  #$2,InitDisplay_Colour(a6)      ; 081CA
+        addq.l  #$1,InitDisplay_I(a6)           ; 081CE
         bra.b   l_000_081AE                     ; 081D2
 l_000_081D4:
         move.l  (GameColorMap).l,(GameViewPortColorMap).l ; 081D4
@@ -1125,13 +1136,17 @@ l_000_08464:
 ;-------------------------------------------------------------------------------
 ; WriteConfig - Writes the config buffer (78 bytes) to a new df0:config; ConfigOnDisk = 1.
 ;-------------------------------------------------------------------------------
+; WriteConfig's frame: arguments from 8(a6), locals below a6 (after its link)
+WriteConfig_Buffer      equ     -$4             ; ConfigBuffer
+WriteConfig_Bytes       equ     -$8             ; what Write returned
+WriteConfig_File        equ     -$C             ; the open file
 WriteConfig:
         link.w  a6,#$fff4                       ; 0846C
         move.l  #$3ee,-(a7)                     ; 08470
         pea.l   (StrConfig).l                   ; 08476
         jsr     (_Open).l                       ; 0847C
         addq.l  #$8,a7                          ; 08482
-        move.l  d0,-$c(a6)                      ; 08484
+        move.l  d0,WriteConfig_File(a6)         ; 08484
         tst.l   d0                              ; 08488
         bgt.b   l_000_08492                     ; 0848A
         moveq   #$0,d0                          ; 0848C
@@ -1142,11 +1157,11 @@ l_000_08492:
         moveq   #$4e,d0                         ; 08498
         move.l  d0,-(a7)                        ; 0849A
         move.l  a0,-(a7)                        ; 0849C
-        move.l  -$c(a6),-(a7)                   ; 0849E
-        move.l  a0,-$4(a6)                      ; 084A2
+        move.l  WriteConfig_File(a6),-(a7)      ; 0849E
+        move.l  a0,WriteConfig_Buffer(a6)       ; 084A2
         jsr     (_Write).l                      ; 084A6
         lea.l   $c(a7),a7                       ; 084AC
-        move.l  d0,-$8(a6)                      ; 084B0
+        move.l  d0,WriteConfig_Bytes(a6)        ; 084B0
         addq.l  #$1,d0                          ; 084B4
         bne.b   l_000_084BE                     ; 084B6
         moveq   #$0,d0                          ; 084B8
@@ -1154,7 +1169,7 @@ l_000_08492:
         rts                                     ; 084BC
 l_000_084BE:
         move.w  #$1,(ConfigOnDisk).l            ; 084BE
-        move.l  -$c(a6),-(a7)                   ; 084C6
+        move.l  WriteConfig_File(a6),-(a7)      ; 084C6
         jsr     (_Close).l                      ; 084CA
         addq.l  #$4,a7                          ; 084D0
         unlk    a6                              ; 084D2
@@ -1164,13 +1179,17 @@ l_000_084BE:
 ; ReadConfig - Reads df0:config (78 bytes) into the config buffer; returns 1 if it was there
 ; (ConfigOnDisk = 1), 0 if not.
 ;-------------------------------------------------------------------------------
+; ReadConfig's frame: arguments from 8(a6), locals below a6 (after its link)
+ReadConfig_Buffer       equ     -$4             ; ConfigBuffer
+ReadConfig_Bytes        equ     -$8             ; what Read returned
+ReadConfig_File         equ     -$C             ; the open file
 ReadConfig:
         link.w  a6,#$fff4                       ; 084D6
         move.l  #$3ed,-(a7)                     ; 084DA
         pea.l   (StrConfig2).l                  ; 084E0
         jsr     (_Open).l                       ; 084E6
         addq.l  #$8,a7                          ; 084EC
-        move.l  d0,-$c(a6)                      ; 084EE
+        move.l  d0,ReadConfig_File(a6)          ; 084EE
         tst.l   d0                              ; 084F2
         bgt.b   l_000_08502                     ; 084F4
         clr.w   (ConfigOnDisk).l                ; 084F6
@@ -1183,15 +1202,15 @@ l_000_08502:
         moveq   #$4e,d0                         ; 08510
         move.l  d0,-(a7)                        ; 08512
         move.l  a0,-(a7)                        ; 08514
-        move.l  -$c(a6),-(a7)                   ; 08516
-        move.l  a0,-$4(a6)                      ; 0851A
+        move.l  ReadConfig_File(a6),-(a7)       ; 08516
+        move.l  a0,ReadConfig_Buffer(a6)        ; 0851A
         jsr     (_Read).l                       ; 0851E
         lea.l   $c(a7),a7                       ; 08524
-        move.l  -$c(a6),-(a7)                   ; 08528
-        move.l  d0,-$8(a6)                      ; 0852C
+        move.l  ReadConfig_File(a6),-(a7)       ; 08528
+        move.l  d0,ReadConfig_Bytes(a6)         ; 0852C
         jsr     (_Close).l                      ; 08530
         addq.l  #$4,a7                          ; 08536
-        cmpi.l  #$ffffffff,-$8(a6)              ; 08538
+        cmpi.l  #$ffffffff,ReadConfig_Bytes(a6) ; 08538
         bne.b   l_000_08548                     ; 08540
         moveq   #$0,d0                          ; 08542
         unlk    a6                              ; 08544
@@ -1205,17 +1224,20 @@ l_000_08548:
 ;-------------------------------------------------------------------------------
 ; ClearConfig - Clears the config buffer (39 words) and marks it changed (ConfigChanged).
 ;-------------------------------------------------------------------------------
+; ClearConfig's frame: arguments from 8(a6), locals below a6 (after its link)
+ClearConfig_I           equ     -$2             ; the word count
+ClearConfig_To          equ     -$6             ; the next word of ConfigBuffer
 ClearConfig:
         link.w  a6,#$fffa                       ; 08556
-        move.l  (ConfigBuffer).l,-$6(a6)        ; 0855A
-        clr.w   -$2(a6)                         ; 08562
+        move.l  (ConfigBuffer).l,ClearConfig_To(a6) ; 0855A
+        clr.w   ClearConfig_I(a6)               ; 08562
 l_000_08566:
-        cmpi.w  #$27,-$2(a6)                    ; 08566
+        cmpi.w  #$27,ClearConfig_I(a6)          ; 08566
         bge.b   l_000_0857E                     ; 0856C
-        movea.l -$6(a6),a0                      ; 0856E
+        movea.l ClearConfig_To(a6),a0           ; 0856E
         clr.w   (a0)                            ; 08572
-        addq.l  #$2,-$6(a6)                     ; 08574
-        addq.w  #$1,-$2(a6)                     ; 08578
+        addq.l  #$2,ClearConfig_To(a6)          ; 08574
+        addq.w  #$1,ClearConfig_I(a6)           ; 08578
         bra.b   l_000_08566                     ; 0857C
 l_000_0857E:
         move.b  #$1,(ConfigChanged).l           ; 0857E
@@ -1226,6 +1248,10 @@ l_000_0857E:
 ; SaveConfig - Writes the config buffer to df0:config again (MODE_OLDFILE) if the disk allows
 ; it and the config was there.
 ;-------------------------------------------------------------------------------
+; SaveConfig's frame: arguments from 8(a6), locals below a6 (after its link)
+SaveConfig_Buffer       equ     -$4             ; ConfigBuffer
+SaveConfig_Bytes        equ     -$8             ; what Write returned
+SaveConfig_File         equ     -$C             ; the open file
 SaveConfig:
         link.w  a6,#$fff4                       ; 0858A
         move.w  (LogDiskStatus).l,d0            ; 0858E
@@ -1252,10 +1278,10 @@ l_000_085D2:
         jsr     (_Open).l                       ; 085DE
         addq.l  #$8,a7                          ; 085E4
         clr.l   -(a7)                           ; 085E6
-        move.l  d0,-$c(a6)                      ; 085E8
+        move.l  d0,SaveConfig_File(a6)          ; 085E8
         jsr     (_FreeSprite).l                 ; 085EC
         addq.l  #$4,a7                          ; 085F2
-        tst.l   -$c(a6)                         ; 085F4
+        tst.l   SaveConfig_File(a6)             ; 085F4
         bgt.b   l_000_08606                     ; 085F8
         clr.w   (ConfigOnDisk).l                ; 085FA
         moveq   #$0,d0                          ; 08600
@@ -1266,21 +1292,21 @@ l_000_08606:
         moveq   #$4e,d0                         ; 0860C
         move.l  d0,-(a7)                        ; 0860E
         move.l  a0,-(a7)                        ; 08610
-        move.l  -$c(a6),-(a7)                   ; 08612
-        move.l  a0,-$4(a6)                      ; 08616
+        move.l  SaveConfig_File(a6),-(a7)       ; 08612
+        move.l  a0,SaveConfig_Buffer(a6)        ; 08616
         jsr     (_Write).l                      ; 0861A
         lea.l   $c(a7),a7                       ; 08620
         clr.l   -(a7)                           ; 08624
-        move.l  d0,-$8(a6)                      ; 08626
+        move.l  d0,SaveConfig_Bytes(a6)         ; 08626
         jsr     (_FreeSprite).l                 ; 0862A
         addq.l  #$4,a7                          ; 08630
-        move.l  -$c(a6),-(a7)                   ; 08632
+        move.l  SaveConfig_File(a6),-(a7)       ; 08632
         jsr     (_Close).l                      ; 08636
         addq.l  #$4,a7                          ; 0863C
         clr.l   -(a7)                           ; 0863E
         jsr     (_FreeSprite).l                 ; 08640
         addq.l  #$4,a7                          ; 08646
-        cmpi.l  #$ffffffff,-$8(a6)              ; 08648
+        cmpi.l  #$ffffffff,SaveConfig_Bytes(a6) ; 08648
         bne.b   l_000_08658                     ; 08650
         moveq   #$0,d0                          ; 08652
         unlk    a6                              ; 08654
@@ -1511,6 +1537,8 @@ l_000_088C8:
 ; CodeCheck - Works out the expected code from CodeValue1-02978 with the tables at
 ; CodeCheckData1 / CodeCheckData2 (CodeHash), masked by CodeCheckData3[CodeHashValue].
 ;-------------------------------------------------------------------------------
+; CodeCheck's frame: arguments from 8(a6), locals below a6 (after its link)
+CodeCheck_Hash          equ     -$2             ; what CodeHash returned
 CodeCheck:
         link.w  a6,#$fff2                       ; 088E0
         movem.l d2-d3,-(a7)                     ; 088E4
@@ -1590,7 +1618,7 @@ l_000_089B0:
         move.l  d0,-(a7)                        ; 089D0
         bsr.w   CodeHash                        ; 089D2
         lea.l   $10(a7),a7                      ; 089D6
-        move.w  d0,-$2(a6)                      ; 089DA
+        move.w  d0,CodeCheck_Hash(a6)           ; 089DA
         bra.b   l_000_08A0C                     ; 089DE
 l_000_089E0:
         move.w  (CodeValue2).l,d0               ; 089E0
@@ -1605,7 +1633,7 @@ l_000_089E0:
         move.l  d0,-(a7)                        ; 089FE
         bsr.w   CodeHash                        ; 08A00
         lea.l   $10(a7),a7                      ; 08A04
-        move.w  d0,-$2(a6)                      ; 08A08
+        move.w  d0,CodeCheck_Hash(a6)           ; 08A08
 l_000_08A0C:
         move.w  (CodeHashValue).l,d0            ; 08A0C
         ext.l   d0                              ; 08A12
@@ -1613,7 +1641,7 @@ l_000_08A0C:
         movea.l d0,a0                           ; 08A16
         adda.l  #CodeCheckData3,a0              ; 08A18
         move.w  (a0),d0                         ; 08A1E
-        move.w  -$2(a6),d1                      ; 08A20
+        move.w  CodeCheck_Hash(a6),d1           ; 08A20
         and.w   d1,d0                           ; 08A24
         movem.l (a7)+,d2-d3                     ; 08A26
         unlk    a6                              ; 08A2A
@@ -2261,6 +2289,11 @@ SetJoystickType:
 ;-------------------------------------------------------------------------------
 ; SetJoystickTrigger - GPD_SETTRIGGER: report every button change.
 ;-------------------------------------------------------------------------------
+; SetJoystickTrigger's frame: arguments from 8(a6), locals below a6 (after its link)
+SetJoystickTrigger_YDelta equ     -$2           ; the GamePortTrigger the request sends (io_Data): gpt_YDelta 1
+SetJoystickTrigger_XDelta equ     -$4           ; gpt_XDelta 1
+SetJoystickTrigger_Timeout equ     -$6          ; gpt_Timeout 0
+SetJoystickTrigger_Keys equ     -$8             ; gpt_Keys 3 (key down and up)
 SetJoystickTrigger:
         link.w  a6,#$fff8                       ; 091B6
         movea.l (JoystickRequest).l,a0          ; 091BA
@@ -2268,14 +2301,14 @@ SetJoystickTrigger:
         moveq   #$8,d0                          ; 091C6
         movea.l (JoystickRequest).l,a0          ; 091C8
         move.l  d0,io_Length(a0)                ; 091CE
-        lea.l   -$8(a6),a0                      ; 091D2
+        lea.l   SetJoystickTrigger_Keys(a6),a0  ; 091D2
         movea.l (JoystickRequest).l,a1          ; 091D6
         move.l  a0,io_Data(a1)                  ; 091DC
-        move.w  #$3,-$8(a6)                     ; 091E0
-        clr.w   -$6(a6)                         ; 091E6
+        move.w  #$3,SetJoystickTrigger_Keys(a6) ; 091E0
+        clr.w   SetJoystickTrigger_Timeout(a6)  ; 091E6
         moveq   #$1,d0                          ; 091EA
-        move.w  d0,-$4(a6)                      ; 091EC
-        move.w  d0,-$2(a6)                      ; 091F0
+        move.w  d0,SetJoystickTrigger_XDelta(a6) ; 091EC
+        move.w  d0,SetJoystickTrigger_YDelta(a6) ; 091F0
         move.l  a1,-(a7)                        ; 091F4
         jsr     (_DoIO).l                       ; 091F6
         addq.l  #$4,a7                          ; 091FC
@@ -2373,58 +2406,73 @@ l_000_092D4:
         movem.l (a7)+,d7                        ; 092D6
         unlk    a6                              ; 092DA
         rts                                     ; 092DC
+;-------------------------------------------------------------------------------
 ; MouseInterrupt - The vertical blank interrupt server's code: the mouse counters' change
-; (JOY0DAT) added to the pointer position, clamped to SetMouseLimits.
+; (JOY0DAT) added to the pointer position, clamped to SetMouseLimits; then a step of a fade
+; (FadeLevel towards FadeTarget, every 2 or 3 frames: LoadRGB4 from FlightPalette's rows, and
+; the copper lists of the buffer not shown, 1 - DisplayBuffer); at its end the colours are copied
+; to LivePalette; and TitleMusicStep.
+;-------------------------------------------------------------------------------
+; MouseInterrupt's frame: arguments from 8(a6), locals below a6 (after its link)
+MouseInterrupt_I        equ     -$2             ; the colour count
+MouseInterrupt_Counters equ     -$4             ; JOY0DAT
+MouseInterrupt_X        equ     -$6             ; its low byte (the x counter)
+MouseInterrupt_Y        equ     -$8             ; its high byte (the y counter)
+MouseInterrupt_DX       equ     -$A             ; X - MouseLastX (wrapped to -128..127)
+MouseInterrupt_DY       equ     -$C             ; Y - MouseLastY (the same)
+MouseInterrupt_From     equ     -$10            ; the next colour copied
+MouseInterrupt_To       equ     -$14            ; the next place in LivePalette
+MouseInterrupt_Other    equ     -$16            ; 1 - DisplayBuffer (the buffer not shown)
 MouseInterrupt:
         link.w  a6,#$ffea                       ; 092DE
         movem.l d2,-(a7)                        ; 092E2
         move.w  (CUSTOM+JOY0DAT).l,d0           ; 092E6
-        move.w  d0,-$4(a6)                      ; 092EC
+        move.w  d0,MouseInterrupt_Counters(a6)  ; 092EC
         andi.w  #$ff,d0                         ; 092F0
-        move.w  -$4(a6),d1                      ; 092F4
+        move.w  MouseInterrupt_Counters(a6),d1  ; 092F4
         asr.w   #$8,d1                          ; 092F8
         andi.w  #$ff,d1                         ; 092FA
-        move.w  d0,-$6(a6)                      ; 092FE
+        move.w  d0,MouseInterrupt_X(a6)         ; 092FE
         sub.w   (MouseLastX).l,d0               ; 09302
-        move.w  d1,-$8(a6)                      ; 09308
+        move.w  d1,MouseInterrupt_Y(a6)         ; 09308
         sub.w   (MouseLastY).l,d1               ; 0930C
-        move.w  d0,-$a(a6)                      ; 09312
-        move.w  d1,-$c(a6)                      ; 09316
+        move.w  d0,MouseInterrupt_DX(a6)        ; 09312
+        move.w  d1,MouseInterrupt_DY(a6)        ; 09316
         cmpi.w  #$ff80,d0                       ; 0931A
         bge.b   l_000_09328                     ; 0931E
-        addi.w  #$100,-$a(a6)                   ; 09320
+        addi.w  #$100,MouseInterrupt_DX(a6)     ; 09320
         bra.b   l_000_09338                     ; 09326
 l_000_09328:
-        move.w  -$a(a6),d0                      ; 09328
+        move.w  MouseInterrupt_DX(a6),d0        ; 09328
         cmpi.w  #$7f,d0                         ; 0932C
         ble.b   l_000_09338                     ; 09330
-        subi.w  #$100,-$a(a6)                   ; 09332
+        subi.w  #$100,MouseInterrupt_DX(a6)     ; 09332
 l_000_09338:
-        move.w  -$c(a6),d0                      ; 09338
+        move.w  MouseInterrupt_DY(a6),d0        ; 09338
         cmpi.w  #$ff80,d0                       ; 0933C
         bge.b   l_000_0934A                     ; 09340
-        addi.w  #$100,-$c(a6)                   ; 09342
+        addi.w  #$100,MouseInterrupt_DY(a6)     ; 09342
         bra.b   l_000_0935A                     ; 09348
 l_000_0934A:
-        move.w  -$c(a6),d0                      ; 0934A
+        move.w  MouseInterrupt_DY(a6),d0        ; 0934A
         cmpi.w  #$7f,d0                         ; 0934E
         ble.b   l_000_0935A                     ; 09352
-        subi.w  #$100,-$c(a6)                   ; 09354
+        subi.w  #$100,MouseInterrupt_DY(a6)     ; 09354
 l_000_0935A:
         move.b  (MouseActive).l,d0              ; 0935A
         tst.b   d0                              ; 09360
         bne.b   l_000_09374                     ; 09362
-        tst.w   -$c(a6)                         ; 09364
+        tst.w   MouseInterrupt_DY(a6)           ; 09364
         bpl.b   l_000_09374                     ; 09368
-        move.w  -$c(a6),d0                      ; 0936A
+        move.w  MouseInterrupt_DY(a6),d0        ; 0936A
         asr.w   #$1,d0                          ; 0936E
-        move.w  d0,-$c(a6)                      ; 09370
+        move.w  d0,MouseInterrupt_DY(a6)        ; 09370
 l_000_09374:
         move.w  (MouseX).l,d0                   ; 09374
-        add.w   -$a(a6),d0                      ; 0937A
+        add.w   MouseInterrupt_DX(a6),d0        ; 0937A
         move.w  d0,(MouseX).l                   ; 0937E
         move.w  (MouseY).l,d1                   ; 09384
-        sub.w   -$c(a6),d1                      ; 0938A
+        sub.w   MouseInterrupt_DY(a6),d1        ; 0938A
         move.w  d1,(MouseY).l                   ; 0938E
         move.w  (MouseX).l,d0                   ; 09394
         move.w  (MouseMaxX).l,d1                ; 0939A
@@ -2462,8 +2510,8 @@ l_000_09408:
         move.l  d1,d0                           ; 09408
 l_000_0940A:
         move.w  d0,(MouseY).l                   ; 0940A
-        move.w  -$6(a6),(MouseLastX).l          ; 09410
-        move.w  -$8(a6),(MouseLastY).l          ; 09418
+        move.w  MouseInterrupt_X(a6),(MouseLastX).l ; 09410
+        move.w  MouseInterrupt_Y(a6),(MouseLastY).l ; 09418
         move.w  (MouseIntFrames).l,d0           ; 09420
         addq.w  #$1,d0                          ; 09426
         move.w  d0,(MouseIntFrames).l           ; 09428
@@ -2501,19 +2549,19 @@ l_000_09480:
         move.l  d0,-(a7)                        ; 0949C
         move.l  a0,-(a7)                        ; 0949E
         pea.l   (GameViewPort).l                ; 094A0
-        move.l  a0,-$10(a6)                     ; 094A6
+        move.l  a0,MouseInterrupt_From(a6)      ; 094A6
         jsr     (_LoadRGB4).l                   ; 094AA
         lea.l   $c(a7),a7                       ; 094B0
         move.w  (DisplayBuffer).l,d0            ; 094B4
         moveq   #$1,d1                          ; 094BA
         sub.w   d0,d1                           ; 094BC
-        move.w  d1,-$16(a6)                     ; 094BE
+        move.w  d1,MouseInterrupt_Other(a6)     ; 094BE
         ext.l   d1                              ; 094C2
         asl.l   #$2,d1                          ; 094C4
         movea.l d1,a0                           ; 094C6
         adda.l  #CopperBuffer1,a0               ; 094C8
         move.l  (a0),(GameViewLOFCprList).l     ; 094CE
-        move.w  -$16(a6),d0                     ; 094D4
+        move.w  MouseInterrupt_Other(a6),d0     ; 094D4
         ext.l   d0                              ; 094D8
         asl.l   #$2,d0                          ; 094DA
         movea.l d0,a0                           ; 094DC
@@ -2521,17 +2569,17 @@ l_000_09480:
         move.l  (a0),(GameViewPortDspIns).l     ; 094E4
         moveq   #$10,d0                         ; 094EA
         move.l  d0,-(a7)                        ; 094EC
-        move.l  -$10(a6),-(a7)                  ; 094EE
+        move.l  MouseInterrupt_From(a6),-(a7)   ; 094EE
         pea.l   (GameViewPort).l                ; 094F2
         jsr     (_LoadRGB4).l                   ; 094F8
         lea.l   $c(a7),a7                       ; 094FE
-        move.w  -$16(a6),d0                     ; 09502
+        move.w  MouseInterrupt_Other(a6),d0     ; 09502
         ext.l   d0                              ; 09506
         asl.l   #$2,d0                          ; 09508
         movea.l d0,a0                           ; 0950A
         adda.l  #CopperBuffer1,a0               ; 0950C
         move.l  (a0),(GameViewLOFCprList).l     ; 09512
-        move.w  -$16(a6),d0                     ; 09518
+        move.w  MouseInterrupt_Other(a6),d0     ; 09518
         ext.l   d0                              ; 0951C
         asl.l   #$2,d0                          ; 0951E
         movea.l d0,a0                           ; 09520
@@ -2541,17 +2589,17 @@ l_000_09480:
         move.b  (FadeTarget).l,d1               ; 09534
         cmp.b   d1,d0                           ; 0953A
         bne.b   l_000_09596                     ; 0953C
-        move.l  (LivePalette).l,-$14(a6)        ; 0953E
-        clr.w   -$2(a6)                         ; 09546
+        move.l  (LivePalette).l,MouseInterrupt_To(a6) ; 0953E
+        clr.w   MouseInterrupt_I(a6)            ; 09546
 l_000_0954A:
-        cmpi.w  #$10,-$2(a6)                    ; 0954A
+        cmpi.w  #$10,MouseInterrupt_I(a6)       ; 0954A
         bge.b   l_000_0956A                     ; 09550
-        movea.l -$10(a6),a0                     ; 09552
-        movea.l -$14(a6),a1                     ; 09556
+        movea.l MouseInterrupt_From(a6),a0      ; 09552
+        movea.l MouseInterrupt_To(a6),a1        ; 09556
         move.w  (a0),(a1)                       ; 0955A
-        addq.l  #$2,-$10(a6)                    ; 0955C
-        addq.l  #$2,-$14(a6)                    ; 09560
-        addq.w  #$1,-$2(a6)                     ; 09564
+        addq.l  #$2,MouseInterrupt_From(a6)     ; 0955C
+        addq.l  #$2,MouseInterrupt_To(a6)       ; 09560
+        addq.w  #$1,MouseInterrupt_I(a6)        ; 09564
         bra.b   l_000_0954A                     ; 09568
 l_000_0956A:
         move.b  #$3,(PaletteLoadCount).l        ; 0956A
@@ -2572,11 +2620,11 @@ l_000_09596:
         unlk    a6                              ; 095A2
         rts                                     ; 095A4
 AddMouseInterrupt:
-        move.b  #$2,(AddMouseInterruptData1).l  ; 095A6
-        clr.b   (AddMouseInterruptData2).l      ; 095AE
-        move.l  #MouseInterruptName,(AddMouseInterruptData3).l ; 095B4
+        move.b  #NT_INTERRUPT,(MouseInterruptType).l ; 095A6
+        clr.b   (MouseInterruptPri).l           ; 095AE
+        move.l  #MouseInterruptName,(MouseInterruptNamePtr).l ; 095B4
         lea.l   MouseInterrupt(pc),a0           ; 095BE
-        move.l  a0,(AddMouseInterruptData4).l   ; 095C2
+        move.l  a0,(MouseInterruptCode).l       ; 095C2
         pea.l   (MouseInterruptNode).l          ; 095C8
         moveq   #$5,d0                          ; 095CE
         move.l  d0,-(a7)                        ; 095D0
@@ -2681,10 +2729,13 @@ l_000_096B8:
 ; sounds 13-34 (each file one sound, plus copies at other settings) when there is the chip RAM
 ; for them; sets their loops and pitches.
 ;-------------------------------------------------------------------------------
+; LoadMusicSamples's frame: arguments from 8(a6), locals below a6 (after its link)
+LoadMusicSamples_Slot   equ     -$4             ; the SoundTable slot
+LoadMusicSamples_Missing equ     -$8            ; the slots still empty
 LoadMusicSamples:
         link.w  a6,#$ffdc                       ; 096BA
         movem.l a2-a5,-(a7)                     ; 096BE
-        clr.l   -$8(a6)                         ; 096C2
+        clr.l   LoadMusicSamples_Missing(a6)    ; 096C2
         moveq   #$d,d0                          ; 096C6
         move.l  d0,-(a7)                        ; 096C8
         pea.l   (StrTextTexti0a).l              ; 096CA
@@ -2811,9 +2862,9 @@ LoadMusicSamples:
         jsr     (CopySound).l                   ; 0982C
         addq.l  #$8,a7                          ; 09832
         moveq   #$d,d0                          ; 09834
-        move.l  d0,-$4(a6)                      ; 09836
+        move.l  d0,LoadMusicSamples_Slot(a6)    ; 09836
 l_000_0983A:
-        move.l  -$4(a6),d0                      ; 0983A
+        move.l  LoadMusicSamples_Slot(a6),d0    ; 0983A
         cmpi.l  #$23,d0                         ; 0983E
         bge.b   l_000_0985E                     ; 09844
         asl.l   #$2,d0                          ; 09846
@@ -2821,17 +2872,17 @@ l_000_0983A:
         adda.l  #SoundTable,a0                  ; 0984A
         tst.l   (a0)                            ; 09850
         bne.b   l_000_09858                     ; 09852
-        addq.l  #$1,-$8(a6)                     ; 09854
+        addq.l  #$1,LoadMusicSamples_Missing(a6) ; 09854
 l_000_09858:
-        addq.l  #$1,-$4(a6)                     ; 09858
+        addq.l  #$1,LoadMusicSamples_Slot(a6)   ; 09858
         bra.b   l_000_0983A                     ; 0985C
 l_000_0985E:
-        tst.l   -$8(a6)                         ; 0985E
+        tst.l   LoadMusicSamples_Missing(a6)    ; 0985E
         bne.w   l_000_099A0                     ; 09862
         moveq   #$d,d0                          ; 09866
-        move.l  d0,-$4(a6)                      ; 09868
+        move.l  d0,LoadMusicSamples_Slot(a6)    ; 09868
 l_000_0986C:
-        move.l  -$4(a6),d0                      ; 0986C
+        move.l  LoadMusicSamples_Slot(a6),d0    ; 0986C
         cmpi.l  #$23,d0                         ; 09870
         bge.b   l_000_098B4                     ; 09876
         asl.l   #$2,d0                          ; 09878
@@ -2850,7 +2901,7 @@ l_000_0986C:
         movea.l d0,a0                           ; 098A2
         adda.l  #EngineSample,a0                ; 098A4
         move.l  (a0),snd_Next(a1)               ; 098AA
-        addq.l  #$1,-$4(a6)                     ; 098AE
+        addq.l  #$1,LoadMusicSamples_Slot(a6)   ; 098AE
         bra.b   l_000_0986C                     ; 098B2
 l_000_098B4:
         movea.l (LoadMusicSamplesData2).l,a0    ; 098B4
@@ -2906,15 +2957,15 @@ l_000_098B4:
         bra.b   l_000_099C2                     ; 0999E
 l_000_099A0:
         moveq   #$d,d0                          ; 099A0
-        move.l  d0,-$4(a6)                      ; 099A2
+        move.l  d0,LoadMusicSamples_Slot(a6)    ; 099A2
 l_000_099A6:
-        move.l  -$4(a6),d0                      ; 099A6
+        move.l  LoadMusicSamples_Slot(a6),d0    ; 099A6
         cmpi.l  #$23,d0                         ; 099AA
         bge.b   l_000_099C2                     ; 099B0
         move.l  d0,-(a7)                        ; 099B2
         jsr     (FreeSound).l                   ; 099B4
         addq.l  #$4,a7                          ; 099BA
-        addq.l  #$1,-$4(a6)                     ; 099BC
+        addq.l  #$1,LoadMusicSamples_Slot(a6)   ; 099BC
         bra.b   l_000_099A6                     ; 099C0
 l_000_099C2:
         movem.l (a7)+,a2-a5                     ; 099C2
