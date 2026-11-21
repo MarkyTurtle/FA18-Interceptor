@@ -41,6 +41,8 @@ l_000_043F0:
 ; $C80, and 3 between $258 and $C4E (asking for the scenery to be rebuilt, RedrawFlags $0B,
 ; when it changes); HeightMid while between $1C2 and $C80. More after (not worked out).
 ;-------------------------------------------------------------------------------
+; SetHeightBand's frame: arguments from 8(a6), locals below a6 (after its link)
+SetHeightBand_Height    equ     -$2             ; the view's height / 8
 SetHeightBand:
         link.w  a6,#$fffa                       ; 043F2
         tst.b   (OutsideView).l                 ; 043F6
@@ -48,17 +50,17 @@ SetHeightBand:
         move.w  (OutsideCamPitch).l,d0          ; 043FE
         asr.w   #$3,d0                          ; 04404
         clr.w   -$4(a6)                         ; 04406
-        move.w  d0,-$2(a6)                      ; 0440A
+        move.w  d0,SetHeightBand_Height(a6)     ; 0440A
         bra.b   l_000_04428                     ; 0440E
 l_000_04410:
         move.l  (OutsideCamPos).l,d0            ; 04410
         asr.l   #$3,d0                          ; 04416
         move.l  (ViewHeightLong).l,d1           ; 04418
         asr.l   #$3,d1                          ; 0441E
-        move.w  d0,-$2(a6)                      ; 04420
+        move.w  d0,SetHeightBand_Height(a6)     ; 04420
         move.w  d1,-$4(a6)                      ; 04424
 l_000_04428:
-        move.w  -$2(a6),d0                      ; 04428
+        move.w  SetHeightBand_Height(a6),d0     ; 04428
         cmpi.w  #$258,d0                        ; 0442C
         ble.b   l_000_04466                     ; 04430
         cmpi.w  #$c4e,d0                        ; 04432
@@ -81,7 +83,7 @@ l_000_04466:
         ori.b   #$b,d0                          ; 0447A
         move.b  d0,(RedrawFlags).l              ; 0447E
 l_000_04484:
-        move.w  -$2(a6),d0                      ; 04484
+        move.w  SetHeightBand_Height(a6),d0     ; 04484
         cmpi.w  #$1c2,d0                        ; 04488
         ble.b   l_000_0449E                     ; 0448C
         cmpi.w  #$c80,d0                        ; 0448E
@@ -90,7 +92,7 @@ l_000_04484:
         bra.b   l_000_044DE                     ; 0449C
 l_000_0449E:
         clr.b   (HeightMid).l                   ; 0449E
-        move.w  -$2(a6),d0                      ; 044A4
+        move.w  SetHeightBand_Height(a6),d0     ; 044A4
         cmpi.w  #$c80,d0                        ; 044A8
         bge.b   l_000_044D8                     ; 044AC
         cmpi.w  #$12c,d0                        ; 044AE
@@ -98,7 +100,7 @@ l_000_0449E:
         move.b  #$2,(HeightBand).l              ; 044B4
         bra.b   l_000_044DE                     ; 044BC
 l_000_044BE:
-        cmpi.w  #$64,-$2(a6)                    ; 044BE
+        cmpi.w  #$64,SetHeightBand_Height(a6)   ; 044BE
         ble.b   l_000_044D0                     ; 044C4
         move.b  #$1,(HeightBand).l              ; 044C6
         bra.b   l_000_044DE                     ; 044CE
@@ -112,7 +114,7 @@ l_000_044DE:
         andi.w  #$fffd,d0                       ; 044E4
         move.w  d0,(FlightBits).l               ; 044E8
         clr.b   -$5(a6)                         ; 044EE
-        move.w  -$2(a6),d0                      ; 044F2
+        move.w  SetHeightBand_Height(a6),d0     ; 044F2
         cmpi.w  #$384,d0                        ; 044F6
         blt.b   l_000_04502                     ; 044FA
         cmpi.w  #$a8c,d0                        ; 044FC
@@ -589,6 +591,16 @@ l_000_04A84:
 ; parameters each) and the requests are cleared; the engine's sound follows the throttle (+$2B,
 ; 0-120)...
 ;-------------------------------------------------------------------------------
+; CockpitSounds's frame: arguments from 8(a6), locals below a6 (after its link)
+CockpitSounds_Throttle  equ     -$2             ; the throttle (0-120), eased
+CockpitSounds_Level     equ     -$4             ; the engine sound's level
+CockpitSounds_Volume    equ     -$6             ; the volume (at most 63)
+CockpitSounds_Volume2   equ     -$8             ; twice it (limited)
+CockpitSounds_Period    equ     -$A             ; the sound's period (first, the throttle's change / 16)
+CockpitSounds_Step      equ     -$C             ; the throttle's step this frame
+CockpitSounds_Cockpit   equ     -$10            ; the cockpit object
+CockpitSounds_Request   equ     -$11            ; EngineSoundRequest
+CockpitSounds_Product   equ     -$16            ; for the divide (CXD33)
 CockpitSounds:
         link.w  a6,#$ffe2                       ; 04AA0
         movem.l d2,-(a7)                        ; 04AA4
@@ -600,11 +612,11 @@ CockpitSounds:
         adda.l  #ObjectTable,a0                 ; 04AB6
         move.l  a0,d0                           ; 04ABC
         move.l  d0,(CockpitObject).l            ; 04ABE
-        move.b  (EngineSoundRequest).l,-$11(a6) ; 04AC4
+        move.b  (EngineSoundRequest).l,CockpitSounds_Request(a6) ; 04AC4
         movea.l d0,a0                           ; 04ACC
         addq.l  #$2,a0                          ; 04ACE
         move.b  (CameraSequence).l,d0           ; 04AD0
-        move.l  a0,-$10(a6)                     ; 04AD6
+        move.l  a0,CockpitSounds_Cockpit(a6)    ; 04AD6
         tst.b   d0                              ; 04ADA
         bne.w   l_000_052BE                     ; 04ADC
         move.b  (MapView).l,d0                  ; 04AE0
@@ -890,7 +902,7 @@ l_000_04E18:
 l_000_04E3A:
         clr.b   (EjectSoundCount).l             ; 04E3A
 l_000_04E40:
-        tst.b   -$11(a6)                        ; 04E40
+        tst.b   CockpitSounds_Request(a6)       ; 04E40
         bne.b   l_000_04E56                     ; 04E44
         move.b  (FrameParity).l,d0              ; 04E46
         andi.b  #$3,d0                          ; 04E4C
@@ -904,99 +916,99 @@ l_000_04E56:
         beq.w   l_000_05274                     ; 04E68
         move.b  $2b(a0),d0                      ; 04E6C
         ext.w   d0                              ; 04E70
-        move.w  d0,-$2(a6)                      ; 04E72
+        move.w  d0,CockpitSounds_Throttle(a6)   ; 04E72
         tst.w   d0                              ; 04E76
         bpl.b   l_000_04E7E                     ; 04E78
-        neg.w   -$2(a6)                         ; 04E7A
+        neg.w   CockpitSounds_Throttle(a6)      ; 04E7A
 l_000_04E7E:
-        move.w  #$3d,-$6(a6)                    ; 04E7E
-        move.w  -$2(a6),d0                      ; 04E84
+        move.w  #$3d,CockpitSounds_Volume(a6)   ; 04E7E
+        move.w  CockpitSounds_Throttle(a6),d0   ; 04E84
         ext.l   d0                              ; 04E88
         move.l  d0,-(a7)                        ; 04E8A
         bsr.w   CockpitEngineVolume             ; 04E8C
         addq.l  #$4,a7                          ; 04E90
-        move.w  d0,-$4(a6)                      ; 04E92
+        move.w  d0,CockpitSounds_Level(a6)      ; 04E92
         tst.w   d0                              ; 04E96
         beq.w   l_000_05262                     ; 04E98
         movea.l (CockpitObject).l,a0            ; 04E9C
         move.w  $5a(a0),d0                      ; 04EA2
         asr.w   #$4,d0                          ; 04EA6
-        move.w  d0,-$c(a6)                      ; 04EA8
+        move.w  d0,CockpitSounds_Step(a6)       ; 04EA8
         tst.w   d0                              ; 04EAC
         bpl.b   l_000_04EB4                     ; 04EAE
-        neg.w   -$c(a6)                         ; 04EB0
+        neg.w   CockpitSounds_Step(a6)          ; 04EB0
 l_000_04EB4:
         movea.l (CockpitObject).l,a0            ; 04EB4
         move.w  $56(a0),d0                      ; 04EBA
         asr.w   #$4,d0                          ; 04EBE
-        move.w  d0,-$a(a6)                      ; 04EC0
+        move.w  d0,CockpitSounds_Period(a6)     ; 04EC0
         tst.w   d0                              ; 04EC4
         bpl.b   l_000_04ECC                     ; 04EC6
-        neg.w   -$a(a6)                         ; 04EC8
+        neg.w   CockpitSounds_Period(a6)        ; 04EC8
 l_000_04ECC:
-        move.w  -$c(a6),d0                      ; 04ECC
-        cmp.w   -$a(a6),d0                      ; 04ED0
+        move.w  CockpitSounds_Step(a6),d0       ; 04ECC
+        cmp.w   CockpitSounds_Period(a6),d0     ; 04ED0
         bge.b   l_000_04EE6                     ; 04ED4
         movea.l (CockpitObject).l,a0            ; 04ED6
         move.w  $56(a0),d1                      ; 04EDC
         asr.w   #$4,d1                          ; 04EE0
-        add.w   d1,-$c(a6)                      ; 04EE2
+        add.w   d1,CockpitSounds_Step(a6)       ; 04EE2
 l_000_04EE6:
-        move.w  -$2(a6),d0                      ; 04EE6
+        move.w  CockpitSounds_Throttle(a6),d0   ; 04EE6
         cmpi.w  #$78,d0                         ; 04EEA
         blt.b   l_000_04EFA                     ; 04EEE
-        move.w  -$c(a6),d0                      ; 04EF0
-        sub.w   d0,-$2(a6)                      ; 04EF4
+        move.w  CockpitSounds_Step(a6),d0       ; 04EF0
+        sub.w   d0,CockpitSounds_Throttle(a6)   ; 04EF4
         bra.b   l_000_04F14                     ; 04EF8
 l_000_04EFA:
-        move.w  -$2(a6),d0                      ; 04EFA
-        move.w  -$c(a6),d1                      ; 04EFE
+        move.w  CockpitSounds_Throttle(a6),d0   ; 04EFA
+        move.w  CockpitSounds_Step(a6),d1       ; 04EFE
         add.w   d0,d1                           ; 04F02
-        move.w  d1,-$2(a6)                      ; 04F04
+        move.w  d1,CockpitSounds_Throttle(a6)   ; 04F04
         cmpi.w  #$78,d1                         ; 04F08
         ble.b   l_000_04F14                     ; 04F0C
-        move.w  #$78,-$2(a6)                    ; 04F0E
+        move.w  #$78,CockpitSounds_Throttle(a6) ; 04F0E
 l_000_04F14:
         tst.b   (OutsideView).l                 ; 04F14
         beq.w   l_000_05088                     ; 04F1A
         move.b  (CameraSequence).l,d0           ; 04F1E
         tst.b   d0                              ; 04F24
         bne.w   l_000_05088                     ; 04F26
-        move.w  -$4(a6),d0                      ; 04F2A
+        move.w  CockpitSounds_Level(a6),d0      ; 04F2A
         asr.w   #$2,d0                          ; 04F2E
-        sub.w   d0,-$4(a6)                      ; 04F30
+        sub.w   d0,CockpitSounds_Level(a6)      ; 04F30
         move.b  (NewView).l,d0                  ; 04F34
         tst.b   d0                              ; 04F3A
         bne.b   l_000_04F70                     ; 04F3C
         tst.w   (ObjectDistanceSound).l         ; 04F3E
         beq.b   l_000_04F70                     ; 04F44
-        move.w  -$6(a6),d0                      ; 04F46
+        move.w  CockpitSounds_Volume(a6),d0     ; 04F46
         ext.l   d0                              ; 04F4A
         asl.l   #$5,d0                          ; 04F4C
         move.w  (ObjectDistanceSound).l,d1      ; 04F4E
         ext.l   d1                              ; 04F54
-        move.l  d0,-$16(a6)                     ; 04F56
+        move.l  d0,CockpitSounds_Product(a6)    ; 04F56
         jsr     (CXD33).l                       ; 04F5A
-        move.w  d0,-$6(a6)                      ; 04F60
+        move.w  d0,CockpitSounds_Volume(a6)     ; 04F60
         cmpi.w  #$3f,d0                         ; 04F64
         ble.b   l_000_04F70                     ; 04F68
-        move.w  #$3f,-$6(a6)                    ; 04F6A
+        move.w  #$3f,CockpitSounds_Volume(a6)   ; 04F6A
 l_000_04F70:
-        move.w  -$2(a6),d0                      ; 04F70
+        move.w  CockpitSounds_Throttle(a6),d0   ; 04F70
         asl.w   #$1,d0                          ; 04F74
         move.w  #$320,d1                        ; 04F76
         sub.w   d0,d1                           ; 04F7A
-        move.w  -$2(a6),d0                      ; 04F7C
+        move.w  CockpitSounds_Throttle(a6),d0   ; 04F7C
         asr.w   #$1,d0                          ; 04F80
         sub.w   d0,d1                           ; 04F82
-        move.w  -$2(a6),d0                      ; 04F84
+        move.w  CockpitSounds_Throttle(a6),d0   ; 04F84
         asr.w   #$2,d0                          ; 04F88
         sub.w   d0,d1                           ; 04F8A
-        move.w  d1,-$a(a6)                      ; 04F8C
-        cmpi.b  #$fe,-$11(a6)                   ; 04F90
+        move.w  d1,CockpitSounds_Period(a6)     ; 04F8C
+        cmpi.b  #$fe,CockpitSounds_Request(a6)  ; 04F90
         bne.b   l_000_04FB0                     ; 04F96
         ext.l   d1                              ; 04F98
-        move.w  -$4(a6),d0                      ; 04F9A
+        move.w  CockpitSounds_Level(a6),d0      ; 04F9A
         ext.l   d0                              ; 04F9E
         move.l  d0,-(a7)                        ; 04FA0
         move.l  d1,-(a7)                        ; 04FA2
@@ -1004,12 +1016,12 @@ l_000_04F70:
         addq.l  #$8,a7                          ; 04FAA
         bra.w   l_000_05284                     ; 04FAC
 l_000_04FB0:
-        cmpi.b  #$fd,-$11(a6)                   ; 04FB0
+        cmpi.b  #$fd,CockpitSounds_Request(a6)  ; 04FB0
         bne.b   l_000_04FDA                     ; 04FB6
-        move.w  -$a(a6),d0                      ; 04FB8
+        move.w  CockpitSounds_Period(a6),d0     ; 04FB8
         ext.l   d0                              ; 04FBC
         addi.l  #$20,d0                         ; 04FBE
-        move.w  -$6(a6),d1                      ; 04FC4
+        move.w  CockpitSounds_Volume(a6),d1     ; 04FC4
         ext.l   d1                              ; 04FC8
         move.l  d1,-(a7)                        ; 04FCA
         move.l  d0,-(a7)                        ; 04FCC
@@ -1017,12 +1029,12 @@ l_000_04FB0:
         addq.l  #$8,a7                          ; 04FD4
         bra.w   l_000_05284                     ; 04FD6
 l_000_04FDA:
-        cmpi.b  #$fc,-$11(a6)                   ; 04FDA
+        cmpi.b  #$fc,CockpitSounds_Request(a6)  ; 04FDA
         bne.b   l_000_05004                     ; 04FE0
-        move.w  -$a(a6),d0                      ; 04FE2
+        move.w  CockpitSounds_Period(a6),d0     ; 04FE2
         ext.l   d0                              ; 04FE6
         addi.l  #$20,d0                         ; 04FE8
-        move.w  -$4(a6),d1                      ; 04FEE
+        move.w  CockpitSounds_Level(a6),d1      ; 04FEE
         ext.l   d1                              ; 04FF2
         move.l  d1,-(a7)                        ; 04FF4
         move.l  d0,-(a7)                        ; 04FF6
@@ -1030,11 +1042,11 @@ l_000_04FDA:
         addq.l  #$8,a7                          ; 04FFE
         bra.w   l_000_05284                     ; 05000
 l_000_05004:
-        cmpi.b  #$fb,-$11(a6)                   ; 05004
+        cmpi.b  #$fb,CockpitSounds_Request(a6)  ; 05004
         bne.b   l_000_05026                     ; 0500A
-        move.w  -$a(a6),d0                      ; 0500C
+        move.w  CockpitSounds_Period(a6),d0     ; 0500C
         ext.l   d0                              ; 05010
-        move.w  -$6(a6),d1                      ; 05012
+        move.w  CockpitSounds_Volume(a6),d1     ; 05012
         ext.l   d1                              ; 05016
         move.l  d1,-(a7)                        ; 05018
         move.l  d0,-(a7)                        ; 0501A
@@ -1042,19 +1054,19 @@ l_000_05004:
         addq.l  #$8,a7                          ; 05020
         bra.w   l_000_05284                     ; 05022
 l_000_05026:
-        cmpi.b  #$fa,-$11(a6)                   ; 05026
+        cmpi.b  #$fa,CockpitSounds_Request(a6)  ; 05026
         bne.b   l_000_05066                     ; 0502C
-        move.w  -$6(a6),d0                      ; 0502E
+        move.w  CockpitSounds_Volume(a6),d0     ; 0502E
         asl.w   #$1,d0                          ; 05032
-        move.w  d0,-$8(a6)                      ; 05034
+        move.w  d0,CockpitSounds_Volume2(a6)    ; 05034
         cmpi.w  #$3f,d0                         ; 05038
         ble.b   l_000_05044                     ; 0503C
-        move.w  #$3f,-$8(a6)                    ; 0503E
+        move.w  #$3f,CockpitSounds_Volume2(a6)  ; 0503E
 l_000_05044:
-        move.w  -$a(a6),d0                      ; 05044
+        move.w  CockpitSounds_Period(a6),d0     ; 05044
         ext.l   d0                              ; 05048
         addi.l  #$16,d0                         ; 0504A
-        move.w  -$8(a6),d1                      ; 05050
+        move.w  CockpitSounds_Volume2(a6),d1    ; 05050
         ext.l   d1                              ; 05054
         move.l  d1,-(a7)                        ; 05056
         move.l  d0,-(a7)                        ; 05058
@@ -1062,9 +1074,9 @@ l_000_05044:
         addq.l  #$8,a7                          ; 05060
         bra.w   l_000_05284                     ; 05062
 l_000_05066:
-        move.w  -$a(a6),d0                      ; 05066
+        move.w  CockpitSounds_Period(a6),d0     ; 05066
         ext.l   d0                              ; 0506A
-        move.w  -$4(a6),d1                      ; 0506C
+        move.w  CockpitSounds_Level(a6),d1      ; 0506C
         ext.l   d1                              ; 05070
         moveq   #$20,d2                         ; 05072
         move.l  d2,-(a7)                        ; 05074
@@ -1074,26 +1086,26 @@ l_000_05066:
         lea.l   $c(a7),a7                       ; 05080
         bra.w   l_000_05284                     ; 05084
 l_000_05088:
-        cmpi.w  #$28,-$4(a6)                    ; 05088
+        cmpi.w  #$28,CockpitSounds_Level(a6)    ; 05088
         bge.b   l_000_05096                     ; 0508E
-        move.w  #$28,-$4(a6)                    ; 05090
+        move.w  #$28,CockpitSounds_Level(a6)    ; 05090
 l_000_05096:
-        move.w  -$2(a6),d0                      ; 05096
+        move.w  CockpitSounds_Throttle(a6),d0   ; 05096
         asl.w   #$1,d0                          ; 0509A
         move.w  #$310,d1                        ; 0509C
         sub.w   d0,d1                           ; 050A0
-        move.w  -$2(a6),d0                      ; 050A2
+        move.w  CockpitSounds_Throttle(a6),d0   ; 050A2
         asr.w   #$2,d0                          ; 050A6
         sub.w   d0,d1                           ; 050A8
-        move.w  d1,-$a(a6)                      ; 050AA
-        cmpi.b  #$fe,-$11(a6)                   ; 050AE
+        move.w  d1,CockpitSounds_Period(a6)     ; 050AA
+        cmpi.b  #$fe,CockpitSounds_Request(a6)  ; 050AE
         bne.b   l_000_050F8                     ; 050B4
-        movea.l -$10(a6),a0                     ; 050B6
+        movea.l CockpitSounds_Cockpit(a6),a0    ; 050B6
         move.w  (a0),d0                         ; 050BA
         btst    #$3,d0                          ; 050BC
         bne.b   l_000_050DA                     ; 050C0
         ext.l   d1                              ; 050C2
-        move.w  -$4(a6),d0                      ; 050C4
+        move.w  CockpitSounds_Level(a6),d0      ; 050C4
         ext.l   d0                              ; 050C8
         move.l  d0,-(a7)                        ; 050CA
         move.l  d1,-(a7)                        ; 050CC
@@ -1101,9 +1113,9 @@ l_000_05096:
         addq.l  #$8,a7                          ; 050D4
         bra.w   l_000_05284                     ; 050D6
 l_000_050DA:
-        move.w  -$a(a6),d0                      ; 050DA
+        move.w  CockpitSounds_Period(a6),d0     ; 050DA
         ext.l   d0                              ; 050DE
-        move.w  -$4(a6),d1                      ; 050E0
+        move.w  CockpitSounds_Level(a6),d1      ; 050E0
         ext.l   d1                              ; 050E4
         asr.l   #$2,d1                          ; 050E6
         move.l  d1,-(a7)                        ; 050E8
@@ -1112,12 +1124,12 @@ l_000_050DA:
         addq.l  #$8,a7                          ; 050F2
         bra.w   l_000_05284                     ; 050F4
 l_000_050F8:
-        cmpi.b  #$fd,-$11(a6)                   ; 050F8
+        cmpi.b  #$fd,CockpitSounds_Request(a6)  ; 050F8
         bne.b   l_000_05124                     ; 050FE
-        move.w  -$a(a6),d0                      ; 05100
+        move.w  CockpitSounds_Period(a6),d0     ; 05100
         ext.l   d0                              ; 05104
         addi.l  #$23,d0                         ; 05106
-        move.w  -$6(a6),d1                      ; 0510C
+        move.w  CockpitSounds_Volume(a6),d1     ; 0510C
         ext.l   d1                              ; 05110
         asr.l   #$1,d1                          ; 05112
         move.l  d1,-(a7)                        ; 05114
@@ -1126,12 +1138,12 @@ l_000_050F8:
         addq.l  #$8,a7                          ; 0511E
         bra.w   l_000_05284                     ; 05120
 l_000_05124:
-        cmpi.b  #$fc,-$11(a6)                   ; 05124
+        cmpi.b  #$fc,CockpitSounds_Request(a6)  ; 05124
         bne.b   l_000_0514E                     ; 0512A
-        move.w  -$a(a6),d0                      ; 0512C
+        move.w  CockpitSounds_Period(a6),d0     ; 0512C
         ext.l   d0                              ; 05130
         addi.l  #$20,d0                         ; 05132
-        move.w  -$4(a6),d1                      ; 05138
+        move.w  CockpitSounds_Level(a6),d1      ; 05138
         ext.l   d1                              ; 0513C
         move.l  d1,-(a7)                        ; 0513E
         move.l  d0,-(a7)                        ; 05140
@@ -1139,11 +1151,11 @@ l_000_05124:
         addq.l  #$8,a7                          ; 05148
         bra.w   l_000_05284                     ; 0514A
 l_000_0514E:
-        cmpi.b  #$fb,-$11(a6)                   ; 0514E
+        cmpi.b  #$fb,CockpitSounds_Request(a6)  ; 0514E
         bne.b   l_000_05170                     ; 05154
-        move.w  -$a(a6),d0                      ; 05156
+        move.w  CockpitSounds_Period(a6),d0     ; 05156
         ext.l   d0                              ; 0515A
-        move.w  -$6(a6),d1                      ; 0515C
+        move.w  CockpitSounds_Volume(a6),d1     ; 0515C
         ext.l   d1                              ; 05160
         move.l  d1,-(a7)                        ; 05162
         move.l  d0,-(a7)                        ; 05164
@@ -1151,19 +1163,19 @@ l_000_0514E:
         addq.l  #$8,a7                          ; 0516A
         bra.w   l_000_05284                     ; 0516C
 l_000_05170:
-        cmpi.b  #$fa,-$11(a6)                   ; 05170
+        cmpi.b  #$fa,CockpitSounds_Request(a6)  ; 05170
         bne.b   l_000_051B0                     ; 05176
-        move.w  -$6(a6),d0                      ; 05178
+        move.w  CockpitSounds_Volume(a6),d0     ; 05178
         asl.w   #$1,d0                          ; 0517C
-        move.w  d0,-$8(a6)                      ; 0517E
+        move.w  d0,CockpitSounds_Volume2(a6)    ; 0517E
         cmpi.w  #$28,d0                         ; 05182
         ble.b   l_000_0518E                     ; 05186
-        move.w  #$28,-$8(a6)                    ; 05188
+        move.w  #$28,CockpitSounds_Volume2(a6)  ; 05188
 l_000_0518E:
-        move.w  -$a(a6),d0                      ; 0518E
+        move.w  CockpitSounds_Period(a6),d0     ; 0518E
         ext.l   d0                              ; 05192
         addi.l  #$16,d0                         ; 05194
-        move.w  -$8(a6),d1                      ; 0519A
+        move.w  CockpitSounds_Volume2(a6),d1    ; 0519A
         ext.l   d1                              ; 0519E
         move.l  d1,-(a7)                        ; 051A0
         move.l  d0,-(a7)                        ; 051A2
@@ -1175,7 +1187,7 @@ l_000_051B0:
         beq.b   l_000_051FE                     ; 051B6
         btst    #$0,(SoundsLoaded).l            ; 051B8
         beq.b   l_000_051E0                     ; 051C0
-        move.w  -$a(a6),d0                      ; 051C2
+        move.w  CockpitSounds_Period(a6),d0     ; 051C2
         ext.l   d0                              ; 051C6
         moveq   #$20,d1                         ; 051C8
         move.l  d1,-(a7)                        ; 051CA
@@ -1186,7 +1198,7 @@ l_000_051B0:
         lea.l   $c(a7),a7                       ; 051D8
         bra.w   l_000_05284                     ; 051DC
 l_000_051E0:
-        move.w  -$a(a6),d0                      ; 051E0
+        move.w  CockpitSounds_Period(a6),d0     ; 051E0
         ext.l   d0                              ; 051E4
         moveq   #$20,d1                         ; 051E6
         move.l  d1,-(a7)                        ; 051E8
@@ -1197,16 +1209,16 @@ l_000_051E0:
         lea.l   $c(a7),a7                       ; 051F6
         bra.w   l_000_05284                     ; 051FA
 l_000_051FE:
-        movea.l -$10(a6),a0                     ; 051FE
+        movea.l CockpitSounds_Cockpit(a6),a0    ; 051FE
         move.w  (a0),d0                         ; 05202
         btst    #$3,d0                          ; 05204
         beq.b   l_000_05214                     ; 05208
         btst    #$0,(SoundsLoaded).l            ; 0520A
         bne.b   l_000_05234                     ; 05212
 l_000_05214:
-        move.w  -$a(a6),d0                      ; 05214
+        move.w  CockpitSounds_Period(a6),d0     ; 05214
         ext.l   d0                              ; 05218
-        move.w  -$4(a6),d1                      ; 0521A
+        move.w  CockpitSounds_Level(a6),d1      ; 0521A
         ext.l   d1                              ; 0521E
         moveq   #$20,d2                         ; 05220
         move.l  d2,-(a7)                        ; 05222
@@ -1216,9 +1228,9 @@ l_000_05214:
         lea.l   $c(a7),a7                       ; 0522E
         bra.b   l_000_05284                     ; 05232
 l_000_05234:
-        move.w  -$a(a6),d0                      ; 05234
+        move.w  CockpitSounds_Period(a6),d0     ; 05234
         ext.l   d0                              ; 05238
-        move.w  -$4(a6),d1                      ; 0523A
+        move.w  CockpitSounds_Level(a6),d1      ; 0523A
         ext.l   d1                              ; 0523E
         move.l  d1,$8(a7)                       ; 05240
         asr.l   #$2,d1                          ; 05244
@@ -1258,7 +1270,7 @@ l_000_0528A:
         move.b  (OutsideView).l,d0              ; 052A0
         tst.b   d0                              ; 052A6
         bne.b   l_000_052BE                     ; 052A8
-        movea.l -$10(a6),a0                     ; 052AA
+        movea.l CockpitSounds_Cockpit(a6),a0    ; 052AA
         move.w  (a0),d0                         ; 052AE
         btst    #$3,d0                          ; 052B0
         bne.b   l_000_052BE                     ; 052B4
@@ -1559,12 +1571,24 @@ l_000_05570:
 ; low speed (+$6C <= $300). For the player it also checks the fuel (PlayerFuel): the warning
 ; bits of WarningFlags below 768,000 and 460,800, and out of fuel at 0.
 ;-------------------------------------------------------------------------------
+; FlightControls's frame: arguments from 8(a6), locals below a6 (after its link)
+FlightControls_Object   equ     -$2             ; CurrentObject (0: the player)
+FlightControls_Response equ     -$6             ; the response table (ControlResponse or ControlResponse2)
+FlightControls_Flags    equ     -$A             ; the object's +$02
+FlightControls_Rate56   equ     -$E             ; the rate the pitch stick drives (+$56)
+FlightControls_Rate58   equ     -$12            ; the rate the rudder drives (+$58)
+FlightControls_Rate5A   equ     -$16            ; the rate the roll stick drives (+$5A)
+FlightControls_Pitch    equ     -$18            ; the pitch stick (+$28)
+FlightControls_Rudder   equ     -$1A            ; the rudder (+$29; 0 on the ground)
+FlightControls_Roll     equ     -$1C            ; the roll stick (+$2A; 0 on the ground, then limited to -10..10)
+FlightControls_Speed    equ     -$1E            ; the cockpit object's speed flown (+$6E)
+FlightControls_ObjRoll  equ     -$20            ; the cockpit object's roll (+$6A)
 FlightControls:
         link.w  a6,#$ffe0                       ; 0557C
         movem.l d2-d3/a2-a3,-(a7)               ; 05580
         move.w  (CurrentObject).l,d0            ; 05584
         moveq   #$9,d1                          ; 0558A
-        move.w  d0,-$2(a6)                      ; 0558C
+        move.w  d0,FlightControls_Object(a6)    ; 0558C
         ext.l   d0                              ; 05590
         asl.l   d1,d0                           ; 05592
         movea.l d0,a0                           ; 05594
@@ -1577,29 +1601,29 @@ FlightControls:
         adda.w  #$58,a2                         ; 055B4
         movea.l (CockpitObject).l,a3            ; 055B8
         adda.w  #$5a,a3                         ; 055BE
-        move.l  a0,-$a(a6)                      ; 055C2
-        move.l  a1,-$e(a6)                      ; 055C6
-        move.l  a2,-$12(a6)                     ; 055CA
-        move.l  a3,-$16(a6)                     ; 055CE
-        tst.w   -$2(a6)                         ; 055D2
+        move.l  a0,FlightControls_Flags(a6)     ; 055C2
+        move.l  a1,FlightControls_Rate56(a6)    ; 055C6
+        move.l  a2,FlightControls_Rate58(a6)    ; 055CA
+        move.l  a3,FlightControls_Rate5A(a6)    ; 055CE
+        tst.w   FlightControls_Object(a6)       ; 055D2
         beq.b   l_000_055E0                     ; 055D6
         move.w  (a0),d0                         ; 055D8
         btst    #$8,d0                          ; 055DA
         beq.b   l_000_055EA                     ; 055DE
 l_000_055E0:
-        move.l  #ControlResponse,-$6(a6)        ; 055E0
+        move.l  #ControlResponse,FlightControls_Response(a6) ; 055E0
         bra.b   l_000_055F2                     ; 055E8
 l_000_055EA:
-        move.l  #ControlResponse2,-$6(a6)       ; 055EA
+        move.l  #ControlResponse2,FlightControls_Response(a6) ; 055EA
 l_000_055F2:
-        movea.l -$a(a6),a0                      ; 055F2
+        movea.l FlightControls_Flags(a6),a0     ; 055F2
         move.w  (a0),d0                         ; 055F6
         andi.w  #$ffbf,d0                       ; 055F8
         move.w  d0,(a0)                         ; 055FC
         move.w  (StatusBits).l,d1               ; 055FE
         btst    #$6,d1                          ; 05604
         beq.w   l_000_05ADE                     ; 05608
-        tst.w   -$2(a6)                         ; 0560C
+        tst.w   FlightControls_Object(a6)       ; 0560C
         bne.w   l_000_056C4                     ; 05610
         tst.l   (PlayerFuel).l                  ; 05614
         bgt.b   l_000_0565A                     ; 0561A
@@ -1647,38 +1671,38 @@ l_000_056C4:
         move.b  $2a(a0),d2                      ; 056D6
         ext.w   d2                              ; 056DA
         move.b  $4(a0),d3                       ; 056DC
-        move.w  d0,-$18(a6)                     ; 056E0
-        move.w  d1,-$1a(a6)                     ; 056E4
-        move.w  d2,-$1c(a6)                     ; 056E8
+        move.w  d0,FlightControls_Pitch(a6)     ; 056E0
+        move.w  d1,FlightControls_Rudder(a6)    ; 056E4
+        move.w  d2,FlightControls_Roll(a6)      ; 056E8
         btst    #$3,d3                          ; 056EC
         beq.b   l_000_056FC                     ; 056F0
         moveq   #$0,d0                          ; 056F2
-        move.w  d0,-$1a(a6)                     ; 056F4
-        move.w  d0,-$1c(a6)                     ; 056F8
+        move.w  d0,FlightControls_Rudder(a6)    ; 056F4
+        move.w  d0,FlightControls_Roll(a6)      ; 056F8
 l_000_056FC:
-        tst.w   -$18(a6)                        ; 056FC
+        tst.w   FlightControls_Pitch(a6)        ; 056FC
         beq.w   l_000_0580E                     ; 05700
-        move.w  -$18(a6),d0                     ; 05704
+        move.w  FlightControls_Pitch(a6),d0     ; 05704
         ext.l   d0                              ; 05708
         tst.l   d0                              ; 0570A
         bpl.b   l_000_05724                     ; 0570C
         neg.l   d0                              ; 0570E
         asl.l   #$1,d0                          ; 05710
-        movea.l -$6(a6),a0                      ; 05712
+        movea.l FlightControls_Response(a6),a0  ; 05712
         adda.l  d0,a0                           ; 05716
         move.w  (a0),d0                         ; 05718
         neg.w   d0                              ; 0571A
         move.w  d0,(ControlScratch2).l          ; 0571C
         bra.b   l_000_05738                     ; 05722
 l_000_05724:
-        move.w  -$18(a6),d0                     ; 05724
+        move.w  FlightControls_Pitch(a6),d0     ; 05724
         ext.l   d0                              ; 05728
         asl.l   #$1,d0                          ; 0572A
-        movea.l -$6(a6),a0                      ; 0572C
+        movea.l FlightControls_Response(a6),a0  ; 0572C
         adda.l  d0,a0                           ; 05730
         move.w  (a0),(ControlScratch2).l        ; 05732
 l_000_05738:
-        movea.l -$a(a6),a0                      ; 05738
+        movea.l FlightControls_Flags(a6),a0     ; 05738
         move.w  (a0),d0                         ; 0573C
         btst    #$7,d0                          ; 0573E
         bne.b   l_000_05758                     ; 05742
@@ -1693,12 +1717,12 @@ l_000_05758:
         move.b  $20(a0),d0                      ; 0575E
         btst    #$0,d0                          ; 05762
         beq.b   l_000_05788                     ; 05766
-        move.w  -$2(a6),d0                      ; 05768
+        move.w  FlightControls_Object(a6),d0    ; 05768
         ext.l   d0                              ; 0576C
         move.l  d0,-(a7)                        ; 0576E
         bsr.w   StepPitchAngle                  ; 05770
         addq.l  #$4,a7                          ; 05774
-        move.w  -$2(a6),d0                      ; 05776
+        move.w  FlightControls_Object(a6),d0    ; 05776
         ext.l   d0                              ; 0577A
         move.l  d0,-(a7)                        ; 0577C
         bsr.w   StepRollAngle                   ; 0577E
@@ -1715,14 +1739,14 @@ l_000_05788:
         cmpi.w  #$6d60,d0                       ; 057A0
         ble.b   l_000_057F0                     ; 057A4
 l_000_057A6:
-        tst.w   -$18(a6)                        ; 057A6
+        tst.w   FlightControls_Pitch(a6)        ; 057A6
         bpl.b   l_000_057D0                     ; 057AA
-        move.w  -$18(a6),d0                     ; 057AC
+        move.w  FlightControls_Pitch(a6),d0     ; 057AC
         ext.l   d0                              ; 057B0
         neg.l   d0                              ; 057B2
         asr.l   #$1,d0                          ; 057B4
         asl.l   #$1,d0                          ; 057B6
-        movea.l -$6(a6),a0                      ; 057B8
+        movea.l FlightControls_Response(a6),a0  ; 057B8
         adda.l  d0,a0                           ; 057BC
         move.w  (a0),d0                         ; 057BE
         ext.l   d0                              ; 057C0
@@ -1732,24 +1756,24 @@ l_000_057A6:
         addq.l  #$4,a7                          ; 057CA
         bra.w   l_000_0586E                     ; 057CC
 l_000_057D0:
-        move.w  -$2(a6),d0                      ; 057D0
+        move.w  FlightControls_Object(a6),d0    ; 057D0
         ext.l   d0                              ; 057D4
         move.l  d0,-(a7)                        ; 057D6
         bsr.w   StepPitchAngle                  ; 057D8
         addq.l  #$4,a7                          ; 057DC
-        move.w  -$2(a6),d0                      ; 057DE
+        move.w  FlightControls_Object(a6),d0    ; 057DE
         ext.l   d0                              ; 057E2
         move.l  d0,-(a7)                        ; 057E4
         bsr.w   StepRollAngle                   ; 057E6
         addq.l  #$4,a7                          ; 057EA
         bra.w   l_000_0586E                     ; 057EC
 l_000_057F0:
-        move.w  -$2(a6),d0                      ; 057F0
+        move.w  FlightControls_Object(a6),d0    ; 057F0
         ext.l   d0                              ; 057F4
         move.l  d0,-(a7)                        ; 057F6
         bsr.w   StepPitchAngle                  ; 057F8
         addq.l  #$4,a7                          ; 057FC
-        move.w  -$2(a6),d0                      ; 057FE
+        move.w  FlightControls_Object(a6),d0    ; 057FE
         ext.l   d0                              ; 05802
         move.l  d0,-(a7)                        ; 05804
         bsr.w   StepRollAngle                   ; 05806
@@ -1758,26 +1782,26 @@ l_000_057F0:
 l_000_0580E:
         moveq   #$0,d0                          ; 0580E
         move.w  d0,(ControlScratch2).l          ; 05810
-        movea.l -$a(a6),a0                      ; 05816
+        movea.l FlightControls_Flags(a6),a0     ; 05816
         move.w  (a0),d1                         ; 0581A
-        move.w  d0,-$18(a6)                     ; 0581C
+        move.w  d0,FlightControls_Pitch(a6)     ; 0581C
         btst    #$7,d1                          ; 05820
         beq.b   l_000_05836                     ; 05824
-        move.w  -$2(a6),d0                      ; 05826
+        move.w  FlightControls_Object(a6),d0    ; 05826
         ext.l   d0                              ; 0582A
         move.l  d0,-(a7)                        ; 0582C
         bsr.w   StepPitchAngle                  ; 0582E
         addq.l  #$4,a7                          ; 05832
         bra.b   l_000_0586E                     ; 05834
 l_000_05836:
-        movea.l -$e(a6),a0                      ; 05836
+        movea.l FlightControls_Rate56(a6),a0    ; 05836
         tst.w   (a0)                            ; 0583A
         beq.b   l_000_0586E                     ; 0583C
         movea.l (CockpitObject).l,a1            ; 0583E
         move.w  $26(a1),d0                      ; 05844
         tst.w   d0                              ; 05848
         bne.b   l_000_0586E                     ; 0584A
-        tst.w   -$2(a6)                         ; 0584C
+        tst.w   FlightControls_Object(a6)       ; 0584C
         bne.b   l_000_05860                     ; 05850
         moveq   #$2,d0                          ; 05852
         move.l  d0,-(a7)                        ; 05854
@@ -1788,29 +1812,29 @@ l_000_05836:
 l_000_05860:
         moveq   #$1,d0                          ; 05860
         move.l  d0,-(a7)                        ; 05862
-        move.l  -$e(a6),-(a7)                   ; 05864
+        move.l  FlightControls_Rate56(a6),-(a7) ; 05864
         bsr.w   EaseToZero                      ; 05868
         addq.l  #$8,a7                          ; 0586C
 l_000_0586E:
-        tst.w   -$1a(a6)                        ; 0586E
+        tst.w   FlightControls_Rudder(a6)       ; 0586E
         beq.b   l_000_058E0                     ; 05872
-        move.w  -$1a(a6),d0                     ; 05874
+        move.w  FlightControls_Rudder(a6),d0    ; 05874
         ext.l   d0                              ; 05878
         tst.l   d0                              ; 0587A
         bpl.b   l_000_05894                     ; 0587C
         neg.l   d0                              ; 0587E
         asl.l   #$1,d0                          ; 05880
-        movea.l -$6(a6),a0                      ; 05882
+        movea.l FlightControls_Response(a6),a0  ; 05882
         adda.l  d0,a0                           ; 05886
         move.w  (a0),d0                         ; 05888
         neg.w   d0                              ; 0588A
         move.w  d0,(ControlScratch3).l          ; 0588C
         bra.b   l_000_058A8                     ; 05892
 l_000_05894:
-        move.w  -$1a(a6),d0                     ; 05894
+        move.w  FlightControls_Rudder(a6),d0    ; 05894
         ext.l   d0                              ; 05898
         asl.l   #$1,d0                          ; 0589A
-        movea.l -$6(a6),a0                      ; 0589C
+        movea.l FlightControls_Response(a6),a0  ; 0589C
         adda.l  d0,a0                           ; 058A0
         move.w  (a0),(ControlScratch3).l        ; 058A2
 l_000_058A8:
@@ -1829,22 +1853,22 @@ l_000_058A8:
 l_000_058D0:
         moveq   #$1,d0                          ; 058D0
         move.l  d0,-(a7)                        ; 058D2
-        move.l  -$12(a6),-(a7)                  ; 058D4
+        move.l  FlightControls_Rate58(a6),-(a7) ; 058D4
         bsr.w   EaseToZero                      ; 058D8
         addq.l  #$8,a7                          ; 058DC
         bra.b   l_000_05912                     ; 058DE
 l_000_058E0:
-        tst.w   -$1c(a6)                        ; 058E0
+        tst.w   FlightControls_Roll(a6)         ; 058E0
         beq.b   l_000_058F2                     ; 058E4
-        movea.l -$a(a6),a0                      ; 058E6
+        movea.l FlightControls_Flags(a6),a0     ; 058E6
         move.w  (a0),d0                         ; 058EA
         btst    #$7,d0                          ; 058EC
         bne.b   l_000_05912                     ; 058F0
 l_000_058F2:
         moveq   #$0,d0                          ; 058F2
         move.w  d0,(ControlScratch3).l          ; 058F4
-        move.w  d0,-$1a(a6)                     ; 058FA
-        movea.l -$12(a6),a0                     ; 058FE
+        move.w  d0,FlightControls_Rudder(a6)    ; 058FA
+        movea.l FlightControls_Rate58(a6),a0    ; 058FE
         tst.w   (a0)                            ; 05902
         beq.b   l_000_05912                     ; 05904
         moveq   #$1,d0                          ; 05906
@@ -1853,62 +1877,62 @@ l_000_058F2:
         bsr.w   EaseToZero                      ; 0590C
         addq.l  #$8,a7                          ; 05910
 l_000_05912:
-        tst.w   -$1c(a6)                        ; 05912
+        tst.w   FlightControls_Roll(a6)         ; 05912
         beq.w   l_000_05AA2                     ; 05916
-        movea.l -$a(a6),a0                      ; 0591A
+        movea.l FlightControls_Flags(a6),a0     ; 0591A
         move.w  (a0),d0                         ; 0591E
         btst    #$7,d0                          ; 05920
         beq.b   l_000_0597A                     ; 05924
-        tst.w   -$1c(a6)                        ; 05926
+        tst.w   FlightControls_Roll(a6)         ; 05926
         bpl.b   l_000_05956                     ; 0592A
-        cmpi.w  #$fff6,-$1c(a6)                 ; 0592C
+        cmpi.w  #$fff6,FlightControls_Roll(a6)  ; 0592C
         bge.b   l_000_0593A                     ; 05932
-        move.w  #$fff6,-$1c(a6)                 ; 05934
+        move.w  #$fff6,FlightControls_Roll(a6)  ; 05934
 l_000_0593A:
-        move.w  -$1c(a6),d0                     ; 0593A
+        move.w  FlightControls_Roll(a6),d0      ; 0593A
         ext.l   d0                              ; 0593E
         neg.l   d0                              ; 05940
         asl.l   #$1,d0                          ; 05942
-        movea.l -$6(a6),a0                      ; 05944
+        movea.l FlightControls_Response(a6),a0  ; 05944
         adda.l  d0,a0                           ; 05948
         move.w  (a0),d0                         ; 0594A
         neg.w   d0                              ; 0594C
         move.w  d0,(ControlScratch).l           ; 0594E
         bra.b   l_000_059AE                     ; 05954
 l_000_05956:
-        cmpi.w  #$a,-$1c(a6)                    ; 05956
+        cmpi.w  #$a,FlightControls_Roll(a6)     ; 05956
         ble.b   l_000_05964                     ; 0595C
-        move.w  #$a,-$1c(a6)                    ; 0595E
+        move.w  #$a,FlightControls_Roll(a6)     ; 0595E
 l_000_05964:
-        move.w  -$1c(a6),d0                     ; 05964
+        move.w  FlightControls_Roll(a6),d0      ; 05964
         ext.l   d0                              ; 05968
         asl.l   #$1,d0                          ; 0596A
-        movea.l -$6(a6),a0                      ; 0596C
+        movea.l FlightControls_Response(a6),a0  ; 0596C
         adda.l  d0,a0                           ; 05970
         move.w  (a0),(ControlScratch).l         ; 05972
         bra.b   l_000_059AE                     ; 05978
 l_000_0597A:
-        move.w  -$1c(a6),d0                     ; 0597A
+        move.w  FlightControls_Roll(a6),d0      ; 0597A
         ext.l   d0                              ; 0597E
         tst.l   d0                              ; 05980
         bpl.b   l_000_0599A                     ; 05982
         neg.l   d0                              ; 05984
         asl.l   #$1,d0                          ; 05986
-        movea.l -$6(a6),a0                      ; 05988
+        movea.l FlightControls_Response(a6),a0  ; 05988
         adda.l  d0,a0                           ; 0598C
         move.w  (a0),d0                         ; 0598E
         neg.w   d0                              ; 05990
         move.w  d0,(ControlScratch).l           ; 05992
         bra.b   l_000_059AE                     ; 05998
 l_000_0599A:
-        move.w  -$1c(a6),d0                     ; 0599A
+        move.w  FlightControls_Roll(a6),d0      ; 0599A
         ext.l   d0                              ; 0599E
         asl.l   #$1,d0                          ; 059A0
-        movea.l -$6(a6),a0                      ; 059A2
+        movea.l FlightControls_Response(a6),a0  ; 059A2
         adda.l  d0,a0                           ; 059A6
         move.w  (a0),(ControlScratch).l         ; 059A8
 l_000_059AE:
-        movea.l -$a(a6),a0                      ; 059AE
+        movea.l FlightControls_Flags(a6),a0     ; 059AE
         move.w  (a0),d0                         ; 059B2
         btst    #$7,d0                          ; 059B4
         bne.b   l_000_059D0                     ; 059B8
@@ -1921,25 +1945,25 @@ l_000_059AE:
         bra.w   l_000_05AE8                     ; 059CC
 l_000_059D0:
         movea.l (CockpitObject).l,a0            ; 059D0
-        move.w  $6e(a0),-$1e(a6)                ; 059D6
-        move.w  $6a(a0),-$20(a6)                ; 059DC
+        move.w  $6e(a0),FlightControls_Speed(a6) ; 059D6
+        move.w  $6a(a0),FlightControls_ObjRoll(a6) ; 059DC
         move.b  $4(a0),d0                       ; 059E2
         btst    #$1,d0                          ; 059E6
         bne.w   l_000_05A84                     ; 059EA
-        tst.w   -$1e(a6)                        ; 059EE
+        tst.w   FlightControls_Speed(a6)        ; 059EE
         beq.w   l_000_05A84                     ; 059F2
         move.w  (ControlScratch).l,d0           ; 059F6
         ext.l   d0                              ; 059FC
         move.l  d0,-(a7)                        ; 059FE
         bsr.w   ScalePitchInput                 ; 05A00
         addq.l  #$4,a7                          ; 05A04
-        move.w  -$20(a6),d0                     ; 05A06
+        move.w  FlightControls_ObjRoll(a6),d0   ; 05A06
         cmpi.w  #$50,d0                         ; 05A0A
         blt.b   l_000_05A16                     ; 05A0E
         cmpi.w  #$7030,d0                       ; 05A10
         ble.b   l_000_05A34                     ; 05A14
 l_000_05A16:
-        cmpi.w  #$360,-$1e(a6)                  ; 05A16
+        cmpi.w  #$360,FlightControls_Speed(a6)  ; 05A16
         ble.b   l_000_05A34                     ; 05A1C
         move.w  (ControlScratch).l,d0           ; 05A1E
         ext.l   d0                              ; 05A24
@@ -1949,9 +1973,9 @@ l_000_05A16:
         addq.l  #$4,a7                          ; 05A2E
         bra.w   l_000_05AE8                     ; 05A30
 l_000_05A34:
-        cmpi.w  #$3840,-$20(a6)                 ; 05A34
+        cmpi.w  #$3840,FlightControls_ObjRoll(a6) ; 05A34
         bge.b   l_000_05A62                     ; 05A3A
-        tst.w   -$1c(a6)                        ; 05A3C
+        tst.w   FlightControls_Roll(a6)         ; 05A3C
         bmi.b   l_000_05A58                     ; 05A40
         move.w  (ControlScratch).l,d0           ; 05A42
         ext.l   d0                              ; 05A48
@@ -1961,11 +1985,11 @@ l_000_05A34:
         addq.l  #$4,a7                          ; 05A52
         bra.w   l_000_05AE8                     ; 05A54
 l_000_05A58:
-        movea.l -$16(a6),a0                     ; 05A58
+        movea.l FlightControls_Rate5A(a6),a0    ; 05A58
         clr.w   (a0)                            ; 05A5C
         bra.w   l_000_05AE8                     ; 05A5E
 l_000_05A62:
-        tst.w   -$1c(a6)                        ; 05A62
+        tst.w   FlightControls_Roll(a6)         ; 05A62
         bgt.b   l_000_05A7C                     ; 05A66
         move.w  (ControlScratch).l,d0           ; 05A68
         ext.l   d0                              ; 05A6E
@@ -1975,36 +1999,36 @@ l_000_05A62:
         addq.l  #$4,a7                          ; 05A78
         bra.b   l_000_05AE8                     ; 05A7A
 l_000_05A7C:
-        movea.l -$16(a6),a0                     ; 05A7C
+        movea.l FlightControls_Rate5A(a6),a0    ; 05A7C
         clr.w   (a0)                            ; 05A80
         bra.b   l_000_05AE8                     ; 05A82
 l_000_05A84:
         moveq   #$1,d0                          ; 05A84
         move.l  d0,-(a7)                        ; 05A86
-        move.l  -$12(a6),-(a7)                  ; 05A88
+        move.l  FlightControls_Rate58(a6),-(a7) ; 05A88
         bsr.w   EaseToZero                      ; 05A8C
         addq.l  #$8,a7                          ; 05A90
         moveq   #$1,d0                          ; 05A92
         move.l  d0,-(a7)                        ; 05A94
-        move.l  -$16(a6),-(a7)                  ; 05A96
+        move.l  FlightControls_Rate5A(a6),-(a7) ; 05A96
         bsr.w   EaseToZero                      ; 05A9A
         addq.l  #$8,a7                          ; 05A9E
         bra.b   l_000_05AE8                     ; 05AA0
 l_000_05AA2:
         moveq   #$0,d0                          ; 05AA2
         move.w  d0,(ControlScratch).l           ; 05AA4
-        movea.l -$a(a6),a0                      ; 05AAA
+        movea.l FlightControls_Flags(a6),a0     ; 05AAA
         move.w  (a0),d1                         ; 05AAE
-        move.w  d0,-$1c(a6)                     ; 05AB0
+        move.w  d0,FlightControls_Roll(a6)      ; 05AB0
         btst    #$7,d1                          ; 05AB4
         beq.b   l_000_05AC8                     ; 05AB8
-        move.w  -$2(a6),d0                      ; 05ABA
+        move.w  FlightControls_Object(a6),d0    ; 05ABA
         ext.l   d0                              ; 05ABE
         move.l  d0,-(a7)                        ; 05AC0
         bsr.w   StepRollAngle                   ; 05AC2
         addq.l  #$4,a7                          ; 05AC6
 l_000_05AC8:
-        movea.l -$16(a6),a0                     ; 05AC8
+        movea.l FlightControls_Rate5A(a6),a0    ; 05AC8
         tst.w   (a0)                            ; 05ACC
         beq.b   l_000_05AE8                     ; 05ACE
         moveq   #$1,d0                          ; 05AD0
@@ -2016,7 +2040,7 @@ l_000_05AC8:
 l_000_05ADE:
         andi.l  #$ffffffbc,(WarningFlags).l     ; 05ADE
 l_000_05AE8:
-        tst.w   -$2(a6)                         ; 05AE8
+        tst.w   FlightControls_Object(a6)       ; 05AE8
         bne.w   l_000_05B72                     ; 05AEC
         move.w  (StatusBits).l,d0               ; 05AF0
         btst    #$6,d0                          ; 05AF6
@@ -2026,7 +2050,7 @@ l_000_05AE8:
         move.b  (Player_20).l,d0                ; 05B04
         btst    #$2,d0                          ; 05B0A
         beq.b   l_000_05B4C                     ; 05B0E
-        movea.l -$a(a6),a0                      ; 05B10
+        movea.l FlightControls_Flags(a6),a0     ; 05B10
         move.w  (a0),d0                         ; 05B14
         btst    #$7,d0                          ; 05B16
         bne.b   l_000_05B4C                     ; 05B1A
@@ -2426,12 +2450,28 @@ l_000_05ED2:
 ; (ThrottleMouseY - MouseY) is read too. The speed (+$6C) then changes towards what the
 ; throttle gives (through Decay); ClimbDivePhysics; and the speed flown (+$6E) = +$6C + +$78.
 ;-------------------------------------------------------------------------------
+; EngineAndSpeed's frame: arguments from 8(a6), locals below a6 (after its link)
+EngineAndSpeed_Throttle equ     -$4             ; the object's throttle (+$2B)
+EngineAndSpeed_Controls equ     -$8             ; its control bits (+$65)
+EngineAndSpeed_Step     equ     -$C             ; its throttle step (+$39)
+EngineAndSpeed_Bits     equ     -$10            ; its +$04
+EngineAndSpeed_Field20  equ     -$14            ; its +$20
+EngineAndSpeed_StepSize equ     -$16            ; the throttle's step: +$39's low nibble + 1 (at most 8), halved
+EngineAndSpeed_Change   equ     -$18            ; the speed's change (starts at -speed)
+EngineAndSpeed_Pitch    equ     -$1A            ; PitchEffect's result (0 below speed $800)
+EngineAndSpeed_Speed    equ     -$20            ; its speed (+$6C)
+EngineAndSpeed_Power    equ     -$24            ; the throttle (0 and up), then scaled
+EngineAndSpeed_Target   equ     -$26            ; the speed it heads for ($600 with flag 8, else |Power|)
+EngineAndSpeed_MouseDY  equ     -$28            ; ThrottleMouseY - MouseY, then its size
+EngineAndSpeed_Record   equ     -$2C            ; the object's record
+EngineAndSpeed_Flags    equ     -$30            ; its flags (+$02)
+EngineAndSpeed_Object   equ     -$32            ; CurrentObject
 EngineAndSpeed:
         link.w  a6,#$ffce                       ; 05ED4
         movem.l d2/a2-a5,-(a7)                  ; 05ED8
         move.w  (CurrentObject).l,d0            ; 05EDC
         moveq   #$9,d1                          ; 05EE2
-        move.w  d0,-$32(a6)                     ; 05EE4
+        move.w  d0,EngineAndSpeed_Object(a6)    ; 05EE4
         ext.l   d0                              ; 05EE8
         asl.l   d1,d0                           ; 05EEA
         movea.l d0,a0                           ; 05EEC
@@ -2439,7 +2479,7 @@ EngineAndSpeed:
         move.l  a0,d0                           ; 05EF4
         move.l  d0,(CockpitObject).l            ; 05EF6
         movea.l d0,a0                           ; 05EFC
-        move.l  a0,-$2c(a6)                     ; 05EFE
+        move.l  a0,EngineAndSpeed_Record(a6)    ; 05EFE
         addq.l  #$2,a0                          ; 05F02
         movea.l d0,a1                           ; 05F04
         addq.l  #$4,a1                          ; 05F06
@@ -2451,93 +2491,93 @@ EngineAndSpeed:
         adda.w  #$65,a4                         ; 05F16
         movea.l d0,a5                           ; 05F1A
         adda.w  #$6c,a5                         ; 05F1C
-        move.l  a0,-$30(a6)                     ; 05F20
+        move.l  a0,EngineAndSpeed_Flags(a6)     ; 05F20
         movea.l d0,a0                           ; 05F24
         adda.w  #$39,a0                         ; 05F26
         move.w  (a5),d1                         ; 05F2A
         neg.w   d1                              ; 05F2C
-        move.w  d1,-$18(a6)                     ; 05F2E
-        move.l  a0,-$c(a6)                      ; 05F32
-        move.l  a1,-$10(a6)                     ; 05F36
-        move.l  a2,-$14(a6)                     ; 05F3A
-        move.l  a3,-$4(a6)                      ; 05F3E
-        move.l  a4,-$8(a6)                      ; 05F42
-        move.l  a5,-$20(a6)                     ; 05F46
+        move.w  d1,EngineAndSpeed_Change(a6)    ; 05F2E
+        move.l  a0,EngineAndSpeed_Step(a6)      ; 05F32
+        move.l  a1,EngineAndSpeed_Bits(a6)      ; 05F36
+        move.l  a2,EngineAndSpeed_Field20(a6)   ; 05F3A
+        move.l  a3,EngineAndSpeed_Throttle(a6)  ; 05F3E
+        move.l  a4,EngineAndSpeed_Controls(a6)  ; 05F42
+        move.l  a5,EngineAndSpeed_Speed(a6)     ; 05F46
         movea.l d0,a0                           ; 05F4A
         tst.l   $72(a0)                         ; 05F4C
         beq.w   l_000_06270                     ; 05F50
-        tst.w   -$32(a6)                        ; 05F54
+        tst.w   EngineAndSpeed_Object(a6)       ; 05F54
         bne.b   l_000_05F74                     ; 05F58
         move.w  (ThrottleMouseY).l,d0           ; 05F5A
         move.w  (MouseY).l,d1                   ; 05F60
         sub.w   d1,d0                           ; 05F66
-        move.w  d0,-$28(a6)                     ; 05F68
+        move.w  d0,EngineAndSpeed_MouseDY(a6)   ; 05F68
         tst.w   d0                              ; 05F6C
         bpl.b   l_000_05F74                     ; 05F6E
-        neg.w   -$28(a6)                        ; 05F70
+        neg.w   EngineAndSpeed_MouseDY(a6)      ; 05F70
 l_000_05F74:
-        movea.l -$8(a6),a0                      ; 05F74
+        movea.l EngineAndSpeed_Controls(a6),a0  ; 05F74
         move.b  (a0),d0                         ; 05F78
         andi.b  #$3,d0                          ; 05F7A
         tst.b   d0                              ; 05F7E
         beq.w   l_000_061AC                     ; 05F80
-        movea.l -$c(a6),a0                      ; 05F84
+        movea.l EngineAndSpeed_Step(a6),a0      ; 05F84
         move.b  (a0),d0                         ; 05F88
         ext.w   d0                              ; 05F8A
         ext.l   d0                              ; 05F8C
         andi.l  #$f,d0                          ; 05F8E
         addq.w  #$1,d0                          ; 05F94
-        move.w  d0,-$16(a6)                     ; 05F96
+        move.w  d0,EngineAndSpeed_StepSize(a6)  ; 05F96
         cmpi.w  #$8,d0                          ; 05F9A
         ble.b   l_000_05FA8                     ; 05F9E
-        move.w  #$8,-$16(a6)                    ; 05FA0
+        move.w  #$8,EngineAndSpeed_StepSize(a6) ; 05FA0
         bra.b   l_000_05FC2                     ; 05FA6
 l_000_05FA8:
-        movea.l -$c(a6),a0                      ; 05FA8
+        movea.l EngineAndSpeed_Step(a6),a0      ; 05FA8
         move.b  (a0),d0                         ; 05FAC
         ext.w   d0                              ; 05FAE
         ext.l   d0                              ; 05FB0
         andi.l  #$f0,d0                         ; 05FB2
-        move.w  -$16(a6),d1                     ; 05FB8
+        move.w  EngineAndSpeed_StepSize(a6),d1  ; 05FB8
         ext.l   d1                              ; 05FBC
         or.l    d1,d0                           ; 05FBE
         move.b  d0,(a0)                         ; 05FC0
 l_000_05FC2:
-        move.w  -$16(a6),d0                     ; 05FC2
+        move.w  EngineAndSpeed_StepSize(a6),d0  ; 05FC2
         asr.w   #$1,d0                          ; 05FC6
-        move.w  d0,-$16(a6)                     ; 05FC8
+        move.w  d0,EngineAndSpeed_StepSize(a6)  ; 05FC8
         tst.w   d0                              ; 05FCC
         beq.b   l_000_05FF0                     ; 05FCE
-        movea.l -$4(a6),a0                      ; 05FD0
+        movea.l EngineAndSpeed_Throttle(a6),a0  ; 05FD0
         move.b  (a0),d0                         ; 05FD4
         tst.b   d0                              ; 05FD6
         bne.b   l_000_05FF0                     ; 05FD8
         move.w  (ViewObjectIndex).l,d0          ; 05FDA
-        move.w  -$32(a6),d1                     ; 05FE0
+        move.w  EngineAndSpeed_Object(a6),d1    ; 05FE0
         cmp.w   d0,d1                           ; 05FE4
         bne.b   l_000_05FF0                     ; 05FE6
         move.b  #$fe,(EngineSoundRequest).l     ; 05FE8
 l_000_05FF0:
-        movea.l -$8(a6),a0                      ; 05FF0
+        movea.l EngineAndSpeed_Controls(a6),a0  ; 05FF0
         move.b  (a0),d0                         ; 05FF4
         andi.b  #$3,d0                          ; 05FF6
         subq.b  #$1,d0                          ; 05FFA
         bne.w   l_000_06098                     ; 05FFC
-        movea.l -$30(a6),a0                     ; 06000
+        movea.l EngineAndSpeed_Flags(a6),a0     ; 06000
         move.w  (a0),d0                         ; 06004
         andi.w  #$fbff,d0                       ; 06006
         move.w  d0,(a0)                         ; 0600A
-        movea.l -$4(a6),a0                      ; 0600C
+        movea.l EngineAndSpeed_Throttle(a6),a0  ; 0600C
         move.b  (a0),d1                         ; 06010
         ext.w   d1                              ; 06012
         ext.l   d1                              ; 06014
-        move.w  -$16(a6),d2                     ; 06016
+        move.w  EngineAndSpeed_StepSize(a6),d2  ; 06016
         ext.l   d2                              ; 0601A
         add.l   d2,d1                           ; 0601C
         move.b  d1,(a0)                         ; 0601E
         cmpi.b  #$78,d1                         ; 06020
         blt.w   l_000_06158                     ; 06024
-        movea.l -$30(a6),a0                     ; 06028
+        movea.l EngineAndSpeed_Flags(a6),a0     ; 06028
         move.w  (a0),d0                         ; 0602C
         btst    #$d,d0                          ; 0602E
         beq.b   l_000_06068                     ; 06032
@@ -2547,35 +2587,35 @@ l_000_05FF0:
         move.w  d0,(a0)                         ; 0603E
         move.b  #$2,(PanelIndicatorRedraw).l    ; 06040
         move.w  (ViewObjectIndex).l,d0          ; 06048
-        move.w  -$32(a6),d1                     ; 0604E
+        move.w  EngineAndSpeed_Object(a6),d1    ; 0604E
         cmp.w   d0,d1                           ; 06052
         bne.b   l_000_0608C                     ; 06054
         move.b  #$fd,(EngineSoundRequest).l     ; 06056
         move.b  #$6,(EngineSoundHold).l         ; 0605E
         bra.b   l_000_0608C                     ; 06066
 l_000_06068:
-        movea.l -$30(a6),a0                     ; 06068
+        movea.l EngineAndSpeed_Flags(a6),a0     ; 06068
         move.w  (a0),d0                         ; 0606C
         ori.w   #$2000,d0                       ; 0606E
         move.w  d0,(a0)                         ; 06072
-        movea.l -$8(a6),a0                      ; 06074
+        movea.l EngineAndSpeed_Controls(a6),a0  ; 06074
         move.b  (a0),d0                         ; 06078
         andi.b  #$fc,d0                         ; 0607A
         move.b  d0,(a0)                         ; 0607E
-        tst.w   -$32(a6)                        ; 06080
+        tst.w   EngineAndSpeed_Object(a6)       ; 06080
         bne.b   l_000_0608C                     ; 06084
         clr.b   (GearState).l                   ; 06086
 l_000_0608C:
-        movea.l -$4(a6),a0                      ; 0608C
+        movea.l EngineAndSpeed_Throttle(a6),a0  ; 0608C
         move.b  #$78,(a0)                       ; 06090
         bra.w   l_000_06158                     ; 06094
 l_000_06098:
-        movea.l -$8(a6),a0                      ; 06098
+        movea.l EngineAndSpeed_Controls(a6),a0  ; 06098
         move.b  (a0),d0                         ; 0609C
         andi.b  #$3,d0                          ; 0609E
         subq.b  #$2,d0                          ; 060A2
         bne.w   l_000_06158                     ; 060A4
-        movea.l -$30(a6),a0                     ; 060A8
+        movea.l EngineAndSpeed_Flags(a6),a0     ; 060A8
         move.w  (a0),d0                         ; 060AC
         andi.w  #$dfff,d0                       ; 060AE
         move.w  d0,(a0)                         ; 060B2
@@ -2583,19 +2623,19 @@ l_000_06098:
         beq.b   l_000_060EA                     ; 060B8
         andi.w  #$fff7,d0                       ; 060BA
         move.w  d0,(a0)                         ; 060BE
-        movea.l -$4(a6),a0                      ; 060C0
+        movea.l EngineAndSpeed_Throttle(a6),a0  ; 060C0
         move.b  (a0),d0                         ; 060C4
         subq.b  #$1,d0                          ; 060C6
         move.b  d0,(a0)                         ; 060C8
         move.b  #$2,(PanelIndicatorRedraw).l    ; 060CA
         move.w  (ViewObjectIndex).l,d0          ; 060D2
-        move.w  -$32(a6),d1                     ; 060D8
+        move.w  EngineAndSpeed_Object(a6),d1    ; 060D8
         cmp.w   d0,d1                           ; 060DC
         bne.b   l_000_06158                     ; 060DE
         move.b  #$fc,(EngineSoundRequest).l     ; 060E0
         bra.b   l_000_06158                     ; 060E8
 l_000_060EA:
-        movea.l -$4(a6),a0                      ; 060EA
+        movea.l EngineAndSpeed_Throttle(a6),a0  ; 060EA
         move.b  (a0),d0                         ; 060EE
         tst.b   d0                              ; 060F0
         bmi.b   l_000_0613A                     ; 060F2
@@ -2603,34 +2643,34 @@ l_000_060EA:
         move.b  d0,(a0)                         ; 060F6
         tst.b   d0                              ; 060F8
         bpl.b   l_000_06158                     ; 060FA
-        movea.l -$10(a6),a0                     ; 060FC
+        movea.l EngineAndSpeed_Bits(a6),a0      ; 060FC
         move.b  (a0),d0                         ; 06100
         btst    #$3,d0                          ; 06102
         beq.b   l_000_06110                     ; 06106
-        movea.l -$4(a6),a0                      ; 06108
+        movea.l EngineAndSpeed_Throttle(a6),a0  ; 06108
         clr.b   (a0)                            ; 0610C
         bra.b   l_000_06158                     ; 0610E
 l_000_06110:
-        movea.l -$30(a6),a0                     ; 06110
+        movea.l EngineAndSpeed_Flags(a6),a0     ; 06110
         move.w  (a0),d0                         ; 06114
         btst    #$a,d0                          ; 06116
         bne.b   l_000_06158                     ; 0611A
-        movea.l -$8(a6),a0                      ; 0611C
+        movea.l EngineAndSpeed_Controls(a6),a0  ; 0611C
         move.b  (a0),d1                         ; 06120
         andi.b  #$fc,d1                         ; 06122
         move.b  d1,(a0)                         ; 06126
-        movea.l -$4(a6),a0                      ; 06128
+        movea.l EngineAndSpeed_Throttle(a6),a0  ; 06128
         clr.b   (a0)                            ; 0612C
         ori.w   #$400,d0                        ; 0612E
-        movea.l -$30(a6),a0                     ; 06132
+        movea.l EngineAndSpeed_Flags(a6),a0     ; 06132
         move.w  d0,(a0)                         ; 06136
         bra.b   l_000_06158                     ; 06138
 l_000_0613A:
-        movea.l -$4(a6),a0                      ; 0613A
+        movea.l EngineAndSpeed_Throttle(a6),a0  ; 0613A
         move.b  (a0),d0                         ; 0613E
         ext.w   d0                              ; 06140
         ext.l   d0                              ; 06142
-        move.w  -$16(a6),d1                     ; 06144
+        move.w  EngineAndSpeed_StepSize(a6),d1  ; 06144
         ext.l   d1                              ; 06148
         sub.l   d1,d0                           ; 0614A
         move.b  d0,(a0)                         ; 0614C
@@ -2638,25 +2678,25 @@ l_000_0613A:
         bge.b   l_000_06158                     ; 06152
         move.b  #$e0,(a0)                       ; 06154
 l_000_06158:
-        tst.w   -$32(a6)                        ; 06158
+        tst.w   EngineAndSpeed_Object(a6)       ; 06158
         bne.b   l_000_061BC                     ; 0615C
-        movea.l -$4(a6),a0                      ; 0615E
+        movea.l EngineAndSpeed_Throttle(a6),a0  ; 0615E
         move.b  (a0),d0                         ; 06162
         ext.w   d0                              ; 06164
-        move.w  d0,-$24(a6)                     ; 06166
+        move.w  d0,EngineAndSpeed_Power(a6)     ; 06166
         tst.w   d0                              ; 0616A
         bpl.b   l_000_06172                     ; 0616C
-        clr.w   -$24(a6)                        ; 0616E
+        clr.w   EngineAndSpeed_Power(a6)        ; 0616E
 l_000_06172:
         tst.b   (MouseActive).l                 ; 06172
         beq.b   l_000_061BC                     ; 06178
         move.w  (MouseY).l,d0                   ; 0617A
         cmpi.w  #$3c0,d0                        ; 06180
         bge.b   l_000_0618E                     ; 06184
-        cmpi.w  #$10,-$28(a6)                   ; 06186
+        cmpi.w  #$10,EngineAndSpeed_MouseDY(a6) ; 06186
         bge.b   l_000_061BC                     ; 0618C
 l_000_0618E:
-        move.w  -$24(a6),d0                     ; 0618E
+        move.w  EngineAndSpeed_Power(a6),d0     ; 0618E
         asl.w   #$3,d0                          ; 06192
         move.w  d0,(ThrottleMouseY).l           ; 06194
         move.w  (MouseY).l,d1                   ; 0619A
@@ -2665,14 +2705,14 @@ l_000_0618E:
         move.w  d0,(MouseY).l                   ; 061A4
         bra.b   l_000_061BC                     ; 061AA
 l_000_061AC:
-        movea.l -$c(a6),a0                      ; 061AC
+        movea.l EngineAndSpeed_Step(a6),a0      ; 061AC
         move.b  (a0),d0                         ; 061B0
         andi.b  #$f0,d0                         ; 061B2
         move.b  d0,(a0)                         ; 061B6
         addq.b  #$1,d0                          ; 061B8
         move.b  d0,(a0)                         ; 061BA
 l_000_061BC:
-        tst.w   -$32(a6)                        ; 061BC
+        tst.w   EngineAndSpeed_Object(a6)       ; 061BC
         bne.w   l_000_0629E                     ; 061C0
         move.b  (GameMode).l,d0                 ; 061C4
         subq.b  #$2,d0                          ; 061CA
@@ -2682,7 +2722,7 @@ l_000_061BC:
         move.w  (MouseY).l,d0                   ; 061DA
         cmpi.w  #$3c0,d0                        ; 061E0
         bge.b   l_000_061F0                     ; 061E4
-        cmpi.w  #$10,-$28(a6)                   ; 061E6
+        cmpi.w  #$10,EngineAndSpeed_MouseDY(a6) ; 061E6
         ble.w   l_000_0629E                     ; 061EC
 l_000_061F0:
         move.w  (MouseY).l,d0                   ; 061F0
@@ -2692,7 +2732,7 @@ l_000_061F0:
         move.b  #$ff,(GearState).l              ; 06200
         bra.b   l_000_06264                     ; 06208
 l_000_0620A:
-        movea.l -$30(a6),a0                     ; 0620A
+        movea.l EngineAndSpeed_Flags(a6),a0     ; 0620A
         move.w  (a0),d0                         ; 0620E
         btst    #$3,d0                          ; 06210
         beq.b   l_000_06230                     ; 06214
@@ -2706,7 +2746,7 @@ l_000_0620A:
 l_000_06230:
         tst.w   (MouseY).l                      ; 06230
         beq.b   l_000_06264                     ; 06236
-        movea.l -$4(a6),a0                      ; 06238
+        movea.l EngineAndSpeed_Throttle(a6),a0  ; 06238
         move.b  (a0),d0                         ; 0623C
         tst.b   d0                              ; 0623E
         bne.b   l_000_06254                     ; 06240
@@ -2723,9 +2763,9 @@ l_000_06264:
         move.w  (MouseY).l,(ThrottleMouseY).l   ; 06264
         bra.b   l_000_0629E                     ; 0626E
 l_000_06270:
-        movea.l -$4(a6),a0                      ; 06270
+        movea.l EngineAndSpeed_Throttle(a6),a0  ; 06270
         clr.b   (a0)                            ; 06274
-        tst.w   -$32(a6)                        ; 06276
+        tst.w   EngineAndSpeed_Object(a6)       ; 06276
         bne.b   l_000_06292                     ; 0627A
         tst.b   (MouseActive).l                 ; 0627C
         beq.b   l_000_06292                     ; 06282
@@ -2733,27 +2773,27 @@ l_000_06270:
         move.w  d0,(ThrottleMouseY).l           ; 06286
         move.w  d0,(MouseY).l                   ; 0628C
 l_000_06292:
-        movea.l -$30(a6),a0                     ; 06292
+        movea.l EngineAndSpeed_Flags(a6),a0     ; 06292
         move.w  (a0),d0                         ; 06296
         andi.w  #$fff7,d0                       ; 06298
         move.w  d0,(a0)                         ; 0629C
 l_000_0629E:
-        movea.l -$4(a6),a0                      ; 0629E
+        movea.l EngineAndSpeed_Throttle(a6),a0  ; 0629E
         move.b  (a0),d0                         ; 062A2
         ext.w   d0                              ; 062A4
         ext.l   d0                              ; 062A6
         asl.l   #$8,d0                          ; 062A8
-        move.w  -$18(a6),d1                     ; 062AA
+        move.w  EngineAndSpeed_Change(a6),d1    ; 062AA
         neg.w   d1                              ; 062AE
-        move.w  d0,-$24(a6)                     ; 062B0
+        move.w  d0,EngineAndSpeed_Power(a6)     ; 062B0
         move.w  d1,-$1c(a6)                     ; 062B4
         cmpi.w  #$800,d1                        ; 062B8
         bge.b   l_000_062C4                     ; 062BC
-        clr.w   -$1a(a6)                        ; 062BE
+        clr.w   EngineAndSpeed_Pitch(a6)        ; 062BE
         bra.b   l_000_062CC                     ; 062C2
 l_000_062C4:
         bsr.w   PitchEffect                     ; 062C4
-        move.w  d0,-$1a(a6)                     ; 062C8
+        move.w  d0,EngineAndSpeed_Pitch(a6)     ; 062C8
 l_000_062CC:
         move.w  (StatusBits).l,d0               ; 062CC
         btst    #$6,d0                          ; 062D2
@@ -2761,9 +2801,9 @@ l_000_062CC:
         move.w  (WarningBits).l,d0              ; 062DA
         btst    #$e,d0                          ; 062E0
         bne.w   l_000_06812                     ; 062E4
-        tst.w   -$24(a6)                        ; 062E8
+        tst.w   EngineAndSpeed_Power(a6)        ; 062E8
         bne.b   l_000_062FC                     ; 062EC
-        movea.l -$30(a6),a0                     ; 062EE
+        movea.l EngineAndSpeed_Flags(a6),a0     ; 062EE
         move.w  (a0),d0                         ; 062F2
         btst    #$3,d0                          ; 062F4
         beq.w   l_000_06750                     ; 062F8
@@ -2771,57 +2811,57 @@ l_000_062FC:
         movea.l (CockpitObject).l,a0            ; 062FC
         tst.l   $72(a0)                         ; 06302
         beq.w   l_000_06750                     ; 06306
-        movea.l -$30(a6),a0                     ; 0630A
+        movea.l EngineAndSpeed_Flags(a6),a0     ; 0630A
         move.w  (a0),d0                         ; 0630E
         btst    #$3,d0                          ; 06310
         beq.w   l_000_063F6                     ; 06314
         move.w  #$600,d0                        ; 06318
-        move.w  d0,-$26(a6)                     ; 0631C
+        move.w  d0,EngineAndSpeed_Target(a6)    ; 0631C
         ext.l   d0                              ; 06320
         movea.l (CockpitObject).l,a0            ; 06322
         sub.l   d0,$72(a0)                      ; 06328
         move.w  #$3a98,d0                       ; 0632C
-        sub.w   -$1a(a6),d0                     ; 06330
-        move.w  d0,-$16(a6)                     ; 06334
+        sub.w   EngineAndSpeed_Pitch(a6),d0     ; 06330
+        move.w  d0,EngineAndSpeed_StepSize(a6)  ; 06334
         cmpi.w  #$4650,d0                       ; 06338
         ble.b   l_000_06344                     ; 0633C
-        move.w  #$4650,-$16(a6)                 ; 0633E
+        move.w  #$4650,EngineAndSpeed_StepSize(a6) ; 0633E
 l_000_06344:
         movea.l (CockpitObject).l,a0            ; 06344
         move.b  $7c(a0),d0                      ; 0634A
         andi.b  #$70,d0                         ; 0634E
         tst.b   d0                              ; 06352
         bne.b   l_000_06360                     ; 06354
-        move.w  -$16(a6),d0                     ; 06356
+        move.w  EngineAndSpeed_StepSize(a6),d0  ; 06356
         asr.w   #$2,d0                          ; 0635A
-        sub.w   d0,-$16(a6)                     ; 0635C
+        sub.w   d0,EngineAndSpeed_StepSize(a6)  ; 0635C
 l_000_06360:
-        movea.l -$2c(a6),a0                     ; 06360
+        movea.l EngineAndSpeed_Record(a6),a0    ; 06360
         move.w  (a0),d0                         ; 06364
         btst    #$b,d0                          ; 06366
         beq.b   l_000_06376                     ; 0636A
-        move.w  -$16(a6),d0                     ; 0636C
+        move.w  EngineAndSpeed_StepSize(a6),d0  ; 0636C
         asr.w   #$2,d0                          ; 06370
-        sub.w   d0,-$16(a6)                     ; 06372
+        sub.w   d0,EngineAndSpeed_StepSize(a6)  ; 06372
 l_000_06376:
         move.w  -$1c(a6),d0                     ; 06376
-        cmp.w   -$16(a6),d0                     ; 0637A
+        cmp.w   EngineAndSpeed_StepSize(a6),d0  ; 0637A
         bge.b   l_000_063D4                     ; 0637E
-        tst.w   -$18(a6)                        ; 06380
+        tst.w   EngineAndSpeed_Change(a6)       ; 06380
         ble.b   l_000_06390                     ; 06384
-        subi.w  #$78,-$18(a6)                   ; 06386
+        subi.w  #$78,EngineAndSpeed_Change(a6)  ; 06386
         bra.w   l_000_06812                     ; 0638C
 l_000_06390:
-        movea.l -$30(a6),a0                     ; 06390
+        movea.l EngineAndSpeed_Flags(a6),a0     ; 06390
         move.w  (a0),d0                         ; 06394
         btst    #$7,d0                          ; 06396
         bne.b   l_000_063B8                     ; 0639A
         cmpi.w  #$1d4c,-$1c(a6)                 ; 0639C
         ble.b   l_000_063AE                     ; 063A2
-        subi.w  #$2d,-$18(a6)                   ; 063A4
+        subi.w  #$2d,EngineAndSpeed_Change(a6)  ; 063A4
         bra.w   l_000_06812                     ; 063AA
 l_000_063AE:
-        subi.w  #$36,-$18(a6)                   ; 063AE
+        subi.w  #$36,EngineAndSpeed_Change(a6)  ; 063AE
         bra.w   l_000_06812                     ; 063B4
 l_000_063B8:
         moveq   #-37,d0                         ; 063B8
@@ -2830,112 +2870,112 @@ l_000_063B8:
         addq.l  #$4,a7                          ; 063C0
         movea.l (CockpitObject).l,a0            ; 063C2
         move.w  $26(a0),d0                      ; 063C8
-        add.w   d0,-$18(a6)                     ; 063CC
+        add.w   d0,EngineAndSpeed_Change(a6)    ; 063CC
         bra.w   l_000_06812                     ; 063D0
 l_000_063D4:
-        move.w  -$16(a6),d0                     ; 063D4
+        move.w  EngineAndSpeed_StepSize(a6),d0  ; 063D4
         ext.l   d0                              ; 063D8
         addi.l  #$3c,d0                         ; 063DA
         move.w  -$1c(a6),d1                     ; 063E0
         ext.l   d1                              ; 063E4
         cmp.l   d0,d1                           ; 063E6
         ble.w   l_000_06812                     ; 063E8
-        addi.w  #$3c,-$18(a6)                   ; 063EC
+        addi.w  #$3c,EngineAndSpeed_Change(a6)  ; 063EC
         bra.w   l_000_06812                     ; 063F2
 l_000_063F6:
-        move.w  -$24(a6),d0                     ; 063F6
-        move.w  d0,-$26(a6)                     ; 063FA
+        move.w  EngineAndSpeed_Power(a6),d0     ; 063F6
+        move.w  d0,EngineAndSpeed_Target(a6)    ; 063FA
         tst.w   d0                              ; 063FE
         bpl.b   l_000_06406                     ; 06400
-        neg.w   -$26(a6)                        ; 06402
+        neg.w   EngineAndSpeed_Target(a6)       ; 06402
 l_000_06406:
         moveq   #$9,d0                          ; 06406
-        move.w  -$26(a6),d1                     ; 06408
+        move.w  EngineAndSpeed_Target(a6),d1    ; 06408
         asr.w   d0,d1                           ; 0640C
-        move.w  d1,-$26(a6)                     ; 0640E
+        move.w  d1,EngineAndSpeed_Target(a6)    ; 0640E
         ext.l   d1                              ; 06412
         movea.l (CockpitObject).l,a0            ; 06414
         sub.l   d1,$72(a0)                      ; 0641A
-        tst.w   -$24(a6)                        ; 0641E
+        tst.w   EngineAndSpeed_Power(a6)        ; 0641E
         bmi.w   l_000_06650                     ; 06422
-        move.w  -$18(a6),d0                     ; 06426
+        move.w  EngineAndSpeed_Change(a6),d0    ; 06426
         neg.w   d0                              ; 0642A
-        movea.l -$30(a6),a0                     ; 0642C
+        movea.l EngineAndSpeed_Flags(a6),a0     ; 0642C
         move.w  (a0),d1                         ; 06430
         move.w  d0,-$1c(a6)                     ; 06432
         btst    #$7,d1                          ; 06436
         bne.w   l_000_06560                     ; 0643A
-        move.w  -$24(a6),d0                     ; 0643E
+        move.w  EngineAndSpeed_Power(a6),d0     ; 0643E
         asr.w   #$1,d0                          ; 06442
-        move.w  -$24(a6),d1                     ; 06444
+        move.w  EngineAndSpeed_Power(a6),d1     ; 06444
         asr.w   #$3,d1                          ; 06448
         sub.w   d1,d0                           ; 0644A
-        move.w  d0,-$16(a6)                     ; 0644C
+        move.w  d0,EngineAndSpeed_StepSize(a6)  ; 0644C
         asr.w   #$2,d0                          ; 06450
-        move.w  -$16(a6),d1                     ; 06452
+        move.w  EngineAndSpeed_StepSize(a6),d1  ; 06452
         sub.w   d0,d1                           ; 06456
-        movea.l -$14(a6),a0                     ; 06458
+        movea.l EngineAndSpeed_Field20(a6),a0   ; 06458
         move.b  (a0),d0                         ; 0645C
-        move.w  d1,-$16(a6)                     ; 0645E
+        move.w  d1,EngineAndSpeed_StepSize(a6)  ; 0645E
         btst    #$0,d0                          ; 06462
         beq.b   l_000_0646E                     ; 06466
         asr.w   #$2,d1                          ; 06468
-        move.w  d1,-$16(a6)                     ; 0646A
+        move.w  d1,EngineAndSpeed_StepSize(a6)  ; 0646A
 l_000_0646E:
-        cmpi.w  #$1fef,-$16(a6)                 ; 0646E
+        cmpi.w  #$1fef,EngineAndSpeed_StepSize(a6) ; 0646E
         ble.b   l_000_0647C                     ; 06474
-        move.w  #$1fef,-$16(a6)                 ; 06476
+        move.w  #$1fef,EngineAndSpeed_StepSize(a6) ; 06476
 l_000_0647C:
-        move.w  -$16(a6),d0                     ; 0647C
-        sub.w   -$1a(a6),d0                     ; 06480
-        movea.l -$2c(a6),a0                     ; 06484
+        move.w  EngineAndSpeed_StepSize(a6),d0  ; 0647C
+        sub.w   EngineAndSpeed_Pitch(a6),d0     ; 06480
+        movea.l EngineAndSpeed_Record(a6),a0    ; 06484
         move.w  (a0),d1                         ; 06488
-        move.w  d0,-$16(a6)                     ; 0648A
+        move.w  d0,EngineAndSpeed_StepSize(a6)  ; 0648A
         btst    #$b,d1                          ; 0648E
         beq.b   l_000_0649A                     ; 06492
         asr.w   #$2,d0                          ; 06494
-        sub.w   d0,-$16(a6)                     ; 06496
+        sub.w   d0,EngineAndSpeed_StepSize(a6)  ; 06496
 l_000_0649A:
         movea.l (CockpitObject).l,a0            ; 0649A
         move.b  $7c(a0),d0                      ; 064A0
         andi.b  #$70,d0                         ; 064A4
         tst.b   d0                              ; 064A8
         bne.b   l_000_064B6                     ; 064AA
-        move.w  -$16(a6),d0                     ; 064AC
+        move.w  EngineAndSpeed_StepSize(a6),d0  ; 064AC
         asr.w   #$2,d0                          ; 064B0
-        sub.w   d0,-$16(a6)                     ; 064B2
+        sub.w   d0,EngineAndSpeed_StepSize(a6)  ; 064B2
 l_000_064B6:
         move.w  -$1c(a6),d0                     ; 064B6
-        cmp.w   -$16(a6),d0                     ; 064BA
+        cmp.w   EngineAndSpeed_StepSize(a6),d0  ; 064BA
         bge.b   l_000_0650E                     ; 064BE
-        tst.w   -$18(a6)                        ; 064C0
+        tst.w   EngineAndSpeed_Change(a6)       ; 064C0
         ble.b   l_000_064CE                     ; 064C4
-        subi.w  #$78,-$18(a6)                   ; 064C6
+        subi.w  #$78,EngineAndSpeed_Change(a6)  ; 064C6
         bra.b   l_000_064F0                     ; 064CC
 l_000_064CE:
-        move.w  -$16(a6),d0                     ; 064CE
+        move.w  EngineAndSpeed_StepSize(a6),d0  ; 064CE
         ext.l   d0                              ; 064D2
         move.w  -$1c(a6),d1                     ; 064D4
         ext.l   d1                              ; 064D8
         sub.l   d1,d0                           ; 064DA
         cmpi.l  #$150,d0                        ; 064DC
         bge.b   l_000_064EA                     ; 064E2
-        subq.w  #$5,-$18(a6)                    ; 064E4
+        subq.w  #$5,EngineAndSpeed_Change(a6)   ; 064E4
         bra.b   l_000_064F0                     ; 064E8
 l_000_064EA:
-        subi.w  #$2a,-$18(a6)                   ; 064EA
+        subi.w  #$2a,EngineAndSpeed_Change(a6)  ; 064EA
 l_000_064F0:
-        move.w  -$18(a6),d0                     ; 064F0
+        move.w  EngineAndSpeed_Change(a6),d0    ; 064F0
         neg.w   d0                              ; 064F4
         move.w  d0,-$1c(a6)                     ; 064F6
-        move.w  -$16(a6),d1                     ; 064FA
+        move.w  EngineAndSpeed_StepSize(a6),d1  ; 064FA
         cmp.w   d1,d0                           ; 064FE
         ble.w   l_000_06812                     ; 06500
         neg.w   d1                              ; 06504
-        move.w  d1,-$18(a6)                     ; 06506
+        move.w  d1,EngineAndSpeed_Change(a6)    ; 06506
         bra.w   l_000_06812                     ; 0650A
 l_000_0650E:
-        move.w  -$16(a6),d0                     ; 0650E
+        move.w  EngineAndSpeed_StepSize(a6),d0  ; 0650E
         ext.l   d0                              ; 06512
         addi.l  #$3c,d0                         ; 06514
         move.w  -$1c(a6),d1                     ; 0651A
@@ -2944,68 +2984,68 @@ l_000_0650E:
         ble.w   l_000_06812                     ; 06522
         cmpi.l  #$1d4c,d1                       ; 06526
         ble.b   l_000_06538                     ; 0652C
-        addi.w  #$52,-$18(a6)                   ; 0652E
+        addi.w  #$52,EngineAndSpeed_Change(a6)  ; 0652E
         bra.w   l_000_06812                     ; 06534
 l_000_06538:
         move.w  -$1c(a6),d0                     ; 06538
         ext.l   d0                              ; 0653C
-        move.w  -$16(a6),d1                     ; 0653E
+        move.w  EngineAndSpeed_StepSize(a6),d1  ; 0653E
         ext.l   d1                              ; 06542
         sub.l   d1,d0                           ; 06544
         cmpi.l  #$1e0,d0                        ; 06546
         bge.b   l_000_06556                     ; 0654C
-        addq.w  #$7,-$18(a6)                    ; 0654E
+        addq.w  #$7,EngineAndSpeed_Change(a6)   ; 0654E
         bra.w   l_000_06812                     ; 06552
 l_000_06556:
-        addi.w  #$3c,-$18(a6)                   ; 06556
+        addi.w  #$3c,EngineAndSpeed_Change(a6)  ; 06556
         bra.w   l_000_06812                     ; 0655C
 l_000_06560:
-        move.w  -$24(a6),d0                     ; 06560
+        move.w  EngineAndSpeed_Power(a6),d0     ; 06560
         asr.w   #$3,d0                          ; 06564
-        move.w  d0,-$16(a6)                     ; 06566
+        move.w  d0,EngineAndSpeed_StepSize(a6)  ; 06566
         asr.w   #$2,d0                          ; 0656A
-        sub.w   d0,-$16(a6)                     ; 0656C
-        movea.l -$10(a6),a0                     ; 06570
+        sub.w   d0,EngineAndSpeed_StepSize(a6)  ; 0656C
+        movea.l EngineAndSpeed_Bits(a6),a0      ; 06570
         move.b  (a0),d0                         ; 06574
         btst    #$3,d0                          ; 06576
         bne.b   l_000_0658C                     ; 0657A
-        movea.l -$4(a6),a0                      ; 0657C
+        movea.l EngineAndSpeed_Throttle(a6),a0  ; 0657C
         move.b  (a0),d0                         ; 06580
         cmpi.b  #$c,d0                          ; 06582
         bge.b   l_000_0658C                     ; 06586
-        clr.w   -$16(a6)                        ; 06588
+        clr.w   EngineAndSpeed_StepSize(a6)     ; 06588
 l_000_0658C:
-        movea.l -$10(a6),a0                     ; 0658C
+        movea.l EngineAndSpeed_Bits(a6),a0      ; 0658C
         move.b  (a0),d0                         ; 06590
         andi.b  #$44,d0                         ; 06592
         tst.b   d0                              ; 06596
         bne.b   l_000_065A6                     ; 06598
-        move.w  -$16(a6),d0                     ; 0659A
+        move.w  EngineAndSpeed_StepSize(a6),d0  ; 0659A
         asr.w   #$1,d0                          ; 0659E
-        move.w  d0,-$16(a6)                     ; 065A0
+        move.w  d0,EngineAndSpeed_StepSize(a6)  ; 065A0
         bra.b   l_000_065B6                     ; 065A4
 l_000_065A6:
-        movea.l -$14(a6),a0                     ; 065A6
+        movea.l EngineAndSpeed_Field20(a6),a0   ; 065A6
         move.b  (a0),d0                         ; 065AA
         btst    #$0,d0                          ; 065AC
         beq.b   l_000_065B6                     ; 065B0
-        clr.w   -$16(a6)                        ; 065B2
+        clr.w   EngineAndSpeed_StepSize(a6)     ; 065B2
 l_000_065B6:
         moveq   #$0,d0                          ; 065B6
         move.w  d0,-$22(a6)                     ; 065B8
         move.w  -$1c(a6),d0                     ; 065BC
-        cmp.w   -$16(a6),d0                     ; 065C0
+        cmp.w   EngineAndSpeed_StepSize(a6),d0  ; 065C0
         bge.b   l_000_0660C                     ; 065C4
-        tst.w   -$18(a6)                        ; 065C6
+        tst.w   EngineAndSpeed_Change(a6)       ; 065C6
         ble.b   l_000_065D4                     ; 065CA
         move.w  #$ff88,-$22(a6)                 ; 065CC
         bra.b   l_000_06628                     ; 065D2
 l_000_065D4:
-        movea.l -$10(a6),a0                     ; 065D4
+        movea.l EngineAndSpeed_Bits(a6),a0      ; 065D4
         move.b  (a0),d0                         ; 065D8
         btst    #$3,d0                          ; 065DA
         beq.b   l_000_065F6                     ; 065DE
-        move.w  -$16(a6),d0                     ; 065E0
+        move.w  EngineAndSpeed_StepSize(a6),d0  ; 065E0
         sub.w   -$1c(a6),d0                     ; 065E4
         asr.w   #$8,d0                          ; 065E8
         addi.w  #$42,d0                         ; 065EA
@@ -3013,7 +3053,7 @@ l_000_065D4:
         move.w  d0,-$22(a6)                     ; 065F0
         bra.b   l_000_06628                     ; 065F4
 l_000_065F6:
-        move.w  -$16(a6),d0                     ; 065F6
+        move.w  EngineAndSpeed_StepSize(a6),d0  ; 065F6
         sub.w   -$1c(a6),d0                     ; 065FA
         asr.w   #$8,d0                          ; 065FE
         addi.w  #$16,d0                         ; 06600
@@ -3021,7 +3061,7 @@ l_000_065F6:
         move.w  d0,-$22(a6)                     ; 06606
         bra.b   l_000_06628                     ; 0660A
 l_000_0660C:
-        move.w  -$16(a6),d0                     ; 0660C
+        move.w  EngineAndSpeed_StepSize(a6),d0  ; 0660C
         ext.l   d0                              ; 06610
         addi.l  #$f,d0                          ; 06612
         move.w  -$1c(a6),d1                     ; 06618
@@ -3039,74 +3079,74 @@ l_000_06628:
         beq.w   l_000_06812                     ; 0663A
         movea.l (CockpitObject).l,a0            ; 0663E
         move.w  $26(a0),d0                      ; 06644
-        add.w   d0,-$18(a6)                     ; 06648
+        add.w   d0,EngineAndSpeed_Change(a6)    ; 06648
         bra.w   l_000_06812                     ; 0664C
 l_000_06650:
-        tst.w   -$24(a6)                        ; 06650
+        tst.w   EngineAndSpeed_Power(a6)        ; 06650
         bpl.w   l_000_06812                     ; 06654
-        movea.l -$30(a6),a0                     ; 06658
+        movea.l EngineAndSpeed_Flags(a6),a0     ; 06658
         move.w  (a0),d0                         ; 0665C
         btst    #$7,d0                          ; 0665E
         bne.b   l_000_066BC                     ; 06662
-        tst.w   -$18(a6)                        ; 06664
+        tst.w   EngineAndSpeed_Change(a6)       ; 06664
         bpl.b   l_000_06674                     ; 06668
-        addi.w  #$57,-$18(a6)                   ; 0666A
+        addi.w  #$57,EngineAndSpeed_Change(a6)  ; 0666A
         bra.w   l_000_06812                     ; 06670
 l_000_06674:
-        move.w  -$24(a6),d0                     ; 06674
+        move.w  EngineAndSpeed_Power(a6),d0     ; 06674
         neg.w   d0                              ; 06678
-        move.w  d0,-$16(a6)                     ; 0667A
+        move.w  d0,EngineAndSpeed_StepSize(a6)  ; 0667A
         asr.w   #$2,d0                          ; 0667E
-        move.w  -$16(a6),d1                     ; 06680
+        move.w  EngineAndSpeed_StepSize(a6),d1  ; 06680
         sub.w   d0,d1                           ; 06684
-        move.w  d1,-$16(a6)                     ; 06686
-        move.w  -$18(a6),d0                     ; 0668A
+        move.w  d1,EngineAndSpeed_StepSize(a6)  ; 06686
+        move.w  EngineAndSpeed_Change(a6),d0    ; 0668A
         cmp.w   d1,d0                           ; 0668E
         ble.b   l_000_0669C                     ; 06690
-        subi.w  #$2a,-$18(a6)                   ; 06692
+        subi.w  #$2a,EngineAndSpeed_Change(a6)  ; 06692
         bra.w   l_000_06812                     ; 06698
 l_000_0669C:
-        move.w  -$16(a6),d0                     ; 0669C
+        move.w  EngineAndSpeed_StepSize(a6),d0  ; 0669C
         ext.l   d0                              ; 066A0
         subi.l  #$2a,d0                         ; 066A2
-        move.w  -$18(a6),d1                     ; 066A8
+        move.w  EngineAndSpeed_Change(a6),d1    ; 066A8
         cmp.w   d0,d1                           ; 066AC
         bge.w   l_000_06812                     ; 066AE
-        addi.w  #$2a,-$18(a6)                   ; 066B2
+        addi.w  #$2a,EngineAndSpeed_Change(a6)  ; 066B2
         bra.w   l_000_06812                     ; 066B8
 l_000_066BC:
         moveq   #$0,d0                          ; 066BC
         move.w  d0,-$22(a6)                     ; 066BE
-        tst.w   -$18(a6)                        ; 066C2
+        tst.w   EngineAndSpeed_Change(a6)       ; 066C2
         bpl.b   l_000_066D0                     ; 066C6
         move.w  #$3c,-$22(a6)                   ; 066C8
         bra.b   l_000_06728                     ; 066CE
 l_000_066D0:
-        move.w  -$24(a6),d0                     ; 066D0
+        move.w  EngineAndSpeed_Power(a6),d0     ; 066D0
         neg.w   d0                              ; 066D4
         asr.w   #$4,d0                          ; 066D6
-        move.w  d0,-$16(a6)                     ; 066D8
+        move.w  d0,EngineAndSpeed_StepSize(a6)  ; 066D8
         asr.w   #$2,d0                          ; 066DC
-        move.w  -$16(a6),d1                     ; 066DE
+        move.w  EngineAndSpeed_StepSize(a6),d1  ; 066DE
         sub.w   d0,d1                           ; 066E2
-        movea.l -$10(a6),a0                     ; 066E4
+        movea.l EngineAndSpeed_Bits(a6),a0      ; 066E4
         move.b  (a0),d0                         ; 066E8
-        move.w  d1,-$16(a6)                     ; 066EA
+        move.w  d1,EngineAndSpeed_StepSize(a6)  ; 066EA
         btst    #$2,d0                          ; 066EE
         bne.b   l_000_066FA                     ; 066F2
         asr.w   #$1,d1                          ; 066F4
-        move.w  d1,-$16(a6)                     ; 066F6
+        move.w  d1,EngineAndSpeed_StepSize(a6)  ; 066F6
 l_000_066FA:
-        move.w  -$18(a6),d0                     ; 066FA
-        cmp.w   -$16(a6),d0                     ; 066FE
+        move.w  EngineAndSpeed_Change(a6),d0    ; 066FA
+        cmp.w   EngineAndSpeed_StepSize(a6),d0  ; 066FE
         ble.b   l_000_0670C                     ; 06702
         move.w  #$ffea,-$22(a6)                 ; 06704
         bra.b   l_000_06728                     ; 0670A
 l_000_0670C:
-        move.w  -$16(a6),d0                     ; 0670C
+        move.w  EngineAndSpeed_StepSize(a6),d0  ; 0670C
         ext.l   d0                              ; 06710
         subi.l  #$16,d0                         ; 06712
-        move.w  -$18(a6),d1                     ; 06718
+        move.w  EngineAndSpeed_Change(a6),d1    ; 06718
         ext.l   d1                              ; 0671C
         cmp.l   d0,d1                           ; 0671E
         bge.b   l_000_06728                     ; 06720
@@ -3121,80 +3161,80 @@ l_000_06728:
         beq.w   l_000_06812                     ; 0673A
         movea.l (CockpitObject).l,a0            ; 0673E
         move.w  $26(a0),d0                      ; 06744
-        add.w   d0,-$18(a6)                     ; 06748
+        add.w   d0,EngineAndSpeed_Change(a6)    ; 06748
         bra.w   l_000_06812                     ; 0674C
 l_000_06750:
-        movea.l -$30(a6),a0                     ; 06750
+        movea.l EngineAndSpeed_Flags(a6),a0     ; 06750
         move.w  (a0),d0                         ; 06754
         btst    #$7,d0                          ; 06756
         bne.b   l_000_067D8                     ; 0675A
-        tst.w   -$18(a6)                        ; 0675C
+        tst.w   EngineAndSpeed_Change(a6)       ; 0675C
         ble.b   l_000_0679C                     ; 06760
-        move.w  -$18(a6),d0                     ; 06762
+        move.w  EngineAndSpeed_Change(a6),d0    ; 06762
         cmpi.w  #$90,d0                         ; 06766
         ble.b   l_000_06784                     ; 0676A
         cmpi.w  #$52,d0                         ; 0676C
         ble.b   l_000_0677C                     ; 06770
-        subi.w  #$52,-$18(a6)                   ; 06772
+        subi.w  #$52,EngineAndSpeed_Change(a6)  ; 06772
         bra.w   l_000_06812                     ; 06778
 l_000_0677C:
-        clr.w   -$18(a6)                        ; 0677C
+        clr.w   EngineAndSpeed_Change(a6)       ; 0677C
         bra.w   l_000_06812                     ; 06780
 l_000_06784:
-        move.w  -$18(a6),d0                     ; 06784
+        move.w  EngineAndSpeed_Change(a6),d0    ; 06784
         cmpi.w  #$3c,d0                         ; 06788
         ble.b   l_000_06796                     ; 0678C
-        subi.w  #$3c,-$18(a6)                   ; 0678E
+        subi.w  #$3c,EngineAndSpeed_Change(a6)  ; 0678E
         bra.b   l_000_06812                     ; 06794
 l_000_06796:
-        clr.w   -$18(a6)                        ; 06796
+        clr.w   EngineAndSpeed_Change(a6)       ; 06796
         bra.b   l_000_06812                     ; 0679A
 l_000_0679C:
         cmpi.w  #$1d4c,-$1c(a6)                 ; 0679C
         ble.b   l_000_067AA                     ; 067A2
-        addi.w  #$52,-$18(a6)                   ; 067A4
+        addi.w  #$52,EngineAndSpeed_Change(a6)  ; 067A4
 l_000_067AA:
         move.w  -$1c(a6),d0                     ; 067AA
         cmpi.w  #$5dc,d0                        ; 067AE
         bge.b   l_000_067C2                     ; 067B2
         cmpi.w  #$1e,d0                         ; 067B4
         ble.b   l_000_06812                     ; 067B8
-        addi.w  #$1e,-$18(a6)                   ; 067BA
+        addi.w  #$1e,EngineAndSpeed_Change(a6)  ; 067BA
         bra.b   l_000_06812                     ; 067C0
 l_000_067C2:
         cmpi.w  #$3c,-$1c(a6)                   ; 067C2
         ble.b   l_000_067D2                     ; 067C8
-        addi.w  #$3c,-$18(a6)                   ; 067CA
+        addi.w  #$3c,EngineAndSpeed_Change(a6)  ; 067CA
         bra.b   l_000_06812                     ; 067D0
 l_000_067D2:
-        clr.w   -$18(a6)                        ; 067D2
+        clr.w   EngineAndSpeed_Change(a6)       ; 067D2
         bra.b   l_000_06812                     ; 067D6
 l_000_067D8:
         clr.l   -(a7)                           ; 067D8
         bsr.w   EaseYaw                         ; 067DA
         addq.l  #$4,a7                          ; 067DE
-        tst.w   -$18(a6)                        ; 067E0
+        tst.w   EngineAndSpeed_Change(a6)       ; 067E0
         ble.b   l_000_067FE                     ; 067E4
-        move.w  -$18(a6),d0                     ; 067E6
+        move.w  EngineAndSpeed_Change(a6),d0    ; 067E6
         cmpi.w  #$f,d0                          ; 067EA
         ble.b   l_000_067F8                     ; 067EE
-        subi.w  #$f,-$18(a6)                    ; 067F0
+        subi.w  #$f,EngineAndSpeed_Change(a6)   ; 067F0
         bra.b   l_000_06812                     ; 067F6
 l_000_067F8:
-        clr.w   -$18(a6)                        ; 067F8
+        clr.w   EngineAndSpeed_Change(a6)       ; 067F8
         bra.b   l_000_06812                     ; 067FC
 l_000_067FE:
         cmpi.w  #$f,-$1c(a6)                    ; 067FE
         ble.b   l_000_0680E                     ; 06804
-        addi.w  #$f,-$18(a6)                    ; 06806
+        addi.w  #$f,EngineAndSpeed_Change(a6)   ; 06806
         bra.b   l_000_06812                     ; 0680C
 l_000_0680E:
-        clr.w   -$18(a6)                        ; 0680E
+        clr.w   EngineAndSpeed_Change(a6)       ; 0680E
 l_000_06812:
-        move.w  -$18(a6),d0                     ; 06812
+        move.w  EngineAndSpeed_Change(a6),d0    ; 06812
         neg.w   d0                              ; 06816
         move.w  d0,-$1c(a6)                     ; 06818
-        tst.w   -$32(a6)                        ; 0681C
+        tst.w   EngineAndSpeed_Object(a6)       ; 0681C
         bne.b   l_000_06868                     ; 06820
         cmpi.w  #$20d0,d0                       ; 06822
         blt.b   l_000_06858                     ; 06826
@@ -3212,8 +3252,8 @@ l_000_06858:
         andi.w  #$bfff,d0                       ; 0685E
         move.w  d0,(FlightBits2).l              ; 06862
 l_000_06868:
-        clr.w   -$16(a6)                        ; 06868
-        movea.l -$30(a6),a0                     ; 0686C
+        clr.w   EngineAndSpeed_StepSize(a6)     ; 06868
+        movea.l EngineAndSpeed_Flags(a6),a0     ; 0686C
         move.w  (a0),d0                         ; 06870
         andi.w  #$c000,d0                       ; 06872
         cmpi.w  #$c000,d0                       ; 06876
@@ -3222,20 +3262,20 @@ l_000_06868:
         move.l  d0,-(a7)                        ; 0687E
         moveq   #$7,d0                          ; 06880
         move.l  d0,-(a7)                        ; 06882
-        move.l  -$20(a6),-(a7)                  ; 06884
+        move.l  EngineAndSpeed_Speed(a6),-(a7)  ; 06884
         bsr.w   Decay                           ; 06888
         lea.l   $c(a7),a7                       ; 0688C
         bra.w   l_000_06940                     ; 06890
 l_000_06894:
-        movea.l -$30(a6),a0                     ; 06894
+        movea.l EngineAndSpeed_Flags(a6),a0     ; 06894
         move.w  (a0),d0                         ; 06898
         btst    #$7,d0                          ; 0689A
         beq.b   l_000_068CC                     ; 0689E
-        movea.l -$2c(a6),a0                     ; 068A0
+        movea.l EngineAndSpeed_Record(a6),a0    ; 068A0
         move.w  (a0),d0                         ; 068A4
         btst    #$b,d0                          ; 068A6
         beq.b   l_000_068CC                     ; 068AA
-        movea.l -$20(a6),a0                     ; 068AC
+        movea.l EngineAndSpeed_Speed(a6),a0     ; 068AC
         move.w  (a0),d0                         ; 068B0
         cmpi.w  #$40,d0                         ; 068B2
         ble.b   l_000_068CC                     ; 068B6
@@ -3248,7 +3288,7 @@ l_000_06894:
         lea.l   $c(a7),a7                       ; 068C6
         bra.b   l_000_06940                     ; 068CA
 l_000_068CC:
-        movea.l -$30(a6),a0                     ; 068CC
+        movea.l EngineAndSpeed_Flags(a6),a0     ; 068CC
         move.w  (a0),d0                         ; 068D0
         btst    #$7,d0                          ; 068D2
         beq.b   l_000_068FE                     ; 068D6
@@ -3260,12 +3300,12 @@ l_000_068CC:
         move.l  d0,-(a7)                        ; 068EA
         moveq   #$1f,d0                         ; 068EC
         move.l  d0,-(a7)                        ; 068EE
-        move.l  -$20(a6),-(a7)                  ; 068F0
+        move.l  EngineAndSpeed_Speed(a6),-(a7)  ; 068F0
         bsr.w   Decay                           ; 068F4
         lea.l   $c(a7),a7                       ; 068F8
         bra.b   l_000_06940                     ; 068FC
 l_000_068FE:
-        movea.l -$14(a6),a0                     ; 068FE
+        movea.l EngineAndSpeed_Field20(a6),a0   ; 068FE
         move.b  (a0),d0                         ; 06902
         btst    #$0,d0                          ; 06904
         beq.b   l_000_06920                     ; 06908
@@ -3273,34 +3313,34 @@ l_000_068FE:
         move.l  d0,-(a7)                        ; 0690C
         moveq   #$3,d0                          ; 0690E
         move.l  d0,-(a7)                        ; 06910
-        move.l  -$20(a6),-(a7)                  ; 06912
+        move.l  EngineAndSpeed_Speed(a6),-(a7)  ; 06912
         bsr.w   Decay                           ; 06916
         lea.l   $c(a7),a7                       ; 0691A
         bra.b   l_000_06940                     ; 0691E
 l_000_06920:
-        movea.l -$10(a6),a0                     ; 06920
+        movea.l EngineAndSpeed_Bits(a6),a0      ; 06920
         move.b  (a0),d0                         ; 06924
         btst    #$3,d0                          ; 06926
         beq.b   l_000_06934                     ; 0692A
-        move.w  #$6c,-$16(a6)                   ; 0692C
+        move.w  #$6c,EngineAndSpeed_StepSize(a6) ; 0692C
         bra.b   l_000_06940                     ; 06932
 l_000_06934:
-        move.w  -$18(a6),d0                     ; 06934
+        move.w  EngineAndSpeed_Change(a6),d0    ; 06934
         neg.w   d0                              ; 06938
-        movea.l -$20(a6),a0                     ; 0693A
+        movea.l EngineAndSpeed_Speed(a6),a0     ; 0693A
         move.w  d0,(a0)                         ; 0693E
 l_000_06940:
-        tst.w   -$16(a6)                        ; 06940
+        tst.w   EngineAndSpeed_StepSize(a6)     ; 06940
         beq.b   l_000_0699C                     ; 06944
-        movea.l -$10(a6),a0                     ; 06946
+        movea.l EngineAndSpeed_Bits(a6),a0      ; 06946
         move.b  (a0),d0                         ; 0694A
         btst    #$3,d0                          ; 0694C
         beq.b   l_000_06990                     ; 06950
-        movea.l -$4(a6),a0                      ; 06952
+        movea.l EngineAndSpeed_Throttle(a6),a0  ; 06952
         move.b  (a0),d0                         ; 06956
         ext.w   d0                              ; 06958
         ext.l   d0                              ; 0695A
-        move.w  -$16(a6),d1                     ; 0695C
+        move.w  EngineAndSpeed_StepSize(a6),d1  ; 0695C
         ext.l   d1                              ; 06960
         cmp.l   d1,d0                           ; 06962
         bge.b   l_000_06982                     ; 06964
@@ -3311,26 +3351,26 @@ l_000_06940:
         move.l  d0,-(a7)                        ; 0696E
         moveq   #$7,d0                          ; 06970
         move.l  d0,-(a7)                        ; 06972
-        move.l  -$20(a6),-(a7)                  ; 06974
+        move.l  EngineAndSpeed_Speed(a6),-(a7)  ; 06974
         bsr.w   Decay                           ; 06978
         lea.l   $c(a7),a7                       ; 0697C
         bra.b   l_000_0699C                     ; 06980
 l_000_06982:
-        move.w  -$18(a6),d0                     ; 06982
+        move.w  EngineAndSpeed_Change(a6),d0    ; 06982
         neg.w   d0                              ; 06986
-        movea.l -$20(a6),a0                     ; 06988
+        movea.l EngineAndSpeed_Speed(a6),a0     ; 06988
         move.w  d0,(a0)                         ; 0698C
         bra.b   l_000_0699C                     ; 0698E
 l_000_06990:
-        move.w  -$18(a6),d0                     ; 06990
+        move.w  EngineAndSpeed_Change(a6),d0    ; 06990
         neg.w   d0                              ; 06994
-        movea.l -$20(a6),a0                     ; 06996
+        movea.l EngineAndSpeed_Speed(a6),a0     ; 06996
         move.w  d0,(a0)                         ; 0699A
 l_000_0699C:
         jsr     (ClimbDivePhysics).l            ; 0699C
         movea.l (CockpitObject).l,a0            ; 069A2
         move.w  $78(a0),d0                      ; 069A8
-        movea.l -$20(a6),a0                     ; 069AC
+        movea.l EngineAndSpeed_Speed(a6),a0     ; 069AC
         move.w  (a0),d1                         ; 069B0
         add.w   d1,d0                           ; 069B2
         movea.l (CockpitObject).l,a0            ; 069B4
@@ -3402,71 +3442,76 @@ l_000_06A2E:
 ;-------------------------------------------------------------------------------
 ; PitchEffect - The effect of the pitch (+$66) on the engine and speed (EngineAndSpeed).
 ;-------------------------------------------------------------------------------
+; PitchEffect's frame: arguments from 8(a6), locals below a6 (after its link)
+PitchEffect_Pitch       equ     -$2             ; the pitch (+$66, folded), / 2
+PitchEffect_Roll        equ     -$4             ; the roll (+$6A, folded), / 8
+PitchEffect_Effect      equ     -$6             ; |yaw rate| x 2 + Roll - Pitch, then with FlightValue
+PitchEffect_Value       equ     -$A             ; FlightValue, shifted
 PitchEffect:
         link.w  a6,#$fff6                       ; 06A32
         movem.l d2,-(a7)                        ; 06A36
         movea.l (CockpitObject).l,a0            ; 06A3A
         move.w  $66(a0),d0                      ; 06A40
-        move.w  d0,-$2(a6)                      ; 06A44
+        move.w  d0,PitchEffect_Pitch(a6)        ; 06A44
         cmpi.w  #$3840,d0                       ; 06A48
         blt.b   l_000_06A54                     ; 06A4C
-        subi.w  #$7080,-$2(a6)                  ; 06A4E
+        subi.w  #$7080,PitchEffect_Pitch(a6)    ; 06A4E
 l_000_06A54:
-        move.w  -$2(a6),d0                      ; 06A54
+        move.w  PitchEffect_Pitch(a6),d0        ; 06A54
         asr.w   #$1,d0                          ; 06A58
         movea.l (CockpitObject).l,a0            ; 06A5A
         move.w  $6a(a0),d1                      ; 06A60
-        move.w  d0,-$2(a6)                      ; 06A64
-        move.w  d1,-$4(a6)                      ; 06A68
+        move.w  d0,PitchEffect_Pitch(a6)        ; 06A64
+        move.w  d1,PitchEffect_Roll(a6)         ; 06A68
         cmpi.w  #$3840,d1                       ; 06A6C
         blt.b   l_000_06A7C                     ; 06A70
         move.w  #$7080,d0                       ; 06A72
         sub.w   d1,d0                           ; 06A76
-        move.w  d0,-$4(a6)                      ; 06A78
+        move.w  d0,PitchEffect_Roll(a6)         ; 06A78
 l_000_06A7C:
-        move.w  -$4(a6),d0                      ; 06A7C
+        move.w  PitchEffect_Roll(a6),d0         ; 06A7C
         cmpi.w  #$1c20,d0                       ; 06A80
         blt.b   l_000_06A90                     ; 06A84
         move.w  #$3840,d1                       ; 06A86
         sub.w   d0,d1                           ; 06A8A
-        move.w  d1,-$4(a6)                      ; 06A8C
+        move.w  d1,PitchEffect_Roll(a6)         ; 06A8C
 l_000_06A90:
-        move.w  -$4(a6),d0                      ; 06A90
+        move.w  PitchEffect_Roll(a6),d0         ; 06A90
         asr.w   #$3,d0                          ; 06A94
         movea.l (CockpitObject).l,a0            ; 06A96
         move.w  $56(a0),d1                      ; 06A9C
-        move.w  d0,-$4(a6)                      ; 06AA0
-        move.w  d1,-$6(a6)                      ; 06AA4
+        move.w  d0,PitchEffect_Roll(a6)         ; 06AA0
+        move.w  d1,PitchEffect_Effect(a6)       ; 06AA4
         tst.w   d1                              ; 06AA8
         bpl.b   l_000_06AB0                     ; 06AAA
-        neg.w   -$6(a6)                         ; 06AAC
+        neg.w   PitchEffect_Effect(a6)          ; 06AAC
 l_000_06AB0:
-        move.w  -$6(a6),d0                      ; 06AB0
+        move.w  PitchEffect_Effect(a6),d0       ; 06AB0
         asl.w   #$1,d0                          ; 06AB4
-        add.w   -$4(a6),d0                      ; 06AB6
-        sub.w   -$2(a6),d0                      ; 06ABA
+        add.w   PitchEffect_Roll(a6),d0         ; 06AB6
+        sub.w   PitchEffect_Pitch(a6),d0        ; 06ABA
         move.l  (FlightValue).l,d1              ; 06ABE
         movea.l (CockpitObject).l,a0            ; 06AC4
         sub.l   $18(a0),d1                      ; 06ACA
         move.w  $2(a0),d2                       ; 06ACE
-        move.w  d0,-$6(a6)                      ; 06AD2
-        move.l  d1,-$a(a6)                      ; 06AD6
+        move.w  d0,PitchEffect_Effect(a6)       ; 06AD2
+        move.l  d1,PitchEffect_Value(a6)        ; 06AD6
         btst    #$3,d2                          ; 06ADA
         beq.b   l_000_06AEA                     ; 06ADE
         moveq   #$b,d0                          ; 06AE0
         asr.l   d0,d1                           ; 06AE2
-        move.l  d1,-$a(a6)                      ; 06AE4
+        move.l  d1,PitchEffect_Value(a6)        ; 06AE4
         bra.b   l_000_06AF6                     ; 06AE8
 l_000_06AEA:
         moveq   #$d,d0                          ; 06AEA
-        move.l  -$a(a6),d1                      ; 06AEC
+        move.l  PitchEffect_Value(a6),d1        ; 06AEC
         asr.l   d0,d1                           ; 06AF0
-        move.l  d1,-$a(a6)                      ; 06AF2
+        move.l  d1,PitchEffect_Value(a6)        ; 06AF2
 l_000_06AF6:
-        move.w  -$6(a6),d0                      ; 06AF6
+        move.w  PitchEffect_Effect(a6),d0       ; 06AF6
         ext.l   d0                              ; 06AFA
-        add.l   -$a(a6),d0                      ; 06AFC
-        move.w  d0,-$6(a6)                      ; 06B00
+        add.l   PitchEffect_Value(a6),d0        ; 06AFC
+        move.w  d0,PitchEffect_Effect(a6)       ; 06B00
         ext.l   d0                              ; 06B04
         movem.l (a7)+,d2                        ; 06B06
         unlk    a6                              ; 06B0A
@@ -3482,12 +3527,30 @@ l_000_06AF6:
 ; / landing and the rest (FlightStep modes 1 and 3 add or take away $6000 vertically; type
 ; $14 uses +$4E)...
 ;-------------------------------------------------------------------------------
+; FlyAircraft's frame: arguments from 8(a6), locals below a6 (after its link)
+FlyAircraft_VelX        equ     -$2             ; the velocity along the nose (ScaledVector), eased (EaseVelocity)
+FlyAircraft_VelY        equ     -$4             ; ... its y (plus the lift / sink, +$76)
+FlyAircraft_VelZ        equ     -$6
+FlyAircraft_OldX        equ     -$8             ; the old velocity (+$3E-+$46), scaled down
+FlyAircraft_OldY        equ     -$A
+FlyAircraft_OldZ        equ     -$C
+FlyAircraft_NewX        equ     -$10            ; the new velocity
+FlyAircraft_NewY        equ     -$14
+FlyAircraft_NewZ        equ     -$18
+FlyAircraft_Gravity     equ     -$1C            ; taken from or added to NewY by FlightStep ($6000 or $60000; 0 when frozen)
+FlyAircraft_Value4E     equ     -$20            ; +$4E x 256 + $A8C (at least $A8C; + $708 for other types)
+FlyAircraft_Length      equ     -$22            ; -(the speed flown, +$6E): ScaleToLength's length
+FlyAircraft_Object      equ     -$24            ; CurrentObject
+FlyAircraft_Record      equ     -$28            ; the object's record
+FlyAircraft_Flags       equ     -$2C            ; its flags (+$02)
+FlyAircraft_Bits        equ     -$30            ; its +$04
+FlyAircraft_Field20     equ     -$34            ; its +$20
 FlyAircraft:
         link.w  a6,#$ffca                       ; 06B0E
         movem.l d2-d4/a2-a3,-(a7)               ; 06B12
         move.w  (CurrentObject).l,d0            ; 06B16
         moveq   #$9,d1                          ; 06B1C
-        move.w  d0,-$24(a6)                     ; 06B1E
+        move.w  d0,FlyAircraft_Object(a6)       ; 06B1E
         ext.l   d0                              ; 06B22
         asl.l   d1,d0                           ; 06B24
         movea.l d0,a0                           ; 06B26
@@ -3495,7 +3558,7 @@ FlyAircraft:
         move.l  a0,d0                           ; 06B2E
         move.l  d0,(CockpitObject).l            ; 06B30
         movea.l d0,a0                           ; 06B36
-        move.l  a0,-$28(a6)                     ; 06B38
+        move.l  a0,FlyAircraft_Record(a6)       ; 06B38
         addq.l  #$2,a0                          ; 06B3C
         movea.l d0,a1                           ; 06B3E
         addq.l  #$4,a1                          ; 06B40
@@ -3512,7 +3575,7 @@ FlyAircraft:
         move.w  d2,(FlightScratch3).l           ; 06B6C
         move.w  $6e(a3),d1                      ; 06B72
         neg.w   d1                              ; 06B76
-        move.w  d1,-$22(a6)                     ; 06B78
+        move.w  d1,FlyAircraft_Length(a6)       ; 06B78
         ext.l   d1                              ; 06B7C
         move.w  (FlightScratch).l,d3            ; 06B7E
         ext.l   d3                              ; 06B84
@@ -3523,15 +3586,15 @@ FlyAircraft:
         move.l  d4,-(a7)                        ; 06B92
         move.l  d3,-(a7)                        ; 06B94
         move.l  d1,-(a7)                        ; 06B96
-        move.l  a0,-$2c(a6)                     ; 06B98
-        move.l  a1,-$30(a6)                     ; 06B9C
-        move.l  a2,-$34(a6)                     ; 06BA0
+        move.l  a0,FlyAircraft_Flags(a6)        ; 06B98
+        move.l  a1,FlyAircraft_Bits(a6)         ; 06B9C
+        move.l  a2,FlyAircraft_Field20(a6)      ; 06BA0
         jsr     (ScaleToLength).l               ; 06BA4
         lea.l   $10(a7),a7                      ; 06BAA
-        move.w  (ScaledVector).l,-$2(a6)        ; 06BAE
-        move.w  (ScaledVectorY).l,-$4(a6)       ; 06BB6
-        move.w  (ScaledVectorZ).l,-$6(a6)       ; 06BBE
-        movea.l -$2c(a6),a0                     ; 06BC6
+        move.w  (ScaledVector).l,FlyAircraft_VelX(a6) ; 06BAE
+        move.w  (ScaledVectorY).l,FlyAircraft_VelY(a6) ; 06BB6
+        move.w  (ScaledVectorZ).l,FlyAircraft_VelZ(a6) ; 06BBE
+        movea.l FlyAircraft_Flags(a6),a0        ; 06BC6
         move.w  (a0),d0                         ; 06BCA
         btst    #$7,d0                          ; 06BCC
         bne.b   l_000_06C42                     ; 06BD0
@@ -3540,130 +3603,130 @@ FlyAircraft:
         asr.l   #$2,d0                          ; 06BDC
         move.l  $46(a0),d1                      ; 06BDE
         asr.l   #$2,d1                          ; 06BE2
-        move.w  d0,-$8(a6)                      ; 06BE4
-        move.w  d1,-$c(a6)                      ; 06BE8
+        move.w  d0,FlyAircraft_OldX(a6)         ; 06BE4
+        move.w  d1,FlyAircraft_OldZ(a6)         ; 06BE8
         tst.b   (FlightFlag170).l               ; 06BEC
         beq.b   l_000_06C0E                     ; 06BF2
-        tst.w   -$24(a6)                        ; 06BF4
+        tst.w   FlyAircraft_Object(a6)          ; 06BF4
         bne.b   l_000_06C0E                     ; 06BF8
         move.l  $3e(a0),d0                      ; 06BFA
         asr.l   #$6,d0                          ; 06BFE
         move.l  $46(a0),d1                      ; 06C00
         asr.l   #$6,d1                          ; 06C04
-        move.w  d0,-$8(a6)                      ; 06C06
-        move.w  d1,-$c(a6)                      ; 06C0A
+        move.w  d0,FlyAircraft_OldX(a6)         ; 06C06
+        move.w  d1,FlyAircraft_OldZ(a6)         ; 06C0A
 l_000_06C0E:
-        move.w  -$2(a6),d0                      ; 06C0E
+        move.w  FlyAircraft_VelX(a6),d0         ; 06C0E
         ext.l   d0                              ; 06C12
-        move.w  -$8(a6),d1                      ; 06C14
+        move.w  FlyAircraft_OldX(a6),d1         ; 06C14
         ext.l   d1                              ; 06C18
         move.l  d1,-(a7)                        ; 06C1A
         move.l  d0,-(a7)                        ; 06C1C
         bsr.w   EaseVelocity                    ; 06C1E
         addq.l  #$8,a7                          ; 06C22
-        move.w  -$6(a6),d1                      ; 06C24
+        move.w  FlyAircraft_VelZ(a6),d1         ; 06C24
         ext.l   d1                              ; 06C28
-        move.w  -$c(a6),d2                      ; 06C2A
+        move.w  FlyAircraft_OldZ(a6),d2         ; 06C2A
         ext.l   d2                              ; 06C2E
         move.l  d2,-(a7)                        ; 06C30
         move.l  d1,-(a7)                        ; 06C32
-        move.w  d0,-$2(a6)                      ; 06C34
+        move.w  d0,FlyAircraft_VelX(a6)         ; 06C34
         bsr.w   EaseVelocity                    ; 06C38
         addq.l  #$8,a7                          ; 06C3C
-        move.w  d0,-$6(a6)                      ; 06C3E
+        move.w  d0,FlyAircraft_VelZ(a6)         ; 06C3E
 l_000_06C42:
         movea.l (CockpitObject).l,a0            ; 06C42
         move.l  $42(a0),d0                      ; 06C48
         asr.l   #$2,d0                          ; 06C4C
-        move.w  d0,-$a(a6)                      ; 06C4E
+        move.w  d0,FlyAircraft_OldY(a6)         ; 06C4E
         tst.b   (FlightFlag170).l               ; 06C52
         beq.b   l_000_06C66                     ; 06C58
-        tst.w   -$24(a6)                        ; 06C5A
+        tst.w   FlyAircraft_Object(a6)          ; 06C5A
         bne.b   l_000_06C66                     ; 06C5E
         asr.w   #$4,d0                          ; 06C60
-        move.w  d0,-$a(a6)                      ; 06C62
+        move.w  d0,FlyAircraft_OldY(a6)         ; 06C62
 l_000_06C66:
-        move.w  -$4(a6),d0                      ; 06C66
+        move.w  FlyAircraft_VelY(a6),d0         ; 06C66
         ext.l   d0                              ; 06C6A
-        move.w  -$a(a6),d1                      ; 06C6C
+        move.w  FlyAircraft_OldY(a6),d1         ; 06C6C
         ext.l   d1                              ; 06C70
         move.l  d1,-(a7)                        ; 06C72
         move.l  d0,-(a7)                        ; 06C74
         bsr.w   EaseVelocity                    ; 06C76
         addq.l  #$8,a7                          ; 06C7A
         move.b  (FlightStep).l,d1               ; 06C7C
-        move.w  d0,-$4(a6)                      ; 06C82
+        move.w  d0,FlyAircraft_VelY(a6)         ; 06C82
         btst    #$0,d1                          ; 06C86
         bne.b   l_000_06C9A                     ; 06C8A
         movea.l (CockpitObject).l,a0            ; 06C8C
         move.w  $76(a0),d1                      ; 06C92
-        add.w   d1,-$4(a6)                      ; 06C96
+        add.w   d1,FlyAircraft_VelY(a6)         ; 06C96
 l_000_06C9A:
-        move.w  -$2(a6),d0                      ; 06C9A
+        move.w  FlyAircraft_VelX(a6),d0         ; 06C9A
         ext.l   d0                              ; 06C9E
         asl.l   #$2,d0                          ; 06CA0
-        move.w  -$4(a6),d1                      ; 06CA2
+        move.w  FlyAircraft_VelY(a6),d1         ; 06CA2
         ext.l   d1                              ; 06CA6
         asl.l   #$2,d1                          ; 06CA8
-        move.w  -$6(a6),d2                      ; 06CAA
+        move.w  FlyAircraft_VelZ(a6),d2         ; 06CAA
         ext.l   d2                              ; 06CAE
         asl.l   #$2,d2                          ; 06CB0
-        move.l  #$6000,-$1c(a6)                 ; 06CB2
-        move.l  d0,-$10(a6)                     ; 06CBA
-        move.l  d1,-$14(a6)                     ; 06CBE
-        move.l  d2,-$18(a6)                     ; 06CC2
+        move.l  #$6000,FlyAircraft_Gravity(a6)  ; 06CB2
+        move.l  d0,FlyAircraft_NewX(a6)         ; 06CBA
+        move.l  d1,FlyAircraft_NewY(a6)         ; 06CBE
+        move.l  d2,FlyAircraft_NewZ(a6)         ; 06CC2
         tst.b   (FlightFlag170).l               ; 06CC6
         beq.b   l_000_06D00                     ; 06CCC
-        tst.w   -$24(a6)                        ; 06CCE
+        tst.w   FlyAircraft_Object(a6)          ; 06CCE
         bne.b   l_000_06D00                     ; 06CD2
-        move.w  -$2(a6),d0                      ; 06CD4
+        move.w  FlyAircraft_VelX(a6),d0         ; 06CD4
         ext.l   d0                              ; 06CD8
         asl.l   #$6,d0                          ; 06CDA
-        move.w  -$4(a6),d1                      ; 06CDC
+        move.w  FlyAircraft_VelY(a6),d1         ; 06CDC
         ext.l   d1                              ; 06CE0
         asl.l   #$6,d1                          ; 06CE2
-        move.w  -$6(a6),d2                      ; 06CE4
+        move.w  FlyAircraft_VelZ(a6),d2         ; 06CE4
         ext.l   d2                              ; 06CE8
         asl.l   #$6,d2                          ; 06CEA
-        move.l  #$60000,-$1c(a6)                ; 06CEC
-        move.l  d0,-$10(a6)                     ; 06CF4
-        move.l  d1,-$14(a6)                     ; 06CF8
-        move.l  d2,-$18(a6)                     ; 06CFC
+        move.l  #$60000,FlyAircraft_Gravity(a6) ; 06CEC
+        move.l  d0,FlyAircraft_NewX(a6)         ; 06CF4
+        move.l  d1,FlyAircraft_NewY(a6)         ; 06CF8
+        move.l  d2,FlyAircraft_NewZ(a6)         ; 06CFC
 l_000_06D00:
-        move.l  -$10(a6),d0                     ; 06D00
+        move.l  FlyAircraft_NewX(a6),d0         ; 06D00
         neg.l   d0                              ; 06D04
         movea.l (CockpitObject).l,a0            ; 06D06
         move.l  d0,$3e(a0)                      ; 06D0C
-        move.l  -$14(a6),d0                     ; 06D10
+        move.l  FlyAircraft_NewY(a6),d0         ; 06D10
         neg.l   d0                              ; 06D14
         movea.l (CockpitObject).l,a0            ; 06D16
         move.l  d0,$42(a0)                      ; 06D1C
-        move.l  -$18(a6),d0                     ; 06D20
+        move.l  FlyAircraft_NewZ(a6),d0         ; 06D20
         neg.l   d0                              ; 06D24
         movea.l (CockpitObject).l,a0            ; 06D26
         move.l  d0,$46(a0)                      ; 06D2C
         tst.b   (WorldFrozen).l                 ; 06D30
         beq.b   l_000_06D42                     ; 06D36
         moveq   #$0,d0                          ; 06D38
-        move.l  d0,-$1c(a6)                     ; 06D3A
-        move.l  d0,-$14(a6)                     ; 06D3E
+        move.l  d0,FlyAircraft_Gravity(a6)      ; 06D3A
+        move.l  d0,FlyAircraft_NewY(a6)         ; 06D3E
 l_000_06D42:
-        tst.w   -$24(a6)                        ; 06D42
+        tst.w   FlyAircraft_Object(a6)          ; 06D42
         bne.b   l_000_06D6E                     ; 06D46
         move.b  (FlightStep).l,d0               ; 06D48
         subq.b  #$3,d0                          ; 06D4E
         bne.b   l_000_06D5C                     ; 06D50
-        move.l  -$1c(a6),d0                     ; 06D52
-        sub.l   d0,-$14(a6)                     ; 06D56
+        move.l  FlyAircraft_Gravity(a6),d0      ; 06D52
+        sub.l   d0,FlyAircraft_NewY(a6)         ; 06D56
         bra.b   l_000_06D6E                     ; 06D5A
 l_000_06D5C:
         move.b  (FlightStep).l,d0               ; 06D5C
         subq.b  #$1,d0                          ; 06D62
         bne.b   l_000_06D6E                     ; 06D64
-        move.l  -$1c(a6),d0                     ; 06D66
-        add.l   d0,-$14(a6)                     ; 06D6A
+        move.l  FlyAircraft_Gravity(a6),d0      ; 06D66
+        add.l   d0,FlyAircraft_NewY(a6)         ; 06D6A
 l_000_06D6E:
-        movea.l -$30(a6),a0                     ; 06D6E
+        movea.l FlyAircraft_Bits(a6),a0         ; 06D6E
         move.b  (a0),d0                         ; 06D72
         andi.b  #$c0,d0                         ; 06D74
         tst.b   d0                              ; 06D78
@@ -3680,10 +3743,10 @@ l_000_06D6E:
         ext.l   d0                              ; 06D9E
         asl.l   #$8,d0                          ; 06DA0
         addi.l  #$a8c,d0                        ; 06DA2
-        move.l  d0,-$20(a6)                     ; 06DA8
+        move.l  d0,FlyAircraft_Value4E(a6)      ; 06DA8
         cmpi.l  #$a8c,d0                        ; 06DAC
         bge.w   l_000_06E6E                     ; 06DB2
-        move.l  #$a8c,-$20(a6)                  ; 06DB6
+        move.l  #$a8c,FlyAircraft_Value4E(a6)   ; 06DB6
         bra.w   l_000_06E6E                     ; 06DBE
 l_000_06DC2:
         movea.l (CockpitObject).l,a0            ; 06DC2
@@ -3691,10 +3754,10 @@ l_000_06DC2:
         ext.l   d0                              ; 06DCC
         asl.l   #$8,d0                          ; 06DCE
         addi.l  #$708,d0                        ; 06DD0
-        move.l  d0,-$20(a6)                     ; 06DD6
+        move.l  d0,FlyAircraft_Value4E(a6)      ; 06DD6
         cmpi.l  #$708,d0                        ; 06DDA
         bge.w   l_000_06E6E                     ; 06DE0
-        move.l  #$708,-$20(a6)                  ; 06DE4
+        move.l  #$708,FlyAircraft_Value4E(a6)   ; 06DE4
         bra.w   l_000_06E6E                     ; 06DEC
 l_000_06DF0:
         movea.l (CockpitObject).l,a0            ; 06DF0
@@ -3702,10 +3765,10 @@ l_000_06DF0:
         ext.l   d0                              ; 06DFA
         asl.l   #$8,d0                          ; 06DFC
         addi.l  #$2ee,d0                        ; 06DFE
-        move.l  d0,-$20(a6)                     ; 06E04
+        move.l  d0,FlyAircraft_Value4E(a6)      ; 06E04
         cmpi.l  #$2ee,d0                        ; 06E08
         bge.b   l_000_06E6E                     ; 06E0E
-        move.l  #$2ee,-$20(a6)                  ; 06E10
+        move.l  #$2ee,FlyAircraft_Value4E(a6)   ; 06E10
         bra.b   l_000_06E6E                     ; 06E18
 l_000_06E1A:
         movea.l (CockpitObject).l,a0            ; 06E1A
@@ -3713,7 +3776,7 @@ l_000_06E1A:
         andi.b  #$f0,d0                         ; 06E24
         tst.b   d0                              ; 06E28
         bne.b   l_000_06E36                     ; 06E2A
-        move.l  #$fffffe00,-$20(a6)             ; 06E2C
+        move.l  #$fffffe00,FlyAircraft_Value4E(a6) ; 06E2C
         bra.b   l_000_06E6E                     ; 06E34
 l_000_06E36:
         movea.l (CockpitObject).l,a0            ; 06E36
@@ -3724,23 +3787,23 @@ l_000_06E36:
         move.b  $62(a0),d0                      ; 06E48
         cmpi.b  #$14,d0                         ; 06E4C
         bne.b   l_000_06E5C                     ; 06E50
-        move.l  #$a8c,-$20(a6)                  ; 06E52
+        move.l  #$a8c,FlyAircraft_Value4E(a6)   ; 06E52
         bra.b   l_000_06E6E                     ; 06E5A
 l_000_06E5C:
-        move.l  #$708,-$20(a6)                  ; 06E5C
+        move.l  #$708,FlyAircraft_Value4E(a6)   ; 06E5C
         bra.b   l_000_06E6E                     ; 06E64
 l_000_06E66:
-        move.l  #$2ee,-$20(a6)                  ; 06E66
+        move.l  #$2ee,FlyAircraft_Value4E(a6)   ; 06E66
 l_000_06E6E:
         movea.l (CockpitObject).l,a0            ; 06E6E
         move.l  $18(a0),d0                      ; 06E74
-        sub.l   -$14(a6),d0                     ; 06E78
+        sub.l   FlyAircraft_NewY(a6),d0         ; 06E78
         movea.l (CockpitObject).l,a0            ; 06E7C
         move.l  d0,$18(a0)                      ; 06E82
-        move.l  -$20(a6),d1                     ; 06E86
+        move.l  FlyAircraft_Value4E(a6),d1      ; 06E86
         cmp.l   d1,d0                           ; 06E8A
         bgt.w   l_000_071AE                     ; 06E8C
-        movea.l -$34(a6),a0                     ; 06E90
+        movea.l FlyAircraft_Field20(a6),a0      ; 06E90
         move.b  (a0),d0                         ; 06E94
         andi.b  #$fb,d0                         ; 06E96
         move.b  d0,(a0)                         ; 06E9A
@@ -3752,12 +3815,12 @@ l_000_06E6E:
         movea.l (CockpitObject).l,a0            ; 06EAE
         move.l  d1,$18(a0)                      ; 06EB4
 l_000_06EB8:
-        movea.l -$30(a6),a0                     ; 06EB8
+        movea.l FlyAircraft_Bits(a6),a0         ; 06EB8
         move.b  (a0),d0                         ; 06EBC
         andi.b  #$c0,d0                         ; 06EBE
         tst.b   d0                              ; 06EC2
         bne.b   l_000_06F30                     ; 06EC4
-        movea.l -$2c(a6),a0                     ; 06EC6
+        movea.l FlyAircraft_Flags(a6),a0        ; 06EC6
         move.w  (a0),d0                         ; 06ECA
         btst    #$7,d0                          ; 06ECC
         beq.b   l_000_06EE4                     ; 06ED0
@@ -3768,7 +3831,7 @@ l_000_06EB8:
         bne.b   l_000_06F30                     ; 06EE2
 l_000_06EE4:
         jsr     (WaterUnderObject).l            ; 06EE4
-        movea.l -$30(a6),a0                     ; 06EEA
+        movea.l FlyAircraft_Bits(a6),a0         ; 06EEA
         move.b  (a0),d0                         ; 06EEE
         btst    #$1,d0                          ; 06EF0
         beq.b   l_000_06F30                     ; 06EF4
@@ -3782,20 +3845,20 @@ l_000_06EE4:
         ori.b   #$80,d0                         ; 06F10
         movea.l (CockpitObject).l,a0            ; 06F14
         move.b  d0,$7c(a0)                      ; 06F1A
-        tst.w   -$24(a6)                        ; 06F1E
+        tst.w   FlyAircraft_Object(a6)          ; 06F1E
         bne.b   l_000_06F30                     ; 06F22
-        movea.l -$34(a6),a0                     ; 06F24
+        movea.l FlyAircraft_Field20(a6),a0      ; 06F24
         move.b  (a0),d0                         ; 06F28
         ori.b   #$1,d0                          ; 06F2A
         move.b  d0,(a0)                         ; 06F2E
 l_000_06F30:
-        tst.w   -$24(a6)                        ; 06F30
+        tst.w   FlyAircraft_Object(a6)          ; 06F30
         bne.w   l_000_07180                     ; 06F34
-        movea.l -$28(a6),a0                     ; 06F38
+        movea.l FlyAircraft_Record(a6),a0       ; 06F38
         move.w  (a0),d0                         ; 06F3C
         btst    #$9,d0                          ; 06F3E
         bne.w   l_000_07104                     ; 06F42
-        movea.l -$2c(a6),a0                     ; 06F46
+        movea.l FlyAircraft_Flags(a6),a0        ; 06F46
         move.w  (a0),d0                         ; 06F4A
         btst    #$7,d0                          ; 06F4C
         bne.w   l_000_07056                     ; 06F50
@@ -3809,12 +3872,12 @@ l_000_06F30:
         move.b  d0,(FlightStep).l               ; 06F76
         moveq   #$1,d0                          ; 06F7C
         move.b  d0,(ShakeKind).l                ; 06F7E
-        cmpi.w  #$240,-$4(a6)                   ; 06F84
+        cmpi.w  #$240,FlyAircraft_VelY(a6)      ; 06F84
         blt.b   l_000_06FCE                     ; 06F8A
         move.b  (NewAircraftReady).l,d0         ; 06F8C
         tst.b   d0                              ; 06F92
         bne.w   l_000_07178                     ; 06F94
-        movea.l -$28(a6),a0                     ; 06F98
+        movea.l FlyAircraft_Record(a6),a0       ; 06F98
         move.w  (a0),d0                         ; 06F9C
         ori.w   #$200,d0                        ; 06F9E
         move.w  d0,(a0)                         ; 06FA2
@@ -3831,7 +3894,7 @@ l_000_06FCE:
         beq.w   l_000_07178                     ; 06FD4
         move.w  (PlayerSpeedFlown).l,(PlayerSpeed).l ; 06FD8
         move.b  #$fe,(EngineSoundRequest).l     ; 06FE2
-        movea.l -$30(a6),a0                     ; 06FEA
+        movea.l FlyAircraft_Bits(a6),a0         ; 06FEA
         move.b  (a0),d0                         ; 06FEE
         btst    #$1,d0                          ; 06FF0
         bne.b   l_000_07008                     ; 06FF4
@@ -3845,13 +3908,13 @@ l_000_07008:
         move.w  $6e(a0),d0                      ; 0700E
         cmpi.w  #$3c0,d0                        ; 07012
         blt.b   l_000_0702E                     ; 07016
-        movea.l -$2c(a6),a0                     ; 07018
+        movea.l FlyAircraft_Flags(a6),a0        ; 07018
         move.w  (a0),d0                         ; 0701C
         ori.w   #$1000,d0                       ; 0701E
         move.w  d0,(a0)                         ; 07022
         move.w  (CurrentObjectOffset).l,(FlameObject).l ; 07024
 l_000_0702E:
-        cmpi.w  #$180,-$4(a6)                   ; 0702E
+        cmpi.w  #$180,FlyAircraft_VelY(a6)      ; 0702E
         ble.b   l_000_07046                     ; 07034
         moveq   #$28,d0                         ; 07036
         move.l  d0,-(a7)                        ; 07038
@@ -3878,11 +3941,11 @@ l_000_07056:
         beq.b   l_000_070AC                     ; 0707E
         andi.w  #$feff,d0                       ; 07080
         move.w  d0,(FlightBits).l               ; 07084
-        movea.l -$30(a6),a0                     ; 0708A
+        movea.l FlyAircraft_Bits(a6),a0         ; 0708A
         move.b  (a0),d0                         ; 0708E
         btst    #$2,d0                          ; 07090
         bne.b   l_000_070A6                     ; 07094
-        movea.l -$2c(a6),a0                     ; 07096
+        movea.l FlyAircraft_Flags(a6),a0        ; 07096
         move.w  (a0),d0                         ; 0709A
         andi.w  #$c000,d0                       ; 0709C
         cmpi.w  #$c000,d0                       ; 070A0
@@ -3910,7 +3973,7 @@ l_000_070DA:
         move.w  d0,(FlightBits2).l              ; 070FC
         bra.b   l_000_07178                     ; 07102
 l_000_07104:
-        movea.l -$28(a6),a0                     ; 07104
+        movea.l FlyAircraft_Record(a6),a0       ; 07104
         move.w  (a0),d0                         ; 07108
         btst    #$9,d0                          ; 0710A
         bne.b   l_000_07178                     ; 0710E
@@ -3940,7 +4003,7 @@ l_000_07178:
         clr.l   (PlayerVelY).l                  ; 07178
         bra.b   l_000_0718C                     ; 0717E
 l_000_07180:
-        movea.l -$2c(a6),a0                     ; 07180
+        movea.l FlyAircraft_Flags(a6),a0        ; 07180
         move.w  (a0),d0                         ; 07184
         ori.w   #$80,d0                         ; 07186
         move.w  d0,(a0)                         ; 0718A
@@ -3949,19 +4012,19 @@ l_000_0718C:
         move.w  $6e(a0),d0                      ; 07192
         cmpi.w  #$3c0,d0                        ; 07196
         bge.w   l_000_07280                     ; 0719A
-        movea.l -$2c(a6),a0                     ; 0719E
+        movea.l FlyAircraft_Flags(a6),a0        ; 0719E
         move.w  (a0),d0                         ; 071A2
         andi.w  #$efff,d0                       ; 071A4
         move.w  d0,(a0)                         ; 071A8
         bra.w   l_000_07280                     ; 071AA
 l_000_071AE:
-        movea.l -$2c(a6),a0                     ; 071AE
+        movea.l FlyAircraft_Flags(a6),a0        ; 071AE
         move.w  (a0),d0                         ; 071B2
         btst    #$7,d0                          ; 071B4
         beq.w   l_000_07262                     ; 071B8
         andi.w  #$ff7f,d0                       ; 071BC
         move.w  d0,(a0)                         ; 071C0
-        movea.l -$30(a6),a0                     ; 071C2
+        movea.l FlyAircraft_Bits(a6),a0         ; 071C2
         move.b  (a0),d0                         ; 071C6
         btst    #$3,d0                          ; 071C8
         beq.b   l_000_071DC                     ; 071CC
@@ -3969,7 +4032,7 @@ l_000_071AE:
         move.b  d0,(a0)                         ; 071D2
         move.b  #$4,(ShakeKind).l               ; 071D4
 l_000_071DC:
-        tst.w   -$24(a6)                        ; 071DC
+        tst.w   FlyAircraft_Object(a6)          ; 071DC
         bne.b   l_000_0724E                     ; 071E0
         jsr     (ReadTime).l                    ; 071E2
         move.l  (FlightStartTime).l,d0          ; 071E8
@@ -3983,7 +4046,7 @@ l_000_071DC:
         ori.b   #$1,d0                          ; 07212
         movea.l (CockpitObject).l,a0            ; 07216
         move.b  d0,$21(a0)                      ; 0721C
-        movea.l -$2c(a6),a0                     ; 07220
+        movea.l FlyAircraft_Flags(a6),a0        ; 07220
         move.w  (a0),d0                         ; 07224
         andi.w  #$efff,d0                       ; 07226
         move.w  d0,(a0)                         ; 0722A
@@ -3997,7 +4060,7 @@ l_000_071DC:
 l_000_0724E:
         jsr     (SetObjectBit7C).l              ; 0724E
 l_000_07254:
-        movea.l -$30(a6),a0                     ; 07254
+        movea.l FlyAircraft_Bits(a6),a0         ; 07254
         move.b  (a0),d0                         ; 07258
         andi.b  #$fd,d0                         ; 0725A
         move.b  d0,(a0)                         ; 0725E
@@ -4062,22 +4125,30 @@ l_000_072CA:
 ; held (GunFlags bit 3) and rounds are left, counting them in the flight log (+$3A), and moves
 ; every bullet (MoveBullet); also the gun's sound.
 ;-------------------------------------------------------------------------------
+; UpdateBullets's frame: arguments from 8(a6), locals below a6 (after its link)
+UpdateBullets_Busy      equ     -$1             ; a bullet fired, or the burst count still running (else both are cleared)
+UpdateBullets_Shots     equ     -$2             ; the bullets fired this frame
+UpdateBullets_Rounds    equ     -$3             ; 1 if rounds are left (PlayerRounds)
+UpdateBullets_Burst7D   equ     -$8             ; Player_7D
+UpdateBullets_Burst3B   equ     -$C             ; Player_3B (counted down each frame)
+UpdateBullets_I         equ     -$10            ; the bullet's number (every other one)
+UpdateBullets_Flags     equ     -$14            ; the bullet's blt_Flags
 UpdateBullets:
         link.w  a6,#$ffea                       ; 072DC
         moveq   #$0,d0                          ; 072E0
-        move.b  d0,-$3(a6)                      ; 072E2
-        move.b  d0,-$1(a6)                      ; 072E6
-        move.b  d0,-$2(a6)                      ; 072EA
+        move.b  d0,UpdateBullets_Rounds(a6)     ; 072E2
+        move.b  d0,UpdateBullets_Busy(a6)       ; 072E6
+        move.b  d0,UpdateBullets_Shots(a6)      ; 072EA
         jsr     (SolidPattern).l                ; 072EE
-        move.l  #Player_7D,-$8(a6)              ; 072F4
-        move.l  #Player_3B,-$c(a6)              ; 072FC
-        movea.l -$c(a6),a0                      ; 07304
+        move.l  #Player_7D,UpdateBullets_Burst7D(a6) ; 072F4
+        move.l  #Player_3B,UpdateBullets_Burst3B(a6) ; 072FC
+        movea.l UpdateBullets_Burst3B(a6),a0    ; 07304
         move.b  (a0),d0                         ; 07308
         subq.b  #$1,d0                          ; 0730A
         move.b  d0,(a0)                         ; 0730C
-        clr.w   -$10(a6)                        ; 0730E
+        clr.w   UpdateBullets_I(a6)             ; 0730E
 l_000_07312:
-        move.w  -$10(a6),d0                     ; 07312
+        move.w  UpdateBullets_I(a6),d0          ; 07312
         cmpi.w  #$14,d0                         ; 07316
         bge.w   l_000_0752C                     ; 0731A
         ext.l   d0                              ; 0731E
@@ -4097,7 +4168,7 @@ l_000_07350:
         movea.l (CurrentBullet).l,a0            ; 07350
         adda.w  #blt_Flags,a0                   ; 07356
         move.b  (WorldFrozen).l,d0              ; 0735A
-        move.l  a0,-$14(a6)                     ; 07360
+        move.l  a0,UpdateBullets_Flags(a6)      ; 07360
         tst.b   d0                              ; 07364
         bne.b   l_000_07374                     ; 07366
         move.w  (GunFlags).l,d0                 ; 07368
@@ -4107,13 +4178,13 @@ l_000_07374:
         tst.b   (CountermeasureSound).l         ; 07374
         beq.w   l_000_0750C                     ; 0737A
 l_000_0737E:
-        movea.l -$14(a6),a0                     ; 0737E
+        movea.l UpdateBullets_Flags(a6),a0      ; 0737E
         move.w  (a0),d0                         ; 07382
         btst    #$0,d0                          ; 07384
         bne.w   l_000_0750C                     ; 07388
-        tst.b   -$3(a6)                         ; 0738C
+        tst.b   UpdateBullets_Rounds(a6)        ; 0738C
         bne.w   l_000_074FE                     ; 07390
-        movea.l -$8(a6),a0                      ; 07394
+        movea.l UpdateBullets_Burst7D(a6),a0    ; 07394
         move.b  (a0),d0                         ; 07398
         andi.b  #$f0,d0                         ; 0739A
         tst.b   d0                              ; 0739E
@@ -4121,7 +4192,7 @@ l_000_0737E:
         move.w  (PlayerRounds).l,d0             ; 073A4
         cmpi.w  #$1,d0                          ; 073AA
         blt.w   l_000_074FE                     ; 073AE
-        addq.b  #$1,-$3(a6)                     ; 073B2
+        addq.b  #$1,UpdateBullets_Rounds(a6)    ; 073B2
         move.b  (a0),d0                         ; 073B6
         move.b  d0,$0(a7)                       ; 073B8
         andi.b  #$f0,d0                         ; 073BC
@@ -4130,15 +4201,15 @@ l_000_0737E:
         andi.b  #$f,d1                          ; 073C8
         or.b    d0,d1                           ; 073CC
         move.b  d1,(a0)                         ; 073CE
-        addq.b  #$1,-$1(a6)                     ; 073D0
-        addq.b  #$1,-$2(a6)                     ; 073D4
+        addq.b  #$1,UpdateBullets_Busy(a6)      ; 073D0
+        addq.b  #$1,UpdateBullets_Shots(a6)     ; 073D4
         movea.l (ConfigBuffer).l,a0             ; 073D8
         move.w  $3a(a0),d1                      ; 073DE
         addq.w  #$3,d1                          ; 073E2
         movea.l (ConfigBuffer).l,a0             ; 073E4
         move.w  d1,$3a(a0)                      ; 073EA
         move.b  #$1,(ConfigChanged).l           ; 073EE
-        movea.l -$14(a6),a0                     ; 073F6
+        movea.l UpdateBullets_Flags(a6),a0      ; 073F6
         move.w  #$401,(a0)                      ; 073FA
         movea.l (CurrentBullet).l,a0            ; 073FE
         clr.w   blt_Owner(a0)                   ; 07404
@@ -4158,21 +4229,21 @@ l_000_0742E:
         move.b  (CountermeasureSound).l,d0      ; 0742E
         subq.b  #$1,d0                          ; 07434
         bne.b   l_000_07454                     ; 07436
-        movea.l -$14(a6),a0                     ; 07438
+        movea.l UpdateBullets_Flags(a6),a0      ; 07438
         move.w  (a0),d0                         ; 0743C
         ori.w   #$2000,d0                       ; 0743E
         move.w  d0,(a0)                         ; 07442
-        move.w  -$10(a6),d0                     ; 07444
+        move.w  UpdateBullets_I(a6),d0          ; 07444
         ext.l   d0                              ; 07448
         addq.l  #$1,d0                          ; 0744A
         move.b  d0,(BulletHitAircraft2).l       ; 0744C
         bra.b   l_000_0746E                     ; 07452
 l_000_07454:
-        movea.l -$14(a6),a0                     ; 07454
+        movea.l UpdateBullets_Flags(a6),a0      ; 07454
         move.w  (a0),d0                         ; 07458
         ori.w   #$1000,d0                       ; 0745A
         move.w  d0,(a0)                         ; 0745E
-        move.w  -$10(a6),d0                     ; 07460
+        move.w  UpdateBullets_I(a6),d0          ; 07460
         ext.l   d0                              ; 07464
         addq.l  #$1,d0                          ; 07466
         move.b  d0,(BulletHitAircraft).l        ; 07468
@@ -4218,40 +4289,40 @@ l_000_074C6:
         clr.w   (PlayerRounds).l                ; 074D8
 l_000_074DE:
         move.b  #$3,(StoresRedraw).l            ; 074DE
-        movea.l -$c(a6),a0                      ; 074E6
+        movea.l UpdateBullets_Burst3B(a6),a0    ; 074E6
         move.b  #$14,(a0)                       ; 074EA
 l_000_074EE:
-        move.w  -$10(a6),d0                     ; 074EE
+        move.w  UpdateBullets_I(a6),d0          ; 074EE
         ext.l   d0                              ; 074F2
         move.l  d0,-(a7)                        ; 074F4
         bsr.w   BulletHitEffects                ; 074F6
         addq.l  #$4,a7                          ; 074FA
         bra.b   l_000_0750C                     ; 074FC
 l_000_074FE:
-        movea.l -$c(a6),a0                      ; 074FE
+        movea.l UpdateBullets_Burst3B(a6),a0    ; 074FE
         move.b  (a0),d0                         ; 07502
         tst.b   d0                              ; 07504
         ble.b   l_000_0750C                     ; 07506
-        addq.b  #$1,-$1(a6)                     ; 07508
+        addq.b  #$1,UpdateBullets_Busy(a6)      ; 07508
 l_000_0750C:
-        movea.l -$14(a6),a0                     ; 0750C
+        movea.l UpdateBullets_Flags(a6),a0      ; 0750C
         move.w  (a0),d0                         ; 07510
         btst    #$0,d0                          ; 07512
         beq.b   l_000_07524                     ; 07516
-        move.w  -$10(a6),d0                     ; 07518
+        move.w  UpdateBullets_I(a6),d0          ; 07518
         ext.l   d0                              ; 0751C
         move.l  d0,-(a7)                        ; 0751E
         bsr.b   MoveBullet                      ; 07520
         addq.l  #$4,a7                          ; 07522
 l_000_07524:
-        addq.w  #$2,-$10(a6)                    ; 07524
+        addq.w  #$2,UpdateBullets_I(a6)         ; 07524
         bra.w   l_000_07312                     ; 07528
 l_000_0752C:
-        tst.b   -$1(a6)                         ; 0752C
+        tst.b   UpdateBullets_Busy(a6)          ; 0752C
         bne.b   l_000_07548                     ; 07530
-        movea.l -$c(a6),a0                      ; 07532
+        movea.l UpdateBullets_Burst3B(a6),a0    ; 07532
         clr.b   (a0)                            ; 07536
-        movea.l -$8(a6),a0                      ; 07538
+        movea.l UpdateBullets_Burst7D(a6),a0    ; 07538
         move.b  (a0),d0                         ; 0753C
         andi.b  #$f,d0                          ; 0753E
         ori.b   #$50,d0                         ; 07542

@@ -138,6 +138,12 @@ bm_Depth		equ	5
 bm_Planes		equ	8
 bm_SIZEOF		equ	$28
 
+; struct InfoData (dos)
+id_DiskState		equ	$8
+id_DiskType		equ	$18
+ID_WRITE_PROTECTED	equ	80
+ID_SIZE			equ	$24
+
 ; struct FileInfoBlock (dos)
 fib_Size		equ	$7C
 
