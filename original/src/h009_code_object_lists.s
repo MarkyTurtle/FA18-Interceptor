@@ -217,7 +217,7 @@ l_009_00280:
         adda.w  d0,a1                           ; 00290
         tst.b   (DistanceFlag).l                ; 00292
         bne.b   l_009_002A0                     ; 00298
-        bclr    #$2,$1(a1)                      ; 0029A
+        bclr    #$2,obj_Flags+1(a1)             ; 0029A
 l_009_002A0:
         move.w  $c(a1),d0                       ; 002A0
         andi.w  #$fff,d0                        ; 002A4
@@ -780,7 +780,7 @@ SortDrawList_Word       equ     -$12            ; the entry's word & $3FFF
 SortDrawList_Data       equ     -$16            ; the entry's data pointer
 SortDrawList_I          equ     -$18            ; the count
 SortDrawList_Count      equ     -$1A            ; the number of them
-SortDrawList_Nibble7D   equ     -$20            ; the object's +$7D low nibble
+SortDrawList_Scale      equ     -$20            ; the object's obj_Scale low nibble
 SortDrawList:
         link.w  a6,#$ffde                       ; 00958
         lea.l   (SceneryList).l,a1              ; 0095C
@@ -984,7 +984,7 @@ l_009_00B56:
         andi.w  #$ff00,d1                       ; 00B5C
         lsr.w   #$3,d1                          ; 00B60
         lea.l   (ObjectTable).l,a2              ; 00B62
-        add.l   $10(a2,d1.w),d0                 ; 00B68
+        add.l   obj_Y8(a2,d1.w),d0              ; 00B68
         move.l  (ViewOffsetY8).l,d1             ; 00B6C
         neg.l   d1                              ; 00B72
         cmp.l   d0,d1                           ; 00B74
@@ -994,15 +994,15 @@ l_009_00B7E:
         lea.l   (ObjectTable).l,a3              ; 00B7E
         andi.w  #$ff00,d1                       ; 00B84
         add.w   d1,d1                           ; 00B88
-        move.w  $c(a3,d1.w),d2                  ; 00B8A
-        move.w  $e(a3,d1.w),d4                  ; 00B8E
-        move.l  $10(a3,d1.w),SortDrawList_Y(a6) ; 00B92
+        move.w  obj_X8(a3,d1.w),d2              ; 00B8A
+        move.w  obj_Z8(a3,d1.w),d4              ; 00B8E
+        move.l  obj_Y8(a3,d1.w),SortDrawList_Y(a6) ; 00B92
         move.w  d1,-(a7)                        ; 00B98
         bsr.w   ObjectOf                        ; 00B9A
         move.w  (a7)+,d1                        ; 00B9E
         move.w  d2,SortDrawList_X(a6)           ; 00BA0
         move.w  d4,SortDrawList_Z(a6)           ; 00BA4
-        move.b  $4(a3,d1.w),d0                  ; 00BA8
+        move.b  obj_Bits(a3,d1.w),d0            ; 00BA8
         andi.b  #$c0,d0                         ; 00BAC
         beq.b   l_009_00BFE                     ; 00BB0
         movea.l $2(a0),a4                       ; 00BB2
@@ -1019,7 +1019,7 @@ l_009_00BD6:
         andi.w  #$ff00,d1                       ; 00BDC
         add.w   d1,d1                           ; 00BE0
         lea.l   (ObjectTable).l,a2              ; 00BE2
-        add.l   $10(a2,d1.w),d0                 ; 00BE8
+        add.l   obj_Y8(a2,d1.w),d0              ; 00BE8
         move.l  (ViewOffsetY8).l,d1             ; 00BEC
         neg.l   d1                              ; 00BF2
         cmp.l   d0,d1                           ; 00BF4
@@ -1093,9 +1093,9 @@ l_009_00C8A:
         addi.w  #$a4,d0                         ; 00CAC
         move.l  (ViewOffsetY8).l,d1             ; 00CB0
         neg.l   d1                              ; 00CB6
-        move.b  $7d(a2),d3                      ; 00CB8
+        move.b  obj_Scale(a2),d3                ; 00CB8
         andi.w  #$f,d3                          ; 00CBC
-        move.w  d3,SortDrawList_Nibble7D(a6)    ; 00CC0
+        move.w  d3,SortDrawList_Scale(a6)       ; 00CC0
         move.w  $2(a2,d0.w),d0                  ; 00CC4
         asr.w   d3,d0                           ; 00CC8
         cmp.w   d0,d1                           ; 00CCA
@@ -1129,13 +1129,13 @@ l_009_00CF4:
         asr.l   #$6,d5                          ; 00D18
         exg.l   d5,d7                           ; 00D1A
         movem.w (a5),d2-d4                      ; 00D1C
-        move.w  SortDrawList_Nibble7D(a6),d0    ; 00D20
+        move.w  SortDrawList_Scale(a6),d0       ; 00D20
         asr.w   d0,d2                           ; 00D24
         asr.l   d0,d3                           ; 00D26
         asr.w   d0,d4                           ; 00D28
-        add.w   $c(a2),d2                       ; 00D2A
-        add.l   $10(a2),d3                      ; 00D2E
-        add.w   $e(a2),d4                       ; 00D32
+        add.w   obj_X8(a2),d2                   ; 00D2A
+        add.l   obj_Y8(a2),d3                   ; 00D2E
+        add.w   obj_Z8(a2),d4                   ; 00D32
         add.w   (ViewOffsetX8).l,d2             ; 00D36
         add.l   (ViewOffsetY8).l,d3             ; 00D3C
         add.w   (ViewOffsetZ8).l,d4             ; 00D42
@@ -1200,13 +1200,13 @@ l_009_00D78:
         move.w  d6,d7                           ; 00DE4
         move.w  d0,d6                           ; 00DE6
         movem.w (a5),d2-d4                      ; 00DE8
-        move.w  SortDrawList_Nibble7D(a6),d0    ; 00DEC
+        move.w  SortDrawList_Scale(a6),d0       ; 00DEC
         asr.w   d0,d2                           ; 00DF0
         asr.l   d0,d3                           ; 00DF2
         asr.w   d0,d4                           ; 00DF4
-        add.w   $c(a2),d2                       ; 00DF6
-        add.l   $10(a2),d3                      ; 00DFA
-        add.w   $e(a2),d4                       ; 00DFE
+        add.w   obj_X8(a2),d2                   ; 00DF6
+        add.l   obj_Y8(a2),d3                   ; 00DFA
+        add.w   obj_Z8(a2),d4                   ; 00DFE
         sub.w   SortDrawList_X(a6),d2           ; 00E02
         sub.l   SortDrawList_Y(a6),d3           ; 00E06
         sub.w   SortDrawList_Z(a6),d4           ; 00E0A
@@ -1223,9 +1223,9 @@ l_009_00D78:
         asr.w   d0,d2                           ; 00E24
         asr.l   d0,d3                           ; 00E26
         asr.w   d0,d4                           ; 00E28
-        add.w   $c(a2),d2                       ; 00E2A
-        add.l   $10(a2),d3                      ; 00E2E
-        add.w   $e(a2),d4                       ; 00E32
+        add.w   obj_X8(a2),d2                   ; 00E2A
+        add.l   obj_Y8(a2),d3                   ; 00E2E
+        add.w   obj_Z8(a2),d4                   ; 00E32
         ext.l   d2                              ; 00E36
         ext.l   d4                              ; 00E38
         sub.l   SortDrawList_DX(a6),d2          ; 00E3A
@@ -1270,11 +1270,11 @@ l_009_00E66:
         asr.l   #$6,d7                          ; 00EB4
         move.w  d4,d5                           ; 00EB6
         movem.w (a5),d2-d4                      ; 00EB8
-        move.w  SortDrawList_Nibble7D(a6),d0    ; 00EBC
+        move.w  SortDrawList_Scale(a6),d0       ; 00EBC
         asr.w   d0,d2                           ; 00EC0
         asr.w   d0,d4                           ; 00EC2
-        add.w   $c(a2),d2                       ; 00EC4
-        add.w   $e(a2),d4                       ; 00EC8
+        add.w   obj_X8(a2),d2                   ; 00EC4
+        add.w   obj_Z8(a2),d4                   ; 00EC8
         sub.w   SortDrawList_X(a6),d2           ; 00ECC
         sub.w   SortDrawList_Z(a6),d4           ; 00ED0
         neg.w   d2                              ; 00ED4
@@ -1444,10 +1444,10 @@ l_009_01070:
         add.w   d1,d1                           ; 01076
         lea.l   (ObjectTable).l,a2              ; 01078
         adda.w  d1,a2                           ; 0107E
-        move.w  $6(a2),d1                       ; 01080
+        move.w  obj_CellX(a2),d1                ; 01080
         andi.w  #$ff,d1                         ; 01084
         move.w  d1,-$1c(a6)                     ; 01088
-        move.w  $8(a2),d1                       ; 0108C
+        move.w  obj_CellZ(a2),d1                ; 0108C
         andi.w  #$ff,d1                         ; 01090
         move.w  d1,-$1e(a6)                     ; 01094
         movea.l (a7)+,a2                        ; 01098

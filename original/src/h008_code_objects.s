@@ -19,7 +19,7 @@ OutsideEyeOffset:
         clr.w   d0                              ; 0000C
         lea.l   (ObjectTable).l,a0              ; 0000E
         adda.w  (ViewObject).l,a0               ; 00014
-        move.l  $14(a0),d2                      ; 0001A
+        move.l  obj_X(a0),d2                    ; 0001A
         andi.l  #$3fffff,d2                     ; 0001E
         add.l   (CameraCellOffset).l,d2         ; 00024
         bge.b   l_008_00032                     ; 0002A
@@ -27,14 +27,14 @@ OutsideEyeOffset:
         bset    #$0,d0                          ; 0002E
 l_008_00032:
         asr.l   #$8,d2                          ; 00032
-        move.l  $18(a0),d3                      ; 00034
+        move.l  obj_Y(a0),d3                    ; 00034
         add.l   (CameraCellOffsetY).l,d3        ; 00038
         bge.b   l_008_00046                     ; 0003E
         neg.l   d3                              ; 00040
         bset    #$1,d0                          ; 00042
 l_008_00046:
         asr.l   #$8,d3                          ; 00046
-        move.l  $1c(a0),d4                      ; 00048
+        move.l  obj_Z(a0),d4                    ; 00048
         andi.l  #$3fffff,d4                     ; 0004C
         add.l   (CameraCellOffsetZ).l,d4        ; 00052
         bge.b   l_008_00060                     ; 00058
@@ -93,11 +93,11 @@ l_008_000BE:
 l_008_000C6:
         lea.l   (ObjectTable).l,a0              ; 000C6
         adda.w  (ViewObject).l,a0               ; 000CC
-        move.l  $14(a0),d0                      ; 000D2
+        move.l  obj_X(a0),d0                    ; 000D2
         andi.l  #$3fffff,d0                     ; 000D6
         sub.l   d0,d2                           ; 000DC
-        sub.l   $18(a0),d3                      ; 000DE
-        move.l  $1c(a0),d0                      ; 000E2
+        sub.l   obj_Y(a0),d3                    ; 000DE
+        move.l  obj_Z(a0),d0                    ; 000E2
         andi.l  #$3fffff,d0                     ; 000E6
         sub.l   d0,d4                           ; 000EC
         bra.b   l_008_0012C                     ; 000EE
@@ -263,7 +263,7 @@ SetCockpitEye:
         bne.w   l_008_00344                     ; 0028C
         lea.l   (ObjectTable).l,a2              ; 00290
         adda.w  (ViewObject).l,a2               ; 00296
-        cmpi.b  #$30,$62(a2)                    ; 0029C
+        cmpi.b  #$30,obj_Type(a2)               ; 0029C
         bne.b   l_008_002AC                     ; 002A2
         moveq   #$0,d3                          ; 002A4
         moveq   #$1,d4                          ; 002A6
@@ -271,7 +271,7 @@ SetCockpitEye:
         bra.b   l_008_002C0                     ; 002AA
 l_008_002AC:
         moveq   #$0,d3                          ; 002AC
-        cmpi.b  #$11,$62(a2)                    ; 002AE
+        cmpi.b  #$11,obj_Type(a2)               ; 002AE
         beq.b   l_008_002BC                     ; 002B4
         moveq   #$4,d4                          ; 002B6
         moveq   #$12,d5                         ; 002B8
@@ -283,38 +283,38 @@ l_008_002C0:
         move.w  d3,d6                           ; 002C0
         move.w  d4,d0                           ; 002C2
         move.w  d5,d7                           ; 002C4
-        muls.w  $92(a2),d6                      ; 002C6
-        muls.w  $94(a2),d0                      ; 002CA
-        muls.w  $96(a2),d7                      ; 002CE
+        muls.w  obj_Inverse(a2),d6              ; 002C6
+        muls.w  obj_Inverse+2(a2),d0            ; 002CA
+        muls.w  obj_Inverse+4(a2),d7            ; 002CE
         add.l   d6,d0                           ; 002D2
         add.l   d7,d0                           ; 002D4
         move.w  d3,d6                           ; 002D6
         move.w  d4,d1                           ; 002D8
         move.w  d5,d7                           ; 002DA
-        muls.w  $98(a2),d6                      ; 002DC
-        muls.w  $9a(a2),d1                      ; 002E0
-        muls.w  $9c(a2),d7                      ; 002E4
+        muls.w  obj_Inverse+6(a2),d6            ; 002DC
+        muls.w  obj_Inverse+8(a2),d1            ; 002E0
+        muls.w  obj_Inverse+10(a2),d7           ; 002E4
         add.l   d6,d1                           ; 002E8
         add.l   d7,d1                           ; 002EA
         move.w  d4,d2                           ; 002EC
-        muls.w  $9e(a2),d3                      ; 002EE
-        muls.w  $a0(a2),d2                      ; 002F2
-        muls.w  $a2(a2),d5                      ; 002F6
+        muls.w  obj_Inverse+12(a2),d3           ; 002EE
+        muls.w  obj_Inverse+14(a2),d2           ; 002F2
+        muls.w  obj_Inverse+16(a2),d5           ; 002F6
         add.l   d3,d2                           ; 002FA
         add.l   d5,d2                           ; 002FC
         asr.l   #$6,d0                          ; 002FE
         asr.l   #$6,d1                          ; 00300
         asr.l   #$6,d2                          ; 00302
-        movem.l $14(a2),d3-d5                   ; 00304
+        movem.l obj_X(a2),d3-d5                 ; 00304
         add.l   d0,d3                           ; 0030A
         add.l   d1,d4                           ; 0030C
         add.l   d2,d5                           ; 0030E
         movem.l d3-d5,(EyeX).l                  ; 00310
-        move.l  $14(a2),d3                      ; 00318
+        move.l  obj_X(a2),d3                    ; 00318
         andi.l  #$3fffff,d3                     ; 0031C
         add.l   d3,d0                           ; 00322
-        add.l   $18(a2),d1                      ; 00324
-        move.l  $1c(a2),d3                      ; 00328
+        add.l   obj_Y(a2),d1                    ; 00324
+        move.l  obj_Z(a2),d3                    ; 00328
         andi.l  #$3fffff,d3                     ; 0032C
         add.l   d3,d2                           ; 00332
         neg.l   d0                              ; 00334
@@ -381,9 +381,9 @@ l_008_003EE:
         lea.l   (ObjectTable).l,a3              ; 003FC
         adda.w  (ViewObject).l,a3               ; 00402
         bsr.w   DetailByTurnRate                ; 00408
-        move.w  $6(a3),(ViewCellX).l            ; 0040C
-        move.w  $8(a3),(ViewCellZ).l            ; 00414
-        move.b  $a(a3),(ViewSubCell).l          ; 0041C
+        move.w  obj_CellX(a3),(ViewCellX).l     ; 0040C
+        move.w  obj_CellZ(a3),(ViewCellZ).l     ; 00414
+        move.b  obj_SubCell(a3),(ViewSubCell).l ; 0041C
         move.w  (ViewCellX).l,d0                ; 00424
         andi.w  #$3,d0                          ; 0042A
         subq.w  #$3,d0                          ; 0042E
@@ -474,15 +474,15 @@ l_008_00526:
 ; +$58): less detail while the view swings.
 ;-------------------------------------------------------------------------------
 DetailByTurnRate:
-        move.w  $56(a3),d0                      ; 0052E
+        move.w  obj_PitchRate(a3),d0            ; 0052E
         bge.b   l_008_00536                     ; 00532
         neg.w   d0                              ; 00534
 l_008_00536:
-        move.w  $58(a3),d1                      ; 00536
+        move.w  obj_YawRate(a3),d1              ; 00536
         bge.b   l_008_0053E                     ; 0053A
         neg.w   d1                              ; 0053C
 l_008_0053E:
-        move.w  $5a(a3),d2                      ; 0053E
+        move.w  obj_RollRate(a3),d2             ; 0053E
         bge.b   l_008_00546                     ; 00542
         neg.w   d2                              ; 00544
 l_008_00546:
@@ -503,7 +503,7 @@ l_008_0055C:
 l_008_0055E:
         cmpi.w  #$60,d0                         ; 0055E
         bgt.b   l_008_0057C                     ; 00562
-        move.w  $6c(a3),d1                      ; 00564
+        move.w  obj_Speed(a3),d1                ; 00564
         bge.b   l_008_0056C                     ; 00568
         neg.w   d1                              ; 0056A
 l_008_0056C:
@@ -562,8 +562,8 @@ l_008_005E8:
 l_008_00612:
         lea.l   (ObjectTable).l,a1              ; 00612
         adda.w  (ViewObject).l,a1               ; 00618
-        move.w  $6(a1),d1                       ; 0061E
-        move.w  $8(a1),d2                       ; 00622
+        move.w  obj_CellX(a1),d1                ; 0061E
+        move.w  obj_CellZ(a1),d2                ; 00622
         asr.w   #$2,d1                          ; 00626
         asr.w   #$2,d2                          ; 00628
 l_008_0062A:
@@ -682,7 +682,7 @@ l_008_007B8:
 MarkAllObjectsInView:
         lea.l   (ObjectTable).l,a0              ; 007BA
         move.b  #$10,d7                         ; 007C0
-        or.b    d7,$1(a0)                       ; 007C4
+        or.b    d7,obj_Flags+1(a0)              ; 007C4
         or.b    d7,$201(a0)                     ; 007C8
         or.b    d7,$401(a0)                     ; 007CC
         or.b    d7,$601(a0)                     ; 007D0
@@ -869,19 +869,19 @@ l_008_00A1C:
         move.w  d0,(CurrentObjectOffset).l      ; 00A3E
         adda.w  d0,a0                           ; 00A44
         moveq   #$0,d7                          ; 00A46
-        move.w  $6(a0),d7                       ; 00A48
+        move.w  obj_CellX(a0),d7                ; 00A48
         sub.w   (ViewCellX).l,d7                ; 00A4C
         swap    d7                              ; 00A52
         asl.l   #$6,d7                          ; 00A54
-        move.l  $14(a0),d4                      ; 00A56
+        move.l  obj_X(a0),d4                    ; 00A56
         andi.l  #$3fffff,d4                     ; 00A5A
         add.l   d4,d7                           ; 00A60
         moveq   #$0,d6                          ; 00A62
-        move.w  $8(a0),d6                       ; 00A64
+        move.w  obj_CellZ(a0),d6                ; 00A64
         sub.w   (ViewCellZ).l,d6                ; 00A68
         swap    d6                              ; 00A6E
         asl.l   #$6,d6                          ; 00A70
-        move.l  $1c(a0),d4                      ; 00A72
+        move.l  obj_Z(a0),d4                    ; 00A72
         andi.l  #$3fffff,d4                     ; 00A76
         add.l   d4,d6                           ; 00A7C
         move.l  d7,d2                           ; 00A7E
@@ -904,7 +904,7 @@ l_008_00A94:
 l_008_00AA6:
         asr.l   #$8,d6                          ; 00AA6
         asr.l   #$4,d6                          ; 00AA8
-        move.l  $10(a0),d0                      ; 00AAA
+        move.l  obj_Y8(a0),d0                   ; 00AAA
         add.l   (ViewOffsetY8).l,d0             ; 00AAE
         bge.b   l_008_00AB8                     ; 00AB4
         neg.l   d0                              ; 00AB6
@@ -934,7 +934,7 @@ l_008_00AEA:
         move.b  (a1,d7.w),d6                    ; 00AF0
         ext.w   d6                              ; 00AF4
         move.w  d6,(DistanceShift).l            ; 00AF6
-        move.l  $18(a0),d3                      ; 00AFC
+        move.l  obj_Y(a0),d3                    ; 00AFC
         move.l  d3,d0                           ; 00B00
         add.l   (ViewOffsetY).l,d0              ; 00B02
         asr.l   d6,d0                           ; 00B08
@@ -1108,12 +1108,12 @@ l_008_00D60:
         move.w  (ViewObject).l,d1               ; 00D60
         cmp.w   d1,d0                           ; 00D66
         beq.b   l_008_00DD0                     ; 00D68
-        btst    #$6,$1(a1,d0.w)                 ; 00D6A
+        btst    #$6,obj_Flags+1(a1,d0.w)        ; 00D6A
         beq.b   l_008_00DD0                     ; 00D70
-        movem.l $14(a1,d0.w),d2-d4              ; 00D72
-        sub.l   $14(a1,d1.w),d2                 ; 00D78
-        sub.l   $18(a1,d1.w),d3                 ; 00D7C
-        sub.l   $1c(a1,d1.w),d4                 ; 00D80
+        movem.l obj_X(a1,d0.w),d2-d4            ; 00D72
+        sub.l   obj_X(a1,d1.w),d2               ; 00D78
+        sub.l   obj_Y(a1,d1.w),d3               ; 00D7C
+        sub.l   obj_Z(a1,d1.w),d4               ; 00D80
         move.l  d2,d5                           ; 00D84
         bge.b   l_008_00D8A                     ; 00D86
         neg.l   d5                              ; 00D88

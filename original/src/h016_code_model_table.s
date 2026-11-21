@@ -625,15 +625,15 @@ ObjectDrawEntries:
 DrawAircraft:
         lea.l   (ObjectTable).l,a1              ; 00A78
         adda.w  (CurrentObjectOffset).l,a1      ; 00A7E
-        move.w  $0(a1),d1                       ; 00A84
+        move.w  obj_Flags(a1),d1                ; 00A84
         move.w  d1,d2                           ; 00A88
         andi.w  #$40,d1                         ; 00A8A
         beq.b   l_016_00ABC                     ; 00A8E
         andi.w  #$200,d2                        ; 00A90
         beq.b   l_016_00AB6                     ; 00A94
-        move.w  #$f,$4c(a1)                     ; 00A96
-        andi.w  #$fdff,$0(a1)                   ; 00A9C
-        ori.w   #$400,$0(a1)                    ; 00AA2
+        move.w  #$f,obj_Timer(a1)               ; 00A96
+        andi.w  #$fdff,obj_Flags(a1)            ; 00A9C
+        ori.w   #$400,obj_Flags(a1)             ; 00AA2
         move.l  a0,-(a7)                        ; 00AA8
         bsr.w   NoDraw                          ; 00AAA
         jsr     (TargetMessage).l               ; 00AAE
@@ -643,9 +643,9 @@ l_016_00AB6:
 l_016_00ABC:
         cmpi.b  #$5,$7a(a1)                     ; 00ABC
         beq.b   l_016_00AD0                     ; 00AC2
-        tst.w   $4c(a1)                         ; 00AC4
+        tst.w   obj_Timer(a1)                   ; 00AC4
         bge.b   l_016_00AD0                     ; 00AC8
-        ori.w   #$40,$0(a1)                     ; 00ACA
+        ori.w   #$40,obj_Flags(a1)              ; 00ACA
 l_016_00AD0:
         rts                                     ; 00AD0
 
@@ -657,7 +657,7 @@ DrawAnimated:
         lea.l   (ObjectTable).l,a1              ; 00AD2
         adda.w  (CurrentObjectOffset).l,a1      ; 00AD8
         lea.l   (ParachuteModel).l,a0           ; 00ADE
-        move.w  $4c(a1),d0                      ; 00AE4
+        move.w  obj_Timer(a1),d0                ; 00AE4
         ble.b   l_016_00B28                     ; 00AE8
         cmpi.w  #$5,d0                          ; 00AEA
         bge.b   l_016_00B5A                     ; 00AEE
@@ -694,9 +694,9 @@ DrawParachute:
         lea.l   (ObjectTable).l,a1              ; 00B72
         adda.w  (CurrentObjectOffset).l,a1      ; 00B78
         lea.l   (RescuePodModel).l,a0           ; 00B7E
-        move.w  $4c(a1),d0                      ; 00B84
+        move.w  obj_Timer(a1),d0                ; 00B84
         ble.b   l_016_00BD4                     ; 00B88
-        ori.b   #$1,$7c(a1)                     ; 00B8A
+        ori.b   #$1,obj_Ejection(a1)            ; 00B8A
         cmpi.w  #$5,d0                          ; 00B90
         bge.w   l_016_00C10                     ; 00B94
         cmpi.w  #$1,d0                          ; 00B98
@@ -712,7 +712,7 @@ l_016_00BBC:
         bra.w   l_016_00AB6                     ; 00BD0
 l_016_00BD4:
         blt.b   l_016_00BF8                     ; 00BD4
-        move.b  $7c(a1),d0                      ; 00BD6
+        move.b  obj_Ejection(a1),d0             ; 00BD6
         andi.b  #$f,d0                          ; 00BDA
         beq.b   l_016_00BF8                     ; 00BDE
         move.l  #Parachute_002A2,(ShapeNow).l   ; 00BE0

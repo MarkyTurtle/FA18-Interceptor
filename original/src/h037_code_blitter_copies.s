@@ -326,7 +326,7 @@ DrawStores:
         subq.b  #$1,(StoresRedraw).l            ; 00348
         lea.l   (ObjectTable).l,a0              ; 0034E
         adda.w  (ViewObject).l,a0               ; 00354
-        move.b  $62(a0),d1                      ; 0035A
+        move.b  obj_Type(a0),d1                 ; 0035A
         andi.b  #$f0,d1                         ; 0035E
         cmpi.b  #$0,d1                          ; 00362
         beq.b   l_037_0033E                     ; 00366
@@ -338,7 +338,7 @@ DrawStores:
         bgt.b   l_037_003E2                     ; 00382
         move.w  #$a3,d1                         ; 00384
         add.w   (ViewY).l,d1                    ; 00388
-        move.b  $63(a0),d5                      ; 0038E
+        move.b  obj_Weapon(a0),d5               ; 0038E
         andi.b  #$f0,d5                         ; 00392
         cmpi.b  #$10,d5                         ; 00396
         bne.b   l_037_003B4                     ; 0039A
@@ -360,7 +360,7 @@ l_037_003D2:
         movem.l (a7)+,d5/a0                     ; 003DE
 l_037_003E2:
         lea.l   DrawStoresData1(pc),a1          ; 003E2
-        move.b  $5f(a0),d4                      ; 003E6
+        move.b  obj_Missiles(a0),d4             ; 003E6
         lsr.b   #$4,d4                          ; 003EA
         cmpi.b  #$20,d5                         ; 003EC
         beq.b   l_037_003F8                     ; 003F0
@@ -371,7 +371,7 @@ l_037_003F8:
 l_037_003FC:
         bsr.w   DrawStoresMarks                 ; 003FC
         lea.l   DrawStoresData2(pc),a1          ; 00400
-        move.b  $5f(a0),d4                      ; 00404
+        move.b  obj_Missiles(a0),d4             ; 00404
         andi.b  #$f,d4                          ; 00408
         cmpi.b  #$30,d5                         ; 0040C
         beq.b   l_037_00418                     ; 00410
@@ -449,7 +449,7 @@ DrawPanelIndicator:
         move.l  #$fffff,(FillPattern).l         ; 004CE
         lea.l   (ObjectTable).l,a2              ; 004D8
         adda.w  (ViewObject).l,a2               ; 004DE
-        btst    #$3,$3(a2)                      ; 004E4
+        btst    #$3,obj_Flags2+1(a2)            ; 004E4
         bne.b   l_037_004F6                     ; 004EA
         move.w  #$0,(DrawColour).l              ; 004EC
         bra.b   l_037_004FE                     ; 004F4
@@ -599,7 +599,7 @@ l_037_006BE:
         subq.b  #$1,(PanelLampRedraw).l         ; 006C6
         lea.l   (ObjectTable).l,a1              ; 006CC
         adda.w  (ViewObject).l,a1               ; 006D2
-        move.b  $7c(a1),d0                      ; 006D8
+        move.b  obj_Ejection(a1),d0             ; 006D8
         lea.l   DrawAfterburnerLampData1(pc),a1 ; 006DC
         bclr    #$7,d0                          ; 006E0
         asr.b   #$5,d0                          ; 006E4
@@ -649,7 +649,7 @@ l_037_006BE:
         move.w  d6,BLTSIZE(a0)                  ; 00780
         lea.l   (ObjectTable).l,a1              ; 00784
         adda.w  (ViewObject).l,a1               ; 0078A
-        btst    #$7,$2(a1)                      ; 00790
+        btst    #$7,obj_Flags2(a1)              ; 00790
         beq.b   l_037_007E8                     ; 00796
         move.w  #$e,d0                          ; 00798
         move.w  #$c0,d1                         ; 0079C
@@ -855,7 +855,7 @@ l_037_009E8:
 CompassPosition:
         lea.l   (ObjectTable).l,a0              ; 009EA
         move.w  (ViewObject).l,d1               ; 009F0
-        move.w  $68(a0,d1.w),d0                 ; 009F6
+        move.w  obj_Heading(a0,d1.w),d0         ; 009F6
         ext.l   d0                              ; 009FA
         asr.l   #$3,d0                          ; 009FC
         divu.w  #$a,d0                          ; 009FE

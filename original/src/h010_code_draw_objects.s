@@ -272,13 +272,13 @@ l_010_002AE:
         beq.w   l_010_0072C                     ; 002C4
         lea.l   (ObjectTable).l,a0              ; 002C8
         adda.w  (CurrentObjectOffset).l,a0      ; 002CE
-        move.w  $0(a0),d1                       ; 002D4
+        move.w  obj_Flags(a0),d1                ; 002D4
         btst    #$6,d1                          ; 002D8
         beq.w   l_010_00168                     ; 002DC
         move.b  DrawSceneryPlain_ShapeFlag(a6),$7b(a0) ; 002E0
         andi.w  #$400,d1                        ; 002E6
         beq.b   l_010_00340                     ; 002EA
-        move.w  $4c(a0),d1                      ; 002EC
+        move.w  obj_Timer(a0),d1                ; 002EC
         cmpi.w  #$e,d1                          ; 002F0
         bne.b   l_010_00338                     ; 002F4
         move.w  DrawSceneryPlain_Range(a6),d0   ; 002F6
@@ -1114,10 +1114,10 @@ l_010_00B0C:
         beq.b   l_010_00B04                     ; 00B1E
         lea.l   (ObjectTable).l,a0              ; 00B20
         adda.w  (CurrentObjectOffset).l,a0      ; 00B26
-        move.w  $0(a0),d0                       ; 00B2C
+        move.w  obj_Flags(a0),d0                ; 00B2C
         andi.w  #$400,d0                        ; 00B30
         beq.b   l_010_00BA0                     ; 00B34
-        move.w  $4c(a0),d1                      ; 00B36
+        move.w  obj_Timer(a0),d1                ; 00B36
         blt.b   l_010_00BA0                     ; 00B3A
         cmpi.w  #$10,d1                         ; 00B3C
         bge.b   l_010_00BA0                     ; 00B40
@@ -1126,27 +1126,27 @@ l_010_00B42:
         sub.w   d1,d3                           ; 00B44
         cmpi.w  #$f,d3                          ; 00B46
         bgt.b   l_010_00BA0                     ; 00B4A
-        move.w  $c(a0),d0                       ; 00B4C
-        move.l  $10(a0),d1                      ; 00B50
-        move.w  $e(a0),d2                       ; 00B54
+        move.w  obj_X8(a0),d0                   ; 00B4C
+        move.l  obj_Y8(a0),d1                   ; 00B50
+        move.w  obj_Z8(a0),d2                   ; 00B54
         ext.l   d0                              ; 00B58
-        move.w  $6(a0),d4                       ; 00B5A
+        move.w  obj_CellX(a0),d4                ; 00B5A
         sub.w   (ViewCellX).l,d4                ; 00B5E
         ext.l   d4                              ; 00B64
         moveq   #$e,d5                          ; 00B66
         asl.l   d5,d4                           ; 00B68
         add.l   d4,d0                           ; 00B6A
         ext.l   d2                              ; 00B6C
-        move.w  $8(a0),d4                       ; 00B6E
+        move.w  obj_CellZ(a0),d4                ; 00B6E
         sub.w   (ViewCellZ).l,d4                ; 00B72
         ext.l   d4                              ; 00B78
         asl.l   d5,d4                           ; 00B7A
         add.l   d4,d2                           ; 00B7C
         moveq   #$3,d4                          ; 00B7E
-        cmpi.b  #$15,$62(a0)                    ; 00B80
+        cmpi.b  #$15,obj_Type(a0)               ; 00B80
         beq.b   l_010_00B94                     ; 00B86
         moveq   #$1,d4                          ; 00B88
-        btst    #$1,$4(a0)                      ; 00B8A
+        btst    #$1,obj_Bits(a0)                ; 00B8A
         beq.b   l_010_00B94                     ; 00B90
         moveq   #$2,d4                          ; 00B92
 l_010_00B94:

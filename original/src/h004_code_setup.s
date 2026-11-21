@@ -381,18 +381,18 @@ l_004_0046C:
         move.b  d4,(Player_7D).l                ; 00478
         clr.b   (FlightFlag170).l               ; 0047E
         lea.l   (ObjectTable).l,a1              ; 00484
-        andi.w  #$f9ff,$0(a1)                   ; 0048A
-        andi.w  #$deff,$2(a1)                   ; 00490
-        andi.w  #$7ff7,$2(a1)                   ; 00496
-        bclr    #$4,$2(a1)                      ; 0049C
-        ori.w   #$80,$2(a1)                     ; 004A2
-        andi.b  #$3f,$4(a1)                     ; 004A8
-        bclr    #$1,$4(a1)                      ; 004AE
-        andi.b  #$f7,$4(a1)                     ; 004B4
-        bclr    #$0,$20(a1)                     ; 004BA
-        bclr    #$2,$20(a1)                     ; 004C0
-        bclr    #$1,$20(a1)                     ; 004C6
-        move.b  #$0,$7c(a1)                     ; 004CC
+        andi.w  #$f9ff,obj_Flags(a1)            ; 0048A
+        andi.w  #$deff,obj_Flags2(a1)           ; 00490
+        andi.w  #$7ff7,obj_Flags2(a1)           ; 00496
+        bclr    #$4,obj_Flags2(a1)              ; 0049C
+        ori.w   #$80,obj_Flags2(a1)             ; 004A2
+        andi.b  #$3f,obj_Bits(a1)               ; 004A8
+        bclr    #$1,obj_Bits(a1)                ; 004AE
+        andi.b  #$f7,obj_Bits(a1)               ; 004B4
+        bclr    #$0,obj_Status(a1)              ; 004BA
+        bclr    #$2,obj_Status(a1)              ; 004C0
+        bclr    #$1,obj_Status(a1)              ; 004C6
+        move.b  #$0,obj_Ejection(a1)            ; 004CC
         clr.b   (ModelVariant).l                ; 004D2
         clr.b   (GearState).l                   ; 004D8
         clr.b   (EjectKeyFlag).l                ; 004DE
@@ -498,31 +498,31 @@ l_004_0062C:
         bclr    #$1f,d0                         ; 0062C
         move.l  d0,d1                           ; 00630
         addi.l  #$7,d0                          ; 00632
-        move.l  d0,$10(a2)                      ; 00638
+        move.l  d0,obj_Y8(a2)                   ; 00638
         asl.l   #$8,d1                          ; 0063C
         addi.l  #$708,d1                        ; 0063E
-        move.l  d1,$18(a2)                      ; 00644
-        ori.b   #$c0,$4(a2)                     ; 00648
-        ori.b   #$8,$4(a2)                      ; 0064E
+        move.l  d1,obj_Y(a2)                    ; 00644
+        ori.b   #$c0,obj_Bits(a2)               ; 00648
+        ori.b   #$8,obj_Bits(a2)                ; 0064E
         move.w  #$a4,d0                         ; 00654
-        clr.w   $14(a2,d0.w)                    ; 00658
-        move.l  $66(a1),$66(a2)                 ; 0065C
-        move.w  $6a(a1),$6a(a2)                 ; 00662
+        clr.w   obj_X(a2,d0.w)                  ; 00658
+        move.l  $66(a1),obj_Pitch(a2)           ; 0065C
+        move.w  $6a(a1),obj_Roll(a2)            ; 00662
         move.w  #$b,d3                          ; 00668
         moveq   #$0,d4                          ; 0066C
         move.w  #$68,d5                         ; 0066E
         bsr.w   TurnByObject                    ; 00672
         lea.l   (ObjectTable).l,a1              ; 00676
-        move.l  d0,$14(a1)                      ; 0067C
-        move.l  d2,$1c(a1)                      ; 00680
+        move.l  d0,obj_X(a1)                    ; 0067C
+        move.l  d2,obj_Z(a1)                    ; 00680
         move.l  d0,d3                           ; 00684
         move.l  d2,d4                           ; 00686
         andi.l  #$3fffff,d3                     ; 00688
         andi.l  #$3fffff,d4                     ; 0068E
         asr.l   #$8,d3                          ; 00694
         asr.l   #$8,d4                          ; 00696
-        move.w  d3,$c(a1)                       ; 00698
-        move.w  d4,$e(a1)                       ; 0069C
+        move.w  d3,obj_X8(a1)                   ; 00698
+        move.w  d4,obj_Z8(a1)                   ; 0069C
         move.l  d2,d1                           ; 006A0
         andi.l  #$1fffffff,d0                   ; 006A2
         andi.l  #$1fffffff,d1                   ; 006A8
@@ -541,11 +541,11 @@ l_004_0062C:
         add.b   d1,d1                           ; 006CA
         add.b   d1,d1                           ; 006CC
         add.b   d0,d1                           ; 006CE
-        move.b  d1,$a(a1)                       ; 006D0
+        move.b  d1,obj_SubCell(a1)              ; 006D0
         asr.w   #$2,d2                          ; 006D4
         asr.w   #$2,d3                          ; 006D6
-        move.w  d2,$6(a1)                       ; 006D8
-        move.w  d3,$8(a1)                       ; 006DC
+        move.w  d2,obj_CellX(a1)                ; 006D8
+        move.w  d3,obj_CellZ(a1)                ; 006DC
         andi.w  #$3,d2                          ; 006E0
         andi.w  #$3,d3                          ; 006E4
         subq.b  #$3,d2                          ; 006E8
@@ -556,7 +556,7 @@ l_004_0062C:
         add.b   d3,d3                           ; 006F2
         add.b   d2,d3                           ; 006F4
         move.b  d3,$b(a1)                       ; 006F6
-        movem.w $66(a1),d4-d6                   ; 006FA
+        movem.w obj_Pitch(a1),d4-d6             ; 006FA
 l_004_00700:
         jsr     (SetAttitude).l                 ; 00700
         rts                                     ; 00706
@@ -567,19 +567,19 @@ l_004_00700:
 ;-------------------------------------------------------------------------------
 ResetPlayerMotion:
         lea.l   (ObjectTable).l,a1              ; 00708
-        clr.w   $6c(a1)                         ; 0070E
-        clr.w   $6e(a1)                         ; 00712
-        clr.w   $78(a1)                         ; 00716
-        clr.l   $3e(a1)                         ; 0071A
-        clr.l   $42(a1)                         ; 0071E
-        clr.l   $46(a1)                         ; 00722
-        clr.l   $56(a1)                         ; 00726
-        clr.w   $5a(a1)                         ; 0072A
-        clr.l   $50(a1)                         ; 0072E
-        clr.w   $54(a1)                         ; 00732
-        clr.b   $65(a1)                         ; 00736
-        move.b  #$9,$2b(a1)                     ; 0073A
-        andi.w  #$7fff,$0(a1)                   ; 00740
+        clr.w   obj_Speed(a1)                   ; 0070E
+        clr.w   obj_SpeedFlown(a1)              ; 00712
+        clr.w   obj_ClimbSpeed(a1)              ; 00716
+        clr.l   obj_VelX(a1)                    ; 0071A
+        clr.l   obj_VelY(a1)                    ; 0071E
+        clr.l   obj_VelZ(a1)                    ; 00722
+        clr.l   obj_PitchRate(a1)               ; 00726
+        clr.w   obj_RollRate(a1)                ; 0072A
+        clr.l   obj_AimRate1(a1)                ; 0072E
+        clr.w   obj_AimRate3(a1)                ; 00732
+        clr.b   obj_Controls(a1)                ; 00736
+        move.b  #$9,obj_Throttle(a1)            ; 0073A
+        andi.w  #$7fff,obj_Flags(a1)            ; 00740
         clr.l   (WarningFlags).l                ; 00746
         clr.l   (SoundRequests).l               ; 0074C
         clr.w   (CurrentWarning).l              ; 00752
@@ -594,11 +594,11 @@ ResetPlayerMotion:
 ResetPlayerFlags:
         lea.l   (ObjectTable).l,a0              ; 00768
         bclr    #$0,$21(a0)                     ; 0076E
-        move.b  #$d,$63(a0)                     ; 00774
+        move.b  #$d,obj_Weapon(a0)              ; 00774
         jsr     (ResetPlayerAircraft).l         ; 0077A
-        move.w  #$148,$0(a0)                    ; 00780
-        ori.w   #$1080,$0(a0)                   ; 00786
-        move.w  #$1400,$7e(a0)                  ; 0078C
+        move.w  #$148,obj_Flags(a0)             ; 00780
+        ori.w   #$1080,obj_Flags(a0)            ; 00786
+        move.w  #$1400,obj_PilotTimer(a0)       ; 0078C
         clr.b   (FlashCount).l                  ; 00792
         clr.b   (NewAircraftReady).l            ; 00798
         clr.b   (PlayerFlag283).l               ; 0079E

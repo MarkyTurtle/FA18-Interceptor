@@ -1699,7 +1699,7 @@ l_000_012A4:
         asl.l   d1,d0                           ; 012AE
         movea.l d0,a0                           ; 012B0
         adda.l  #ObjectTable,a0                 ; 012B2
-        move.b  $62(a0),d0                      ; 012B8
+        move.b  obj_Type(a0),d0                 ; 012B8
         cmpi.b  #$30,d0                         ; 012BC
         bne.b   l_000_012CC                     ; 012C0
         tst.b   (PanelBlitCount).l              ; 012C2
@@ -5366,7 +5366,7 @@ l_000_04206:
         asl.l   d1,d0                           ; 04210
         movea.l d0,a0                           ; 04212
         adda.l  #ObjectTable,a0                 ; 04214
-        move.b  $62(a0),d0                      ; 0421A
+        move.b  obj_Type(a0),d0                 ; 0421A
         andi.b  #$f0,d0                         ; 0421E
         move.w  (GunFlags).l,d1                 ; 04222
         move.b  d0,SwitchView_Class(a6)         ; 04228

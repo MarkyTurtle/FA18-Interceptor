@@ -36,7 +36,7 @@ l_023_0002E:
         lea.l   (ObjectTable).l,a1              ; 00036
         adda.w  d1,a1                           ; 0003C
         lea.l   (CameraCellOffset).l,a2         ; 0003E
-        movem.l $14(a1),d2-d4                   ; 00044
+        movem.l obj_X(a1),d2-d4                 ; 00044
         sub.l   $c(a2),d2                       ; 0004A
         bge.b   l_023_00052                     ; 0004E
         neg.l   d2                              ; 00050
@@ -115,9 +115,9 @@ BulletHitTest:
         movem.w d0-d2,-$10(a6)                  ; 0010C
         move.w  #$0,(BulletHitObject).l         ; 00112
         lea.l   (ObjectTable).l,a0              ; 0011A
-        move.w  $c(a0),-$1a(a6)                 ; 00120
-        move.l  $10(a0),-$16(a6)                ; 00126
-        move.w  $e(a0),-$14(a6)                 ; 0012C
+        move.w  obj_X8(a0),-$1a(a6)             ; 00120
+        move.l  obj_Y8(a0),-$16(a6)             ; 00126
+        move.w  obj_Z8(a0),-$14(a6)             ; 0012C
         move.b  (DistanceCount2).l,d0           ; 00132
         ext.w   d0                              ; 00138
         move.w  d0,-$6(a6)                      ; 0013A
@@ -144,10 +144,10 @@ l_023_0014A:
         asl.w   #$8,d0                          ; 00188
         add.w   d0,d0                           ; 0018A
         lea.l   (ObjectTable).l,a0              ; 0018C
-        move.w  $6(a0,d0.w),d1                  ; 00192
+        move.w  obj_CellX(a0,d0.w),d1           ; 00192
         cmp.w   blt_CellX(a3),d1                ; 00196
         bne.w   l_023_002E8                     ; 0019A
-        move.w  $8(a0,d0.w),d1                  ; 0019E
+        move.w  obj_CellZ(a0,d0.w),d1           ; 0019E
         cmp.w   blt_CellZ(a3),d1                ; 001A2
         bne.w   l_023_002E8                     ; 001A6
         lea.l   (ObjectTable).l,a1              ; 001AA
@@ -155,9 +155,9 @@ l_023_0014A:
         andi.w  #$40,d1                         ; 001B4
         beq.w   l_023_002E8                     ; 001B8
         move.w  d2,(BulletHitObject).l          ; 001BC
-        move.w  $c(a0,d0.w),d2                  ; 001C2
-        move.l  $10(a0,d0.w),d3                 ; 001C6
-        move.w  $e(a0,d0.w),d4                  ; 001CA
+        move.w  obj_X8(a0,d0.w),d2              ; 001C2
+        move.l  obj_Y8(a0,d0.w),d3              ; 001C6
+        move.w  obj_Z8(a0,d0.w),d4              ; 001CA
         movea.l $1a(a5),a0                      ; 001CE
         movea.l $4(a0),a0                       ; 001D2
         move.w  (a0),d7                         ; 001D6
@@ -507,19 +507,19 @@ l_023_00530:
         addq.b  #$1,d7                          ; 00566
         cmpi.b  #$3,d7                          ; 00568
         blt.b   l_023_005AC                     ; 0056C
-        ori.w   #$200,$0(a1)                    ; 0056E
-        move.b  $62(a1),d0                      ; 00574
+        ori.w   #$200,obj_Flags(a1)             ; 0056E
+        move.b  obj_Type(a1),d0                 ; 00574
         cmpi.b  #$15,d0                         ; 00578
         beq.w   l_023_00480                     ; 0057C
         andi.b  #$f0,d0                         ; 00580
         cmpi.b  #$0,d0                          ; 00584
         beq.w   l_023_00480                     ; 00588
-        bset    #$1,$20(a1)                     ; 0058C
+        bset    #$1,obj_Status(a1)              ; 0058C
         swap    d7                              ; 00592
         move.w  d7,(FlameObject).l              ; 00594
         swap    d7                              ; 0059A
-        bset    #$4,$2(a1)                      ; 0059C
-        move.b  #$1,$5(a1)                      ; 005A2
+        bset    #$4,obj_Flags2(a1)              ; 0059C
+        move.b  #$1,obj_State(a1)               ; 005A2
         bra.w   l_023_00480                     ; 005A8
 l_023_005AC:
         andi.b  #$f0,d0                         ; 005AC
@@ -669,7 +669,7 @@ BulletTestCell:
         asl.w   #$8,d0                          ; 00700
         add.w   d0,d0                           ; 00702
         adda.w  d0,a3                           ; 00704
-        cmpi.b  #$20,$62(a3)                    ; 00706
+        cmpi.b  #$20,obj_Type(a3)               ; 00706
         bne.b   l_023_00716                     ; 0070C
         lea.l   (Carrier_00000).l,a4            ; 0070E
         bra.b   l_023_0071C                     ; 00714
@@ -679,7 +679,7 @@ l_023_0071C:
         movea.l (a4)+,a5                        ; 0071C
         move.w  $2(a5),d7                       ; 0071E
         addi.w  #$a4,d7                         ; 00722
-        move.b  $7d(a3),d2                      ; 00726
+        move.b  obj_Scale(a3),d2                ; 00726
         andi.w  #$f,d2                          ; 0072A
         move.w  d2,-$5a(a6)                     ; 0072E
         move.w  $2(a3,d7.w),d4                  ; 00732
@@ -693,7 +693,7 @@ l_023_0073C:
         beq.b   l_023_0073C                     ; 00746
         bra.w   l_023_0079A                     ; 00748
 l_023_0074C:
-        cmpi.b  #$20,$62(a3)                    ; 0074C
+        cmpi.b  #$20,obj_Type(a3)               ; 0074C
         bne.b   l_023_0075C                     ; 00752
         lea.l   (Carrier_0007C).l,a4            ; 00754
         bra.b   l_023_00762                     ; 0075A
@@ -748,7 +748,7 @@ BulletTestCell2:
         lea.l   (Mig_00744).l,a3                ; 007CE
         move.b  $7b(a0),d0                      ; 007D4
         blt.w   l_023_008B8                     ; 007D8
-        move.b  $7d(a0),d2                      ; 007DC
+        move.b  obj_Scale(a0),d2                ; 007DC
         andi.w  #$f,d2                          ; 007E0
         lsr.b   #$4,d0                          ; 007E4
         andi.w  #$f,d0                          ; 007E6
@@ -814,9 +814,9 @@ l_023_00882:
         asr.w   d0,d3                           ; 0088C
         asr.w   d0,d4                           ; 0088E
         ext.l   d3                              ; 00890
-        add.w   $c(a0),d2                       ; 00892
-        add.l   $10(a0),d3                      ; 00896
-        add.w   $e(a0),d4                       ; 0089A
+        add.w   obj_X8(a0),d2                   ; 00892
+        add.l   obj_Y8(a0),d3                   ; 00896
+        add.w   obj_Z8(a0),d4                   ; 0089A
         sub.w   a2,d2                           ; 0089E
         sub.l   a1,d3                           ; 008A0
         sub.w   a4,d4                           ; 008A2

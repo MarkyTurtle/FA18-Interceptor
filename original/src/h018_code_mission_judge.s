@@ -111,14 +111,14 @@ JudgeF2:
         bne.w   l_018_005F6                     ; 000FA
         lea.l   (Object4).l,a1                  ; 000FE
         move.w  #$4,(CurrentObject).l           ; 00104
-        move.w  $6(a1),d0                       ; 0010C
-        or.w    $c(a1),d0                       ; 00110
+        move.w  obj_CellX(a1),d0                ; 0010C
+        or.w    obj_X8(a1),d0                   ; 00110
         beq.b   l_018_000F2                     ; 00114
-        btst    #$6,$1(a1)                      ; 00116
+        btst    #$6,obj_Flags+1(a1)             ; 00116
         beq.b   l_018_00142                     ; 0011C
-        btst    #$7,$3(a1)                      ; 0011E
+        btst    #$7,obj_Flags2+1(a1)            ; 0011E
         beq.b   l_018_000F2                     ; 00124
-        cmpi.w  #$320,$6c(a1)                   ; 00126
+        cmpi.w  #$320,obj_Speed(a1)             ; 00126
         bgt.b   l_018_000F2                     ; 0012C
         btst    #$6,(Object8_01).l              ; 0012E
         bne.b   l_018_000F2                     ; 00136
@@ -138,7 +138,7 @@ l_018_00152:
         move.b  (ViewChoice).l,(JudgeSavedView).l ; 00172
         bset    #$7,(JudgeSavedView).l          ; 0017C
         move.b  (OutsideView).l,(SavedOutsideView2).l ; 00184
-        btst    #$6,$1(a1)                      ; 0018E
+        btst    #$6,obj_Flags+1(a1)             ; 0018E
         beq.w   l_018_00204                     ; 00194
         move.b  #$7,(ViewChoice).l              ; 00198
         move.b  #$1,(NewView).l                 ; 001A0
@@ -146,12 +146,12 @@ l_018_00152:
         clr.b   (MapView).l                     ; 001B0
         tst.b   (OutsideView).l                 ; 001B6
         bne.b   l_018_00204                     ; 001BC
-        move.w  $68(a1),(ViewHeadingSaved).l    ; 001BE
+        move.w  obj_Heading(a1),(ViewHeadingSaved).l ; 001BE
         ori.w   #$2,(GunFlags).l                ; 001C6
         move.b  #$ff,(SavedOutsideView).l       ; 001CE
         bra.b   l_018_00204                     ; 001D6
 l_018_001D8:
-        btst    #$6,$1(a1)                      ; 001D8
+        btst    #$6,obj_Flags+1(a1)             ; 001D8
         beq.b   l_018_00206                     ; 001DE
         move.w  (CurrentObject).l,d1            ; 001E0
         jsr     (ViewFollow).l                  ; 001E6
@@ -165,7 +165,7 @@ l_018_00204:
 l_018_00206:
         cmpi.b  #$3,(QuitRequest).l             ; 00206
         beq.b   l_018_00204                     ; 0020E
-        btst    #$7,$20(a1)                     ; 00210
+        btst    #$7,obj_Status(a1)              ; 00210
         beq.b   l_018_00222                     ; 00216
         move.b  #$fd,(MissionResult).l          ; 00218
         bra.b   l_018_0022A                     ; 00220
@@ -188,21 +188,21 @@ JudgeF3:
         bne.w   l_018_005F6                     ; 00238
         lea.l   (Object4).l,a2                  ; 0023C
         lea.l   (Object6).l,a3                  ; 00242
-        btst    #$6,$1(a2)                      ; 00248
+        btst    #$6,obj_Flags+1(a2)             ; 00248
         bne.b   l_018_00268                     ; 0024E
-        btst    #$6,$1(a3)                      ; 00250
+        btst    #$6,obj_Flags+1(a3)             ; 00250
         beq.w   l_018_00306                     ; 00256
-        btst    #$3,$1(a3)                      ; 0025A
+        btst    #$3,obj_Flags+1(a3)             ; 0025A
         beq.w   l_018_002FE                     ; 00260
         exg.l   a2,a3                           ; 00264
         bra.b   l_018_00272                     ; 00266
 l_018_00268:
-        btst    #$3,$1(a2)                      ; 00268
+        btst    #$3,obj_Flags+1(a2)             ; 00268
         beq.w   l_018_002FE                     ; 0026E
 l_018_00272:
-        cmpi.w  #$70,$6(a2)                     ; 00272
+        cmpi.w  #$70,obj_CellX(a2)              ; 00272
         bge.w   l_018_00344                     ; 00278
-        movem.l $14(a2),d0-d2                   ; 0027C
+        movem.l obj_X(a2),d0-d2                 ; 0027C
         movem.l (PlayerX).l,d3-d5               ; 00282
         cmpi.b  #$3,(Difficulty).l              ; 0028A
         bge.b   l_018_002AE                     ; 00292
@@ -306,16 +306,16 @@ JudgeF4:
         beq.b   l_018_0038A                     ; 0039C
         lea.l   (ObjectTable).l,a1              ; 0039E
         adda.w  d0,a1                           ; 003A4
-        btst    #$7,$0(a1)                      ; 003A6
+        btst    #$7,obj_Flags(a1)               ; 003A6
         beq.b   l_018_0038A                     ; 003AC
-        tst.w   $4c(a1)                         ; 003AE
+        tst.w   obj_Timer(a1)                   ; 003AE
         bgt.b   l_018_0038A                     ; 003B2
         movem.l (Object11_14).l,d0-d2           ; 003B4
-        sub.l   $14(a1),d0                      ; 003BC
+        sub.l   obj_X(a1),d0                    ; 003BC
         bge.b   l_018_003C4                     ; 003C0
         neg.l   d0                              ; 003C2
 l_018_003C4:
-        sub.l   $1c(a1),d2                      ; 003C4
+        sub.l   obj_Z(a1),d2                    ; 003C4
         bge.b   l_018_003CC                     ; 003C8
         neg.l   d2                              ; 003CA
 l_018_003CC:
@@ -348,12 +348,12 @@ JudgeF5:
         bne.w   l_018_005F6                     ; 00416
         lea.l   (Object4).l,a1                  ; 0041A
         move.w  #$4,(CurrentObject).l           ; 00420
-        move.w  $6(a1),d0                       ; 00428
-        or.w    $c(a1),d0                       ; 0042C
+        move.w  obj_CellX(a1),d0                ; 00428
+        or.w    obj_X8(a1),d0                   ; 0042C
         beq.b   l_018_0040E                     ; 00430
-        btst    #$6,$1(a1)                      ; 00432
+        btst    #$6,obj_Flags+1(a1)             ; 00432
         beq.b   l_018_00442                     ; 00438
-        btst    #$7,$1(a1)                      ; 0043A
+        btst    #$7,obj_Flags+1(a1)             ; 0043A
         bne.b   l_018_0040E                     ; 00440
 l_018_00442:
         tst.b   (WorldFrozen).l                 ; 00442
@@ -369,7 +369,7 @@ l_018_00452:
         move.b  (ViewChoice).l,(JudgeSavedView).l ; 00472
         bset    #$7,(JudgeSavedView).l          ; 0047C
         move.b  (OutsideView).l,(SavedOutsideView2).l ; 00484
-        btst    #$6,$1(a1)                      ; 0048E
+        btst    #$6,obj_Flags+1(a1)             ; 0048E
         beq.w   l_018_0051C                     ; 00494
         move.b  #$7,(ViewChoice).l              ; 00498
         move.b  #$1,(NewView).l                 ; 004A0
@@ -377,12 +377,12 @@ l_018_00452:
         clr.b   (MapView).l                     ; 004B0
         tst.b   (OutsideView).l                 ; 004B6
         bne.b   l_018_0051C                     ; 004BC
-        move.w  $68(a1),(ViewHeadingSaved).l    ; 004BE
+        move.w  obj_Heading(a1),(ViewHeadingSaved).l ; 004BE
         ori.w   #$2,(GunFlags).l                ; 004C6
         move.b  #$3,(SavedOutsideView).l        ; 004CE
         bra.b   l_018_0051C                     ; 004D6
 l_018_004D8:
-        btst    #$1,$20(a1)                     ; 004D8
+        btst    #$1,obj_Status(a1)              ; 004D8
         bne.b   l_018_00504                     ; 004DE
         move.w  (CurrentObject).l,d1            ; 004E0
         jsr     (ViewFollow).l                  ; 004E6
@@ -410,13 +410,13 @@ JudgeQualification:
         tst.b   (MissionResult).l               ; 00520
         bne.b   l_018_0051E                     ; 00526
         lea.l   (ObjectTable).l,a1              ; 00528
-        btst    #$6,$1(a1)                      ; 0052E
+        btst    #$6,obj_Flags+1(a1)             ; 0052E
         beq.b   l_018_0051E                     ; 00534
-        move.w  $2(a1),d0                       ; 00536
+        move.w  obj_Flags2(a1),d0               ; 00536
         andi.w  #$c080,d0                       ; 0053A
         cmpi.w  #$c080,d0                       ; 0053E
         bne.b   l_018_0051E                     ; 00542
-        tst.w   $6e(a1)                         ; 00544
+        tst.w   obj_SpeedFlown(a1)              ; 00544
         bne.b   l_018_0051E                     ; 00548
         cmpi.b  #$3,(QuitRequest).l             ; 0054A
         beq.b   l_018_0051E                     ; 00552
@@ -434,7 +434,7 @@ JudgePractice:
         tst.b   (MissionResult).l               ; 00564
         bne.b   l_018_00562                     ; 0056A
         lea.l   (Object4).l,a1                  ; 0056C
-        btst    #$6,$1(a1)                      ; 00572
+        btst    #$6,obj_Flags+1(a1)             ; 00572
         bne.b   l_018_00562                     ; 00578
         cmpi.b  #$3,(QuitRequest).l             ; 0057A
         beq.b   l_018_00562                     ; 00582
@@ -495,19 +495,19 @@ PlayerParked:
         lea.l   (ObjectTable).l,a0              ; 0061A
         btst    #$0,$21(a0)                     ; 00620
         beq.b   l_018_00658                     ; 00626
-        btst    #$7,$3(a0)                      ; 00628
+        btst    #$7,obj_Flags2+1(a0)            ; 00628
         beq.b   l_018_00658                     ; 0062E
         cmpi.b  #$3,(StartPoint).l              ; 00630
         beq.b   l_018_00644                     ; 00638
-        btst    #$2,$4(a0)                      ; 0063A
+        btst    #$2,obj_Bits(a0)                ; 0063A
         beq.b   l_018_00658                     ; 00640
         bra.b   l_018_0064E                     ; 00642
 l_018_00644:
-        move.b  $4(a0),d0                       ; 00644
+        move.b  obj_Bits(a0),d0                 ; 00644
         andi.b  #$c0,d0                         ; 00648
         beq.b   l_018_00658                     ; 0064C
 l_018_0064E:
-        tst.w   $6e(a0)                         ; 0064E
+        tst.w   obj_SpeedFlown(a0)              ; 0064E
         bne.b   l_018_00658                     ; 00652
         moveq   #$0,d0                          ; 00654
         rts                                     ; 00656

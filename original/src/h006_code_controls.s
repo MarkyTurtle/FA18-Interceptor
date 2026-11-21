@@ -103,14 +103,14 @@ SetObjectBit7C:
 l_006_00106:
         lea.l   (ObjectTable).l,a1              ; 00106
         adda.w  (CurrentObjectOffset).l,a1      ; 0010C
-        btst    #$7,$3(a1)                      ; 00112
+        btst    #$7,obj_Flags2+1(a1)            ; 00112
         bne.b   l_006_0012C                     ; 00118
         tst.b   d7                              ; 0011A
         bne.b   l_006_00126                     ; 0011C
-        bclr    #$7,$7c(a1)                     ; 0011E
+        bclr    #$7,obj_Ejection(a1)            ; 0011E
         bra.b   l_006_0012C                     ; 00124
 l_006_00126:
-        bset    #$7,$7c(a1)                     ; 00126
+        bset    #$7,obj_Ejection(a1)            ; 00126
 l_006_0012C:
         movem.l (a7)+,d4/d7/a1                  ; 0012C
         rts                                     ; 00130

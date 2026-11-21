@@ -796,7 +796,7 @@ ShapeEjectionStep:
         lea.l   (ObjectTable).l,a3              ; 00868
         adda.w  (CurrentObjectOffset).l,a3      ; 0086E
         moveq   #$0,d0                          ; 00874
-        move.b  $7c(a3),d1                      ; 00876
+        move.b  obj_Ejection(a3),d1             ; 00876
         andi.b  #$f,d1                          ; 0087A
         cmpi.b  #$6,d1                          ; 0087E
         bgt.b   l_014_008B0                     ; 00882
@@ -831,7 +831,7 @@ ShapeSkipDuringEjection:
         lea.l   (ObjectTable).l,a3              ; 008B6
         adda.w  (CurrentObjectOffset).l,a3      ; 008BC
         moveq   #$0,d0                          ; 008C2
-        move.b  $7c(a3),d1                      ; 008C4
+        move.b  obj_Ejection(a3),d1             ; 008C4
         andi.b  #$f,d1                          ; 008C8
         cmpi.b  #$3,d1                          ; 008CC
         blt.b   l_014_008DA                     ; 008D0
@@ -850,7 +850,7 @@ ShapeSkipUnlessFlag3:
         move.w  (a2)+,d2                        ; 008E0
         lea.l   (ObjectTable).l,a3              ; 008E2
         adda.w  (CurrentObjectOffset).l,a3      ; 008E8
-        move.w  $2(a3),d1                       ; 008EE
+        move.w  obj_Flags2(a3),d1               ; 008EE
         andi.w  #$8,d1                          ; 008F2
         bne.b   l_014_008FA                     ; 008F6
         moveq   #$0,d2                          ; 008F8
@@ -892,7 +892,7 @@ ShapeSelectVariant:
 ShapeSkipBeforeEjection:
         lea.l   (ObjectTable).l,a3              ; 0092C
         adda.w  (CurrentObjectOffset).l,a3      ; 00932
-        move.b  $7c(a3),d1                      ; 00938
+        move.b  obj_Ejection(a3),d1             ; 00938
         bclr    #$7,d1                          ; 0093C
         asr.b   #$4,d1                          ; 00940
         cmpi.b  #$6,d1                          ; 00942
@@ -934,7 +934,7 @@ MakeVerticesBetween:
         movem.w d3-d7/a4,$18(a3)                ; 00994
         lea.l   (ObjectTable).l,a3              ; 0099A
         adda.w  (CurrentObjectOffset).l,a3      ; 009A0
-        move.b  $7c(a3),d1                      ; 009A6
+        move.b  obj_Ejection(a3),d1             ; 009A6
         bclr    #$7,d1                          ; 009AA
         asr.b   #$4,d1                          ; 009AE
         ext.w   d1                              ; 009B0

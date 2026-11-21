@@ -110,7 +110,7 @@ HUDAltitude:
         move.l  #$1869f,d0                      ; 00142
         bra.b   l_040_0015A                     ; 00148
 l_040_0014A:
-        move.l  $18(a0),d0                      ; 0014A
+        move.l  obj_Y(a0),d0                    ; 0014A
         asr.l   #$7,d0                          ; 0014E
         asr.l   #$3,d0                          ; 00150
         move.l  d0,d1                           ; 00152
@@ -118,7 +118,7 @@ l_040_0014A:
         add.l   d0,d0                           ; 00156
         add.l   d1,d0                           ; 00158
 l_040_0015A:
-        cmpi.b  #$10,$62(a0)                    ; 0015A
+        cmpi.b  #$10,obj_Type(a0)               ; 0015A
         beq.w   l_040_001C2                     ; 00160
         lea.l   (TextBuffer).l,a2               ; 00164
         lea.l   $6(a2),a0                       ; 0016A
@@ -274,13 +274,13 @@ HUDSpeed:
         lea.l   (ObjectTable).l,a0              ; 0035E
         adda.w  (ViewObject).l,a0               ; 00364
         moveq   #$0,d0                          ; 0036A
-        btst    #$7,$0(a0)                      ; 0036C
+        btst    #$7,obj_Flags(a0)               ; 0036C
         bne.b   l_040_0037C                     ; 00372
-        move.w  $6e(a0),d0                      ; 00374
+        move.w  obj_SpeedFlown(a0),d0           ; 00374
         bge.b   l_040_0037C                     ; 00378
         neg.w   d0                              ; 0037A
 l_040_0037C:
-        cmpi.b  #$10,$62(a0)                    ; 0037C
+        cmpi.b  #$10,obj_Type(a0)               ; 0037C
         beq.w   l_040_003EC                     ; 00382
         lea.l   (TextBuffer).l,a2               ; 00386
         lea.l   $4(a2),a0                       ; 0038C
@@ -435,7 +435,7 @@ HUDHeading:
 l_040_005A4:
         lea.l   (ObjectTable).l,a0              ; 005A4
         adda.w  (ViewObject).l,a0               ; 005AA
-        move.w  $68(a0),d0                      ; 005B0
+        move.w  obj_Heading(a0),d0              ; 005B0
         asr.w   #$3,d0                          ; 005B4
         ext.l   d0                              ; 005B6
         moveq   #$0,d2                          ; 005B8
@@ -638,7 +638,7 @@ DrawGunSight:
         bne.b   l_040_008DE                     ; 008E8
         lea.l   (ObjectTable).l,a1              ; 008EA
         adda.w  (ViewObject).l,a1               ; 008F0
-        move.b  $63(a1),d5                      ; 008F6
+        move.b  obj_Weapon(a1),d5               ; 008F6
         andi.b  #$f0,d5                         ; 008FA
         cmpi.b  #$10,d5                         ; 008FE
         beq.b   l_040_00934                     ; 00902
@@ -669,7 +669,7 @@ l_040_00946:
 l_040_0095C:
         cmpi.w  #$8,d1                          ; 0095C
         bgt.b   l_040_00994                     ; 00960
-        cmpi.w  #$900,$4a(a1)                   ; 00962
+        cmpi.w  #$900,obj_Range(a1)             ; 00962
         bgt.b   l_040_00994                     ; 00968
         tst.b   (ShootCue).l                    ; 0096A
         bne.b   l_040_0098C                     ; 00970
@@ -705,7 +705,7 @@ l_040_009C0:
         add.w   (ViewY).l,d1                    ; 009FC
         lea.l   (ObjectTable).l,a0              ; 00A02
         adda.w  (ViewObject).l,a0               ; 00A08
-        move.w  $4a(a0),d2                      ; 00A0E
+        move.w  obj_Range(a0),d2                ; 00A0E
         move.l  a0,-(a7)                        ; 00A12
         mulu.w  #$4c,d2                         ; 00A14
         divu.w  #$8ca0,d2                       ; 00A18
@@ -713,12 +713,12 @@ l_040_009C0:
         move.w  #$d,(DrawColour).l              ; 00A22
         bsr.w   DrawRangeArc                    ; 00A2A
         movea.l (a7)+,a0                        ; 00A2E
-        move.w  $4a(a0),d0                      ; 00A30
+        move.w  obj_Range(a0),d0                ; 00A30
         cmpi.w  #$7f00,d0                       ; 00A34
         bgt.b   l_040_00A6C                     ; 00A38
         tst.b   (WorldFrozen).l                 ; 00A3A
         bne.b   l_040_00A4A                     ; 00A40
-        bclr    #$0,$4(a0)                      ; 00A42
+        bclr    #$0,obj_Bits(a0)                ; 00A42
         bne.b   l_040_00A52                     ; 00A48
 l_040_00A4A:
         move.w  (Closure).l,d0                  ; 00A4A
@@ -747,9 +747,9 @@ ComputeGunPipper:
         lea.l   (ObjectTable).l,a1              ; 00A7A
         adda.w  (ViewObject).l,a1               ; 00A80
         movem.l (GunPointOld).l,d2-d4           ; 00A86
-        sub.l   $14(a1),d2                      ; 00A8E
-        sub.l   $18(a1),d3                      ; 00A92
-        sub.l   $1c(a1),d4                      ; 00A96
+        sub.l   obj_X(a1),d2                    ; 00A8E
+        sub.l   obj_Y(a1),d3                    ; 00A92
+        sub.l   obj_Z(a1),d4                    ; 00A96
         asr.l   #$8,d2                          ; 00A9A
         asr.l   #$8,d3                          ; 00A9C
         asr.l   #$8,d4                          ; 00A9E
@@ -804,9 +804,9 @@ ComputeGunPipper:
         asr.l   #$6,d0                          ; 00B20
         asr.l   #$6,d1                          ; 00B22
         asr.l   #$6,d2                          ; 00B24
-        add.l   $14(a1),d0                      ; 00B26
-        add.l   $18(a1),d1                      ; 00B2A
-        add.l   $1c(a1),d2                      ; 00B2E
+        add.l   obj_X(a1),d0                    ; 00B26
+        add.l   obj_Y(a1),d1                    ; 00B2A
+        add.l   obj_Z(a1),d2                    ; 00B2E
         movem.l (GunPointNow).l,d3-d5           ; 00B32
         movem.l d3-d5,(GunPointOld).l           ; 00B3A
         movem.l d0-d2,(GunPointNow).l           ; 00B42
@@ -839,7 +839,7 @@ DrawMissileSeeker:
         blt.b   ClearLockTone                   ; 00B76
         lea.l   (ObjectTable).l,a1              ; 00B78
         adda.w  (ViewObject).l,a1               ; 00B7E
-        move.b  $63(a1),d5                      ; 00B84
+        move.b  obj_Weapon(a1),d5               ; 00B84
         andi.b  #$f0,d5                         ; 00B88
         cmpi.b  #$10,d5                         ; 00B8C
         beq.b   ClearLockTone                   ; 00B90
@@ -877,7 +877,7 @@ l_040_00BDA:
         cmpi.b  #$20,d5                         ; 00C06
         bne.w   l_040_00CFA                     ; 00C0A
 l_040_00C0E:
-        cmp.w   $4a(a1),d7                      ; 00C0E
+        cmp.w   obj_Range(a1),d7                ; 00C0E
         ble.b   l_040_00C78                     ; 00C12
         tst.w   (LockedTarget).l                ; 00C14
         blt.b   l_040_00C78                     ; 00C1A
@@ -1189,7 +1189,7 @@ l_040_00F94:
 l_040_00FC6:
         lea.l   (ObjectTable).l,a0              ; 00FC6
         adda.w  (ViewObject).l,a0               ; 00FCC
-        move.b  $62(a0),d0                      ; 00FD2
+        move.b  obj_Type(a0),d0                 ; 00FD2
         cmpi.b  #$10,d0                         ; 00FD6
         beq.b   l_040_00FEA                     ; 00FDA
         cmpi.b  #$11,d0                         ; 00FDC
@@ -1254,7 +1254,7 @@ l_040_01086:
         moveq   #$0,d5                          ; 010A0
         lea.l   (ObjectTable).l,a1              ; 010A2
         adda.w  (ViewObject).l,a1               ; 010A8
-        move.b  $63(a1),d4                      ; 010AE
+        move.b  obj_Weapon(a1),d4               ; 010AE
         andi.b  #$f0,d4                         ; 010B2
         beq.b   l_040_010BC                     ; 010B6
         tst.w   d0                              ; 010B8

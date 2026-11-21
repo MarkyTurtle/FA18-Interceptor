@@ -303,7 +303,7 @@ l_028_00C7C:
 l_028_00C8C:
         lea.l   (ObjectTable).l,a4              ; 00C8C
         adda.w  (ViewObject).l,a4               ; 00C92
-        lea.l   $14(a4),a4                      ; 00C98
+        lea.l   obj_X(a4),a4                    ; 00C98
 l_028_00C9C:
         move.l  $4(a4),d2                       ; 00C9C
         addi.l  #$1000,d2                       ; 00CA0
@@ -751,7 +751,7 @@ l_028_01142:
         move.w  #$41,(DebugCheckpoint).l        ; 01142
         jsr     (Nop).l                         ; 0114A
 l_028_01150:
-        bclr    #$1,$4(a1)                      ; 01150
+        bclr    #$1,obj_Bits(a1)                ; 01150
         bra.w   l_028_0134A                     ; 01156
 
 ;-------------------------------------------------------------------------------
@@ -761,8 +761,8 @@ l_028_01150:
 WaterUnderObject:
         lea.l   (ObjectTable).l,a1              ; 0115A
         adda.w  (CurrentObjectOffset).l,a1      ; 01160
-        move.l  $14(a1),d6                      ; 01166
-        move.l  $1c(a1),d7                      ; 0116A
+        move.l  obj_X(a1),d6                    ; 01166
+        move.l  obj_Z(a1),d7                    ; 0116A
         move.l  d7,d1                           ; 0116E
         andi.l  #$ffffff,d1                     ; 01170
         swap    d6                              ; 01176
@@ -789,7 +789,7 @@ l_028_011A4:
         lea.l   (a3),a4                         ; 011A4
         suba.l  a5,a5                           ; 011A6
 l_028_011A8:
-        move.l  $14(a1),d0                      ; 011A8
+        move.l  obj_X(a1),d0                    ; 011A8
         andi.l  #$ffffff,d0                     ; 011AC
         movem.w (a3),d2-d5                      ; 011B2
         addq.w  #$4,a3                          ; 011B6
@@ -939,7 +939,7 @@ l_028_012C4:
         cmp.l   d1,d3                           ; 012C6
         blt.b   l_028_01330                     ; 012C8
         movem.l (a7)+,d2/d4-d6                  ; 012CA
-        move.l  $14(a1),d0                      ; 012CE
+        move.l  obj_X(a1),d0                    ; 012CE
         andi.l  #$ffffff,d0                     ; 012D2
         sub.l   d2,d0                           ; 012D8
         bge.b   l_028_012DE                     ; 012DA
@@ -947,7 +947,7 @@ l_028_012C4:
 l_028_012DE:
         cmpi.l  #$300,d0                        ; 012DE
         blt.w   l_028_01150                     ; 012E4
-        move.l  $14(a1),d0                      ; 012E8
+        move.l  obj_X(a1),d0                    ; 012E8
         andi.l  #$ffffff,d0                     ; 012EC
         sub.l   d5,d0                           ; 012F2
         bge.b   l_028_012F8                     ; 012F4
@@ -961,7 +961,7 @@ l_028_012F8:
         bge.b   l_028_0130C                     ; 01308
         exg.l   d2,d5                           ; 0130A
 l_028_0130C:
-        move.l  $14(a1),d3                      ; 0130C
+        move.l  obj_X(a1),d3                    ; 0130C
         andi.l  #$ffffff,d3                     ; 01310
         cmp.l   d2,d3                           ; 01316
         ble.b   l_028_01334                     ; 01318
@@ -987,7 +987,7 @@ l_028_01334:
         move.w  a5,d0                           ; 0133A
         btst    #$0,d0                          ; 0133C
         beq.w   l_028_01198                     ; 01340
-        bset    #$1,$4(a1)                      ; 01344
+        bset    #$1,obj_Bits(a1)                ; 01344
 l_028_0134A:
         lea.l   (StartPointPlaces).l,a0         ; 0134A
         lea.l   (ObjectDrawTable).l,a3          ; 01350
@@ -1022,14 +1022,14 @@ l_028_0135E:
         add.l   d4,d1                           ; 0139C
         add.l   d5,d2                           ; 0139E
         move.l  d1,d3                           ; 013A0
-        sub.l   $14(a1),d3                      ; 013A2
+        sub.l   obj_X(a1),d3                    ; 013A2
         bge.b   l_028_013AA                     ; 013A6
         neg.l   d3                              ; 013A8
 l_028_013AA:
         cmpi.l  #$180000,d3                     ; 013AA
         bgt.b   l_028_0135A                     ; 013B0
         move.l  d2,d3                           ; 013B2
-        sub.l   $1c(a1),d3                      ; 013B4
+        sub.l   obj_Z(a1),d3                    ; 013B4
         asr.l   #$8,d3                          ; 013B8
         bge.b   l_028_013BE                     ; 013BA
         neg.l   d3                              ; 013BC
@@ -1052,8 +1052,8 @@ l_028_013D2:
         asl.l   #$8,d4                          ; 013EC
         add.l   d1,d3                           ; 013EE
         add.l   d2,d4                           ; 013F0
-        sub.l   $14(a1),d3                      ; 013F2
-        sub.l   $1c(a1),d4                      ; 013F6
+        sub.l   obj_X(a1),d3                    ; 013F2
+        sub.l   obj_Z(a1),d4                    ; 013F6
         asr.l   #$8,d3                          ; 013FA
         asr.l   #$8,d4                          ; 013FC
         muls.w  d3,d6                           ; 013FE
@@ -1069,8 +1069,8 @@ l_028_013D2:
         asl.l   #$8,d4                          ; 01420
         add.l   d1,d3                           ; 01422
         add.l   d2,d4                           ; 01424
-        sub.l   $14(a1),d3                      ; 01426
-        sub.l   $1c(a1),d4                      ; 0142A
+        sub.l   obj_X(a1),d3                    ; 01426
+        sub.l   obj_Z(a1),d4                    ; 0142A
         asr.l   #$8,d3                          ; 0142E
         asr.l   #$8,d4                          ; 01430
         muls.w  d3,d6                           ; 01432
@@ -1086,8 +1086,8 @@ l_028_013D2:
         asl.l   #$8,d4                          ; 01452
         add.l   d1,d3                           ; 01454
         add.l   d2,d4                           ; 01456
-        sub.l   $14(a1),d3                      ; 01458
-        sub.l   $1c(a1),d4                      ; 0145C
+        sub.l   obj_X(a1),d3                    ; 01458
+        sub.l   obj_Z(a1),d4                    ; 0145C
         asr.l   #$8,d3                          ; 01460
         asr.l   #$8,d4                          ; 01462
         muls.w  d3,d6                           ; 01464
@@ -1103,8 +1103,8 @@ l_028_013D2:
         asl.l   #$8,d4                          ; 01482
         add.l   d1,d3                           ; 01484
         add.l   d2,d4                           ; 01486
-        sub.l   $14(a1),d3                      ; 01488
-        sub.l   $1c(a1),d4                      ; 0148C
+        sub.l   obj_X(a1),d3                    ; 01488
+        sub.l   obj_Z(a1),d4                    ; 0148C
         asr.l   #$8,d3                          ; 01490
         asr.l   #$8,d4                          ; 01492
         muls.w  d3,d6                           ; 01494
@@ -1115,10 +1115,10 @@ l_028_0149C:
         adda.w  #$10,a4                         ; 0149C
         bra.w   l_028_013D2                     ; 014A0
 l_028_014A4:
-        bset    #$2,$4(a1)                      ; 014A4
+        bset    #$2,obj_Bits(a1)                ; 014A4
         rts                                     ; 014AA
 l_028_014AC:
-        bclr    #$2,$4(a1)                      ; 014AC
+        bclr    #$2,obj_Bits(a1)                ; 014AC
         rts                                     ; 014B2
 h028_end:
 	ifnd	HUNKEXE				; the hunk's tables, as in the original file

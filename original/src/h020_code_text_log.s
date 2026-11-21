@@ -286,13 +286,13 @@ l_020_002CC:
         adda.w  #$a,a2                          ; 002D4
         lsl.w   #$8,d3                          ; 002D8
         add.w   d3,d3                           ; 002DA
-        move.b  $62(a1,d3.w),d1                 ; 002DC
+        move.b  obj_Type(a1,d3.w),d1            ; 002DC
         cmpi.b  #$15,d1                         ; 002E0
         beq.b   l_020_002CC                     ; 002E4
         andi.b  #$f0,d1                         ; 002E6
         cmpi.b  #$10,d1                         ; 002EA
         bne.b   l_020_002CC                     ; 002EE
-        btst    #$6,$1(a1,d3.w)                 ; 002F0
+        btst    #$6,obj_Flags+1(a1,d3.w)        ; 002F0
         beq.b   l_020_002CC                     ; 002F6
         adda.w  d3,a1                           ; 002F8
         moveq   #$0,d3                          ; 002FA

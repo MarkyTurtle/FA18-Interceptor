@@ -413,36 +413,36 @@ BulletHitsObject:
         adda.l  #ObjectTable,a0                 ; 07A3E
         move.l  a0,(CockpitObject).l            ; 07A44
         movea.l (CurrentBullet).l,a1            ; 07A4A
-        move.w  $6(a0),blt_CellX(a1)            ; 07A50
+        move.w  obj_CellX(a0),blt_CellX(a1)     ; 07A50
         movea.l (CockpitObject).l,a0            ; 07A56
         movea.l (CurrentBullet).l,a1            ; 07A5C
-        move.w  $8(a0),blt_CellZ(a1)            ; 07A62
+        move.w  obj_CellZ(a0),blt_CellZ(a1)     ; 07A62
         movea.l (CockpitObject).l,a0            ; 07A68
-        move.l  $14(a0),d0                      ; 07A6E
+        move.l  obj_X(a0),d0                    ; 07A6E
         andi.l  #$3fffff,d0                     ; 07A72
         movea.l (CurrentBullet).l,a0            ; 07A78
         move.l  d0,(a0)                         ; 07A7E
         movea.l (CockpitObject).l,a0            ; 07A80
         movea.l (CurrentBullet).l,a1            ; 07A86
-        move.l  $18(a0),blt_Y(a1)               ; 07A8C
+        move.l  obj_Y(a0),blt_Y(a1)             ; 07A8C
         movea.l (CockpitObject).l,a0            ; 07A92
-        move.l  $1c(a0),d0                      ; 07A98
+        move.l  obj_Z(a0),d0                    ; 07A98
         andi.l  #$3fffff,d0                     ; 07A9C
         movea.l (CurrentBullet).l,a0            ; 07AA2
         move.l  d0,blt_Z(a0)                    ; 07AA8
         move.w  #$14,blt_Timer(a0)              ; 07AAC
         movea.l (CockpitObject).l,a0            ; 07AB2
-        move.w  $96(a0),d0                      ; 07AB8
+        move.w  obj_Inverse+4(a0),d0            ; 07AB8
         ext.l   d0                              ; 07ABC
         asl.l   #$4,d0                          ; 07ABE
         move.l  d0,(HitPointX).l                ; 07AC0
         movea.l (CockpitObject).l,a0            ; 07AC6
-        move.w  $9c(a0),d0                      ; 07ACC
+        move.w  obj_Inverse+10(a0),d0           ; 07ACC
         ext.l   d0                              ; 07AD0
         asl.l   #$4,d0                          ; 07AD2
         move.l  d0,(HitPointY).l                ; 07AD4
         movea.l (CockpitObject).l,a0            ; 07ADA
-        move.w  $a2(a0),d0                      ; 07AE0
+        move.w  obj_Inverse+16(a0),d0           ; 07AE0
         ext.l   d0                              ; 07AE4
         asl.l   #$4,d0                          ; 07AE6
         move.l  d0,(HitPointZ).l                ; 07AE8
@@ -497,7 +497,7 @@ l_000_07B42:
         asl.l   d1,d0                           ; 07B4C
         movea.l d0,a0                           ; 07B4E
         adda.l  #ObjectTable,a0                 ; 07B50
-        move.w  $6c(a0),d0                      ; 07B56
+        move.w  obj_Speed(a0),d0                ; 07B56
         asr.w   #$6,d0                          ; 07B5A
         movea.l (CurrentBullet).l,a0            ; 07B5C
         move.w  blt_Flags(a0),d1                ; 07B62

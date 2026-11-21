@@ -116,7 +116,7 @@ missile selected it asks for a launch (`LaunchRequest`).
 Everything that moves is an **object**: `ObjectTable` holds 16 records of 512 bytes; record 0 is
 the player's F/A-18 (named `Player...` where the code reaches its fields directly), the others are
 aircraft, missiles and other objects. `SmallObjects` are 16 more of 32 bytes. An object's
-record holds (see the header above `ObjectTable` for all that is known):
+record holds (the `Object` structure above `ObjectTable` names all that is known, `obj_...`):
 
 * whether it exists (`+$01` bit 6), its type (`+$62`, below), its state (`+$05`) and a timer
   (`+$4C`);

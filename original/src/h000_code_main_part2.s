@@ -685,7 +685,7 @@ l_000_04B5A:
         bra.w   l_000_04DCE                     ; 04BAA
 l_000_04BAE:
         movea.l (CockpitObject).l,a0            ; 04BAE
-        move.b  $7c(a0),d0                      ; 04BB4
+        move.b  obj_Ejection(a0),d0             ; 04BB4
         andi.b  #$f,d0                          ; 04BB8
         tst.b   d0                              ; 04BBC
         bne.w   l_000_04DCE                     ; 04BBE
@@ -913,11 +913,11 @@ l_000_04E40:
         bne.w   l_000_0528A                     ; 04E52
 l_000_04E56:
         movea.l (CockpitObject).l,a0            ; 04E56
-        move.b  $62(a0),d0                      ; 04E5C
+        move.b  obj_Type(a0),d0                 ; 04E5C
         andi.b  #$f0,d0                         ; 04E60
         cmpi.b  #$30,d0                         ; 04E64
         beq.w   l_000_05274                     ; 04E68
-        move.b  $2b(a0),d0                      ; 04E6C
+        move.b  obj_Throttle(a0),d0             ; 04E6C
         ext.w   d0                              ; 04E70
         move.w  d0,CockpitSounds_Throttle(a6)   ; 04E72
         tst.w   d0                              ; 04E76
@@ -934,7 +934,7 @@ l_000_04E7E:
         tst.w   d0                              ; 04E96
         beq.w   l_000_05262                     ; 04E98
         movea.l (CockpitObject).l,a0            ; 04E9C
-        move.w  $5a(a0),d0                      ; 04EA2
+        move.w  obj_RollRate(a0),d0             ; 04EA2
         asr.w   #$4,d0                          ; 04EA6
         move.w  d0,CockpitSounds_Step(a6)       ; 04EA8
         tst.w   d0                              ; 04EAC
@@ -942,7 +942,7 @@ l_000_04E7E:
         neg.w   CockpitSounds_Step(a6)          ; 04EB0
 l_000_04EB4:
         movea.l (CockpitObject).l,a0            ; 04EB4
-        move.w  $56(a0),d0                      ; 04EBA
+        move.w  obj_PitchRate(a0),d0            ; 04EBA
         asr.w   #$4,d0                          ; 04EBE
         move.w  d0,CockpitSounds_Period(a6)     ; 04EC0
         tst.w   d0                              ; 04EC4
@@ -953,7 +953,7 @@ l_000_04ECC:
         cmp.w   CockpitSounds_Period(a6),d0     ; 04ED0
         bge.b   l_000_04EE6                     ; 04ED4
         movea.l (CockpitObject).l,a0            ; 04ED6
-        move.w  $56(a0),d1                      ; 04EDC
+        move.w  obj_PitchRate(a0),d1            ; 04EDC
         asr.w   #$4,d1                          ; 04EE0
         add.w   d1,CockpitSounds_Step(a6)       ; 04EE2
 l_000_04EE6:
@@ -1466,7 +1466,7 @@ l_000_0544E:
         move.w  #$54,CockpitEngineVolume_Level(a6) ; 0547A
 l_000_05480:
         movea.l (CockpitObject).l,a0            ; 05480
-        move.w  $2(a0),d0                       ; 05486
+        move.w  obj_Flags2(a0),d0               ; 05486
         btst    #$3,d0                          ; 0548A
         bne.b   l_000_0549A                     ; 0548E
         move.w  CockpitEngineVolume_Level(a6),d0 ; 05490
@@ -1487,10 +1487,10 @@ l_000_054A8:
         bra.b   l_000_054DC                     ; 054BE
 l_000_054C0:
         movea.l (CockpitObject).l,a0            ; 054C0
-        move.w  $2(a0),d0                       ; 054C6
+        move.w  obj_Flags2(a0),d0               ; 054C6
         btst    #$7,d0                          ; 054CA
         beq.b   l_000_054DC                     ; 054CE
-        tst.w   $6e(a0)                         ; 054D0
+        tst.w   obj_SpeedFlown(a0)              ; 054D0
         beq.b   l_000_054DC                     ; 054D4
         move.w  #$c,CockpitEngineVolume_Level(a6) ; 054D6
 l_000_054DC:
@@ -1527,7 +1527,7 @@ EngineSoundLevel_Level  equ     -$2             ; the level (1-63)
 EngineSoundLevel:
         link.w  a6,#$fffe                       ; 05502
         movea.l (CockpitObject).l,a0            ; 05506
-        move.b  $62(a0),d0                      ; 0550C
+        move.b  obj_Type(a0),d0                 ; 0550C
         andi.b  #$f0,d0                         ; 05510
         cmpi.b  #$30,d0                         ; 05514
         bne.b   l_000_05522                     ; 05518
@@ -1535,7 +1535,7 @@ EngineSoundLevel:
         bra.b   l_000_05570                     ; 05520
 l_000_05522:
         movea.l (CockpitObject).l,a0            ; 05522
-        move.w  $6e(a0),d0                      ; 05528
+        move.w  obj_SpeedFlown(a0),d0           ; 05528
         move.w  d0,EngineSoundLevel_Level(a6)   ; 0552C
         tst.w   d0                              ; 05530
         bpl.b   l_000_05538                     ; 05532
@@ -1570,22 +1570,22 @@ l_000_05570:
 ; FlightControls - The flight controls of an aircraft (CurrentObject): its stick deflection
 ; (+$28 pitch, +$29 and +$2A the other two axes, signed bytes; the last two zero on the ground,
 ; +$04 bit 3) is looked up in a response table (ControlResponse, or ControlResponse2 with flag
-; $100) to give its rotation rates (+$56, +$58, +$5A; StepYawRate...), the pitch limited at
+; $100) to give its rotation rates (obj_PitchRate, obj_YawRate, obj_RollRate; StepPitchRate...), the pitch limited at
 ; low speed (+$6C <= $300). For the player it also checks the fuel (PlayerFuel): the warning
 ; bits of WarningFlags below 768,000 and 460,800, and out of fuel at 0.
 ;-------------------------------------------------------------------------------
 ; FlightControls's frame: arguments from 8(a6), locals below a6 (after its link)
 FlightControls_Object   equ     -$2             ; CurrentObject (0: the player)
 FlightControls_Response equ     -$6             ; the response table (ControlResponse or ControlResponse2)
-FlightControls_Flags    equ     -$A             ; the object's +$02
-FlightControls_Rate56   equ     -$E             ; the rate the pitch stick drives (+$56)
-FlightControls_Rate58   equ     -$12            ; the rate the rudder drives (+$58)
-FlightControls_Rate5A   equ     -$16            ; the rate the roll stick drives (+$5A)
-FlightControls_Pitch    equ     -$18            ; the pitch stick (+$28)
-FlightControls_Rudder   equ     -$1A            ; the rudder (+$29; 0 on the ground)
-FlightControls_Roll     equ     -$1C            ; the roll stick (+$2A; 0 on the ground, then limited to -10..10)
-FlightControls_Speed    equ     -$1E            ; the cockpit object's speed flown (+$6E)
-FlightControls_ObjRoll  equ     -$20            ; the cockpit object's roll (+$6A)
+FlightControls_Flags    equ     -$A             ; the object's obj_Flags2
+FlightControls_PitchRate equ     -$E            ; the object's obj_PitchRate (the pitch stick drives it)
+FlightControls_YawRate  equ     -$12            ; its obj_YawRate (the rudder)
+FlightControls_RollRate equ     -$16            ; its obj_RollRate (the roll stick)
+FlightControls_Pitch    equ     -$18            ; its obj_StickPitch
+FlightControls_Rudder   equ     -$1A            ; its obj_Rudder (0 on the ground)
+FlightControls_Roll     equ     -$1C            ; its obj_StickRoll (0 on the ground, then limited to -10..10)
+FlightControls_Speed    equ     -$1E            ; the cockpit object's obj_SpeedFlown
+FlightControls_ObjRoll  equ     -$20            ; its obj_Roll
 FlightControls:
         link.w  a6,#$ffe0                       ; 0557C
         movem.l d2-d3/a2-a3,-(a7)               ; 05580
@@ -1599,15 +1599,15 @@ FlightControls:
         move.l  a0,(CockpitObject).l            ; 0559C
         addq.l  #$2,a0                          ; 055A2
         movea.l (CockpitObject).l,a1            ; 055A4
-        adda.w  #$56,a1                         ; 055AA
+        adda.w  #obj_PitchRate,a1               ; 055AA
         movea.l (CockpitObject).l,a2            ; 055AE
-        adda.w  #$58,a2                         ; 055B4
+        adda.w  #obj_YawRate,a2                 ; 055B4
         movea.l (CockpitObject).l,a3            ; 055B8
-        adda.w  #$5a,a3                         ; 055BE
+        adda.w  #obj_RollRate,a3                ; 055BE
         move.l  a0,FlightControls_Flags(a6)     ; 055C2
-        move.l  a1,FlightControls_Rate56(a6)    ; 055C6
-        move.l  a2,FlightControls_Rate58(a6)    ; 055CA
-        move.l  a3,FlightControls_Rate5A(a6)    ; 055CE
+        move.l  a1,FlightControls_PitchRate(a6) ; 055C6
+        move.l  a2,FlightControls_YawRate(a6)   ; 055CA
+        move.l  a3,FlightControls_RollRate(a6)  ; 055CE
         tst.w   FlightControls_Object(a6)       ; 055D2
         beq.b   l_000_055E0                     ; 055D6
         move.w  (a0),d0                         ; 055D8
@@ -1667,13 +1667,13 @@ l_000_056BA:
         andi.l  #$ffffffbc,(WarningFlags).l     ; 056BA
 l_000_056C4:
         movea.l (CockpitObject).l,a0            ; 056C4
-        move.b  $28(a0),d0                      ; 056CA
+        move.b  obj_StickPitch(a0),d0           ; 056CA
         ext.w   d0                              ; 056CE
-        move.b  $29(a0),d1                      ; 056D0
+        move.b  obj_Rudder(a0),d1               ; 056D0
         ext.w   d1                              ; 056D4
-        move.b  $2a(a0),d2                      ; 056D6
+        move.b  obj_StickRoll(a0),d2            ; 056D6
         ext.w   d2                              ; 056DA
-        move.b  $4(a0),d3                       ; 056DC
+        move.b  obj_Bits(a0),d3                 ; 056DC
         move.w  d0,FlightControls_Pitch(a6)     ; 056E0
         move.w  d1,FlightControls_Rudder(a6)    ; 056E4
         move.w  d2,FlightControls_Roll(a6)      ; 056E8
@@ -1712,12 +1712,12 @@ l_000_05738:
         move.w  (ControlScratch2).l,d0          ; 05744
         ext.l   d0                              ; 0574A
         move.l  d0,-(a7)                        ; 0574C
-        bsr.w   StepYawRate                     ; 0574E
+        bsr.w   StepPitchRate                     ; 0574E
         addq.l  #$4,a7                          ; 05752
         bra.w   l_000_0586E                     ; 05754
 l_000_05758:
         movea.l (CockpitObject).l,a0            ; 05758
-        move.b  $20(a0),d0                      ; 0575E
+        move.b  obj_Status(a0),d0               ; 0575E
         btst    #$0,d0                          ; 05762
         beq.b   l_000_05788                     ; 05766
         move.w  FlightControls_Object(a6),d0    ; 05768
@@ -1733,10 +1733,10 @@ l_000_05758:
         bra.w   l_000_0586E                     ; 05784
 l_000_05788:
         movea.l (CockpitObject).l,a0            ; 05788
-        move.w  $6c(a0),d0                      ; 0578E
+        move.w  obj_Speed(a0),d0                ; 0578E
         cmpi.w  #$300,d0                        ; 05792
         ble.b   l_000_057F0                     ; 05796
-        move.w  $66(a0),d0                      ; 05798
+        move.w  obj_Pitch(a0),d0                ; 05798
         tst.w   d0                              ; 0579C
         beq.b   l_000_057A6                     ; 0579E
         cmpi.w  #$6d60,d0                       ; 057A0
@@ -1755,7 +1755,7 @@ l_000_057A6:
         ext.l   d0                              ; 057C0
         neg.l   d0                              ; 057C2
         move.l  d0,-(a7)                        ; 057C4
-        bsr.w   StepYawRate                     ; 057C6
+        bsr.w   StepPitchRate                     ; 057C6
         addq.l  #$4,a7                          ; 057CA
         bra.w   l_000_0586E                     ; 057CC
 l_000_057D0:
@@ -1797,11 +1797,11 @@ l_000_0580E:
         addq.l  #$4,a7                          ; 05832
         bra.b   l_000_0586E                     ; 05834
 l_000_05836:
-        movea.l FlightControls_Rate56(a6),a0    ; 05836
+        movea.l FlightControls_PitchRate(a6),a0 ; 05836
         tst.w   (a0)                            ; 0583A
         beq.b   l_000_0586E                     ; 0583C
         movea.l (CockpitObject).l,a1            ; 0583E
-        move.w  $26(a1),d0                      ; 05844
+        move.w  obj_Response(a1),d0             ; 05844
         tst.w   d0                              ; 05848
         bne.b   l_000_0586E                     ; 0584A
         tst.w   FlightControls_Object(a6)       ; 0584C
@@ -1815,7 +1815,7 @@ l_000_05836:
 l_000_05860:
         moveq   #$1,d0                          ; 05860
         move.l  d0,-(a7)                        ; 05862
-        move.l  FlightControls_Rate56(a6),-(a7) ; 05864
+        move.l  FlightControls_PitchRate(a6),-(a7) ; 05864
         bsr.w   EaseToZero                      ; 05868
         addq.l  #$8,a7                          ; 0586C
 l_000_0586E:
@@ -1842,21 +1842,21 @@ l_000_05894:
         move.w  (a0),(ControlScratch3).l        ; 058A2
 l_000_058A8:
         movea.l (CockpitObject).l,a0            ; 058A8
-        move.b  $4(a0),d0                       ; 058AE
+        move.b  obj_Bits(a0),d0                 ; 058AE
         btst    #$1,d0                          ; 058B2
         bne.b   l_000_058D0                     ; 058B6
-        tst.w   $6e(a0)                         ; 058B8
+        tst.w   obj_SpeedFlown(a0)              ; 058B8
         beq.b   l_000_058D0                     ; 058BC
         move.w  (ControlScratch3).l,d0          ; 058BE
         ext.l   d0                              ; 058C4
         move.l  d0,-(a7)                        ; 058C6
-        bsr.w   ScalePitchInput                 ; 058C8
+        bsr.w   ScaleYawInput                 ; 058C8
         addq.l  #$4,a7                          ; 058CC
         bra.b   l_000_05912                     ; 058CE
 l_000_058D0:
         moveq   #$1,d0                          ; 058D0
         move.l  d0,-(a7)                        ; 058D2
-        move.l  FlightControls_Rate58(a6),-(a7) ; 058D4
+        move.l  FlightControls_YawRate(a6),-(a7) ; 058D4
         bsr.w   EaseToZero                      ; 058D8
         addq.l  #$8,a7                          ; 058DC
         bra.b   l_000_05912                     ; 058DE
@@ -1871,7 +1871,7 @@ l_000_058F2:
         moveq   #$0,d0                          ; 058F2
         move.w  d0,(ControlScratch3).l          ; 058F4
         move.w  d0,FlightControls_Rudder(a6)    ; 058FA
-        movea.l FlightControls_Rate58(a6),a0    ; 058FE
+        movea.l FlightControls_YawRate(a6),a0   ; 058FE
         tst.w   (a0)                            ; 05902
         beq.b   l_000_05912                     ; 05904
         moveq   #$1,d0                          ; 05906
@@ -1948,9 +1948,9 @@ l_000_059AE:
         bra.w   l_000_05AE8                     ; 059CC
 l_000_059D0:
         movea.l (CockpitObject).l,a0            ; 059D0
-        move.w  $6e(a0),FlightControls_Speed(a6) ; 059D6
-        move.w  $6a(a0),FlightControls_ObjRoll(a6) ; 059DC
-        move.b  $4(a0),d0                       ; 059E2
+        move.w  obj_SpeedFlown(a0),FlightControls_Speed(a6) ; 059D6
+        move.w  obj_Roll(a0),FlightControls_ObjRoll(a6) ; 059DC
+        move.b  obj_Bits(a0),d0                 ; 059E2
         btst    #$1,d0                          ; 059E6
         bne.w   l_000_05A84                     ; 059EA
         tst.w   FlightControls_Speed(a6)        ; 059EE
@@ -1958,7 +1958,7 @@ l_000_059D0:
         move.w  (ControlScratch).l,d0           ; 059F6
         ext.l   d0                              ; 059FC
         move.l  d0,-(a7)                        ; 059FE
-        bsr.w   ScalePitchInput                 ; 05A00
+        bsr.w   ScaleYawInput                 ; 05A00
         addq.l  #$4,a7                          ; 05A04
         move.w  FlightControls_ObjRoll(a6),d0   ; 05A06
         cmpi.w  #$50,d0                         ; 05A0A
@@ -1988,7 +1988,7 @@ l_000_05A34:
         addq.l  #$4,a7                          ; 05A52
         bra.w   l_000_05AE8                     ; 05A54
 l_000_05A58:
-        movea.l FlightControls_Rate5A(a6),a0    ; 05A58
+        movea.l FlightControls_RollRate(a6),a0  ; 05A58
         clr.w   (a0)                            ; 05A5C
         bra.w   l_000_05AE8                     ; 05A5E
 l_000_05A62:
@@ -2002,18 +2002,18 @@ l_000_05A62:
         addq.l  #$4,a7                          ; 05A78
         bra.b   l_000_05AE8                     ; 05A7A
 l_000_05A7C:
-        movea.l FlightControls_Rate5A(a6),a0    ; 05A7C
+        movea.l FlightControls_RollRate(a6),a0  ; 05A7C
         clr.w   (a0)                            ; 05A80
         bra.b   l_000_05AE8                     ; 05A82
 l_000_05A84:
         moveq   #$1,d0                          ; 05A84
         move.l  d0,-(a7)                        ; 05A86
-        move.l  FlightControls_Rate58(a6),-(a7) ; 05A88
+        move.l  FlightControls_YawRate(a6),-(a7) ; 05A88
         bsr.w   EaseToZero                      ; 05A8C
         addq.l  #$8,a7                          ; 05A90
         moveq   #$1,d0                          ; 05A92
         move.l  d0,-(a7)                        ; 05A94
-        move.l  FlightControls_Rate5A(a6),-(a7) ; 05A96
+        move.l  FlightControls_RollRate(a6),-(a7) ; 05A96
         bsr.w   EaseToZero                      ; 05A9A
         addq.l  #$8,a7                          ; 05A9E
         bra.b   l_000_05AE8                     ; 05AA0
@@ -2031,7 +2031,7 @@ l_000_05AA2:
         bsr.w   StepRollAngle                   ; 05AC2
         addq.l  #$4,a7                          ; 05AC6
 l_000_05AC8:
-        movea.l FlightControls_Rate5A(a6),a0    ; 05AC8
+        movea.l FlightControls_RollRate(a6),a0  ; 05AC8
         tst.w   (a0)                            ; 05ACC
         beq.b   l_000_05AE8                     ; 05ACE
         moveq   #$1,d0                          ; 05AD0
@@ -2139,15 +2139,15 @@ l_000_05BDA:
 ;-------------------------------------------------------------------------------
 ; StepPitchAngle's frame: arguments from 8(a6), locals below a6 (after its link)
 StepPitchAngle_Shift    equ     -$2             ; how fast (1 at speed $6C0 or more, else 0)
-StepPitchAngle_Pitch    equ     -$6             ; the cockpit object's pitch (+$66)
-StepPitchAngle_Rate     equ     -$A             ; the cockpit object's pitch rate (+$56)
+StepPitchAngle_Pitch    equ     -$6             ; the cockpit object's obj_Pitch
+StepPitchAngle_Rate     equ     -$A             ; its obj_PitchRate
 StepPitchAngle_Target   equ     -$C             ; the rate to move to (-$40 below $3840, else $40)
 StepPitchAngle:
         link.w  a6,#$fff2                       ; 05BDE
         movea.l (CockpitObject).l,a0            ; 05BE2
-        adda.w  #$66,a0                         ; 05BE8
+        adda.w  #obj_Pitch,a0                   ; 05BE8
         movea.l (CockpitObject).l,a1            ; 05BEC
-        adda.w  #$56,a1                         ; 05BF2
+        adda.w  #obj_PitchRate,a1               ; 05BF2
         move.w  (a0),d0                         ; 05BF6
         move.l  a0,StepPitchAngle_Pitch(a6)     ; 05BF8
         move.l  a1,StepPitchAngle_Rate(a6)      ; 05BFC
@@ -2156,17 +2156,17 @@ StepPitchAngle:
         cmpi.w  #$190,d0                        ; 05C06
         bge.b   l_000_05C54                     ; 05C0A
         movea.l (CockpitObject).l,a0            ; 05C0C
-        move.w  $2(a0),d0                       ; 05C12
+        move.w  obj_Flags2(a0),d0               ; 05C12
         btst    #$6,d0                          ; 05C16
         bne.b   l_000_05C4C                     ; 05C1A
         ori.w   #$40,d0                         ; 05C1C
         movea.l (CockpitObject).l,a0            ; 05C20
-        move.w  d0,$2(a0)                       ; 05C26
+        move.w  d0,obj_Flags2(a0)               ; 05C26
         move.w  (a0),d0                         ; 05C2A
         andi.w  #$1600,d0                       ; 05C2C
         cmpi.w  #$1000,d0                       ; 05C30
         bne.b   l_000_05C4C                     ; 05C34
-        move.b  $4(a0),d0                       ; 05C36
+        move.b  obj_Bits(a0),d0                 ; 05C36
         btst    #$1,d0                          ; 05C3A
         bne.b   l_000_05C4C                     ; 05C3E
         moveq   #$f,d0                          ; 05C40
@@ -2179,7 +2179,7 @@ l_000_05C4C:
         bra.b   l_000_05CA6                     ; 05C52
 l_000_05C54:
         movea.l (CockpitObject).l,a0            ; 05C54
-        move.w  $6c(a0),d0                      ; 05C5A
+        move.w  obj_Speed(a0),d0                ; 05C5A
         cmpi.w  #$6c0,d0                        ; 05C5E
         bge.b   l_000_05C6A                     ; 05C62
         clr.w   StepPitchAngle_Shift(a6)        ; 05C64
@@ -2213,14 +2213,14 @@ l_000_05CA6:
 ; StepRollAngle - FlightControls' step of the roll (+$6A) by its rate (+$5A).
 ;-------------------------------------------------------------------------------
 ; StepRollAngle's frame: arguments from 8(a6), locals below a6 (after its link)
-StepRollAngle_Roll      equ     -$4             ; the cockpit object's roll (+$6A)
-StepRollAngle_Rate      equ     -$8             ; the cockpit object's roll rate (+$5A)
+StepRollAngle_Roll      equ     -$4             ; the cockpit object's obj_Roll
+StepRollAngle_Rate      equ     -$8             ; its obj_RollRate
 StepRollAngle:
         link.w  a6,#$fff8                       ; 05CAA
         movea.l (CockpitObject).l,a0            ; 05CAE
-        adda.w  #$6a,a0                         ; 05CB4
+        adda.w  #obj_Roll,a0                    ; 05CB4
         movea.l (CockpitObject).l,a1            ; 05CB8
-        adda.w  #$5a,a1                         ; 05CBE
+        adda.w  #obj_RollRate,a1                ; 05CBE
         move.l  a0,StepRollAngle_Roll(a6)       ; 05CC2
         move.l  a1,StepRollAngle_Rate(a6)       ; 05CC6
         tst.w   (a0)                            ; 05CCA
@@ -2242,44 +2242,46 @@ l_000_05CEC:
         rts                                     ; 05CEE
 
 ;-------------------------------------------------------------------------------
-; StepYawRate - FlightControls' step of the yaw (+$26).
+; StepPitchRate - FlightControls' step of the pitch rate (obj_PitchRate) towards the pitch
+; stick's input, a quarter of the way a frame (the input halved when damaged, obj_Status bit 2;
+; only positive input with no responsiveness, obj_Response 0); then InputBySpeed.
 ;-------------------------------------------------------------------------------
-; StepYawRate's frame: arguments from 8(a6), locals below a6 (after its link)
+; StepPitchRate's frame: arguments from 8(a6), locals below a6 (after its link)
                 rsset   8
                 rs.w    1                       ; (pushed as a long: the high part)
-StepYawRate_Input       rs.w    1               ; the yaw input
-StepYawRate_Rate        equ     -$4             ; the cockpit object's yaw rate (+$56)
-StepYawRate:
+StepPitchRate_Input     rs.w    1               ; the pitch stick's input
+StepPitchRate_Rate      equ     -$4             ; the cockpit object's obj_PitchRate
+StepPitchRate:
         link.w  a6,#$fffa                       ; 05CF0
         movea.l (CockpitObject).l,a0            ; 05CF4
-        move.w  $2(a0),d0                       ; 05CFA
+        move.w  obj_Flags2(a0),d0               ; 05CFA
         btst    #$7,d0                          ; 05CFE
         bne.b   l_000_05D12                     ; 05D02
-        move.w  $26(a0),d0                      ; 05D04
+        move.w  obj_Response(a0),d0             ; 05D04
         tst.w   d0                              ; 05D08
         beq.b   l_000_05D12                     ; 05D0A
-        tst.w   StepYawRate_Input(a6)           ; 05D0C
+        tst.w   StepPitchRate_Input(a6)           ; 05D0C
         ble.b   l_000_05D56                     ; 05D10
 l_000_05D12:
         movea.l (CockpitObject).l,a0            ; 05D12
-        move.b  $20(a0),d0                      ; 05D18
+        move.b  obj_Status(a0),d0               ; 05D18
         btst    #$2,d0                          ; 05D1C
         beq.b   l_000_05D2C                     ; 05D20
-        move.w  StepYawRate_Input(a6),d0        ; 05D22
+        move.w  StepPitchRate_Input(a6),d0        ; 05D22
         asr.w   #$1,d0                          ; 05D26
-        move.w  d0,StepYawRate_Input(a6)        ; 05D28
+        move.w  d0,StepPitchRate_Input(a6)        ; 05D28
 l_000_05D2C:
         movea.l (CockpitObject).l,a0            ; 05D2C
-        adda.w  #$56,a0                         ; 05D32
+        adda.w  #obj_PitchRate,a0               ; 05D32
         move.w  (a0),d0                         ; 05D36
         move.w  d0,$0(a7)                       ; 05D38
-        sub.w   StepYawRate_Input(a6),d0        ; 05D3C
+        sub.w   StepPitchRate_Input(a6),d0        ; 05D3C
         asr.w   #$2,d0                          ; 05D40
         move.w  $0(a7),d1                       ; 05D42
         sub.w   d0,d1                           ; 05D46
         move.w  d1,(a0)                         ; 05D48
         move.l  a0,-(a7)                        ; 05D4A
-        move.l  a0,StepYawRate_Rate(a6)         ; 05D4C
+        move.l  a0,StepPitchRate_Rate(a6)         ; 05D4C
         bsr.w   InputBySpeed                    ; 05D50
         addq.l  #$4,a7                          ; 05D54
 l_000_05D56:
@@ -2287,40 +2289,40 @@ l_000_05D56:
         rts                                     ; 05D58
 
 ;-------------------------------------------------------------------------------
-; ScalePitchInput - Scales the pitch input (x 5/8; halved when the aircraft is damaged, +$20
-; bit 2).
+; ScaleYawInput - Moves the yaw rate (obj_YawRate) towards the input: the rudder's, or the
+; roll's (x 5/8; halved when the aircraft is damaged, obj_Status bit 2).
 ;-------------------------------------------------------------------------------
-; ScalePitchInput's frame: arguments from 8(a6), locals below a6 (after its link)
+; ScaleYawInput's frame: arguments from 8(a6), locals below a6 (after its link)
                 rsset   8
                 rs.w    1                       ; (pushed as a long: the high part)
-ScalePitchInput_Input   rs.w    1               ; the pitch input
-ScalePitchInput_Rate    equ     -$4             ; the cockpit object's pitch rate (+$58)
-ScalePitchInput:
+ScaleYawInput_Input     rs.w    1               ; the yaw input
+ScaleYawInput_Rate      equ     -$4             ; the cockpit object's obj_YawRate
+ScaleYawInput:
         link.w  a6,#$fffa                       ; 05D5A
-        move.w  ScalePitchInput_Input(a6),d0    ; 05D5E
+        move.w  ScaleYawInput_Input(a6),d0    ; 05D5E
         asr.w   #$1,d0                          ; 05D62
-        move.w  ScalePitchInput_Input(a6),d1    ; 05D64
+        move.w  ScaleYawInput_Input(a6),d1    ; 05D64
         asr.w   #$3,d1                          ; 05D68
         add.w   d1,d0                           ; 05D6A
         movea.l (CockpitObject).l,a0            ; 05D6C
-        move.b  $20(a0),d1                      ; 05D72
-        move.w  d0,ScalePitchInput_Input(a6)    ; 05D76
+        move.b  obj_Status(a0),d1               ; 05D72
+        move.w  d0,ScaleYawInput_Input(a6)    ; 05D76
         btst    #$2,d1                          ; 05D7A
         beq.b   l_000_05D86                     ; 05D7E
         asr.w   #$1,d0                          ; 05D80
-        move.w  d0,ScalePitchInput_Input(a6)    ; 05D82
+        move.w  d0,ScaleYawInput_Input(a6)    ; 05D82
 l_000_05D86:
         movea.l (CockpitObject).l,a0            ; 05D86
-        adda.w  #$58,a0                         ; 05D8C
+        adda.w  #obj_YawRate,a0                 ; 05D8C
         move.w  (a0),d0                         ; 05D90
         move.w  d0,$0(a7)                       ; 05D92
-        sub.w   ScalePitchInput_Input(a6),d0    ; 05D96
+        sub.w   ScaleYawInput_Input(a6),d0    ; 05D96
         asr.w   #$2,d0                          ; 05D9A
         move.w  $0(a7),d1                       ; 05D9C
         sub.w   d0,d1                           ; 05DA0
         move.w  d1,(a0)                         ; 05DA2
         move.l  a0,-(a7)                        ; 05DA4
-        move.l  a0,ScalePitchInput_Rate(a6)     ; 05DA6
+        move.l  a0,ScaleYawInput_Rate(a6)     ; 05DA6
         bsr.w   InputBySpeed                    ; 05DAA
         addq.l  #$4,a7                          ; 05DAE
         unlk    a6                              ; 05DB0
@@ -2333,7 +2335,7 @@ l_000_05D86:
                 rsset   8
                 rs.w    1                       ; (pushed as a long: the high part)
 ScaleRollInput_Input    rs.w    1               ; the roll input
-ScaleRollInput_Rate     equ     -$4             ; the cockpit object's roll rate (+$5A)
+ScaleRollInput_Rate     equ     -$4             ; the cockpit object's obj_RollRate
 ScaleRollInput_Shift    equ     -$6             ; how fast the rate follows the input (2 for object kind $14, else 1)
 ScaleRollInput:
         link.w  a6,#$fff8                       ; 05DB4
@@ -2343,7 +2345,7 @@ ScaleRollInput:
         asr.w   #$3,d1                          ; 05DC2
         add.w   d1,d0                           ; 05DC4
         movea.l (CockpitObject).l,a0            ; 05DC6
-        move.b  $20(a0),d1                      ; 05DCC
+        move.b  obj_Status(a0),d1               ; 05DCC
         move.w  d0,ScaleRollInput_Input(a6)     ; 05DD0
         btst    #$2,d1                          ; 05DD4
         beq.b   l_000_05DE0                     ; 05DD8
@@ -2351,7 +2353,7 @@ ScaleRollInput:
         move.w  d0,ScaleRollInput_Input(a6)     ; 05DDC
 l_000_05DE0:
         movea.l (CockpitObject).l,a0            ; 05DE0
-        move.b  $62(a0),d0                      ; 05DE6
+        move.b  obj_Type(a0),d0                 ; 05DE6
         cmpi.b  #$14,d0                         ; 05DEA
         bne.b   l_000_05DF8                     ; 05DEE
         move.w  #$2,ScaleRollInput_Shift(a6)    ; 05DF0
@@ -2360,7 +2362,7 @@ l_000_05DF8:
         move.w  #$1,ScaleRollInput_Shift(a6)    ; 05DF8
 l_000_05DFE:
         movea.l (CockpitObject).l,a0            ; 05DFE
-        adda.w  #$5a,a0                         ; 05E04
+        adda.w  #obj_RollRate,a0                ; 05E04
         move.w  (a0),d0                         ; 05E08
         move.w  d0,$0(a7)                       ; 05E0A
         sub.w   ScaleRollInput_Input(a6),d0     ; 05E0E
@@ -2386,7 +2388,7 @@ InputBySpeed_Step       equ     -$2             ; the speed / 128 (0 near the ce
 InputBySpeed:
         link.w  a6,#$fffe                       ; 05E2E
         movea.l (CockpitObject).l,a0            ; 05E32
-        move.w  $6c(a0),d0                      ; 05E38
+        move.w  obj_Speed(a0),d0                ; 05E38
         asr.w   #$7,d0                          ; 05E3C
         movea.l InputBySpeed_Value(a6),a0       ; 05E3E
         move.w  (a0),d1                         ; 05E42
@@ -2454,20 +2456,20 @@ l_000_05ED2:
 ; throttle gives (through Decay); ClimbDivePhysics; and the speed flown (+$6E) = +$6C + +$78.
 ;-------------------------------------------------------------------------------
 ; EngineAndSpeed's frame: arguments from 8(a6), locals below a6 (after its link)
-EngineAndSpeed_Throttle equ     -$4             ; the object's throttle (+$2B)
-EngineAndSpeed_Controls equ     -$8             ; its control bits (+$65)
-EngineAndSpeed_Step     equ     -$C             ; its throttle step (+$39)
-EngineAndSpeed_Bits     equ     -$10            ; its +$04
-EngineAndSpeed_Field20  equ     -$14            ; its +$20
+EngineAndSpeed_Throttle equ     -$4             ; the object's obj_Throttle
+EngineAndSpeed_Controls equ     -$8             ; its obj_Controls
+EngineAndSpeed_Step     equ     -$C             ; its obj_ThrottleStep
+EngineAndSpeed_Bits     equ     -$10            ; its obj_Bits
+EngineAndSpeed_Status   equ     -$14            ; its obj_Status
 EngineAndSpeed_StepSize equ     -$16            ; the throttle's step: +$39's low nibble + 1 (at most 8), halved
 EngineAndSpeed_Change   equ     -$18            ; the speed's change (starts at -speed)
 EngineAndSpeed_Pitch    equ     -$1A            ; PitchEffect's result (0 below speed $800)
-EngineAndSpeed_Speed    equ     -$20            ; its speed (+$6C)
+EngineAndSpeed_Speed    equ     -$20            ; its obj_Speed
 EngineAndSpeed_Power    equ     -$24            ; the throttle (0 and up), then scaled
 EngineAndSpeed_Target   equ     -$26            ; the speed it heads for ($600 with flag 8, else |Power|)
 EngineAndSpeed_MouseDY  equ     -$28            ; ThrottleMouseY - MouseY, then its size
 EngineAndSpeed_Record   equ     -$2C            ; the object's record
-EngineAndSpeed_Flags    equ     -$30            ; its flags (+$02)
+EngineAndSpeed_Flags    equ     -$30            ; its obj_Flags2
 EngineAndSpeed_Object   equ     -$32            ; CurrentObject
 EngineAndSpeed:
         link.w  a6,#$ffce                       ; 05ED4
@@ -2502,7 +2504,7 @@ EngineAndSpeed:
         move.w  d1,EngineAndSpeed_Change(a6)    ; 05F2E
         move.l  a0,EngineAndSpeed_Step(a6)      ; 05F32
         move.l  a1,EngineAndSpeed_Bits(a6)      ; 05F36
-        move.l  a2,EngineAndSpeed_Field20(a6)   ; 05F3A
+        move.l  a2,EngineAndSpeed_Status(a6)    ; 05F3A
         move.l  a3,EngineAndSpeed_Throttle(a6)  ; 05F3E
         move.l  a4,EngineAndSpeed_Controls(a6)  ; 05F42
         move.l  a5,EngineAndSpeed_Speed(a6)     ; 05F46
@@ -2812,7 +2814,7 @@ l_000_062CC:
         beq.w   l_000_06750                     ; 062F8
 l_000_062FC:
         movea.l (CockpitObject).l,a0            ; 062FC
-        tst.l   $72(a0)                         ; 06302
+        tst.l   obj_Fuel(a0)                    ; 06302
         beq.w   l_000_06750                     ; 06306
         movea.l EngineAndSpeed_Flags(a6),a0     ; 0630A
         move.w  (a0),d0                         ; 0630E
@@ -2822,7 +2824,7 @@ l_000_062FC:
         move.w  d0,EngineAndSpeed_Target(a6)    ; 0631C
         ext.l   d0                              ; 06320
         movea.l (CockpitObject).l,a0            ; 06322
-        sub.l   d0,$72(a0)                      ; 06328
+        sub.l   d0,obj_Fuel(a0)                 ; 06328
         move.w  #$3a98,d0                       ; 0632C
         sub.w   EngineAndSpeed_Pitch(a6),d0     ; 06330
         move.w  d0,EngineAndSpeed_StepSize(a6)  ; 06334
@@ -2831,7 +2833,7 @@ l_000_062FC:
         move.w  #$4650,EngineAndSpeed_StepSize(a6) ; 0633E
 l_000_06344:
         movea.l (CockpitObject).l,a0            ; 06344
-        move.b  $7c(a0),d0                      ; 0634A
+        move.b  obj_Ejection(a0),d0             ; 0634A
         andi.b  #$70,d0                         ; 0634E
         tst.b   d0                              ; 06352
         bne.b   l_000_06360                     ; 06354
@@ -2872,7 +2874,7 @@ l_000_063B8:
         bsr.w   EaseYaw                         ; 063BC
         addq.l  #$4,a7                          ; 063C0
         movea.l (CockpitObject).l,a0            ; 063C2
-        move.w  $26(a0),d0                      ; 063C8
+        move.w  obj_Response(a0),d0             ; 063C8
         add.w   d0,EngineAndSpeed_Change(a6)    ; 063CC
         bra.w   l_000_06812                     ; 063D0
 l_000_063D4:
@@ -2898,7 +2900,7 @@ l_000_06406:
         move.w  d1,EngineAndSpeed_Target(a6)    ; 0640E
         ext.l   d1                              ; 06412
         movea.l (CockpitObject).l,a0            ; 06414
-        sub.l   d1,$72(a0)                      ; 0641A
+        sub.l   d1,obj_Fuel(a0)                 ; 0641A
         tst.w   EngineAndSpeed_Power(a6)        ; 0641E
         bmi.w   l_000_06650                     ; 06422
         move.w  EngineAndSpeed_Change(a6),d0    ; 06426
@@ -2917,7 +2919,7 @@ l_000_06406:
         asr.w   #$2,d0                          ; 06450
         move.w  EngineAndSpeed_StepSize(a6),d1  ; 06452
         sub.w   d0,d1                           ; 06456
-        movea.l EngineAndSpeed_Field20(a6),a0   ; 06458
+        movea.l EngineAndSpeed_Status(a6),a0    ; 06458
         move.b  (a0),d0                         ; 0645C
         move.w  d1,EngineAndSpeed_StepSize(a6)  ; 0645E
         btst    #$0,d0                          ; 06462
@@ -2940,7 +2942,7 @@ l_000_0647C:
         sub.w   d0,EngineAndSpeed_StepSize(a6)  ; 06496
 l_000_0649A:
         movea.l (CockpitObject).l,a0            ; 0649A
-        move.b  $7c(a0),d0                      ; 064A0
+        move.b  obj_Ejection(a0),d0             ; 064A0
         andi.b  #$70,d0                         ; 064A4
         tst.b   d0                              ; 064A8
         bne.b   l_000_064B6                     ; 064AA
@@ -3028,7 +3030,7 @@ l_000_0658C:
         move.w  d0,EngineAndSpeed_StepSize(a6)  ; 065A0
         bra.b   l_000_065B6                     ; 065A4
 l_000_065A6:
-        movea.l EngineAndSpeed_Field20(a6),a0   ; 065A6
+        movea.l EngineAndSpeed_Status(a6),a0    ; 065A6
         move.b  (a0),d0                         ; 065AA
         btst    #$0,d0                          ; 065AC
         beq.b   l_000_065B6                     ; 065B0
@@ -3081,7 +3083,7 @@ l_000_06628:
         tst.w   -$22(a6)                        ; 06636
         beq.w   l_000_06812                     ; 0663A
         movea.l (CockpitObject).l,a0            ; 0663E
-        move.w  $26(a0),d0                      ; 06644
+        move.w  obj_Response(a0),d0             ; 06644
         add.w   d0,EngineAndSpeed_Change(a6)    ; 06648
         bra.w   l_000_06812                     ; 0664C
 l_000_06650:
@@ -3163,7 +3165,7 @@ l_000_06728:
         tst.w   -$22(a6)                        ; 06736
         beq.w   l_000_06812                     ; 0673A
         movea.l (CockpitObject).l,a0            ; 0673E
-        move.w  $26(a0),d0                      ; 06744
+        move.w  obj_Response(a0),d0             ; 06744
         add.w   d0,EngineAndSpeed_Change(a6)    ; 06748
         bra.w   l_000_06812                     ; 0674C
 l_000_06750:
@@ -3296,7 +3298,7 @@ l_000_068CC:
         btst    #$7,d0                          ; 068D2
         beq.b   l_000_068FE                     ; 068D6
         movea.l (CockpitObject).l,a0            ; 068D8
-        move.b  $7c(a0),d0                      ; 068DE
+        move.b  obj_Ejection(a0),d0             ; 068DE
         btst    #$7,d0                          ; 068E2
         beq.b   l_000_068FE                     ; 068E6
         moveq   #$5,d0                          ; 068E8
@@ -3308,7 +3310,7 @@ l_000_068CC:
         lea.l   $c(a7),a7                       ; 068F8
         bra.b   l_000_06940                     ; 068FC
 l_000_068FE:
-        movea.l EngineAndSpeed_Field20(a6),a0   ; 068FE
+        movea.l EngineAndSpeed_Status(a6),a0    ; 068FE
         move.b  (a0),d0                         ; 06902
         btst    #$0,d0                          ; 06904
         beq.b   l_000_06920                     ; 06908
@@ -3372,12 +3374,12 @@ l_000_06990:
 l_000_0699C:
         jsr     (ClimbDivePhysics).l            ; 0699C
         movea.l (CockpitObject).l,a0            ; 069A2
-        move.w  $78(a0),d0                      ; 069A8
+        move.w  obj_ClimbSpeed(a0),d0           ; 069A8
         movea.l EngineAndSpeed_Speed(a6),a0     ; 069AC
         move.w  (a0),d1                         ; 069B0
         add.w   d1,d0                           ; 069B2
         movea.l (CockpitObject).l,a0            ; 069B4
-        move.w  d0,$6e(a0)                      ; 069BA
+        move.w  d0,obj_SpeedFlown(a0)           ; 069BA
         movem.l (a7)+,d2/a2-a5                  ; 069BE
         unlk    a6                              ; 069C2
         rts                                     ; 069C4
@@ -3392,14 +3394,14 @@ EaseYaw_Target          rs.w    1               ; the yaw value to move towards
 EaseYaw:
         link.w  a6,#$fffe                       ; 069C6
         movea.l (CockpitObject).l,a0            ; 069CA
-        move.w  $26(a0),d0                      ; 069D0
+        move.w  obj_Response(a0),d0             ; 069D0
         move.w  d0,$0(a7)                       ; 069D4
         sub.w   EaseYaw_Target(a6),d0           ; 069D8
         asr.w   #$3,d0                          ; 069DC
         move.w  $0(a7),d1                       ; 069DE
         sub.w   d0,d1                           ; 069E2
         movea.l (CockpitObject).l,a0            ; 069E4
-        move.w  d1,$26(a0)                      ; 069EA
+        move.w  d1,obj_Response(a0)             ; 069EA
         unlk    a6                              ; 069EE
         rts                                     ; 069F0
 
@@ -3454,7 +3456,7 @@ PitchEffect:
         link.w  a6,#$fff6                       ; 06A32
         movem.l d2,-(a7)                        ; 06A36
         movea.l (CockpitObject).l,a0            ; 06A3A
-        move.w  $66(a0),d0                      ; 06A40
+        move.w  obj_Pitch(a0),d0                ; 06A40
         move.w  d0,PitchEffect_Pitch(a6)        ; 06A44
         cmpi.w  #$3840,d0                       ; 06A48
         blt.b   l_000_06A54                     ; 06A4C
@@ -3463,7 +3465,7 @@ l_000_06A54:
         move.w  PitchEffect_Pitch(a6),d0        ; 06A54
         asr.w   #$1,d0                          ; 06A58
         movea.l (CockpitObject).l,a0            ; 06A5A
-        move.w  $6a(a0),d1                      ; 06A60
+        move.w  obj_Roll(a0),d1                 ; 06A60
         move.w  d0,PitchEffect_Pitch(a6)        ; 06A64
         move.w  d1,PitchEffect_Roll(a6)         ; 06A68
         cmpi.w  #$3840,d1                       ; 06A6C
@@ -3482,7 +3484,7 @@ l_000_06A90:
         move.w  PitchEffect_Roll(a6),d0         ; 06A90
         asr.w   #$3,d0                          ; 06A94
         movea.l (CockpitObject).l,a0            ; 06A96
-        move.w  $56(a0),d1                      ; 06A9C
+        move.w  obj_PitchRate(a0),d1            ; 06A9C
         move.w  d0,PitchEffect_Roll(a6)         ; 06AA0
         move.w  d1,PitchEffect_Effect(a6)       ; 06AA4
         tst.w   d1                              ; 06AA8
@@ -3495,8 +3497,8 @@ l_000_06AB0:
         sub.w   PitchEffect_Pitch(a6),d0        ; 06ABA
         move.l  (FlightValue).l,d1              ; 06ABE
         movea.l (CockpitObject).l,a0            ; 06AC4
-        sub.l   $18(a0),d1                      ; 06ACA
-        move.w  $2(a0),d2                       ; 06ACE
+        sub.l   obj_Y(a0),d1                    ; 06ACA
+        move.w  obj_Flags2(a0),d2               ; 06ACE
         move.w  d0,PitchEffect_Effect(a6)       ; 06AD2
         move.l  d1,PitchEffect_Value(a6)        ; 06AD6
         btst    #$3,d2                          ; 06ADA
@@ -3545,9 +3547,9 @@ FlyAircraft_Value4E     equ     -$20            ; +$4E x 256 + $A8C (at least $A
 FlyAircraft_Length      equ     -$22            ; -(the speed flown, +$6E): ScaleToLength's length
 FlyAircraft_Object      equ     -$24            ; CurrentObject
 FlyAircraft_Record      equ     -$28            ; the object's record
-FlyAircraft_Flags       equ     -$2C            ; its flags (+$02)
-FlyAircraft_Bits        equ     -$30            ; its +$04
-FlyAircraft_Field20     equ     -$34            ; its +$20
+FlyAircraft_Flags       equ     -$2C            ; its obj_Flags2
+FlyAircraft_Bits        equ     -$30            ; its obj_Bits
+FlyAircraft_Status      equ     -$34            ; its obj_Status
 FlyAircraft:
         link.w  a6,#$ffca                       ; 06B0E
         movem.l d2-d4/a2-a3,-(a7)               ; 06B12
@@ -3591,7 +3593,7 @@ FlyAircraft:
         move.l  d1,-(a7)                        ; 06B96
         move.l  a0,FlyAircraft_Flags(a6)        ; 06B98
         move.l  a1,FlyAircraft_Bits(a6)         ; 06B9C
-        move.l  a2,FlyAircraft_Field20(a6)      ; 06BA0
+        move.l  a2,FlyAircraft_Status(a6)       ; 06BA0
         jsr     (ScaleToLength).l               ; 06BA4
         lea.l   $10(a7),a7                      ; 06BAA
         move.w  (ScaledVector).l,FlyAircraft_VelX(a6) ; 06BAE
@@ -3602,9 +3604,9 @@ FlyAircraft:
         btst    #$7,d0                          ; 06BCC
         bne.b   l_000_06C42                     ; 06BD0
         movea.l (CockpitObject).l,a0            ; 06BD2
-        move.l  $3e(a0),d0                      ; 06BD8
+        move.l  obj_VelX(a0),d0                 ; 06BD8
         asr.l   #$2,d0                          ; 06BDC
-        move.l  $46(a0),d1                      ; 06BDE
+        move.l  obj_VelZ(a0),d1                 ; 06BDE
         asr.l   #$2,d1                          ; 06BE2
         move.w  d0,FlyAircraft_OldX(a6)         ; 06BE4
         move.w  d1,FlyAircraft_OldZ(a6)         ; 06BE8
@@ -3612,9 +3614,9 @@ FlyAircraft:
         beq.b   l_000_06C0E                     ; 06BF2
         tst.w   FlyAircraft_Object(a6)          ; 06BF4
         bne.b   l_000_06C0E                     ; 06BF8
-        move.l  $3e(a0),d0                      ; 06BFA
+        move.l  obj_VelX(a0),d0                 ; 06BFA
         asr.l   #$6,d0                          ; 06BFE
-        move.l  $46(a0),d1                      ; 06C00
+        move.l  obj_VelZ(a0),d1                 ; 06C00
         asr.l   #$6,d1                          ; 06C04
         move.w  d0,FlyAircraft_OldX(a6)         ; 06C06
         move.w  d1,FlyAircraft_OldZ(a6)         ; 06C0A
@@ -3639,7 +3641,7 @@ l_000_06C0E:
         move.w  d0,FlyAircraft_VelZ(a6)         ; 06C3E
 l_000_06C42:
         movea.l (CockpitObject).l,a0            ; 06C42
-        move.l  $42(a0),d0                      ; 06C48
+        move.l  obj_VelY(a0),d0                 ; 06C48
         asr.l   #$2,d0                          ; 06C4C
         move.w  d0,FlyAircraft_OldY(a6)         ; 06C4E
         tst.b   (FlightFlag170).l               ; 06C52
@@ -3662,7 +3664,7 @@ l_000_06C66:
         btst    #$0,d1                          ; 06C86
         bne.b   l_000_06C9A                     ; 06C8A
         movea.l (CockpitObject).l,a0            ; 06C8C
-        move.w  $76(a0),d1                      ; 06C92
+        move.w  obj_Lift(a0),d1                 ; 06C92
         add.w   d1,FlyAircraft_VelY(a6)         ; 06C96
 l_000_06C9A:
         move.w  FlyAircraft_VelX(a6),d0         ; 06C9A
@@ -3699,15 +3701,15 @@ l_000_06D00:
         move.l  FlyAircraft_NewX(a6),d0         ; 06D00
         neg.l   d0                              ; 06D04
         movea.l (CockpitObject).l,a0            ; 06D06
-        move.l  d0,$3e(a0)                      ; 06D0C
+        move.l  d0,obj_VelX(a0)                 ; 06D0C
         move.l  FlyAircraft_NewY(a6),d0         ; 06D10
         neg.l   d0                              ; 06D14
         movea.l (CockpitObject).l,a0            ; 06D16
-        move.l  d0,$42(a0)                      ; 06D1C
+        move.l  d0,obj_VelY(a0)                 ; 06D1C
         move.l  FlyAircraft_NewZ(a6),d0         ; 06D20
         neg.l   d0                              ; 06D24
         movea.l (CockpitObject).l,a0            ; 06D26
-        move.l  d0,$46(a0)                      ; 06D2C
+        move.l  d0,obj_VelZ(a0)                 ; 06D2C
         tst.b   (WorldFrozen).l                 ; 06D30
         beq.b   l_000_06D42                     ; 06D36
         moveq   #$0,d0                          ; 06D38
@@ -3735,11 +3737,11 @@ l_000_06D6E:
         tst.b   d0                              ; 06D78
         beq.w   l_000_06E1A                     ; 06D7A
         movea.l (CockpitObject).l,a0            ; 06D7E
-        move.b  $7c(a0),d0                      ; 06D84
+        move.b  obj_Ejection(a0),d0             ; 06D84
         andi.b  #$70,d0                         ; 06D88
         tst.b   d0                              ; 06D8C
         bne.b   l_000_06DF0                     ; 06D8E
-        move.b  $62(a0),d0                      ; 06D90
+        move.b  obj_Type(a0),d0                 ; 06D90
         cmpi.b  #$14,d0                         ; 06D94
         bne.b   l_000_06DC2                     ; 06D98
         move.w  $4e(a0),d0                      ; 06D9A
@@ -3775,7 +3777,7 @@ l_000_06DF0:
         bra.b   l_000_06E6E                     ; 06E18
 l_000_06E1A:
         movea.l (CockpitObject).l,a0            ; 06E1A
-        move.b  $62(a0),d0                      ; 06E20
+        move.b  obj_Type(a0),d0                 ; 06E20
         andi.b  #$f0,d0                         ; 06E24
         tst.b   d0                              ; 06E28
         bne.b   l_000_06E36                     ; 06E2A
@@ -3783,11 +3785,11 @@ l_000_06E1A:
         bra.b   l_000_06E6E                     ; 06E34
 l_000_06E36:
         movea.l (CockpitObject).l,a0            ; 06E36
-        move.b  $7c(a0),d0                      ; 06E3C
+        move.b  obj_Ejection(a0),d0             ; 06E3C
         andi.b  #$70,d0                         ; 06E40
         tst.b   d0                              ; 06E44
         bne.b   l_000_06E66                     ; 06E46
-        move.b  $62(a0),d0                      ; 06E48
+        move.b  obj_Type(a0),d0                 ; 06E48
         cmpi.b  #$14,d0                         ; 06E4C
         bne.b   l_000_06E5C                     ; 06E50
         move.l  #$a8c,FlyAircraft_Value4E(a6)   ; 06E52
@@ -3799,24 +3801,24 @@ l_000_06E66:
         move.l  #$2ee,FlyAircraft_Value4E(a6)   ; 06E66
 l_000_06E6E:
         movea.l (CockpitObject).l,a0            ; 06E6E
-        move.l  $18(a0),d0                      ; 06E74
+        move.l  obj_Y(a0),d0                    ; 06E74
         sub.l   FlyAircraft_NewY(a6),d0         ; 06E78
         movea.l (CockpitObject).l,a0            ; 06E7C
-        move.l  d0,$18(a0)                      ; 06E82
+        move.l  d0,obj_Y(a0)                    ; 06E82
         move.l  FlyAircraft_Value4E(a6),d1      ; 06E86
         cmp.l   d1,d0                           ; 06E8A
         bgt.w   l_000_071AE                     ; 06E8C
-        movea.l FlyAircraft_Field20(a6),a0      ; 06E90
+        movea.l FlyAircraft_Status(a6),a0       ; 06E90
         move.b  (a0),d0                         ; 06E94
         andi.b  #$fb,d0                         ; 06E96
         move.b  d0,(a0)                         ; 06E9A
         movea.l (CockpitObject).l,a0            ; 06E9C
-        move.b  $62(a0),d0                      ; 06EA2
+        move.b  obj_Type(a0),d0                 ; 06EA2
         andi.b  #$f0,d0                         ; 06EA6
         tst.b   d0                              ; 06EAA
         beq.b   l_000_06EB8                     ; 06EAC
         movea.l (CockpitObject).l,a0            ; 06EAE
-        move.l  d1,$18(a0)                      ; 06EB4
+        move.l  d1,obj_Y(a0)                    ; 06EB4
 l_000_06EB8:
         movea.l FlyAircraft_Bits(a6),a0         ; 06EB8
         move.b  (a0),d0                         ; 06EBC
@@ -3828,7 +3830,7 @@ l_000_06EB8:
         btst    #$7,d0                          ; 06ECC
         beq.b   l_000_06EE4                     ; 06ED0
         movea.l (CockpitObject).l,a0            ; 06ED2
-        move.w  $4c(a0),d0                      ; 06ED8
+        move.w  obj_Timer(a0),d0                ; 06ED8
         andi.w  #$7,d0                          ; 06EDC
         tst.w   d0                              ; 06EE0
         bne.b   l_000_06F30                     ; 06EE2
@@ -3839,7 +3841,7 @@ l_000_06EE4:
         btst    #$1,d0                          ; 06EF0
         beq.b   l_000_06F30                     ; 06EF4
         movea.l (CockpitObject).l,a0            ; 06EF6
-        move.b  $7c(a0),d0                      ; 06EFC
+        move.b  obj_Ejection(a0),d0             ; 06EFC
         move.b  d0,$14(a7)                      ; 06F00
         andi.b  #$70,d0                         ; 06F04
         tst.b   d0                              ; 06F08
@@ -3847,10 +3849,10 @@ l_000_06EE4:
         move.b  $14(a7),d0                      ; 06F0C
         ori.b   #$80,d0                         ; 06F10
         movea.l (CockpitObject).l,a0            ; 06F14
-        move.b  d0,$7c(a0)                      ; 06F1A
+        move.b  d0,obj_Ejection(a0)             ; 06F1A
         tst.w   FlyAircraft_Object(a6)          ; 06F1E
         bne.b   l_000_06F30                     ; 06F22
-        movea.l FlyAircraft_Field20(a6),a0      ; 06F24
+        movea.l FlyAircraft_Status(a6),a0       ; 06F24
         move.b  (a0),d0                         ; 06F28
         ori.b   #$1,d0                          ; 06F2A
         move.b  d0,(a0)                         ; 06F2E
@@ -3868,7 +3870,7 @@ l_000_06F30:
         ori.w   #$80,d0                         ; 06F54
         move.w  d0,(a0)                         ; 06F58
         movea.l (CockpitObject).l,a0            ; 06F5A
-        clr.w   $26(a0)                         ; 06F60
+        clr.w   obj_Response(a0)                ; 06F60
         jsr     (ReadTime).l                    ; 06F64
         move.l  (TimeSeconds).l,(FlightStartTime).l ; 06F6A
         moveq   #$0,d0                          ; 06F74
@@ -3902,13 +3904,13 @@ l_000_06FCE:
         btst    #$1,d0                          ; 06FF0
         bne.b   l_000_07008                     ; 06FF4
         movea.l (CockpitObject).l,a0            ; 06FF6
-        move.b  $7c(a0),d0                      ; 06FFC
+        move.b  obj_Ejection(a0),d0             ; 06FFC
         andi.b  #$70,d0                         ; 07000
         tst.b   d0                              ; 07004
         beq.b   l_000_0702E                     ; 07006
 l_000_07008:
         movea.l (CockpitObject).l,a0            ; 07008
-        move.w  $6e(a0),d0                      ; 0700E
+        move.w  obj_SpeedFlown(a0),d0           ; 0700E
         cmpi.w  #$3c0,d0                        ; 07012
         blt.b   l_000_0702E                     ; 07016
         movea.l FlyAircraft_Flags(a6),a0        ; 07018
@@ -4012,7 +4014,7 @@ l_000_07180:
         move.w  d0,(a0)                         ; 0718A
 l_000_0718C:
         movea.l (CockpitObject).l,a0            ; 0718C
-        move.w  $6e(a0),d0                      ; 07192
+        move.w  obj_SpeedFlown(a0),d0           ; 07192
         cmpi.w  #$3c0,d0                        ; 07196
         bge.w   l_000_07280                     ; 0719A
         movea.l FlyAircraft_Flags(a6),a0        ; 0719E
@@ -4071,11 +4073,11 @@ l_000_07254:
 l_000_07262:
         move.l  (FlightValue).l,d0              ; 07262
         movea.l (CockpitObject).l,a0            ; 07268
-        move.l  $18(a0),d1                      ; 0726E
+        move.l  obj_Y(a0),d1                    ; 0726E
         cmp.l   d0,d1                           ; 07272
         ble.b   l_000_07280                     ; 07274
         movea.l (CockpitObject).l,a0            ; 07276
-        move.l  d0,$18(a0)                      ; 0727C
+        move.l  d0,obj_Y(a0)                    ; 0727C
 l_000_07280:
         movem.l (a7)+,d2-d4/a2-a3               ; 07280
         unlk    a6                              ; 07284

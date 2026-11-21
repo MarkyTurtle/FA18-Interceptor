@@ -29,7 +29,7 @@ DrawStartPointMarkers:
 l_029_00038:
         lea.l   (ObjectTable).l,a4              ; 00038
         move.w  (ViewObject).l,d2               ; 0003E
-        lea.l   $14(a4,d2.w),a4                 ; 00044
+        lea.l   obj_X(a4,d2.w),a4               ; 00044
 l_029_00048:
         lea.l   (StartPoints).l,a0              ; 00048
         move.w  #$0,(LoopIndex).l               ; 0004E
@@ -67,10 +67,10 @@ l_029_000A0:
         add.w   d0,d0                           ; 000B6
         lea.l   (ObjectTable).l,a1              ; 000B8
         adda.w  d0,a1                           ; 000BE
-        btst    #$6,$1(a1)                      ; 000C0
+        btst    #$6,obj_Flags+1(a1)             ; 000C0
         beq.w   l_029_00198                     ; 000C6
-        move.l  $14(a1),d0                      ; 000CA
-        move.l  $1c(a1),d1                      ; 000CE
+        move.l  obj_X(a1),d0                    ; 000CA
+        move.l  obj_Z(a1),d1                    ; 000CE
         bra.w   l_029_00110                     ; 000D2
 l_029_000D6:
         swap    d0                              ; 000D6
@@ -288,16 +288,16 @@ l_029_00366:
 l_029_00372:
         lea.l   (ObjectTable).l,a0              ; 00372
         adda.w  d6,a0                           ; 00378
-        move.w  $0(a0),d7                       ; 0037A
+        move.w  obj_Flags(a0),d7                ; 0037A
         move.w  d7,d2                           ; 0037E
         andi.w  #$40,d7                         ; 00380
         beq.w   l_029_00414                     ; 00384
         andi.w  #$8,d2                          ; 00388
         beq.b   l_029_00398                     ; 0038C
-        btst    #$7,$3(a0)                      ; 0038E
+        btst    #$7,obj_Flags2+1(a0)            ; 0038E
         bne.w   l_029_00414                     ; 00394
 l_029_00398:
-        movem.l $14(a0),d2-d4                   ; 00398
+        movem.l obj_X(a0),d2-d4                 ; 00398
         swap    d2                              ; 0039E
         swap    d4                              ; 003A0
         lea.l   (LineEnds).l,a5                 ; 003A2
@@ -308,7 +308,7 @@ l_029_00398:
         tst.w   (a7)                            ; 003B6
         beq.b   l_029_003FC                     ; 003B8
         move.w  #$3,(DrawColour).l              ; 003BA
-        move.b  $62(a0),d7                      ; 003C2
+        move.b  obj_Type(a0),d7                 ; 003C2
         andi.b  #$f0,d7                         ; 003C6
         cmpi.b  #$20,d7                         ; 003CA
         bne.b   l_029_003D6                     ; 003CE
@@ -317,10 +317,10 @@ l_029_00398:
 l_029_003D6:
         cmpi.b  #$3,(GameMode).l                ; 003D6
         bne.b   l_029_003E8                     ; 003DE
-        btst    #$6,$20(a0)                     ; 003E0
+        btst    #$6,obj_Status(a0)              ; 003E0
         beq.b   l_029_00404                     ; 003E6
 l_029_003E8:
-        move.w  $0(a0),d7                       ; 003E8
+        move.w  obj_Flags(a0),d7                ; 003E8
         andi.w  #$8,d7                          ; 003EC
         bne.b   l_029_003FC                     ; 003F0
         move.w  #$1,(DrawColour).l              ; 003F2
@@ -389,8 +389,8 @@ l_029_00590:
 ;-------------------------------------------------------------------------------
 MapMarkerObject:
         movem.w (LineEnds).l,d0-d2              ; 00592
-        move.l  $14(a0),d2                      ; 0059A
-        move.l  $1c(a0),d4                      ; 0059E
+        move.l  obj_X(a0),d2                    ; 0059A
+        move.l  obj_Z(a0),d4                    ; 0059E
         swap    d2                              ; 005A2
         move.w  -$2(a6),d3                      ; 005A4
         swap    d4                              ; 005A8
@@ -470,7 +470,7 @@ l_029_00680:
         move.b  $71(a0),d4                      ; 00686
         bra.w   l_029_006DA                     ; 0068A
 l_029_0068E:
-        move.w  $68(a0),d7                      ; 0068E
+        move.w  obj_Heading(a0),d7              ; 0068E
         move.w  #$384,d6                        ; 00692
         moveq   #$0,d4                          ; 00696
         sub.w   d6,d7                           ; 00698

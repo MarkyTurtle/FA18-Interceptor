@@ -71,14 +71,14 @@ NoUpdate2:
         rts                                     ; 000B6
 	dc.b	$4E,$75
 l_022_000BA:
-        btst    #$6,$1(a1)                      ; 000BA
+        btst    #$6,obj_Flags+1(a1)             ; 000BA
         beq.b   l_022_000FC                     ; 000C0
-        movem.w $66(a1),d5-d7                   ; 000C2
+        movem.w obj_Pitch(a1),d5-d7             ; 000C2
         movem.l a0-a1,-(a7)                     ; 000C8
         jsr     (SetInverseMatrix).l            ; 000CC
         movem.l (a7)+,a0-a1                     ; 000D2
-        move.w  $c(a1),d2                       ; 000D6
-        move.w  $e(a1),d4                       ; 000DA
+        move.w  obj_X8(a1),d2                   ; 000D6
+        move.w  obj_Z8(a1),d4                   ; 000DA
         ext.l   d2                              ; 000DE
         ext.l   d4                              ; 000E0
         swap    d2                              ; 000E2
@@ -92,7 +92,7 @@ l_022_000BA:
         add.w   d4,d4                           ; 000F2
         add.w   d4,d4                           ; 000F4
         add.w   d2,d4                           ; 000F6
-        move.b  d4,$a(a1)                       ; 000F8
+        move.b  d4,obj_SubCell(a1)              ; 000F8
 l_022_000FC:
         rts                                     ; 000FC
 
@@ -124,14 +124,14 @@ l_022_0012C:
         bne.b   l_022_00144                     ; 0013C
         jsr     (KeepInZone).l                  ; 0013E
 l_022_00144:
-        move.w  $0(a1),d0                       ; 00144
+        move.w  obj_Flags(a1),d0                ; 00144
         move.w  d0,d1                           ; 00148
         andi.w  #$400,d0                        ; 0014A
         beq.b   l_022_001C6                     ; 0014E
-        tst.w   $4c(a1)                         ; 00150
+        tst.w   obj_Timer(a1)                   ; 00150
         bgt.b   l_022_001C0                     ; 00154
-        andi.w  #$fbff,$0(a1)                   ; 00156
-        move.b  $62(a1),d2                      ; 0015C
+        andi.w  #$fbff,obj_Flags(a1)            ; 00156
+        move.b  obj_Type(a1),d2                 ; 0015C
         cmpi.b  #$15,d2                         ; 00160
         beq.b   l_022_001A4                     ; 00164
         andi.b  #$f0,d2                         ; 00166
@@ -139,26 +139,26 @@ l_022_00144:
         beq.b   l_022_001A4                     ; 0016E
         cmpi.b  #$10,d2                         ; 00170
         bne.b   l_022_0018C                     ; 00174
-        btst    #$3,$1(a1)                      ; 00176
+        btst    #$3,obj_Flags+1(a1)             ; 00176
         bne.b   l_022_0018C                     ; 0017C
-        btst    #$7,$3(a1)                      ; 0017E
+        btst    #$7,obj_Flags2+1(a1)            ; 0017E
         bne.b   l_022_0018C                     ; 00184
         addq.b  #$1,(MissionTargetsDone).l      ; 00186
 l_022_0018C:
         tst.w   (CurrentObject).l               ; 0018C
         beq.b   l_022_001A4                     ; 00192
-        btst    #$7,$3(a1)                      ; 00194
+        btst    #$7,obj_Flags2+1(a1)            ; 00194
         bne.b   l_022_001A4                     ; 0019A
-        btst    #$7,$0(a1)                      ; 0019C
+        btst    #$7,obj_Flags(a1)               ; 0019C
         beq.b   l_022_001C0                     ; 001A2
 l_022_001A4:
-        andi.w  #$ffbf,$0(a1)                   ; 001A4
-        move.w  #$14,$4c(a1)                    ; 001AA
-        bclr    #$6,$0(a1)                      ; 001B0
-        andi.w  #$dfff,$0(a1)                   ; 001B6
+        andi.w  #$ffbf,obj_Flags(a1)            ; 001A4
+        move.w  #$14,obj_Timer(a1)              ; 001AA
+        bclr    #$6,obj_Flags(a1)               ; 001B0
+        andi.w  #$dfff,obj_Flags(a1)            ; 001B6
         bra.w   l_022_00816                     ; 001BC
 l_022_001C0:
-        andi.w  #$dfff,$0(a1)                   ; 001C0
+        andi.w  #$dfff,obj_Flags(a1)            ; 001C0
 l_022_001C6:
         move.w  d1,d0                           ; 001C6
         andi.w  #$1000,d1                       ; 001C8
@@ -166,11 +166,11 @@ l_022_001C6:
         andi.w  #$100,d0                        ; 001CE
         beq.w   l_022_00368                     ; 001D2
 l_022_001D6:
-        btst    #$0,$2(a1)                      ; 001D6
+        btst    #$0,obj_Flags2(a1)              ; 001D6
         beq.b   l_022_001EC                     ; 001DC
-        tst.b   $5(a1)                          ; 001DE
+        tst.b   obj_State(a1)                   ; 001DE
         bne.b   l_022_001EC                     ; 001E2
-        bset    #$4,$3(a1)                      ; 001E4
+        bset    #$4,obj_Flags2+1(a1)            ; 001E4
         bra.b   l_022_00208                     ; 001EA
 l_022_001EC:
         move.w  (StatusBits).l,d0               ; 001EC
@@ -183,20 +183,20 @@ l_022_00208:
         jsr     (PlayerFrameControls).l         ; 00208
         tst.w   (CurrentObject).l               ; 0020E
         bne.w   l_022_002BA                     ; 00214
-        move.l  $42(a1),d0                      ; 00218
+        move.l  obj_VelY(a1),d0                 ; 00218
         bge.b   l_022_00262                     ; 0021C
         neg.l   d0                              ; 0021E
-        btst    #$1,$20(a1)                     ; 00220
+        btst    #$1,obj_Status(a1)              ; 00220
         bne.b   l_022_00288                     ; 00226
-        cmpi.w  #$3840,$66(a1)                  ; 00228
+        cmpi.w  #$3840,obj_Pitch(a1)            ; 00228
         bgt.b   l_022_00262                     ; 0022E
-        cmpi.w  #$1e0,$66(a1)                   ; 00230
+        cmpi.w  #$1e0,obj_Pitch(a1)             ; 00230
         blt.b   l_022_00262                     ; 00236
         asl.l   #$4,d0                          ; 00238
-        cmp.l   $18(a1),d0                      ; 0023A
+        cmp.l   obj_Y(a1),d0                    ; 0023A
         blt.b   l_022_00262                     ; 0023E
 l_022_00240:
-        btst    #$7,$3(a1)                      ; 00240
+        btst    #$7,obj_Flags2+1(a1)            ; 00240
         bne.b   l_022_002BA                     ; 00246
         cmpi.w  #$9c06,(CurrentWarning).l       ; 00248
         beq.b   l_022_002BA                     ; 00250
@@ -204,24 +204,24 @@ l_022_00240:
         move.w  #$9c06,d0                       ; 0025C
         bra.b   l_022_002B2                     ; 00260
 l_022_00262:
-        cmpi.w  #$3840,$6a(a1)                  ; 00262
+        cmpi.w  #$3840,obj_Roll(a1)             ; 00262
         bgt.b   l_022_00274                     ; 00268
-        cmpi.w  #$4b0,$6a(a1)                   ; 0026A
+        cmpi.w  #$4b0,obj_Roll(a1)              ; 0026A
         blt.b   l_022_002BA                     ; 00270
         bra.b   l_022_0027C                     ; 00272
 l_022_00274:
-        cmpi.w  #$6bd0,$6a(a1)                  ; 00274
+        cmpi.w  #$6bd0,obj_Roll(a1)             ; 00274
         bgt.b   l_022_002BA                     ; 0027A
 l_022_0027C:
-        cmpi.l  #$1800,$18(a1)                  ; 0027C
+        cmpi.l  #$1800,obj_Y(a1)                ; 0027C
         ble.b   l_022_00240                     ; 00284
         bra.b   l_022_002BA                     ; 00286
 l_022_00288:
-        move.b  $7c(a1),d1                      ; 00288
+        move.b  obj_Ejection(a1),d1             ; 00288
         andi.b  #$f,d1                          ; 0028C
         bne.b   l_022_002BA                     ; 00290
         asl.l   #$6,d0                          ; 00292
-        cmp.l   $18(a1),d0                      ; 00294
+        cmp.l   obj_Y(a1),d0                    ; 00294
         blt.b   l_022_002BA                     ; 00298
         cmpi.w  #$d02a,(CurrentWarning).l       ; 0029A
         beq.b   l_022_002BA                     ; 002A2
@@ -236,7 +236,7 @@ l_022_002BA:
         bne.b   l_022_002F6                     ; 002C6
         tst.b   (OutsideView).l                 ; 002C8
         bne.b   l_022_002F6                     ; 002CE
-        btst    #$0,$3(a1)                      ; 002D0
+        btst    #$0,obj_Flags2+1(a1)            ; 002D0
         beq.b   l_022_002F6                     ; 002D6
         cmpi.w  #$d00a,(CurrentWarning).l       ; 002D8
         beq.b   l_022_002F6                     ; 002E0
@@ -244,23 +244,23 @@ l_022_002BA:
         jsr     (StartWarning).l                ; 002E6
         ori.l   #$80,(SoundRequests).l          ; 002EC
 l_022_002F6:
-        btst    #$1,$20(a1)                     ; 002F6
+        btst    #$1,obj_Status(a1)              ; 002F6
         bne.b   l_022_0031E                     ; 002FC
-        move.b  $62(a1),d0                      ; 002FE
+        move.b  obj_Type(a1),d0                 ; 002FE
         andi.b  #$f0,d0                         ; 00302
         cmpi.b  #$10,d0                         ; 00306
         bne.b   l_022_0031E                     ; 0030A
-        btst    #$4,$0(a1)                      ; 0030C
+        btst    #$4,obj_Flags(a1)               ; 0030C
         beq.b   l_022_0031E                     ; 00312
         move.l  a1,-(a7)                        ; 00314
         jsr     (EngineAndSpeed).l              ; 00316
         movea.l (a7)+,a1                        ; 0031C
 l_022_0031E:
-        move.b  $62(a1),d0                      ; 0031E
+        move.b  obj_Type(a1),d0                 ; 0031E
         andi.b  #$f0,d0                         ; 00322
         cmpi.b  #$30,d0                         ; 00326
         beq.b   l_022_00334                     ; 0032A
-        btst    #$7,$0(a1)                      ; 0032C
+        btst    #$7,obj_Flags(a1)               ; 0032C
         bne.b   l_022_0033E                     ; 00332
 l_022_00334:
         move.l  a1,-(a7)                        ; 00334
@@ -269,35 +269,35 @@ l_022_00334:
 l_022_0033E:
         tst.w   (CurrentObject).l               ; 0033E
         beq.b   l_022_003A8                     ; 00344
-        move.w  $96(a1),d5                      ; 00346
-        move.w  $9c(a1),d6                      ; 0034A
-        move.w  $a2(a1),d7                      ; 0034E
+        move.w  obj_Inverse+4(a1),d5            ; 00346
+        move.w  obj_Inverse+10(a1),d6           ; 0034A
+        move.w  obj_Inverse+16(a1),d7           ; 0034E
         asr.w   #$2,d5                          ; 00352
         asr.w   #$2,d6                          ; 00354
         asr.w   #$2,d7                          ; 00356
-        move.w  $0(a1),d0                       ; 00358
+        move.w  obj_Flags(a1),d0                ; 00358
         andi.w  #$100,d0                        ; 0035C
         beq.b   l_022_00372                     ; 00360
-        andi.w  #$feff,$0(a1)                   ; 00362
+        andi.w  #$feff,obj_Flags(a1)            ; 00362
 l_022_00368:
         moveq   #$0,d5                          ; 00368
         moveq   #$0,d6                          ; 0036A
         moveq   #$0,d7                          ; 0036C
         bra.w   l_022_0041E                     ; 0036E
 l_022_00372:
-        move.b  $62(a1),d0                      ; 00372
+        move.b  obj_Type(a1),d0                 ; 00372
         andi.b  #$f0,d0                         ; 00376
         cmpi.b  #$30,d0                         ; 0037A
         bne.b   l_022_003A8                     ; 0037E
-        move.l  $18(a1),d4                      ; 00380
-        add.l   $42(a1),d4                      ; 00384
+        move.l  obj_Y(a1),d4                    ; 00380
+        add.l   obj_VelY(a1),d4                 ; 00384
         bgt.b   l_022_00392                     ; 00388
-        bset    #$7,$0(a1)                      ; 0038A
+        bset    #$7,obj_Flags(a1)               ; 0038A
         clr.l   d4                              ; 00390
 l_022_00392:
-        move.l  d4,$18(a1)                      ; 00392
-        movem.l $3e(a1),d5-d7                   ; 00396
-        btst    #$7,$0(a1)                      ; 0039C
+        move.l  d4,obj_Y(a1)                    ; 00392
+        movem.l obj_VelX(a1),d5-d7              ; 00396
+        btst    #$7,obj_Flags(a1)               ; 0039C
         beq.b   l_022_003CC                     ; 003A2
         bra.w   l_022_00816                     ; 003A4
 l_022_003A8:
@@ -312,16 +312,16 @@ l_022_003BC:
         move.l  a1,-(a7)                        ; 003BC
         jsr     (FlyAircraft).l                 ; 003BE
         movea.l (a7)+,a1                        ; 003C4
-        movem.l $3e(a1),d5-d7                   ; 003C6
+        movem.l obj_VelX(a1),d5-d7              ; 003C6
 l_022_003CC:
-        btst    #$4,$0(a1)                      ; 003CC
+        btst    #$4,obj_Flags(a1)               ; 003CC
         bne.b   l_022_003DC                     ; 003D2
         movem.l d5-d7/a1,-(a7)                  ; 003D4
         bra.w   l_022_004E6                     ; 003D8
 l_022_003DC:
         move.l  #$1fffffff,d0                   ; 003DC
-        move.l  $14(a1),d2                      ; 003E2
-        move.l  $1c(a1),d4                      ; 003E6
+        move.l  obj_X(a1),d2                    ; 003E2
+        move.l  obj_Z(a1),d4                    ; 003E6
         add.l   d5,d2                           ; 003EA
         blt.b   l_022_003F6                     ; 003EC
         cmp.l   d0,d2                           ; 003EE
@@ -340,33 +340,33 @@ l_022_003F8:
 l_022_00404:
         moveq   #$0,d4                          ; 00404
 l_022_00406:
-        move.l  d2,$14(a1)                      ; 00406
-        move.l  d4,$1c(a1)                      ; 0040A
-        cmpi.b  #$15,$62(a1)                    ; 0040E
+        move.l  d2,obj_X(a1)                    ; 00406
+        move.l  d4,obj_Z(a1)                    ; 0040A
+        cmpi.b  #$15,obj_Type(a1)               ; 0040E
         bne.b   l_022_0041E                     ; 00414
-        move.l  #$b000,$18(a1)                  ; 00416
+        move.l  #$b000,obj_Y(a1)                ; 00416
 l_022_0041E:
         movem.l d5-d7/a1,-(a7)                  ; 0041E
-        move.l  $18(a1),d3                      ; 00422
+        move.l  obj_Y(a1),d3                    ; 00422
         moveq   #$0,d6                          ; 00426
-        move.l  $14(a1),d0                      ; 00428
+        move.l  obj_X(a1),d0                    ; 00428
         move.l  d0,d2                           ; 0042C
         andi.l  #$3fffff,d2                     ; 0042E
-        move.l  $1c(a1),d1                      ; 00434
+        move.l  obj_Z(a1),d1                    ; 00434
         move.l  d1,d4                           ; 00438
         andi.l  #$3fffff,d4                     ; 0043A
         swap    d0                              ; 00440
         asr.w   #$6,d0                          ; 00442
-        cmp.w   $6(a1),d0                       ; 00444
+        cmp.w   obj_CellX(a1),d0                ; 00444
         beq.b   l_022_00450                     ; 00448
-        move.w  d0,$6(a1)                       ; 0044A
+        move.w  d0,obj_CellX(a1)                ; 0044A
         moveq   #-1,d6                          ; 0044E
 l_022_00450:
         swap    d1                              ; 00450
         asr.w   #$6,d1                          ; 00452
-        cmp.w   $8(a1),d1                       ; 00454
+        cmp.w   obj_CellZ(a1),d1                ; 00454
         beq.b   l_022_00460                     ; 00458
-        move.w  d1,$8(a1)                       ; 0045A
+        move.w  d1,obj_CellZ(a1)                ; 0045A
         moveq   #-1,d6                          ; 0045E
 l_022_00460:
         tst.b   d6                              ; 00460
@@ -376,9 +376,9 @@ l_022_0046A:
         asr.l   #$8,d2                          ; 0046A
         asr.l   #$8,d3                          ; 0046C
         asr.l   #$8,d4                          ; 0046E
-        move.w  d2,$c(a1)                       ; 00470
-        move.w  d4,$e(a1)                       ; 00474
-        move.l  d3,$10(a1)                      ; 00478
+        move.w  d2,obj_X8(a1)                   ; 00470
+        move.w  d4,obj_Z8(a1)                   ; 00474
+        move.l  d3,obj_Y8(a1)                   ; 00478
         swap    d2                              ; 0047C
         rol.l   #$4,d2                          ; 0047E
         swap    d4                              ; 00480
@@ -392,17 +392,17 @@ l_022_0046A:
         add.w   d4,d4                           ; 00490
         add.w   d4,d4                           ; 00492
         add.w   d2,d4                           ; 00494
-        cmp.b   $a(a1),d4                       ; 00496
+        cmp.b   obj_SubCell(a1),d4              ; 00496
         beq.b   l_022_004E6                     ; 0049A
-        move.b  d4,$a(a1)                       ; 0049C
-        move.w  $6(a1),d0                       ; 004A0
+        move.b  d4,obj_SubCell(a1)              ; 0049C
+        move.w  obj_CellX(a1),d0                ; 004A0
         sub.w   (ViewCellX).l,d0                ; 004A4
         bge.b   l_022_004AE                     ; 004AA
         neg.w   d0                              ; 004AC
 l_022_004AE:
         cmpi.w  #$2,d0                          ; 004AE
         bgt.b   l_022_004E6                     ; 004B2
-        move.w  $8(a1),d0                       ; 004B4
+        move.w  obj_CellZ(a1),d0                ; 004B4
         sub.w   (ViewCellZ).l,d0                ; 004B8
         bge.b   l_022_004C2                     ; 004BE
         neg.w   d0                              ; 004C0
@@ -421,7 +421,7 @@ l_022_004C2:
         add.w   d5,d7                           ; 004E0
         move.b  d7,$b(a1)                       ; 004E2
 l_022_004E6:
-        move.b  $7c(a1),d0                      ; 004E6
+        move.b  obj_Ejection(a1),d0             ; 004E6
         move.b  d0,d1                           ; 004EA
         andi.b  #$f0,d1                         ; 004EC
         andi.b  #$f,d0                          ; 004F0
@@ -436,16 +436,16 @@ l_022_00506:
         addq.b  #$1,d0                          ; 00506
         cmpi.b  #$6,d0                          ; 00508
         ble.b   l_022_00522                     ; 0050C
-        btst    #$5,$3(a1)                      ; 0050E
+        btst    #$5,obj_Flags2+1(a1)            ; 0050E
         bne.b   l_022_0051A                     ; 00514
         subq.b  #$1,d0                          ; 00516
         bra.b   l_022_00522                     ; 00518
 l_022_0051A:
         clr.b   d0                              ; 0051A
-        andi.w  #$ffdf,$2(a1)                   ; 0051C
+        andi.w  #$ffdf,obj_Flags2(a1)           ; 0051C
 l_022_00522:
         or.b    d1,d0                           ; 00522
-        move.b  d0,$7c(a1)                      ; 00524
+        move.b  d0,obj_Ejection(a1)             ; 00524
 l_022_00528:
         move.b  d1,d0                           ; 00528
         andi.b  #$f,d0                          ; 0052A
@@ -462,7 +462,7 @@ l_022_0053A:
         bset    #$7,d1                          ; 00548
 l_022_0054C:
         or.b    d0,d1                           ; 0054C
-        move.b  d1,$7c(a1)                      ; 0054E
+        move.b  d1,obj_Ejection(a1)             ; 0054E
         move.b  #$3,(PanelLampRedraw).l         ; 00552
 l_022_0055A:
         tst.w   (CurrentObjectOffset).l         ; 0055A
@@ -481,12 +481,12 @@ l_022_00570:
 l_022_00580:
         move.b  d1,(ModelVariant).l             ; 00580
 l_022_00586:
-        btst    #$2,$0(a1)                      ; 00586
+        btst    #$2,obj_Flags(a1)               ; 00586
         beq.b   l_022_00596                     ; 0058C
         movem.l (a7)+,d5-d7/a1                  ; 0058E
         bra.w   l_022_00816                     ; 00592
 l_022_00596:
-        movem.l $14(a1),d2-d4                   ; 00596
+        movem.l obj_X(a1),d2-d4                 ; 00596
         movem.l (a7),d5-d7                      ; 0059C
         sub.l   d5,d2                           ; 005A0
         sub.l   d6,d3                           ; 005A2
@@ -497,18 +497,18 @@ l_022_00596:
         move.w  (CurrentObject).l,d1            ; 005B4
         btst    #$5,d0                          ; 005BA
         beq.b   l_022_005C8                     ; 005BE
-        clr.l   $56(a1)                         ; 005C0
-        clr.w   $5a(a1)                         ; 005C4
+        clr.l   obj_PitchRate(a1)               ; 005C0
+        clr.w   obj_RollRate(a1)                ; 005C4
 l_022_005C8:
         cmpi.w  #$10,d0                         ; 005C8
         beq.b   l_022_00616                     ; 005CC
         cmpi.w  #$20,d0                         ; 005CE
         bne.b   l_022_00616                     ; 005D2
-        move.b  $62(a1),d2                      ; 005D4
+        move.b  obj_Type(a1),d2                 ; 005D4
         andi.b  #$f0,d2                         ; 005D8
         cmpi.b  #$0,d2                          ; 005DC
         beq.b   l_022_00616                     ; 005E0
-        move.b  $62(a1),d2                      ; 005E2
+        move.b  obj_Type(a1),d2                 ; 005E2
         andi.b  #$f0,d2                         ; 005E6
         cmpi.b  #$0,d2                          ; 005EA
         bne.b   l_022_00602                     ; 005EE
@@ -522,38 +522,38 @@ l_022_005C8:
         sub.l   d3,d6                           ; 005FE
         sub.l   d4,d7                           ; 00600
 l_022_00602:
-        btst    #$7,$3(a1)                      ; 00602
+        btst    #$7,obj_Flags2+1(a1)            ; 00602
         bne.b   l_022_0060E                     ; 00608
-        sub.l   d6,$18(a1)                      ; 0060A
+        sub.l   d6,obj_Y(a1)                    ; 0060A
 l_022_0060E:
-        sub.l   d5,$14(a1)                      ; 0060E
-        sub.l   d7,$1c(a1)                      ; 00612
+        sub.l   d5,obj_X(a1)                    ; 0060E
+        sub.l   d7,obj_Z(a1)                    ; 00612
 l_022_00616:
-        movem.l $14(a1),d2-d4                   ; 00616
+        movem.l obj_X(a1),d2-d4                 ; 00616
         andi.l  #$3fffff,d2                     ; 0061C
         andi.l  #$3fffff,d4                     ; 00622
         asr.l   #$8,d2                          ; 00628
         asr.l   #$8,d3                          ; 0062A
         asr.l   #$8,d4                          ; 0062C
-        move.w  d2,$c(a1)                       ; 0062E
-        move.w  d4,$e(a1)                       ; 00632
-        move.l  d3,$10(a1)                      ; 00636
-        move.w  $6e(a1),d2                      ; 0063A
+        move.w  d2,obj_X8(a1)                   ; 0062E
+        move.w  d4,obj_Z8(a1)                   ; 00632
+        move.l  d3,obj_Y8(a1)                   ; 00636
+        move.w  obj_SpeedFlown(a1),d2           ; 0063A
         tst.w   d1                              ; 0063E
         bne.w   l_022_00742                     ; 00640
-        move.b  $7c(a1),d3                      ; 00644
+        move.b  obj_Ejection(a1),d3             ; 00644
         andi.b  #$f,d3                          ; 00648
         bne.w   l_022_0074E                     ; 0064C
         btst    #$4,d0                          ; 00650
         beq.b   l_022_0065E                     ; 00654
-        bset    #$7,$3(a1)                      ; 00656
+        bset    #$7,obj_Flags2+1(a1)            ; 00656
         bra.b   l_022_0069A                     ; 0065C
 l_022_0065E:
         tst.b   (FlightHeld).l                  ; 0065E
         beq.w   l_022_00816                     ; 00664
         cmpi.w  #$20,d0                         ; 00668
         bgt.b   l_022_0069A                     ; 0066C
-        bset    #$7,$0(a1)                      ; 0066E
+        bset    #$7,obj_Flags(a1)               ; 0066E
         bne.b   l_022_0069A                     ; 00674
         cmpi.w  #$3c0,d2                        ; 00676
         bgt.b   l_022_0069A                     ; 0067A
@@ -566,7 +566,7 @@ l_022_0065E:
         addq.l  #$8,a7                          ; 00696
         movea.l (a7)+,a1                        ; 00698
 l_022_0069A:
-        bset    #$7,$0(a1)                      ; 0069A
+        bset    #$7,obj_Flags(a1)               ; 0069A
         cmpi.w  #$3c0,d2                        ; 006A0
         ble.w   l_022_00816                     ; 006A4
         tst.b   (NewAircraftReady).l            ; 006A8
@@ -578,7 +578,7 @@ l_022_0069A:
         move.b  (FlareTime).l,d1                ; 006C2
         or.b    (ChaffTime).l,d1                ; 006C8
         bgt.w   l_022_00816                     ; 006CE
-        bset    #$1,$20(a1)                     ; 006D2
+        bset    #$1,obj_Status(a1)              ; 006D2
         move.w  #$9014,d1                       ; 006D8
         ori.w   #$100,(StatusBits).l            ; 006DC
         bra.b   l_022_006F8                     ; 006E4
@@ -595,7 +595,7 @@ l_022_006F8:
         move.b  #$1,(ShakeKind).l               ; 00704
         bra.w   l_022_00816                     ; 0070C
 l_022_00710:
-        ori.w   #$200,$0(a1)                    ; 00710
+        ori.w   #$200,obj_Flags(a1)             ; 00710
         btst    #$6,d0                          ; 00716
         bne.b   l_022_00736                     ; 0071A
         movea.l (ConfigBuffer).l,a0             ; 0071C
@@ -609,38 +609,38 @@ l_022_00736:
 l_022_00742:
         cmpi.w  #$40,d0                         ; 00742
         beq.b   l_022_0074E                     ; 00746
-        bset    #$7,$0(a1)                      ; 00748
+        bset    #$7,obj_Flags(a1)               ; 00748
 l_022_0074E:
-        btst    #$2,$0(a1)                      ; 0074E
+        btst    #$2,obj_Flags(a1)               ; 0074E
         beq.b   l_022_00772                     ; 00754
-        cmpi.w  #$f,$4c(a1)                     ; 00756
+        cmpi.w  #$f,obj_Timer(a1)               ; 00756
         ble.w   l_022_00816                     ; 0075C
         move.w  #$3a,(DebugCheckpoint).l        ; 00760
         jsr     (Nop).l                         ; 00768
         bra.w   l_022_00816                     ; 0076E
 l_022_00772:
-        move.b  $62(a1),d2                      ; 00772
+        move.b  obj_Type(a1),d2                 ; 00772
         andi.b  #$f0,d2                         ; 00776
         cmpi.b  #$30,d2                         ; 0077A
         bne.b   l_022_0078A                     ; 0077E
-        btst    #$1,$0(a1)                      ; 00780
+        btst    #$1,obj_Flags(a1)               ; 00780
         beq.w   l_022_00816                     ; 00786
 l_022_0078A:
-        bset    #$1,$20(a1)                     ; 0078A
+        bset    #$1,obj_Status(a1)              ; 0078A
         cmpi.w  #$40,d0                         ; 00790
         beq.b   l_022_0079C                     ; 00794
-        andi.w  #$efff,$0(a1)                   ; 00796
+        andi.w  #$efff,obj_Flags(a1)            ; 00796
 l_022_0079C:
         cmpi.b  #$0,d2                          ; 0079C
         beq.b   l_022_007CC                     ; 007A0
-        cmpi.b  #$15,$62(a1)                    ; 007A2
+        cmpi.b  #$15,obj_Type(a1)               ; 007A2
         beq.b   l_022_007F6                     ; 007A8
         cmpi.w  #$40,d0                         ; 007AA
         blt.b   l_022_007F6                     ; 007AE
         move.w  (CurrentObjectOffset).l,(FlameObject).l ; 007B0
-        bset    #$4,$2(a1)                      ; 007BA
-        bset    #$1,$20(a1)                     ; 007C0
-        move.b  #$1,$5(a1)                      ; 007C6
+        bset    #$4,obj_Flags2(a1)              ; 007BA
+        bset    #$1,obj_Status(a1)              ; 007C0
+        move.b  #$1,obj_State(a1)               ; 007C6
 l_022_007CC:
         cmpi.w  #$40,d0                         ; 007CC
         beq.b   l_022_0081C                     ; 007D0
@@ -652,63 +652,63 @@ l_022_007D2:
         move.l  a1,-(a7)                        ; 007DE
         jsr     (WaterUnderObject).l            ; 007E0
         movea.l (a7)+,a1                        ; 007E6
-        btst    #$1,$4(a1)                      ; 007E8
+        btst    #$1,obj_Bits(a1)                ; 007E8
         bne.b   l_022_007F6                     ; 007EE
         moveq   #$0,d1                          ; 007F0
 l_022_007F2:
         bsr.w   FreeSmallObject                 ; 007F2
 l_022_007F6:
-        ori.w   #$400,$0(a1)                    ; 007F6
-        move.w  #$f,$4c(a1)                     ; 007FC
-        bset    #$1,$0(a1)                      ; 00802
+        ori.w   #$400,obj_Flags(a1)             ; 007F6
+        move.w  #$f,obj_Timer(a1)               ; 007FC
+        bset    #$1,obj_Flags(a1)               ; 00802
         tst.w   (CurrentObject).l               ; 00808
         beq.b   l_022_00816                     ; 0080E
-        bclr    #$1,$0(a1)                      ; 00810
+        bclr    #$1,obj_Flags(a1)               ; 00810
 l_022_00816:
         bsr.w   UpdateFlame                     ; 00816
         rts                                     ; 0081A
 l_022_0081C:
-        bclr    #$6,$1(a1)                      ; 0081C
+        bclr    #$6,obj_Flags+1(a1)             ; 0081C
         move.b  #$c,(RedrawFlags).l             ; 00822
         rts                                     ; 0082A
 l_022_0082C:
-        btst    #$1,$20(a1)                     ; 0082C
+        btst    #$1,obj_Status(a1)              ; 0082C
         beq.b   l_022_0084C                     ; 00832
-        btst    #$7,$3(a1)                      ; 00834
+        btst    #$7,obj_Flags2+1(a1)            ; 00834
         beq.b   l_022_0084C                     ; 0083A
-        btst    #$2,$0(a1)                      ; 0083C
+        btst    #$2,obj_Flags(a1)               ; 0083C
         bne.b   l_022_0084C                     ; 00842
-        andi.w  #$efff,$0(a1)                   ; 00844
+        andi.w  #$efff,obj_Flags(a1)            ; 00844
         bra.b   l_022_007F6                     ; 0084A
 l_022_0084C:
-        move.b  $62(a1),d2                      ; 0084C
+        move.b  obj_Type(a1),d2                 ; 0084C
         andi.b  #$f0,d2                         ; 00850
         cmpi.b  #$30,d2                         ; 00854
         beq.b   l_022_00816                     ; 00858
-        bclr    #$7,$0(a1)                      ; 0085A
+        bclr    #$7,obj_Flags(a1)               ; 0085A
         cmpi.b  #$0,d2                          ; 00860
         bne.b   l_022_0087A                     ; 00864
         moveq   #$0,d0                          ; 00866
-        btst    #$2,$0(a1)                      ; 00868
+        btst    #$2,obj_Flags(a1)               ; 00868
         bne.b   l_022_00884                     ; 0086E
-        btst    #$7,$3(a1)                      ; 00870
+        btst    #$7,obj_Flags2+1(a1)            ; 00870
         bne.w   l_022_007D2                     ; 00876
 l_022_0087A:
-        btst    #$1,$0(a1)                      ; 0087A
+        btst    #$1,obj_Flags(a1)               ; 0087A
         bne.w   l_022_007F6                     ; 00880
 l_022_00884:
         tst.b   (Hunk24Flag).l                  ; 00884
         beq.b   l_022_00894                     ; 0088A
-        bset    #$1,$3(a1)                      ; 0088C
+        bset    #$1,obj_Flags2+1(a1)            ; 0088C
         bra.b   l_022_008B6                     ; 00892
 l_022_00894:
-        bclr    #$1,$3(a1)                      ; 00894
+        bclr    #$1,obj_Flags2+1(a1)            ; 00894
         beq.b   l_022_008B6                     ; 0089A
-        move.b  $62(a1),d0                      ; 0089C
+        move.b  obj_Type(a1),d0                 ; 0089C
         andi.b  #$f0,d0                         ; 008A0
         cmpi.b  #$0,d0                          ; 008A4
         bne.b   l_022_008B6                     ; 008A8
-        bset    #$5,$20(a1)                     ; 008AA
+        bset    #$5,obj_Status(a1)              ; 008AA
         clr.b   (ShootCue).l                    ; 008B0
 l_022_008B6:
         bra.w   l_022_00816                     ; 008B6
@@ -723,7 +723,7 @@ ObjectHeightCheck:
         move.l  d7,d2                           ; 008BE
         asr.l   #$8,d1                          ; 008C0
         beq.b   l_022_008E8                     ; 008C2
-        move.l  $18(a1),d3                      ; 008C4
+        move.l  obj_Y(a1),d3                    ; 008C4
         asr.l   #$8,d3                          ; 008C8
         neg.w   d3                              ; 008CA
         asl.l   #$4,d0                          ; 008CC
@@ -734,9 +734,9 @@ ObjectHeightCheck:
         muls.w  d3,d2                           ; 008D6
         asr.l   #$4,d0                          ; 008D8
         asr.l   #$4,d2                          ; 008DA
-        add.l   d0,$14(a1)                      ; 008DC
-        clr.l   $18(a1)                         ; 008E0
-        add.l   d2,$1c(a1)                      ; 008E4
+        add.l   d0,obj_X(a1)                    ; 008DC
+        clr.l   obj_Y(a1)                       ; 008E0
+        add.l   d2,obj_Z(a1)                    ; 008E4
 l_022_008E8:
         rts                                     ; 008E8
 
@@ -783,8 +783,8 @@ ClimbDiveTable:
 	dc.b	$00,$2A,$00,$24,$00,$1E,$00,$18,$00,$12,$00,$0C,$00,$06,$00,$02
 	dc.b	$00,$00
 l_022_009B6:
-        clr.w   $76(a1)                         ; 009B6
-        clr.w   $78(a1)                         ; 009BA
+        clr.w   obj_Lift(a1)                    ; 009B6
+        clr.w   obj_ClimbSpeed(a1)              ; 009BA
         rts                                     ; 009BE
 
 ;-------------------------------------------------------------------------------
@@ -798,7 +798,7 @@ ClimbDivePhysics:
         adda.w  (CurrentObjectOffset).l,a1      ; 009C6
         tst.b   (FlightPhysics).l               ; 009CC
         beq.b   l_022_009B6                     ; 009D2
-        move.w  $6c(a1),d0                      ; 009D4
+        move.w  obj_Speed(a1),d0                ; 009D4
         bge.b   l_022_009DC                     ; 009D8
         neg.w   d0                              ; 009DA
 l_022_009DC:
@@ -811,7 +811,7 @@ l_022_009E6:
         add.w   d0,d0                           ; 009EA
         move.w  (a0,d0.w),d1                    ; 009EC
         lea.l   (SineTable).l,a0                ; 009F0
-        move.w  $66(a1),d2                      ; 009F6
+        move.w  obj_Pitch(a1),d2                ; 009F6
         asr.w   #$3,d2                          ; 009FA
         cmpi.w  #$708,d2                        ; 009FC
         bgt.b   l_022_00A1E                     ; 00A00
@@ -841,15 +841,15 @@ l_022_00A1E:
 l_022_00A40:
         muls.w  d3,d1                           ; 00A40
         asr.l   #$3,d1                          ; 00A42
-        btst    #$7,$3(a1)                      ; 00A44
+        btst    #$7,obj_Flags2+1(a1)            ; 00A44
         bne.b   l_022_00A78                     ; 00A4A
-        tst.b   $7c(a1)                         ; 00A4C
+        tst.b   obj_Ejection(a1)                ; 00A4C
         blt.b   l_022_00A58                     ; 00A50
         move.w  d1,d0                           ; 00A52
         asr.w   #$2,d0                          ; 00A54
         sub.w   d0,d1                           ; 00A56
 l_022_00A58:
-        move.w  $78(a1),d0                      ; 00A58
+        move.w  obj_ClimbSpeed(a1),d0           ; 00A58
         move.w  d0,d2                           ; 00A5C
         cmp.w   d1,d0                           ; 00A5E
         ble.b   l_022_00A7C                     ; 00A60
@@ -873,8 +873,8 @@ l_022_00A7C:
 l_022_00A80:
         sub.w   d0,d2                           ; 00A80
 l_022_00A82:
-        move.w  d2,$78(a1)                      ; 00A82
-        move.w  $6e(a1),d0                      ; 00A86
+        move.w  d2,obj_ClimbSpeed(a1)           ; 00A82
+        move.w  obj_SpeedFlown(a1),d0           ; 00A86
         bge.b   l_022_00A8E                     ; 00A8A
         neg.w   d0                              ; 00A8C
 l_022_00A8E:
@@ -886,12 +886,12 @@ l_022_00A98:
         lea.l   LiftTable(pc),a0                ; 00A98
         add.w   d0,d0                           ; 00A9C
         move.w  (a0,d0.w),d2                    ; 00A9E
-        move.w  $76(a1),d0                      ; 00AA2
+        move.w  obj_Lift(a1),d0                 ; 00AA2
         move.w  d0,d1                           ; 00AA6
         sub.w   d2,d0                           ; 00AA8
         asr.w   #$6,d0                          ; 00AAA
         sub.w   d0,d1                           ; 00AAC
-        move.w  d2,$76(a1)                      ; 00AAE
+        move.w  d2,obj_Lift(a1)                 ; 00AAE
         rts                                     ; 00AB2
 l_022_00AB4:
         rts                                     ; 00AB4
@@ -917,14 +917,14 @@ UpdateFlame:
         add.w   d0,d0                           ; 00AE8
         add.w   d3,d0                           ; 00AEA
         adda.w  d0,a0                           ; 00AEC
-        move.l  $14(a1),(a0)+                   ; 00AEE
-        move.l  $18(a1),(a0)+                   ; 00AF2
-        move.l  $1c(a1),(a0)+                   ; 00AF6
+        move.l  obj_X(a1),(a0)+                 ; 00AEE
+        move.l  obj_Y(a1),(a0)+                 ; 00AF2
+        move.l  obj_Z(a1),(a0)+                 ; 00AF6
         cmpi.b  #$5,(FlameStep).l               ; 00AFA
         bge.b   l_022_00B10                     ; 00B02
-        move.l  $14(a1),(a0)+                   ; 00B04
-        move.l  $18(a1),(a0)+                   ; 00B08
-        move.l  $1c(a1),(a0)+                   ; 00B0C
+        move.l  obj_X(a1),(a0)+                 ; 00B04
+        move.l  obj_Y(a1),(a0)+                 ; 00B08
+        move.l  obj_Z(a1),(a0)+                 ; 00B0C
 l_022_00B10:
         addq.b  #$1,(FlameStep2).l              ; 00B10
         cmpi.b  #$5,(FlameStep2).l              ; 00B16
@@ -935,9 +935,9 @@ l_022_00B26:
         bge.b   l_022_00B36                     ; 00B2E
         addq.b  #$1,(FlameStep).l               ; 00B30
 l_022_00B36:
-        tst.w   $6e(a1)                         ; 00B36
+        tst.w   obj_SpeedFlown(a1)              ; 00B36
         beq.b   l_022_00B44                     ; 00B3A
-        btst    #$4,$2(a1)                      ; 00B3C
+        btst    #$4,obj_Flags2(a1)              ; 00B3C
         bne.b   l_022_00B5C                     ; 00B42
 l_022_00B44:
         move.b  $3d(a1),d0                      ; 00B44

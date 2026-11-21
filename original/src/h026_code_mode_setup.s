@@ -129,19 +129,19 @@ l_026_0011E:
         move.w  d1,d2                           ; 00128
         add.w   d1,d1                           ; 0012A
         adda.w  d1,a1                           ; 0012C
-        move.w  $0(a1),d1                       ; 0012E
+        move.w  obj_Flags(a1),d1                ; 0012E
         andi.w  #$40,d1                         ; 00132
         beq.b   l_026_001A2                     ; 00136
-        move.w  $6(a1),$2c(a0)                  ; 00138
-        move.w  $8(a1),$2e(a0)                  ; 0013E
-        move.w  $c(a1),$30(a0)                  ; 00144
-        move.w  $e(a1),$32(a0)                  ; 0014A
-        move.l  $10(a1),$34(a0)                 ; 00150
+        move.w  obj_CellX(a1),$2c(a0)           ; 00138
+        move.w  obj_CellZ(a1),$2e(a0)           ; 0013E
+        move.w  obj_X8(a1),$30(a0)              ; 00144
+        move.w  obj_Z8(a1),$32(a0)              ; 0014A
+        move.l  obj_Y8(a1),$34(a0)              ; 00150
         lsr.w   #$8,d2                          ; 00156
         ori.b   #$80,d2                         ; 00158
         move.b  d2,$38(a0)                      ; 0015C
-        move.l  $14(a1),d2                      ; 00160
-        move.l  $1c(a1),d4                      ; 00164
+        move.l  obj_X(a1),d2                    ; 00160
+        move.l  obj_Z(a1),d4                    ; 00164
 l_026_00168:
         sub.l   $14(a0),d2                      ; 00168
         sub.l   $1c(a0),d4                      ; 0016C
@@ -197,14 +197,14 @@ l_026_001CA:
         jsr     (TurnByPanelMatrix).l           ; 00206
         lea.l   (ObjectTable).l,a1              ; 0020C
         adda.w  (CurrentObjectOffset).l,a1      ; 00212
-        move.b  #$10,$62(a1)                    ; 00218
-        movem.l d0-d2,$14(a1)                   ; 0021E
+        move.b  #$10,obj_Type(a1)               ; 00218
+        movem.l d0-d2,obj_X(a1)                 ; 0021E
         swap    d0                              ; 00224
         swap    d2                              ; 00226
         lsr.w   #$6,d0                          ; 00228
         lsr.w   #$6,d2                          ; 0022A
-        move.w  d0,$6(a1)                       ; 0022C
-        move.w  d2,$8(a1)                       ; 00230
+        move.w  d0,obj_CellX(a1)                ; 0022C
+        move.w  d2,obj_CellZ(a1)                ; 00230
         andi.w  #$3,d0                          ; 00234
         subq.w  #$3,d0                          ; 00238
         neg.w   d0                              ; 0023A
@@ -213,10 +213,10 @@ l_026_001CA:
         neg.w   d2                              ; 00242
         asl.w   #$2,d2                          ; 00244
         add.w   d0,d2                           ; 00246
-        move.b  d2,$a(a1)                       ; 00248
-        move.b  #$1,$5d(a1)                     ; 0024C
-        move.w  #$ffff,$2c(a1)                  ; 00252
-        clr.b   $5(a1)                          ; 00258
+        move.b  d2,obj_SubCell(a1)              ; 00248
+        move.b  #$1,obj_Zone(a1)                ; 0024C
+        move.w  #$ffff,obj_DestCellX(a1)        ; 00252
+        clr.b   obj_State(a1)                   ; 00258
         move.w  (CurrentObject).l,d0            ; 0025C
         move.b  d0,$5e(a1)                      ; 00262
         clr.b   (FlameStep).l                   ; 00266
@@ -291,7 +291,7 @@ l_026_002EE:
         asl.w   #$8,d1                          ; 00310
         add.w   d1,d1                           ; 00312
         adda.w  d1,a0                           ; 00314
-        move.b  $38(a0),d1                      ; 00316
+        move.b  obj_Target(a0),d1               ; 00316
         bge.b   l_026_00324                     ; 0031A
         andi.b  #$7f,d1                         ; 0031C
         bne.w   l_026_003D4                     ; 00320
@@ -310,8 +310,8 @@ l_026_00342:
         move.w  (a4)+,d6                        ; 00342
         ext.l   d6                              ; 00344
         bsr.w   SetDestination                  ; 00346
-        move.b  #$80,$38(a0)                    ; 0034A
-        andi.w  #$fffe,$0(a0)                   ; 00350
+        move.b  #$80,obj_Target(a0)             ; 0034A
+        andi.w  #$fffe,obj_Flags(a0)            ; 00350
         bra.w   l_026_003D6                     ; 00356
 l_026_0035A:
         tst.w   d6                              ; 0035A
@@ -323,8 +323,8 @@ l_026_0035A:
         adda.w  (a4,d6.w),a4                    ; 0036C
         movem.w (a4)+,d2-d6                     ; 00370
         bsr.w   SetDestination                  ; 00374
-        move.b  #$ff,$38(a0)                    ; 00378
-        andi.w  #$fffe,$0(a0)                   ; 0037E
+        move.b  #$ff,obj_Target(a0)             ; 00378
+        andi.w  #$fffe,obj_Flags(a0)            ; 0037E
         bra.b   l_026_003CE                     ; 00384
 l_026_00386:
         lea.l   (ObjectTable).l,a1              ; 00386
@@ -332,18 +332,18 @@ l_026_00386:
         move.w  d6,d5                           ; 00390
         add.w   d6,d6                           ; 00392
         adda.w  d6,a1                           ; 00394
-        move.w  $0(a1),d1                       ; 00396
+        move.w  obj_Flags(a1),d1                ; 00396
         andi.w  #$40,d1                         ; 0039A
         beq.b   l_026_0032C                     ; 0039E
-        move.w  $6(a1),$2c(a0)                  ; 003A0
-        move.w  $8(a1),$2e(a0)                  ; 003A6
-        move.w  $c(a1),$30(a0)                  ; 003AC
-        move.w  $e(a1),$32(a0)                  ; 003B2
-        move.l  $10(a1),$34(a0)                 ; 003B8
-        andi.w  #$fffe,$0(a0)                   ; 003BE
+        move.w  obj_CellX(a1),obj_DestCellX(a0) ; 003A0
+        move.w  obj_CellZ(a1),obj_DestCellZ(a0) ; 003A6
+        move.w  obj_X8(a1),obj_DestX(a0)        ; 003AC
+        move.w  obj_Z8(a1),obj_DestZ(a0)        ; 003B2
+        move.l  obj_Y8(a1),obj_DestY(a0)        ; 003B8
+        andi.w  #$fffe,obj_Flags(a0)            ; 003BE
         lsr.w   #$8,d5                          ; 003C4
         ori.b   #$80,d5                         ; 003C6
-        move.b  d5,$38(a0)                      ; 003CA
+        move.b  d5,obj_Target(a0)               ; 003CA
 l_026_003CE:
         move.b  #$3,$7a(a0)                     ; 003CE
 l_026_003D4:
@@ -409,7 +409,7 @@ l_026_00436:
         asl.w   #$8,d3                          ; 00444
         add.w   d3,d3                           ; 00446
         adda.w  d3,a4                           ; 00448
-        btst    #$6,$1(a4)                      ; 0044A
+        btst    #$6,obj_Flags+1(a4)             ; 0044A
         bne.b   l_026_004C6                     ; 00450
         move.w  d1,d3                           ; 00452
         lea.l   (ObjectDrawTable).l,a0          ; 00454
@@ -443,12 +443,12 @@ l_026_00488:
         move.b  (MissionTargets).l,d3           ; 004A2
         cmp.b   (TargetsPlaced).l,d3            ; 004A8
         ble.b   l_026_004C6                     ; 004AE
-        cmpi.b  #$15,$62(a0)                    ; 004B0
+        cmpi.b  #$15,obj_Type(a0)               ; 004B0
         bne.b   l_026_004BE                     ; 004B6
-        tst.w   $6(a0)                          ; 004B8
+        tst.w   obj_CellX(a0)                   ; 004B8
         bne.b   l_026_004C6                     ; 004BC
 l_026_004BE:
-        btst    #$6,$1(a0)                      ; 004BE
+        btst    #$6,obj_Flags+1(a0)             ; 004BE
         beq.b   l_026_004CE                     ; 004C4
 l_026_004C6:
         addq.w  #$6,a2                          ; 004C6
@@ -655,21 +655,21 @@ KeepInZone:
         add.w   d0,d0                           ; 00716
         beq.b   l_026_00706                     ; 00718
         adda.w  d0,a0                           ; 0071A
-        move.b  $62(a0),d5                      ; 0071C
+        move.b  obj_Type(a0),d5                 ; 0071C
         andi.b  #$f0,d5                         ; 00720
         cmpi.b  #$10,d5                         ; 00724
         bne.b   l_026_00706                     ; 00728
-        cmpi.b  #$8,$5(a0)                      ; 0072A
+        cmpi.b  #$8,obj_State(a0)               ; 0072A
         beq.b   l_026_00706                     ; 00730
-        move.b  $5d(a0),d0                      ; 00732
+        move.b  obj_Zone(a0),d0                 ; 00732
         blt.b   l_026_00706                     ; 00736
         subq.b  #$1,d0                          ; 00738
         blt.b   l_026_006F6                     ; 0073A
         ext.w   d0                              ; 0073C
         add.w   d0,d0                           ; 0073E
         add.w   d0,d0                           ; 00740
-        move.w  $6(a0),d5                       ; 00742
-        move.w  $8(a0),d6                       ; 00746
+        move.w  obj_CellX(a0),d5                ; 00742
+        move.w  obj_CellZ(a0),d6                ; 00746
         lea.l   (Zones).l,a3                    ; 0074A
         adda.w  d0,a3                           ; 00750
         movea.l (a3),a3                         ; 00752
@@ -725,9 +725,9 @@ l_026_007A6:
 l_026_007D8:
         move.b  #$5,$7a(a0)                     ; 007D8
 l_026_007DE:
-        andi.w  #$fffe,$0(a0)                   ; 007DE
+        andi.w  #$fffe,obj_Flags(a0)            ; 007DE
         bsr.w   SetDestination                  ; 007E4
-        move.b  #$ff,$38(a0)                    ; 007E8
+        move.b  #$ff,obj_Target(a0)             ; 007E8
 l_026_007EE:
         rts                                     ; 007EE
 l_026_007F0:
@@ -802,9 +802,9 @@ UpdateCamera:
         bne.b   l_026_0096E                     ; 0094E
         lea.l   (ObjectTable).l,a0              ; 00950
         adda.w  (ViewObject).l,a0               ; 00956
-        move.l  $14(a0),d5                      ; 0095C
+        move.l  obj_X(a0),d5                    ; 0095C
         move.l  (CameraY).l,d6                  ; 00960
-        move.l  $1c(a0),d7                      ; 00966
+        move.l  obj_Z(a0),d7                    ; 00966
         bra.w   l_026_00AA8                     ; 0096A
 l_026_0096E:
         cmpi.b  #$5,(CameraSequence).l          ; 0096E
@@ -814,7 +814,7 @@ l_026_0096E:
 l_026_00984:
         lea.l   (ObjectTable).l,a0              ; 00984
         adda.w  (ViewObject).l,a0               ; 0098A
-        move.b  $62(a0),d0                      ; 00990
+        move.b  obj_Type(a0),d0                 ; 00990
         andi.b  #$f0,d0                         ; 00994
         move.b  d0,d7                           ; 00998
         cmpi.b  #$30,d0                         ; 0099A
@@ -822,7 +822,7 @@ l_026_00984:
         lea.l   UpdateCameraData4(pc),a1        ; 009A0
         bra.w   l_026_00A0E                     ; 009A4
 l_026_009A8:
-        move.w  $68(a0),d0                      ; 009A8
+        move.w  obj_Heading(a0),d0              ; 009A8
         move.w  (ViewHeadingSaved).l,d1         ; 009AC
         sub.w   d0,d1                           ; 009B2
         bge.b   l_026_009B8                     ; 009B4
@@ -846,9 +846,9 @@ l_026_009B8:
 l_026_009E8:
         move.b  d0,(ViewChoice).l               ; 009E8
 l_026_009EE:
-        cmpi.b  #$11,$62(a0)                    ; 009EE
+        cmpi.b  #$11,obj_Type(a0)               ; 009EE
         beq.b   l_026_00A04                     ; 009F4
-        cmpi.b  #$14,$62(a0)                    ; 009F6
+        cmpi.b  #$14,obj_Type(a0)               ; 009F6
         beq.b   l_026_00A0A                     ; 009FC
         lea.l   UpdateCameraData1(pc),a1        ; 009FE
         bra.b   l_026_00A0E                     ; 00A02
@@ -903,7 +903,7 @@ l_026_00A76:
         movem.l d0-d2,(FlyByPoint).l            ; 00A76
         movem.l (FlyByPoint).l,d5-d7            ; 00A7E
         movea.l (a7)+,a0                        ; 00A86
-        move.b  $4(a0),d0                       ; 00A88
+        move.b  obj_Bits(a0),d0                 ; 00A88
         andi.b  #$c0,d0                         ; 00A8C
         bne.b   l_026_00A96                     ; 00A90
         moveq   #$0,d0                          ; 00A92
@@ -1089,14 +1089,14 @@ l_026_00C6A:
         adda.w  #$a,a2                          ; 00C72
         lsl.w   #$8,d3                          ; 00C76
         add.w   d3,d3                           ; 00C78
-        move.b  $62(a0,d3.w),d1                 ; 00C7A
+        move.b  obj_Type(a0,d3.w),d1            ; 00C7A
         andi.b  #$f0,d1                         ; 00C7E
         cmpi.b  #$10,d1                         ; 00C82
         bne.b   l_026_00C6A                     ; 00C86
-        btst    #$6,$1(a0,d3.w)                 ; 00C88
+        btst    #$6,obj_Flags+1(a0,d3.w)        ; 00C88
         beq.b   l_026_00C6A                     ; 00C8E
         move.w  d3,(FlyByObject).l              ; 00C90
-        btst    #$3,$1(a0,d3.w)                 ; 00C96
+        btst    #$3,obj_Flags+1(a0,d3.w)        ; 00C96
         beq.b   l_026_00CBE                     ; 00C9C
         bra.b   l_026_00C6A                     ; 00C9E
 l_026_00CA0:
@@ -1109,8 +1109,8 @@ l_026_00CA0:
 l_026_00CBE:
         move.w  (FlyByObject).l,d3              ; 00CBE
         move.b  #$ff,(FlyByPhase).l             ; 00CC4
-        move.l  $14(a0,d3.w),d0                 ; 00CCC
-        move.l  $1c(a0,d3.w),d2                 ; 00CD0
+        move.l  obj_X(a0,d3.w),d0               ; 00CCC
+        move.l  obj_Z(a0,d3.w),d2               ; 00CD0
         move.l  (CameraY).l,d1                  ; 00CD4
         move.l  d1,d3                           ; 00CDA
         asr.l   #$2,d3                          ; 00CDC
@@ -1123,9 +1123,9 @@ l_026_00CEA:
         lea.l   (ObjectTable).l,a2              ; 00CEE
         adda.w  (ViewObject).l,a2               ; 00CF4
         movem.l (CameraX).l,d0-d2               ; 00CFA
-        add.l   $14(a2),d0                      ; 00D02
-        add.l   $18(a2),d1                      ; 00D06
-        add.l   $1c(a2),d2                      ; 00D0A
+        add.l   obj_X(a2),d0                    ; 00D02
+        add.l   obj_Y(a2),d1                    ; 00D06
+        add.l   obj_Z(a2),d2                    ; 00D0A
         asr.l   #$1,d0                          ; 00D0E
         asr.l   #$1,d1                          ; 00D10
         asr.l   #$1,d2                          ; 00D12

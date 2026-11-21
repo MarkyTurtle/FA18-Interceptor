@@ -427,7 +427,7 @@ Key_R:
         bset    #$6,(JoyEvents).l               ; 005B6
         lea.l   (ObjectTable).l,a0              ; 005BE
         adda.w  (ViewObject).l,a0               ; 005C4
-        move.b  $63(a0),d4                      ; 005CA
+        move.b  obj_Weapon(a0),d4               ; 005CA
         andi.b  #$f,d4                          ; 005CE
         cmpi.b  #$9,d4                          ; 005D2
         beq.b   l_005_005E4                     ; 005D6
@@ -441,8 +441,8 @@ l_005_005E4:
 l_005_005EA:
         move.b  #$9,d4                          ; 005EA
 l_005_005EE:
-        andi.b  #$f0,$63(a0)                    ; 005EE
-        or.b    d4,$63(a0)                      ; 005F4
+        andi.b  #$f0,obj_Weapon(a0)             ; 005EE
+        or.b    d4,obj_Weapon(a0)               ; 005F4
         move.b  #$3,(WeaponRangeRedraw).l       ; 005F8
         bra.w   l_005_01624                     ; 00600
 Key_Space:
@@ -531,7 +531,7 @@ l_005_006EA:
 l_005_00724:
         bra.w   l_005_0159C                     ; 00724
 l_005_00728:
-        move.b  $7c(a1),d0                      ; 00728
+        move.b  obj_Ejection(a1),d0             ; 00728
         andi.b  #$f,d0                          ; 0072C
         bne.w   l_005_007F6                     ; 00730
         tst.b   (WorldFrozen).l                 ; 00734
@@ -546,9 +546,9 @@ l_005_00748:
         beq.b   l_005_007B4                     ; 00752
         subq.b  #$1,d1                          ; 00754
         beq.b   l_005_007B4                     ; 00756
-        move.b  $39(a1),d1                      ; 00758
+        move.b  obj_ThrottleStep(a1),d1         ; 00758
         andi.b  #$f,d1                          ; 0075C
-        sub.b   $2b(a1),d0                      ; 00760
+        sub.b   obj_Throttle(a1),d0             ; 00760
         beq.b   l_005_00798                     ; 00764
         bgt.b   l_005_00780                     ; 00766
         cmpi.b  #$f8,d0                         ; 00768
@@ -571,11 +571,11 @@ l_005_00792:
         bsr.w   ThrottleUp                      ; 00792
         bra.b   l_005_007B4                     ; 00796
 l_005_00798:
-        cmpi.b  #$78,$2b(a1)                    ; 00798
+        cmpi.b  #$78,obj_Throttle(a1)           ; 00798
         blt.b   l_005_007B0                     ; 0079E
-        btst    #$3,$3(a1)                      ; 007A0
+        btst    #$3,obj_Flags2+1(a1)            ; 007A0
         bne.b   l_005_007B0                     ; 007A6
-        btst    #$5,$2(a1)                      ; 007A8
+        btst    #$5,obj_Flags2(a1)              ; 007A8
         bne.b   l_005_007B4                     ; 007AE
 l_005_007B0:
         bsr.w   ThrottleHoldReset               ; 007B0
@@ -592,20 +592,20 @@ l_005_007C8:
         movea.l (a7)+,a1                        ; 007D0
 l_005_007D2:
         clr.b   d4                              ; 007D2
-        btst    #$4,$4(a1)                      ; 007D4
+        btst    #$4,obj_Bits(a1)                ; 007D4
         beq.b   l_005_007F8                     ; 007DA
-        tst.w   $4c(a1)                         ; 007DC
+        tst.w   obj_Timer(a1)                   ; 007DC
         bge.b   l_005_007EA                     ; 007E0
-        bclr    #$4,$4(a1)                      ; 007E2
+        bclr    #$4,obj_Bits(a1)                ; 007E2
         bra.b   l_005_007F8                     ; 007E8
 l_005_007EA:
-        move.b  d4,$28(a1)                      ; 007EA
-        move.b  d4,$29(a1)                      ; 007EE
-        move.b  d4,$2a(a1)                      ; 007F2
+        move.b  d4,obj_StickPitch(a1)           ; 007EA
+        move.b  d4,obj_Rudder(a1)               ; 007EE
+        move.b  d4,obj_StickRoll(a1)            ; 007F2
 l_005_007F6:
         rts                                     ; 007F6
 l_005_007F8:
-        move.b  $65(a1),d2                      ; 007F8
+        move.b  obj_Controls(a1),d2             ; 007F8
         move.b  d2,d3                           ; 007FC
         andi.b  #$30,d2                         ; 007FE
         bne.b   l_005_00806                     ; 00802
@@ -613,7 +613,7 @@ l_005_007F8:
 l_005_00806:
         cmpi.b  #$10,d2                         ; 00806
         beq.b   l_005_00822                     ; 0080A
-        move.b  $28(a1),d4                      ; 0080C
+        move.b  obj_StickPitch(a1),d4           ; 0080C
         ble.b   l_005_00816                     ; 00810
         moveq   #-1,d4                          ; 00812
         bra.b   l_005_00818                     ; 00814
@@ -625,7 +625,7 @@ l_005_00818:
         moveq   #-20,d4                         ; 0081E
         bra.b   l_005_00836                     ; 00820
 l_005_00822:
-        move.b  $28(a1),d4                      ; 00822
+        move.b  obj_StickPitch(a1),d4           ; 00822
         bge.b   l_005_0082C                     ; 00826
         moveq   #$1,d4                          ; 00828
         bra.b   l_005_0082E                     ; 0082A
@@ -636,14 +636,14 @@ l_005_0082E:
         ble.b   l_005_00836                     ; 00832
         moveq   #$14,d4                         ; 00834
 l_005_00836:
-        move.b  d4,$28(a1)                      ; 00836
+        move.b  d4,obj_StickPitch(a1)           ; 00836
         clr.b   d4                              ; 0083A
         move.b  d3,d2                           ; 0083C
         andi.b  #$c0,d3                         ; 0083E
         beq.b   l_005_00874                     ; 00842
         cmpi.b  #$40,d3                         ; 00844
         beq.b   l_005_00860                     ; 00848
-        move.b  $29(a1),d4                      ; 0084A
+        move.b  obj_Rudder(a1),d4               ; 0084A
         ble.b   l_005_00854                     ; 0084E
         moveq   #-1,d4                          ; 00850
         bra.b   l_005_00856                     ; 00852
@@ -655,7 +655,7 @@ l_005_00856:
         moveq   #-20,d4                         ; 0085C
         bra.b   l_005_00874                     ; 0085E
 l_005_00860:
-        move.b  $29(a1),d4                      ; 00860
+        move.b  obj_Rudder(a1),d4               ; 00860
         bge.b   l_005_0086A                     ; 00864
         moveq   #$1,d4                          ; 00866
         bra.b   l_005_0086C                     ; 00868
@@ -666,7 +666,7 @@ l_005_0086C:
         ble.b   l_005_00874                     ; 00870
         moveq   #$14,d4                         ; 00872
 l_005_00874:
-        move.b  d4,$29(a1)                      ; 00874
+        move.b  d4,obj_Rudder(a1)               ; 00874
         clr.b   d4                              ; 00878
         andi.b  #$c,d2                          ; 0087A
         bne.b   l_005_00882                     ; 0087E
@@ -674,7 +674,7 @@ l_005_00874:
 l_005_00882:
         cmpi.b  #$4,d2                          ; 00882
         beq.b   l_005_0089E                     ; 00886
-        move.b  $2a(a1),d4                      ; 00888
+        move.b  obj_StickRoll(a1),d4            ; 00888
         ble.b   l_005_00892                     ; 0088C
         moveq   #-3,d4                          ; 0088E
         bra.b   l_005_00894                     ; 00890
@@ -686,7 +686,7 @@ l_005_00894:
         moveq   #-60,d4                         ; 0089A
         bra.b   l_005_008B2                     ; 0089C
 l_005_0089E:
-        move.b  $2a(a1),d4                      ; 0089E
+        move.b  obj_StickRoll(a1),d4            ; 0089E
         bge.b   l_005_008A8                     ; 008A2
         moveq   #$3,d4                          ; 008A4
         bra.b   l_005_008AA                     ; 008A6
@@ -697,7 +697,7 @@ l_005_008AA:
         ble.b   l_005_008B2                     ; 008AE
         moveq   #$3c,d4                         ; 008B0
 l_005_008B2:
-        move.b  d4,$2a(a1)                      ; 008B2
+        move.b  d4,obj_StickRoll(a1)            ; 008B2
         rts                                     ; 008B6
 
 ;-------------------------------------------------------------------------------
@@ -896,7 +896,7 @@ l_005_00A74:
 l_005_00A82:
         lea.l   (ObjectTable).l,a0              ; 00A82
         move.w  (ViewObject).l,d4               ; 00A88
-        move.w  $68(a0,d4.w),(ViewHeadingSaved).l ; 00A8E
+        move.w  obj_Heading(a0,d4.w),(ViewHeadingSaved).l ; 00A8E
         ori.w   #$2,(GunFlags).l                ; 00A96
         move.b  #$ff,(SavedOutsideView).l       ; 00A9E
         bra.w   l_005_01624                     ; 00AA6
@@ -916,7 +916,7 @@ l_005_00AAA:
         add.w   d0,d0                           ; 00AD8
         lea.l   (ObjectTable).l,a1              ; 00ADA
         adda.w  d0,a1                           ; 00AE0
-        cmpi.b  #$20,$62(a1)                    ; 00AE2
+        cmpi.b  #$20,obj_Type(a1)               ; 00AE2
         bne.b   l_005_00AF8                     ; 00AE8
         move.w  #$ffdc,d3                       ; 00AEA
         move.w  #$2f,d4                         ; 00AEE
@@ -1139,7 +1139,7 @@ l_005_00DC2:
         move.b  #$ff,(ViewKeyRepeat).l          ; 00DE0
         lea.l   (ObjectTable).l,a0              ; 00DE8
         adda.w  (ViewObject).l,a0               ; 00DEE
-        move.b  $62(a0),d4                      ; 00DF4
+        move.b  obj_Type(a0),d4                 ; 00DF4
         andi.b  #$f0,d4                         ; 00DF8
         cmpi.b  #$30,d4                         ; 00DFC
         beq.w   l_005_01624                     ; 00E00
@@ -1538,8 +1538,8 @@ ViewFollow:
         bra.w   l_005_01624                     ; 01318
 l_005_0131C:
         lea.l   (ObjectTable).l,a0              ; 0131C
-        move.w  $68(a0,d1.w),(ViewHeadingSaved).l ; 01322
-        move.b  $62(a0,d1.w),d4                 ; 0132A
+        move.w  obj_Heading(a0,d1.w),(ViewHeadingSaved).l ; 01322
+        move.b  obj_Type(a0,d1.w),d4            ; 0132A
         andi.b  #$f0,d4                         ; 0132E
         cmpi.b  #$30,d4                         ; 01332
         bne.w   BackToCockpitView               ; 01336

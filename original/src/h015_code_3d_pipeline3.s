@@ -117,12 +117,12 @@ l_015_000EA:
         bge.b   l_015_00106                     ; 00100
         subq.b  #$1,-$a(a6)                     ; 00102
 l_015_00106:
-        movem.l $3e(a1),d0-d2                   ; 00106
-        movem.l $14(a1),d3-d5                   ; 0010C
+        movem.l obj_VelX(a1),d0-d2              ; 00106
+        movem.l obj_X(a1),d3-d5                 ; 0010C
         sub.l   (EyeX).l,d3                     ; 00112
         sub.l   (EyeY).l,d4                     ; 00118
         sub.l   (EyeZ).l,d5                     ; 0011E
-        cmpi.w  #$100,$6e(a1)                   ; 00124
+        cmpi.w  #$100,obj_SpeedFlown(a1)        ; 00124
         blt.b   l_015_00132                     ; 0012A
         asr.l   #$8,d0                          ; 0012C
         asr.l   #$8,d1                          ; 0012E
@@ -208,7 +208,7 @@ l_015_001EE:
 l_015_001FA:
         btst    #$0,-$20(a6)                    ; 001FA
         beq.b   l_015_0021E                     ; 00200
-        btst    #$1,$20(a1)                     ; 00202
+        btst    #$1,obj_Status(a1)              ; 00202
         bne.b   l_015_00214                     ; 00208
         move.w  #$8,(DrawColour).l              ; 0020A
         bra.b   l_015_00238                     ; 00212
@@ -216,7 +216,7 @@ l_015_00214:
         move.w  #$3,(DrawColour).l              ; 00214
         bra.b   l_015_00238                     ; 0021C
 l_015_0021E:
-        btst    #$1,$20(a1)                     ; 0021E
+        btst    #$1,obj_Status(a1)              ; 0021E
         bne.b   l_015_00230                     ; 00224
         move.w  #$a,(DrawColour).l              ; 00226
         bra.b   l_015_00238                     ; 0022E

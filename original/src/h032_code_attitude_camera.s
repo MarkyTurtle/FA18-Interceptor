@@ -14,20 +14,20 @@
 ; the control bits (+$64, +$65) and the state (+$05).
 ;-------------------------------------------------------------------------------
 UpdateAttitude:
-        move.b  $62(a1),d0                      ; 00000
+        move.b  obj_Type(a1),d0                 ; 00000
         andi.b  #$f0,d0                         ; 00004
         cmpi.b  #$30,d0                         ; 00008
         bne.w   l_032_0008E                     ; 0000C
-        tst.w   $4c(a1)                         ; 00010
+        tst.w   obj_Timer(a1)                   ; 00010
         ble.b   l_032_00084                     ; 00014
         tst.b   (WorldFrozen).l                 ; 00016
         bne.b   l_032_00084                     ; 0001C
-        movem.l $3e(a1),d2-d4                   ; 0001E
+        movem.l obj_VelX(a1),d2-d4              ; 0001E
         move.l  #$7d0,d5                        ; 00024
         moveq   #$0,d6                          ; 0002A
         tst.b   (OutsideView).l                 ; 0002C
         bne.b   l_032_0004E                     ; 00032
-        move.w  $6a(a1),d6                      ; 00034
+        move.w  obj_Roll(a1),d6                 ; 00034
         cmpi.w  #$3840,d6                       ; 00038
         bgt.b   l_032_00046                     ; 0003C
         sub.w   d5,d6                           ; 0003E
@@ -40,9 +40,9 @@ l_032_00046:
         cmpi.w  #$7080,d6                       ; 00048
         bge.b   l_032_00042                     ; 0004C
 l_032_0004E:
-        move.w  d6,$6a(a1)                      ; 0004E
-        move.w  $66(a1),d0                      ; 00052
-        move.w  $68(a1),d1                      ; 00056
+        move.w  d6,obj_Roll(a1)                 ; 0004E
+        move.w  obj_Pitch(a1),d0                ; 00052
+        move.w  obj_Heading(a1),d1              ; 00056
         ext.l   d0                              ; 0005A
         ext.l   d1                              ; 0005C
         move.l  a1,-(a7)                        ; 0005E
@@ -55,7 +55,7 @@ l_032_0004E:
         move.w  $6a(a1),d6                      ; 0007C
         bra.w   SetAttitude                     ; 00080
 l_032_00084:
-        movem.w $66(a1),d4-d6                   ; 00084
+        movem.w obj_Pitch(a1),d4-d6             ; 00084
         bra.w   SetAttitude                     ; 0008A
 l_032_0008E:
         moveq   #$0,d0                          ; 0008E
@@ -67,20 +67,20 @@ l_032_0008E:
         beq.w   l_032_001F4                     ; 000A2
         bra.w   l_032_002F4                     ; 000A6
 l_032_000AA:
-        btst    #$0,$2(a1)                      ; 000AA
+        btst    #$0,obj_Flags2(a1)              ; 000AA
         bne.b   l_032_000C8                     ; 000B0
-        move.b  $64(a1),d1                      ; 000B2
+        move.b  obj_Controls2(a1),d1            ; 000B2
         move.b  d1,d3                           ; 000B6
         andi.b  #$10,d3                         ; 000B8
         bne.b   l_032_000C8                     ; 000BC
-        andi.b  #$c3,$65(a1)                    ; 000BE
+        andi.b  #$c3,obj_Controls(a1)           ; 000BE
         bra.w   l_032_001F4                     ; 000C4
 l_032_000C8:
-        cmpi.b  #$6,$5(a1)                      ; 000C8
+        cmpi.b  #$6,obj_State(a1)               ; 000C8
         beq.w   l_032_0018C                     ; 000CE
-        cmpi.b  #$a,$5(a1)                      ; 000D2
+        cmpi.b  #$a,obj_State(a1)               ; 000D2
         beq.w   l_032_0018C                     ; 000D8
-        btst    #$0,$2(a1)                      ; 000DC
+        btst    #$0,obj_Flags2(a1)              ; 000DC
         bne.w   l_032_001F4                     ; 000E2
         move.b  d1,d3                           ; 000E6
         andi.b  #$8,d3                          ; 000E8
@@ -88,7 +88,7 @@ l_032_000C8:
         move.b  d1,d3                           ; 000EE
         andi.b  #$4,d3                          ; 000F0
         bne.b   l_032_0012C                     ; 000F4
-        andi.w  #$dfff,$0(a1)                   ; 000F6
+        andi.w  #$dfff,obj_Flags(a1)            ; 000F6
         move.b  d1,d3                           ; 000FC
         andi.b  #$40,d3                         ; 000FE
         bne.b   l_032_0012C                     ; 00102
@@ -97,7 +97,7 @@ l_032_00108:
         move.b  d1,d3                           ; 00108
         andi.b  #$2,d3                          ; 0010A
         bne.b   l_032_00120                     ; 0010E
-        andi.w  #$dfff,$0(a1)                   ; 00110
+        andi.w  #$dfff,obj_Flags(a1)            ; 00110
         move.b  d1,d3                           ; 00116
         andi.b  #$20,d3                         ; 00118
         beq.w   l_032_001F4                     ; 0011C
@@ -111,12 +111,12 @@ l_032_0012C:
         andi.b  #$20,d3                         ; 0012E
         beq.w   l_032_001F4                     ; 00132
 l_032_00136:
-        move.b  $62(a1),d0                      ; 00136
+        move.b  obj_Type(a1),d0                 ; 00136
         andi.b  #$f0,d0                         ; 0013A
         cmpi.b  #$10,d0                         ; 0013E
         beq.b   l_032_0016C                     ; 00142
         move.w  #$fc40,d4                       ; 00144
-        move.w  $6a(a1),d3                      ; 00148
+        move.w  obj_Roll(a1),d3                 ; 00148
         cmpi.w  #$3840,d3                       ; 0014C
         bgt.b   l_032_0015C                     ; 00150
         cmpi.w  #$118,d3                        ; 00152
@@ -130,30 +130,30 @@ l_032_00166:
         clr.w   d4                              ; 00166
         bra.w   l_032_00294                     ; 00168
 l_032_0016C:
-        move.b  $5(a1),d0                       ; 0016C
+        move.b  obj_State(a1),d0                ; 0016C
         beq.b   l_032_00180                     ; 00170
         cmpi.b  #$8,d0                          ; 00172
         beq.b   l_032_0018C                     ; 00176
         cmpi.b  #$1,d0                          ; 00178
         bne.w   l_032_001F4                     ; 0017C
 l_032_00180:
-        move.b  #$6,$5(a1)                      ; 00180
-        move.w  #$1e,$4c(a1)                    ; 00186
+        move.b  #$6,obj_State(a1)               ; 00180
+        move.w  #$1e,obj_Timer(a1)              ; 00186
 l_032_0018C:
-        ori.w   #$2000,$0(a1)                   ; 0018C
-        cmpi.w  #$1000,$6c(a1)                  ; 00192
+        ori.w   #$2000,obj_Flags(a1)            ; 0018C
+        cmpi.w  #$1000,obj_Speed(a1)            ; 00192
         bge.b   l_032_001A0                     ; 00198
         move.w  #$fd80,d4                       ; 0019A
         bra.b   l_032_001B2                     ; 0019E
 l_032_001A0:
-        cmpi.w  #$2000,$6c(a1)                  ; 001A0
+        cmpi.w  #$2000,obj_Speed(a1)            ; 001A0
         bge.b   l_032_001AE                     ; 001A6
         move.w  #$fce0,d4                       ; 001A8
         bra.b   l_032_001B2                     ; 001AC
 l_032_001AE:
         move.w  #$fbf0,d4                       ; 001AE
 l_032_001B2:
-        move.w  $6a(a1),d3                      ; 001B2
+        move.w  obj_Roll(a1),d3                 ; 001B2
         cmpi.w  #$3840,d3                       ; 001B6
         bgt.b   l_032_001C6                     ; 001BA
         moveq   #$4,d2                          ; 001BC
@@ -168,17 +168,17 @@ l_032_001C6:
 l_032_001D0:
         moveq   #$0,d2                          ; 001D0
 l_032_001D2:
-        move.b  $65(a1),d1                      ; 001D2
+        move.b  obj_Controls(a1),d1             ; 001D2
         andi.b  #$3,d1                          ; 001D6
         or.b    d2,d1                           ; 001DA
-        move.b  d1,$65(a1)                      ; 001DC
-        move.b  $64(a1),d1                      ; 001E0
+        move.b  d1,obj_Controls(a1)             ; 001DC
+        move.b  obj_Controls2(a1),d1            ; 001E0
         andi.b  #$6,d1                          ; 001E4
         cmpi.b  #$6,d1                          ; 001E8
         bne.b   l_032_001F4                     ; 001EC
-        bset    #$4,$3(a1)                      ; 001EE
+        bset    #$4,obj_Flags2+1(a1)            ; 001EE
 l_032_001F4:
-        move.b  $62(a1),d0                      ; 001F4
+        move.b  obj_Type(a1),d0                 ; 001F4
         andi.b  #$f0,d0                         ; 001F8
         cmpi.b  #$10,d0                         ; 001FC
         bne.b   l_032_00232                     ; 00200
@@ -189,9 +189,9 @@ l_032_001F4:
         jsr     (FlightControls).l              ; 00210
         movea.l (a7)+,a1                        ; 00216
 l_032_00218:
-        move.w  $56(a1),d0                      ; 00218
-        move.w  $58(a1),d2                      ; 0021C
-        move.w  $5a(a1),d4                      ; 00220
+        move.w  obj_PitchRate(a1),d0            ; 00218
+        move.w  obj_YawRate(a1),d2              ; 0021C
+        move.w  obj_RollRate(a1),d4             ; 00220
         bra.w   l_032_002BE                     ; 00224
 l_032_00228:
         clr.w   d0                              ; 00228
@@ -199,12 +199,12 @@ l_032_00228:
         clr.w   d4                              ; 0022C
         bra.w   l_032_002F4                     ; 0022E
 l_032_00232:
-        move.w  $50(a1),d0                      ; 00232
-        move.w  $52(a1),d2                      ; 00236
-        move.w  $54(a1),d4                      ; 0023A
-        btst    #$5,$20(a1)                     ; 0023E
+        move.w  obj_AimRate1(a1),d0             ; 00232
+        move.w  obj_AimRate2(a1),d2             ; 00236
+        move.w  obj_AimRate3(a1),d4             ; 0023A
+        btst    #$5,obj_Status(a1)              ; 0023E
         bne.b   l_032_00276                     ; 00244
-        move.b  $38(a1),d3                      ; 00246
+        move.b  obj_Target(a1),d3               ; 00246
         bge.b   l_032_0027A                     ; 0024A
         cmpi.b  #$ff,d3                         ; 0024C
         beq.b   l_032_0027A                     ; 00250
@@ -215,7 +215,7 @@ l_032_00232:
         lea.l   (ObjectTable).l,a4              ; 0025C
         tst.b   (JToggle).l                     ; 00262
         beq.b   l_032_0027A                     ; 00268
-        cmpi.b  #$1,$62(a1)                     ; 0026A
+        cmpi.b  #$1,obj_Type(a1)                ; 0026A
         beq.b   l_032_0027A                     ; 00270
         moveq   #$5,d3                          ; 00272
         bra.b   l_032_00288                     ; 00274
@@ -223,7 +223,7 @@ l_032_00276:
         moveq   #$a,d3                          ; 00276
         bra.b   l_032_00288                     ; 00278
 l_032_0027A:
-        move.w  $26(a1),d3                      ; 0027A
+        move.w  obj_Response(a1),d3             ; 0027A
         ble.b   l_032_00294                     ; 0027E
         cmpi.w  #$f,d3                          ; 00280
         ble.b   l_032_00288                     ; 00284
@@ -236,27 +236,27 @@ l_032_00288:
         divs.w  d3,d2                           ; 00290
         divs.w  d3,d4                           ; 00292
 l_032_00294:
-        movem.w $56(a1),d5-d7                   ; 00294
+        movem.w obj_PitchRate(a1),d5-d7         ; 00294
         add.w   d0,d5                           ; 0029A
         asr.w   #$1,d5                          ; 0029C
         add.w   d5,d0                           ; 0029E
         asr.w   #$1,d0                          ; 002A0
-        move.w  d0,$56(a1)                      ; 002A2
+        move.w  d0,obj_PitchRate(a1)            ; 002A2
         add.w   d2,d6                           ; 002A6
         asr.w   #$1,d6                          ; 002A8
         add.w   d6,d2                           ; 002AA
         asr.w   #$1,d2                          ; 002AC
-        move.w  d2,$58(a1)                      ; 002AE
+        move.w  d2,obj_YawRate(a1)              ; 002AE
         add.w   d4,d7                           ; 002B2
         asr.w   #$1,d7                          ; 002B4
         add.w   d7,d4                           ; 002B6
         asr.w   #$1,d4                          ; 002B8
-        move.w  d4,$5a(a1)                      ; 002BA
+        move.w  d4,obj_RollRate(a1)             ; 002BA
 l_032_002BE:
         move.b  (PilotsHeld).l,d7               ; 002BE
         or.b    (WorldFrozen).l,d7              ; 002C4
         bne.w   l_032_00228                     ; 002CA
-        move.b  $62(a1),d3                      ; 002CE
+        move.b  obj_Type(a1),d3                 ; 002CE
         andi.b  #$f0,d3                         ; 002D2
         cmpi.b  #$10,d3                         ; 002D6
         bne.b   l_032_002F4                     ; 002DA
@@ -265,14 +265,14 @@ l_032_002BE:
         tst.b   (AttitudeFlag).l                ; 002E4
         beq.b   l_032_002F4                     ; 002EA
 l_032_002EC:
-        move.w  $6a(a1),d7                      ; 002EC
+        move.w  obj_Roll(a1),d7                 ; 002EC
         bsr.w   ComputeGLoad                    ; 002F0
 l_032_002F4:
-        lea.l   $80(a1),a4                      ; 002F4
+        lea.l   obj_Matrix(a1),a4               ; 002F4
         bsr.w   NormaliseAngles                 ; 002F8
-        bclr    #$4,$3(a1)                      ; 002FC
+        bclr    #$4,obj_Flags2+1(a1)            ; 002FC
         beq.b   l_032_00366                     ; 00302
-        move.w  $6a(a1),d6                      ; 00304
+        move.w  obj_Roll(a1),d6                 ; 00304
         cmpi.w  #$3840,d6                       ; 00308
         beq.b   l_032_00366                     ; 0030C
         blt.b   l_032_00338                     ; 0030E
@@ -316,9 +316,9 @@ l_032_00360:
 l_032_00364:
         moveq   #$0,d6                          ; 00364
 l_032_00366:
-        cmpi.b  #$a,$5(a1)                      ; 00366
+        cmpi.b  #$a,obj_State(a1)               ; 00366
         bne.b   l_032_00394                     ; 0036C
-        move.w  $66(a1),d4                      ; 0036E
+        move.w  obj_Pitch(a1),d4                ; 0036E
         cmpi.w  #$3840,d4                       ; 00372
         ble.b   l_032_00386                     ; 00376
         addi.w  #$50,d4                         ; 00378
@@ -332,9 +332,9 @@ l_032_0038E:
         moveq   #$0,d4                          ; 0038E
         bra.w   l_032_00546                     ; 00390
 l_032_00394:
-        btst    #$6,$3(a1)                      ; 00394
+        btst    #$6,obj_Flags2+1(a1)            ; 00394
         beq.b   l_032_003C2                     ; 0039A
-        move.w  $66(a1),d4                      ; 0039C
+        move.w  obj_Pitch(a1),d4                ; 0039C
         cmpi.w  #$3840,d4                       ; 003A0
         ble.b   l_032_003B4                     ; 003A4
         addi.w  #$a0,d4                         ; 003A6
@@ -352,16 +352,16 @@ l_032_003C2:
         beq.w   l_032_004A0                     ; 003C8
         tst.w   (CurrentObject).l               ; 003CC
         bne.b   l_032_003DE                     ; 003D2
-        btst    #$1,$20(a1)                     ; 003D4
+        btst    #$1,obj_Status(a1)              ; 003D4
         bne.w   l_032_00460                     ; 003DA
 l_032_003DE:
-        btst    #$7,$3(a1)                      ; 003DE
+        btst    #$7,obj_Flags2+1(a1)            ; 003DE
         bne.w   l_032_004A0                     ; 003E4
-        move.b  $62(a1),d0                      ; 003E8
+        move.b  obj_Type(a1),d0                 ; 003E8
         andi.b  #$f0,d0                         ; 003EC
         cmpi.b  #$10,d0                         ; 003F0
         bne.w   l_032_004A0                     ; 003F4
-        move.w  $66(a1),d0                      ; 003F8
+        move.w  obj_Pitch(a1),d0                ; 003F8
         asr.w   #$1,d0                          ; 003FC
         cmpi.w  #$1c20,d0                       ; 003FE
         bge.b   l_032_00412                     ; 00402
@@ -375,36 +375,36 @@ l_032_00412:
         neg.w   d0                              ; 00416
         mulu.w  #$6c,d0                         ; 00418
         asr.l   #$8,d0                          ; 0041C
-        move.w  $22(a1),d7                      ; 0041E
+        move.w  obj_Weight(a1),d7               ; 0041E
         asr.w   #$8,d7                          ; 00422
         mulu.w  d0,d7                           ; 00424
         asr.l   #$6,d7                          ; 00426
         add.w   d7,d0                           ; 00428
-        btst    #$7,$3(a1)                      ; 0042A
+        btst    #$7,obj_Flags2+1(a1)            ; 0042A
         bne.b   l_032_0043C                     ; 00430
-        cmp.w   $6e(a1),d0                      ; 00432
+        cmp.w   obj_SpeedFlown(a1),d0           ; 00432
         bge.b   l_032_00444                     ; 00436
-        clr.w   $26(a1)                         ; 00438
+        clr.w   obj_Response(a1)                ; 00438
 l_032_0043C:
-        bclr    #$2,$20(a1)                     ; 0043C
+        bclr    #$2,obj_Status(a1)              ; 0043C
         bra.b   l_032_004A0                     ; 00442
 l_032_00444:
-        bset    #$2,$20(a1)                     ; 00444
-        move.w  $56(a1),d1                      ; 0044A
-        or.w    $58(a1),d1                      ; 0044E
-        or.w    $5a(a1),d1                      ; 00452
+        bset    #$2,obj_Status(a1)              ; 00444
+        move.w  obj_PitchRate(a1),d1            ; 0044A
+        or.w    obj_YawRate(a1),d1              ; 0044E
+        or.w    obj_RollRate(a1),d1             ; 00452
         beq.b   l_032_00460                     ; 00456
         asr.w   #$1,d0                          ; 00458
-        cmp.w   $6e(a1),d0                      ; 0045A
+        cmp.w   obj_SpeedFlown(a1),d0           ; 0045A
         blt.b   l_032_004A0                     ; 0045E
 l_032_00460:
-        clr.w   $56(a1)                         ; 00460
+        clr.w   obj_PitchRate(a1)               ; 00460
         move.w  #$50,d0                         ; 00464
-        sub.w   $26(a1),d0                      ; 00468
+        sub.w   obj_Response(a1),d0             ; 00468
         asr.w   #$2,d0                          ; 0046C
-        add.w   $26(a1),d0                      ; 0046E
-        move.w  d0,$26(a1)                      ; 00472
-        move.w  $66(a1),d4                      ; 00476
+        add.w   obj_Response(a1),d0             ; 0046E
+        move.w  d0,obj_Response(a1)             ; 00472
+        move.w  obj_Pitch(a1),d4                ; 00476
         add.w   d0,d4                           ; 0047A
         cmpi.w  #$7080,d4                       ; 0047C
         bge.b   l_032_0049A                     ; 00480
@@ -418,14 +418,14 @@ l_032_0049A:
         moveq   #$0,d4                          ; 0049A
         bra.w   l_032_00546                     ; 0049C
 l_032_004A0:
-        move.w  $66(a1),d0                      ; 004A0
+        move.w  obj_Pitch(a1),d0                ; 004A0
         cmpi.w  #$1770,d0                       ; 004A4
         ble.w   l_032_00546                     ; 004A8
         cmpi.w  #$5910,d0                       ; 004AC
         bge.w   l_032_00546                     ; 004B0
         moveq   #$0,d0                          ; 004B4
         move.w  d5,d1                           ; 004B6
-        sub.w   $68(a1),d1                      ; 004B8
+        sub.w   obj_Heading(a1),d1              ; 004B8
         bge.b   l_032_004C0                     ; 004BC
         neg.w   d1                              ; 004BE
 l_032_004C0:
@@ -439,7 +439,7 @@ l_032_004C0:
         neg.w   d1                              ; 004D4
 l_032_004D6:
         move.w  d6,d2                           ; 004D6
-        sub.w   $6a(a1),d2                      ; 004D8
+        sub.w   obj_Roll(a1),d2                 ; 004D8
         bge.b   l_032_004E0                     ; 004DC
         neg.w   d2                              ; 004DE
 l_032_004E0:
@@ -458,31 +458,31 @@ l_032_004FA:
         cmpi.w  #$320,d2                        ; 004FA
         blt.b   l_032_00546                     ; 004FE
 l_032_00500:
-        btst    #$2,$3(a1)                      ; 00500
+        btst    #$2,obj_Flags2+1(a1)            ; 00500
         bne.b   l_032_0052C                     ; 00506
-        bset    #$2,$3(a1)                      ; 00508
-        tst.b   $28(a1)                         ; 0050E
+        bset    #$2,obj_Flags2+1(a1)            ; 00508
+        tst.b   obj_StickPitch(a1)              ; 0050E
         beq.w   l_032_00592                     ; 00512
         move.w  (UpdateAttitudeData1).l,d0      ; 00516
-        tst.w   $56(a1)                         ; 0051C
+        tst.w   obj_PitchRate(a1)               ; 0051C
         bge.b   l_032_00524                     ; 00520
         neg.w   d0                              ; 00522
 l_032_00524:
-        add.w   d0,$56(a1)                      ; 00524
+        add.w   d0,obj_PitchRate(a1)            ; 00524
         bra.w   l_032_00592                     ; 00528
 l_032_0052C:
         move.w  (UpdateAttitudeData1).l,d0      ; 0052C
-        tst.w   $58(a1)                         ; 00532
+        tst.w   obj_YawRate(a1)                 ; 00532
         bge.b   l_032_0053A                     ; 00536
         neg.w   d0                              ; 00538
 l_032_0053A:
-        add.w   d0,$58(a1)                      ; 0053A
+        add.w   d0,obj_YawRate(a1)              ; 0053A
         bra.w   l_032_00592                     ; 0053E
 l_032_00542:
         tst.w   d0                              ; 00542
         bne.b   l_032_00500                     ; 00544
 l_032_00546:
-        bclr    #$2,$3(a1)                      ; 00546
+        bclr    #$2,obj_Flags2+1(a1)            ; 00546
 
 ;-------------------------------------------------------------------------------
 ; SetAttitude - SetAttitude(a1 = an object, d4-d6 = its three attitude angles): stores the
@@ -557,14 +557,14 @@ SetOutsideCamera:
         move.w  (ViewObject).l,d2               ; 005C0
         bne.b   l_032_005DE                     ; 005C6
         move.w  (EjectedPilot).l,d2             ; 005C8
-        btst    #$6,$1(a1,d2.w)                 ; 005CE
+        btst    #$6,obj_Flags+1(a1,d2.w)        ; 005CE
         beq.b   l_032_005E0                     ; 005D4
-        cmpi.b  #$30,$62(a1,d2.w)               ; 005D6
+        cmpi.b  #$30,obj_Type(a1,d2.w)          ; 005D6
         bne.b   l_032_005E0                     ; 005DC
 l_032_005DE:
         adda.w  d2,a1                           ; 005DE
 l_032_005E0:
-        move.b  $62(a1),d0                      ; 005E0
+        move.b  obj_Type(a1),d0                 ; 005E0
         andi.b  #$f0,d0                         ; 005E4
         cmpi.b  #$30,d0                         ; 005E8
         beq.b   l_032_00602                     ; 005EC
@@ -643,7 +643,7 @@ CameraHeadingMatrix:
         lea.l   (ObjectTable).l,a0              ; 006EA
         adda.w  (ViewObject).l,a0               ; 006F0
         move.w  #$7080,d1                       ; 006F6
-        move.w  $68(a0),d4                      ; 006FA
+        move.w  obj_Heading(a0),d4              ; 006FA
         beq.b   l_032_00704                     ; 006FE
         sub.w   d4,d1                           ; 00700
         move.w  d1,d4                           ; 00702
@@ -659,14 +659,14 @@ l_032_00704:
 CockpitViewMatrix:
         lea.l   (ObjectTable).l,a0              ; 00710
         adda.w  (ViewObject).l,a0               ; 00716
-        move.w  $68(a0),d4                      ; 0071C
+        move.w  obj_Heading(a0),d4              ; 0071C
         lea.l   (PanelMatrixHeading).l,a1       ; 00720
         bsr.w   HeadingMatrix                   ; 00726
         lea.l   (ObjectTable).l,a0              ; 0072A
         adda.w  (ViewObject).l,a0               ; 00730
         tst.b   (OutsideView).l                 ; 00736
         bne.b   l_032_00752                     ; 0073C
-        movem.w $66(a0),d0/d2/d4                ; 0073E
+        movem.w obj_Pitch(a0),d0/d2/d4          ; 0073E
         lea.l   (PanelViewMatrix).l,a1          ; 00744
         move.l  a0,-(a7)                        ; 0074A
         bsr.w   AttitudeMatrix                  ; 0074C
@@ -675,7 +675,7 @@ l_032_00752:
         moveq   #$0,d0                          ; 00752
         moveq   #$0,d2                          ; 00754
         moveq   #$0,d4                          ; 00756
-        move.b  $62(a0),d3                      ; 00758
+        move.b  obj_Type(a0),d3                 ; 00758
         andi.b  #$f0,d3                         ; 0075C
         move.b  (ViewZoom).l,d1                 ; 00760
         beq.b   l_032_0077E                     ; 00766
@@ -694,7 +694,7 @@ l_032_0078A:
         move.b  (CockpitViewKind).l,d1          ; 0078A
         cmpi.b  #$1,d1                          ; 00790
         bgt.b   l_032_007A8                     ; 00794
-        movem.w $66(a0),d0/d2/d4                ; 00796
+        movem.w obj_Pitch(a0),d0/d2/d4          ; 00796
         movem.l d0/d2/d4,(OutsideCamPos).l      ; 0079C
         bra.w   l_032_00892                     ; 007A4
 l_032_007A8:
@@ -704,7 +704,7 @@ l_032_007A8:
 l_032_007B2:
         subq.b  #$1,d1                          ; 007B2
         beq.b   l_032_007D6                     ; 007B4
-        move.w  $66(a0),d0                      ; 007B6
+        move.w  obj_Pitch(a0),d0                ; 007B6
         cmpi.w  #$230,d0                        ; 007BA
         blt.b   l_032_007C6                     ; 007BE
         cmpi.w  #$6e50,d0                       ; 007C0
@@ -716,7 +716,7 @@ l_032_007CE:
         move.w  #$1c20,d0                       ; 007CE
         bra.w   l_032_00862                     ; 007D2
 l_032_007D6:
-        move.w  $66(a0),d0                      ; 007D6
+        move.w  obj_Pitch(a0),d0                ; 007D6
         cmpi.w  #$230,d0                        ; 007DA
         blt.b   l_032_007E6                     ; 007DE
         cmpi.w  #$6e50,d0                       ; 007E0
@@ -730,7 +730,7 @@ l_032_007EC:
 l_032_007F2:
         subq.b  #$1,d1                          ; 007F2
         beq.b   l_032_00812                     ; 007F4
-        move.w  $66(a0),d0                      ; 007F6
+        move.w  obj_Pitch(a0),d0                ; 007F6
         cmpi.w  #$1e50,d0                       ; 007FA
         bge.b   l_032_0080C                     ; 007FE
         cmpi.w  #$19f0,d0                       ; 00800
@@ -741,7 +741,7 @@ l_032_0080C:
         move.w  #$0,d0                          ; 0080C
         bra.b   l_032_00862                     ; 00810
 l_032_00812:
-        move.w  $66(a0),d0                      ; 00812
+        move.w  obj_Pitch(a0),d0                ; 00812
         cmpi.w  #$1e50,d0                       ; 00816
         bge.b   l_032_00828                     ; 0081A
         cmpi.w  #$19f0,d0                       ; 0081C
@@ -784,7 +784,7 @@ l_032_00862:
         bsr.w   ScaleRows                       ; 00878
         movem.w (a7)+,d0/d2/d4                  ; 0087C
         movea.l (a7)+,a0                        ; 00880
-        lea.l   $80(a0),a4                      ; 00882
+        lea.l   obj_Matrix(a0),a4               ; 00882
         bsr.w   NormaliseAngles                 ; 00886
         movem.l d4-d6,(OutsideCamPos).l         ; 0088A
 l_032_00892:
@@ -817,7 +817,7 @@ CockpitViewMatrixData2:
 ;-------------------------------------------------------------------------------
 ComputeGLoad:
         movem.l d0-d1/d4/a0,-(a7)               ; 00946
-        btst    #$7,$0(a1)                      ; 0094A
+        btst    #$7,obj_Flags(a1)               ; 0094A
         bne.w   l_032_00A72                     ; 00950
         move.w  d7,d4                           ; 00954
         asr.w   #$3,d4                          ; 00956
@@ -852,13 +852,13 @@ l_032_0099E:
         subi.w  #$708,d4                        ; 009A2
         bsr.w   SinCos                          ; 009A6
 l_032_009AA:
-        move.w  d4,$22(a1)                      ; 009AA
+        move.w  d4,obj_Weight(a1)               ; 009AA
         move.w  d5,$24(a1)                      ; 009AE
         move.w  d4,d3                           ; 009B2
         bge.b   l_032_009B8                     ; 009B4
         neg.w   d4                              ; 009B6
 l_032_009B8:
-        move.w  $54(a1),d1                      ; 009B8
+        move.w  obj_AimRate3(a1),d1             ; 009B8
         move.w  d1,d7                           ; 009BC
         tst.w   d5                              ; 009BE
         bge.b   l_032_009C4                     ; 009C0
@@ -880,7 +880,7 @@ l_032_009DE:
         asr.w   #$3,d1                          ; 009DE
 l_032_009E0:
         sub.w   d1,d7                           ; 009E0
-        move.w  d7,$54(a1)                      ; 009E2
+        move.w  d7,obj_AimRate3(a1)             ; 009E2
         move.w  d7,d4                           ; 009E6
         bge.b   l_032_009F8                     ; 009E8
         neg.w   d4                              ; 009EA
@@ -895,19 +895,19 @@ l_032_009F8:
         cmpi.w  #$ff00,d5                       ; 009FC
         bgt.b   l_032_00A1A                     ; 00A00
 l_032_00A02:
-        move.w  $50(a1),d6                      ; 00A02
-        move.w  $52(a1),d7                      ; 00A06
+        move.w  obj_AimRate1(a1),d6             ; 00A02
+        move.w  obj_AimRate2(a1),d7             ; 00A06
         eor.w   d6,d7                           ; 00A0A
         blt.b   l_032_00A1A                     ; 00A0C
         neg.w   d3                              ; 00A0E
         neg.w   d5                              ; 00A10
         bra.b   l_032_00A1A                     ; 00A12
 l_032_00A14:
-        move.w  $50(a1),$52(a1)                 ; 00A14
+        move.w  obj_AimRate1(a1),obj_AimRate2(a1) ; 00A14
 l_032_00A1A:
-        cmp.w   $7e(a1),d4                      ; 00A1A
+        cmp.w   obj_PilotTimer(a1),d4           ; 00A1A
         ble.b   l_032_00A24                     ; 00A1E
-        move.w  $7e(a1),d4                      ; 00A20
+        move.w  obj_PilotTimer(a1),d4           ; 00A20
 l_032_00A24:
         move.w  d4,d7                           ; 00A24
         asr.w   #$2,d7                          ; 00A26
@@ -925,7 +925,7 @@ l_032_00A24:
         muls.w  d4,d5                           ; 00A3E
         asr.l   d7,d3                           ; 00A40
         asr.l   d7,d5                           ; 00A42
-        move.w  $66(a1),d1                      ; 00A44
+        move.w  obj_Pitch(a1),d1                ; 00A44
         cmpi.w  #$3840,d1                       ; 00A48
         blt.b   l_032_00A54                     ; 00A4C
         subi.w  #$7080,d1                       ; 00A4E
@@ -958,26 +958,26 @@ l_032_00A8C:
 ; ClearPlus50 - Clears the object's +$50.
 ;-------------------------------------------------------------------------------
 ClearPlus50:
-        tst.w   $50(a1)                         ; 00A8E
+        tst.w   obj_AimRate1(a1)                ; 00A8E
         bne.b   l_032_00AA8                     ; 00A92
-        clr.w   $50(a1)                         ; 00A94
+        clr.w   obj_AimRate1(a1)                ; 00A94
         rts                                     ; 00A98
 
 ;-------------------------------------------------------------------------------
 ; SetPlus50 - Sets the object's +$50 to -1.
 ;-------------------------------------------------------------------------------
 SetPlus50:
-        tst.w   $50(a1)                         ; 00A9A
+        tst.w   obj_AimRate1(a1)                ; 00A9A
         beq.b   l_032_00AAE                     ; 00A9E
-        move.w  #$ffff,$50(a1)                  ; 00AA0
+        move.w  #$ffff,obj_AimRate1(a1)         ; 00AA0
         rts                                     ; 00AA6
 l_032_00AA8:
-        clr.w   $50(a1)                         ; 00AA8
+        clr.w   obj_AimRate1(a1)                ; 00AA8
         bra.b   l_032_00AB4                     ; 00AAC
 l_032_00AAE:
-        move.w  #$ffff,$50(a1)                  ; 00AAE
+        move.w  #$ffff,obj_AimRate1(a1)         ; 00AAE
 l_032_00AB4:
-        neg.w   $54(a1)                         ; 00AB4
+        neg.w   obj_AimRate3(a1)                ; 00AB4
         rts                                     ; 00AB8
 ; ComputeGLoadData1 - Data used by ComputeGLoad.
 ComputeGLoadData1:

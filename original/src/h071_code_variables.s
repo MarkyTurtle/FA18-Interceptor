@@ -2627,39 +2627,103 @@ BulletTestRange:
 PolygonsDrawn:
 	dc.b	$00
 	dc.b	$00
+; Object - an ObjectTable record (512 bytes; emits no bytes: the offsets). An object's
+; offset in ObjectTable is its number << 9.
+                rsreset
+obj_Flags               rs.w    1               ; flags ($2000 throttle at full, $0008 probably the
+                                                ; afterburner, $0400 spent...); low byte: bit 6 it
+                                                ; exists, bit 4 in a cell being drawn
+obj_Flags2              rs.w    1               ; more flags (low byte bit 7...)
+obj_Bits                rs.b    1               ; bits (bit 3 on the ground...)
+obj_State               rs.b    1               ; the computer pilot's state (1 pull up, 8 route...)
+obj_CellX               rs.w    1               ; its map cell
+obj_CellZ               rs.w    1
+obj_SubCell             rs.b    1               ; where in the cell
+                        rs.b    1
+obj_X8                  rs.w    1               ; the position in the cell / 256 (x, z), and its
+                                                ; height (long)
+obj_Z8                  rs.w    1
+obj_Y8                  rs.l    1
+obj_X                   rs.l    1               ; the position (low 22 bits of x and z: inside the
+                                                ; cell; y is the height, up)
+obj_Y                   rs.l    1
+obj_Z                   rs.l    1
+obj_Status              rs.b    1               ; what has happened to it: bit 1 destroyed, 2
+                                                ; damaged, 6 signature confirmed, 7 hit by the
+                                                ; player
+                        rs.b    1
+obj_Weight              rs.w    1               ; (a weight-like term in the stall check)
+                        rs.w    1
+obj_Response            rs.w    1               ; responsiveness (at most 15; a missile: $14 at
+                                                ; launch)
+obj_StickPitch          rs.b    1               ; the pitch stick (-20..20)
+obj_Rudder              rs.b    1               ; the rudder (-20..20)
+obj_StickRoll           rs.b    1               ; the roll stick (-60..60)
+obj_Throttle            rs.b    1               ; the throttle (0-120)
+obj_DestCellX           rs.w    1               ; the computer pilot's destination: its map cell,
+obj_DestCellZ           rs.w    1
+obj_DestX               rs.w    1               ; where in it,
+obj_DestZ               rs.w    1
+obj_DestY               rs.l    1               ; and its height
+obj_Target              rs.b    1               ; its target ($80 + an object; copied to its
+                                                ; missiles)
+obj_ThrottleStep        rs.b    1               ; low nibble: the throttle's step
+obj_Route               rs.b    1               ; the route (Routes)
+                        rs.b    1
+                        rs.w    1
+obj_VelX                rs.l    1               ; its velocity
+obj_VelY                rs.l    1
+obj_VelZ                rs.l    1
+obj_Range               rs.w    1               ; the range to its target (the locked target, for
+                                                ; the player)
+obj_Timer               rs.w    1               ; a timer (a missile: $96 / $C8 at launch)
+                        rs.w    1
+obj_AimRate1            rs.w    1               ; target rotation rates (computer aircraft)
+obj_AimRate2            rs.w    1
+obj_AimRate3            rs.w    1
+obj_PitchRate           rs.w    1               ; rotation rates, which the matrix turns by each
+                                                ; frame: the pitch stick drives this one,
+obj_YawRate             rs.w    1               ; the rudder this one,
+obj_RollRate            rs.w    1               ; the roll stick this one
+                        rs.b    1
+obj_Zone                rs.b    1               ; its zone (Zones, for KeepInZone)
+                        rs.b    1
+obj_Missiles            rs.b    1               ; missiles left: low nibble AMRAAMs, high nibble
+                                                ; Sidewinders
+obj_Rounds              rs.w    1               ; cannon rounds left
+obj_Type                rs.b    1               ; its type (0 Sidewinder, 1 AMRAAM; $1x an aircraft:
+                                                ; $10 F-16, $11 F/A-18; $3x a parachute or pod...)
+obj_Weapon              rs.b    1               ; the selected weapon (high nibble: $10 gun, $20
+                                                ; Sidewinder, $30 AMRAAM)
+obj_Controls2           rs.b    1               ; more control bits (bits 5 and 6: its target is in
+                                                ; its forward cone)
+obj_Controls            rs.b    1               ; control bits: $80/$40 rudder, $20/$10 pitch,
+                                                ; $08/$04 roll, $02/$01 throttle
+obj_Pitch               rs.w    1               ; its attitude (1/80 degree)
+obj_Heading             rs.w    1
+obj_Roll                rs.w    1
+obj_Speed               rs.w    1               ; its speed
+obj_SpeedFlown          rs.w    1               ; the speed flown (obj_Speed + obj_ClimbSpeed)
+                        rs.b    1
+                        rs.b    1
+obj_Fuel                rs.l    1               ; fuel (6,400,000 at the start)
+obj_Lift                rs.w    1               ; lift / sink (vertical velocity)
+obj_ClimbSpeed          rs.w    1               ; speed lost climbing / gained diving
+                                                ; (ClimbDivePhysics)
+                        rs.w    1
+obj_Ejection            rs.b    1               ; the ejection: low nibble its step, bit 7
+                                                ; (SetObjectBit7C)
+obj_Scale               rs.b    1               ; low nibble: a scale shift
+obj_PilotTimer          rs.w    1               ; the computer pilot's timer ($1400 for a computer
+                                                ; aircraft)
+obj_Matrix              rs.w    9               ; a 3 x 3 rotation matrix from the angles (2.14,
+                                                ; rows of 3 words)
+obj_Inverse             rs.w    9               ; the opposite rotation, from the negated angles
+                                                ; (its third column: the nose)
+obj_Vertices            rs.w    174             ; its own copy of its model's vertices
+OBJECT_SIZE             rs.b    0
 ; ObjectTable - The 16 objects (aircraft, missiles, ships...; the player's aircraft is record 0):
-; records of 512 bytes, $00B54-$02B53 (an object's offset = its number << 9). What is known:
-;   +$00 w  flags ($2000 throttle at full, $0008 probably the afterburner, $0400 spent...)
-;                                       +$01 b  bit 6 the object exists, bit 4 in a cell being drawn
-;   +$03 b  bit 7   +$05 b  state (the computer pilot's: 1 pull up, 8 route...)   +$06 w  map cell X   +$08 w  map cell Z
-;   +$0A b  sub-cell                    +$10 l
-;   +$14 l  position X (low 22 bits: inside the cell)   +$18 l  Y (height; positive is up)
-;   +$1C l  position Z (low 22 bits: inside the cell)   +$26 w  (a missile: $14 at launch)
-;   +$22 w  (a weight-like term in the stall check)   +$26 w  responsiveness (at most 15)
-;   +$2C w, +$2E w  the computer pilot's destination: map cell X, Z   +$30 w, +$32 w  in the cell
-;   +$34 l  the destination's height   +$3A b  the route (Routes)
-;   +$28 b  pitch stick (-20..20)   +$29 b  rudder (-20..20)   +$2A b  roll stick (-60..60)
-;   +$2B b  the throttle (0-120)   +$39 b  low nibble: the throttle's step   +$38 b  (copied to its missiles)
-;   +$3E l  velocity X   +$42 l  velocity Y   +$46 l  velocity Z
-;   +$4A w  the range to its target (the locked target's for the player)
-;   +$4C w  a timer (a missile: $96 / $C8 at launch)   +$5D b  its zone (Zones), for KeepInZone
-;   +$50 w, +$52 w, +$54 w  target rotation rates (computer aircraft)
-;   +$56 w, +$58 w, +$5A w  rotation rates: the +$80 matrix turns by them each frame
-;   +$5F b  missiles left: low nibble AMRAAMs, high nibble Sidewinders ($24 at the start)
-;   +$60 w  cannon rounds left (500 at the start)
-;   +$62 b  type (0 Sidewinder, 1 AMRAAM; $1x aircraft flown by rotation rates - $10 F-16, $11
-;           F/A-18; $3x a parachute or pod)   +$64 b  more control bits
-;   +$63 b  selected weapon (high nibble: $10 gun, $20 Sidewinder, $30 AMRAAM; for a computer
-;           pilot $20 / $30 also mean attacking)
-;   +$65 b  control bits: $80/$40 rudder (the , and . keys), $20/$10 pitch, $08/$04 roll, $02/$01 throttle
-;   +$66 w  pitch   +$68 w  heading   +$6A w  roll  (1/80 degree; SetAttitude, UpdateAttitude)
-;   +$80-$90 w  a 3 x 3 rotation matrix made from them (2.14)
-;   +$6C w  speed   +$6E w  the speed flown (+$6C + +$78)   +$76 w  lift / sink (vertical velocity)
-;   +$78 w  speed lost climbing / gained diving (ClimbDivePhysics)
-;   +$7E w  ($1400 for a computer aircraft)   +$71 b   +$72 l  fuel (6,400,000 at the start)
-;   +$7C b  the ejection: low nibble its step (CheckEjection), bit 7 set by SetObjectBit7C
-;   +$92-$A2 w  the opposite rotation (from the negated angles; rows at +$92, +$98, +$9E)
-;   +$A4    the object's own copy of its model's vertices (the vertex builders and the shadow)
+; Object records (above) of 512 bytes, $00B54-$02B53 (an object's offset = its number << 9).
 ObjectTable:
 	dc.b	$00
 	dc.b	$00

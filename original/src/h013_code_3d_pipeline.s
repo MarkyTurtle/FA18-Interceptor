@@ -495,7 +495,7 @@ ShapeShadow:
         move.l  (ViewOffsetY).l,d0              ; 004BE
         lea.l   (ObjectTable).l,a4              ; 004C4
         adda.w  (CurrentObjectOffset).l,a4      ; 004CA
-        move.b  $4(a4),d3                       ; 004D0
+        move.b  obj_Bits(a4),d3                 ; 004D0
         move.b  d3,d7                           ; 004D4
         andi.b  #$c0,d7                         ; 004D6
         beq.b   l_013_004E2                     ; 004DA
@@ -535,11 +535,11 @@ l_013_00544:
         moveq   #$1,d0                          ; 00544
         rts                                     ; 00546
 l_013_00548:
-        cmpi.b  #$30,$62(a4)                    ; 00548
+        cmpi.b  #$30,obj_Type(a4)               ; 00548
         beq.b   l_013_00574                     ; 0054E
         cmpi.l  #$ffff0000,d0                   ; 00550
         bge.b   l_013_00574                     ; 00556
-        cmpi.b  #$14,$62(a4)                    ; 00558
+        cmpi.b  #$14,obj_Type(a4)               ; 00558
         beq.b   l_013_00574                     ; 0055E
         cmpi.b  #$1,(HeightBand).l              ; 00560
         ble.b   l_013_00544                     ; 00568
@@ -552,7 +552,7 @@ l_013_00574:
         move.w  (a2)+,d0                        ; 00578
         ext.l   d0                              ; 0057A
         asl.l   #$8,d0                          ; 0057C
-        cmp.l   $18(a4),d0                      ; 0057E
+        cmp.l   obj_Y(a4),d0                    ; 0057E
         blt.w   l_013_0060A                     ; 00582
         adda.w  #$a4,a4                         ; 00586
         move.w  (DistanceShift).l,-$2(a6)       ; 0058A
@@ -1089,7 +1089,7 @@ ShapeCockpitFlag:
         bne.b   l_013_00B3A                     ; 00B1C
         lea.l   (ObjectTable).l,a3              ; 00B1E
         adda.w  (ViewObject).l,a3               ; 00B24
-        move.b  $4(a3),d1                       ; 00B2A
+        move.b  obj_Bits(a3),d1                 ; 00B2A
         andi.b  #$40,d1                         ; 00B2E
         beq.b   l_013_00B3A                     ; 00B32
         move.w  #$1,-$7a(a6)                    ; 00B34
