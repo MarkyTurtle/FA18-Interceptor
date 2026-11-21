@@ -1977,49 +1977,57 @@ InitInput:
 ; PutHex - PutHex(text, value, digits): writes value in hex, right-aligned, leading zeros as
 ; spaces.
 ;-------------------------------------------------------------------------------
+; PutHex's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+PutHex_Text             rs.l    1               ; where the digits go (moved to their end)
+PutHex_Value            rs.l    1               ; the number
+                rs.b    3                       ; (pushed as a long: the high part)
+PutHex_Digits           rs.b    1               ; how many digits
+PutHex_I                equ     -$1             ; the digit count
+PutHex_Char             equ     -$2             ; the digit's character
 PutHex:
         link.w  a6,#$fffe                       ; 016BA
-        move.b  $13(a6),d0                      ; 016BE
+        move.b  PutHex_Digits(a6),d0            ; 016BE
         ext.w   d0                              ; 016C2
         ext.l   d0                              ; 016C4
-        add.l   d0,$8(a6)                       ; 016C6
-        clr.b   -$1(a6)                         ; 016CA
+        add.l   d0,PutHex_Text(a6)              ; 016C6
+        clr.b   PutHex_I(a6)                    ; 016CA
 l_000_016CE:
-        move.b  -$1(a6),d0                      ; 016CE
-        cmp.b   $13(a6),d0                      ; 016D2
+        move.b  PutHex_I(a6),d0                 ; 016CE
+        cmp.b   PutHex_Digits(a6),d0            ; 016D2
         bge.b   l_000_01712                     ; 016D6
-        move.l  $c(a6),d0                       ; 016D8
+        move.l  PutHex_Value(a6),d0             ; 016D8
         andi.l  #$f,d0                          ; 016DC
         addi.l  #$30,d0                         ; 016E2
-        move.b  d0,-$2(a6)                      ; 016E8
+        move.b  d0,PutHex_Char(a6)              ; 016E8
         cmpi.b  #$39,d0                         ; 016EC
         ble.b   l_000_016F6                     ; 016F0
-        addq.b  #$7,-$2(a6)                     ; 016F2
+        addq.b  #$7,PutHex_Char(a6)             ; 016F2
 l_000_016F6:
-        movea.l $8(a6),a0                       ; 016F6
-        move.b  -$2(a6),(a0)                    ; 016FA
-        subq.l  #$1,$8(a6)                      ; 016FE
-        addq.b  #$1,-$1(a6)                     ; 01702
-        move.l  $c(a6),d0                       ; 01706
+        movea.l PutHex_Text(a6),a0              ; 016F6
+        move.b  PutHex_Char(a6),(a0)            ; 016FA
+        subq.l  #$1,PutHex_Text(a6)             ; 016FE
+        addq.b  #$1,PutHex_I(a6)                ; 01702
+        move.l  PutHex_Value(a6),d0             ; 01706
         lsr.l   #$4,d0                          ; 0170A
-        move.l  d0,$c(a6)                       ; 0170C
+        move.l  d0,PutHex_Value(a6)             ; 0170C
         bra.b   l_000_016CE                     ; 01710
 l_000_01712:
-        subq.b  #$1,$13(a6)                     ; 01712
-        addq.l  #$1,$8(a6)                      ; 01716
-        clr.b   -$1(a6)                         ; 0171A
+        subq.b  #$1,PutHex_Digits(a6)           ; 01712
+        addq.l  #$1,PutHex_Text(a6)             ; 01716
+        clr.b   PutHex_I(a6)                    ; 0171A
 l_000_0171E:
-        move.b  -$1(a6),d0                      ; 0171E
-        cmp.b   $13(a6),d0                      ; 01722
+        move.b  PutHex_I(a6),d0                 ; 0171E
+        cmp.b   PutHex_Digits(a6),d0            ; 01722
         bge.b   l_000_01744                     ; 01726
-        movea.l $8(a6),a0                       ; 01728
+        movea.l PutHex_Text(a6),a0              ; 01728
         move.b  (a0),d0                         ; 0172C
         cmpi.b  #$30,d0                         ; 0172E
         bne.b   l_000_01744                     ; 01732
         move.b  #$20,(a0)                       ; 01734
-        addq.l  #$1,$8(a6)                      ; 01738
+        addq.l  #$1,PutHex_Text(a6)             ; 01738
         nop                                     ; 0173C
-        addq.b  #$1,-$1(a6)                     ; 0173E
+        addq.b  #$1,PutHex_I(a6)                ; 0173E
         bra.b   l_000_0171E                     ; 01742
 l_000_01744:
         unlk    a6                              ; 01744
@@ -4846,20 +4854,26 @@ l_000_03C1A:
 ;-------------------------------------------------------------------------------
 ; SetPalette - SetPalette(colours): copies 32 colours (16 longs) into the palette.
 ;-------------------------------------------------------------------------------
+; SetPalette's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+SetPalette_Colours      rs.l    1               ; the 32 colour words
+SetPalette_I            equ     -$2             ; the long being copied
+SetPalette_From         equ     -$6             ; the next colours
+SetPalette_To           equ     -$A             ; the next place in LivePalette
 SetPalette:
         link.w  a6,#$fff6                       ; 03C1C
-        move.l  $8(a6),-$6(a6)                  ; 03C20
-        move.l  (LivePalette).l,-$a(a6)         ; 03C26
-        clr.w   -$2(a6)                         ; 03C2E
+        move.l  SetPalette_Colours(a6),SetPalette_From(a6) ; 03C20
+        move.l  (LivePalette).l,SetPalette_To(a6) ; 03C26
+        clr.w   SetPalette_I(a6)                ; 03C2E
 l_000_03C32:
-        cmpi.w  #$10,-$2(a6)                    ; 03C32
+        cmpi.w  #$10,SetPalette_I(a6)           ; 03C32
         bge.b   l_000_03C52                     ; 03C38
-        movea.l -$6(a6),a0                      ; 03C3A
-        movea.l -$a(a6),a1                      ; 03C3E
+        movea.l SetPalette_From(a6),a0          ; 03C3A
+        movea.l SetPalette_To(a6),a1            ; 03C3E
         move.l  (a0),(a1)                       ; 03C42
-        addq.l  #$4,-$6(a6)                     ; 03C44
-        addq.l  #$4,-$a(a6)                     ; 03C48
-        addq.w  #$1,-$2(a6)                     ; 03C4C
+        addq.l  #$4,SetPalette_From(a6)         ; 03C44
+        addq.l  #$4,SetPalette_To(a6)           ; 03C48
+        addq.w  #$1,SetPalette_I(a6)            ; 03C4C
         bra.b   l_000_03C32                     ; 03C50
 l_000_03C52:
         move.b  #$2,(PaletteLoadCount).l        ; 03C52

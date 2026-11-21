@@ -266,14 +266,15 @@ TimerSeconds:
 ; TimerMicros - The time read (microseconds).
 TimerMicros:
         ds.b    $4                              ; 029A0
-; KeyboardRequest - The keyboard device's IO request (OpenKeyboard, ReadKeyEvent).
-KeyboardRequest:
+; KeyboardEventPtr - The keyboard request's data: points at KeyboardEvent (OpenKeyboard,
+; ReadKeyEvent).
+KeyboardEventPtr:
         ds.b    $4                              ; 029A4
-; OpenKeyboardData1 - Data used by OpenKeyboard.
-OpenKeyboardData1:
+; KeyboardError - What OpenDevice returned for keyboard.device.
+KeyboardError:
         ds.b    $2                              ; 029A8
-; OpenKeyboardData2 - Data used by OpenKeyboard.
-OpenKeyboardData2:
+; KeyboardEvent - The InputEvent the keyboard request reads into (22 bytes; ie_Code at +6).
+KeyboardEvent:
         ds.b    $16                             ; 029AA
 ; LastKey - The key code last pushed (PushKey, GetKey).
 LastKey:
@@ -281,8 +282,8 @@ LastKey:
 ; JoystickEventPtr2 - Points at JoystickEvent too (ReadJoystick).
 JoystickEventPtr2:
         ds.b    $4                              ; 029C2
-; JoystickPort - The gameport device's message port (OpenJoystick).
-JoystickPort:
+; JoystickRequest - The gameport device's IO request (OpenJoystick: CreateStdIO).
+JoystickRequest:
         ds.b    $4                              ; 029C6
 ; JoystickEvent - The gameport's input event buffer.
 JoystickEvent:
@@ -290,8 +291,8 @@ JoystickEvent:
 ; JoystickEventPtr - Points at JoystickEvent (the request's data).
 JoystickEventPtr:
         ds.b    $4                              ; 029E0
-; JoystickRequest - The gameport device's IO request (OpenJoystick).
-JoystickRequest:
+; JoystickPort - The gameport device's reply port (OpenJoystick: CreatePort).
+JoystickPort:
         ds.b    $4                              ; 029E4
 ; MouseInterruptNode - The interrupt structure of the mouse's vertical-blank server
 ; (AddMouseInterrupt).

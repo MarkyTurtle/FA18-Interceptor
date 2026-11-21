@@ -171,20 +171,20 @@ CodeCheckData2:
 ; CodeCheckData3 - Data used by CodeCheck.
 CodeCheckData3:
 	dc.b	$01,$FF,$0F,$FF,$7F,$FF,$FF,$FF
-; Hunk001Data1 - Data used by KeyboardPort.
-Hunk001Data1:
+; KeyboardIOReq - The keyboard device's IO request (an IOStdReq, 48 bytes).
+KeyboardIOReq:
 	dcb.b	48,$00
-; KeyboardPort - The keyboard device's message port.
-KeyboardPort:
-        dc.l    Hunk001Data1                    ; 001FC
+; KeyboardIO - Points at KeyboardIOReq: the keyboard device's IO request.
+KeyboardIO:
+        dc.l    KeyboardIOReq                   ; 001FC
 	dc.b	$00
 	dc.b	$00
-; Hunk001Data2 - Data used by KeyboardPortPtr.
-Hunk001Data2:
+; KeyboardMsgPort - The keyboard request's reply port (a MsgPort, 34 bytes).
+KeyboardMsgPort:
 	dcb.b	34,$00
-; KeyboardPortPtr - A pointer used in opening the keyboard.
-KeyboardPortPtr:
-        dc.l    Hunk001Data2                    ; 00224
+; KeyboardPort - Points at KeyboardMsgPort: the keyboard request's reply port (MakePort).
+KeyboardPort:
+        dc.l    KeyboardMsgPort                 ; 00224
 ; StrKeyboardDevice - "keyboard.device"
 StrKeyboardDevice:
 	dc.b	'keyboard.device'

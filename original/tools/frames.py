@@ -243,7 +243,7 @@ def apply(spec):
                 if nc != code:
                     L[k] = pad(nc.rstrip(), sep + cmt) if sep else nc.rstrip()
                 k += 1
-            i = k
+            i += 1
     for f, L in files.items():
         txt = '\n'.join(L)
         if txt != open(f).read():

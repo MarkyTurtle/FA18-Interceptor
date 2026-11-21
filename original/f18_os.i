@@ -78,6 +78,53 @@ sm_NumArgs		equ	$1C
 sm_ToolWindow		equ	$20
 sm_ArgList		equ	$24
 wa_Lock			equ	0
+; struct Node / Message / MsgPort (exec)
+ln_Succ			equ	0
+ln_Pred			equ	4
+ln_Type			equ	8
+ln_Pri			equ	9
+ln_Name			equ	$A
+mn_ReplyPort		equ	$E
+mp_Flags		equ	$E
+mp_SigBit		equ	$F
+mp_SigTask		equ	$10
+mp_MsgList		equ	$14
+MP_SIZE			equ	$22
+NT_MSGPORT		equ	4
+
+; struct IOStdReq (exec)
+io_Device		equ	$14
+io_Unit			equ	$18
+io_Command		equ	$1C
+io_Flags		equ	$1E
+io_Error		equ	$1F
+io_Actual		equ	$20
+io_Length		equ	$24
+io_Data			equ	$28
+io_Offset		equ	$2C
+IOSTD_SIZE		equ	$30
+
+; struct InputEvent (devices/inputevent)
+ie_NextEvent		equ	0
+ie_Class		equ	4
+ie_SubClass		equ	5
+ie_Code			equ	6
+ie_Qualifier		equ	8
+ie_X			equ	$A
+ie_Y			equ	$C
+ie_TimeStamp		equ	$E
+IE_SIZE			equ	$16
+IECODE_LBUTTON		equ	$68
+IECODE_UP_PREFIX	equ	$80
+
+; device commands
+KBD_READEVENT		equ	9	; keyboard.device
+GPD_READEVENT		equ	9	; gameport.device
+GPD_ASKCTYPE		equ	10
+GPD_SETCTYPE		equ	11
+GPD_ASKTRIGGER		equ	12
+GPD_SETTRIGGER		equ	13
+
 ; struct BitMap (graphics)
 bm_BytesPerRow		equ	0
 bm_Rows			equ	2

@@ -379,9 +379,15 @@ l_000_079B6:
 ; (BulletHitObject), moves the bullet into the object's cell and applies the hit
 ; (BulletDamage).
 ;-------------------------------------------------------------------------------
+; BulletHitsObject's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+                rs.w    1                       ; (pushed as a long: the high part)
+BulletHitsObject_Hit    rs.w    1               ; BulletDamage's argument
+                rs.w    1                       ; (pushed as a long: the high part)
+BulletHitsObject_Object rs.w    1               ; the object hit
 BulletHitsObject:
         link.w  a6,#$0                          ; 07A28
-        move.w  $e(a6),d0                       ; 07A2C
+        move.w  BulletHitsObject_Object(a6),d0  ; 07A2C
         move.w  d0,(BulletHitObject).l          ; 07A30
         moveq   #$9,d1                          ; 07A36
         ext.l   d0                              ; 07A38
@@ -423,7 +429,7 @@ BulletHitsObject:
         ext.l   d0                              ; 07AE4
         asl.l   #$4,d0                          ; 07AE6
         move.l  d0,(HitPointZ).l                ; 07AE8
-        move.w  $a(a6),d0                       ; 07AEE
+        move.w  BulletHitsObject_Hit(a6),d0     ; 07AEE
         ext.l   d0                              ; 07AF2
         move.l  d0,-(a7)                        ; 07AF4
         bsr.b   BulletDamage                    ; 07AF6
@@ -1398,49 +1404,63 @@ l_000_08844:
 ; CodeCheckData1 and an LFSR (15 steps, feedback $B400); also leaves (value >> 1) & 3 in
 ; CodeHashValue.
 ;-------------------------------------------------------------------------------
+; CodeHash's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+                rs.w    1                       ; (pushed as a long: the high part)
+CodeHash_A              rs.w    1               ; the four numbers
+                rs.w    1                       ; (pushed as a long: the high part)
+CodeHash_B              rs.w    1
+                rs.w    1                       ; (pushed as a long: the high part)
+CodeHash_C              rs.w    1               ; (an index into CodeCheckData1)
+                rs.w    1                       ; (pushed as a long: the high part)
+CodeHash_D              rs.w    1
+CodeHash_Byte           equ     -$2             ; the byte made from them
+CodeHash_Value          equ     -$4             ; the LFSR's value (returned)
+CodeHash_Steps          equ     -$6             ; the steps left
+CodeHash_Bit            equ     -$8             ; the bit shifted out
 CodeHash:
         link.w  a6,#$fff8                       ; 08854
-        move.w  $a(a6),d0                       ; 08858
-        sub.w   $16(a6),d0                      ; 0885C
+        move.w  CodeHash_A(a6),d0               ; 08858
+        sub.w   CodeHash_D(a6),d0               ; 0885C
         asl.w   #$4,d0                          ; 08860
-        move.w  $12(a6),d1                      ; 08862
+        move.w  CodeHash_C(a6),d1               ; 08862
         ext.l   d1                              ; 08866
         asl.l   #$1,d1                          ; 08868
         movea.l d1,a0                           ; 0886A
         adda.l  #CodeCheckData1,a0              ; 0886C
         move.w  (a0),d1                         ; 08872
         add.w   d1,d0                           ; 08874
-        add.w   $e(a6),d0                       ; 08876
+        add.w   CodeHash_B(a6),d0               ; 08876
         andi.w  #$ff,d0                         ; 0887A
-        move.w  d0,-$2(a6)                      ; 0887E
+        move.w  d0,CodeHash_Byte(a6)            ; 0887E
         asl.w   #$8,d0                          ; 08882
-        add.w   -$2(a6),d0                      ; 08884
-        move.w  #$f,-$6(a6)                     ; 08888
-        move.w  d0,-$4(a6)                      ; 0888E
+        add.w   CodeHash_Byte(a6),d0            ; 08884
+        move.w  #$f,CodeHash_Steps(a6)          ; 08888
+        move.w  d0,CodeHash_Value(a6)           ; 0888E
 l_000_08892:
-        tst.w   -$6(a6)                         ; 08892
+        tst.w   CodeHash_Steps(a6)              ; 08892
         beq.b   l_000_088C8                     ; 08896
-        move.w  -$4(a6),d0                      ; 08898
+        move.w  CodeHash_Value(a6),d0           ; 08898
         andi.w  #$1,d0                          ; 0889C
-        move.w  -$4(a6),d1                      ; 088A0
+        move.w  CodeHash_Value(a6),d1           ; 088A0
         asr.w   #$1,d1                          ; 088A4
         andi.w  #$7fff,d1                       ; 088A6
-        move.w  d0,-$8(a6)                      ; 088AA
-        move.w  d1,-$4(a6)                      ; 088AE
+        move.w  d0,CodeHash_Bit(a6)             ; 088AA
+        move.w  d1,CodeHash_Value(a6)           ; 088AE
         tst.w   d0                              ; 088B2
         beq.b   l_000_088C2                     ; 088B4
         ext.l   d1                              ; 088B6
         addi.l  #$b400,d1                       ; 088B8
-        move.w  d1,-$4(a6)                      ; 088BE
+        move.w  d1,CodeHash_Value(a6)           ; 088BE
 l_000_088C2:
-        subq.w  #$1,-$6(a6)                     ; 088C2
+        subq.w  #$1,CodeHash_Steps(a6)          ; 088C2
         bra.b   l_000_08892                     ; 088C6
 l_000_088C8:
-        move.w  -$2(a6),d0                      ; 088C8
+        move.w  CodeHash_Byte(a6),d0            ; 088C8
         asr.w   #$1,d0                          ; 088CC
         andi.w  #$3,d0                          ; 088CE
         move.w  d0,(CodeHashValue).l            ; 088D2
-        move.w  -$4(a6),d0                      ; 088D8
+        move.w  CodeHash_Value(a6),d0           ; 088D8
         unlk    a6                              ; 088DC
         rts                                     ; 088DE
 
@@ -1685,26 +1705,34 @@ l_000_08BB8:
 ;-------------------------------------------------------------------------------
 ; CopyAndOr3 - Copies one buffer into dst and ORs three more into it (n bytes each).
 ;-------------------------------------------------------------------------------
+; CopyAndOr3's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+CopyAndOr3_Count        rs.l    1               ; the bytes in each
+CopyAndOr3_Src          rs.l    1               ; copied into Dest
+CopyAndOr3_Src2         rs.l    1               ; ORed into it
+CopyAndOr3_Src3         rs.l    1               ; ORed into it
+CopyAndOr3_Src4         rs.l    1               ; ORed into it
+CopyAndOr3_Dest         rs.l    1               ; the buffer made
 CopyAndOr3:
         link.w  a6,#$0                          ; 08C24
-        move.l  $1c(a6),-(a7)                   ; 08C28
-        move.l  $c(a6),-(a7)                    ; 08C2C
-        move.l  $8(a6),-(a7)                    ; 08C30
+        move.l  CopyAndOr3_Dest(a6),-(a7)       ; 08C28
+        move.l  CopyAndOr3_Src(a6),-(a7)        ; 08C2C
+        move.l  CopyAndOr3_Count(a6),-(a7)      ; 08C30
         bsr.b   CopyBytes                       ; 08C34
         lea.l   $c(a7),a7                       ; 08C36
-        move.l  $1c(a6),-(a7)                   ; 08C3A
-        move.l  $10(a6),-(a7)                   ; 08C3E
-        move.l  $8(a6),-(a7)                    ; 08C42
+        move.l  CopyAndOr3_Dest(a6),-(a7)       ; 08C3A
+        move.l  CopyAndOr3_Src2(a6),-(a7)       ; 08C3E
+        move.l  CopyAndOr3_Count(a6),-(a7)      ; 08C42
         bsr.w   OrBytes                         ; 08C46
         lea.l   $c(a7),a7                       ; 08C4A
-        move.l  $1c(a6),-(a7)                   ; 08C4E
-        move.l  $14(a6),-(a7)                   ; 08C52
-        move.l  $8(a6),-(a7)                    ; 08C56
+        move.l  CopyAndOr3_Dest(a6),-(a7)       ; 08C4E
+        move.l  CopyAndOr3_Src3(a6),-(a7)       ; 08C52
+        move.l  CopyAndOr3_Count(a6),-(a7)      ; 08C56
         bsr.w   OrBytes                         ; 08C5A
         lea.l   $c(a7),a7                       ; 08C5E
-        move.l  $1c(a6),-(a7)                   ; 08C62
-        move.l  $18(a6),-(a7)                   ; 08C66
-        move.l  $8(a6),-(a7)                    ; 08C6A
+        move.l  CopyAndOr3_Dest(a6),-(a7)       ; 08C62
+        move.l  CopyAndOr3_Src4(a6),-(a7)       ; 08C66
+        move.l  CopyAndOr3_Count(a6),-(a7)      ; 08C6A
         bsr.w   OrBytes                         ; 08C6E
         lea.l   $c(a7),a7                       ; 08C72
         unlk    a6                              ; 08C76
@@ -1713,19 +1741,25 @@ CopyAndOr3:
 ;-------------------------------------------------------------------------------
 ; CopyBytes - CopyBytes(n, src, dst).
 ;-------------------------------------------------------------------------------
+; CopyBytes's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+CopyBytes_Count         rs.l    1               ; how many bytes
+CopyBytes_Src           rs.l    1               ; from
+CopyBytes_Dest          rs.l    1               ; to
+CopyBytes_I             equ     -$4             ; the byte count
 CopyBytes:
         link.w  a6,#$fffc                       ; 08C7A
-        clr.l   -$4(a6)                         ; 08C7E
+        clr.l   CopyBytes_I(a6)                 ; 08C7E
 l_000_08C82:
-        move.l  -$4(a6),d0                      ; 08C82
-        cmp.l   $8(a6),d0                       ; 08C86
+        move.l  CopyBytes_I(a6),d0              ; 08C82
+        cmp.l   CopyBytes_Count(a6),d0          ; 08C86
         bge.b   l_000_08CA4                     ; 08C8A
-        movea.l $c(a6),a0                       ; 08C8C
-        movea.l $10(a6),a1                      ; 08C90
+        movea.l CopyBytes_Src(a6),a0            ; 08C8C
+        movea.l CopyBytes_Dest(a6),a1           ; 08C90
         move.b  (a0),(a1)                       ; 08C94
-        addq.l  #$1,$c(a6)                      ; 08C96
-        addq.l  #$1,$10(a6)                     ; 08C9A
-        addq.l  #$1,-$4(a6)                     ; 08C9E
+        addq.l  #$1,CopyBytes_Src(a6)           ; 08C96
+        addq.l  #$1,CopyBytes_Dest(a6)          ; 08C9A
+        addq.l  #$1,CopyBytes_I(a6)             ; 08C9E
         bra.b   l_000_08C82                     ; 08CA2
 l_000_08CA4:
         unlk    a6                              ; 08CA4
@@ -1734,22 +1768,28 @@ l_000_08CA4:
 ;-------------------------------------------------------------------------------
 ; OrBytes - OrBytes(n, src, dst): dst |= src.
 ;-------------------------------------------------------------------------------
+; OrBytes's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+OrBytes_Count           rs.l    1               ; how many bytes
+OrBytes_Src             rs.l    1               ; from
+OrBytes_Dest            rs.l    1               ; to (Dest |= Src)
+OrBytes_I               equ     -$4             ; the byte count
 OrBytes:
         link.w  a6,#$fffc                       ; 08CA8
-        clr.l   -$4(a6)                         ; 08CAC
+        clr.l   OrBytes_I(a6)                   ; 08CAC
 l_000_08CB0:
-        move.l  -$4(a6),d0                      ; 08CB0
-        cmp.l   $8(a6),d0                       ; 08CB4
+        move.l  OrBytes_I(a6),d0                ; 08CB0
+        cmp.l   OrBytes_Count(a6),d0            ; 08CB4
         bge.b   l_000_08CD8                     ; 08CB8
-        movea.l $10(a6),a0                      ; 08CBA
+        movea.l OrBytes_Dest(a6),a0             ; 08CBA
         move.b  (a0),d0                         ; 08CBE
-        movea.l $c(a6),a1                       ; 08CC0
+        movea.l OrBytes_Src(a6),a1              ; 08CC0
         move.b  (a1),d1                         ; 08CC4
         or.b    d1,d0                           ; 08CC6
         move.b  d0,(a0)                         ; 08CC8
-        addq.l  #$1,$10(a6)                     ; 08CCA
-        addq.l  #$1,$c(a6)                      ; 08CCE
-        addq.l  #$1,-$4(a6)                     ; 08CD2
+        addq.l  #$1,OrBytes_Dest(a6)            ; 08CCA
+        addq.l  #$1,OrBytes_Src(a6)             ; 08CCE
+        addq.l  #$1,OrBytes_I(a6)               ; 08CD2
         bra.b   l_000_08CB0                     ; 08CD6
 l_000_08CD8:
         unlk    a6                              ; 08CD8
@@ -1757,29 +1797,29 @@ l_000_08CD8:
 
 ;-------------------------------------------------------------------------------
 ; OpenKeyboard - Opens keyboard.device and queues a KBD_READEVENT (command 9) for one
-; InputEvent (22 bytes, OpenKeyboardData2).
+; InputEvent (22 bytes, KeyboardEvent).
 ;-------------------------------------------------------------------------------
 OpenKeyboard:
         moveq   #$0,d0                          ; 08CDC
         move.l  d0,-(a7)                        ; 08CDE
-        move.l  (KeyboardPort).l,-(a7)          ; 08CE0
+        move.l  (KeyboardIO).l,-(a7)            ; 08CE0
         move.l  d0,-(a7)                        ; 08CE6
         pea.l   (StrKeyboardDevice).l           ; 08CE8
         jsr     (_OpenDevice).l                 ; 08CEE
         lea.l   $10(a7),a7                      ; 08CF4
-        move.l  (KeyboardPortPtr).l,-(a7)       ; 08CF8
-        move.w  d0,(OpenKeyboardData1).l        ; 08CFE
+        move.l  (KeyboardPort).l,-(a7)          ; 08CF8
+        move.w  d0,(KeyboardError).l            ; 08CFE
         jsr     (MakePort).l                    ; 08D04
         addq.l  #$4,a7                          ; 08D0A
-        movea.l (KeyboardPort).l,a0             ; 08D0C
-        move.l  (KeyboardPortPtr).l,$e(a0)      ; 08D12
+        movea.l (KeyboardIO).l,a0               ; 08D0C
+        move.l  (KeyboardPort).l,mn_ReplyPort(a0) ; 08D12
         moveq   #$16,d0                         ; 08D1A
-        move.l  d0,$24(a0)                      ; 08D1C
-        lea.l   (OpenKeyboardData2).l,a1        ; 08D20
-        move.l  a1,$28(a0)                      ; 08D26
-        move.w  #$9,$1c(a0)                     ; 08D2A
+        move.l  d0,io_Length(a0)                ; 08D1C
+        lea.l   (KeyboardEvent).l,a1            ; 08D20
+        move.l  a1,io_Data(a0)                  ; 08D26
+        move.w  #KBD_READEVENT,io_Command(a0)   ; 08D2A
         move.l  a0,-(a7)                        ; 08D30
-        move.l  a1,(KeyboardRequest).l          ; 08D32
+        move.l  a1,(KeyboardEventPtr).l         ; 08D32
         jsr     (_SendIO).l                     ; 08D38
         addq.l  #$4,a7                          ; 08D3E
         rts                                     ; 08D40
@@ -1790,7 +1830,7 @@ OpenKeyboard:
 ;-------------------------------------------------------------------------------
 ReadKeyEvent:
         link.w  a6,#$fffa                       ; 08D42
-        move.l  (KeyboardPortPtr).l,-(a7)       ; 08D46
+        move.l  (KeyboardPort).l,-(a7)          ; 08D46
         jsr     (_GetMsg).l                     ; 08D4C
         addq.l  #$4,a7                          ; 08D52
         move.l  d0,-$6(a6)                      ; 08D54
@@ -1800,10 +1840,10 @@ ReadKeyEvent:
         unlk    a6                              ; 08D5E
         rts                                     ; 08D60
 l_000_08D62:
-        movea.l (KeyboardRequest).l,a0          ; 08D62
-        move.w  $6(a0),d0                       ; 08D68
-        clr.w   $6(a0)                          ; 08D6C
-        move.l  (KeyboardPort).l,-(a7)          ; 08D70
+        movea.l (KeyboardEventPtr).l,a0         ; 08D62
+        move.w  ie_Code(a0),d0                  ; 08D68
+        clr.w   ie_Code(a0)                     ; 08D6C
+        move.l  (KeyboardIO).l,-(a7)            ; 08D70
         move.b  d0,-$1(a6)                      ; 08D76
         jsr     (_SendIO).l                     ; 08D7A
         addq.l  #$4,a7                          ; 08D80
@@ -1814,10 +1854,14 @@ l_000_08D62:
 ;-------------------------------------------------------------------------------
 ; PushKey - PushKey(code): makes GetKey return code next time (a key pressed by the program).
 ;-------------------------------------------------------------------------------
+; PushKey's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+                rs.b    3                       ; (pushed as a long: the high part)
+PushKey_Code            rs.b    1               ; the key code
 PushKey:
         link.w  a6,#$0                          ; 08D8A
         move.w  #$1,(KeyWaiting).l              ; 08D8E
-        move.b  $b(a6),d0                       ; 08D96
+        move.b  PushKey_Code(a6),d0             ; 08D96
         ext.w   d0                              ; 08D9A
         move.w  d0,(LastKey).l                  ; 08D9C
         unlk    a6                              ; 08DA2
@@ -1924,7 +1968,7 @@ OpenJoystick:
         move.l  d0,-(a7)                        ; 08EAE
         jsr     (_CreatePort).l                 ; 08EB0
         addq.l  #$8,a7                          ; 08EB6
-        move.l  d0,(JoystickRequest).l          ; 08EB8
+        move.l  d0,(JoystickPort).l             ; 08EB8
         tst.l   d0                              ; 08EBE
         bne.b   l_000_08ECE                     ; 08EC0
         moveq   #-1,d0                          ; 08EC2
@@ -1932,13 +1976,13 @@ OpenJoystick:
         jsr     (exit).l                        ; 08EC6
         addq.l  #$4,a7                          ; 08ECC
 l_000_08ECE:
-        move.l  (JoystickRequest).l,-(a7)       ; 08ECE
+        move.l  (JoystickPort).l,-(a7)          ; 08ECE
         jsr     (_CreateStdIO).l                ; 08ED4
         addq.l  #$4,a7                          ; 08EDA
-        move.l  d0,(JoystickPort).l             ; 08EDC
+        move.l  d0,(JoystickRequest).l          ; 08EDC
         tst.l   d0                              ; 08EE2
         bne.b   l_000_08F00                     ; 08EE4
-        move.l  (JoystickRequest).l,-(a7)       ; 08EE6
+        move.l  (JoystickPort).l,-(a7)          ; 08EE6
         jsr     (_DeletePort).l                 ; 08EEC
         addq.l  #$4,a7                          ; 08EF2
         moveq   #-2,d0                          ; 08EF4
@@ -1947,7 +1991,7 @@ l_000_08ECE:
         addq.l  #$4,a7                          ; 08EFE
 l_000_08F00:
         clr.l   -(a7)                           ; 08F00
-        move.l  (JoystickPort).l,-(a7)          ; 08F02
+        move.l  (JoystickRequest).l,-(a7)       ; 08F02
         moveq   #$1,d0                          ; 08F08
         move.l  d0,-(a7)                        ; 08F0A
         pea.l   (StrGameportDevice).l           ; 08F0C
@@ -1956,10 +2000,10 @@ l_000_08F00:
         move.w  d0,-$2(a6)                      ; 08F1C
         tst.w   d0                              ; 08F20
         beq.b   l_000_08F4C                     ; 08F22
-        move.l  (JoystickPort).l,-(a7)          ; 08F24
+        move.l  (JoystickRequest).l,-(a7)       ; 08F24
         jsr     (_DeleteStdIO).l                ; 08F2A
         addq.l  #$4,a7                          ; 08F30
-        move.l  (JoystickRequest).l,-(a7)       ; 08F32
+        move.l  (JoystickPort).l,-(a7)          ; 08F32
         jsr     (_DeletePort).l                 ; 08F38
         addq.l  #$4,a7                          ; 08F3E
         moveq   #-3,d0                          ; 08F40
@@ -1974,10 +2018,10 @@ l_000_08F4C:
         addq.l  #$4,a7                          ; 08F5E
         tst.l   d0                              ; 08F60
         beq.b   l_000_08F8C                     ; 08F62
-        move.l  (JoystickPort).l,-(a7)          ; 08F64
+        move.l  (JoystickRequest).l,-(a7)       ; 08F64
         jsr     (_DeleteStdIO).l                ; 08F6A
         addq.l  #$4,a7                          ; 08F70
-        move.l  (JoystickRequest).l,-(a7)       ; 08F72
+        move.l  (JoystickPort).l,-(a7)          ; 08F72
         jsr     (_DeletePort).l                 ; 08F78
         addq.l  #$4,a7                          ; 08F7E
         moveq   #-4,d0                          ; 08F80
@@ -1988,10 +2032,10 @@ l_000_08F8C:
         bsr.w   SetJoystickTrigger              ; 08F8C
         tst.l   d0                              ; 08F90
         beq.b   l_000_08FBC                     ; 08F92
-        move.l  (JoystickPort).l,-(a7)          ; 08F94
+        move.l  (JoystickRequest).l,-(a7)       ; 08F94
         jsr     (_DeleteStdIO).l                ; 08F9A
         addq.l  #$4,a7                          ; 08FA0
-        move.l  (JoystickRequest).l,-(a7)       ; 08FA2
+        move.l  (JoystickPort).l,-(a7)          ; 08FA2
         jsr     (_DeletePort).l                 ; 08FA8
         addq.l  #$4,a7                          ; 08FAE
         moveq   #-4,d0                          ; 08FB0
@@ -1999,16 +2043,16 @@ l_000_08F8C:
         jsr     (exit).l                        ; 08FB4
         addq.l  #$4,a7                          ; 08FBA
 l_000_08FBC:
-        movea.l (JoystickPort).l,a0             ; 08FBC
-        move.w  #$9,$1c(a0)                     ; 08FC2
-        movea.l (JoystickPort).l,a0             ; 08FC8
-        move.l  #JoystickEvent,$28(a0)          ; 08FCE
+        movea.l (JoystickRequest).l,a0          ; 08FBC
+        move.w  #GPD_READEVENT,io_Command(a0)   ; 08FC2
+        movea.l (JoystickRequest).l,a0          ; 08FC8
+        move.l  #JoystickEvent,io_Data(a0)      ; 08FCE
         moveq   #$16,d0                         ; 08FD6
-        movea.l (JoystickPort).l,a0             ; 08FD8
-        move.l  d0,$24(a0)                      ; 08FDE
-        clr.b   $1e(a0)                         ; 08FE2
-        movea.l (JoystickPort).l,a0             ; 08FE6
-        move.l  d0,$24(a0)                      ; 08FEC
+        movea.l (JoystickRequest).l,a0          ; 08FD8
+        move.l  d0,io_Length(a0)                ; 08FDE
+        clr.b   io_Flags(a0)                    ; 08FE2
+        movea.l (JoystickRequest).l,a0          ; 08FE6
+        move.l  d0,io_Length(a0)                ; 08FEC
         move.l  a0,-(a7)                        ; 08FF0
         jsr     (_SendIO).l                     ; 08FF2
         addq.l  #$4,a7                          ; 08FF8
@@ -2022,7 +2066,7 @@ l_000_08FBC:
 ;-------------------------------------------------------------------------------
 ReadJoystick:
         link.w  a6,#$fffa                       ; 08FFE
-        move.l  (JoystickRequest).l,-(a7)       ; 09002
+        move.l  (JoystickPort).l,-(a7)          ; 09002
         jsr     (_GetMsg).l                     ; 09008
         addq.l  #$4,a7                          ; 0900E
         move.l  d0,-$6(a6)                      ; 09010
@@ -2032,22 +2076,22 @@ ReadJoystick:
         bra.b   l_000_09066                     ; 0901E
 l_000_09020:
         movea.l (JoystickEventPtr2).l,a0        ; 09020
-        move.w  $6(a0),d0                       ; 09026
+        move.w  ie_Code(a0),d0                  ; 09026
         move.w  d0,-$2(a6)                      ; 0902A
         tst.w   d0                              ; 0902E
         beq.b   l_000_0904E                     ; 09030
-        cmpi.w  #$68,d0                         ; 09032
+        cmpi.w  #IECODE_LBUTTON,d0              ; 09032
         bne.b   l_000_09040                     ; 09036
         jsr     (FirePressed).l                 ; 09038
         bra.b   l_000_0904E                     ; 0903E
 l_000_09040:
-        cmpi.w  #$e8,-$2(a6)                    ; 09040
+        cmpi.w  #IECODE_LBUTTON|IECODE_UP_PREFIX,-$2(a6) ; 09040
         bne.b   l_000_0904E                     ; 09046
         jsr     (FireReleased).l                ; 09048
 l_000_0904E:
         movea.l (JoystickEventPtr2).l,a0        ; 0904E
-        clr.w   $6(a0)                          ; 09054
-        move.l  (JoystickPort).l,-(a7)          ; 09058
+        clr.w   ie_Code(a0)                     ; 09054
+        move.l  (JoystickRequest).l,-(a7)       ; 09058
         jsr     (_SendIO).l                     ; 0905E
         addq.l  #$4,a7                          ; 09064
 l_000_09066:
@@ -2121,29 +2165,33 @@ l_000_09140:
 ;-------------------------------------------------------------------------------
 ; SetJoystickType - GPD_SETCTYPE: SetJoystickType(type) (3 = GPCT_ABSJOYSTICK).
 ;-------------------------------------------------------------------------------
+; SetJoystickType's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+                rs.w    1                       ; (pushed as a long: the high part)
+SetJoystickType_Type    rs.w    1               ; the controller type
 SetJoystickType:
         link.w  a6,#$0                          ; 09144
-        movea.l (JoystickPort).l,a0             ; 09148
-        move.w  #$b,$1c(a0)                     ; 0914E
+        movea.l (JoystickRequest).l,a0          ; 09148
+        move.w  #GPD_SETCTYPE,io_Command(a0)    ; 0914E
         moveq   #$1,d0                          ; 09154
-        movea.l (JoystickPort).l,a0             ; 09156
-        move.l  d0,$24(a0)                      ; 0915C
-        movea.l (JoystickPort).l,a0             ; 09160
-        move.l  (JoystickEventPtr).l,$28(a0)    ; 09166
-        move.w  $a(a6),d0                       ; 0916E
+        movea.l (JoystickRequest).l,a0          ; 09156
+        move.l  d0,io_Length(a0)                ; 0915C
+        movea.l (JoystickRequest).l,a0          ; 09160
+        move.l  (JoystickEventPtr).l,io_Data(a0) ; 09166
+        move.w  SetJoystickType_Type(a6),d0     ; 0916E
         movea.l (JoystickEventPtr).l,a0         ; 09172
         move.b  d0,(a0)                         ; 09178
-        move.l  (JoystickPort).l,-(a7)          ; 0917A
+        move.l  (JoystickRequest).l,-(a7)       ; 0917A
         jsr     (_SendIO).l                     ; 09180
         addq.l  #$4,a7                          ; 09186
-        move.l  (JoystickRequest).l,-(a7)       ; 09188
+        move.l  (JoystickPort).l,-(a7)          ; 09188
         jsr     (_WaitPort).l                   ; 0918E
         addq.l  #$4,a7                          ; 09194
-        move.l  (JoystickRequest).l,-(a7)       ; 09196
+        move.l  (JoystickPort).l,-(a7)          ; 09196
         jsr     (_GetMsg).l                     ; 0919C
         addq.l  #$4,a7                          ; 091A2
-        movea.l (JoystickPort).l,a0             ; 091A4
-        move.b  $1f(a0),d0                      ; 091AA
+        movea.l (JoystickRequest).l,a0          ; 091A4
+        move.b  io_Error(a0),d0                 ; 091AA
         ext.w   d0                              ; 091AE
         ext.l   d0                              ; 091B0
         unlk    a6                              ; 091B2
@@ -2154,14 +2202,14 @@ SetJoystickType:
 ;-------------------------------------------------------------------------------
 SetJoystickTrigger:
         link.w  a6,#$fff8                       ; 091B6
-        movea.l (JoystickPort).l,a0             ; 091BA
-        move.w  #$d,$1c(a0)                     ; 091C0
+        movea.l (JoystickRequest).l,a0          ; 091BA
+        move.w  #GPD_SETTRIGGER,io_Command(a0)  ; 091C0
         moveq   #$8,d0                          ; 091C6
-        movea.l (JoystickPort).l,a0             ; 091C8
-        move.l  d0,$24(a0)                      ; 091CE
+        movea.l (JoystickRequest).l,a0          ; 091C8
+        move.l  d0,io_Length(a0)                ; 091CE
         lea.l   -$8(a6),a0                      ; 091D2
-        movea.l (JoystickPort).l,a1             ; 091D6
-        move.l  a0,$28(a1)                      ; 091DC
+        movea.l (JoystickRequest).l,a1          ; 091D6
+        move.l  a0,io_Data(a1)                  ; 091DC
         move.w  #$3,-$8(a6)                     ; 091E0
         clr.w   -$6(a6)                         ; 091E6
         moveq   #$1,d0                          ; 091EA
@@ -2178,10 +2226,10 @@ SetJoystickTrigger:
 ; first).
 ;-------------------------------------------------------------------------------
 CloseJoystick:
-        move.l  (KeyboardPort).l,-(a7)          ; 09202
+        move.l  (KeyboardIO).l,-(a7)            ; 09202
         jsr     (_CloseDevice).l                ; 09208
         addq.l  #$4,a7                          ; 0920E
-        move.l  (KeyboardPort).l,-(a7)          ; 09210
+        move.l  (KeyboardIO).l,-(a7)            ; 09210
         jsr     (_DeleteStdIO).l                ; 09216
         addq.l  #$4,a7                          ; 0921C
         pea.l   (TimerRequest).l                ; 0921E
@@ -2190,10 +2238,10 @@ CloseJoystick:
         clr.l   -(a7)                           ; 0922C
         bsr.w   SetJoystickType                 ; 0922E
         addq.l  #$4,a7                          ; 09232
-        move.l  (JoystickPort).l,-(a7)          ; 09234
+        move.l  (JoystickRequest).l,-(a7)       ; 09234
         jsr     (_CloseDevice).l                ; 0923A
         addq.l  #$4,a7                          ; 09240
-        move.l  (JoystickPort).l,-(a7)          ; 09242
+        move.l  (JoystickRequest).l,-(a7)       ; 09242
         jsr     (_DeleteStdIO).l                ; 09248
         addq.l  #$4,a7                          ; 0924E
         moveq   #$0,d0                          ; 09250
@@ -2203,12 +2251,22 @@ CloseJoystick:
 ; SetMouseLimits - SetMouseLimits(minx, miny, maxx, maxy) for the mouse pointer the interrupt
 ; moves.
 ;-------------------------------------------------------------------------------
+; SetMouseLimits's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+                rs.w    1                       ; (pushed as a long: the high part)
+SetMouseLimits_MinX     rs.w    1               ; the pointer's limits
+                rs.w    1                       ; (pushed as a long: the high part)
+SetMouseLimits_MinY     rs.w    1
+                rs.w    1                       ; (pushed as a long: the high part)
+SetMouseLimits_MaxX     rs.w    1
+                rs.w    1                       ; (pushed as a long: the high part)
+SetMouseLimits_MaxY     rs.w    1
 SetMouseLimits:
         link.w  a6,#$0                          ; 09254
-        move.w  $a(a6),(MouseMinX).l            ; 09258
-        move.w  $e(a6),(MouseMinY).l            ; 09260
-        move.w  $12(a6),(MouseMaxX).l           ; 09268
-        move.w  $16(a6),(MouseMaxY).l           ; 09270
+        move.w  SetMouseLimits_MinX(a6),(MouseMinX).l ; 09258
+        move.w  SetMouseLimits_MinY(a6),(MouseMinY).l ; 09260
+        move.w  SetMouseLimits_MaxX(a6),(MouseMaxX).l ; 09268
+        move.w  SetMouseLimits_MaxY(a6),(MouseMaxY).l ; 09270
         unlk    a6                              ; 09278
         rts                                     ; 0927A
 
@@ -2473,36 +2531,51 @@ RemoveMouseInterrupt:
         jsr     (_RemIntServer).l               ; 095E6
         addq.l  #$8,a7                          ; 095EC
         rts                                     ; 095EE
+
+;-------------------------------------------------------------------------------
+; MakePort - MakePort(port): sets up a MsgPort in place (amiga.lib's CreatePort without the
+; allocation): a public port with no name, a new signal bit, this task, an empty message list.
+;-------------------------------------------------------------------------------
+; MakePort's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+MakePort_Port           rs.l    1               ; the MsgPort to set up
 MakePort:
         link.w  a6,#$0                          ; 095F0
         moveq   #$0,d0                          ; 095F4
-        movea.l $8(a6),a0                       ; 095F6
-        move.b  d0,$e(a0)                       ; 095FA
-        move.b  d0,$9(a0)                       ; 095FE
-        clr.l   $a(a0)                          ; 09602
-        move.b  #$4,$8(a0)                      ; 09606
+        movea.l MakePort_Port(a6),a0            ; 095F6
+        move.b  d0,mp_Flags(a0)                 ; 095FA
+        move.b  d0,ln_Pri(a0)                   ; 095FE
+        clr.l   ln_Name(a0)                     ; 09602
+        move.b  #NT_MSGPORT,ln_Type(a0)         ; 09606
         moveq   #-1,d0                          ; 0960C
         move.l  d0,-(a7)                        ; 0960E
         jsr     (_AllocSignal).l                ; 09610
         addq.l  #$4,a7                          ; 09616
-        movea.l $8(a6),a0                       ; 09618
-        move.b  d0,$f(a0)                       ; 0961C
+        movea.l MakePort_Port(a6),a0            ; 09618
+        move.b  d0,mp_SigBit(a0)                ; 0961C
         clr.l   -(a7)                           ; 09620
         jsr     (_FindTask).l                   ; 09622
         addq.l  #$4,a7                          ; 09628
-        movea.l $8(a6),a0                       ; 0962A
-        move.l  d0,$10(a0)                      ; 0962E
-        adda.w  #$14,a0                         ; 09632
+        movea.l MakePort_Port(a6),a0            ; 0962A
+        move.l  d0,mp_SigTask(a0)               ; 0962E
+        adda.w  #mp_MsgList,a0                  ; 09632
         move.l  a0,-(a7)                        ; 09636
         jsr     (_NewList).l                    ; 09638
         addq.l  #$4,a7                          ; 0963E
         unlk    a6                              ; 09640
         rts                                     ; 09642
+
+;-------------------------------------------------------------------------------
+; UnmakePort - UnmakePort(port): frees the port's signal bit.
+;-------------------------------------------------------------------------------
+; UnmakePort's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+UnmakePort_Port         rs.l    1               ; the MsgPort
 UnmakePort:
         link.w  a6,#$0                          ; 09644
         moveq   #$0,d0                          ; 09648
-        movea.l $8(a6),a0                       ; 0964A
-        move.b  $f(a0),d0                       ; 0964E
+        movea.l UnmakePort_Port(a6),a0          ; 0964A
+        move.b  mp_SigBit(a0),d0                ; 0964E
         move.l  d0,-(a7)                        ; 09652
         jsr     (_FreeSignal).l                 ; 09654
         addq.l  #$4,a7                          ; 0965A
