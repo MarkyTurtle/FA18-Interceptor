@@ -1254,19 +1254,20 @@ l_000_052BE:
         rts                                     ; 052C4
 
 ;-------------------------------------------------------------------------------
-; CockpitEffectSound - Plays a cockpit sound effect (PlayEffect2) if sounds are on.
+; CockpitEffectSound - CockpitEffectSound(period, volume): with sound effects on (SoundFlags
+; bit 1) PlayEffect2(volume); otherwise the engine sound at period + 22 (PlayEngineSound).
 ;-------------------------------------------------------------------------------
 ; CockpitEffectSound's frame: arguments from 8(a6), locals below a6 (after its link)
                 rsset   8
                 rs.w    1                       ; (pushed as a long: the high part)
 CockpitEffectSound_Period rs.w    1             ; the engine sound's period less 22 (when effects are off)
                 rs.w    1                       ; (pushed as a long: the high part)
-CockpitEffectSound_Value rs.w    1              ; PlayEffect2's period, or the engine sound's volume
+CockpitEffectSound_Volume rs.w    1             ; 0-63
 CockpitEffectSound:
         link.w  a6,#$0                          ; 052C6
         btst    #$1,(SoundFlags).l              ; 052CA
         beq.b   l_000_052EC                     ; 052D2
-        move.w  CockpitEffectSound_Value(a6),d0 ; 052D4
+        move.w  CockpitEffectSound_Volume(a6),d0 ; 052D4
         ext.l   d0                              ; 052D8
         move.l  d0,-(a7)                        ; 052DA
         jsr     (PlayEffect2).l                 ; 052DC
@@ -1277,7 +1278,7 @@ l_000_052EC:
         move.w  CockpitEffectSound_Period(a6),d0 ; 052EC
         ext.l   d0                              ; 052F0
         addi.l  #$16,d0                         ; 052F2
-        move.w  CockpitEffectSound_Value(a6),d1 ; 052F8
+        move.w  CockpitEffectSound_Volume(a6),d1 ; 052F8
         ext.l   d1                              ; 052FC
         move.l  d1,-(a7)                        ; 052FE
         move.l  d0,-(a7)                        ; 05300

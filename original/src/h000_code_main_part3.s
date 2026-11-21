@@ -3378,9 +3378,9 @@ EnginePitch:
         movem.l d2,-(a7)                        ; 09EFE
         btst    #$1,(SoundsLoaded).l            ; 09F02
         beq.w   l_000_09F92                     ; 09F0A
-        tst.l   (EnginePitchData1).l            ; 09F0E
+        tst.l   (ChannelSound1).l            ; 09F0E
         beq.b   l_000_09F92                     ; 09F14
-        movea.l (EnginePitchData1).l,a0         ; 09F16
+        movea.l (ChannelSound1).l,a0         ; 09F16
         moveq   #$10,d0                         ; 09F1C
         move.l  EnginePitch_Period(a6),d1       ; 09F1E
         asl.l   d0,d1                           ; 09F22
@@ -3477,21 +3477,22 @@ l_000_0A03E:
         rts                                     ; 0A040
 
 ;-------------------------------------------------------------------------------
-; PlayEffect - Plays a sampled sound effect on its channel (EffectSound) with the period,
-; volume and length given on the stack (into EffectParams_04 and on): stops what the channel was
-; playing first. Used by the cockpit sounds, the ejection and the menu beep.
+; PlayEffect - PlayEffect(period, volume, time, period2, volume2, time2, repeats2, repeats,
+; time3): plays EffectSound on channel 3 with its script (EffectParams) set from the arguments,
+; stopping what the channel was playing first. Used by the cockpit sounds, the ejection and the
+; menu beep.
 ;-------------------------------------------------------------------------------
 ; PlayEffect's frame: arguments from 8(a6), locals below a6 (after its link)
                 rsset   8
-PlayEffect_Period       rs.l    1               ; the period (into EffectParams_14)
-PlayEffect_Volume       rs.l    1               ; the volume (EffectParams_1C)
-PlayEffect_Time         rs.l    1               ; how long, in frames (EffectParams_24)
-PlayEffect_Period2      rs.l    1               ; then this period (EffectParams_2C)
-PlayEffect_Volume2      rs.l    1               ; and volume (EffectParams_34)
-PlayEffect_Time2        rs.l    1               ; for so long (EffectParams_3C)
-PlayEffect_Param28      rs.l    1               ; into EffectParams_0C (the sound record's +$28)
-PlayEffect_Param24      rs.l    1               ; into EffectParams_04 (the sound record's +$24)
-PlayEffect_Param4C      rs.l    1               ; into EffectParams_4C
+PlayEffect_Period       rs.l    1               ; the period (EffectPeriod)
+PlayEffect_Volume       rs.l    1               ; the volume (EffectVolume)
+PlayEffect_Time         rs.l    1               ; for so many frames (EffectTime)
+PlayEffect_Period2      rs.l    1               ; then this period (EffectPeriod2)
+PlayEffect_Volume2      rs.l    1               ; and volume (EffectVolume2)
+PlayEffect_Time2        rs.l    1               ; for so many frames (EffectTime2)
+PlayEffect_Repeats2     rs.l    1               ; the two parts, so many times (EffectRepeats2)
+PlayEffect_Repeats      rs.l    1               ; the whole, so many times (EffectRepeats)
+PlayEffect_Time3        rs.l    1               ; the pause between (EffectTime3)
 PlayEffect:
         link.w  a6,#$0                          ; 0A042
         tst.l   (EffectSound).l                 ; 0A046
@@ -3500,24 +3501,24 @@ PlayEffect:
         move.l  d0,-(a7)                        ; 0A052
         bsr.w   StopSound                       ; 0A054
         addq.l  #$4,a7                          ; 0A058
-        move.l  PlayEffect_Param24(a6),(EffectParams_04).l ; 0A05A
-        move.l  PlayEffect_Param28(a6),(EffectParams_0C).l ; 0A062
+        move.l  PlayEffect_Repeats(a6),(EffectRepeats).l ; 0A05A
+        move.l  PlayEffect_Repeats2(a6),(EffectRepeats2).l ; 0A062
         moveq   #$10,d0                         ; 0A06A
         move.l  PlayEffect_Period(a6),d1        ; 0A06C
         asl.l   d0,d1                           ; 0A070
-        move.l  d1,(EffectParams_14).l          ; 0A072
+        move.l  d1,(EffectPeriod).l          ; 0A072
         move.l  PlayEffect_Volume(a6),d1        ; 0A078
         asl.l   d0,d1                           ; 0A07C
-        move.l  d1,(EffectParams_1C).l          ; 0A07E
-        move.l  PlayEffect_Time(a6),(EffectParams_24).l ; 0A084
+        move.l  d1,(EffectVolume).l          ; 0A07E
+        move.l  PlayEffect_Time(a6),(EffectTime).l ; 0A084
         move.l  PlayEffect_Period2(a6),d1       ; 0A08C
         asl.l   d0,d1                           ; 0A090
-        move.l  d1,(EffectParams_2C).l          ; 0A092
+        move.l  d1,(EffectPeriod2).l          ; 0A092
         move.l  PlayEffect_Volume2(a6),d1       ; 0A098
         asl.l   d0,d1                           ; 0A09C
-        move.l  d1,(EffectParams_34).l          ; 0A09E
-        move.l  PlayEffect_Time2(a6),(EffectParams_3C).l ; 0A0A4
-        move.l  PlayEffect_Param4C(a6),(EffectParams_4C).l ; 0A0AC
+        move.l  d1,(EffectVolume2).l          ; 0A09E
+        move.l  PlayEffect_Time2(a6),(EffectTime2).l ; 0A0A4
+        move.l  PlayEffect_Time3(a6),(EffectTime3).l ; 0A0AC
         movea.l (EffectSound).l,a0              ; 0A0B4
         moveq   #$0,d0                          ; 0A0BA
         move.l  d0,$34(a0)                      ; 0A0BC
@@ -3535,14 +3536,14 @@ l_000_0A0D8:
         rts                                     ; 0A0DA
 
 ;-------------------------------------------------------------------------------
-; PlaySweep - Plays sound 2 sliding in pitch (the start period and the change given on the
-; stack: SweepParams_04 and on): explosions, flares and the like (if sounds are on, SoundFlags
-; bit 0).
+; PlaySweep - PlaySweep(volume, frames): plays SweepSound (slot 6) on channel 2 at a random
+; period, fading from volume to nothing over frames (SweepParams): explosions, flares and the
+; like (if sounds are on, SoundFlags bit 0; otherwise a burst of the engine sound).
 ;-------------------------------------------------------------------------------
 ; PlaySweep's frame: arguments from 8(a6), locals below a6 (after its link)
                 rsset   8
-PlaySweep_Period        rs.l    1               ; the period it starts at
-PlaySweep_Frames        rs.l    1               ; how many frames it slides for
+PlaySweep_Volume        rs.l    1               ; the volume it fades from (SweepVolume)
+PlaySweep_Frames        rs.l    1               ; how many frames the fade takes (SweepTime)
 PlaySweep:
         link.w  a6,#$fffc                       ; 0A0DC
         btst    #$0,(SoundFlags).l              ; 0A0E0
@@ -3554,15 +3555,15 @@ PlaySweep:
         bsr.w   StopSound                       ; 0A0FA
         addq.l  #$4,a7                          ; 0A0FE
         moveq   #$10,d0                         ; 0A100
-        move.l  PlaySweep_Period(a6),d1         ; 0A102
+        move.l  PlaySweep_Volume(a6),d1         ; 0A102
         asl.l   d0,d1                           ; 0A106
-        move.l  d1,(SweepParams_04).l           ; 0A108
+        move.l  d1,(SweepVolume).l           ; 0A108
         neg.l   d1                              ; 0A10E
         move.l  d1,d0                           ; 0A110
         move.l  PlaySweep_Frames(a6),d1         ; 0A112
         jsr     (CXD33).l                       ; 0A116
-        move.l  d0,(SweepParams_0C).l           ; 0A11C
-        move.l  PlaySweep_Frames(a6),(SweepParams_14).l ; 0A122
+        move.l  d0,(SweepVolumeStep).l           ; 0A11C
+        move.l  PlaySweep_Frames(a6),(SweepTime).l ; 0A122
         movea.l (SweepSound).l,a0               ; 0A12A
         clr.l   $34(a0)                         ; 0A130
         moveq   #$b,d0                          ; 0A134
@@ -3676,12 +3677,13 @@ StopChannel2:
         rts                                     ; 0A256
 
 ;-------------------------------------------------------------------------------
-; PlayEffect2 - Plays EffectSound2 on channel 2 at the period on the stack (if SoundFlags bit
+; PlayEffect2 - PlayEffect2(volume): plays EffectSound2 (slot 12) on channel 2 at a random
+; period, rising and then fading from volume over 60 frames (Effect2Params) (if SoundFlags bit
 ; 1).
 ;-------------------------------------------------------------------------------
 ; PlayEffect2's frame: arguments from 8(a6), locals below a6 (after its link)
                 rsset   8
-PlayEffect2_Period      rs.l    1               ; the period it starts at
+PlayEffect2_Volume      rs.l    1               ; the volume it fades from (Effect2Volume)
 PlayEffect2:
         link.w  a6,#$fffc                       ; 0A258
         btst    #$1,(SoundFlags).l              ; 0A25C
@@ -3693,17 +3695,17 @@ PlayEffect2:
         bsr.w   StopSound                       ; 0A274
         addq.l  #$4,a7                          ; 0A278
         moveq   #$10,d0                         ; 0A27A
-        move.l  PlayEffect2_Period(a6),d1       ; 0A27C
+        move.l  PlayEffect2_Volume(a6),d1       ; 0A27C
         asl.l   d0,d1                           ; 0A280
-        move.l  d1,(Effect2Params_1C).l         ; 0A282
-        move.l  PlayEffect2_Period(a6),d0       ; 0A288
+        move.l  d1,(Effect2Volume).l         ; 0A282
+        move.l  PlayEffect2_Volume(a6),d0       ; 0A288
         subq.l  #$1,d0                          ; 0A28C
         moveq   #$10,d1                         ; 0A28E
         asl.l   d1,d0                           ; 0A290
         neg.l   d0                              ; 0A292
         moveq   #$3c,d1                         ; 0A294
         jsr     (CXD33).l                       ; 0A296
-        move.l  d0,(Effect2Params_24).l         ; 0A29C
+        move.l  d0,(Effect2VolumeStep).l         ; 0A29C
         movea.l (EffectSound2).l,a0             ; 0A2A2
         clr.l   $34(a0)                         ; 0A2A8
         moveq   #$3,d0                          ; 0A2AC
@@ -3731,11 +3733,12 @@ l_000_0A2EC:
         rts                                     ; 0A2EE
 
 ;-------------------------------------------------------------------------------
-; PlayGunSound - Plays the gun's sound (GunSoundCopy) on channel 2.
+; PlayGunSound - PlayGunSound(repeats, volume): plays the gun's sound (GunSoundCopy, slot 10)
+; on channel 2, repeats bursts at volume (GunParams).
 ;-------------------------------------------------------------------------------
 ; PlayGunSound's frame: arguments from 8(a6), locals below a6 (after its link)
                 rsset   8
-PlayGunSound_Param24    rs.l    1               ; into GunParams_04 (the sound record's +$24)
+PlayGunSound_Repeats    rs.l    1               ; how many bursts (GunRepeats)
 PlayGunSound_Volume     rs.l    1               ; 0-63
 PlayGunSound:
         link.w  a6,#$0                          ; 0A2F0
@@ -3748,11 +3751,11 @@ PlayGunSound:
         movea.l (GunSoundCopy).l,a0             ; 0A306
         moveq   #$0,d0                          ; 0A30C
         move.l  d0,$2c(a0)                      ; 0A30E
-        move.l  PlayGunSound_Param24(a6),(GunParams_04).l ; 0A312
+        move.l  PlayGunSound_Repeats(a6),(GunRepeats).l ; 0A312
         moveq   #$10,d0                         ; 0A31A
         move.l  PlayGunSound_Volume(a6),d1      ; 0A31C
         asl.l   d0,d1                           ; 0A320
-        move.l  d1,(GunParams_0C).l             ; 0A322
+        move.l  d1,(GunVolume).l             ; 0A322
         moveq   #$0,d0                          ; 0A328
         move.l  d0,$34(a0)                      ; 0A32A
         moveq   #$1,d0                          ; 0A32E

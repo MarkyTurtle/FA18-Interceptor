@@ -92,6 +92,11 @@ mp_MsgList		equ	$14
 MP_SIZE			equ	$22
 NT_MSGPORT		equ	4
 
+; struct Interrupt (exec): a Node, then
+is_Data			equ	$E
+is_Code			equ	$12
+NT_INTERRUPT		equ	2
+
 ; struct IOStdReq (exec)
 io_Device		equ	$14
 io_Unit			equ	$18
