@@ -138,6 +138,9 @@ bm_Depth		equ	5
 bm_Planes		equ	8
 bm_SIZEOF		equ	$28
 
+; struct FileInfoBlock (dos)
+fib_Size		equ	$7C
+
 ; dos.library Open() modes
 MODE_OLDFILE		equ	1005
 MODE_NEWFILE		equ	1006

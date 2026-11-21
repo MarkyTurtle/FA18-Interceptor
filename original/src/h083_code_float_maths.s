@@ -10,23 +10,29 @@
 ;-------------------------------------------------------------------------------
 ; SoundMakeNoise - Makes a sound's samples in memory (hunk 83's generators).
 ;-------------------------------------------------------------------------------
+; SoundMakeNoise's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+SoundMakeNoise_Dest     rs.l    1               ; where the samples go
+SoundMakeNoise_Length   rs.l    1               ; how many
+SoundMakeNoise_I        equ     -$4             ; the sample count
+SoundMakeNoise_Level    equ     -$8             ; the sample's level (a float)
 SoundMakeNoise:
         link.w  a6,#$fff0                       ; 00000
-        clr.l   -$8(a6)                         ; 00004
-        clr.l   -$4(a6)                         ; 00008
+        clr.l   SoundMakeNoise_Level(a6)        ; 00004
+        clr.l   SoundMakeNoise_I(a6)            ; 00008
 l_083_0000C:
-        move.l  $c(a6),d0                       ; 0000C
+        move.l  SoundMakeNoise_Length(a6),d0    ; 0000C
         moveq   #$4,d1                          ; 00010
         jsr     (CXD33).l                       ; 00012
-        move.l  -$4(a6),d1                      ; 00018
+        move.l  SoundMakeNoise_I(a6),d1         ; 00018
         cmp.l   d0,d1                           ; 0001C
         bge.b   l_083_0009C                     ; 0001E
-        move.l  -$8(a6),d0                      ; 00020
+        move.l  SoundMakeNoise_Level(a6),d0     ; 00020
         jsr     (fp_SingleToLong).l             ; 00024
-        movea.l $8(a6),a0                       ; 0002A
+        movea.l SoundMakeNoise_Dest(a6),a0      ; 0002A
         move.b  d0,(a0)                         ; 0002E
-        addq.l  #$1,$8(a6)                      ; 00030
-        move.l  $c(a6),d0                       ; 00034
+        addq.l  #$1,SoundMakeNoise_Dest(a6)     ; 00030
+        move.l  SoundMakeNoise_Length(a6),d0    ; 00034
         moveq   #$4,d1                          ; 00038
         jsr     (CXD33).l                       ; 0003A
         jsr     (fp_LongToSingle).l             ; 00040
@@ -39,31 +45,31 @@ l_083_0000C:
         move.l  $4(a7),d3                       ; 00060
         jsr     (fp_DoubleDiv).l                ; 00064
         move.l  d0,$0(a7)                       ; 0006A
-        move.l  -$8(a6),d0                      ; 0006E
+        move.l  SoundMakeNoise_Level(a6),d0     ; 0006E
         move.l  d1,$4(a7)                       ; 00072
         jsr     (fp_SingleToDouble).l           ; 00076
         move.l  $0(a7),d2                       ; 0007C
         move.l  $4(a7),d3                       ; 00080
         jsr     (fp_DoubleSub).l                ; 00084
         jsr     (fp_DoubleToSingle).l           ; 0008A
-        move.l  d0,-$8(a6)                      ; 00090
-        addq.l  #$1,-$4(a6)                     ; 00094
+        move.l  d0,SoundMakeNoise_Level(a6)     ; 00090
+        addq.l  #$1,SoundMakeNoise_I(a6)        ; 00094
         bra.w   l_083_0000C                     ; 00098
 l_083_0009C:
-        clr.l   -$4(a6)                         ; 0009C
+        clr.l   SoundMakeNoise_I(a6)            ; 0009C
 l_083_000A0:
-        move.l  $c(a6),d0                       ; 000A0
+        move.l  SoundMakeNoise_Length(a6),d0    ; 000A0
         moveq   #$2,d1                          ; 000A4
         jsr     (CXD33).l                       ; 000A6
-        move.l  -$4(a6),d1                      ; 000AC
+        move.l  SoundMakeNoise_I(a6),d1         ; 000AC
         cmp.l   d0,d1                           ; 000B0
         bge.b   l_083_00130                     ; 000B2
-        move.l  -$8(a6),d0                      ; 000B4
+        move.l  SoundMakeNoise_Level(a6),d0     ; 000B4
         jsr     (fp_SingleToLong).l             ; 000B8
-        movea.l $8(a6),a0                       ; 000BE
+        movea.l SoundMakeNoise_Dest(a6),a0      ; 000BE
         move.b  d0,(a0)                         ; 000C2
-        addq.l  #$1,$8(a6)                      ; 000C4
-        move.l  $c(a6),d0                       ; 000C8
+        addq.l  #$1,SoundMakeNoise_Dest(a6)     ; 000C4
+        move.l  SoundMakeNoise_Length(a6),d0    ; 000C8
         moveq   #$4,d1                          ; 000CC
         jsr     (CXD33).l                       ; 000CE
         jsr     (fp_LongToSingle).l             ; 000D4
@@ -76,31 +82,31 @@ l_083_000A0:
         move.l  $4(a7),d3                       ; 000F4
         jsr     (fp_DoubleDiv).l                ; 000F8
         move.l  d0,$0(a7)                       ; 000FE
-        move.l  -$8(a6),d0                      ; 00102
+        move.l  SoundMakeNoise_Level(a6),d0     ; 00102
         move.l  d1,$4(a7)                       ; 00106
         jsr     (fp_SingleToDouble).l           ; 0010A
         move.l  $0(a7),d2                       ; 00110
         move.l  $4(a7),d3                       ; 00114
         jsr     (fp_DoubleAdd).l                ; 00118
         jsr     (fp_DoubleToSingle).l           ; 0011E
-        move.l  d0,-$8(a6)                      ; 00124
-        addq.l  #$1,-$4(a6)                     ; 00128
+        move.l  d0,SoundMakeNoise_Level(a6)     ; 00124
+        addq.l  #$1,SoundMakeNoise_I(a6)        ; 00128
         bra.w   l_083_000A0                     ; 0012C
 l_083_00130:
-        clr.l   -$4(a6)                         ; 00130
+        clr.l   SoundMakeNoise_I(a6)            ; 00130
 l_083_00134:
-        move.l  $c(a6),d0                       ; 00134
+        move.l  SoundMakeNoise_Length(a6),d0    ; 00134
         moveq   #$4,d1                          ; 00138
         jsr     (CXD33).l                       ; 0013A
-        move.l  -$4(a6),d1                      ; 00140
+        move.l  SoundMakeNoise_I(a6),d1         ; 00140
         cmp.l   d0,d1                           ; 00144
         bge.b   l_083_001C4                     ; 00146
-        move.l  -$8(a6),d0                      ; 00148
+        move.l  SoundMakeNoise_Level(a6),d0     ; 00148
         jsr     (fp_SingleToLong).l             ; 0014C
-        movea.l $8(a6),a0                       ; 00152
+        movea.l SoundMakeNoise_Dest(a6),a0      ; 00152
         move.b  d0,(a0)                         ; 00156
-        addq.l  #$1,$8(a6)                      ; 00158
-        move.l  $c(a6),d0                       ; 0015C
+        addq.l  #$1,SoundMakeNoise_Dest(a6)     ; 00158
+        move.l  SoundMakeNoise_Length(a6),d0    ; 0015C
         moveq   #$4,d1                          ; 00160
         jsr     (CXD33).l                       ; 00162
         jsr     (fp_LongToSingle).l             ; 00168
@@ -113,15 +119,15 @@ l_083_00134:
         move.l  $4(a7),d3                       ; 00188
         jsr     (fp_DoubleDiv).l                ; 0018C
         move.l  d0,$0(a7)                       ; 00192
-        move.l  -$8(a6),d0                      ; 00196
+        move.l  SoundMakeNoise_Level(a6),d0     ; 00196
         move.l  d1,$4(a7)                       ; 0019A
         jsr     (fp_SingleToDouble).l           ; 0019E
         move.l  $0(a7),d2                       ; 001A4
         move.l  $4(a7),d3                       ; 001A8
         jsr     (fp_DoubleSub).l                ; 001AC
         jsr     (fp_DoubleToSingle).l           ; 001B2
-        move.l  d0,-$8(a6)                      ; 001B8
-        addq.l  #$1,-$4(a6)                     ; 001BC
+        move.l  d0,SoundMakeNoise_Level(a6)     ; 001B8
+        addq.l  #$1,SoundMakeNoise_I(a6)        ; 001BC
         bra.w   l_083_00134                     ; 001C0
 l_083_001C4:
         unlk    a6                              ; 001C4
@@ -130,34 +136,39 @@ l_083_001C4:
 ;-------------------------------------------------------------------------------
 ; SoundMakeTone - Makes a tone's samples (LoadEngineSounds).
 ;-------------------------------------------------------------------------------
+; SoundMakeTone's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+SoundMakeTone_Dest      rs.l    1               ; where the samples go
+SoundMakeTone_Length    rs.l    1               ; how many (half high, half low)
+SoundMakeTone_I         equ     -$4             ; the sample count
 SoundMakeTone:
         link.w  a6,#$fffc                       ; 001C8
-        clr.l   -$4(a6)                         ; 001CC
+        clr.l   SoundMakeTone_I(a6)             ; 001CC
 l_083_001D0:
-        move.l  $c(a6),d0                       ; 001D0
+        move.l  SoundMakeTone_Length(a6),d0     ; 001D0
         moveq   #$2,d1                          ; 001D4
         jsr     (CXD33).l                       ; 001D6
-        move.l  -$4(a6),d1                      ; 001DC
+        move.l  SoundMakeTone_I(a6),d1          ; 001DC
         cmp.l   d0,d1                           ; 001E0
         bge.b   l_083_001F6                     ; 001E2
-        movea.l $8(a6),a0                       ; 001E4
+        movea.l SoundMakeTone_Dest(a6),a0       ; 001E4
         move.b  #$7f,(a0)                       ; 001E8
-        addq.l  #$1,$8(a6)                      ; 001EC
-        addq.l  #$1,-$4(a6)                     ; 001F0
+        addq.l  #$1,SoundMakeTone_Dest(a6)      ; 001EC
+        addq.l  #$1,SoundMakeTone_I(a6)         ; 001F0
         bra.b   l_083_001D0                     ; 001F4
 l_083_001F6:
-        clr.l   -$4(a6)                         ; 001F6
+        clr.l   SoundMakeTone_I(a6)             ; 001F6
 l_083_001FA:
-        move.l  $c(a6),d0                       ; 001FA
+        move.l  SoundMakeTone_Length(a6),d0     ; 001FA
         moveq   #$2,d1                          ; 001FE
         jsr     (CXD33).l                       ; 00200
-        move.l  -$4(a6),d1                      ; 00206
+        move.l  SoundMakeTone_I(a6),d1          ; 00206
         cmp.l   d0,d1                           ; 0020A
         bge.b   l_083_00220                     ; 0020C
-        movea.l $8(a6),a0                       ; 0020E
+        movea.l SoundMakeTone_Dest(a6),a0       ; 0020E
         move.b  #$82,(a0)                       ; 00212
-        addq.l  #$1,$8(a6)                      ; 00216
-        addq.l  #$1,-$4(a6)                     ; 0021A
+        addq.l  #$1,SoundMakeTone_Dest(a6)      ; 00216
+        addq.l  #$1,SoundMakeTone_I(a6)         ; 0021A
         bra.b   l_083_001FA                     ; 0021E
 l_083_00220:
         unlk    a6                              ; 00220
@@ -166,6 +177,8 @@ l_083_00220:
 ;-------------------------------------------------------------------------------
 ; SoundRandomBit - The next bit of the noise generator (NoiseSeed).
 ;-------------------------------------------------------------------------------
+; SoundRandomBit's frame: arguments from 8(a6), locals below a6 (after its link)
+SoundRandomBit_Bit      equ     -$4             ; the bit shifted out
 SoundRandomBit:
         link.w  a6,#$fffc                       ; 00224
         move.l  (NoiseSeed).l,d0                ; 00228
@@ -178,51 +191,60 @@ SoundRandomBit:
         asr.l   #$1,d1                          ; 0024A
         andi.l  #$7fffffff,d1                   ; 0024C
         move.l  d1,(NoiseSeed).l                ; 00252
-        move.l  d0,-$4(a6)                      ; 00258
+        move.l  d0,SoundRandomBit_Bit(a6)       ; 00258
         tst.l   d0                              ; 0025C
         beq.b   l_083_0026A                     ; 0025E
         subi.l  #$80000000,(NoiseSeed).l        ; 00260
 l_083_0026A:
-        move.l  -$4(a6),d0                      ; 0026A
+        move.l  SoundRandomBit_Bit(a6),d0       ; 0026A
         unlk    a6                              ; 0026E
         rts                                     ; 00270
 
 ;-------------------------------------------------------------------------------
 ; SoundRandom - A random number for the sound effects (from SoundRandomBit).
 ;-------------------------------------------------------------------------------
+; SoundRandom's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+SoundRandom_Bits        rs.l    1               ; how many random bits
+SoundRandom_Value       equ     -$4             ; the number made
 SoundRandom:
         link.w  a6,#$fff8                       ; 00272
-        clr.l   -$4(a6)                         ; 00276
+        clr.l   SoundRandom_Value(a6)           ; 00276
 l_083_0027A:
-        move.l  $8(a6),d0                       ; 0027A
-        subq.l  #$1,$8(a6)                      ; 0027E
+        move.l  SoundRandom_Bits(a6),d0         ; 0027A
+        subq.l  #$1,SoundRandom_Bits(a6)        ; 0027E
         tst.l   d0                              ; 00282
         ble.b   l_083_0029E                     ; 00284
-        move.l  -$4(a6),d0                      ; 00286
+        move.l  SoundRandom_Value(a6),d0        ; 00286
         asl.l   #$1,d0                          ; 0028A
         move.l  d0,$0(a7)                       ; 0028C
         bsr.b   SoundRandomBit                  ; 00290
         move.l  $0(a7),d1                       ; 00292
         add.l   d0,d1                           ; 00296
-        move.l  d1,-$4(a6)                      ; 00298
+        move.l  d1,SoundRandom_Value(a6)        ; 00298
         bra.b   l_083_0027A                     ; 0029C
 l_083_0029E:
-        move.l  -$4(a6),d0                      ; 0029E
+        move.l  SoundRandom_Value(a6),d0        ; 0029E
         unlk    a6                              ; 002A2
         rts                                     ; 002A4
 
 ;-------------------------------------------------------------------------------
 ; SoundMakeSweep - Makes a sweeping sound's samples (LoadEngineSounds).
 ;-------------------------------------------------------------------------------
+; SoundMakeSweep's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+SoundMakeSweep_Dest     rs.l    1               ; where the samples go
+SoundMakeSweep_Length   rs.l    1               ; how many (random bytes)
+SoundMakeSweep_I        equ     -$4             ; the sample count
 SoundMakeSweep:
         link.w  a6,#$fff8                       ; 002A6
-        clr.l   -$4(a6)                         ; 002AA
+        clr.l   SoundMakeSweep_I(a6)            ; 002AA
 l_083_002AE:
-        move.l  -$4(a6),d0                      ; 002AE
-        cmp.l   $c(a6),d0                       ; 002B2
+        move.l  SoundMakeSweep_I(a6),d0         ; 002AE
+        cmp.l   SoundMakeSweep_Length(a6),d0    ; 002B2
         bge.b   l_083_002D8                     ; 002B6
-        movea.l $8(a6),a0                       ; 002B8
-        addq.l  #$1,$8(a6)                      ; 002BC
+        movea.l SoundMakeSweep_Dest(a6),a0      ; 002B8
+        addq.l  #$1,SoundMakeSweep_Dest(a6)     ; 002BC
         moveq   #$8,d0                          ; 002C0
         move.l  d0,-(a7)                        ; 002C2
         move.l  a0,$4(a7)                       ; 002C4
@@ -230,7 +252,7 @@ l_083_002AE:
         addq.l  #$4,a7                          ; 002CA
         movea.l $0(a7),a0                       ; 002CC
         move.b  d0,(a0)                         ; 002D0
-        addq.l  #$1,-$4(a6)                     ; 002D2
+        addq.l  #$1,SoundMakeSweep_I(a6)        ; 002D2
         bra.b   l_083_002AE                     ; 002D6
 l_083_002D8:
         unlk    a6                              ; 002D8

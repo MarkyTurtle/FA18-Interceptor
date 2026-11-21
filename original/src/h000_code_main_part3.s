@@ -2816,14 +2816,14 @@ l_000_0986C:
         adda.l  #SoundTable,a0                  ; 09886
         movea.l (a0),a2                         ; 0988C
         moveq   #$0,d1                          ; 0988E
-        move.l  d1,$14(a2)                      ; 09890
-        move.l  d1,$10(a1)                      ; 09894
+        move.l  d1,snd_RepeatsSet(a2)           ; 09890
+        move.l  d1,snd_Repeats(a1)              ; 09894
         movea.l d0,a0                           ; 09898
         adda.l  #SoundTable,a0                  ; 0989A
         movea.l (a0),a1                         ; 098A0
         movea.l d0,a0                           ; 098A2
         adda.l  #EngineSample,a0                ; 098A4
-        move.l  (a0),$20(a1)                    ; 098AA
+        move.l  (a0),snd_Next(a1)               ; 098AA
         addq.l  #$1,-$4(a6)                     ; 098AE
         bra.b   l_000_0986C                     ; 098B2
 l_000_098B4:
@@ -2933,15 +2933,15 @@ l_000_09A0C:
         beq.b   l_000_09A64                     ; 09A24
         moveq   #-1,d0                          ; 09A26
         movea.l (EngineSample).l,a0             ; 09A28
-        move.l  d0,$10(a0)                      ; 09A2E
+        move.l  d0,snd_Repeats(a0)              ; 09A2E
         movea.l (EngineSample2).l,a0            ; 09A32
-        move.l  d0,$10(a0)                      ; 09A38
+        move.l  d0,snd_Repeats(a0)              ; 09A38
         addi.l  #$370,(a0)                      ; 09A3C
-        move.l  $4(a0),d0                       ; 09A42
+        move.l  snd_Length(a0),d0               ; 09A42
         andi.l  #$7fffffff,d0                   ; 09A46
         subi.l  #$370,d0                        ; 09A4C
         ori.l   #$80000000,d0                   ; 09A52
-        move.l  d0,$4(a0)                       ; 09A58
+        move.l  d0,snd_Length(a0)               ; 09A58
         bset    #$1,(SoundsLoaded).l            ; 09A5C
 l_000_09A64:
         moveq   #$4,d0                          ; 09A64
@@ -2953,14 +2953,14 @@ l_000_09A64:
         tst.l   d0                              ; 09A74
         beq.b   l_000_09AA0                     ; 09A76
         movea.l (EffectSound).l,a0              ; 09A78
-        move.l  $4(a0),-(a7)                    ; 09A7E
+        move.l  snd_Length(a0),-(a7)            ; 09A7E
         move.l  (a0),-(a7)                      ; 09A82
         jsr     (SoundMakeTone).l               ; 09A84
         addq.l  #$8,a7                          ; 09A8A
         movea.l (EffectSound).l,a0              ; 09A8C
-        move.l  #EffectParams,$30(a0)           ; 09A92
+        move.l  #EffectParams,snd_Script(a0)    ; 09A92
         moveq   #-1,d0                          ; 09A9A
-        move.l  d0,$10(a0)                      ; 09A9C
+        move.l  d0,snd_Repeats(a0)              ; 09A9C
 l_000_09AA0:
         moveq   #$6,d0                          ; 09AA0
         move.l  d0,-(a7)                        ; 09AA2
@@ -2970,14 +2970,14 @@ l_000_09AA0:
         tst.l   d0                              ; 09AB2
         beq.b   l_000_09AE6                     ; 09AB4
         movea.l (SweepSound).l,a0               ; 09AB6
-        move.l  $4(a0),-(a7)                    ; 09ABC
+        move.l  snd_Length(a0),-(a7)            ; 09ABC
         move.l  (a0),-(a7)                      ; 09AC0
         jsr     (SoundMakeSweep).l              ; 09AC2
         addq.l  #$8,a7                          ; 09AC8
         movea.l (SweepSound).l,a0               ; 09ACA
         moveq   #-1,d0                          ; 09AD0
-        move.l  d0,$10(a0)                      ; 09AD2
-        move.l  #SweepParams,$30(a0)            ; 09AD6
+        move.l  d0,snd_Repeats(a0)              ; 09AD2
+        move.l  #SweepParams,snd_Script(a0)     ; 09AD6
         bset    #$0,(SoundFlags).l              ; 09ADE
 l_000_09AE6:
         moveq   #$5,d0                          ; 09AE6
@@ -3000,8 +3000,8 @@ l_000_09B04:
         tst.l   d0                              ; 09B1C
         beq.b   l_000_09B3E                     ; 09B1E
         movea.l (GunSoundCopy).l,a0             ; 09B20
-        move.l  #GunParams,$30(a0)              ; 09B26
-        move.l  #$960000,$8(a0)                 ; 09B2E
+        move.l  #GunParams,snd_Script(a0)       ; 09B26
+        move.l  #$960000,snd_Period(a0)         ; 09B2E
         bset    #$5,(SoundsLoaded).l            ; 09B36
 l_000_09B3E:
         moveq   #$b,d0                          ; 09B3E
@@ -3013,7 +3013,7 @@ l_000_09B3E:
         beq.b   l_000_09B68                     ; 09B52
         moveq   #-1,d0                          ; 09B54
         movea.l (GearSample).l,a0               ; 09B56
-        move.l  d0,$10(a0)                      ; 09B5C
+        move.l  d0,snd_Repeats(a0)              ; 09B5C
         bset    #$6,(SoundsLoaded).l            ; 09B60
 l_000_09B68:
         tst.l   (EngineSample).l                ; 09B68
@@ -3027,7 +3027,7 @@ l_000_09B68:
         tst.l   d0                              ; 09B80
         beq.b   l_000_09B9A                     ; 09B82
         movea.l (EffectSound2).l,a0             ; 09B84
-        move.l  #Effect2Params,$30(a0)          ; 09B8A
+        move.l  #Effect2Params,snd_Script(a0)   ; 09B8A
         bset    #$1,(SoundFlags).l              ; 09B92
 l_000_09B9A:
         clr.l   -(a7)                           ; 09B9A
@@ -3045,10 +3045,10 @@ l_000_09B9A:
         beq.b   l_000_09BE6                     ; 09BBE
         moveq   #-1,d0                          ; 09BC0
         movea.l (SoundTable).l,a0               ; 09BC2
-        move.l  d0,$10(a0)                      ; 09BC8
+        move.l  d0,snd_Repeats(a0)              ; 09BC8
         movea.l (CatapultSample).l,a0           ; 09BCC
-        move.l  d0,$10(a0)                      ; 09BD2
-        move.l  #$800015cc,$4(a0)               ; 09BD6
+        move.l  d0,snd_Repeats(a0)              ; 09BD2
+        move.l  #$800015cc,snd_Length(a0)       ; 09BD6
         bset    #$0,(SoundsLoaded).l            ; 09BDE
 l_000_09BE6:
         moveq   #$8,d0                          ; 09BE6
@@ -3068,16 +3068,16 @@ l_000_09BE6:
         beq.b   l_000_09C54                     ; 09C0E
         movea.l (PlayWindSoundData1).l,a0       ; 09C10
         moveq   #-1,d0                          ; 09C16
-        move.l  d0,$10(a0)                      ; 09C18
+        move.l  d0,snd_Repeats(a0)              ; 09C18
         movea.l (WindSample).l,a1               ; 09C1C
-        move.l  d0,$10(a1)                      ; 09C22
+        move.l  d0,snd_Repeats(a1)              ; 09C22
         addi.l  #$792,(a0)                      ; 09C26
         movea.l (EngineSample2).l,a1            ; 09C2C
-        move.l  $4(a1),d0                       ; 09C32
+        move.l  snd_Length(a1),d0               ; 09C32
         andi.l  #$7fffffff,d0                   ; 09C36
         subi.l  #$792,d0                        ; 09C3C
         ori.l   #$80000000,d0                   ; 09C42
-        move.l  d0,$4(a0)                       ; 09C48
+        move.l  d0,snd_Length(a0)               ; 09C48
         bset    #$4,(SoundsLoaded).l            ; 09C4C
 l_000_09C54:
         unlk    a6                              ; 09C54
@@ -3131,7 +3131,7 @@ PlaySound:
         moveq   #$10,d1                         ; 09CAE
         move.l  PlaySound_Volume(a6),d2         ; 09CB0
         asl.l   d1,d2                           ; 09CB4
-        move.l  d2,$c(a1)                       ; 09CB6
+        move.l  d2,snd_Volume(a1)               ; 09CB6
         move.l  PlaySound_Channel(a6),d1        ; 09CBA
         asl.l   #$2,d1                          ; 09CBE
         movea.l d1,a0                           ; 09CC0
@@ -3246,22 +3246,22 @@ PlayCatapultSound:
         beq.b   l_000_09E42                     ; 09DC6
         movea.l (CatapultSample).l,a0           ; 09DC8
         moveq   #$0,d0                          ; 09DCE
-        move.l  d0,$1c(a0)                      ; 09DD0
+        move.l  d0,snd_VolumeStep(a0)           ; 09DD0
         movea.l (SoundTable).l,a1               ; 09DD4
-        move.l  d0,$1c(a1)                      ; 09DDA
-        move.l  d0,$18(a0)                      ; 09DDE
+        move.l  d0,snd_VolumeStep(a1)           ; 09DDA
+        move.l  d0,snd_PeriodStep(a0)           ; 09DDE
         movea.l (SoundTable).l,a1               ; 09DE2
-        move.l  d0,$18(a1)                      ; 09DE8
+        move.l  d0,snd_PeriodStep(a1)           ; 09DE8
         moveq   #$10,d0                         ; 09DEC
         move.l  PlayCatapultSound_Period(a6),d1 ; 09DEE
         asl.l   d0,d1                           ; 09DF2
         movea.l (SoundTable).l,a1               ; 09DF4
-        move.l  d1,$8(a1)                       ; 09DFA
+        move.l  d1,snd_Period(a1)               ; 09DFA
         move.l  PlayCatapultSound_Period(a6),d0 ; 09DFE
         addq.l  #$2,d0                          ; 09E02
         moveq   #$10,d1                         ; 09E04
         asl.l   d1,d0                           ; 09E06
-        move.l  d0,$8(a0)                       ; 09E08
+        move.l  d0,snd_Period(a0)               ; 09E08
         move.l  PlayCatapultSound_Volume(a6),-(a7) ; 09E0C
         moveq   #$0,d0                          ; 09E10
         move.l  d0,-(a7)                        ; 09E12
@@ -3303,19 +3303,19 @@ PlayEngineSound:
         movea.l (EngineSample).l,a0             ; 09E5C
         movea.l (EngineSample2).l,a1            ; 09E62
         moveq   #$0,d0                          ; 09E68
-        move.l  d0,$1c(a1)                      ; 09E6A
-        move.l  d0,$1c(a0)                      ; 09E6E
-        move.l  d0,$18(a1)                      ; 09E72
-        move.l  d0,$18(a0)                      ; 09E76
+        move.l  d0,snd_VolumeStep(a1)           ; 09E6A
+        move.l  d0,snd_VolumeStep(a0)           ; 09E6E
+        move.l  d0,snd_PeriodStep(a1)           ; 09E72
+        move.l  d0,snd_PeriodStep(a0)           ; 09E76
         moveq   #$10,d0                         ; 09E7A
         move.l  PlayEngineSound_Period(a6),d1   ; 09E7C
         asl.l   d0,d1                           ; 09E80
-        move.l  d1,$8(a0)                       ; 09E82
+        move.l  d1,snd_Period(a0)               ; 09E82
         move.l  PlayEngineSound_Period(a6),d0   ; 09E86
         addq.l  #$2,d0                          ; 09E8A
         moveq   #$10,d1                         ; 09E8C
         asl.l   d1,d0                           ; 09E8E
-        move.l  d0,$8(a1)                       ; 09E90
+        move.l  d0,snd_Period(a1)               ; 09E90
         move.l  PlayEngineSound_Volume(a6),-(a7) ; 09E94
         clr.l   -(a7)                           ; 09E98
         moveq   #$2,d0                          ; 09E9A
@@ -3385,31 +3385,31 @@ EnginePitch:
         move.l  EnginePitch_Period(a6),d1       ; 09F1E
         asl.l   d0,d1                           ; 09F22
         movea.l (ChannelSound).l,a1             ; 09F24
-        sub.l   $8(a1),d1                       ; 09F2A
+        sub.l   snd_Period(a1),d1               ; 09F2A
         move.l  d1,d0                           ; 09F2E
         move.l  EnginePitch_Frames(a6),d1       ; 09F30
         jsr     (CXD33).l                       ; 09F34
         move.l  d0,$18(a0)                      ; 09F3A
         movea.l (ChannelSound).l,a1             ; 09F3E
-        move.l  d0,$18(a1)                      ; 09F44
+        move.l  d0,snd_PeriodStep(a1)           ; 09F44
         move.l  EnginePitch_Frames(a6),d0       ; 09F48
         move.l  d0,$38(a0)                      ; 09F4C
         movea.l (ChannelSound).l,a1             ; 09F50
-        move.l  d0,$38(a1)                      ; 09F56
+        move.l  d0,snd_PeriodSteps(a1)          ; 09F56
         moveq   #$10,d1                         ; 09F5A
         move.l  EnginePitch_Volume(a6),d2       ; 09F5C
         asl.l   d1,d2                           ; 09F60
-        sub.l   $c(a1),d2                       ; 09F62
+        sub.l   snd_Volume(a1),d2               ; 09F62
         move.l  d2,d0                           ; 09F66
         move.l  EnginePitch_Frames(a6),d1       ; 09F68
         jsr     (CXD33).l                       ; 09F6C
         move.l  d0,$1c(a0)                      ; 09F72
         movea.l (ChannelSound).l,a1             ; 09F76
-        move.l  d0,$1c(a1)                      ; 09F7C
+        move.l  d0,snd_VolumeStep(a1)           ; 09F7C
         move.l  EnginePitch_Frames(a6),d0       ; 09F80
         move.l  d0,$3c(a0)                      ; 09F84
         movea.l (ChannelSound).l,a1             ; 09F88
-        move.l  d0,$3c(a1)                      ; 09F8E
+        move.l  d0,snd_VolumeSteps(a1)          ; 09F8E
 l_000_09F92:
         movem.l (a7)+,d2                        ; 09F92
         unlk    a6                              ; 09F96
@@ -3521,9 +3521,9 @@ PlayEffect:
         move.l  PlayEffect_Time3(a6),(EffectTime3).l ; 0A0AC
         movea.l (EffectSound).l,a0              ; 0A0B4
         moveq   #$0,d0                          ; 0A0BA
-        move.l  d0,$34(a0)                      ; 0A0BC
+        move.l  d0,snd_ScriptPos(a0)            ; 0A0BC
         moveq   #$1,d0                          ; 0A0C0
-        move.l  d0,$2c(a0)                      ; 0A0C2
+        move.l  d0,snd_Wait(a0)                 ; 0A0C2
         clr.l   -(a7)                           ; 0A0C6
         moveq   #$3,d0                          ; 0A0C8
         move.l  d0,-(a7)                        ; 0A0CA
@@ -3565,7 +3565,7 @@ PlaySweep:
         move.l  d0,(SweepVolumeStep).l           ; 0A11C
         move.l  PlaySweep_Frames(a6),(SweepTime).l ; 0A122
         movea.l (SweepSound).l,a0               ; 0A12A
-        clr.l   $34(a0)                         ; 0A130
+        clr.l   snd_ScriptPos(a0)               ; 0A130
         moveq   #$b,d0                          ; 0A134
         move.l  d0,-(a7)                        ; 0A136
         move.l  a0,$4(a7)                       ; 0A138
@@ -3579,7 +3579,7 @@ PlaySweep:
         move.l  d0,$8(a0)                       ; 0A154
         moveq   #$1,d0                          ; 0A158
         movea.l (SweepSound).l,a0               ; 0A15A
-        move.l  d0,$2c(a0)                      ; 0A160
+        move.l  d0,snd_Wait(a0)                 ; 0A160
         clr.l   -(a7)                           ; 0A164
         moveq   #$2,d0                          ; 0A166
         move.l  d0,-(a7)                        ; 0A168
@@ -3613,10 +3613,10 @@ PlayTireSound:
         tst.l   (TireSample).l                  ; 0A1AA
         beq.b   l_000_0A1E2                     ; 0A1B0
         movea.l (TireSample).l,a0               ; 0A1B2
-        move.l  #$1360000,$8(a0)                ; 0A1B8
-        move.l  #$fffe0000,$18(a0)              ; 0A1C0
+        move.l  #$1360000,snd_Period(a0)        ; 0A1B8
+        move.l  #$fffe0000,snd_PeriodStep(a0)   ; 0A1C0
         moveq   #$1,d0                          ; 0A1C8
-        move.l  d0,$10(a0)                      ; 0A1CA
+        move.l  d0,snd_Repeats(a0)              ; 0A1CA
         move.l  PlayTireSound_Volume(a6),-(a7)  ; 0A1CE
         moveq   #$2,d0                          ; 0A1D2
         move.l  d0,-(a7)                        ; 0A1D4
@@ -3650,11 +3650,11 @@ PlayGearSound:
         addq.l  #$4,a7                          ; 0A214
         movea.l (GearSample).l,a0               ; 0A216
         moveq   #$0,d0                          ; 0A21C
-        move.l  d0,$2c(a0)                      ; 0A21E
-        move.l  #GearParams,$30(a0)             ; 0A222
-        move.l  d0,$34(a0)                      ; 0A22A
+        move.l  d0,snd_Wait(a0)                 ; 0A21E
+        move.l  #GearParams,snd_Script(a0)      ; 0A222
+        move.l  d0,snd_ScriptPos(a0)            ; 0A22A
         moveq   #$1,d0                          ; 0A22E
-        move.l  d0,$2c(a0)                      ; 0A230
+        move.l  d0,snd_Wait(a0)                 ; 0A230
         move.l  PlayGearSound_Volume(a6),-(a7)  ; 0A234
         moveq   #$2,d0                          ; 0A238
         move.l  d0,-(a7)                        ; 0A23A
@@ -3707,7 +3707,7 @@ PlayEffect2:
         jsr     (CXD33).l                       ; 0A296
         move.l  d0,(Effect2VolumeStep).l         ; 0A29C
         movea.l (EffectSound2).l,a0             ; 0A2A2
-        clr.l   $34(a0)                         ; 0A2A8
+        clr.l   snd_ScriptPos(a0)               ; 0A2A8
         moveq   #$3,d0                          ; 0A2AC
         move.l  d0,-(a7)                        ; 0A2AE
         move.l  a0,$4(a7)                       ; 0A2B0
@@ -3720,7 +3720,7 @@ PlayEffect2:
         move.l  d0,$8(a0)                       ; 0A2CA
         moveq   #$1,d0                          ; 0A2CE
         movea.l (EffectSound2).l,a0             ; 0A2D0
-        move.l  d0,$2c(a0)                      ; 0A2D6
+        move.l  d0,snd_Wait(a0)                 ; 0A2D6
         clr.l   -(a7)                           ; 0A2DA
         moveq   #$2,d0                          ; 0A2DC
         move.l  d0,-(a7)                        ; 0A2DE
@@ -3750,16 +3750,16 @@ PlayGunSound:
         addq.l  #$4,a7                          ; 0A304
         movea.l (GunSoundCopy).l,a0             ; 0A306
         moveq   #$0,d0                          ; 0A30C
-        move.l  d0,$2c(a0)                      ; 0A30E
+        move.l  d0,snd_Wait(a0)                 ; 0A30E
         move.l  PlayGunSound_Repeats(a6),(GunRepeats).l ; 0A312
         moveq   #$10,d0                         ; 0A31A
         move.l  PlayGunSound_Volume(a6),d1      ; 0A31C
         asl.l   d0,d1                           ; 0A320
         move.l  d1,(GunVolume).l             ; 0A322
         moveq   #$0,d0                          ; 0A328
-        move.l  d0,$34(a0)                      ; 0A32A
+        move.l  d0,snd_ScriptPos(a0)            ; 0A32A
         moveq   #$1,d0                          ; 0A32E
-        move.l  d0,$2c(a0)                      ; 0A330
+        move.l  d0,snd_Wait(a0)                 ; 0A330
         clr.l   -(a7)                           ; 0A334
         moveq   #$2,d0                          ; 0A336
         move.l  d0,-(a7)                        ; 0A338
