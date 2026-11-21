@@ -8,7 +8,35 @@ What is known about `f18_main.s` and `src/*.s`, module by module. Each file in `
 on every hunk before its include, and an overview of the groups at the top. Each hunk is one object module
 of the original link: compiled Lattice C (functions start with `link a6` / end with `unlk a6`,
 arguments on the stack, results in `d0`), some assembly. Routine headers in the source say what
-each named routine does; routines still called `sub_HHH_OOOOO` are not worked out yet.
+each named routine does.
+
+### The C routines' stack frames
+
+A compiled routine starts `link.w a6,#-n`. Its caller pushes the arguments right to left, as
+longs, so the first is at `8(a6)`, the next at `$C(a6)`...; a word argument is read from the
+long's low half (`$A(a6)`), a byte from its last byte; the locals sit below `a6`. Where a
+routine's arguments and locals are known they are named, in a block above its label that emits
+no bytes:
+
+```
+; IFFReadBytes's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+IFFReadBytes_Context    rs.l    1               ; the IFF context
+IFFReadBytes_Buffer     rs.l    1               ; where the bytes go
+IFFReadBytes_Bytes      rs.l    1               ; how many to read
+IFFReadBytes_Result     equ     -$4             ; 0, or an error
+IFFReadBytes:
+        link.w  a6,#$fffc
+        ...
+        movea.l IFFReadBytes_Context(a6),a0
+        move.l  gc_ckSize(a0),d0
+```
+
+A word argument gets an `rs.w` for the long's unused high half first, so its name is the
+address read. The names are `Routine_Name`, so each is unique. Structures the routines point
+at are `rs` structures too: the IFF reader's `GroupContext` (`gc_...`) and `BitMapHeader`
+(`bmh_...`) above `LoadPicture`, and the system's (`bm_...`) in `f18_os.i`. With `-no-opt`
+a named offset assembles to the same bytes as the number, so the build stays byte-identical.
 
 ## How it runs
 
@@ -81,6 +109,11 @@ before each. Some parts run only every 2nd, 4th, 8th, 16th or 32nd frame (`Frame
 
 * `tools/rename.py NAMES.txt` renames labels everywhere and adds their header boxes (`OLD NEW -
   description`; `- !description` replaces an existing header), then runs `build.py`.
+* `tools/frames.py [ROUTINE...]` lists the C routines' frames: the argument and local offsets each
+  uses (with their sizes and names), and how many bytes its callers pop. `tools/frames.py --name
+  SPEC` writes the frame blocks above and puts the names into the routines' code; SPEC has a
+  routine's name, then a line per offset (`  $8  Context  the IFF context`; an array local takes
+  its size, `-$34/36`). Running it again with new names renames them.
 * `tools/decode.py LABEL` turns a `dc.b` region that turns out to be code into instructions
   (relocated longs stay labels), then runs `build.py`; the file is put back if the build differs.
 

@@ -78,9 +78,22 @@ sm_NumArgs		equ	$1C
 sm_ToolWindow		equ	$20
 sm_ArgList		equ	$24
 wa_Lock			equ	0
+; struct BitMap (graphics)
+bm_BytesPerRow		equ	0
+bm_Rows			equ	2
+bm_Flags		equ	4
+bm_Depth		equ	5
+bm_Planes		equ	8
+bm_SIZEOF		equ	$28
+
 ; dos.library Open() modes
 MODE_OLDFILE		equ	1005
 MODE_NEWFILE		equ	1006
+
+; dos.library Seek() modes
+OFFSET_BEGINNING	equ	-1
+OFFSET_CURRENT		equ	0
+OFFSET_END		equ	1
 
 ; exec.library Alert() codes
 AG_OpenLib		equ	$00030000

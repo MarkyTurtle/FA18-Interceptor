@@ -1411,14 +1411,18 @@ l_000_054DC:
 ;-------------------------------------------------------------------------------
 ; FiveEighths - Returns the word argument x 5/8 (x/2 + x/8).
 ;-------------------------------------------------------------------------------
+; FiveEighths's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+                rs.w    1                       ; (pushed as a long: the high part)
+FiveEighths_Value       rs.w    1               ; the value
 FiveEighths:
         link.w  a6,#$0                          ; 054E6
-        move.w  $a(a6),d0                       ; 054EA
+        move.w  FiveEighths_Value(a6),d0        ; 054EA
         asr.w   #$1,d0                          ; 054EE
-        move.w  $a(a6),d1                       ; 054F0
+        move.w  FiveEighths_Value(a6),d1        ; 054F0
         asr.w   #$3,d1                          ; 054F4
         add.w   d1,d0                           ; 054F6
-        move.w  d0,$a(a6)                       ; 054F8
+        move.w  d0,FiveEighths_Value(a6)        ; 054F8
         ext.l   d0                              ; 054FC
         unlk    a6                              ; 054FE
         rts                                     ; 05500
@@ -1977,34 +1981,39 @@ l_000_05B72:
 ; EaseToZero - Moves the word at a0 towards 0 by its value shifted right by the given amount
 ; (at least 1 step), for the controls' return to centre.
 ;-------------------------------------------------------------------------------
+; EaseToZero's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+EaseToZero_Value        rs.l    1               ; the word to move
+                rs.w    1                       ; (pushed as a long: the high part)
+EaseToZero_Shift        rs.w    1               ; how far to shift its value right
 EaseToZero:
         link.w  a6,#$fffe                       ; 05B7A
-        movea.l $8(a6),a0                       ; 05B7E
+        movea.l EaseToZero_Value(a6),a0         ; 05B7E
         move.w  (a0),d0                         ; 05B82
         move.w  d0,$0(a7)                       ; 05B84
         cmpi.w  #$fff1,d0                       ; 05B88
         bge.b   l_000_05BA0                     ; 05B8C
         neg.w   d0                              ; 05B8E
-        move.w  $e(a6),d1                       ; 05B90
+        move.w  EaseToZero_Shift(a6),d1         ; 05B90
         asr.w   d1,d0                           ; 05B94
         move.w  $0(a7),d1                       ; 05B96
         add.w   d0,d1                           ; 05B9A
         move.w  d1,(a0)                         ; 05B9C
         bra.b   l_000_05BDA                     ; 05B9E
 l_000_05BA0:
-        movea.l $8(a6),a0                       ; 05BA0
+        movea.l EaseToZero_Value(a6),a0         ; 05BA0
         move.w  (a0),d0                         ; 05BA4
         move.w  d0,$0(a7)                       ; 05BA6
         cmpi.w  #$f,d0                          ; 05BAA
         ble.b   l_000_05BC0                     ; 05BAE
-        move.w  $e(a6),d1                       ; 05BB0
+        move.w  EaseToZero_Shift(a6),d1         ; 05BB0
         asr.w   d1,d0                           ; 05BB4
         move.w  $0(a7),d1                       ; 05BB6
         sub.w   d0,d1                           ; 05BBA
         move.w  d1,(a0)                         ; 05BBC
         bra.b   l_000_05BDA                     ; 05BBE
 l_000_05BC0:
-        movea.l $8(a6),a0                       ; 05BC0
+        movea.l EaseToZero_Value(a6),a0         ; 05BC0
         move.w  (a0),d0                         ; 05BC4
         tst.w   d0                              ; 05BC6
         bpl.b   l_000_05BD0                     ; 05BC8
@@ -2012,7 +2021,7 @@ l_000_05BC0:
         move.w  d0,(a0)                         ; 05BCC
         bra.b   l_000_05BDA                     ; 05BCE
 l_000_05BD0:
-        movea.l $8(a6),a0                       ; 05BD0
+        movea.l EaseToZero_Value(a6),a0         ; 05BD0
         move.w  (a0),d0                         ; 05BD4
         subq.w  #$1,d0                          ; 05BD6
         move.w  d0,(a0)                         ; 05BD8
@@ -3244,12 +3253,19 @@ EaseYaw:
 ;-------------------------------------------------------------------------------
 ; Decay - Decay(p, limit, shift): *p -= *p >> shift while |*p| > limit; then 0.
 ;-------------------------------------------------------------------------------
+; Decay's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+Decay_Value             rs.l    1               ; the word to decay
+                rs.w    1                       ; (pushed as a long: the high part)
+Decay_Limit             rs.w    1               ; at or below this size it becomes 0
+                rs.w    1                       ; (pushed as a long: the high part)
+Decay_Shift             rs.w    1               ; how far to shift it right for each step
 Decay:
         link.w  a6,#$fffe                       ; 069F2
-        movea.l $8(a6),a0                       ; 069F6
+        movea.l Decay_Value(a6),a0              ; 069F6
         move.w  (a0),d0                         ; 069FA
         ext.l   d0                              ; 069FC
-        move.w  $e(a6),d1                       ; 069FE
+        move.w  Decay_Limit(a6),d1              ; 069FE
         ext.l   d1                              ; 06A02
         cmp.l   d1,d0                           ; 06A04
         bgt.b   l_000_06A0E                     ; 06A06
@@ -3257,9 +3273,9 @@ Decay:
         cmp.l   d1,d0                           ; 06A0A
         bge.b   l_000_06A28                     ; 06A0C
 l_000_06A0E:
-        movea.l $8(a6),a0                       ; 06A0E
+        movea.l Decay_Value(a6),a0              ; 06A0E
         move.w  (a0),d0                         ; 06A12
-        move.w  $12(a6),d1                      ; 06A14
+        move.w  Decay_Shift(a6),d1              ; 06A14
         move.w  d0,$0(a7)                       ; 06A18
         asr.w   d1,d0                           ; 06A1C
         move.w  $0(a7),d1                       ; 06A1E
@@ -3267,7 +3283,7 @@ l_000_06A0E:
         move.w  d1,(a0)                         ; 06A24
         bra.b   l_000_06A2E                     ; 06A26
 l_000_06A28:
-        movea.l $8(a6),a0                       ; 06A28
+        movea.l Decay_Value(a6),a0              ; 06A28
         clr.w   (a0)                            ; 06A2C
 l_000_06A2E:
         unlk    a6                              ; 06A2E
@@ -3893,32 +3909,40 @@ l_000_07280:
 ; EaseVelocity - EaseVelocity(target, current): d = target + current, divided by 4 if |d| > 4,
 ; by 2 if |d| > 2; returns d - current (how far the velocity moves this frame).
 ;-------------------------------------------------------------------------------
+; EaseVelocity's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+                rs.w    1                       ; (pushed as a long: the high part)
+EaseVelocity_Target     rs.w    1               ; the target velocity
+                rs.w    1                       ; (pushed as a long: the high part)
+EaseVelocity_Current    rs.w    1               ; the current one
+EaseVelocity_D          equ     -$2             ; target + current, scaled
+EaseVelocity_Size       equ     -$4             ; its size (|D|)
 EaseVelocity:
         link.w  a6,#$fffc                       ; 07288
-        move.w  $a(a6),d0                       ; 0728C
-        add.w   $e(a6),d0                       ; 07290
-        move.w  d0,-$2(a6)                      ; 07294
-        move.w  d0,-$4(a6)                      ; 07298
+        move.w  EaseVelocity_Target(a6),d0      ; 0728C
+        add.w   EaseVelocity_Current(a6),d0     ; 07290
+        move.w  d0,EaseVelocity_D(a6)           ; 07294
+        move.w  d0,EaseVelocity_Size(a6)        ; 07298
         tst.w   d0                              ; 0729C
         bpl.b   l_000_072A4                     ; 0729E
-        neg.w   -$4(a6)                         ; 072A0
+        neg.w   EaseVelocity_Size(a6)           ; 072A0
 l_000_072A4:
-        cmpi.w  #$4,-$4(a6)                     ; 072A4
+        cmpi.w  #$4,EaseVelocity_Size(a6)       ; 072A4
         ble.b   l_000_072B8                     ; 072AA
-        move.w  -$2(a6),d0                      ; 072AC
+        move.w  EaseVelocity_D(a6),d0           ; 072AC
         asr.w   #$2,d0                          ; 072B0
-        move.w  d0,-$2(a6)                      ; 072B2
+        move.w  d0,EaseVelocity_D(a6)           ; 072B2
         bra.b   l_000_072CA                     ; 072B6
 l_000_072B8:
-        cmpi.w  #$2,-$4(a6)                     ; 072B8
+        cmpi.w  #$2,EaseVelocity_Size(a6)       ; 072B8
         ble.b   l_000_072CA                     ; 072BE
-        move.w  -$2(a6),d0                      ; 072C0
+        move.w  EaseVelocity_D(a6),d0           ; 072C0
         asr.w   #$1,d0                          ; 072C4
-        move.w  d0,-$2(a6)                      ; 072C6
+        move.w  d0,EaseVelocity_D(a6)           ; 072C6
 l_000_072CA:
-        move.w  -$2(a6),d0                      ; 072CA
-        sub.w   $e(a6),d0                       ; 072CE
-        move.w  d0,$a(a6)                       ; 072D2
+        move.w  EaseVelocity_D(a6),d0           ; 072CA
+        sub.w   EaseVelocity_Current(a6),d0     ; 072CE
+        move.w  d0,EaseVelocity_Target(a6)      ; 072D2
         ext.l   d0                              ; 072D6
         unlk    a6                              ; 072D8
         rts                                     ; 072DA

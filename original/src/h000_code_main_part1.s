@@ -175,6 +175,53 @@ OpenDOSLibrary:
 	dc.b	$00,$00
 
 ;-------------------------------------------------------------------------------
+; The IFF reader's structures (EA's IFF code, linked in). These emit no bytes: they name the
+; offsets the routines below use.
+;
+; GroupContext - the reader's state for one group (FORM, LIST, CAT, PROP) or the file itself.
+                rsreset
+gc_Parent               rs.l    1               ; the enclosing group's context (0 for the file)
+gc_ClientFrame          rs.l    1               ; the client's data (not used here)
+gc_File                 rs.l    1               ; the DOS file
+gc_Position             rs.l    1               ; where in the file reading has got to
+gc_Bound                rs.l    1               ; the group's end (for the file: its length)
+gc_ckID                 rs.l    1               ; the current chunk's header: its ID
+gc_ckSize               rs.l    1               ; ... and its size
+gc_Subtype              rs.l    1               ; a group's type (ILBM in FORM ILBM)
+gc_BytesSoFar           rs.l    1               ; how much of the current chunk has been read
+gc_SIZEOF               rs.b    0
+
+; BitMapHeader - the ILBM's BMHD chunk (20 bytes).
+                rsreset
+bmh_Width               rs.w    1               ; the picture's size in pixels
+bmh_Height              rs.w    1
+bmh_Left                rs.w    1               ; where it goes
+bmh_Top                 rs.w    1
+bmh_Depth               rs.b    1               ; its planes
+bmh_Masking             rs.b    1               ; 1: an extra mask plane follows each row's planes
+bmh_Compression         rs.b    1               ; 0: none, 1: ByteRun1
+bmh_Pad                 rs.b    1
+bmh_Transparent         rs.w    1               ; the transparent colour
+bmh_XAspect             rs.b    1               ; the pixels' shape
+bmh_YAspect             rs.b    1
+bmh_PageWidth           rs.w    1               ; the screen it was drawn for
+bmh_PageHeight          rs.w    1
+bmh_SIZEOF              rs.b    0
+
+; The IFF reader's results (0 is IFF_OKAY): what its routines return, and the chunk ID
+; GetChunkHdr leaves when it reaches a group's end (END_MARK) or fails.
+IFF_OKAY                equ     0
+END_MARK                equ     -1              ; no more chunks in this group
+IFF_DONE                equ     -2              ; the client has what it wanted
+DOS_ERROR               equ     -3              ; a DOS call failed
+NOT_IFF                 equ     -4              ; not an IFF file
+NO_FILE                 equ     -5              ; the file is not open
+CLIENT_ERROR            equ     -6              ; the caller asked for something it can't do
+BAD_FORM                equ     -7              ; the FORM's contents are bad
+SHORT_CHUNK             equ     -8              ; the chunk ends too soon
+BAD_IFF                 equ     -9              ; a badly formed file (or its end)
+
+;-------------------------------------------------------------------------------
 ; LoadPicture - LoadPicture(name, colours, bmhd): loads an IFF ILBM picture from the disk.
 ; Opens the file and the IFF context (OpenRIFF), reads the FORM header, the BMHD (20 bytes,
 ; into bmhd), the CMAP (up to 32 colours, as RGB4 words, into colours: GetCMAP), skips the next
@@ -183,15 +230,31 @@ OpenDOSLibrary:
 ; row buffer, and decompresses the BODY into it (GetBODY). The chunks must come in that order.
 ; Returns the BitMap (0 if the file did not open).
 ;-------------------------------------------------------------------------------
+; LoadPicture's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+LoadPicture_Name        rs.l    1               ; the file name
+LoadPicture_Colours     rs.l    1               ; where the RGB4 colour words go
+LoadPicture_BMHD        rs.l    1               ; where the 20-byte BMHD goes
+LoadPicture_Plane       equ     -$4             ; the plane being allocated
+LoadPicture_Header      equ     -$8             ; the BMHD (from BMHD)
+LoadPicture_Error       equ     -$C             ; what OpenRIFF returned
+LoadPicture_File        equ     -$10            ; the open file
+LoadPicture_Context     equ     -$34            ; the IFF context (a GroupContext) (36 bytes)
+LoadPicture_RowBuffer   equ     -$38            ; the BODY's row buffer
+LoadPicture_RowSize     equ     -$3C            ; its size
+LoadPicture_PlaneSize   equ     -$40            ; a plane's size in bytes
+LoadPicture_NColours    equ     -$41            ; the most colours to read (32)
+LoadPicture_Skip        equ     -$49            ; where the skipped chunk headers go (8 bytes)
+LoadPicture_BitMap      equ     -$4E            ; the BitMap (returned)
 LoadPicture:
         link.w  a6,#$ffae                       ; 001C8
         movem.l d2-d3,-(a7)                     ; 001CC
-        move.l  $10(a6),-$8(a6)                 ; 001D0
+        move.l  LoadPicture_BMHD(a6),LoadPicture_Header(a6) ; 001D0
         move.l  #MODE_OLDFILE,-(a7)             ; 001D6
-        move.l  $8(a6),-(a7)                    ; 001DC
+        move.l  LoadPicture_Name(a6),-(a7)      ; 001DC
         jsr     (_Open).l                       ; 001E0
         addq.l  #$8,a7                          ; 001E6
-        move.l  d0,-$10(a6)                     ; 001E8
+        move.l  d0,LoadPicture_File(a6)         ; 001E8
         tst.l   d0                              ; 001EC
         bne.b   l_000_001FA                     ; 001EE
         moveq   #$0,d0                          ; 001F0
@@ -200,11 +263,11 @@ LoadPicture:
         rts                                     ; 001F8
 l_000_001FA:
         clr.l   -(a7)                           ; 001FA
-        pea.l   -$34(a6)                        ; 001FC
-        move.l  -$10(a6),-(a7)                  ; 00200
+        pea.l   LoadPicture_Context(a6)         ; 001FC
+        move.l  LoadPicture_File(a6),-(a7)      ; 00200
         jsr     (OpenRIFF).l                    ; 00204
         lea.l   $c(a7),a7                       ; 0020A
-        move.l  d0,-$c(a6)                      ; 0020E
+        move.l  d0,LoadPicture_Error(a6)        ; 0020E
         tst.l   d0                              ; 00212
         beq.b   l_000_00220                     ; 00214
         moveq   #$0,d0                          ; 00216
@@ -212,93 +275,93 @@ l_000_001FA:
         unlk    a6                              ; 0021C
         rts                                     ; 0021E
 l_000_00220:
-        pea.l   -$34(a6)                        ; 00220
+        pea.l   LoadPicture_Context(a6)         ; 00220
         jsr     (GetFChunkHdr).l                ; 00224
         addq.l  #$4,a7                          ; 0022A
         moveq   #$8,d0                          ; 0022C
         move.l  d0,-(a7)                        ; 0022E
-        pea.l   -$49(a6)                        ; 00230
-        pea.l   -$34(a6)                        ; 00234
+        pea.l   LoadPicture_Skip(a6)            ; 00230
+        pea.l   LoadPicture_Context(a6)         ; 00234
         jsr     (IFFReadBytes).l                ; 00238
         lea.l   $c(a7),a7                       ; 0023E
         moveq   #$14,d0                         ; 00242
         move.l  d0,-(a7)                        ; 00244
-        move.l  -$8(a6),-(a7)                   ; 00246
-        pea.l   -$34(a6)                        ; 0024A
+        move.l  LoadPicture_Header(a6),-(a7)    ; 00246
+        pea.l   LoadPicture_Context(a6)         ; 0024A
         jsr     (IFFReadBytes).l                ; 0024E
         lea.l   $c(a7),a7                       ; 00254
         moveq   #$8,d0                          ; 00258
         move.l  d0,-(a7)                        ; 0025A
-        pea.l   -$49(a6)                        ; 0025C
-        pea.l   -$34(a6)                        ; 00260
+        pea.l   LoadPicture_Skip(a6)            ; 0025C
+        pea.l   LoadPicture_Context(a6)         ; 00260
         jsr     (IFFReadBytes).l                ; 00264
         lea.l   $c(a7),a7                       ; 0026A
-        move.b  #$20,-$41(a6)                   ; 0026E
-        pea.l   -$41(a6)                        ; 00274
-        move.l  $c(a6),-(a7)                    ; 00278
-        pea.l   -$34(a6)                        ; 0027C
+        move.b  #$20,LoadPicture_NColours(a6)   ; 0026E
+        pea.l   LoadPicture_NColours(a6)        ; 00274
+        move.l  LoadPicture_Colours(a6),-(a7)   ; 00278
+        pea.l   LoadPicture_Context(a6)         ; 0027C
         jsr     (GetCMAP).l                     ; 00280
         lea.l   $c(a7),a7                       ; 00286
         moveq   #$8,d0                          ; 0028A
         move.l  d0,-(a7)                        ; 0028C
-        pea.l   -$49(a6)                        ; 0028E
-        pea.l   -$34(a6)                        ; 00292
+        pea.l   LoadPicture_Skip(a6)            ; 0028E
+        pea.l   LoadPicture_Context(a6)         ; 00292
         jsr     (IFFReadBytes).l                ; 00296
         lea.l   $c(a7),a7                       ; 0029C
         moveq   #$4,d0                          ; 002A0
         move.l  d0,-(a7)                        ; 002A2
-        pea.l   -$49(a6)                        ; 002A4
-        pea.l   -$34(a6)                        ; 002A8
+        pea.l   LoadPicture_Skip(a6)            ; 002A4
+        pea.l   LoadPicture_Context(a6)         ; 002A8
         jsr     (IFFReadBytes).l                ; 002AC
         lea.l   $c(a7),a7                       ; 002B2
-        move.l  #$10002,-(a7)                   ; 002B6
-        moveq   #$28,d0                         ; 002BC
+        move.l  #MEMF_CHIP|MEMF_CLEAR,-(a7)     ; 002B6
+        moveq   #bm_SIZEOF,d0                   ; 002BC
         move.l  d0,-(a7)                        ; 002BE
         jsr     (_AllocMem).l                   ; 002C0
         addq.l  #$8,a7                          ; 002C6
         moveq   #$0,d1                          ; 002C8
-        movea.l -$8(a6),a0                      ; 002CA
-        move.b  $8(a0),d1                       ; 002CE
+        movea.l LoadPicture_Header(a6),a0       ; 002CA
+        move.b  bmh_Depth(a0),d1                ; 002CE
         moveq   #$0,d2                          ; 002D2
         move.w  (a0),d2                         ; 002D4
         moveq   #$0,d3                          ; 002D6
-        move.w  $2(a0),d3                       ; 002D8
+        move.w  bmh_Height(a0),d3               ; 002D8
         move.l  d3,-(a7)                        ; 002DC
         move.l  d2,-(a7)                        ; 002DE
         move.l  d1,-(a7)                        ; 002E0
         move.l  d0,-(a7)                        ; 002E2
-        move.l  d0,-$4e(a6)                     ; 002E4
+        move.l  d0,LoadPicture_BitMap(a6)       ; 002E4
         jsr     (_InitBitMap).l                 ; 002E8
         lea.l   $10(a7),a7                      ; 002EE
-        clr.l   -$4(a6)                         ; 002F2
+        clr.l   LoadPicture_Plane(a6)           ; 002F2
 l_000_002F6:
         moveq   #$0,d0                          ; 002F6
-        movea.l -$8(a6),a0                      ; 002F8
-        move.b  $8(a0),d0                       ; 002FC
-        move.l  -$4(a6),d1                      ; 00300
+        movea.l LoadPicture_Header(a6),a0       ; 002F8
+        move.b  bmh_Depth(a0),d0                ; 002FC
+        move.l  LoadPicture_Plane(a6),d1        ; 00300
         cmp.l   d0,d1                           ; 00304
         bcc.b   l_000_00340                     ; 00306
         move.w  (a0),d0                         ; 00308
-        move.w  $2(a0),d2                       ; 0030A
+        move.w  bmh_Height(a0),d2               ; 0030A
         mulu.w  d2,d0                           ; 0030E
         lsr.l   #$3,d0                          ; 00310
         asl.l   #$2,d1                          ; 00312
-        movea.l -$4e(a6),a0                     ; 00314
-        addq.l  #$8,a0                          ; 00318
+        movea.l LoadPicture_BitMap(a6),a0       ; 00314
+        addq.l  #bm_Planes,a0                   ; 00318
         adda.l  d1,a0                           ; 0031A
-        move.l  #$10002,-(a7)                   ; 0031C
+        move.l  #MEMF_CHIP|MEMF_CLEAR,-(a7)     ; 0031C
         move.l  d0,-(a7)                        ; 00322
-        move.l  d0,-$40(a6)                     ; 00324
+        move.l  d0,LoadPicture_PlaneSize(a6)    ; 00324
         move.l  a0,$10(a7)                      ; 00328
         jsr     (_AllocMem).l                   ; 0032C
         addq.l  #$8,a7                          ; 00332
         movea.l $8(a7),a0                       ; 00334
         move.l  d0,(a0)                         ; 00338
-        addq.l  #$1,-$4(a6)                     ; 0033A
+        addq.l  #$1,LoadPicture_Plane(a6)       ; 0033A
         bra.b   l_000_002F6                     ; 0033E
 l_000_00340:
         moveq   #$0,d0                          ; 00340
-        movea.l -$4e(a6),a0                     ; 00342
+        movea.l LoadPicture_BitMap(a6),a0       ; 00342
         move.w  (a0),d0                         ; 00346
         move.l  d0,$8(a7)                       ; 00348
         addi.l  #$7f,d0                         ; 0034C
@@ -306,33 +369,33 @@ l_000_00340:
         move.l  $8(a7),d1                       ; 00354
         add.l   d0,d1                           ; 00358
         asl.l   #$1,d1                          ; 0035A
-        move.l  #$10002,-(a7)                   ; 0035C
+        move.l  #MEMF_CHIP|MEMF_CLEAR,-(a7)     ; 0035C
         move.l  d1,-(a7)                        ; 00362
-        move.l  d1,-$3c(a6)                     ; 00364
+        move.l  d1,LoadPicture_RowSize(a6)      ; 00364
         jsr     (_AllocMem).l                   ; 00368
         addq.l  #$8,a7                          ; 0036E
         moveq   #$8,d1                          ; 00370
         move.l  d1,-(a7)                        ; 00372
-        pea.l   -$49(a6)                        ; 00374
-        pea.l   -$34(a6)                        ; 00378
-        move.l  d0,-$38(a6)                     ; 0037C
+        pea.l   LoadPicture_Skip(a6)            ; 00374
+        pea.l   LoadPicture_Context(a6)         ; 00378
+        move.l  d0,LoadPicture_RowBuffer(a6)    ; 0037C
         jsr     (IFFReadBytes).l                ; 00380
         lea.l   $c(a7),a7                       ; 00386
-        move.l  -$3c(a6),-(a7)                  ; 0038A
-        move.l  -$38(a6),-(a7)                  ; 0038E
-        move.l  -$8(a6),-(a7)                   ; 00392
+        move.l  LoadPicture_RowSize(a6),-(a7)   ; 0038A
+        move.l  LoadPicture_RowBuffer(a6),-(a7) ; 0038E
+        move.l  LoadPicture_Header(a6),-(a7)    ; 00392
         clr.l   -(a7)                           ; 00396
-        move.l  -$4e(a6),-(a7)                  ; 00398
-        pea.l   -$34(a6)                        ; 0039C
+        move.l  LoadPicture_BitMap(a6),-(a7)    ; 00398
+        pea.l   LoadPicture_Context(a6)         ; 0039C
         jsr     (GetBODY).l                     ; 003A0
         lea.l   $18(a7),a7                      ; 003A6
-        pea.l   -$34(a6)                        ; 003AA
+        pea.l   LoadPicture_Context(a6)         ; 003AA
         jsr     (CloseRGroup).l                 ; 003AE
         addq.l  #$4,a7                          ; 003B4
-        move.l  -$10(a6),-(a7)                  ; 003B6
+        move.l  LoadPicture_File(a6),-(a7)      ; 003B6
         jsr     (_Close).l                      ; 003BA
         addq.l  #$4,a7                          ; 003C0
-        move.l  -$4e(a6),d0                     ; 003C2
+        move.l  LoadPicture_BitMap(a6),d0       ; 003C2
         movem.l (a7)+,d2-d3                     ; 003C6
         unlk    a6                              ; 003CA
         rts                                     ; 003CC
@@ -688,14 +751,18 @@ l_000_008BA:
 ;-------------------------------------------------------------------------------
 ; BusyWait - BusyWait(count): counts to count (a delay), then FreeSprite(0).
 ;-------------------------------------------------------------------------------
+; BusyWait's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+BusyWait_Count          rs.l    1               ; how far to count
+BusyWait_I              equ     -$4             ; the counter
 BusyWait:
         link.w  a6,#$fffc                       ; 008DA
-        clr.l   -$4(a6)                         ; 008DE
+        clr.l   BusyWait_I(a6)                  ; 008DE
 l_000_008E2:
-        move.l  -$4(a6),d0                      ; 008E2
-        cmp.l   $8(a6),d0                       ; 008E6
+        move.l  BusyWait_I(a6),d0               ; 008E2
+        cmp.l   BusyWait_Count(a6),d0           ; 008E6
         bge.b   l_000_008F2                     ; 008EA
-        addq.l  #$1,-$4(a6)                     ; 008EC
+        addq.l  #$1,BusyWait_I(a6)              ; 008EC
         bra.b   l_000_008E2                     ; 008F0
 l_000_008F2:
         clr.l   -(a7)                           ; 008F2
@@ -709,58 +776,66 @@ l_000_008F2:
 ; each) and stores each as an RGB4 word ($0RGB, the top 4 bits of each); *ncolours = min(its
 ; value, the chunk's size / 3).
 ;-------------------------------------------------------------------------------
+; GetCMAP's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+GetCMAP_Context         rs.l    1               ; the IFF context
+GetCMAP_Colours         rs.l    1               ; where the RGB4 colour words go
+GetCMAP_NColours        rs.l    1               ; the byte with the most colours to read; set to the number read
+GetCMAP_Count           equ     -$4             ; the colours left to read
+GetCMAP_Error           equ     -$8             ; what IFFReadBytes returned
+GetCMAP_RGB             equ     -$B             ; one colour's red, green and blue bytes (3 bytes)
 GetCMAP:
         link.w  a6,#$fff4                       ; 00900
-        movea.l $8(a6),a0                       ; 00904
-        move.l  $18(a0),d0                      ; 00908
+        movea.l GetCMAP_Context(a6),a0          ; 00904
+        move.l  gc_ckSize(a0),d0                ; 00908
         moveq   #$3,d1                          ; 0090C
         jsr     (CXD33).l                       ; 0090E
         moveq   #$0,d1                          ; 00914
-        movea.l $10(a6),a0                      ; 00916
+        movea.l GetCMAP_NColours(a6),a0         ; 00916
         move.b  (a0),d1                         ; 0091A
-        move.l  d0,-$4(a6)                      ; 0091C
+        move.l  d0,GetCMAP_Count(a6)            ; 0091C
         cmp.l   d0,d1                           ; 00920
         bcc.b   l_000_0092C                     ; 00922
         moveq   #$0,d0                          ; 00924
         move.b  (a0),d0                         ; 00926
-        move.l  d0,-$4(a6)                      ; 00928
+        move.l  d0,GetCMAP_Count(a6)            ; 00928
 l_000_0092C:
-        move.l  -$4(a6),d0                      ; 0092C
-        movea.l $10(a6),a0                      ; 00930
+        move.l  GetCMAP_Count(a6),d0            ; 0092C
+        movea.l GetCMAP_NColours(a6),a0         ; 00930
         move.b  d0,(a0)                         ; 00934
 l_000_00936:
-        tst.l   -$4(a6)                         ; 00936
+        tst.l   GetCMAP_Count(a6)               ; 00936
         ble.b   l_000_00990                     ; 0093A
-        lea.l   -$b(a6),a0                      ; 0093C
+        lea.l   GetCMAP_RGB(a6),a0              ; 0093C
         moveq   #$3,d0                          ; 00940
         move.l  d0,-(a7)                        ; 00942
         move.l  a0,-(a7)                        ; 00944
-        move.l  $8(a6),-(a7)                    ; 00946
+        move.l  GetCMAP_Context(a6),-(a7)       ; 00946
         jsr     (IFFReadBytes).l                ; 0094A
         lea.l   $c(a7),a7                       ; 00950
-        move.l  d0,-$8(a6)                      ; 00954
+        move.l  d0,GetCMAP_Error(a6)            ; 00954
         tst.l   d0                              ; 00958
         beq.b   l_000_00960                     ; 0095A
         unlk    a6                              ; 0095C
         rts                                     ; 0095E
 l_000_00960:
         moveq   #$0,d0                          ; 00960
-        move.b  -$b(a6),d0                      ; 00962
+        move.b  GetCMAP_RGB(a6),d0              ; 00962
         lsr.l   #$4,d0                          ; 00966
         asl.l   #$8,d0                          ; 00968
         moveq   #$0,d1                          ; 0096A
-        move.b  -$a(a6),d1                      ; 0096C
+        move.b  GetCMAP_RGB+1(a6),d1            ; 0096C
         lsr.l   #$4,d1                          ; 00970
         asl.l   #$4,d1                          ; 00972
         or.l    d1,d0                           ; 00974
         moveq   #$0,d1                          ; 00976
-        move.b  -$9(a6),d1                      ; 00978
+        move.b  GetCMAP_RGB+2(a6),d1            ; 00978
         lsr.l   #$4,d1                          ; 0097C
         or.l    d1,d0                           ; 0097E
-        movea.l $c(a6),a0                       ; 00980
+        movea.l GetCMAP_Colours(a6),a0          ; 00980
         move.w  d0,(a0)                         ; 00984
-        addq.l  #$2,$c(a6)                      ; 00986
-        subq.l  #$1,-$4(a6)                     ; 0098A
+        addq.l  #$2,GetCMAP_Colours(a6)         ; 00986
+        subq.l  #$1,GetCMAP_Count(a6)           ; 0098A
         bra.b   l_000_00936                     ; 0098E
 l_000_00990:
         moveq   #$0,d0                          ; 00990
@@ -773,205 +848,227 @@ l_000_00990:
 ; through _UnPackRow; an extra mask plane (masking 1) goes to mask if given. CLIENT_ERROR (-6)
 ; for an unknown compression or a BitMap too small, BAD_FORM (-7) for bad compressed data.
 ;-------------------------------------------------------------------------------
+; GetBODY's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+GetBODY_Context         rs.l    1               ; the IFF context
+GetBODY_BitMap          rs.l    1               ; the BitMap to fill
+GetBODY_Mask            rs.l    1               ; where an extra mask plane goes (0: thrown away)
+GetBODY_BMHD            rs.l    1               ; the picture's BMHD
+GetBODY_Buffer          rs.l    1               ; a buffer for the compressed rows
+GetBODY_BufSize         rs.l    1               ; its size
+GetBODY_Error           equ     -$4             ; what IFFReadBytes returned
+GetBODY_NPlanes         equ     -$5             ; the planes to read (+1 for a mask)
+GetBODY_RowBytes        equ     -$A             ; a plane's row, in bytes
+GetBODY_BufBytes        equ     -$E             ; the buffer's size in use (at first a packed row's most: RowBytes + RowBytes/128)
+GetBODY_Rows            equ     -$12            ; the rows to read
+GetBODY_Packing         equ     -$13            ; the compression (0 none, 1 ByteRun1)
+GetBODY_Plane           equ     -$18            ; the plane being read
+GetBODY_Row             equ     -$1C            ; the rows left
+GetBODY_Empty           equ     -$20            ; the bytes used up at the buffer's start
+GetBODY_Filled          equ     -$24            ; the bytes still in the buffer
+GetBODY_Buf             equ     -$28            ; the next compressed byte
+GetBODY_Null            equ     -$2C            ; where a plane not wanted goes
+GetBODY_Dest            equ     -$30            ; the plane pointer being written
+GetBODY_Planes          equ     -$74            ; the 17 plane pointers (the BitMap's, then the mask, then 0s) (68 bytes)
 GetBODY:
         link.w  a6,#$ff8c                       ; 00996
         movem.l d2,-(a7)                        ; 0099A
-        movea.l $14(a6),a0                      ; 0099E
-        move.b  $8(a0),-$5(a6)                  ; 009A2
+        movea.l GetBODY_BMHD(a6),a0             ; 0099E
+        move.b  bmh_Depth(a0),GetBODY_NPlanes(a6) ; 009A2
         moveq   #$0,d0                          ; 009A8
         move.w  (a0),d0                         ; 009AA
         addi.l  #$f,d0                          ; 009AC
         lsr.l   #$4,d0                          ; 009B2
         asl.l   #$1,d0                          ; 009B4
-        move.l  d0,-$a(a6)                      ; 009B6
+        move.l  d0,GetBODY_RowBytes(a6)         ; 009B6
         addi.l  #$7f,d0                         ; 009BA
         asr.l   #$7,d0                          ; 009C0
-        move.l  -$a(a6),d1                      ; 009C2
+        move.l  GetBODY_RowBytes(a6),d1         ; 009C2
         add.l   d0,d1                           ; 009C6
         moveq   #$0,d0                          ; 009C8
-        move.w  $2(a0),d0                       ; 009CA
-        move.b  $a(a0),d2                       ; 009CE
-        move.l  d0,-$12(a6)                     ; 009D2
-        move.l  d1,-$e(a6)                      ; 009D6
-        move.b  d2,-$13(a6)                     ; 009DA
+        move.w  bmh_Height(a0),d0               ; 009CA
+        move.b  bmh_Compression(a0),d2          ; 009CE
+        move.l  d0,GetBODY_Rows(a6)             ; 009D2
+        move.l  d1,GetBODY_BufBytes(a6)         ; 009D6
+        move.b  d2,GetBODY_Packing(a6)          ; 009DA
         cmpi.b  #$1,d2                          ; 009DE
         bls.b   l_000_009EE                     ; 009E2
-        moveq   #-6,d0                          ; 009E4
+        moveq   #CLIENT_ERROR,d0                ; 009E4
         movem.l (a7)+,d2                        ; 009E6
         unlk    a6                              ; 009EA
         rts                                     ; 009EC
 l_000_009EE:
         moveq   #$0,d0                          ; 009EE
-        movea.l $c(a6),a0                       ; 009F0
+        movea.l GetBODY_BitMap(a6),a0           ; 009F0
         move.w  (a0),d0                         ; 009F4
-        move.l  -$a(a6),d1                      ; 009F6
+        move.l  GetBODY_RowBytes(a6),d1         ; 009F6
         cmp.l   d0,d1                           ; 009FA
         bne.b   l_000_00A14                     ; 009FC
-        move.l  -$e(a6),d0                      ; 009FE
+        move.l  GetBODY_BufBytes(a6),d0         ; 009FE
         asl.l   #$1,d0                          ; 00A02
-        move.l  $1c(a6),d1                      ; 00A04
+        move.l  GetBODY_BufSize(a6),d1          ; 00A04
         cmp.l   d0,d1                           ; 00A08
         blt.b   l_000_00A14                     ; 00A0A
-        cmpi.b  #$11,-$5(a6)                    ; 00A0C
+        cmpi.b  #$11,GetBODY_NPlanes(a6)        ; 00A0C
         bls.b   l_000_00A1E                     ; 00A12
 l_000_00A14:
-        moveq   #-6,d0                          ; 00A14
+        moveq   #CLIENT_ERROR,d0                ; 00A14
         movem.l (a7)+,d2                        ; 00A16
         unlk    a6                              ; 00A1A
         rts                                     ; 00A1C
 l_000_00A1E:
         moveq   #$0,d0                          ; 00A1E
-        movea.l $c(a6),a0                       ; 00A20
-        move.w  $2(a0),d0                       ; 00A24
-        move.l  -$12(a6),d1                     ; 00A28
+        movea.l GetBODY_BitMap(a6),a0           ; 00A20
+        move.w  bm_Rows(a0),d0                  ; 00A24
+        move.l  GetBODY_Rows(a6),d1             ; 00A28
         cmp.l   d0,d1                           ; 00A2C
         bls.b   l_000_00A3A                     ; 00A2E
         moveq   #$0,d1                          ; 00A30
-        move.w  $2(a0),d1                       ; 00A32
-        move.l  d1,-$12(a6)                     ; 00A36
+        move.w  bm_Rows(a0),d1                  ; 00A32
+        move.l  d1,GetBODY_Rows(a6)             ; 00A36
 l_000_00A3A:
-        clr.l   -$18(a6)                        ; 00A3A
+        clr.l   GetBODY_Plane(a6)               ; 00A3A
 l_000_00A3E:
         moveq   #$0,d0                          ; 00A3E
-        movea.l $c(a6),a0                       ; 00A40
-        move.b  $5(a0),d0                       ; 00A44
-        move.l  -$18(a6),d1                     ; 00A48
+        movea.l GetBODY_BitMap(a6),a0           ; 00A40
+        move.b  bm_Depth(a0),d0                 ; 00A44
+        move.l  GetBODY_Plane(a6),d1            ; 00A48
         cmp.l   d0,d1                           ; 00A4C
         bcc.b   l_000_00A60                     ; 00A4E
         asl.l   #$2,d1                          ; 00A50
-        addq.l  #$8,a0                          ; 00A52
+        addq.l  #bm_Planes,a0                   ; 00A52
         adda.l  d1,a0                           ; 00A54
-        move.l  (a0),-$74(a6,d1.l)              ; 00A56
-        addq.l  #$1,-$18(a6)                    ; 00A5A
+        move.l  (a0),GetBODY_Planes(a6,d1.l)    ; 00A56
+        addq.l  #$1,GetBODY_Plane(a6)           ; 00A5A
         bra.b   l_000_00A3E                     ; 00A5E
 l_000_00A60:
-        move.l  -$18(a6),d0                     ; 00A60
+        move.l  GetBODY_Plane(a6),d0            ; 00A60
         cmpi.l  #$11,d0                         ; 00A64
         bge.b   l_000_00A78                     ; 00A6A
         asl.l   #$2,d0                          ; 00A6C
-        clr.l   -$74(a6,d0.l)                   ; 00A6E
-        addq.l  #$1,-$18(a6)                    ; 00A72
+        clr.l   GetBODY_Planes(a6,d0.l)         ; 00A6E
+        addq.l  #$1,GetBODY_Plane(a6)           ; 00A72
         bra.b   l_000_00A60                     ; 00A76
 l_000_00A78:
-        movea.l $14(a6),a0                      ; 00A78
-        move.b  $9(a0),d0                       ; 00A7C
+        movea.l GetBODY_BMHD(a6),a0             ; 00A78
+        move.b  bmh_Masking(a0),d0              ; 00A7C
         subq.b  #$1,d0                          ; 00A80
         bne.b   l_000_00AAA                     ; 00A82
-        tst.l   $10(a6)                         ; 00A84
+        tst.l   GetBODY_Mask(a6)                ; 00A84
         beq.b   l_000_00A9A                     ; 00A88
         moveq   #$0,d0                          ; 00A8A
-        move.b  -$5(a6),d0                      ; 00A8C
+        move.b  GetBODY_NPlanes(a6),d0          ; 00A8C
         asl.l   #$2,d0                          ; 00A90
-        move.l  $10(a6),-$74(a6,d0.l)           ; 00A92
+        move.l  GetBODY_Mask(a6),GetBODY_Planes(a6,d0.l) ; 00A92
         bra.b   l_000_00AA6                     ; 00A98
 l_000_00A9A:
         moveq   #$0,d0                          ; 00A9A
-        move.b  -$5(a6),d0                      ; 00A9C
+        move.b  GetBODY_NPlanes(a6),d0          ; 00A9C
         asl.l   #$2,d0                          ; 00AA0
-        clr.l   -$74(a6,d0.l)                   ; 00AA2
+        clr.l   GetBODY_Planes(a6,d0.l)         ; 00AA2
 l_000_00AA6:
-        addq.b  #$1,-$5(a6)                     ; 00AA6
+        addq.b  #$1,GetBODY_NPlanes(a6)         ; 00AA6
 l_000_00AAA:
-        movea.l $18(a6),a0                      ; 00AAA
-        adda.l  -$e(a6),a0                      ; 00AAE
-        move.l  a0,-$28(a6)                     ; 00AB2
-        move.l  -$12(a6),-$1c(a6)               ; 00AB6
+        movea.l GetBODY_Buffer(a6),a0           ; 00AAA
+        adda.l  GetBODY_BufBytes(a6),a0         ; 00AAE
+        move.l  a0,GetBODY_Buf(a6)              ; 00AB2
+        move.l  GetBODY_Rows(a6),GetBODY_Row(a6) ; 00AB6
 l_000_00ABC:
-        tst.l   -$1c(a6)                        ; 00ABC
+        tst.l   GetBODY_Row(a6)                 ; 00ABC
         ble.w   l_000_00BEE                     ; 00AC0
-        clr.l   -$18(a6)                        ; 00AC4
+        clr.l   GetBODY_Plane(a6)               ; 00AC4
 l_000_00AC8:
         moveq   #$0,d0                          ; 00AC8
-        move.b  -$5(a6),d0                      ; 00ACA
-        move.l  -$18(a6),d1                     ; 00ACE
+        move.b  GetBODY_NPlanes(a6),d0          ; 00ACA
+        move.l  GetBODY_Plane(a6),d1            ; 00ACE
         cmp.l   d0,d1                           ; 00AD2
         bcc.w   l_000_00BE6                     ; 00AD4
         asl.l   #$2,d1                          ; 00AD8
-        lea.l   -$74(a6),a0                     ; 00ADA
+        lea.l   GetBODY_Planes(a6),a0           ; 00ADA
         adda.l  d1,a0                           ; 00ADE
-        move.l  a0,-$30(a6)                     ; 00AE0
+        move.l  a0,GetBODY_Dest(a6)             ; 00AE0
         tst.l   (a0)                            ; 00AE4
         bne.b   l_000_00AFC                     ; 00AE6
-        movea.l $18(a6),a0                      ; 00AE8
-        adda.l  -$e(a6),a0                      ; 00AEC
-        move.l  a0,-$2c(a6)                     ; 00AF0
-        lea.l   -$2c(a6),a0                     ; 00AF4
-        move.l  a0,-$30(a6)                     ; 00AF8
+        movea.l GetBODY_Buffer(a6),a0           ; 00AE8
+        adda.l  GetBODY_BufBytes(a6),a0         ; 00AEC
+        move.l  a0,GetBODY_Null(a6)             ; 00AF0
+        lea.l   GetBODY_Null(a6),a0             ; 00AF4
+        move.l  a0,GetBODY_Dest(a6)             ; 00AF8
 l_000_00AFC:
-        tst.b   -$13(a6)                        ; 00AFC
+        tst.b   GetBODY_Packing(a6)             ; 00AFC
         bne.b   l_000_00B38                     ; 00B00
-        move.l  -$a(a6),-(a7)                   ; 00B02
-        movea.l -$30(a6),a0                     ; 00B06
+        move.l  GetBODY_RowBytes(a6),-(a7)      ; 00B02
+        movea.l GetBODY_Dest(a6),a0             ; 00B06
         move.l  (a0),-(a7)                      ; 00B0A
-        move.l  $8(a6),-(a7)                    ; 00B0C
+        move.l  GetBODY_Context(a6),-(a7)       ; 00B0C
         jsr     (IFFReadBytes).l                ; 00B10
         lea.l   $c(a7),a7                       ; 00B16
-        move.l  d0,-$4(a6)                      ; 00B1A
+        move.l  d0,GetBODY_Error(a6)            ; 00B1A
         tst.l   d0                              ; 00B1E
         beq.b   l_000_00B2A                     ; 00B20
         movem.l (a7)+,d2                        ; 00B22
         unlk    a6                              ; 00B26
         rts                                     ; 00B28
 l_000_00B2A:
-        move.l  -$a(a6),d0                      ; 00B2A
-        movea.l -$30(a6),a0                     ; 00B2E
+        move.l  GetBODY_RowBytes(a6),d0         ; 00B2A
+        movea.l GetBODY_Dest(a6),a0             ; 00B2E
         add.l   d0,(a0)                         ; 00B32
         bra.w   l_000_00BDE                     ; 00B34
 l_000_00B38:
-        move.l  -$28(a6),d0                     ; 00B38
-        sub.l   $18(a6),d0                      ; 00B3C
-        move.l  -$e(a6),d1                      ; 00B40
+        move.l  GetBODY_Buf(a6),d0              ; 00B38
+        sub.l   GetBODY_Buffer(a6),d0           ; 00B3C
+        move.l  GetBODY_BufBytes(a6),d1         ; 00B40
         sub.l   d0,d1                           ; 00B44
         move.l  d1,-(a7)                        ; 00B46
-        move.l  $18(a6),-(a7)                   ; 00B48
-        move.l  -$28(a6),-(a7)                  ; 00B4C
-        move.l  d0,-$20(a6)                     ; 00B50
-        move.l  d1,-$24(a6)                     ; 00B54
+        move.l  GetBODY_Buffer(a6),-(a7)        ; 00B48
+        move.l  GetBODY_Buf(a6),-(a7)           ; 00B4C
+        move.l  d0,GetBODY_Empty(a6)            ; 00B50
+        move.l  d1,GetBODY_Filled(a6)           ; 00B54
         jsr     (movmem).l                      ; 00B58
         lea.l   $c(a7),a7                       ; 00B5E
-        movea.l $8(a6),a0                       ; 00B62
-        move.l  $18(a0),d0                      ; 00B66
-        sub.l   $20(a0),d0                      ; 00B6A
-        move.l  -$20(a6),d1                     ; 00B6E
+        movea.l GetBODY_Context(a6),a0          ; 00B62
+        move.l  gc_ckSize(a0),d0                ; 00B66
+        sub.l   gc_BytesSoFar(a0),d0            ; 00B6A
+        move.l  GetBODY_Empty(a6),d1            ; 00B6E
         cmp.l   d0,d1                           ; 00B72
         ble.b   l_000_00B84                     ; 00B74
-        move.l  -$24(a6),d1                     ; 00B76
+        move.l  GetBODY_Filled(a6),d1           ; 00B76
         add.l   d0,d1                           ; 00B7A
-        move.l  d0,-$20(a6)                     ; 00B7C
-        move.l  d1,-$e(a6)                      ; 00B80
+        move.l  d0,GetBODY_Empty(a6)            ; 00B7C
+        move.l  d1,GetBODY_BufBytes(a6)         ; 00B80
 l_000_00B84:
-        movea.l $18(a6),a0                      ; 00B84
-        adda.l  -$24(a6),a0                     ; 00B88
-        move.l  -$20(a6),-(a7)                  ; 00B8C
+        movea.l GetBODY_Buffer(a6),a0           ; 00B84
+        adda.l  GetBODY_Filled(a6),a0           ; 00B88
+        move.l  GetBODY_Empty(a6),-(a7)         ; 00B8C
         move.l  a0,-(a7)                        ; 00B90
-        move.l  $8(a6),-(a7)                    ; 00B92
+        move.l  GetBODY_Context(a6),-(a7)       ; 00B92
         jsr     (IFFReadBytes).l                ; 00B96
         lea.l   $c(a7),a7                       ; 00B9C
-        move.l  d0,-$4(a6)                      ; 00BA0
+        move.l  d0,GetBODY_Error(a6)            ; 00BA0
         tst.l   d0                              ; 00BA4
         beq.b   l_000_00BB0                     ; 00BA6
         movem.l (a7)+,d2                        ; 00BA8
         unlk    a6                              ; 00BAC
         rts                                     ; 00BAE
 l_000_00BB0:
-        move.l  $18(a6),-$28(a6)                ; 00BB0
-        move.l  -$a(a6),-(a7)                   ; 00BB6
-        move.l  -$e(a6),-(a7)                   ; 00BBA
-        move.l  -$30(a6),-(a7)                  ; 00BBE
-        pea.l   -$28(a6)                        ; 00BC2
+        move.l  GetBODY_Buffer(a6),GetBODY_Buf(a6) ; 00BB0
+        move.l  GetBODY_RowBytes(a6),-(a7)      ; 00BB6
+        move.l  GetBODY_BufBytes(a6),-(a7)      ; 00BBA
+        move.l  GetBODY_Dest(a6),-(a7)          ; 00BBE
+        pea.l   GetBODY_Buf(a6)                 ; 00BC2
         jsr     (_UnPackRow).l                  ; 00BC6
         lea.l   $10(a7),a7                      ; 00BCC
         tst.w   d0                              ; 00BD0
         beq.b   l_000_00BDE                     ; 00BD2
-        moveq   #-7,d0                          ; 00BD4
+        moveq   #BAD_FORM,d0                    ; 00BD4
         movem.l (a7)+,d2                        ; 00BD6
         unlk    a6                              ; 00BDA
         rts                                     ; 00BDC
 l_000_00BDE:
-        addq.l  #$1,-$18(a6)                    ; 00BDE
+        addq.l  #$1,GetBODY_Plane(a6)           ; 00BDE
         bra.w   l_000_00AC8                     ; 00BE2
 l_000_00BE6:
-        subq.l  #$1,-$1c(a6)                    ; 00BE6
+        subq.l  #$1,GetBODY_Row(a6)             ; 00BE6
         bra.w   l_000_00ABC                     ; 00BEA
 l_000_00BEE:
         moveq   #$0,d0                          ; 00BEE
@@ -983,31 +1080,35 @@ l_000_00BEE:
 ; FileLength - FileLength(file): the file's length (Seek to the end and back), NO_FILE (-5) if
 ; there is no file, DOS_ERROR (-3) if Seek fails.
 ;-------------------------------------------------------------------------------
+; FileLength's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+FileLength_File         rs.l    1               ; the file
+FileLength_Length       equ     -$4             ; the result
 FileLength:
         link.w  a6,#$fffc                       ; 00BF8
-        moveq   #-5,d0                          ; 00BFC
-        move.l  d0,-$4(a6)                      ; 00BFE
-        tst.l   $8(a6)                          ; 00C02
+        moveq   #NO_FILE,d0                     ; 00BFC
+        move.l  d0,FileLength_Length(a6)        ; 00BFE
+        tst.l   FileLength_File(a6)             ; 00C02
         ble.b   l_000_00C3E                     ; 00C06
-        moveq   #$1,d0                          ; 00C08
+        moveq   #OFFSET_END,d0                  ; 00C08
         move.l  d0,-(a7)                        ; 00C0A
         clr.l   -(a7)                           ; 00C0C
-        move.l  $8(a6),-(a7)                    ; 00C0E
+        move.l  FileLength_File(a6),-(a7)       ; 00C0E
         jsr     (_Seek).l                       ; 00C12
         lea.l   $c(a7),a7                       ; 00C18
         moveq   #$0,d0                          ; 00C1C
         move.l  d0,-(a7)                        ; 00C1E
         move.l  d0,-(a7)                        ; 00C20
-        move.l  $8(a6),-(a7)                    ; 00C22
+        move.l  FileLength_File(a6),-(a7)       ; 00C22
         jsr     (_Seek).l                       ; 00C26
         lea.l   $c(a7),a7                       ; 00C2C
-        move.l  d0,-$4(a6)                      ; 00C30
+        move.l  d0,FileLength_Length(a6)        ; 00C30
         tst.l   d0                              ; 00C34
         bpl.b   l_000_00C3E                     ; 00C36
-        moveq   #-3,d0                          ; 00C38
-        move.l  d0,-$4(a6)                      ; 00C3A
+        moveq   #DOS_ERROR,d0                   ; 00C38
+        move.l  d0,FileLength_Length(a6)        ; 00C3A
 l_000_00C3E:
-        move.l  -$4(a6),d0                      ; 00C3E
+        move.l  FileLength_Length(a6),d0        ; 00C3E
         unlk    a6                              ; 00C42
         rts                                     ; 00C44
 
@@ -1015,65 +1116,77 @@ l_000_00C3E:
 ; OpenRIFF - OpenRIFF(file, context, clientFrame): makes the context for reading an IFF file
 ; (its bound = the file's length); NOT_IFF (-4) if it is shorter than 8 bytes.
 ;-------------------------------------------------------------------------------
+; OpenRIFF's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+OpenRIFF_File           rs.l    1               ; the open file
+OpenRIFF_Context        rs.l    1               ; the context to set up
+OpenRIFF_Client         rs.l    1               ; the client frame (stored at the context's +4)
+OpenRIFF_File2          equ     -$4             ; the file (kept)
+OpenRIFF_Ctx            equ     -$8             ; the context (kept)
+OpenRIFF_Result         equ     -$C             ; 0, or an error
 OpenRIFF:
         link.w  a6,#$fff4                       ; 00C46
-        move.l  $8(a6),d0                       ; 00C4A
-        move.l  $c(a6),-$8(a6)                  ; 00C4E
+        move.l  OpenRIFF_File(a6),d0            ; 00C4A
+        move.l  OpenRIFF_Context(a6),OpenRIFF_Ctx(a6) ; 00C4E
         moveq   #$0,d1                          ; 00C54
-        movea.l -$8(a6),a0                      ; 00C56
+        movea.l OpenRIFF_Ctx(a6),a0             ; 00C56
         move.l  d1,(a0)                         ; 00C5A
-        move.l  $10(a6),$4(a0)                  ; 00C5C
-        move.l  d0,$8(a0)                       ; 00C62
-        move.l  d1,$c(a0)                       ; 00C66
-        move.l  d1,$1c(a0)                      ; 00C6A
-        move.l  d1,$14(a0)                      ; 00C6E
-        move.l  d1,$20(a0)                      ; 00C72
-        move.l  d1,$18(a0)                      ; 00C76
+        move.l  OpenRIFF_Client(a6),gc_ClientFrame(a0) ; 00C5C
+        move.l  d0,gc_File(a0)                  ; 00C62
+        move.l  d1,gc_Position(a0)              ; 00C66
+        move.l  d1,gc_Subtype(a0)               ; 00C6A
+        move.l  d1,gc_ckID(a0)                  ; 00C6E
+        move.l  d1,gc_BytesSoFar(a0)            ; 00C72
+        move.l  d1,gc_ckSize(a0)                ; 00C76
         move.l  d0,-(a7)                        ; 00C7A
-        move.l  d0,-$4(a6)                      ; 00C7C
-        move.l  d1,-$c(a6)                      ; 00C80
+        move.l  d0,OpenRIFF_File2(a6)           ; 00C7C
+        move.l  d1,OpenRIFF_Result(a6)          ; 00C80
         bsr.w   FileLength                      ; 00C84
         addq.l  #$4,a7                          ; 00C88
-        movea.l -$8(a6),a0                      ; 00C8A
-        move.l  d0,$10(a0)                      ; 00C8E
+        movea.l OpenRIFF_Ctx(a6),a0             ; 00C8A
+        move.l  d0,gc_Bound(a0)                 ; 00C8E
         tst.l   d0                              ; 00C92
         bpl.b   l_000_00C9C                     ; 00C94
-        move.l  d0,-$c(a6)                      ; 00C96
+        move.l  d0,OpenRIFF_Result(a6)          ; 00C96
         bra.b   l_000_00CC6                     ; 00C9A
 l_000_00C9C:
-        movea.l -$8(a6),a0                      ; 00C9C
-        cmpi.l  #$8,$10(a0)                     ; 00CA0
+        movea.l OpenRIFF_Ctx(a6),a0             ; 00C9C
+        cmpi.l  #$8,gc_Bound(a0)                ; 00CA0
         bge.b   l_000_00CB2                     ; 00CA8
-        moveq   #-4,d0                          ; 00CAA
-        move.l  d0,-$c(a6)                      ; 00CAC
+        moveq   #NOT_IFF,d0                     ; 00CAA
+        move.l  d0,OpenRIFF_Result(a6)          ; 00CAC
         bra.b   l_000_00CC6                     ; 00CB0
 l_000_00CB2:
-        moveq   #-1,d0                          ; 00CB2
+        moveq   #OFFSET_BEGINNING,d0            ; 00CB2
         move.l  d0,-(a7)                        ; 00CB4
         clr.l   -(a7)                           ; 00CB6
-        move.l  -$4(a6),-(a7)                   ; 00CB8
+        move.l  OpenRIFF_File2(a6),-(a7)        ; 00CB8
         jsr     (_Seek).l                       ; 00CBC
         lea.l   $c(a7),a7                       ; 00CC2
 l_000_00CC6:
-        move.l  -$c(a6),d0                      ; 00CC6
+        move.l  OpenRIFF_Result(a6),d0          ; 00CC6
         unlk    a6                              ; 00CCA
         rts                                     ; 00CCC
 
 ;-------------------------------------------------------------------------------
 ; CloseRGroup - CloseRGroup(context): adds what was read in the group to its parent's position.
 ;-------------------------------------------------------------------------------
+; CloseRGroup's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+CloseRGroup_Context     rs.l    1               ; the group's context
+CloseRGroup_Position    equ     -$4             ; the group's position
 CloseRGroup:
         link.w  a6,#$fffc                       ; 00CCE
-        movea.l $8(a6),a0                       ; 00CD2
+        movea.l CloseRGroup_Context(a6),a0      ; 00CD2
         tst.l   (a0)                            ; 00CD6
         beq.b   l_000_00CF6                     ; 00CD8
-        movea.l $8(a6),a0                       ; 00CDA
-        move.l  $c(a0),d0                       ; 00CDE
+        movea.l CloseRGroup_Context(a6),a0      ; 00CDA
+        move.l  gc_Position(a0),d0              ; 00CDE
         movea.l (a0),a0                         ; 00CE2
-        move.l  d0,-$4(a6)                      ; 00CE4
-        sub.l   $c(a0),d0                       ; 00CE8
-        add.l   d0,$20(a0)                      ; 00CEC
-        move.l  -$4(a6),$c(a0)                  ; 00CF0
+        move.l  d0,CloseRGroup_Position(a6)     ; 00CE4
+        sub.l   gc_Position(a0),d0              ; 00CE8
+        add.l   d0,gc_BytesSoFar(a0)            ; 00CEC
+        move.l  CloseRGroup_Position(a6),gc_Position(a0) ; 00CF0
 l_000_00CF6:
         moveq   #$0,d0                          ; 00CF6
         unlk    a6                              ; 00CF8
@@ -1082,29 +1195,34 @@ l_000_00CF6:
 ;-------------------------------------------------------------------------------
 ; SkipFwd - SkipFwd(context, bytes): Seek forward; BAD_IFF (-9) if that fails.
 ;-------------------------------------------------------------------------------
+; SkipFwd's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+SkipFwd_Context         rs.l    1               ; the IFF context
+SkipFwd_Bytes           rs.l    1               ; how far to skip
+SkipFwd_Result          equ     -$4             ; 0, or BAD_IFF
 SkipFwd:
         link.w  a6,#$fffc                       ; 00CFC
         moveq   #$0,d0                          ; 00D00
-        move.l  d0,-$4(a6)                      ; 00D02
-        tst.l   $c(a6)                          ; 00D06
+        move.l  d0,SkipFwd_Result(a6)           ; 00D02
+        tst.l   SkipFwd_Bytes(a6)               ; 00D06
         ble.b   l_000_00D3C                     ; 00D0A
         move.l  d0,-(a7)                        ; 00D0C
-        move.l  $c(a6),-(a7)                    ; 00D0E
-        movea.l $8(a6),a0                       ; 00D12
-        move.l  $8(a0),-(a7)                    ; 00D16
+        move.l  SkipFwd_Bytes(a6),-(a7)         ; 00D0E
+        movea.l SkipFwd_Context(a6),a0          ; 00D12
+        move.l  gc_File(a0),-(a7)               ; 00D16
         jsr     (_Seek).l                       ; 00D1A
         lea.l   $c(a7),a7                       ; 00D20
         addq.l  #$1,d0                          ; 00D24
         bne.b   l_000_00D30                     ; 00D26
-        moveq   #-9,d0                          ; 00D28
-        move.l  d0,-$4(a6)                      ; 00D2A
+        moveq   #BAD_IFF,d0                     ; 00D28
+        move.l  d0,SkipFwd_Result(a6)           ; 00D2A
         bra.b   l_000_00D3C                     ; 00D2E
 l_000_00D30:
-        move.l  $c(a6),d0                       ; 00D30
-        movea.l $8(a6),a0                       ; 00D34
-        add.l   d0,$c(a0)                       ; 00D38
+        move.l  SkipFwd_Bytes(a6),d0            ; 00D30
+        movea.l SkipFwd_Context(a6),a0          ; 00D34
+        add.l   d0,gc_Position(a0)              ; 00D38
 l_000_00D3C:
-        move.l  -$4(a6),d0                      ; 00D3C
+        move.l  SkipFwd_Result(a6),d0           ; 00D3C
         unlk    a6                              ; 00D40
         rts                                     ; 00D42
 
@@ -1114,115 +1232,121 @@ l_000_00D3C:
 ; (FORM, CAT, LIST, PROP) also its type ID. Returns the chunk ID, END_MARK (-1) at the end of
 ; the group, or BAD_IFF (-9).
 ;-------------------------------------------------------------------------------
+; GetChunkHdr's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+GetChunkHdr_Context     rs.l    1               ; the IFF context
+GetChunkHdr_Ctx         equ     -$4             ; the context (kept)
+GetChunkHdr_Error       equ     -$8             ; what SkipFwd returned
+GetChunkHdr_Left        equ     -$C             ; the bytes left in the group
 GetChunkHdr:
         link.w  a6,#$fff4                       ; 00D44
-        movea.l $8(a6),a0                       ; 00D48
-        move.l  $18(a0),d0                      ; 00D4C
-        sub.l   $20(a0),d0                      ; 00D50
-        move.l  $18(a0),d1                      ; 00D54
+        movea.l GetChunkHdr_Context(a6),a0      ; 00D48
+        move.l  gc_ckSize(a0),d0                ; 00D4C
+        sub.l   gc_BytesSoFar(a0),d0            ; 00D50
+        move.l  gc_ckSize(a0),d1                ; 00D54
         andi.l  #$1,d1                          ; 00D58
         add.l   d1,d0                           ; 00D5E
         move.l  d0,-(a7)                        ; 00D60
         move.l  a0,-(a7)                        ; 00D62
-        move.l  a0,-$4(a6)                      ; 00D64
+        move.l  a0,GetChunkHdr_Ctx(a6)          ; 00D64
         bsr.b   SkipFwd                         ; 00D68
         addq.l  #$8,a7                          ; 00D6A
-        move.l  d0,-$8(a6)                      ; 00D6C
+        move.l  d0,GetChunkHdr_Error(a6)        ; 00D6C
         tst.l   d0                              ; 00D70
         beq.b   l_000_00D78                     ; 00D72
         unlk    a6                              ; 00D74
         rts                                     ; 00D76
 l_000_00D78:
-        moveq   #-9,d0                          ; 00D78
-        movea.l -$4(a6),a0                      ; 00D7A
-        move.l  d0,$14(a0)                      ; 00D7E
+        moveq   #BAD_IFF,d0                     ; 00D78
+        movea.l GetChunkHdr_Ctx(a6),a0          ; 00D7A
+        move.l  d0,gc_ckID(a0)                  ; 00D7E
         moveq   #$0,d0                          ; 00D82
-        move.l  d0,$1c(a0)                      ; 00D84
-        move.l  d0,$20(a0)                      ; 00D88
-        move.l  $10(a0),d0                      ; 00D8C
-        sub.l   $c(a0),d0                       ; 00D90
-        move.l  d0,-$c(a6)                      ; 00D94
+        move.l  d0,gc_Subtype(a0)               ; 00D84
+        move.l  d0,gc_BytesSoFar(a0)            ; 00D88
+        move.l  gc_Bound(a0),d0                 ; 00D8C
+        sub.l   gc_Position(a0),d0              ; 00D90
+        move.l  d0,GetChunkHdr_Left(a6)         ; 00D94
         tst.l   d0                              ; 00D98
         bne.b   l_000_00DAA                     ; 00D9A
-        clr.l   $18(a0)                         ; 00D9C
-        moveq   #-1,d0                          ; 00DA0
-        move.l  d0,$14(a0)                      ; 00DA2
+        clr.l   gc_ckSize(a0)                   ; 00D9C
+        moveq   #END_MARK,d0                    ; 00DA0
+        move.l  d0,gc_ckID(a0)                  ; 00DA2
         bra.w   l_000_00EE8                     ; 00DA6
 l_000_00DAA:
-        move.l  -$c(a6),d0                      ; 00DAA
+        move.l  GetChunkHdr_Left(a6),d0         ; 00DAA
         cmpi.l  #$8,d0                          ; 00DAE
         bge.b   l_000_00DC2                     ; 00DB4
-        movea.l -$4(a6),a0                      ; 00DB6
-        move.l  d0,$18(a0)                      ; 00DBA
+        movea.l GetChunkHdr_Ctx(a6),a0          ; 00DB6
+        move.l  d0,gc_ckSize(a0)                ; 00DBA
         bra.w   l_000_00EE8                     ; 00DBE
 l_000_00DC2:
-        movea.l -$4(a6),a0                      ; 00DC2
-        adda.w  #$14,a0                         ; 00DC6
+        movea.l GetChunkHdr_Ctx(a6),a0          ; 00DC2
+        adda.w  #gc_ckID,a0                     ; 00DC6
         move.l  a0,d0                           ; 00DCA
         moveq   #$8,d1                          ; 00DCC
         move.l  d1,-(a7)                        ; 00DCE
         move.l  d0,-(a7)                        ; 00DD0
-        movea.l -$4(a6),a0                      ; 00DD2
-        move.l  $8(a0),-(a7)                    ; 00DD6
+        movea.l GetChunkHdr_Ctx(a6),a0          ; 00DD2
+        move.l  gc_File(a0),-(a7)               ; 00DD6
         jsr     (_Read).l                       ; 00DDA
         lea.l   $c(a7),a7                       ; 00DE0
         tst.l   d0                              ; 00DE4
         beq.b   l_000_00DFE                     ; 00DE6
         cmpi.l  #$ffffffff,d0                   ; 00DE8
         bne.b   l_000_00E0C                     ; 00DEE
-        moveq   #-3,d0                          ; 00DF0
-        movea.l -$4(a6),a0                      ; 00DF2
-        move.l  d0,$14(a0)                      ; 00DF6
+        moveq   #DOS_ERROR,d0                   ; 00DF0
+        movea.l GetChunkHdr_Ctx(a6),a0          ; 00DF2
+        move.l  d0,gc_ckID(a0)                  ; 00DF6
         unlk    a6                              ; 00DFA
         rts                                     ; 00DFC
 l_000_00DFE:
-        moveq   #-9,d0                          ; 00DFE
-        movea.l -$4(a6),a0                      ; 00E00
-        move.l  d0,$14(a0)                      ; 00E04
+        moveq   #BAD_IFF,d0                     ; 00DFE
+        movea.l GetChunkHdr_Ctx(a6),a0          ; 00E00
+        move.l  d0,gc_ckID(a0)                  ; 00E04
         unlk    a6                              ; 00E08
         rts                                     ; 00E0A
 l_000_00E0C:
-        movea.l -$4(a6),a0                      ; 00E0C
+        movea.l GetChunkHdr_Ctx(a6),a0          ; 00E0C
         tst.l   (a0)                            ; 00E10
         bne.b   l_000_00E40                     ; 00E12
-        move.l  $14(a0),d0                      ; 00E14
-        cmpi.l  #$43415420,d0                   ; 00E18
+        move.l  gc_ckID(a0),d0                  ; 00E14
+        cmpi.l  #'CAT ',d0                      ; 00E18
         beq.b   l_000_00E40                     ; 00E1E
-        cmpi.l  #$4c495354,d0                   ; 00E20
+        cmpi.l  #'LIST',d0                      ; 00E20
         beq.b   l_000_00E40                     ; 00E26
-        cmpi.l  #$464f524d,d0                   ; 00E28
+        cmpi.l  #'FORM',d0                      ; 00E28
         beq.b   l_000_00E40                     ; 00E2E
         nop                                     ; 00E30
-        moveq   #-4,d0                          ; 00E32
-        movea.l -$4(a6),a0                      ; 00E34
-        move.l  d0,$14(a0)                      ; 00E38
+        moveq   #NOT_IFF,d0                     ; 00E32
+        movea.l GetChunkHdr_Ctx(a6),a0          ; 00E34
+        move.l  d0,gc_ckID(a0)                  ; 00E38
         unlk    a6                              ; 00E3C
         rts                                     ; 00E3E
 l_000_00E40:
-        movea.l -$4(a6),a0                      ; 00E40
-        addq.l  #$8,$c(a0)                      ; 00E44
-        subq.l  #$8,-$c(a6)                     ; 00E48
-        tst.l   $14(a0)                         ; 00E4C
+        movea.l GetChunkHdr_Ctx(a6),a0          ; 00E40
+        addq.l  #$8,gc_Position(a0)             ; 00E44
+        subq.l  #$8,GetChunkHdr_Left(a6)        ; 00E48
+        tst.l   gc_ckID(a0)                     ; 00E4C
         bgt.b   l_000_00E5C                     ; 00E50
-        moveq   #-9,d0                          ; 00E52
-        move.l  d0,$14(a0)                      ; 00E54
+        moveq   #BAD_IFF,d0                     ; 00E52
+        move.l  d0,gc_ckID(a0)                  ; 00E54
         bra.w   l_000_00EE8                     ; 00E58
 l_000_00E5C:
-        movea.l -$4(a6),a0                      ; 00E5C
-        tst.l   $18(a0)                         ; 00E60
+        movea.l GetChunkHdr_Ctx(a6),a0          ; 00E5C
+        tst.l   gc_ckSize(a0)                   ; 00E60
         bmi.b   l_000_00E70                     ; 00E64
-        move.l  $18(a0),d0                      ; 00E66
-        cmp.l   -$c(a6),d0                      ; 00E6A
+        move.l  gc_ckSize(a0),d0                ; 00E66
+        cmp.l   GetChunkHdr_Left(a6),d0         ; 00E6A
         ble.b   l_000_00E82                     ; 00E6E
 l_000_00E70:
-        movea.l -$4(a6),a0                      ; 00E70
-        move.l  -$c(a6),$18(a0)                 ; 00E74
-        moveq   #-9,d0                          ; 00E7A
-        move.l  d0,$14(a0)                      ; 00E7C
+        movea.l GetChunkHdr_Ctx(a6),a0          ; 00E70
+        move.l  GetChunkHdr_Left(a6),gc_ckSize(a0) ; 00E74
+        moveq   #BAD_IFF,d0                     ; 00E7A
+        move.l  d0,gc_ckID(a0)                  ; 00E7C
         bra.b   l_000_00EE8                     ; 00E80
 l_000_00E82:
-        movea.l -$4(a6),a0                      ; 00E82
-        move.l  $14(a0),d0                      ; 00E86
+        movea.l GetChunkHdr_Ctx(a6),a0          ; 00E82
+        move.l  gc_ckID(a0),d0                  ; 00E86
         moveq   #$20,d1                         ; 00E8A
 l_000_00E8C:
         subi.l  #$8,d1                          ; 00E8C
@@ -1230,19 +1354,38 @@ l_000_00E8C:
         cmp.l   ChunkIds(pc,d1.l),d0            ; 00E94
         bne.b   l_000_00E8C                     ; 00E98
         jmp     ChunkJumps(pc,d1.l)             ; 00E9A
-; ChunkIds - The IFF chunk names GetChunkHdr knows (compared with the chunk read).
+; ChunkIds - The group chunk IDs GetChunkHdr knows, 8 bytes apart: CAT , then (between
+; ChunkJumps' branches) PROP, FORM and LIST.
 ChunkIds:
-	dc.b	$43,$41,$54,$20
-; ChunkJumps - GetChunkHdr's jump table, one entry per name in ChunkIds.
+        dc.b    'CAT '                          ; 00E9E
+; ChunkJumps - GetChunkHdr's jump table, one branch per ID in ChunkIds (at ChunkIds + 4): each
+; group chunk goes on to read its 4-byte subtype into the context.
 ChunkJumps:
-	dc.b	$60,$00,$00,$1A,$50,$52,$4F,$50,$60,$00,$00,$12,$46,$4F,$52,$4D
-	dc.b	$60,$00,$00,$0A,$4C,$49,$53,$54,$60,$00,$00,$02,$20,$6E,$FF,$FC
-	dc.b	$D0,$FC,$00,$1C,$20,$08,$72,$04,$2F,$01,$2F,$00,$2F,$2E,$FF,$FC
-	dc.b	$61,$20,$4F,$EF,$00,$0C,$2D,$40,$FF,$F8,$4A,$80,$67,$08,$20,$6E
-	dc.b	$FF,$FC,$21,$40,$00,$14
+        bra.w   l_000_00EBE                     ; 00EA2
+        dc.b    'PROP'                          ; 00EA6
+        bra.w   l_000_00EBE                     ; 00EAA
+        dc.b    'FORM'                          ; 00EAE
+        bra.w   l_000_00EBE                     ; 00EB2
+        dc.b    'LIST'                          ; 00EB6
+        bra.w   l_000_00EBE                     ; 00EBA
+l_000_00EBE:
+        movea.l GetChunkHdr_Ctx(a6),a0          ; 00EBE
+        adda.w  #gc_Subtype,a0                  ; 00EC2
+        move.l  a0,d0                           ; 00EC6
+        moveq   #$4,d1                          ; 00EC8
+        move.l  d1,-(a7)                        ; 00ECA
+        move.l  d0,-(a7)                        ; 00ECC
+        move.l  GetChunkHdr_Ctx(a6),-(a7)       ; 00ECE
+        bsr.b   IFFReadBytes                    ; 00ED2
+        lea.l   $c(a7),a7                       ; 00ED4
+        move.l  d0,GetChunkHdr_Error(a6)        ; 00ED8
+        tst.l   d0                              ; 00EDC
+        beq.b   l_000_00EE8                     ; 00EDE
+        movea.l GetChunkHdr_Ctx(a6),a0          ; 00EE0
+        move.l  d0,gc_ckID(a0)                  ; 00EE4
 l_000_00EE8:
-        movea.l -$4(a6),a0                      ; 00EE8
-        move.l  $14(a0),d0                      ; 00EEC
+        movea.l GetChunkHdr_Ctx(a6),a0          ; 00EE8
+        move.l  gc_ckID(a0),d0                  ; 00EEC
         unlk    a6                              ; 00EF0
         rts                                     ; 00EF2
 
@@ -1251,52 +1394,58 @@ l_000_00EE8:
 ; CLIENT_ERROR (-6) for a negative count, SHORT_CHUNK (-8) if the chunk is shorter, DOS_ERROR
 ; (-3), BAD_IFF (-9) at the end of the file.
 ;-------------------------------------------------------------------------------
+; IFFReadBytes's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+IFFReadBytes_Context    rs.l    1               ; the IFF context
+IFFReadBytes_Buffer     rs.l    1               ; where the bytes go
+IFFReadBytes_Bytes      rs.l    1               ; how many to read
+IFFReadBytes_Result     equ     -$4             ; 0, or an error
 IFFReadBytes:
         link.w  a6,#$fffc                       ; 00EF4
         moveq   #$0,d0                          ; 00EF8
-        move.l  d0,-$4(a6)                      ; 00EFA
-        tst.l   $10(a6)                         ; 00EFE
+        move.l  d0,IFFReadBytes_Result(a6)      ; 00EFA
+        tst.l   IFFReadBytes_Bytes(a6)          ; 00EFE
         bpl.b   l_000_00F0C                     ; 00F02
-        moveq   #-6,d0                          ; 00F04
-        move.l  d0,-$4(a6)                      ; 00F06
+        moveq   #CLIENT_ERROR,d0                ; 00F04
+        move.l  d0,IFFReadBytes_Result(a6)      ; 00F06
         bra.b   l_000_00F74                     ; 00F0A
 l_000_00F0C:
-        movea.l $8(a6),a0                       ; 00F0C
-        move.l  $18(a0),d0                      ; 00F10
-        sub.l   $20(a0),d0                      ; 00F14
-        move.l  $10(a6),d1                      ; 00F18
+        movea.l IFFReadBytes_Context(a6),a0     ; 00F0C
+        move.l  gc_ckSize(a0),d0                ; 00F10
+        sub.l   gc_BytesSoFar(a0),d0            ; 00F14
+        move.l  IFFReadBytes_Bytes(a6),d1       ; 00F18
         cmp.l   d0,d1                           ; 00F1C
         ble.b   l_000_00F28                     ; 00F1E
-        moveq   #-8,d0                          ; 00F20
-        move.l  d0,-$4(a6)                      ; 00F22
+        moveq   #SHORT_CHUNK,d0                 ; 00F20
+        move.l  d0,IFFReadBytes_Result(a6)      ; 00F22
         bra.b   l_000_00F74                     ; 00F26
 l_000_00F28:
-        tst.l   $10(a6)                         ; 00F28
+        tst.l   IFFReadBytes_Bytes(a6)          ; 00F28
         ble.b   l_000_00F74                     ; 00F2C
-        move.l  $10(a6),-(a7)                   ; 00F2E
-        move.l  $c(a6),-(a7)                    ; 00F32
-        movea.l $8(a6),a0                       ; 00F36
-        move.l  $8(a0),-(a7)                    ; 00F3A
+        move.l  IFFReadBytes_Bytes(a6),-(a7)    ; 00F2E
+        move.l  IFFReadBytes_Buffer(a6),-(a7)   ; 00F32
+        movea.l IFFReadBytes_Context(a6),a0     ; 00F36
+        move.l  gc_File(a0),-(a7)               ; 00F3A
         jsr     (_Read).l                       ; 00F3E
         lea.l   $c(a7),a7                       ; 00F44
         tst.l   d0                              ; 00F48
         beq.b   l_000_00F5C                     ; 00F4A
         cmpi.l  #$ffffffff,d0                   ; 00F4C
         bne.b   l_000_00F64                     ; 00F52
-        moveq   #-3,d0                          ; 00F54
-        move.l  d0,-$4(a6)                      ; 00F56
+        moveq   #DOS_ERROR,d0                   ; 00F54
+        move.l  d0,IFFReadBytes_Result(a6)      ; 00F56
         bra.b   l_000_00F74                     ; 00F5A
 l_000_00F5C:
-        moveq   #-9,d0                          ; 00F5C
-        move.l  d0,-$4(a6)                      ; 00F5E
+        moveq   #BAD_IFF,d0                     ; 00F5C
+        move.l  d0,IFFReadBytes_Result(a6)      ; 00F5E
         bra.b   l_000_00F74                     ; 00F62
 l_000_00F64:
-        move.l  $10(a6),d0                      ; 00F64
-        movea.l $8(a6),a0                       ; 00F68
-        add.l   d0,$c(a0)                       ; 00F6C
-        add.l   d0,$20(a0)                      ; 00F70
+        move.l  IFFReadBytes_Bytes(a6),d0       ; 00F64
+        movea.l IFFReadBytes_Context(a6),a0     ; 00F68
+        add.l   d0,gc_Position(a0)              ; 00F6C
+        add.l   d0,gc_BytesSoFar(a0)            ; 00F70
 l_000_00F74:
-        move.l  -$4(a6),d0                      ; 00F74
+        move.l  IFFReadBytes_Result(a6),d0      ; 00F74
         unlk    a6                              ; 00F78
         rts                                     ; 00F7A
 
@@ -1304,20 +1453,24 @@ l_000_00F74:
 ; GetFChunkHdr - GetFChunkHdr(context): GetChunkHdr inside a FORM, where a PROP is not allowed
 ; (BAD_IFF).
 ;-------------------------------------------------------------------------------
+; GetFChunkHdr's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+GetFChunkHdr_Context    rs.l    1               ; the IFF context
+GetFChunkHdr_ID         equ     -$4             ; the chunk ID (or an error)
 GetFChunkHdr:
         link.w  a6,#$fffc                       ; 00F7C
-        move.l  $8(a6),-(a7)                    ; 00F80
+        move.l  GetFChunkHdr_Context(a6),-(a7)  ; 00F80
         bsr.w   GetChunkHdr                     ; 00F84
         addq.l  #$4,a7                          ; 00F88
-        move.l  d0,-$4(a6)                      ; 00F8A
-        cmpi.l  #$50524f50,d0                   ; 00F8E
+        move.l  d0,GetFChunkHdr_ID(a6)          ; 00F8A
+        cmpi.l  #'PROP',d0                      ; 00F8E
         bne.b   l_000_00FA4                     ; 00F94
-        moveq   #-9,d1                          ; 00F96
-        movea.l $8(a6),a0                       ; 00F98
-        move.l  d1,$14(a0)                      ; 00F9C
-        move.l  d1,-$4(a6)                      ; 00FA0
+        moveq   #BAD_IFF,d1                     ; 00F96
+        movea.l GetFChunkHdr_Context(a6),a0     ; 00F98
+        move.l  d1,gc_ckID(a0)                  ; 00F9C
+        move.l  d1,GetFChunkHdr_ID(a6)          ; 00FA0
 l_000_00FA4:
-        move.l  -$4(a6),d0                      ; 00FA4
+        move.l  GetFChunkHdr_ID(a6),d0          ; 00FA4
         unlk    a6                              ; 00FA8
         rts                                     ; 00FAA
 
@@ -4774,17 +4927,21 @@ l_000_03CFE:
 ; StartWarningIfReady - StartWarning with the word on the stack, only while StatusBits bit 8 is
 ; set.
 ;-------------------------------------------------------------------------------
+; StartWarningIfReady's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+                rs.w    1                       ; (pushed as a long: the high part)
+StartWarningIfReady_Warning rs.w    1           ; the warning's sound word
 StartWarningIfReady:
         link.w  a6,#$0                          ; 03D00
         move.w  (StatusBits).l,d0               ; 03D04
         btst    #$8,d0                          ; 03D0A
         beq.b   l_000_03D48                     ; 03D0E
-        move.w  $a(a6),d1                       ; 03D10
+        move.w  StartWarningIfReady_Warning(a6),d1 ; 03D10
         move.w  d1,(CurrentWarning).l           ; 03D14
         ori.w   #$1,d0                          ; 03D1A
         move.w  d0,(StatusBits).l               ; 03D1E
         andi.w  #$ff00,d1                       ; 03D24
-        move.w  d1,$a(a6)                       ; 03D28
+        move.w  d1,StartWarningIfReady_Warning(a6) ; 03D28
         cmpi.w  #$4000,d1                       ; 03D2C
         beq.b   l_000_03D38                     ; 03D30
         cmpi.w  #$4800,d1                       ; 03D32

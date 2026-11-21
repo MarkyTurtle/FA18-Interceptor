@@ -37,9 +37,10 @@ Several CODE hunks hold no code: hunks 71-73 are the game's variables (zeros in 
 addressed from nearly every module), and hunks such as 42, 51, 63-65, 68 and 70 are tables.
 
 In the source each hunk is under its own `org 0`, so a label's value is its offset in the
-hunk, the value the file stores (LoadSeg adds the hunk's address when it loads it). Labels are
-named by hunk and offset: `sub_HHH_OOOOO` (called), `l_HHH_OOOOO` (jumped to), `dat_HHH_OOOOO`
-(data), `hHHH` and `hHHH_end` (a hunk's start and end). Each hunk's relocation and symbol tables
+hunk, the value the file stores (LoadSeg adds the hunk's address when it loads it). Every
+routine and variable has a name; branch targets inside a routine keep the disassembler's
+`l_HHH_OOOOO` (hunk and offset), and `hHHH` / `hHHH_end` mark a hunk's start and end. The C
+routines' arguments and locals are named too (see `docs/CODE.md`). Each hunk's relocation and symbol tables
 follow it, as in the file, in the `-Fbin` build only.
 
 **The source is edited by hand** (since November 2026): it was made by `tools/disasm/make.py`
