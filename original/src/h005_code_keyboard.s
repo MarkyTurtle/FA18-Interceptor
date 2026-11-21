@@ -104,9 +104,12 @@ l_005_0015A:
 ; the Key_ labels below are named by the key that leads there (Amiga raw key codes: $40 Space,
 ; $4C-$4F the cursor keys, $50-$59 F1-F10, $0F-$3F the numeric keypad...).
 ;-------------------------------------------------------------------------------
+; HandleKey's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+HandleKey_Code          rs.l    1               ; the raw key code
 HandleKey:
         link.w  a6,#$0                          ; 0015C
-        move.l  $8(a6),d0                       ; 00160
+        move.l  HandleKey_Code(a6),d0           ; 00160
         unlk    a6                              ; 00164
         tst.b   (TextKeyCount).l                ; 00166
         bgt.b   l_005_0017A                     ; 0016C

@@ -891,19 +891,25 @@ l_020_00996:
 ; ScaleToLengthD0 - ScaleToLength with the length in d0 and the vector in d5-d7 (registers
 ; instead of the stack).
 ;-------------------------------------------------------------------------------
+; ScaleToLengthD0's frame: arguments from 8(a6), locals below a6 (after its link)
+ScaleToLengthD0_Sign    equ     -$2             ; the length's sign (shared with ScaleToLength)
 ScaleToLengthD0:
         link.w  a6,#$fffc                       ; 0099A
-        move.w  d0,-$2(a6)                      ; 0099E
+        move.w  d0,ScaleToLengthD0_Sign(a6)     ; 0099E
         bra.b   l_020_009B4                     ; 009A2
 
 ;-------------------------------------------------------------------------------
 ; ScaleToLength - ScaleToLength(length, x, y, z): the vector (x, y, z) made length long (its
 ; size from VectorLength), into ScaledVector, 0041E, 00420.
 ;-------------------------------------------------------------------------------
+; ScaleToLength's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+ScaleToLength_Length    rs.l    1               ; the length (then x, y and z: movem'd from here)
+ScaleToLength_Sign      equ     -$2             ; the length's high word (negative: the vector turns round)
 ScaleToLength:
         link.w  a6,#$fffc                       ; 009A4
-        movem.l $8(a6),d0/d5-d7                 ; 009A8
-        move.w  $8(a6),-$2(a6)                  ; 009AE
+        movem.l ScaleToLength_Length(a6),d0/d5-d7 ; 009A8
+        move.w  ScaleToLength_Length(a6),ScaleToLength_Sign(a6) ; 009AE
 l_020_009B4:
         tst.w   d0                              ; 009B4
         beq.b   l_020_00A24                     ; 009B6
@@ -951,7 +957,7 @@ l_020_009F2:
         asr.l   d2,d5                           ; 00A00
         asr.l   d2,d6                           ; 00A02
         asr.l   d2,d7                           ; 00A04
-        tst.w   -$2(a6)                         ; 00A06
+        tst.w   ScaleToLength_Sign(a6)          ; 00A06
         bge.b   l_020_00A12                     ; 00A0A
         neg.w   d5                              ; 00A0C
         neg.w   d6                              ; 00A0E
@@ -976,9 +982,12 @@ l_020_00A2C:
 ;-------------------------------------------------------------------------------
 ; ScaleToLengthStack - ScaleToLength's body, called with its arguments on the stack.
 ;-------------------------------------------------------------------------------
+; ScaleToLengthStack's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+ScaleToLengthStack_Length rs.l    1             ; the length (then x, y and z: movem'd from here)
 ScaleToLengthStack:
         link.w  a6,#$0                          ; 00A3C
-        movem.l $8(a6),d0/d5-d7                 ; 00A40
+        movem.l ScaleToLengthStack_Length(a6),d0/d5-d7 ; 00A40
         tst.w   d0                              ; 00A46
         beq.b   l_020_00A2C                     ; 00A48
         bgt.b   l_020_00A4E                     ; 00A4A
@@ -1024,7 +1033,7 @@ l_020_00A82:
         asr.l   d2,d5                           ; 00A90
         asr.l   d2,d6                           ; 00A92
         asr.l   d2,d7                           ; 00A94
-        tst.w   $8(a6)                          ; 00A96
+        tst.w   ScaleToLengthStack_Length(a6)   ; 00A96
         bge.b   l_020_00AA2                     ; 00A9A
         neg.w   d5                              ; 00A9C
         neg.w   d6                              ; 00A9E

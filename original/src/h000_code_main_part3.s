@@ -9,186 +9,195 @@
 ; (BulletHitTest) or the ground (BulletHitGround), adds its velocity and the aircraft's, then
 ; draws it - the hit (DrawBulletHit), the smoke (DrawBulletSmoke) or the tracer (DrawBullet).
 ;-------------------------------------------------------------------------------
+; MoveBullet's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+                rs.w    1                       ; (pushed as a long: the high part)
+MoveBullet_Bullet       rs.w    1               ; the bullet's number
+MoveBullet_Flags        equ     -$4             ; its blt_Flags
+MoveBullet_Depth        equ     -$6             ; its distance in front (TurnedZ, after DrawBullet)
+MoveBullet_X            equ     -$A             ; its blt_X
+MoveBullet_Y            equ     -$E             ; its blt_Y
+MoveBullet_Z            equ     -$12            ; its blt_Z
 MoveBullet:
         link.w  a6,#$ffee                       ; 0754C
         movem.l a2,-(a7)                        ; 07550
         movea.l (CurrentBullet).l,a0            ; 07554
-        adda.w  #$26,a0                         ; 0755A
+        adda.w  #blt_Flags,a0                   ; 0755A
         movea.l (CurrentBullet).l,a1            ; 0755E
-        move.w  $28(a1),d0                      ; 07564
-        move.l  a0,-$4(a6)                      ; 07568
+        move.w  blt_Timer(a1),d0                ; 07564
+        move.l  a0,MoveBullet_Flags(a6)         ; 07568
         tst.w   d0                              ; 0756C
         ble.w   l_000_0778C                     ; 0756E
-        move.l  a1,-$a(a6)                      ; 07572
+        move.l  a1,MoveBullet_X(a6)             ; 07572
         addq.l  #$4,a1                          ; 07576
         movea.l (CurrentBullet).l,a2            ; 07578
         addq.l  #$8,a2                          ; 0757E
         move.w  (a0),d0                         ; 07580
-        move.l  a1,-$e(a6)                      ; 07582
-        move.l  a2,-$12(a6)                     ; 07586
+        move.l  a1,MoveBullet_Y(a6)             ; 07582
+        move.l  a2,MoveBullet_Z(a6)             ; 07586
         btst    #$1,d0                          ; 0758A
         bne.w   l_000_076FE                     ; 0758E
-        move.w  $a(a6),d0                       ; 07592
+        move.w  MoveBullet_Bullet(a6),d0        ; 07592
         ext.l   d0                              ; 07596
         move.l  d0,-(a7)                        ; 07598
         jsr     (BulletHitTest).l               ; 0759A
         addq.l  #$4,a7                          ; 075A0
         tst.l   d0                              ; 075A2
         beq.b   l_000_075C6                     ; 075A4
-        movea.l -$4(a6),a0                      ; 075A6
+        movea.l MoveBullet_Flags(a6),a0         ; 075A6
         move.w  (a0),d0                         ; 075AA
         andi.w  #$fff7,d0                       ; 075AC
         ori.w   #$12,d0                         ; 075B0
         move.w  d0,(a0)                         ; 075B4
         movea.l (CurrentBullet).l,a0            ; 075B6
-        move.w  #$2,$28(a0)                     ; 075BC
+        move.w  #$2,blt_Timer(a0)               ; 075BC
         bra.w   l_000_07734                     ; 075C2
 l_000_075C6:
-        movea.l -$e(a6),a0                      ; 075C6
+        movea.l MoveBullet_Y(a6),a0             ; 075C6
         tst.l   (a0)                            ; 075CA
         bpl.b   l_000_07628                     ; 075CC
-        movea.l -$4(a6),a0                      ; 075CE
+        movea.l MoveBullet_Flags(a6),a0         ; 075CE
         move.w  (a0),d0                         ; 075D2
         andi.w  #$ffe7,d0                       ; 075D4
         ori.w   #$2,d0                          ; 075D8
         move.w  d0,(a0)                         ; 075DC
         movea.l (CurrentBullet).l,a0            ; 075DE
-        move.w  #$2,$28(a0)                     ; 075E4
+        move.w  #$2,blt_Timer(a0)               ; 075E4
         movea.l (CurrentBullet).l,a0            ; 075EA
-        move.l  $10(a0),d0                      ; 075F0
+        move.l  blt_VelY(a0),d0                 ; 075F0
         asr.l   #$8,d0                          ; 075F4
         move.w  d0,(DivideBy).l                 ; 075F6
         tst.w   d0                              ; 075FC
         beq.w   l_000_07734                     ; 075FE
-        move.w  $a(a6),d0                       ; 07602
+        move.w  MoveBullet_Bullet(a6),d0        ; 07602
         ext.l   d0                              ; 07606
         move.l  d0,-(a7)                        ; 07608
         jsr     (BulletHitGround).l             ; 0760A
         addq.l  #$4,a7                          ; 07610
         tst.l   d0                              ; 07612
         beq.w   l_000_07734                     ; 07614
-        movea.l -$4(a6),a0                      ; 07618
+        movea.l MoveBullet_Flags(a6),a0         ; 07618
         move.w  (a0),d0                         ; 0761C
         ori.w   #$80,d0                         ; 0761E
         move.w  d0,(a0)                         ; 07622
         bra.w   l_000_07734                     ; 07624
 l_000_07628:
-        movea.l -$a(a6),a0                      ; 07628
+        movea.l MoveBullet_X(a6),a0             ; 07628
         tst.l   (a0)                            ; 0762C
         bpl.b   l_000_0765C                     ; 0762E
         movea.l (CurrentBullet).l,a0            ; 07630
-        move.w  $30(a0),d0                      ; 07636
+        move.w  blt_CellX(a0),d0                ; 07636
         subq.w  #$1,d0                          ; 0763A
         movea.l (CurrentBullet).l,a0            ; 0763C
-        move.w  d0,$30(a0)                      ; 07642
+        move.w  d0,blt_CellX(a0)                ; 07642
         tst.w   d0                              ; 07646
         bpl.b   l_000_07650                     ; 07648
-        move.w  #$7f,$30(a0)                    ; 0764A
+        move.w  #$7f,blt_CellX(a0)              ; 0764A
 l_000_07650:
-        movea.l -$a(a6),a0                      ; 07650
+        movea.l MoveBullet_X(a6),a0             ; 07650
         addi.l  #$400000,(a0)                   ; 07654
         bra.b   l_000_07692                     ; 0765A
 l_000_0765C:
-        movea.l -$a(a6),a0                      ; 0765C
+        movea.l MoveBullet_X(a6),a0             ; 0765C
         cmpi.l  #$400000,(a0)                   ; 07660
         blt.b   l_000_07692                     ; 07666
         movea.l (CurrentBullet).l,a0            ; 07668
-        move.w  $30(a0),d0                      ; 0766E
+        move.w  blt_CellX(a0),d0                ; 0766E
         addq.w  #$1,d0                          ; 07672
         movea.l (CurrentBullet).l,a0            ; 07674
-        move.w  d0,$30(a0)                      ; 0767A
+        move.w  d0,blt_CellX(a0)                ; 0767A
         cmpi.w  #$7f,d0                         ; 0767E
         ble.b   l_000_07688                     ; 07682
-        clr.w   $30(a0)                         ; 07684
+        clr.w   blt_CellX(a0)                   ; 07684
 l_000_07688:
-        movea.l -$a(a6),a0                      ; 07688
+        movea.l MoveBullet_X(a6),a0             ; 07688
         subi.l  #$400000,(a0)                   ; 0768C
 l_000_07692:
-        movea.l -$12(a6),a0                     ; 07692
+        movea.l MoveBullet_Z(a6),a0             ; 07692
         tst.l   (a0)                            ; 07696
         bpl.b   l_000_076C6                     ; 07698
         movea.l (CurrentBullet).l,a0            ; 0769A
-        move.w  $32(a0),d0                      ; 076A0
+        move.w  blt_CellZ(a0),d0                ; 076A0
         subq.w  #$1,d0                          ; 076A4
         movea.l (CurrentBullet).l,a0            ; 076A6
-        move.w  d0,$32(a0)                      ; 076AC
+        move.w  d0,blt_CellZ(a0)                ; 076AC
         tst.w   d0                              ; 076B0
         bpl.b   l_000_076BA                     ; 076B2
-        move.w  #$7f,$32(a0)                    ; 076B4
+        move.w  #$7f,blt_CellZ(a0)              ; 076B4
 l_000_076BA:
-        movea.l -$12(a6),a0                     ; 076BA
+        movea.l MoveBullet_Z(a6),a0             ; 076BA
         addi.l  #$400000,(a0)                   ; 076BE
         bra.b   l_000_07734                     ; 076C4
 l_000_076C6:
-        movea.l -$12(a6),a0                     ; 076C6
+        movea.l MoveBullet_Z(a6),a0             ; 076C6
         cmpi.l  #$400000,(a0)                   ; 076CA
         blt.b   l_000_07734                     ; 076D0
         movea.l (CurrentBullet).l,a0            ; 076D2
-        move.w  $32(a0),d0                      ; 076D8
+        move.w  blt_CellZ(a0),d0                ; 076D8
         addq.w  #$1,d0                          ; 076DC
         movea.l (CurrentBullet).l,a0            ; 076DE
-        move.w  d0,$32(a0)                      ; 076E4
+        move.w  d0,blt_CellZ(a0)                ; 076E4
         cmpi.w  #$7f,d0                         ; 076E8
         ble.b   l_000_076F2                     ; 076EC
-        clr.w   $32(a0)                         ; 076EE
+        clr.w   blt_CellZ(a0)                   ; 076EE
 l_000_076F2:
-        movea.l -$12(a6),a0                     ; 076F2
+        movea.l MoveBullet_Z(a6),a0             ; 076F2
         subi.l  #$400000,(a0)                   ; 076F6
         bra.b   l_000_07734                     ; 076FC
 l_000_076FE:
-        movea.l -$4(a6),a0                      ; 076FE
+        movea.l MoveBullet_Flags(a6),a0         ; 076FE
         move.w  (a0),d0                         ; 07702
         btst    #$8,d0                          ; 07704
         beq.b   l_000_07734                     ; 07708
         move.l  (PlayerVelX).l,d0               ; 0770A
         asr.l   #$2,d0                          ; 07710
-        movea.l -$a(a6),a0                      ; 07712
+        movea.l MoveBullet_X(a6),a0             ; 07712
         add.l   d0,(a0)                         ; 07716
         move.l  (PlayerVelY).l,d0               ; 07718
         asr.l   #$2,d0                          ; 0771E
-        movea.l -$e(a6),a0                      ; 07720
+        movea.l MoveBullet_Y(a6),a0             ; 07720
         add.l   d0,(a0)                         ; 07724
         move.l  (PlayerVelZ).l,d0               ; 07726
         asr.l   #$2,d0                          ; 0772C
-        movea.l -$12(a6),a0                     ; 0772E
+        movea.l MoveBullet_Z(a6),a0             ; 0772E
         add.l   d0,(a0)                         ; 07732
 l_000_07734:
-        movea.l -$4(a6),a0                      ; 07734
+        movea.l MoveBullet_Flags(a6),a0         ; 07734
         move.w  (a0),d0                         ; 07738
         andi.w  #$1002,d0                       ; 0773A
         tst.w   d0                              ; 0773E
         beq.b   l_000_07754                     ; 07740
-        move.w  $a(a6),d0                       ; 07742
+        move.w  MoveBullet_Bullet(a6),d0        ; 07742
         ext.l   d0                              ; 07746
         move.l  d0,-(a7)                        ; 07748
         jsr     (DrawBulletHit).l               ; 0774A
         addq.l  #$4,a7                          ; 07750
         bra.b   l_000_077D0                     ; 07752
 l_000_07754:
-        movea.l -$4(a6),a0                      ; 07754
+        movea.l MoveBullet_Flags(a6),a0         ; 07754
         move.w  (a0),d0                         ; 07758
         btst    #$d,d0                          ; 0775A
         beq.b   l_000_07772                     ; 0775E
-        move.w  $a(a6),d0                       ; 07760
+        move.w  MoveBullet_Bullet(a6),d0        ; 07760
         ext.l   d0                              ; 07764
         move.l  d0,-(a7)                        ; 07766
         jsr     (DrawBulletSmoke).l             ; 07768
         addq.l  #$4,a7                          ; 0776E
         bra.b   l_000_077D0                     ; 07770
 l_000_07772:
-        move.w  $a(a6),d0                       ; 07772
+        move.w  MoveBullet_Bullet(a6),d0        ; 07772
         ext.l   d0                              ; 07776
         move.l  d0,-(a7)                        ; 07778
         jsr     (DrawBullet).l                  ; 0777A
         addq.l  #$4,a7                          ; 07780
-        move.w  (TurnedZ).l,-$6(a6)             ; 07782
+        move.w  (TurnedZ).l,MoveBullet_Depth(a6) ; 07782
         bra.b   l_000_077D0                     ; 0778A
 l_000_0778C:
-        movea.l -$4(a6),a0                      ; 0778C
+        movea.l MoveBullet_Flags(a6),a0         ; 0778C
         move.w  (a0),d0                         ; 07790
         andi.w  #$fffe,d0                       ; 07792
         move.w  d0,(a0)                         ; 07796
-        move.w  $a(a6),d0                       ; 07798
+        move.w  MoveBullet_Bullet(a6),d0        ; 07798
         ext.l   d0                              ; 0779C
         addq.l  #$1,d0                          ; 0779E
         move.b  (BulletHitAircraft).l,d1        ; 077A0
@@ -198,7 +207,7 @@ l_000_0778C:
         bne.b   l_000_077B4                     ; 077AC
         clr.b   (BulletHitAircraft).l           ; 077AE
 l_000_077B4:
-        move.w  $a(a6),d0                       ; 077B4
+        move.w  MoveBullet_Bullet(a6),d0        ; 077B4
         ext.l   d0                              ; 077B8
         addq.l  #$1,d0                          ; 077BA
         move.b  (BulletHitAircraft2).l,d1       ; 077BC
@@ -216,59 +225,67 @@ l_000_077D0:
 ; BulletHitEffects - What follows a bullet's hit (CurrentBullet): sets its timer and flags for
 ; the hit's drawing and the damage (BulletDamage).
 ;-------------------------------------------------------------------------------
+; BulletHitEffects's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+                rs.w    1                       ; (pushed as a long: the high part)
+BulletHitEffects_Bullet rs.w    1               ; the bullet's number
+BulletHitEffects_OffX   equ     -$2             ; an offset from the aircraft, in its axes (turned by PlayerM..)
+BulletHitEffects_OffY   equ     -$4
+BulletHitEffects_OffZ   equ     -$6
+BulletHitEffects_Flags  equ     -$A             ; the bullet's blt_Flags
 BulletHitEffects:
         link.w  a6,#$fff6                       ; 077D8
         movem.l d2-d5,-(a7)                     ; 077DC
         movea.l (CurrentBullet).l,a0            ; 077E0
-        adda.w  #$26,a0                         ; 077E6
+        adda.w  #blt_Flags,a0                   ; 077E6
         move.w  (a0),d0                         ; 077EA
-        move.l  a0,-$a(a6)                      ; 077EC
+        move.l  a0,BulletHitEffects_Flags(a6)   ; 077EC
         btst    #$c,d0                          ; 077F0
         beq.b   l_000_07814                     ; 077F4
         moveq   #$0,d0                          ; 077F6
-        move.w  #$fff8,-$4(a6)                  ; 077F8
+        move.w  #$fff8,BulletHitEffects_OffY(a6) ; 077F8
         movea.l (CurrentBullet).l,a0            ; 077FE
-        move.w  #$1e,$28(a0)                    ; 07804
-        move.w  d0,-$6(a6)                      ; 0780A
-        move.w  d0,-$2(a6)                      ; 0780E
+        move.w  #$1e,blt_Timer(a0)              ; 07804
+        move.w  d0,BulletHitEffects_OffZ(a6)    ; 0780A
+        move.w  d0,BulletHitEffects_OffX(a6)    ; 0780E
         bra.b   l_000_0787A                     ; 07812
 l_000_07814:
-        movea.l -$a(a6),a0                      ; 07814
+        movea.l BulletHitEffects_Flags(a6),a0   ; 07814
         move.w  (a0),d0                         ; 07818
         btst    #$d,d0                          ; 0781A
         beq.b   l_000_0783E                     ; 0781E
-        clr.w   -$2(a6)                         ; 07820
-        move.w  #$fff8,-$4(a6)                  ; 07824
-        move.w  #$ffc8,-$6(a6)                  ; 0782A
+        clr.w   BulletHitEffects_OffX(a6)       ; 07820
+        move.w  #$fff8,BulletHitEffects_OffY(a6) ; 07824
+        move.w  #$ffc8,BulletHitEffects_OffZ(a6) ; 0782A
         movea.l (CurrentBullet).l,a0            ; 07830
-        move.w  #$3c,$28(a0)                    ; 07836
+        move.w  #$3c,blt_Timer(a0)              ; 07836
         bra.b   l_000_0787A                     ; 0783C
 l_000_0783E:
         move.b  (PlayerType).l,d0               ; 0783E
         cmpi.b  #$11,d0                         ; 07844
         bne.b   l_000_0785C                     ; 07848
         moveq   #$0,d0                          ; 0784A
-        move.w  #$38,-$6(a6)                    ; 0784C
-        move.w  d0,-$4(a6)                      ; 07852
-        move.w  d0,-$2(a6)                      ; 07856
+        move.w  #$38,BulletHitEffects_OffZ(a6)  ; 0784C
+        move.w  d0,BulletHitEffects_OffY(a6)    ; 07852
+        move.w  d0,BulletHitEffects_OffX(a6)    ; 07856
         bra.b   l_000_0786E                     ; 0785A
 l_000_0785C:
-        move.w  #$6,-$2(a6)                     ; 0785C
-        move.w  #$1,-$4(a6)                     ; 07862
-        move.w  #$18,-$6(a6)                    ; 07868
+        move.w  #$6,BulletHitEffects_OffX(a6)   ; 0785C
+        move.w  #$1,BulletHitEffects_OffY(a6)   ; 07862
+        move.w  #$18,BulletHitEffects_OffZ(a6)  ; 07868
 l_000_0786E:
         movea.l (CurrentBullet).l,a0            ; 0786E
-        move.w  #$14,$28(a0)                    ; 07874
+        move.w  #$14,blt_Timer(a0)              ; 07874
 l_000_0787A:
         move.w  (PlayerM11).l,d0                ; 0787A
-        move.w  -$2(a6),d1                      ; 07880
+        move.w  BulletHitEffects_OffX(a6),d1    ; 07880
         muls.w  d1,d0                           ; 07884
         move.w  (PlayerM12).l,d2                ; 07886
-        move.w  -$4(a6),d3                      ; 0788C
+        move.w  BulletHitEffects_OffY(a6),d3    ; 0788C
         muls.w  d3,d2                           ; 07890
         add.l   d2,d0                           ; 07892
         move.w  (PlayerM13).l,d2                ; 07894
-        move.w  -$6(a6),d4                      ; 0789A
+        move.w  BulletHitEffects_OffZ(a6),d4    ; 0789A
         muls.w  d4,d2                           ; 0789E
         add.l   d2,d0                           ; 078A0
         asr.l   #$6,d0                          ; 078A2
@@ -294,9 +311,9 @@ l_000_0787A:
         asr.l   #$6,d1                          ; 078EA
         move.l  d1,(HitPointZ).l                ; 078EC
         movea.l (CurrentBullet).l,a0            ; 078F2
-        move.w  (PlayerCellX).l,$30(a0)         ; 078F8
+        move.w  (PlayerCellX).l,blt_CellX(a0)   ; 078F8
         movea.l (CurrentBullet).l,a0            ; 07900
-        move.w  (PlayerCellZ).l,$32(a0)         ; 07906
+        move.w  (PlayerCellZ).l,blt_CellZ(a0)   ; 07906
         move.l  (PlayerX).l,d0                  ; 0790E
         andi.l  #$3fffff,d0                     ; 07914
         move.l  (HitPointX).l,d1                ; 0791A
@@ -306,24 +323,24 @@ l_000_0787A:
         move.l  (HitPointY).l,d0                ; 0792A
         add.l   (PlayerY).l,d0                  ; 07930
         movea.l (CurrentBullet).l,a0            ; 07936
-        move.l  d0,$4(a0)                       ; 0793C
+        move.l  d0,blt_Y(a0)                    ; 0793C
         move.l  (PlayerZ).l,d0                  ; 07940
         andi.l  #$3fffff,d0                     ; 07946
         move.l  (HitPointZ).l,d1                ; 0794C
         add.l   d0,d1                           ; 07952
         movea.l (CurrentBullet).l,a0            ; 07954
-        move.l  d1,$8(a0)                       ; 0795A
-        movea.l -$a(a6),a0                      ; 0795E
+        move.l  d1,blt_Z(a0)                    ; 0795A
+        movea.l BulletHitEffects_Flags(a6),a0   ; 0795E
         move.w  (a0),d0                         ; 07962
         andi.w  #$3000,d0                       ; 07964
         tst.w   d0                              ; 07968
         beq.b   l_000_07978                     ; 0796A
-        move.w  #$ffc0,-$4(a6)                  ; 0796C
-        clr.w   -$6(a6)                         ; 07972
+        move.w  #$ffc0,BulletHitEffects_OffY(a6) ; 0796C
+        clr.w   BulletHitEffects_OffZ(a6)       ; 07972
         bra.b   l_000_079B6                     ; 07976
 l_000_07978:
-        move.w  #$40,-$4(a6)                    ; 07978
-        move.w  #$400,-$6(a6)                   ; 0797E
+        move.w  #$40,BulletHitEffects_OffY(a6)  ; 07978
+        move.w  #$400,BulletHitEffects_OffZ(a6) ; 0797E
         move.w  (FrameCount).l,d0               ; 07984
         ext.l   d0                              ; 0798A
         andi.l  #$3,d0                          ; 0798C
@@ -333,19 +350,19 @@ l_000_07978:
         beq.b   l_000_079AC                     ; 079A0
         tst.l   d0                              ; 079A2
         bne.b   l_000_079B6                     ; 079A4
-        addq.w  #$3,-$4(a6)                     ; 079A6
+        addq.w  #$3,BulletHitEffects_OffY(a6)   ; 079A6
         bra.b   l_000_079B6                     ; 079AA
 l_000_079AC:
-        subq.w  #$3,-$4(a6)                     ; 079AC
+        subq.w  #$3,BulletHitEffects_OffY(a6)   ; 079AC
         bra.b   l_000_079B6                     ; 079B0
 l_000_079B2:
-        addq.w  #$5,-$4(a6)                     ; 079B2
+        addq.w  #$5,BulletHitEffects_OffY(a6)   ; 079B2
 l_000_079B6:
         move.w  (PlayerM12).l,d0                ; 079B6
-        move.w  -$4(a6),d1                      ; 079BC
+        move.w  BulletHitEffects_OffY(a6),d1    ; 079BC
         muls.w  d1,d0                           ; 079C0
         move.w  (PlayerM13).l,d2                ; 079C2
-        move.w  -$6(a6),d3                      ; 079C8
+        move.w  BulletHitEffects_OffZ(a6),d3    ; 079C8
         muls.w  d3,d2                           ; 079CC
         add.l   d2,d0                           ; 079CE
         asr.l   #$4,d0                          ; 079D0
@@ -365,7 +382,7 @@ l_000_079B6:
         asr.l   #$4,d1                          ; 07A04
         move.l  d1,(HitPointZ).l                ; 07A06
         clr.w   (BulletHitObject).l             ; 07A0C
-        move.w  $a(a6),d0                       ; 07A12
+        move.w  BulletHitEffects_Bullet(a6),d0  ; 07A12
         ext.l   d0                              ; 07A16
         move.l  d0,-(a7)                        ; 07A18
         bsr.w   BulletDamage                    ; 07A1A
@@ -396,10 +413,10 @@ BulletHitsObject:
         adda.l  #ObjectTable,a0                 ; 07A3E
         move.l  a0,(CockpitObject).l            ; 07A44
         movea.l (CurrentBullet).l,a1            ; 07A4A
-        move.w  $6(a0),$30(a1)                  ; 07A50
+        move.w  $6(a0),blt_CellX(a1)            ; 07A50
         movea.l (CockpitObject).l,a0            ; 07A56
         movea.l (CurrentBullet).l,a1            ; 07A5C
-        move.w  $8(a0),$32(a1)                  ; 07A62
+        move.w  $8(a0),blt_CellZ(a1)            ; 07A62
         movea.l (CockpitObject).l,a0            ; 07A68
         move.l  $14(a0),d0                      ; 07A6E
         andi.l  #$3fffff,d0                     ; 07A72
@@ -407,13 +424,13 @@ BulletHitsObject:
         move.l  d0,(a0)                         ; 07A7E
         movea.l (CockpitObject).l,a0            ; 07A80
         movea.l (CurrentBullet).l,a1            ; 07A86
-        move.l  $18(a0),$4(a1)                  ; 07A8C
+        move.l  $18(a0),blt_Y(a1)               ; 07A8C
         movea.l (CockpitObject).l,a0            ; 07A92
         move.l  $1c(a0),d0                      ; 07A98
         andi.l  #$3fffff,d0                     ; 07A9C
         movea.l (CurrentBullet).l,a0            ; 07AA2
-        move.l  d0,$8(a0)                       ; 07AA8
-        move.w  #$14,$28(a0)                    ; 07AAC
+        move.l  d0,blt_Z(a0)                    ; 07AA8
+        move.w  #$14,blt_Timer(a0)              ; 07AAC
         movea.l (CockpitObject).l,a0            ; 07AB2
         move.w  $96(a0),d0                      ; 07AB8
         ext.l   d0                              ; 07ABC
@@ -441,6 +458,16 @@ BulletHitsObject:
 ; BulletDamage - What a bullet's hit does to what it hit (every few frames by FrameCount's low
 ; bits): the damage and its effects (BulletDamageAt).
 ;-------------------------------------------------------------------------------
+; BulletDamage's frame: arguments from 8(a6), locals below a6 (after its link)
+BulletDamage_Speed      equ     -$2             ; the debris' speed (BulletDamageAt's length)
+BulletDamage_Wobble     equ     -$4             ; 0, 16 or -16 by FrameCount
+BulletDamage_HitSpeed   equ     -$6             ; the object hit's speed (+$6C) / 64
+BulletDamage_DX         equ     -$A             ; from the bullet to the hit point
+BulletDamage_DY         equ     -$E
+BulletDamage_DZ         equ     -$12
+BulletDamage_DX8        equ     -$14            ; the same / 256
+BulletDamage_DY8        equ     -$16
+BulletDamage_DZ8        equ     -$18
 BulletDamage:
         link.w  a6,#$ffe8                       ; 07AFE
         movem.l d2-d3,-(a7)                     ; 07B02
@@ -453,16 +480,16 @@ BulletDamage:
         beq.b   l_000_07B2E                     ; 07B22
         tst.l   d0                              ; 07B24
         bne.b   l_000_07B3C                     ; 07B26
-        clr.w   -$4(a6)                         ; 07B28
+        clr.w   BulletDamage_Wobble(a6)         ; 07B28
         bra.b   l_000_07B42                     ; 07B2C
 l_000_07B2E:
-        move.w  #$10,-$4(a6)                    ; 07B2E
+        move.w  #$10,BulletDamage_Wobble(a6)    ; 07B2E
         bra.b   l_000_07B42                     ; 07B34
 l_000_07B36:
-        clr.w   -$4(a6)                         ; 07B36
+        clr.w   BulletDamage_Wobble(a6)         ; 07B36
         bra.b   l_000_07B42                     ; 07B3A
 l_000_07B3C:
-        move.w  #$fff0,-$4(a6)                  ; 07B3C
+        move.w  #$fff0,BulletDamage_Wobble(a6)  ; 07B3C
 l_000_07B42:
         move.w  (BulletHitObject).l,d0          ; 07B42
         moveq   #$9,d1                          ; 07B48
@@ -473,24 +500,24 @@ l_000_07B42:
         move.w  $6c(a0),d0                      ; 07B56
         asr.w   #$6,d0                          ; 07B5A
         movea.l (CurrentBullet).l,a0            ; 07B5C
-        move.w  $26(a0),d1                      ; 07B62
-        move.w  d0,-$6(a6)                      ; 07B66
+        move.w  blt_Flags(a0),d1                ; 07B62
+        move.w  d0,BulletDamage_HitSpeed(a6)    ; 07B66
         btst    #$c,d1                          ; 07B6A
         beq.b   l_000_07B78                     ; 07B6E
-        move.w  #$d,-$2(a6)                     ; 07B70
+        move.w  #$d,BulletDamage_Speed(a6)      ; 07B70
         bra.b   l_000_07BA0                     ; 07B76
 l_000_07B78:
         movea.l (CurrentBullet).l,a0            ; 07B78
-        move.w  $26(a0),d0                      ; 07B7E
+        move.w  blt_Flags(a0),d0                ; 07B7E
         btst    #$d,d0                          ; 07B82
         beq.b   l_000_07B90                     ; 07B86
-        move.w  #$5,-$2(a6)                     ; 07B88
+        move.w  #$5,BulletDamage_Speed(a6)      ; 07B88
         bra.b   l_000_07BA0                     ; 07B8E
 l_000_07B90:
-        move.w  -$4(a6),d0                      ; 07B90
+        move.w  BulletDamage_Wobble(a6),d0      ; 07B90
         addi.w  #$c6,d0                         ; 07B94
-        add.w   -$6(a6),d0                      ; 07B98
-        move.w  d0,-$2(a6)                      ; 07B9C
+        add.w   BulletDamage_HitSpeed(a6),d0    ; 07B98
+        move.w  d0,BulletDamage_Speed(a6)       ; 07B9C
 l_000_07BA0:
         move.l  (PlayerX).l,d0                  ; 07BA0
         andi.l  #$3fffff,d0                     ; 07BA6
@@ -500,25 +527,25 @@ l_000_07BA0:
         sub.l   (a0),d1                         ; 07BBA
         move.l  (HitPointY).l,d0                ; 07BBC
         add.l   (PlayerY).l,d0                  ; 07BC2
-        sub.l   $4(a0),d0                       ; 07BC8
+        sub.l   blt_Y(a0),d0                    ; 07BC8
         move.l  (PlayerZ).l,d2                  ; 07BCC
         andi.l  #$3fffff,d2                     ; 07BD2
         move.l  (HitPointZ).l,d3                ; 07BD8
         add.l   d2,d3                           ; 07BDE
-        sub.l   $8(a0),d3                       ; 07BE0
-        move.l  d1,-$a(a6)                      ; 07BE4
+        sub.l   blt_Z(a0),d3                    ; 07BE0
+        move.l  d1,BulletDamage_DX(a6)          ; 07BE4
         asr.l   #$8,d1                          ; 07BE8
-        move.l  d0,-$e(a6)                      ; 07BEA
+        move.l  d0,BulletDamage_DY(a6)          ; 07BEA
         asr.l   #$8,d0                          ; 07BEE
-        move.l  d3,-$12(a6)                     ; 07BF0
+        move.l  d3,BulletDamage_DZ(a6)          ; 07BF0
         asr.l   #$8,d3                          ; 07BF4
-        move.w  -$2(a6),d2                      ; 07BF6
+        move.w  BulletDamage_Speed(a6),d2       ; 07BF6
         ext.l   d2                              ; 07BFA
-        move.w  d1,-$14(a6)                     ; 07BFC
+        move.w  d1,BulletDamage_DX8(a6)         ; 07BFC
         ext.l   d1                              ; 07C00
-        move.w  d0,-$16(a6)                     ; 07C02
+        move.w  d0,BulletDamage_DY8(a6)         ; 07C02
         ext.l   d0                              ; 07C06
-        move.w  d3,-$18(a6)                     ; 07C08
+        move.w  d3,BulletDamage_DZ8(a6)         ; 07C08
         ext.l   d3                              ; 07C0C
         move.l  d3,-(a7)                        ; 07C0E
         move.l  d0,-(a7)                        ; 07C10
@@ -534,16 +561,26 @@ l_000_07BA0:
 ; BulletDamageAt - Part of BulletDamage: the hit's effect at a point (four values on the
 ; stack).
 ;-------------------------------------------------------------------------------
+; BulletDamageAt's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+                rs.w    1                       ; (pushed as a long: the high part)
+BulletDamageAt_Speed    rs.w    1               ; the speed (ScaleToLengthStack's length)
+                rs.w    1                       ; (pushed as a long: the high part)
+BulletDamageAt_DX       rs.w    1               ; the direction
+                rs.w    1                       ; (pushed as a long: the high part)
+BulletDamageAt_DY       rs.w    1
+                rs.w    1                       ; (pushed as a long: the high part)
+BulletDamageAt_DZ       rs.w    1
 BulletDamageAt:
         link.w  a6,#$fff4                       ; 07C24
         movem.l d2-d3,-(a7)                     ; 07C28
-        move.w  $a(a6),d0                       ; 07C2C
+        move.w  BulletDamageAt_Speed(a6),d0     ; 07C2C
         ext.l   d0                              ; 07C30
-        move.w  $e(a6),d1                       ; 07C32
+        move.w  BulletDamageAt_DX(a6),d1        ; 07C32
         ext.l   d1                              ; 07C36
-        move.w  $12(a6),d2                      ; 07C38
+        move.w  BulletDamageAt_DY(a6),d2        ; 07C38
         ext.l   d2                              ; 07C3C
-        move.w  $16(a6),d3                      ; 07C3E
+        move.w  BulletDamageAt_DZ(a6),d3        ; 07C3E
         ext.l   d3                              ; 07C42
         move.l  d3,-(a7)                        ; 07C44
         move.l  d2,-(a7)                        ; 07C46
@@ -556,54 +593,54 @@ BulletDamageAt:
         move.l  d0,$8(a7)                       ; 07C5E
         asl.l   #$3,d0                          ; 07C62
         movea.l (CurrentBullet).l,a0            ; 07C64
-        move.l  d0,$c(a0)                       ; 07C6A
+        move.l  d0,blt_VelX(a0)                 ; 07C6A
         move.w  (ScaledVectorY).l,d1            ; 07C6E
         ext.l   d1                              ; 07C74
         move.l  d1,$c(a7)                       ; 07C76
         asl.l   #$3,d1                          ; 07C7A
         movea.l (CurrentBullet).l,a0            ; 07C7C
-        move.l  d1,$10(a0)                      ; 07C82
+        move.l  d1,blt_VelY(a0)                 ; 07C82
         move.w  (ScaledVectorZ).l,d0            ; 07C86
         ext.l   d0                              ; 07C8C
         move.l  d0,$10(a7)                      ; 07C8E
         asl.l   #$3,d0                          ; 07C92
         movea.l (CurrentBullet).l,a0            ; 07C94
-        move.l  d0,$14(a0)                      ; 07C9A
+        move.l  d0,blt_VelZ(a0)                 ; 07C9A
         move.l  $8(a7),d1                       ; 07C9E
         movea.l (CurrentBullet).l,a0            ; 07CA2
-        move.l  d1,$18(a0)                      ; 07CA8
+        move.l  d1,blt_DriftX(a0)               ; 07CA8
         move.l  $c(a7),d0                       ; 07CAC
         movea.l (CurrentBullet).l,a0            ; 07CB0
-        move.l  d0,$1c(a0)                      ; 07CB6
+        move.l  d0,blt_DriftY(a0)               ; 07CB6
         move.l  $10(a7),d1                      ; 07CBA
         movea.l (CurrentBullet).l,a0            ; 07CBE
-        move.l  d1,$20(a0)                      ; 07CC4
+        move.l  d1,blt_DriftZ(a0)               ; 07CC4
         clr.w   $24(a0)                         ; 07CC8
         movea.l (CurrentBullet).l,a0            ; 07CCC
-        move.w  $26(a0),d0                      ; 07CD2
+        move.w  blt_Flags(a0),d0                ; 07CD2
         andi.w  #$3000,d0                       ; 07CD6
         tst.w   d0                              ; 07CDA
         beq.b   l_000_07D3E                     ; 07CDC
         move.l  (PlayerVelX).l,d0               ; 07CDE
-        add.l   d0,$c(a0)                       ; 07CE4
+        add.l   d0,blt_VelX(a0)                 ; 07CE4
         move.l  (PlayerVelY).l,d0               ; 07CE8
         movea.l (CurrentBullet).l,a0            ; 07CEE
-        add.l   d0,$10(a0)                      ; 07CF4
+        add.l   d0,blt_VelY(a0)                 ; 07CF4
         move.l  (PlayerVelZ).l,d0               ; 07CF8
         movea.l (CurrentBullet).l,a0            ; 07CFE
-        add.l   d0,$14(a0)                      ; 07D04
+        add.l   d0,blt_VelZ(a0)                 ; 07D04
         move.l  (PlayerVelX).l,d0               ; 07D08
         asr.l   #$3,d0                          ; 07D0E
         movea.l (CurrentBullet).l,a0            ; 07D10
-        add.l   d0,$18(a0)                      ; 07D16
+        add.l   d0,blt_DriftX(a0)               ; 07D16
         move.l  (PlayerVelY).l,d0               ; 07D1A
         asr.l   #$3,d0                          ; 07D20
         movea.l (CurrentBullet).l,a0            ; 07D22
-        add.l   d0,$1c(a0)                      ; 07D28
+        add.l   d0,blt_DriftY(a0)               ; 07D28
         move.l  (PlayerVelZ).l,d0               ; 07D2C
         asr.l   #$3,d0                          ; 07D32
         movea.l (CurrentBullet).l,a0            ; 07D34
-        add.l   d0,$20(a0)                      ; 07D3A
+        add.l   d0,blt_DriftZ(a0)               ; 07D3A
 l_000_07D3E:
         movem.l (a7)+,d2-d3                     ; 07D3E
         unlk    a6                              ; 07D42

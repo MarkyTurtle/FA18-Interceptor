@@ -4074,10 +4074,10 @@ l_000_07312:
         move.w  $28(a0),d0                      ; 07340
         subq.w  #$1,d0                          ; 07344
         movea.l (CurrentBullet).l,a0            ; 07346
-        move.w  d0,$28(a0)                      ; 0734C
+        move.w  d0,blt_Timer(a0)                ; 0734C
 l_000_07350:
         movea.l (CurrentBullet).l,a0            ; 07350
-        adda.w  #$26,a0                         ; 07356
+        adda.w  #blt_Flags,a0                   ; 07356
         move.b  (WorldFrozen).l,d0              ; 0735A
         move.l  a0,-$14(a6)                     ; 07360
         tst.b   d0                              ; 07364
@@ -4123,7 +4123,7 @@ l_000_0737E:
         movea.l -$14(a6),a0                     ; 073F6
         move.w  #$401,(a0)                      ; 073FA
         movea.l (CurrentBullet).l,a0            ; 073FE
-        clr.w   $2e(a0)                         ; 07404
+        clr.w   blt_Owner(a0)                   ; 07404
         move.b  d0,-$d(a6)                      ; 07408
         tst.b   (CountermeasureSound).l         ; 0740C
         beq.b   l_000_07476                     ; 07412

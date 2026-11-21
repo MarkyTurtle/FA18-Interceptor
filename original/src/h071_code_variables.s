@@ -2574,10 +2574,29 @@ FlyByPoint:
 	dc.b	$00
 	dc.b	$00
 	dc.b	$00
-; Bullets - The gun's bullets: 20 records of 64 bytes. +$00 the position (x, y, z longs within
-; its map cell), +$0C the previous position, +$26 flags (bit 0 in flight; 1 hit the ground, 4
-; hit something, $1000 / $2000 how it is drawn at the end), +$28 a timer, +$2E the object that
-; fired it, +$30 / +$32 its map cell (x, z).
+; Bullets - The gun's bullets: 20 Bullet records (64 bytes each, below).
+; Bullet - a record of Bullets (emits no bytes: the offsets).
+                rsreset
+blt_X                   rs.l    1               ; the position in its map cell (x and z wrap at
+blt_Y                   rs.l    1               ; $400000 into the next cell)
+blt_Z                   rs.l    1
+blt_VelX                rs.l    1               ; its velocity, per frame (BulletHitTest's step:
+blt_VelY                rs.l    1               ; these / 256)
+blt_VelZ                rs.l    1
+blt_DriftX              rs.l    1               ; an eighth of the velocity (set with it by
+blt_DriftY              rs.l    1               ; BulletDamageAt)
+blt_DriftZ              rs.l    1
+                        rs.w    1               ; (cleared with them)
+blt_Flags               rs.w    1               ; bit 0 in flight; 1 hit the ground, 4 hit
+                                                ; something, $100 moves with the aircraft, $1000
+                                                ; / $2000 how it is drawn at the end
+blt_Timer               rs.w    1               ; frames left
+                        rs.w    2
+blt_Owner               rs.w    1               ; the object that fired it
+blt_CellX               rs.w    1               ; its map cell (x, z)
+blt_CellZ               rs.w    1
+                        rs.b    $40-$34
+BULLET_SIZE             rs.b    0
 Bullets:
 	dcb.b	1280,$00
 ; BulletTestFrom - BulletHitTest's start point (x, y, z words).

@@ -615,9 +615,12 @@ BulletHitTestNext:
 ; BulletHitGround - What a bullet that reached the ground hit there; d0 = 1 when something
 ; counts.
 ;-------------------------------------------------------------------------------
+; BulletHitGround's frame: arguments from 8(a6), locals below a6 (after its link)
+                rsset   8
+BulletHitGround_Bullet  rs.l    1               ; the bullet's number
 BulletHitGround:
         link.w  a6,#$0                          ; 0068A
-        move.l  $8(a6),d0                       ; 0068E
+        move.l  BulletHitGround_Bullet(a6),d0   ; 0068E
         asl.w   #$6,d0                          ; 00692
         lea.l   (Bullets).l,a3                  ; 00694
         adda.w  d0,a3                           ; 0069A
