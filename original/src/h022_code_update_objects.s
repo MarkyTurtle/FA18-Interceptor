@@ -419,7 +419,7 @@ l_022_004C2:
         add.w   d7,d7                           ; 004DC
         add.w   d7,d7                           ; 004DE
         add.w   d5,d7                           ; 004E0
-        move.b  d7,$b(a1)                       ; 004E2
+        move.b  d7,obj_Place(a1)                ; 004E2
 l_022_004E6:
         move.b  obj_Ejection(a1),d0             ; 004E6
         move.b  d0,d1                           ; 004EA

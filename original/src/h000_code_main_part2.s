@@ -3546,7 +3546,7 @@ FlyAircraft_NewX        equ     -$10            ; the new velocity
 FlyAircraft_NewY        equ     -$14
 FlyAircraft_NewZ        equ     -$18
 FlyAircraft_Gravity     equ     -$1C            ; taken from or added to NewY by FlightStep ($6000 or $60000; 0 when frozen)
-FlyAircraft_Value4E     equ     -$20            ; +$4E x 256 + $A8C (at least $A8C; + $708 for other types)
+FlyAircraft_Floor       equ     -$20            ; the lowest height: obj_DeckHeight x 256 + $A8C over a deck (+ $708 for other types)
 FlyAircraft_Length      equ     -$22            ; -(the speed flown, +$6E): ScaleToLength's length
 FlyAircraft_Object      equ     -$24            ; CurrentObject
 FlyAircraft_Record      equ     -$28            ; the object's record
@@ -3747,36 +3747,36 @@ l_000_06D6E:
         move.b  obj_Type(a0),d0                 ; 06D90
         cmpi.b  #$14,d0                         ; 06D94
         bne.b   l_000_06DC2                     ; 06D98
-        move.w  $4e(a0),d0                      ; 06D9A
+        move.w  obj_DeckHeight(a0),d0           ; 06D9A
         ext.l   d0                              ; 06D9E
         asl.l   #$8,d0                          ; 06DA0
         addi.l  #$a8c,d0                        ; 06DA2
-        move.l  d0,FlyAircraft_Value4E(a6)      ; 06DA8
+        move.l  d0,FlyAircraft_Floor(a6)      ; 06DA8
         cmpi.l  #$a8c,d0                        ; 06DAC
         bge.w   l_000_06E6E                     ; 06DB2
-        move.l  #$a8c,FlyAircraft_Value4E(a6)   ; 06DB6
+        move.l  #$a8c,FlyAircraft_Floor(a6)   ; 06DB6
         bra.w   l_000_06E6E                     ; 06DBE
 l_000_06DC2:
         movea.l (CockpitObject).l,a0            ; 06DC2
-        move.w  $4e(a0),d0                      ; 06DC8
+        move.w  obj_DeckHeight(a0),d0           ; 06DC8
         ext.l   d0                              ; 06DCC
         asl.l   #$8,d0                          ; 06DCE
         addi.l  #$708,d0                        ; 06DD0
-        move.l  d0,FlyAircraft_Value4E(a6)      ; 06DD6
+        move.l  d0,FlyAircraft_Floor(a6)      ; 06DD6
         cmpi.l  #$708,d0                        ; 06DDA
         bge.w   l_000_06E6E                     ; 06DE0
-        move.l  #$708,FlyAircraft_Value4E(a6)   ; 06DE4
+        move.l  #$708,FlyAircraft_Floor(a6)   ; 06DE4
         bra.w   l_000_06E6E                     ; 06DEC
 l_000_06DF0:
         movea.l (CockpitObject).l,a0            ; 06DF0
-        move.w  $4e(a0),d0                      ; 06DF6
+        move.w  obj_DeckHeight(a0),d0           ; 06DF6
         ext.l   d0                              ; 06DFA
         asl.l   #$8,d0                          ; 06DFC
         addi.l  #$2ee,d0                        ; 06DFE
-        move.l  d0,FlyAircraft_Value4E(a6)      ; 06E04
+        move.l  d0,FlyAircraft_Floor(a6)      ; 06E04
         cmpi.l  #$2ee,d0                        ; 06E08
         bge.b   l_000_06E6E                     ; 06E0E
-        move.l  #$2ee,FlyAircraft_Value4E(a6)   ; 06E10
+        move.l  #$2ee,FlyAircraft_Floor(a6)   ; 06E10
         bra.b   l_000_06E6E                     ; 06E18
 l_000_06E1A:
         movea.l (CockpitObject).l,a0            ; 06E1A
@@ -3784,7 +3784,7 @@ l_000_06E1A:
         andi.b  #$f0,d0                         ; 06E24
         tst.b   d0                              ; 06E28
         bne.b   l_000_06E36                     ; 06E2A
-        move.l  #$fffffe00,FlyAircraft_Value4E(a6) ; 06E2C
+        move.l  #$fffffe00,FlyAircraft_Floor(a6) ; 06E2C
         bra.b   l_000_06E6E                     ; 06E34
 l_000_06E36:
         movea.l (CockpitObject).l,a0            ; 06E36
@@ -3795,20 +3795,20 @@ l_000_06E36:
         move.b  obj_Type(a0),d0                 ; 06E48
         cmpi.b  #$14,d0                         ; 06E4C
         bne.b   l_000_06E5C                     ; 06E50
-        move.l  #$a8c,FlyAircraft_Value4E(a6)   ; 06E52
+        move.l  #$a8c,FlyAircraft_Floor(a6)   ; 06E52
         bra.b   l_000_06E6E                     ; 06E5A
 l_000_06E5C:
-        move.l  #$708,FlyAircraft_Value4E(a6)   ; 06E5C
+        move.l  #$708,FlyAircraft_Floor(a6)   ; 06E5C
         bra.b   l_000_06E6E                     ; 06E64
 l_000_06E66:
-        move.l  #$2ee,FlyAircraft_Value4E(a6)   ; 06E66
+        move.l  #$2ee,FlyAircraft_Floor(a6)   ; 06E66
 l_000_06E6E:
         movea.l (CockpitObject).l,a0            ; 06E6E
         move.l  obj_Y(a0),d0                    ; 06E74
         sub.l   FlyAircraft_NewY(a6),d0         ; 06E78
         movea.l (CockpitObject).l,a0            ; 06E7C
         move.l  d0,obj_Y(a0)                    ; 06E82
-        move.l  FlyAircraft_Value4E(a6),d1      ; 06E86
+        move.l  FlyAircraft_Floor(a6),d1      ; 06E86
         cmp.l   d1,d0                           ; 06E8A
         bgt.w   l_000_071AE                     ; 06E8C
         movea.l FlyAircraft_Status(a6),a0       ; 06E90

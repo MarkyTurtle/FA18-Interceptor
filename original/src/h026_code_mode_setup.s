@@ -910,7 +910,7 @@ l_026_00A76:
         moveq   #$0,d0                          ; 00A92
         bra.b   l_026_00A9A                     ; 00A94
 l_026_00A96:
-        move.w  $4e(a0),d0                      ; 00A96
+        move.w  obj_DeckHeight(a0),d0           ; 00A96
 l_026_00A9A:
         addi.w  #$7,d0                          ; 00A9A
         ext.l   d0                              ; 00A9E

@@ -501,7 +501,7 @@ l_023_00530:
         swap    d7                              ; 00552
         lea.l   (ObjectTable).l,a1              ; 00554
         adda.w  d0,a1                           ; 0055A
-        move.b  $3c(a1),d7                      ; 0055C
+        move.b  obj_Hits(a1),d7                 ; 0055C
         move.b  d7,d0                           ; 00560
         andi.b  #$f,d7                          ; 00562
         addq.b  #$1,d7                          ; 00566
@@ -524,21 +524,21 @@ l_023_00530:
 l_023_005AC:
         andi.b  #$f0,d0                         ; 005AC
         or.b    d7,d0                           ; 005B0
-        move.b  d0,$3c(a1)                      ; 005B2
+        move.b  d0,obj_Hits(a1)                 ; 005B2
         bra.w   l_023_00480                     ; 005B6
 
 ;-------------------------------------------------------------------------------
-; BulletHitStep - Steps a hit object's damage counter (+$3C).
+; BulletHitStep - Steps the high nibble of a hit object's obj_Hits (nothing branches here).
 ;-------------------------------------------------------------------------------
 BulletHitStep:
-        move.b  $3c(a1),d7                      ; 005BA
+        move.b  obj_Hits(a1),d7                 ; 005BA
         move.b  d7,d0                           ; 005BE
         andi.b  #$f0,d7                         ; 005C0
         addi.b  #$10,d7                         ; 005C4
         cmpi.b  #$30,d7                         ; 005C8
         andi.b  #$f,d0                          ; 005CC
         or.b    d7,d0                           ; 005D0
-        move.b  d7,$3c(a1)                      ; 005D2
+        move.b  d7,obj_Hits(a1)                 ; 005D2
         bra.w   l_023_00480                     ; 005D6
 l_023_005DA:
         move.w  #$8,-$1c(a6)                    ; 005DA

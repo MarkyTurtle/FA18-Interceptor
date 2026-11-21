@@ -136,6 +136,10 @@ record holds (the `Object` structure above `ObjectTable` names all that is known
 * for a computer aircraft, whether it is attacking (`obj_Attack`: 3, 4 when close, 5 broken off and
   sent along its route) and its destination (`obj_DestCellX`...);
 * `obj_Group`: objects with the same value don't collide (a missile gets its launcher's number).
+* how many cannon hits it has taken (`obj_Hits`, low nibble: the third destroys it), the sine and
+  cosine of its roll (`obj_SinRoll`, `obj_CosRoll`, for the G load and the stall check), the height
+  of a ship's deck under it (`obj_DeckHeight`, with `obj_Bits` bit 6 or 7: the floor it can't go
+  below), and which cell of its 4 x 4 block it is in (`obj_Place`).
 
 The types (`obj_Type`) seen so far:
 

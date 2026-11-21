@@ -408,7 +408,7 @@ l_004_004EA:
         blt.w   l_004_005E0                     ; 00502
         move.w  d0,(ViewBlockX).l               ; 00506
         move.w  d1,(ViewBlockZ).l               ; 0050C
-        move.b  d2,$b(a1)                       ; 00512
+        move.b  d2,obj_Place(a1)                ; 00512
         lea.l   (StartPointSubCells).l,a2       ; 00516
         move.w  d2,d6                           ; 0051C
         add.w   d6,d6                           ; 0051E
@@ -555,7 +555,7 @@ l_004_0062C:
         add.b   d3,d3                           ; 006F0
         add.b   d3,d3                           ; 006F2
         add.b   d2,d3                           ; 006F4
-        move.b  d3,$b(a1)                       ; 006F6
+        move.b  d3,obj_Place(a1)                ; 006F6
         movem.w obj_Pitch(a1),d4-d6             ; 006FA
 l_004_00700:
         jsr     (SetAttitude).l                 ; 00700

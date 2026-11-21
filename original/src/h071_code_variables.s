@@ -882,7 +882,8 @@ ChaffTime:
 ; missiles may be drawn off (UpdateObject).
 FlareTime:
 	dc.b	$00
-; ViewPlace - Which part of its map cell the view is in (UpdateViewCell): used to pick the
+; ViewPlace - Which cell of its 4 x 4 block the view's cell is (UpdateViewCell; as an object's
+; obj_Place): used to pick the
 ; scenery and by the view tables (LookupViewTable).
 ViewPlace:
 	dc.b	$00
@@ -2634,12 +2635,14 @@ obj_Flags               rs.w    1               ; flags ($2000 throttle at full,
                                                 ; afterburner, $0400 spent...); low byte: bit 6 it
                                                 ; exists, bit 4 in a cell being drawn
 obj_Flags2              rs.w    1               ; more flags (low byte bit 7...)
-obj_Bits                rs.b    1               ; bits (bit 3 on the ground...)
+obj_Bits                rs.b    1               ; bits: 3 on the ground; 6 or 7 over a ship's deck
+                                                ; (obj_DeckHeight)
 obj_State               rs.b    1               ; the computer pilot's state (1 pull up, 8 route...)
 obj_CellX               rs.w    1               ; its map cell
 obj_CellZ               rs.w    1
 obj_SubCell             rs.b    1               ; where in the cell
-                        rs.b    1
+obj_Place               rs.b    1               ; which cell of its 4 x 4 block it is in: (3 - x & 3) +
+                                                ; 4 x (3 - z & 3), as ViewPlace for the view
 obj_X8                  rs.w    1               ; the position in the cell / 256 (x, z), and its
                                                 ; height (long)
 obj_Z8                  rs.w    1
@@ -2653,8 +2656,9 @@ obj_Status              rs.b    1               ; what has happened to it: bit 1
                                                 ; player
 obj_Status2             rs.b    1               ; bit 0: landed (the flight time counted;
                                                 ; PlayerParked)
-obj_Weight              rs.w    1               ; (a weight-like term in the stall check)
-                        rs.w    1
+obj_SinRoll             rs.w    1               ; the sine of the roll (2.14, ComputeGLoad; the stall check
+                                                ; uses it)
+obj_CosRoll             rs.w    1               ; the cosine of the roll (2.14, ComputeGLoad)
 obj_Response            rs.w    1               ; responsiveness (at most 15; a missile: $14 at
                                                 ; launch)
 obj_StickPitch          rs.b    1               ; the pitch stick (-20..20)
@@ -2671,7 +2675,8 @@ obj_Target              rs.b    1               ; its target ($80 + an object; c
 obj_ThrottleStep        rs.b    1               ; low nibble: the throttle's step
 obj_Route               rs.b    1               ; the route (Routes)
                         rs.b    1
-                        rs.b    1
+obj_Hits                rs.b    1               ; cannon hits: low nibble the count (the third destroys it),
+                                                ; high nibble BulletHitStep's
 obj_FlameLength         rs.b    1               ; the flame's length (0-4: grows while it burns,
                                                 ; Flags2 bit 4)
 obj_VelX                rs.l    1               ; its velocity
@@ -2680,7 +2685,8 @@ obj_VelZ                rs.l    1
 obj_Range               rs.w    1               ; the range to its target (the locked target, for
                                                 ; the player)
 obj_Timer               rs.w    1               ; a timer (a missile: $96 / $C8 at launch)
-                        rs.w    1
+obj_DeckHeight          rs.w    1               ; the height of the deck it is over (a ship's, from its model:
+                                                ; ObjectCollisions, with obj_Bits bit 6 or 7; / 256)
 obj_AimRate1            rs.w    1               ; target rotation rates (computer aircraft)
 obj_AimRate2            rs.w    1
 obj_AimRate3            rs.w    1

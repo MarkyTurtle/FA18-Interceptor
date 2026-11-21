@@ -440,7 +440,7 @@ l_024_004E8:
 l_024_004F6:
         ori.b   #$80,obj_Bits(a4)               ; 004F6
 l_024_004FC:
-        move.w  -$34(a6),$4e(a4)                ; 004FC
+        move.w  -$34(a6),obj_DeckHeight(a4)     ; 004FC
         move.l  obj_Y8(a4),d3                   ; 00502
         cmpi.b  #$20,obj_Type(a3)               ; 00506
         bne.b   l_024_00516                     ; 0050C

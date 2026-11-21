@@ -375,7 +375,7 @@ l_032_00412:
         neg.w   d0                              ; 00416
         mulu.w  #$6c,d0                         ; 00418
         asr.l   #$8,d0                          ; 0041C
-        move.w  obj_Weight(a1),d7               ; 0041E
+        move.w  obj_SinRoll(a1),d7               ; 0041E
         asr.w   #$8,d7                          ; 00422
         mulu.w  d0,d7                           ; 00424
         asr.l   #$6,d7                          ; 00426
@@ -852,8 +852,8 @@ l_032_0099E:
         subi.w  #$708,d4                        ; 009A2
         bsr.w   SinCos                          ; 009A6
 l_032_009AA:
-        move.w  d4,obj_Weight(a1)               ; 009AA
-        move.w  d5,$24(a1)                      ; 009AE
+        move.w  d4,obj_SinRoll(a1)               ; 009AA
+        move.w  d5,obj_CosRoll(a1)              ; 009AE
         move.w  d4,d3                           ; 009B2
         bge.b   l_032_009B8                     ; 009B4
         neg.w   d4                              ; 009B6

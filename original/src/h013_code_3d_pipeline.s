@@ -504,7 +504,7 @@ ShapeShadow:
 l_013_004E2:
         andi.b  #$40,d3                         ; 004E2
         beq.b   l_013_00506                     ; 004E6
-        move.w  $4e(a4),d7                      ; 004E8
+        move.w  obj_DeckHeight(a4),d7           ; 004E8
         neg.w   d7                              ; 004EC
         ext.l   d7                              ; 004EE
         asl.l   #$8,d7                          ; 004F0
