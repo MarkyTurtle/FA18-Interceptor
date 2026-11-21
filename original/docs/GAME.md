@@ -118,19 +118,24 @@ the player's F/A-18 (named `Player...` where the code reaches its fields directl
 aircraft, missiles and other objects. `SmallObjects` are 16 more of 32 bytes. An object's
 record holds (the `Object` structure above `ObjectTable` names all that is known, `obj_...`):
 
-* whether it exists (`+$01` bit 6), its type (`obj_Type`, below), its state (`obj_State`) and a timer
+* whether it exists (`obj_Flags` low byte bit 6), its type (`obj_Type`, below), its state (`obj_State`) and a timer
   (`obj_Timer`);
 * what has happened to it (`obj_Status`): bit 1 destroyed, bit 6 its signature confirmed (seen up
   close, so the radar's readout names it), bit 7 hit by the player;
-* its position: a map cell (`obj_CellX` X, `obj_CellZ` Z) and a 32-bit position (`obj_X` X, `obj_Y` Y, `obj_Z` Z)
-  whose low 22 bits are the position inside the cell; Y is height, positive upwards (`$708` on
+* its position: a map cell (`obj_CellX`, `obj_CellZ`) and a 32-bit position (`obj_X`, `obj_Y`,
+  `obj_Z`) whose low 22 bits are the position inside the cell; Y is height, positive upwards (`$708` on
   a runway; the game's own frame, drawn in the emulator, shows this);
 * its velocity (`obj_VelX`, `obj_VelY`, `obj_VelZ`) and speed (`obj_Speed`, `obj_SpeedFlown`);
 * its attitude: pitch, heading, roll (`obj_Pitch`, `obj_Heading`, `obj_Roll`) and two rotation matrices made from
   them (`obj_Matrix`, and `obj_Inverse` from the negated angles, whose third column is the nose's direction);
 * its weapons: the selected weapon (`obj_Weapon`) and missiles left (`obj_Missiles`: 4 AMRAAMs and 2 Sidewinders
   for the player at the start);
-* its control bits (`obj_Controls2`, `obj_Controls`) and the throttle (probably `obj_Throttle`).
+* its control bits (`obj_Controls2`, `obj_Controls`), sticks (`obj_StickPitch`, `obj_Rudder`,
+  `obj_StickRoll`) and throttle (`obj_Throttle`); the pitch stick drives `obj_PitchRate`, the rudder
+  `obj_YawRate`, the roll stick `obj_RollRate`;
+* for a computer aircraft, whether it is attacking (`obj_Attack`: 3, 4 when close, 5 broken off and
+  sent along its route) and its destination (`obj_DestCellX`...);
+* `obj_Group`: objects with the same value don't collide (a missile gets its launcher's number).
 
 The types (`obj_Type`) seen so far:
 
