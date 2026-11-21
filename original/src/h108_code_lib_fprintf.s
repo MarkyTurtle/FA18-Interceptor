@@ -16,11 +16,15 @@
 fprintf_FP              rs.l    1               ; the stream
 fprintf_Format          rs.l    1               ; the format string
 fprintf_Args            rs.l    1               ; the first argument (the rest follow it)
+fprintf_I               equ     -$4             ; the character count
+fprintf_Char            equ     -$8             ; the character written
+fprintf_Length          equ     -$10            ; what _pfmt returned
+fprintf_ArgPtr          equ     -$14            ; the next argument (from Args)
 fprintf:
         link.w  a6,#$feec                       ; 00000
         movem.l a2,-(a7)                        ; 00004
         lea.l   fprintf_Args(a6),a0             ; 00008
-        move.l  a0,-$14(a6)                     ; 0000C
+        move.l  a0,fprintf_ArgPtr(a6)           ; 0000C
 l_108_00010:
         movea.l fprintf_Format(a6),a0           ; 00010
         move.b  (a0),d0                         ; 00014
@@ -29,7 +33,7 @@ l_108_00010:
         moveq   #$0,d1                          ; 0001C
         move.b  (a0),d1                         ; 0001E
         addq.l  #$1,a0                          ; 00020
-        move.l  d1,-$8(a6)                      ; 00022
+        move.l  d1,fprintf_Char(a6)             ; 00022
         move.l  a0,fprintf_Format(a6)           ; 00026
         cmpi.l  #$25,d1                         ; 0002A
         bne.w   l_108_000F8                     ; 00030
@@ -43,7 +47,7 @@ l_108_00010:
         move.l  iob_WCnt(a0),d0                 ; 00048
         subq.l  #$1,d0                          ; 0004C
         move.l  d0,iob_WCnt(a0)                 ; 0004E
-        move.l  d2,-$8(a6)                      ; 00052
+        move.l  d2,fprintf_Char(a6)             ; 00052
         tst.l   d0                              ; 00056
         bmi.b   l_108_00066                     ; 00058
         movea.l (a0),a1                         ; 0005A
@@ -54,24 +58,24 @@ l_108_00010:
         bra.b   l_108_00010                     ; 00064
 l_108_00066:
         move.l  fprintf_FP(a6),-(a7)            ; 00066
-        move.l  -$8(a6),-(a7)                   ; 0006A
+        move.l  fprintf_Char(a6),-(a7)          ; 0006A
         jsr     (_flsbuf).l                     ; 0006E
         addq.l  #$8,a7                          ; 00074
         bra.b   l_108_00010                     ; 00076
 l_108_00078:
         pea.l   -$c(a6)                         ; 00078
-        pea.l   -$14(a6)                        ; 0007C
+        pea.l   fprintf_ArgPtr(a6)              ; 0007C
         pea.l   -$114(a6)                       ; 00080
         move.l  fprintf_Format(a6),-(a7)        ; 00084
         jsr     (_pfmt).l                       ; 00088
         lea.l   $10(a7),a7                      ; 0008E
-        move.l  d0,-$10(a6)                     ; 00092
+        move.l  d0,fprintf_Length(a6)           ; 00092
         tst.l   d0                              ; 00096
         beq.w   l_108_00010                     ; 00098
-        clr.l   -$4(a6)                         ; 0009C
+        clr.l   fprintf_I(a6)                   ; 0009C
         move.l  d0,fprintf_Format(a6)           ; 000A0
 l_108_000A4:
-        move.l  -$4(a6),d0                      ; 000A4
+        move.l  fprintf_I(a6),d0                ; 000A4
         cmp.l   -$c(a6),d0                      ; 000A8
         bge.w   l_108_00010                     ; 000AC
         movea.l fprintf_FP(a6),a0               ; 000B0
@@ -91,7 +95,7 @@ l_108_000A4:
         bra.b   l_108_000F2                     ; 000D4
 l_108_000D6:
         lea.l   -$114(a6),a0                    ; 000D6
-        adda.l  -$4(a6),a0                      ; 000DA
+        adda.l  fprintf_I(a6),a0                ; 000DA
         moveq   #$0,d0                          ; 000DE
         move.b  (a0),d0                         ; 000E0
         move.l  fprintf_FP(a6),-(a7)            ; 000E2
@@ -100,7 +104,7 @@ l_108_000D6:
         addq.l  #$8,a7                          ; 000EE
         move.l  d0,d1                           ; 000F0
 l_108_000F2:
-        addq.l  #$1,-$4(a6)                     ; 000F2
+        addq.l  #$1,fprintf_I(a6)               ; 000F2
         bra.b   l_108_000A4                     ; 000F6
 l_108_000F8:
         movea.l fprintf_FP(a6),a0               ; 000F8
@@ -111,14 +115,14 @@ l_108_000F8:
         bmi.b   l_108_0011C                     ; 00108
         movea.l (a0),a1                         ; 0010A
         addq.l  #$1,(a0)                        ; 0010C
-        move.l  -$8(a6),d0                      ; 0010E
+        move.l  fprintf_Char(a6),d0             ; 0010E
         move.b  d0,(a1)                         ; 00112
         moveq   #$0,d1                          ; 00114
         move.b  (a1),d1                         ; 00116
         bra.w   l_108_00010                     ; 00118
 l_108_0011C:
         move.l  fprintf_FP(a6),-(a7)            ; 0011C
-        move.l  -$8(a6),-(a7)                   ; 00120
+        move.l  fprintf_Char(a6),-(a7)          ; 00120
         jsr     (_flsbuf).l                     ; 00124
         addq.l  #$8,a7                          ; 0012A
         move.l  d0,d1                           ; 0012C

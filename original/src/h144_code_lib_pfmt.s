@@ -14,25 +14,30 @@
 ; _pfmt's frame: arguments from 8(a6), locals below a6 (after its link)
                 rsset   8
 _pfmt_Format            rs.l    1               ; the format, at the conversion (moved past it)
+_pfmt_Left              equ     -$10            ; 1 for a '-' (left-justify)
+_pfmt_LongArg           equ     -$14            ; 1 for an 'l'
+_pfmt_Precision         equ     -$1C            ; the precision (-1: none; after '.')
+_pfmt_Pad               equ     -$20            ; ' ', or '0' for a leading 0
+_pfmt_Width             equ     -$24            ; the field's width
 _pfmt:
         link.w  a6,#$ffb4                       ; 00000
         movem.l a2,-(a7)                        ; 00004
         moveq   #$0,d0                          ; 00008
         move.l  d0,-$18(a6)                     ; 0000A
         moveq   #-1,d1                          ; 0000E
-        move.l  d1,-$1c(a6)                     ; 00010
+        move.l  d1,_pfmt_Precision(a6)          ; 00010
         moveq   #$20,d1                         ; 00014
-        move.l  d1,-$20(a6)                     ; 00016
+        move.l  d1,_pfmt_Pad(a6)                ; 00016
         movea.l _pfmt_Format(a6),a0             ; 0001A
         move.b  (a0),d1                         ; 0001E
-        move.l  d0,-$10(a6)                     ; 00020
-        move.l  d0,-$24(a6)                     ; 00024
-        move.l  d0,-$14(a6)                     ; 00028
+        move.l  d0,_pfmt_Left(a6)               ; 00020
+        move.l  d0,_pfmt_Width(a6)              ; 00024
+        move.l  d0,_pfmt_LongArg(a6)            ; 00028
         cmpi.b  #$2d,d1                         ; 0002C
         bne.b   l_144_0003C                     ; 00030
         moveq   #$1,d0                          ; 00032
         addq.l  #$1,_pfmt_Format(a6)            ; 00034
-        move.l  d0,-$10(a6)                     ; 00038
+        move.l  d0,_pfmt_Left(a6)               ; 00038
 l_144_0003C:
         moveq   #$0,d0                          ; 0003C
         movea.l _pfmt_Format(a6),a0             ; 0003E
@@ -47,14 +52,14 @@ l_144_0003C:
         cmpi.l  #$30,$4(a7)                     ; 0005A
         bne.b   l_144_0006A                     ; 00062
         moveq   #$30,d0                         ; 00064
-        move.l  d0,-$20(a6)                     ; 00066
+        move.l  d0,_pfmt_Pad(a6)                ; 00066
 l_144_0006A:
         moveq   #$0,d0                          ; 0006A
         movea.l _pfmt_Format(a6),a0             ; 0006C
         move.b  (a0),d0                         ; 00070
         addq.l  #$1,_pfmt_Format(a6)            ; 00072
         andi.l  #$f,d0                          ; 00076
-        move.l  d0,-$24(a6)                     ; 0007C
+        move.l  d0,_pfmt_Width(a6)              ; 0007C
 l_144_00080:
         moveq   #$0,d0                          ; 00080
         movea.l _pfmt_Format(a6),a0             ; 00082
@@ -65,7 +70,7 @@ l_144_00080:
         move.b  (a1),d0                         ; 00092
         btst    #$2,d0                          ; 00094
         beq.b   l_144_000BC                     ; 00098
-        move.l  -$24(a6),d0                     ; 0009A
+        move.l  _pfmt_Width(a6),d0              ; 0009A
         moveq   #$a,d1                          ; 0009E
         jsr     (CXM33).l                       ; 000A0
         moveq   #$0,d1                          ; 000A6
@@ -73,7 +78,7 @@ l_144_00080:
         addq.l  #$1,_pfmt_Format(a6)            ; 000AA
         andi.l  #$f,d1                          ; 000AE
         add.l   d1,d0                           ; 000B4
-        move.l  d0,-$24(a6)                     ; 000B6
+        move.l  d0,_pfmt_Width(a6)              ; 000B6
         bra.b   l_144_00080                     ; 000BA
 l_144_000BC:
         movea.l _pfmt_Format(a6),a0             ; 000BC
@@ -81,7 +86,7 @@ l_144_000BC:
         cmpi.b  #$2e,d0                         ; 000C2
         bne.b   l_144_0010C                     ; 000C6
         addq.l  #$1,_pfmt_Format(a6)            ; 000C8
-        clr.l   -$1c(a6)                        ; 000CC
+        clr.l   _pfmt_Precision(a6)             ; 000CC
 l_144_000D0:
         moveq   #$0,d0                          ; 000D0
         movea.l _pfmt_Format(a6),a0             ; 000D2
@@ -92,7 +97,7 @@ l_144_000D0:
         move.b  (a1),d0                         ; 000E2
         btst    #$2,d0                          ; 000E4
         beq.b   l_144_0010C                     ; 000E8
-        move.l  -$1c(a6),d0                     ; 000EA
+        move.l  _pfmt_Precision(a6),d0          ; 000EA
         moveq   #$a,d1                          ; 000EE
         jsr     (CXM33).l                       ; 000F0
         moveq   #$0,d1                          ; 000F6
@@ -100,7 +105,7 @@ l_144_000D0:
         addq.l  #$1,_pfmt_Format(a6)            ; 000FA
         andi.l  #$f,d1                          ; 000FE
         add.l   d1,d0                           ; 00104
-        move.l  d0,-$1c(a6)                     ; 00106
+        move.l  d0,_pfmt_Precision(a6)          ; 00106
         bra.b   l_144_000D0                     ; 0010A
 l_144_0010C:
         movea.l _pfmt_Format(a6),a0             ; 0010C
@@ -109,7 +114,7 @@ l_144_0010C:
         bne.b   l_144_00122                     ; 00116
         moveq   #$1,d0                          ; 00118
         addq.l  #$1,_pfmt_Format(a6)            ; 0011A
-        move.l  d0,-$14(a6)                     ; 0011E
+        move.l  d0,_pfmt_LongArg(a6)            ; 0011E
 l_144_00122:
         clr.l   -$30(a6)                        ; 00122
         moveq   #$0,d0                          ; 00126

@@ -420,17 +420,19 @@ l_080_0046E:
 ;-------------------------------------------------------------------------------
 ; FreeAllSounds - Frees every sound slot.
 ;-------------------------------------------------------------------------------
+; FreeAllSounds's frame: arguments from 8(a6), locals below a6 (after its link)
+FreeAllSounds_Slot      equ     -$4             ; the SoundTable slot
 FreeAllSounds:
         link.w  a6,#$fffc                       ; 00476
-        clr.l   -$4(a6)                         ; 0047A
+        clr.l   FreeAllSounds_Slot(a6)          ; 0047A
 l_080_0047E:
-        move.l  -$4(a6),d0                      ; 0047E
+        move.l  FreeAllSounds_Slot(a6),d0       ; 0047E
         cmpi.l  #$28,d0                         ; 00482
         bge.b   l_080_00498                     ; 00488
         move.l  d0,-(a7)                        ; 0048A
         bsr.w   FreeSound                       ; 0048C
         addq.l  #$4,a7                          ; 00490
-        addq.l  #$1,-$4(a6)                     ; 00492
+        addq.l  #$1,FreeAllSounds_Slot(a6)      ; 00492
         bra.b   l_080_0047E                     ; 00496
 l_080_00498:
         unlk    a6                              ; 00498

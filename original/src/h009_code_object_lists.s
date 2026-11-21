@@ -770,6 +770,17 @@ l_009_00954:
 ; SortDrawList - Orders the scenery list by distance from the viewer (EntryDistance for each
 ; entry's distance).
 ;-------------------------------------------------------------------------------
+; SortDrawList's frame: arguments from 8(a6), locals below a6 (after its link)
+SortDrawList_X          equ     -$2             ; the entry's position (EntryCellX...)
+SortDrawList_Y          equ     -$6
+SortDrawList_Z          equ     -$8
+SortDrawList_DX         equ     -$C             ; relative to the viewer's cell (ViewCellXRel)
+SortDrawList_DZ         equ     -$10
+SortDrawList_Word       equ     -$12            ; the entry's word & $3FFF
+SortDrawList_Data       equ     -$16            ; the entry's data pointer
+SortDrawList_I          equ     -$18            ; the count
+SortDrawList_Count      equ     -$1A            ; the number of them
+SortDrawList_Nibble7D   equ     -$20            ; the object's +$7D low nibble
 SortDrawList:
         link.w  a6,#$ffde                       ; 00958
         lea.l   (SceneryList).l,a1              ; 0095C
@@ -821,8 +832,8 @@ l_009_009BA:
         ext.l   d2                              ; 009D6
         ext.l   d4                              ; 009D8
         bsr.w   ViewCellXRel                    ; 009DA
-        move.l  d2,-$c(a6)                      ; 009DE
-        move.l  d4,-$10(a6)                     ; 009E2
+        move.l  d2,SortDrawList_DX(a6)          ; 009DE
+        move.l  d4,SortDrawList_DZ(a6)          ; 009E2
         move.w  (a1),d1                         ; 009E6
         btst    #$4,d1                          ; 009E8
         beq.b   l_009_009F4                     ; 009EC
@@ -945,9 +956,9 @@ l_009_00AEE:
         bne.w   l_009_00B7E                     ; 00AFA
         bsr.w   EntryDistance                   ; 00AFE
         bsr.w   EntryCellX                      ; 00B02
-        move.w  d2,-$2(a6)                      ; 00B06
-        move.l  d3,-$6(a6)                      ; 00B0A
-        move.w  d4,-$8(a6)                      ; 00B0E
+        move.w  d2,SortDrawList_X(a6)           ; 00B06
+        move.l  d3,SortDrawList_Y(a6)           ; 00B0A
+        move.w  d4,SortDrawList_Z(a6)           ; 00B0E
         bra.w   l_009_00BFE                     ; 00B12
 l_009_00B16:
         lea.l   (SmallObjects).l,a3             ; 00B16
@@ -955,16 +966,16 @@ l_009_00B16:
         asr.w   #$3,d1                          ; 00B20
         move.w  $c(a3,d1.w),d2                  ; 00B22
         move.w  $e(a3,d1.w),d4                  ; 00B26
-        move.l  $10(a3,d1.w),-$6(a6)            ; 00B2A
+        move.l  $10(a3,d1.w),SortDrawList_Y(a6) ; 00B2A
         move.w  d1,-(a7)                        ; 00B30
         bsr.w   SmallObjectOf                   ; 00B32
         move.w  (a7)+,d1                        ; 00B36
-        move.w  d2,-$2(a6)                      ; 00B38
-        move.w  d4,-$8(a6)                      ; 00B3C
+        move.w  d2,SortDrawList_X(a6)           ; 00B38
+        move.w  d4,SortDrawList_Z(a6)           ; 00B3C
         movea.l $2(a0),a4                       ; 00B40
         movea.l $10(a4),a4                      ; 00B44
         move.l  $2(a4),d0                       ; 00B48
-        move.l  d0,-$16(a6)                     ; 00B4C
+        move.l  d0,SortDrawList_Data(a6)        ; 00B4C
         blt.b   l_009_00B56                     ; 00B50
         bra.w   l_009_00BFE                     ; 00B52
 l_009_00B56:
@@ -985,19 +996,19 @@ l_009_00B7E:
         add.w   d1,d1                           ; 00B88
         move.w  $c(a3,d1.w),d2                  ; 00B8A
         move.w  $e(a3,d1.w),d4                  ; 00B8E
-        move.l  $10(a3,d1.w),-$6(a6)            ; 00B92
+        move.l  $10(a3,d1.w),SortDrawList_Y(a6) ; 00B92
         move.w  d1,-(a7)                        ; 00B98
         bsr.w   ObjectOf                        ; 00B9A
         move.w  (a7)+,d1                        ; 00B9E
-        move.w  d2,-$2(a6)                      ; 00BA0
-        move.w  d4,-$8(a6)                      ; 00BA4
+        move.w  d2,SortDrawList_X(a6)           ; 00BA0
+        move.w  d4,SortDrawList_Z(a6)           ; 00BA4
         move.b  $4(a3,d1.w),d0                  ; 00BA8
         andi.b  #$c0,d0                         ; 00BAC
         beq.b   l_009_00BFE                     ; 00BB0
         movea.l $2(a0),a4                       ; 00BB2
         movea.l $10(a4),a4                      ; 00BB6
         move.l  $2(a4),d0                       ; 00BBA
-        move.l  d0,-$16(a6)                     ; 00BBE
+        move.l  d0,SortDrawList_Data(a6)        ; 00BBE
         blt.b   l_009_00BD6                     ; 00BC2
         move.w  #$22,(DebugCheckpoint).l        ; 00BC4
         jsr     (Nop).l                         ; 00BCC
@@ -1031,10 +1042,10 @@ l_009_00C1C:
         movem.w $6(a2),d5-d7                    ; 00C20
         add.w   a3,d2                           ; 00C26
         add.w   a5,d4                           ; 00C28
-        sub.w   -$2(a6),d2                      ; 00C2A
-        sub.w   -$8(a6),d4                      ; 00C2E
+        sub.w   SortDrawList_X(a6),d2           ; 00C2A
+        sub.w   SortDrawList_Z(a6),d4           ; 00C2E
         neg.w   d2                              ; 00C32
-        move.l  -$6(a6),d3                      ; 00C34
+        move.l  SortDrawList_Y(a6),d3           ; 00C34
         neg.w   d4                              ; 00C38
         muls.w  d5,d2                           ; 00C3A
         muls.w  d6,d3                           ; 00C3C
@@ -1048,9 +1059,9 @@ l_009_00C1C:
         add.w   a5,d4                           ; 00C4E
         ext.l   d2                              ; 00C50
         ext.l   d4                              ; 00C52
-        sub.l   -$c(a6),d2                      ; 00C54
+        sub.l   SortDrawList_DX(a6),d2          ; 00C54
         move.l  (ViewOffsetY8).l,d3             ; 00C58
-        sub.l   -$10(a6),d4                     ; 00C5E
+        sub.l   SortDrawList_DZ(a6),d4          ; 00C5E
         neg.l   d2                              ; 00C62
         neg.l   d3                              ; 00C64
         neg.l   d4                              ; 00C66
@@ -1069,8 +1080,8 @@ l_009_00C7C:
         bra.w   l_009_00EE8                     ; 00C86
 l_009_00C8A:
         andi.w  #$3fff,d0                       ; 00C8A
-        move.w  d0,-$12(a6)                     ; 00C8E
-        move.l  (a4)+,-$16(a6)                  ; 00C92
+        move.w  d0,SortDrawList_Word(a6)        ; 00C8E
+        move.l  (a4)+,SortDrawList_Data(a6)     ; 00C92
         move.l  a4,-(a7)                        ; 00C96
         move.w  (a0),d1                         ; 00C98
         andi.w  #$ff00,d1                       ; 00C9A
@@ -1084,21 +1095,21 @@ l_009_00C8A:
         neg.l   d1                              ; 00CB6
         move.b  $7d(a2),d3                      ; 00CB8
         andi.w  #$f,d3                          ; 00CBC
-        move.w  d3,-$20(a6)                     ; 00CC0
+        move.w  d3,SortDrawList_Nibble7D(a6)    ; 00CC0
         move.w  $2(a2,d0.w),d0                  ; 00CC4
         asr.w   d3,d0                           ; 00CC8
         cmp.w   d0,d1                           ; 00CCA
         blt.w   l_009_00D74                     ; 00CCC
 l_009_00CD0:
-        clr.w   -$18(a6)                        ; 00CD0
-        move.w  (a4),-$1a(a6)                   ; 00CD4
+        clr.w   SortDrawList_I(a6)              ; 00CD0
+        move.w  (a4),SortDrawList_Count(a6)     ; 00CD4
         blt.w   l_009_00D74                     ; 00CD8
 l_009_00CDC:
         move.w  (a4)+,d0                        ; 00CDC
         bge.b   l_009_00CEE                     ; 00CDE
         andi.w  #$fff,d0                        ; 00CE0
-        move.w  -$1a(a6),d1                     ; 00CE4
-        addq.w  #$1,-$18(a6)                    ; 00CE8
+        move.w  SortDrawList_Count(a6),d1       ; 00CE4
+        addq.w  #$1,SortDrawList_I(a6)          ; 00CE8
         bra.b   l_009_00CF4                     ; 00CEC
 l_009_00CEE:
         move.w  (a4),d1                         ; 00CEE
@@ -1118,7 +1129,7 @@ l_009_00CF4:
         asr.l   #$6,d5                          ; 00D18
         exg.l   d5,d7                           ; 00D1A
         movem.w (a5),d2-d4                      ; 00D1C
-        move.w  -$20(a6),d0                     ; 00D20
+        move.w  SortDrawList_Nibble7D(a6),d0    ; 00D20
         asr.w   d0,d2                           ; 00D24
         asr.l   d0,d3                           ; 00D26
         asr.w   d0,d4                           ; 00D28
@@ -1135,14 +1146,14 @@ l_009_00CF4:
         muls.w  d4,d7                           ; 00D50
         add.l   d5,d7                           ; 00D52
         blt.b   l_009_00D66                     ; 00D54
-        tst.w   -$18(a6)                        ; 00D56
+        tst.w   SortDrawList_I(a6)              ; 00D56
         bne.w   l_009_00CD0                     ; 00D5A
 l_009_00D5E:
         move.w  (a4)+,d0                        ; 00D5E
         bge.b   l_009_00D5E                     ; 00D60
         bra.w   l_009_00CD0                     ; 00D62
 l_009_00D66:
-        tst.w   -$18(a6)                        ; 00D66
+        tst.w   SortDrawList_I(a6)              ; 00D66
         beq.w   l_009_00CDC                     ; 00D6A
         movea.l (a7)+,a4                        ; 00D6E
         bra.w   l_009_00EE8                     ; 00D70
@@ -1189,16 +1200,16 @@ l_009_00D78:
         move.w  d6,d7                           ; 00DE4
         move.w  d0,d6                           ; 00DE6
         movem.w (a5),d2-d4                      ; 00DE8
-        move.w  -$20(a6),d0                     ; 00DEC
+        move.w  SortDrawList_Nibble7D(a6),d0    ; 00DEC
         asr.w   d0,d2                           ; 00DF0
         asr.l   d0,d3                           ; 00DF2
         asr.w   d0,d4                           ; 00DF4
         add.w   $c(a2),d2                       ; 00DF6
         add.l   $10(a2),d3                      ; 00DFA
         add.w   $e(a2),d4                       ; 00DFE
-        sub.w   -$2(a6),d2                      ; 00E02
-        sub.l   -$6(a6),d3                      ; 00E06
-        sub.w   -$8(a6),d4                      ; 00E0A
+        sub.w   SortDrawList_X(a6),d2           ; 00E02
+        sub.l   SortDrawList_Y(a6),d3           ; 00E06
+        sub.w   SortDrawList_Z(a6),d4           ; 00E0A
         neg.w   d2                              ; 00E0E
         neg.l   d3                              ; 00E10
         neg.w   d4                              ; 00E12
@@ -1217,9 +1228,9 @@ l_009_00D78:
         add.w   $e(a2),d4                       ; 00E32
         ext.l   d2                              ; 00E36
         ext.l   d4                              ; 00E38
-        sub.l   -$c(a6),d2                      ; 00E3A
+        sub.l   SortDrawList_DX(a6),d2          ; 00E3A
         add.l   (ViewOffsetY8).l,d3             ; 00E3E
-        sub.l   -$10(a6),d4                     ; 00E44
+        sub.l   SortDrawList_DZ(a6),d4          ; 00E44
         neg.l   d2                              ; 00E48
         neg.l   d3                              ; 00E4A
         neg.l   d4                              ; 00E4C
@@ -1229,13 +1240,13 @@ l_009_00D78:
         add.l   d3,d4                           ; 00E54
         add.l   d2,d4                           ; 00E56
         bge.b   l_009_00E66                     ; 00E58
-        subq.w  #$1,-$12(a6)                    ; 00E5A
+        subq.w  #$1,SortDrawList_Word(a6)       ; 00E5A
         bge.w   l_009_00D78                     ; 00E5E
         bra.w   l_009_00EE8                     ; 00E62
 l_009_00E66:
         tst.l   d1                              ; 00E66
         bge.w   l_009_00EF0                     ; 00E68
-        tst.w   -$16(a6)                        ; 00E6C
+        tst.w   SortDrawList_Data(a6)           ; 00E6C
         bge.b   l_009_00EE0                     ; 00E70
         movea.l -$4(a4),a2                      ; 00E72
         movem.w $2(a2),d2-d3                    ; 00E76
@@ -1259,13 +1270,13 @@ l_009_00E66:
         asr.l   #$6,d7                          ; 00EB4
         move.w  d4,d5                           ; 00EB6
         movem.w (a5),d2-d4                      ; 00EB8
-        move.w  -$20(a6),d0                     ; 00EBC
+        move.w  SortDrawList_Nibble7D(a6),d0    ; 00EBC
         asr.w   d0,d2                           ; 00EC0
         asr.w   d0,d4                           ; 00EC2
         add.w   $c(a2),d2                       ; 00EC4
         add.w   $e(a2),d4                       ; 00EC8
-        sub.w   -$2(a6),d2                      ; 00ECC
-        sub.w   -$8(a6),d4                      ; 00ED0
+        sub.w   SortDrawList_X(a6),d2           ; 00ECC
+        sub.w   SortDrawList_Z(a6),d4           ; 00ED0
         neg.w   d2                              ; 00ED4
         neg.w   d4                              ; 00ED6
         muls.w  d5,d2                           ; 00ED8
@@ -1273,7 +1284,7 @@ l_009_00E66:
         add.l   d2,d4                           ; 00EDC
         bge.b   l_009_00EF0                     ; 00EDE
 l_009_00EE0:
-        subq.w  #$1,-$12(a6)                    ; 00EE0
+        subq.w  #$1,SortDrawList_Word(a6)       ; 00EE0
         bge.w   l_009_00D78                     ; 00EE4
 l_009_00EE8:
         ori.w   #$c000,$2(a1)                   ; 00EE8

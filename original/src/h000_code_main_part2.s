@@ -43,13 +43,15 @@ l_000_043F0:
 ;-------------------------------------------------------------------------------
 ; SetHeightBand's frame: arguments from 8(a6), locals below a6 (after its link)
 SetHeightBand_Height    equ     -$2             ; the view's height / 8
+SetHeightBand_Height2   equ     -$4             ; ViewHeightLong / 8 (0 for the outside camera)
+SetHeightBand_Low       equ     -$5             ; 1 if low enough ($384 / $A8C...)
 SetHeightBand:
         link.w  a6,#$fffa                       ; 043F2
         tst.b   (OutsideView).l                 ; 043F6
         beq.b   l_000_04410                     ; 043FC
         move.w  (OutsideCamPitch).l,d0          ; 043FE
         asr.w   #$3,d0                          ; 04404
-        clr.w   -$4(a6)                         ; 04406
+        clr.w   SetHeightBand_Height2(a6)       ; 04406
         move.w  d0,SetHeightBand_Height(a6)     ; 0440A
         bra.b   l_000_04428                     ; 0440E
 l_000_04410:
@@ -58,7 +60,7 @@ l_000_04410:
         move.l  (ViewHeightLong).l,d1           ; 04418
         asr.l   #$3,d1                          ; 0441E
         move.w  d0,SetHeightBand_Height(a6)     ; 04420
-        move.w  d1,-$4(a6)                      ; 04424
+        move.w  d1,SetHeightBand_Height2(a6)    ; 04424
 l_000_04428:
         move.w  SetHeightBand_Height(a6),d0     ; 04428
         cmpi.w  #$258,d0                        ; 0442C
@@ -113,30 +115,30 @@ l_000_044DE:
         move.w  (FlightBits).l,d0               ; 044DE
         andi.w  #$fffd,d0                       ; 044E4
         move.w  d0,(FlightBits).l               ; 044E8
-        clr.b   -$5(a6)                         ; 044EE
+        clr.b   SetHeightBand_Low(a6)           ; 044EE
         move.w  SetHeightBand_Height(a6),d0     ; 044F2
         cmpi.w  #$384,d0                        ; 044F6
         blt.b   l_000_04502                     ; 044FA
         cmpi.w  #$a8c,d0                        ; 044FC
         blt.b   l_000_0451A                     ; 04500
 l_000_04502:
-        move.w  -$4(a6),d0                      ; 04502
+        move.w  SetHeightBand_Height2(a6),d0    ; 04502
         cmpi.w  #$384,d0                        ; 04506
         blt.b   l_000_04530                     ; 0450A
         cmpi.w  #$a8c,d0                        ; 0450C
         bgt.b   l_000_04530                     ; 04510
-        move.b  #$1,-$5(a6)                     ; 04512
+        move.b  #$1,SetHeightBand_Low(a6)       ; 04512
         bra.b   l_000_04530                     ; 04518
 l_000_0451A:
-        move.w  -$4(a6),d0                      ; 0451A
+        move.w  SetHeightBand_Height2(a6),d0    ; 0451A
         cmpi.w  #$384,d0                        ; 0451E
         blt.b   l_000_0452A                     ; 04522
         cmpi.w  #$a8c,d0                        ; 04524
         blt.b   l_000_04530                     ; 04528
 l_000_0452A:
-        move.b  #$1,-$5(a6)                     ; 0452A
+        move.b  #$1,SetHeightBand_Low(a6)       ; 0452A
 l_000_04530:
-        tst.b   -$5(a6)                         ; 04530
+        tst.b   SetHeightBand_Low(a6)           ; 04530
         beq.b   l_000_04546                     ; 04534
         move.w  (FlightBits).l,d0               ; 04536
         ori.w   #$2,d0                          ; 0453C
@@ -159,6 +161,7 @@ VectorToAngles_DY       rs.l    1
 VectorToAngles_DZ       rs.l    1
 VectorToAngles_MaxTurn  rs.l    1               ; -1: set the angles; else each moves 1/4 of the way there, at most this far
 VectorToAngles_Signs    equ     -$9             ; bits 0-2: DX, DY, DZ were negative
+VectorToAngles_Octant   equ     -$A             ; Signs & 5 (DX's and DZ's)
 VectorToAngles_PitchTo  equ     -$E             ; the direction's pitch
 VectorToAngles_HeadingTo equ     -$12           ; the direction's heading
 VectorToAngles_Largest  equ     -$16            ; the largest part (to scale them by)
@@ -300,7 +303,7 @@ l_000_046BA:
 l_000_04706:
         move.b  VectorToAngles_Signs(a6),d0     ; 04706
         andi.b  #$5,d0                          ; 0470A
-        move.b  d0,-$a(a6)                      ; 0470E
+        move.b  d0,VectorToAngles_Octant(a6)    ; 0470E
         subq.b  #$5,d0                          ; 04712
         bne.b   l_000_04726                     ; 04714
         move.l  #$3840,d0                       ; 04716
@@ -308,12 +311,12 @@ l_000_04706:
         move.l  d0,VectorToAngles_HeadingTo(a6) ; 04720
         bra.b   l_000_0474C                     ; 04724
 l_000_04726:
-        cmpi.b  #$4,-$a(a6)                     ; 04726
+        cmpi.b  #$4,VectorToAngles_Octant(a6)   ; 04726
         bne.b   l_000_04738                     ; 0472C
         addi.l  #$3840,VectorToAngles_HeadingTo(a6) ; 0472E
         bra.b   l_000_0474C                     ; 04736
 l_000_04738:
-        tst.b   -$a(a6)                         ; 04738
+        tst.b   VectorToAngles_Octant(a6)       ; 04738
         bne.b   l_000_0474C                     ; 0473C
         move.l  #$7080,d0                       ; 0473E
         sub.l   VectorToAngles_HeadingTo(a6),d0 ; 04744

@@ -24,15 +24,18 @@ ClipFillPolygon:
 ; ClipFillPolygonBuffer - ClipFillPolygon's second entry: for a polygon already in
 ; PolygonBuffer (count, then x, y, z words per corner).
 ;-------------------------------------------------------------------------------
+; ClipFillPolygonBuffer's frame: arguments from 8(a6), locals below a6 (after its link)
+ClipFillPolygonBuffer_First equ     -$2         ; the buffer's first word (before the count)
+ClipFillPolygonBuffer_Corners equ     -$4       ; the corners left
 ClipFillPolygonBuffer:
         link.w  a6,#$fffa                       ; 00018
         clr.w   d7                              ; 0001C
         lea.l   (PolygonBuffer).l,a0            ; 0001E
-        move.w  (a0)+,-$2(a6)                   ; 00024
+        move.w  (a0)+,ClipFillPolygonBuffer_First(a6) ; 00024
         move.w  (a0)+,d0                        ; 00028
         cmpi.w  #$3,d0                          ; 0002A
         blt.b   l_019_00004                     ; 0002E
-        move.w  d0,-$4(a6)                      ; 00030
+        move.w  d0,ClipFillPolygonBuffer_Corners(a6) ; 00030
         lea.l   (ClipCorners).l,a1              ; 00034
         lea.l   (ClipWork3).l,a2                ; 0003A
         lea.l   (ClipWork2).l,a3                ; 00040
@@ -42,10 +45,10 @@ ClipFillPolygonBuffer:
         moveq   #$1,d0                          ; 00052
 l_019_00054:
         beq.b   l_019_00000                     ; 00054
-        subq.w  #$1,-$4(a6)                     ; 00056
+        subq.w  #$1,ClipFillPolygonBuffer_Corners(a6) ; 00056
         blt.w   l_019_0040C                     ; 0005A
         movem.w (a0)+,d0-d2                     ; 0005E
-        move.w  -$2(a6),d3                      ; 00062
+        move.w  ClipFillPolygonBuffer_First(a6),d3 ; 00062
         asl.l   d3,d0                           ; 00066
         asl.l   d3,d1                           ; 00068
         asl.l   d3,d2                           ; 0006A

@@ -1052,18 +1052,21 @@ l_040_00E0A:
 ; HUDHeadingTicks - The heading scale's tick marks, every 10 pixels from HUDTapeOffset, longer
 ; at the labelled ones.
 ;-------------------------------------------------------------------------------
+; HUDHeadingTicks's frame: arguments from 8(a6), locals below a6 (after its link)
+HUDHeadingTicks_Tick    equ     -$2             ; the tick count
+HUDHeadingTicks_Y       equ     -$4             ; its row (d1)
 HUDHeadingTicks:
         link.w  a6,#$fff8                       ; 00E0E
-        move.w  d1,-$4(a6)                      ; 00E12
+        move.w  d1,HUDHeadingTicks_Y(a6)        ; 00E12
         move.w  (HUDTapeOffset).l,d0            ; 00E16
         jsr     (PlotInView).l                  ; 00E1C
         blt.b   l_040_00E2C                     ; 00E22
         subq.w  #$1,d1                          ; 00E24
         jsr     (PlotKeep).l                    ; 00E26
 l_040_00E2C:
-        move.w  #$0,-$2(a6)                     ; 00E2C
+        move.w  #$0,HUDHeadingTicks_Tick(a6)    ; 00E2C
 l_040_00E32:
-        move.w  -$4(a6),d1                      ; 00E32
+        move.w  HUDHeadingTicks_Y(a6),d1        ; 00E32
         addi.w  #$a,d0                          ; 00E36
         blt.b   l_040_00E84                     ; 00E3A
         cmpi.w  #$13f,d0                        ; 00E3C
@@ -1073,27 +1076,27 @@ l_040_00E32:
         cmp.w   d2,d0                           ; 00E4C
         bge.b   l_040_00E84                     ; 00E4E
         move.w  d0,-(a7)                        ; 00E50
-        cmpi.w  #$1,-$2(a6)                     ; 00E52
+        cmpi.w  #$1,HUDHeadingTicks_Tick(a6)    ; 00E52
         beq.b   l_040_00E6A                     ; 00E58
-        cmpi.w  #$3,-$2(a6)                     ; 00E5A
+        cmpi.w  #$3,HUDHeadingTicks_Tick(a6)    ; 00E5A
         beq.b   l_040_00E6A                     ; 00E60
         jsr     (Plot).l                        ; 00E62
         bra.b   l_040_00E7C                     ; 00E68
 l_040_00E6A:
         jsr     (PlotKeep).l                    ; 00E6A
-        move.w  -$4(a6),d1                      ; 00E70
+        move.w  HUDHeadingTicks_Y(a6),d1        ; 00E70
         subq.w  #$1,d1                          ; 00E74
         jsr     (Plot).l                        ; 00E76
 l_040_00E7C:
         move.w  (a7)+,d0                        ; 00E7C
-        addq.w  #$1,-$2(a6)                     ; 00E7E
+        addq.w  #$1,HUDHeadingTicks_Tick(a6)    ; 00E7E
         bra.b   l_040_00E32                     ; 00E82
 l_040_00E84:
         move.w  (HUDTapeOffset).l,d0            ; 00E84
         add.w   (ViewX).l,d0                    ; 00E8A
-        move.w  #$0,-$2(a6)                     ; 00E90
+        move.w  #$0,HUDHeadingTicks_Tick(a6)    ; 00E90
 l_040_00E96:
-        move.w  -$4(a6),d1                      ; 00E96
+        move.w  HUDHeadingTicks_Y(a6),d1        ; 00E96
         subi.w  #$a,d0                          ; 00E9A
         blt.b   l_040_00EE8                     ; 00E9E
         cmpi.w  #$13f,d0                        ; 00EA0
@@ -1103,20 +1106,20 @@ l_040_00E96:
         cmp.w   d2,d0                           ; 00EB0
         ble.b   l_040_00EE8                     ; 00EB2
         move.w  d0,-(a7)                        ; 00EB4
-        cmpi.w  #$1,-$2(a6)                     ; 00EB6
+        cmpi.w  #$1,HUDHeadingTicks_Tick(a6)    ; 00EB6
         beq.b   l_040_00ECE                     ; 00EBC
-        cmpi.w  #$3,-$2(a6)                     ; 00EBE
+        cmpi.w  #$3,HUDHeadingTicks_Tick(a6)    ; 00EBE
         beq.b   l_040_00ECE                     ; 00EC4
         jsr     (Plot).l                        ; 00EC6
         bra.b   l_040_00EE0                     ; 00ECC
 l_040_00ECE:
         jsr     (PlotKeep).l                    ; 00ECE
-        move.w  -$4(a6),d1                      ; 00ED4
+        move.w  HUDHeadingTicks_Y(a6),d1        ; 00ED4
         subq.w  #$1,d1                          ; 00ED8
         jsr     (Plot).l                        ; 00EDA
 l_040_00EE0:
         move.w  (a7)+,d0                        ; 00EE0
-        addq.w  #$1,-$2(a6)                     ; 00EE2
+        addq.w  #$1,HUDHeadingTicks_Tick(a6)    ; 00EE2
         bra.b   l_040_00E96                     ; 00EE6
 l_040_00EE8:
         unlk    a6                              ; 00EE8
@@ -1510,11 +1513,19 @@ TargetBoxShape:
 ; DrawHUDShape - Draws a shape of point offsets (a0: byte pairs, d2 of them) round (d0, d1),
 ; only inside the head-up display: the gun pipper.
 ;-------------------------------------------------------------------------------
+; DrawHUDShape's frame: arguments from 8(a6), locals below a6 (after its link)
+DrawHUDShape_X          equ     -$2             ; the centre (d0, d1)
+DrawHUDShape_Y          equ     -$4
+DrawHUDShape_Left       equ     -$6             ; the head-up display's edges: ViewX + $55
+DrawHUDShape_Right      equ     -$8             ; ViewX + $E9
+DrawHUDShape_Top        equ     -$A             ; $2D
+DrawHUDShape_Bottom     equ     -$C             ; $90
+DrawHUDShape_Points     equ     -$E             ; the points left (d2)
 DrawHUDShape:
         link.w  a6,#$fff0                       ; 01348
-        move.w  d0,-$2(a6)                      ; 0134C
-        move.w  d1,-$4(a6)                      ; 01350
-        move.w  d2,-$e(a6)                      ; 01354
+        move.w  d0,DrawHUDShape_X(a6)           ; 0134C
+        move.w  d1,DrawHUDShape_Y(a6)           ; 01350
+        move.w  d2,DrawHUDShape_Points(a6)      ; 01354
         cmpi.w  #$e,d0                          ; 01358
         ble.w   l_040_0143E                     ; 0135C
         cmpi.w  #$132,d0                        ; 01360
@@ -1538,12 +1549,12 @@ l_040_01398:
         neg.b   d1                              ; 0139E
         ext.w   d0                              ; 013A0
         ext.w   d1                              ; 013A2
-        add.w   -$2(a6),d0                      ; 013A4
-        add.w   -$4(a6),d1                      ; 013A8
+        add.w   DrawHUDShape_X(a6),d0           ; 013A4
+        add.w   DrawHUDShape_Y(a6),d1           ; 013A8
         move.l  a0,-(a7)                        ; 013AC
         jsr     (Plot).l                        ; 013AE
         movea.l (a7)+,a0                        ; 013B4
-        subq.w  #$1,-$e(a6)                     ; 013B6
+        subq.w  #$1,DrawHUDShape_Points(a6)     ; 013B6
         blt.w   l_040_0143A                     ; 013BA
         bra.b   l_040_01398                     ; 013BE
 l_040_013C0:
@@ -1555,12 +1566,12 @@ l_040_013C2:
         subq.b  #$1,d1                          ; 013C8
         ext.w   d0                              ; 013CA
         ext.w   d1                              ; 013CC
-        add.w   -$2(a6),d0                      ; 013CE
-        add.w   -$4(a6),d1                      ; 013D2
+        add.w   DrawHUDShape_X(a6),d0           ; 013CE
+        add.w   DrawHUDShape_Y(a6),d1           ; 013D2
         move.l  a0,-(a7)                        ; 013D6
         jsr     (Plot).l                        ; 013D8
         movea.l (a7)+,a0                        ; 013DE
-        subq.w  #$1,-$e(a6)                     ; 013E0
+        subq.w  #$1,DrawHUDShape_Points(a6)     ; 013E0
         blt.b   l_040_0143A                     ; 013E4
         bra.b   l_040_013C2                     ; 013E6
 l_040_013E8:
@@ -1573,12 +1584,12 @@ l_040_013EA:
         subq.b  #$1,d1                          ; 013F2
         ext.w   d0                              ; 013F4
         ext.w   d1                              ; 013F6
-        add.w   -$2(a6),d0                      ; 013F8
-        add.w   -$4(a6),d1                      ; 013FC
+        add.w   DrawHUDShape_X(a6),d0           ; 013F8
+        add.w   DrawHUDShape_Y(a6),d1           ; 013FC
         move.l  a0,-(a7)                        ; 01400
         jsr     (Plot).l                        ; 01402
         movea.l (a7)+,a0                        ; 01408
-        subq.w  #$1,-$e(a6)                     ; 0140A
+        subq.w  #$1,DrawHUDShape_Points(a6)     ; 0140A
         blt.b   l_040_0143A                     ; 0140E
         bra.b   l_040_013EA                     ; 01410
 l_040_01412:
@@ -1591,12 +1602,12 @@ l_040_01414:
         neg.b   d1                              ; 0141C
         ext.w   d0                              ; 0141E
         ext.w   d1                              ; 01420
-        add.w   -$2(a6),d0                      ; 01422
-        add.w   -$4(a6),d1                      ; 01426
+        add.w   DrawHUDShape_X(a6),d0           ; 01422
+        add.w   DrawHUDShape_Y(a6),d1           ; 01426
         move.l  a0,-(a7)                        ; 0142A
         jsr     (Plot).l                        ; 0142C
         movea.l (a7)+,a0                        ; 01432
-        subq.w  #$1,-$e(a6)                     ; 01434
+        subq.w  #$1,DrawHUDShape_Points(a6)     ; 01434
         bge.b   l_040_01414                     ; 01438
 l_040_0143A:
         unlk    a6                              ; 0143A
@@ -1604,12 +1615,12 @@ l_040_0143A:
 l_040_0143E:
         move.w  #$55,d0                         ; 0143E
         add.w   (ViewX).l,d0                    ; 01442
-        move.w  d0,-$6(a6)                      ; 01448
+        move.w  d0,DrawHUDShape_Left(a6)        ; 01448
         move.w  #$e9,d0                         ; 0144C
         add.w   (ViewX).l,d0                    ; 01450
-        move.w  d0,-$8(a6)                      ; 01456
-        move.w  #$2d,-$a(a6)                    ; 0145A
-        move.w  #$90,-$c(a6)                    ; 01460
+        move.w  d0,DrawHUDShape_Right(a6)       ; 01456
+        move.w  #$2d,DrawHUDShape_Top(a6)       ; 0145A
+        move.w  #$90,DrawHUDShape_Bottom(a6)    ; 01460
 l_040_01466:
         move.b  (a0)+,d0                        ; 01466
         move.b  (a0)+,d1                        ; 01468
@@ -1617,25 +1628,25 @@ l_040_01466:
         neg.b   d1                              ; 0146C
         ext.w   d0                              ; 0146E
         ext.w   d1                              ; 01470
-        add.w   -$2(a6),d0                      ; 01472
-        add.w   -$4(a6),d1                      ; 01476
+        add.w   DrawHUDShape_X(a6),d0           ; 01472
+        add.w   DrawHUDShape_Y(a6),d1           ; 01476
         cmpi.w  #$e,d0                          ; 0147A
         ble.b   l_040_014A8                     ; 0147E
         cmpi.w  #$132,d0                        ; 01480
         bge.b   l_040_014A8                     ; 01484
-        cmp.w   -$6(a6),d0                      ; 01486
+        cmp.w   DrawHUDShape_Left(a6),d0        ; 01486
         ble.b   l_040_014A8                     ; 0148A
-        cmp.w   -$8(a6),d0                      ; 0148C
+        cmp.w   DrawHUDShape_Right(a6),d0       ; 0148C
         bge.b   l_040_014A8                     ; 01490
-        cmp.w   -$a(a6),d1                      ; 01492
+        cmp.w   DrawHUDShape_Top(a6),d1         ; 01492
         ble.b   l_040_014A8                     ; 01496
-        cmp.w   -$c(a6),d1                      ; 01498
+        cmp.w   DrawHUDShape_Bottom(a6),d1      ; 01498
         bge.b   l_040_014A8                     ; 0149C
         move.l  a0,-(a7)                        ; 0149E
         jsr     (Plot).l                        ; 014A0
         movea.l (a7)+,a0                        ; 014A6
 l_040_014A8:
-        subq.w  #$1,-$e(a6)                     ; 014A8
+        subq.w  #$1,DrawHUDShape_Points(a6)     ; 014A8
         blt.w   l_040_01596                     ; 014AC
         bra.b   l_040_01466                     ; 014B0
 l_040_014B2:
@@ -1646,25 +1657,25 @@ l_040_014B4:
         blt.b   l_040_014FE                     ; 014B8
         ext.w   d0                              ; 014BA
         ext.w   d1                              ; 014BC
-        add.w   -$2(a6),d0                      ; 014BE
-        add.w   -$4(a6),d1                      ; 014C2
+        add.w   DrawHUDShape_X(a6),d0           ; 014BE
+        add.w   DrawHUDShape_Y(a6),d1           ; 014C2
         cmpi.w  #$e,d0                          ; 014C6
         ble.b   l_040_014F4                     ; 014CA
         cmpi.w  #$132,d0                        ; 014CC
         bge.b   l_040_014F4                     ; 014D0
-        cmp.w   -$6(a6),d0                      ; 014D2
+        cmp.w   DrawHUDShape_Left(a6),d0        ; 014D2
         ble.b   l_040_014F4                     ; 014D6
-        cmp.w   -$8(a6),d0                      ; 014D8
+        cmp.w   DrawHUDShape_Right(a6),d0       ; 014D8
         bge.b   l_040_014F4                     ; 014DC
-        cmp.w   -$a(a6),d1                      ; 014DE
+        cmp.w   DrawHUDShape_Top(a6),d1         ; 014DE
         ble.b   l_040_014F4                     ; 014E2
-        cmp.w   -$c(a6),d1                      ; 014E4
+        cmp.w   DrawHUDShape_Bottom(a6),d1      ; 014E4
         bge.b   l_040_014F4                     ; 014E8
         move.l  a0,-(a7)                        ; 014EA
         jsr     (Plot).l                        ; 014EC
         movea.l (a7)+,a0                        ; 014F2
 l_040_014F4:
-        subq.w  #$1,-$e(a6)                     ; 014F4
+        subq.w  #$1,DrawHUDShape_Points(a6)     ; 014F4
         blt.w   l_040_01596                     ; 014F8
         bra.b   l_040_014B4                     ; 014FC
 l_040_014FE:
@@ -1676,25 +1687,25 @@ l_040_01500:
         neg.b   d0                              ; 01506
         ext.w   d0                              ; 01508
         ext.w   d1                              ; 0150A
-        add.w   -$2(a6),d0                      ; 0150C
-        add.w   -$4(a6),d1                      ; 01510
+        add.w   DrawHUDShape_X(a6),d0           ; 0150C
+        add.w   DrawHUDShape_Y(a6),d1           ; 01510
         cmpi.w  #$e,d0                          ; 01514
         ble.b   l_040_01542                     ; 01518
         cmpi.w  #$132,d0                        ; 0151A
         bge.b   l_040_01542                     ; 0151E
-        cmp.w   -$6(a6),d0                      ; 01520
+        cmp.w   DrawHUDShape_Left(a6),d0        ; 01520
         ble.b   l_040_01542                     ; 01524
-        cmp.w   -$8(a6),d0                      ; 01526
+        cmp.w   DrawHUDShape_Right(a6),d0       ; 01526
         bge.b   l_040_01542                     ; 0152A
-        cmp.w   -$a(a6),d1                      ; 0152C
+        cmp.w   DrawHUDShape_Top(a6),d1         ; 0152C
         ble.b   l_040_01542                     ; 01530
-        cmp.w   -$c(a6),d1                      ; 01532
+        cmp.w   DrawHUDShape_Bottom(a6),d1      ; 01532
         bge.b   l_040_01542                     ; 01536
         move.l  a0,-(a7)                        ; 01538
         jsr     (Plot).l                        ; 0153A
         movea.l (a7)+,a0                        ; 01540
 l_040_01542:
-        subq.w  #$1,-$e(a6)                     ; 01542
+        subq.w  #$1,DrawHUDShape_Points(a6)     ; 01542
         blt.b   l_040_01596                     ; 01546
         bra.b   l_040_01500                     ; 01548
 l_040_0154A:
@@ -1707,25 +1718,25 @@ l_040_0154C:
         neg.b   d1                              ; 01554
         ext.w   d0                              ; 01556
         ext.w   d1                              ; 01558
-        add.w   -$2(a6),d0                      ; 0155A
-        add.w   -$4(a6),d1                      ; 0155E
+        add.w   DrawHUDShape_X(a6),d0           ; 0155A
+        add.w   DrawHUDShape_Y(a6),d1           ; 0155E
         cmpi.w  #$e,d0                          ; 01562
         ble.b   l_040_01590                     ; 01566
         cmpi.w  #$132,d0                        ; 01568
         bge.b   l_040_01590                     ; 0156C
-        cmp.w   -$6(a6),d0                      ; 0156E
+        cmp.w   DrawHUDShape_Left(a6),d0        ; 0156E
         ble.b   l_040_01590                     ; 01572
-        cmp.w   -$8(a6),d0                      ; 01574
+        cmp.w   DrawHUDShape_Right(a6),d0       ; 01574
         bge.b   l_040_01590                     ; 01578
-        cmp.w   -$a(a6),d1                      ; 0157A
+        cmp.w   DrawHUDShape_Top(a6),d1         ; 0157A
         ble.b   l_040_01590                     ; 0157E
-        cmp.w   -$c(a6),d1                      ; 01580
+        cmp.w   DrawHUDShape_Bottom(a6),d1      ; 01580
         bge.b   l_040_01590                     ; 01584
         move.l  a0,-(a7)                        ; 01586
         jsr     (Plot).l                        ; 01588
         movea.l (a7)+,a0                        ; 0158E
 l_040_01590:
-        subq.w  #$1,-$e(a6)                     ; 01590
+        subq.w  #$1,DrawHUDShape_Points(a6)     ; 01590
         bge.b   l_040_0154C                     ; 01594
 l_040_01596:
         unlk    a6                              ; 01596
@@ -1735,35 +1746,43 @@ l_040_01596:
 ; DrawRangeArc - The gun sight's range bar: d2 points of the circle (a0) from its start, so its
 ; length shows the range.
 ;-------------------------------------------------------------------------------
+; DrawRangeArc's frame: arguments from 8(a6), locals below a6 (after its link)
+DrawRangeArc_X          equ     -$2             ; the centre (d0, d1)
+DrawRangeArc_Y          equ     -$4
+DrawRangeArc_Left       equ     -$6             ; the head-up display's edges: ViewX + $55
+DrawRangeArc_Right      equ     -$8             ; ViewX + $E9
+DrawRangeArc_Top        equ     -$A             ; $2D
+DrawRangeArc_Bottom     equ     -$C             ; $90
+DrawRangeArc_Points     equ     -$E             ; the points left (d2)
 DrawRangeArc:
         link.w  a6,#$fff0                       ; 0159A
-        move.w  d0,-$2(a6)                      ; 0159E
-        move.w  d1,-$4(a6)                      ; 015A2
-        move.w  d2,-$e(a6)                      ; 015A6
+        move.w  d0,DrawRangeArc_X(a6)           ; 0159E
+        move.w  d1,DrawRangeArc_Y(a6)           ; 015A2
+        move.w  d2,DrawRangeArc_Points(a6)      ; 015A6
         move.w  #$55,d0                         ; 015AA
         add.w   (ViewX).l,d0                    ; 015AE
-        move.w  d0,-$6(a6)                      ; 015B4
+        move.w  d0,DrawRangeArc_Left(a6)        ; 015B4
         move.w  #$e9,d0                         ; 015B8
         add.w   (ViewX).l,d0                    ; 015BC
-        move.w  d0,-$8(a6)                      ; 015C2
-        move.w  #$2d,-$a(a6)                    ; 015C6
-        move.w  #$90,-$c(a6)                    ; 015CC
+        move.w  d0,DrawRangeArc_Right(a6)       ; 015C2
+        move.w  #$2d,DrawRangeArc_Top(a6)       ; 015C6
+        move.w  #$90,DrawRangeArc_Bottom(a6)    ; 015CC
 l_040_015D2:
         move.b  (a0)+,d0                        ; 015D2
         move.b  (a0)+,d1                        ; 015D4
         blt.b   l_040_015E2                     ; 015D6
         neg.b   d1                              ; 015D8
-        subq.w  #$1,-$e(a6)                     ; 015DA
+        subq.w  #$1,DrawRangeArc_Points(a6)     ; 015DA
         blt.b   l_040_0161E                     ; 015DE
         bra.b   l_040_015D2                     ; 015E0
 l_040_015E2:
         subq.w  #$2,a0                          ; 015E2
-        subq.w  #$1,-$4(a6)                     ; 015E4
+        subq.w  #$1,DrawRangeArc_Y(a6)          ; 015E4
 l_040_015E8:
         move.b  -(a0),d1                        ; 015E8
         move.b  -(a0),d0                        ; 015EA
         blt.b   l_040_015F6                     ; 015EC
-        subq.w  #$1,-$e(a6)                     ; 015EE
+        subq.w  #$1,DrawRangeArc_Points(a6)     ; 015EE
         blt.b   l_040_0161E                     ; 015F2
         bra.b   l_040_015E8                     ; 015F4
 l_040_015F6:
@@ -1773,36 +1792,36 @@ l_040_015F8:
         move.b  (a0)+,d1                        ; 015FA
         blt.b   l_040_01608                     ; 015FC
         neg.b   d0                              ; 015FE
-        subq.w  #$1,-$e(a6)                     ; 01600
+        subq.w  #$1,DrawRangeArc_Points(a6)     ; 01600
         blt.b   l_040_0161E                     ; 01604
         bra.b   l_040_015F8                     ; 01606
 l_040_01608:
         subq.w  #$2,a0                          ; 01608
-        addq.w  #$1,-$4(a6)                     ; 0160A
+        addq.w  #$1,DrawRangeArc_Y(a6)          ; 0160A
 l_040_0160E:
         move.b  -(a0),d1                        ; 0160E
         move.b  -(a0),d0                        ; 01610
         blt.b   l_040_01654                     ; 01612
         neg.b   d0                              ; 01614
         neg.b   d1                              ; 01616
-        subq.w  #$1,-$e(a6)                     ; 01618
+        subq.w  #$1,DrawRangeArc_Points(a6)     ; 01618
         bge.b   l_040_0160E                     ; 0161C
 l_040_0161E:
         ext.w   d0                              ; 0161E
         ext.w   d1                              ; 01620
-        add.w   -$2(a6),d0                      ; 01622
-        add.w   -$4(a6),d1                      ; 01626
+        add.w   DrawRangeArc_X(a6),d0           ; 01622
+        add.w   DrawRangeArc_Y(a6),d1           ; 01626
         cmpi.w  #$2,d0                          ; 0162A
         ble.b   l_040_01654                     ; 0162E
         cmpi.w  #$13e,d0                        ; 01630
         bge.b   l_040_01654                     ; 01634
-        cmp.w   -$6(a6),d0                      ; 01636
+        cmp.w   DrawRangeArc_Left(a6),d0        ; 01636
         ble.b   l_040_01654                     ; 0163A
-        cmp.w   -$8(a6),d0                      ; 0163C
+        cmp.w   DrawRangeArc_Right(a6),d0       ; 0163C
         bge.b   l_040_01654                     ; 01640
-        cmp.w   -$a(a6),d1                      ; 01642
+        cmp.w   DrawRangeArc_Top(a6),d1         ; 01642
         ble.b   l_040_01654                     ; 01646
-        cmp.w   -$c(a6),d1                      ; 01648
+        cmp.w   DrawRangeArc_Bottom(a6),d1      ; 01648
         bge.b   l_040_01654                     ; 0164C
         jsr     (PlotBigAbove).l                ; 0164E
 l_040_01654:

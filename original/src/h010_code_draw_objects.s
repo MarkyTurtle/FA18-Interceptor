@@ -95,12 +95,21 @@ l_010_000CC:
 ;-------------------------------------------------------------------------------
 ; DrawSceneryPlain - DrawModel's main part (also the entry of some scenery shapes).
 ;-------------------------------------------------------------------------------
+; DrawSceneryPlain's frame: arguments from 8(a6), locals below a6 (after its link)
+DrawSceneryPlain_View   equ     -$20            ; the view offset (ViewOffsetX...: x, y, z longs) >> DistanceShift (12 bytes)
+DrawSceneryPlain_ViewNeg equ     -$26           ; View8, negated (x, y, z words) (6 bytes)
+DrawSceneryPlain_Range  equ     -$28            ; the distance shapes are drawn to (ObjectDistance; scaled by RadarScale without GroundDetail)
+DrawSceneryPlain_Model  equ     -$2C            ; the model (its shape offsets are from here)
+DrawSceneryPlain_Plain  equ     -$62            ; 1 if the shape lacks flag $4000
+DrawSceneryPlain_View8  equ     -$86            ; View / 256 (x, y, z words) (6 bytes)
+DrawSceneryPlain_ShapeFlag equ     -$88         ; the shape's first word's low byte
+DrawSceneryPlain_Distance equ     -$96          ; ObjectDistance
 DrawSceneryPlain:
         link.w  a6,#$ff68                       ; 000DC
         clr.w   -$80(a6)                        ; 000E0
 l_010_000E4:
         move.w  (ObjectDistance).l,d1           ; 000E4
-        move.w  d1,-$96(a6)                     ; 000EA
+        move.w  d1,DrawSceneryPlain_Distance(a6) ; 000EA
         tst.b   (GroundDetail).l                ; 000EE
         bne.b   l_010_00108                     ; 000F4
         move.w  (RadarScale).l,d3               ; 000F6
@@ -110,9 +119,9 @@ l_010_000E4:
         mulu.w  d3,d1                           ; 00104
         asr.l   #$8,d1                          ; 00106
 l_010_00108:
-        move.w  d1,-$28(a6)                     ; 00108
+        move.w  d1,DrawSceneryPlain_Range(a6)   ; 00108
         movea.l (ShapeNow).l,a2                 ; 0010C
-        move.l  a0,-$2c(a6)                     ; 00112
+        move.l  a0,DrawSceneryPlain_Model(a6)   ; 00112
         move.w  (DistanceShift).l,d3            ; 00116
 l_010_0011C:
         move.w  (a2)+,d0                        ; 0011C
@@ -129,7 +138,7 @@ l_010_0011C:
 l_010_00136:
         move.w  (a2),d0                         ; 00136
         blt.b   l_010_00168                     ; 00138
-        movea.l -$2c(a6),a2                     ; 0013A
+        movea.l DrawSceneryPlain_Model(a6),a2   ; 0013A
         adda.w  d0,a2                           ; 0013E
         bra.b   l_010_0011C                     ; 00140
 l_010_00142:
@@ -183,14 +192,14 @@ l_010_001A2:
         andi.w  #$1,d4                          ; 001BC
         beq.b   l_010_00168                     ; 001C0
 l_010_001C2:
-        move.w  d7,-$62(a6)                     ; 001C2
+        move.w  d7,DrawSceneryPlain_Plain(a6)   ; 001C2
         andi.w  #$fff,d0                        ; 001C6
-        movea.l -$2c(a6),a3                     ; 001CA
+        movea.l DrawSceneryPlain_Model(a6),a3   ; 001CA
         lea.l   (a3,d0.w),a1                    ; 001CE
         move.l  a1,(CurrentShape).l             ; 001D2
         move.l  a2,(ShapeNow).l                 ; 001D8
         move.w  (a1)+,d0                        ; 001DE
-        move.b  d0,-$88(a6)                     ; 001E0
+        move.b  d0,DrawSceneryPlain_ShapeFlag(a6) ; 001E0
         move.w  (a1)+,d4                        ; 001E4
         move.w  (a1)+,d5                        ; 001E6
         move.b  (a1)+,d6                        ; 001E8
@@ -205,18 +214,18 @@ l_010_001C2:
         asr.l   d3,d1                           ; 00208
         asr.l   d3,d2                           ; 0020A
 l_010_0020C:
-        movem.l d0-d2,-$20(a6)                  ; 0020C
+        movem.l d0-d2,DrawSceneryPlain_View(a6) ; 0020C
         asr.l   #$8,d0                          ; 00212
         asr.l   #$8,d1                          ; 00214
         asr.l   #$8,d2                          ; 00216
-        movem.w d0-d2,-$86(a6)                  ; 00218
+        movem.w d0-d2,DrawSceneryPlain_View8(a6) ; 00218
         neg.w   d0                              ; 0021E
         neg.w   d1                              ; 00220
         neg.w   d2                              ; 00222
-        movem.w d0-d2,-$26(a6)                  ; 00224
+        movem.w d0-d2,DrawSceneryPlain_ViewNeg(a6) ; 00224
         move.w  d7,-$4(a6)                      ; 0022A
         asr.w   d3,d5                           ; 0022E
-        cmp.w   -$96(a6),d5                     ; 00230
+        cmp.w   DrawSceneryPlain_Distance(a6),d5 ; 00230
         bge.b   l_010_0023C                     ; 00234
         move.w  d7,d3                           ; 00236
         clr.w   d2                              ; 00238
@@ -224,7 +233,7 @@ l_010_0020C:
 l_010_0023C:
         move.w  (DistanceShift).l,d3            ; 0023C
         asr.w   d3,d4                           ; 00242
-        cmp.w   -$96(a6),d4                     ; 00244
+        cmp.w   DrawSceneryPlain_Distance(a6),d4 ; 00244
         bge.b   l_010_00252                     ; 00248
         move.w  d6,d3                           ; 0024A
         move.w  d7,d2                           ; 0024C
@@ -266,13 +275,13 @@ l_010_002AE:
         move.w  $0(a0),d1                       ; 002D4
         btst    #$6,d1                          ; 002D8
         beq.w   l_010_00168                     ; 002DC
-        move.b  -$88(a6),$7b(a0)                ; 002E0
+        move.b  DrawSceneryPlain_ShapeFlag(a6),$7b(a0) ; 002E0
         andi.w  #$400,d1                        ; 002E6
         beq.b   l_010_00340                     ; 002EA
         move.w  $4c(a0),d1                      ; 002EC
         cmpi.w  #$e,d1                          ; 002F0
         bne.b   l_010_00338                     ; 002F4
-        move.w  -$28(a6),d0                     ; 002F6
+        move.w  DrawSceneryPlain_Range(a6),d0   ; 002F6
         ext.l   d0                              ; 002FA
         move.w  (DistanceShift).l,d2            ; 002FC
         asl.l   d2,d0                           ; 00302
@@ -297,8 +306,8 @@ l_010_00338:
         cmpi.w  #$c,d1                          ; 00338
         ble.w   l_010_00B42                     ; 0033C
 l_010_00340:
-        move.l  -$20(a6),d0                     ; 00340
-        move.l  -$18(a6),d2                     ; 00344
+        move.l  DrawSceneryPlain_View(a6),d0    ; 00340
+        move.l  DrawSceneryPlain_View+8(a6),d2  ; 00344
         move.l  (ObjectViewPosL).l,d3           ; 00348
         move.l  (ObjectViewPosZL).l,d4          ; 0034E
         add.l   d3,d0                           ; 00354
@@ -426,7 +435,7 @@ l_010_00428:
         movem.w d0-d1,(TargetScreenPos).l       ; 004AA
         movem.w (a7)+,d0-d1/d4/d7               ; 004B2
 l_010_004B6:
-        cmpi.w  #$1,-$62(a6)                    ; 004B6
+        cmpi.w  #$1,DrawSceneryPlain_Plain(a6)  ; 004B6
         ble.b   l_010_004E4                     ; 004BC
         move.w  d4,d2                           ; 004BE
         ble.b   l_010_004DE                     ; 004C0

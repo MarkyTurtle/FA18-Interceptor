@@ -250,11 +250,13 @@ l_035_001D4:
 ; words each): clips it against the view's four edge planes and the near plane (ClipSwitch),
 ; projects it and draws it (DrawLine). Used by all the shapes' line operations.
 ;-------------------------------------------------------------------------------
+; ClipDrawLine3D's frame: arguments from 8(a6), locals below a6 (after its link)
+ClipDrawLine3D_Ends     equ     -$2             ; the line's ends left to do
 ClipDrawLine3D:
         link.w  a6,#$fffc                       ; 001DA
         lea.l   (LineEnds).l,a1                 ; 001DE
         lea.l   (ScreenPolygon).l,a0            ; 001E4
-        move.w  #$1,-$2(a6)                     ; 001EA
+        move.w  #$1,ClipDrawLine3D_Ends(a6)     ; 001EA
 l_035_001F0:
         movem.w (a1),d3-d5                      ; 001F0
         cmp.w   d5,d3                           ; 001F4
@@ -456,7 +458,7 @@ l_035_003FA:
         neg.w   d4                              ; 00404
         move.w  d3,(a0)+                        ; 00406
         move.w  d4,(a0)+                        ; 00408
-        subq.w  #$1,-$2(a6)                     ; 0040A
+        subq.w  #$1,ClipDrawLine3D_Ends(a6)     ; 0040A
         beq.b   l_035_00430                     ; 0040E
         movem.w (ScreenPolygon).l,d0-d3         ; 00410
         jsr     (DrawLine).l                    ; 00418

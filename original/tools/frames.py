@@ -221,6 +221,9 @@ def apply(spec):
                     sz = re.search(r' \((\d+) bytes\)$', d)
                     if sz: d = d[:sz.start()]
                     fields = fields + [(old[mm.group(1)], int(sz.group(1)) if sz else None, mm.group(2), d)]
+            dup = [n for n in {f[2] for f in fields} if [f[2] for f in fields].count(n) > 1]
+            if dup:
+                raise SystemExit('%s: %s named twice' % (name, ' '.join(dup)))
             new = block(name, fields)
             L[j:i] = new
             i = j + len(new)

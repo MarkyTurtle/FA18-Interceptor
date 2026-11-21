@@ -12,6 +12,14 @@
 ; scattered on the ground round the viewer (patterns from DrawGroundDotsData2 and on), so that height
 ; and speed can be judged over plain ground.
 ;-------------------------------------------------------------------------------
+; DrawGroundDots's frame: arguments from 8(a6), locals below a6 (after its link)
+DrawGroundDots_Z        equ     -$2             ; the view's position / 256 (ViewOffsetX8, ViewOffsetZ8), snapped to the dots' grid
+DrawGroundDots_X        equ     -$6
+DrawGroundDots_Count    equ     -$8             ; the dots left
+DrawGroundDots_Pattern1 equ     -$C             ; the dot tables picked (DrawGroundDotsData5-10)
+DrawGroundDots_Pattern2 equ     -$10
+DrawGroundDots_Pattern3 equ     -$14
+DrawGroundDots_Point    equ     -$20            ; a dot, turned to the view (x, y, z words) (6 bytes)
 DrawGroundDots:
         link.w  a6,#$ffdc                       ; 00000
         move.w  #$4,d0                          ; 00004
@@ -41,7 +49,7 @@ l_025_00042:
 l_025_00066:
         move.w  (ViewOffsetX8).l,d0             ; 00066
         move.w  (ViewOffsetZ8).l,d2             ; 0006C
-        movem.w d0-d2,-$6(a6)                   ; 00072
+        movem.w d0-d2,DrawGroundDots_X(a6)      ; 00072
         move.w  #$fe00,d1                       ; 00078
         move.w  #$ff80,d3                       ; 0007C
         move.w  #$ff20,d4                       ; 00080
@@ -60,35 +68,35 @@ l_025_0009E:
 l_025_000AA:
         lea.l   (DrawGroundDotsData4).l,a3      ; 000AA
 l_025_000B0:
-        move.w  (a3)+,-$8(a6)                   ; 000B0
+        move.w  (a3)+,DrawGroundDots_Count(a6)  ; 000B0
         move.w  (a3)+,-$1a(a6)                  ; 000B4
         move.w  #$800,d0                        ; 000B8
         move.w  d0,d1                           ; 000BC
         lsr.w   #$1,d1                          ; 000BE
         move.w  d1,d2                           ; 000C0
-        sub.w   -$6(a6),d1                      ; 000C2
-        sub.w   -$2(a6),d2                      ; 000C6
+        sub.w   DrawGroundDots_X(a6),d1         ; 000C2
+        sub.w   DrawGroundDots_Z(a6),d2         ; 000C6
         neg.w   d0                              ; 000CA
         and.w   d0,d1                           ; 000CC
-        add.w   -$6(a6),d1                      ; 000CE
-        move.w  d1,-$6(a6)                      ; 000D2
+        add.w   DrawGroundDots_X(a6),d1         ; 000CE
+        move.w  d1,DrawGroundDots_X(a6)         ; 000D2
         and.w   d0,d2                           ; 000D6
-        add.w   -$2(a6),d2                      ; 000D8
-        move.w  d2,-$2(a6)                      ; 000DC
+        add.w   DrawGroundDots_Z(a6),d2         ; 000D8
+        move.w  d2,DrawGroundDots_Z(a6)         ; 000DC
         move.l  a3,d0                           ; 000E0
         move.w  -$16(a6),d1                     ; 000E2
         beq.b   l_025_0010C                     ; 000E6
         move.w  -$4(a6),d0                      ; 000E8
         asl.w   d1,d0                           ; 000EC
         move.w  d0,-$4(a6)                      ; 000EE
-        move.l  #DrawGroundDotsData6,-$c(a6)    ; 000F2
-        move.l  #DrawGroundDotsData8,-$10(a6)   ; 000FA
-        move.l  #DrawGroundDotsData10,-$14(a6)  ; 00102
+        move.l  #DrawGroundDotsData6,DrawGroundDots_Pattern1(a6) ; 000F2
+        move.l  #DrawGroundDotsData8,DrawGroundDots_Pattern2(a6) ; 000FA
+        move.l  #DrawGroundDotsData10,DrawGroundDots_Pattern3(a6) ; 00102
         bra.b   l_025_00124                     ; 0010A
 l_025_0010C:
-        move.l  #DrawGroundDotsData5,-$c(a6)    ; 0010C
-        move.l  #DrawGroundDotsData7,-$10(a6)   ; 00114
-        move.l  #DrawGroundDotsData9,-$14(a6)   ; 0011C
+        move.l  #DrawGroundDotsData5,DrawGroundDots_Pattern1(a6) ; 0010C
+        move.l  #DrawGroundDotsData7,DrawGroundDots_Pattern2(a6) ; 00114
+        move.l  #DrawGroundDotsData9,DrawGroundDots_Pattern3(a6) ; 0011C
 l_025_00124:
         lea.l   (ViewMatrix01).l,a0             ; 00124
         move.w  -$4(a6),d2                      ; 0012A
@@ -100,13 +108,13 @@ l_025_00124:
         asr.l   #$8,d2                          ; 0013A
         muls.w  $c(a0),d3                       ; 0013C
         asr.l   #$8,d3                          ; 00140
-        movem.w d1-d3,-$20(a6)                  ; 00142
+        movem.w d1-d3,DrawGroundDots_Point(a6)  ; 00142
         move.w  #$3,(ScreenPolygon).l           ; 00148
 l_025_00150:
         movem.w (a3)+,d0-d2                     ; 00150
         move.w  d2,-$18(a6)                     ; 00154
-        add.w   -$6(a6),d0                      ; 00158
-        add.w   -$2(a6),d1                      ; 0015C
+        add.w   DrawGroundDots_X(a6),d0         ; 00158
+        add.w   DrawGroundDots_Z(a6),d1         ; 0015C
         move.w  d0,d3                           ; 00160
         bge.b   l_025_00166                     ; 00162
         neg.w   d3                              ; 00164
@@ -145,7 +153,7 @@ l_025_001AA:
         asl.w   d3,d1                           ; 001B0
         movea.w d0,a4                           ; 001B2
         movea.w d1,a5                           ; 001B4
-        movem.w -$20(a6),d1/d5/d7               ; 001B6
+        movem.w DrawGroundDots_Point(a6),d1/d5/d7 ; 001B6
         tst.w   d2                              ; 001BC
         bge.w   l_025_00292                     ; 001BE
         lea.l   (ScreenPolygonPoints).l,a1      ; 001C2
@@ -216,7 +224,7 @@ l_025_00248:
         jsr     (FillPolygon).l                 ; 00264
         movea.l (a7)+,a3                        ; 0026A
 l_025_0026C:
-        subq.w  #$1,-$8(a6)                     ; 0026C
+        subq.w  #$1,DrawGroundDots_Count(a6)    ; 0026C
         bgt.w   l_025_00150                     ; 00270
 l_025_00274:
         clr.b   (GroundDotsDrawn).l             ; 00274

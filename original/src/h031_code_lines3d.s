@@ -108,6 +108,8 @@ l_031_000EA:
 ; DrawBulletHit's frame: arguments from 8(a6), locals below a6 (after its link)
                 rsset   8
 DrawBulletHit_Bullet    rs.l    1               ; the bullet's number
+DrawBulletHit_Point     equ     -$8             ; where it struck, from the view / 256 (x, y, z words) (6 bytes)
+DrawBulletHit_Crosses   equ     -$A             ; the crosses left (3)
 DrawBulletHit:
         link.w  a6,#$ffc2                       ; 000F4
         move.l  DrawBulletHit_Bullet(a6),d0     ; 000F8
@@ -135,22 +137,22 @@ DrawBulletHit:
         move.l  blt_Y(a3),d4                    ; 00142
         add.l   (ViewOffsetY).l,d4              ; 00146
         asr.l   #$8,d4                          ; 0014C
-        movem.w d3-d5,-$8(a6)                   ; 0014E
-        move.w  #$3,-$a(a6)                     ; 00154
+        movem.w d3-d5,DrawBulletHit_Point(a6)   ; 0014E
+        move.w  #$3,DrawBulletHit_Crosses(a6)   ; 00154
         move.w  #$f,(FillPattern).l             ; 0015A
         move.w  #$ffff,(DrawXor).l              ; 00162
         clr.l   (FillPattern2).l                ; 0016A
         move.w  #$9,(DrawColour).l              ; 00170
         lea.l   (DrawBulletHitData1).l,a2       ; 00178
-        movea.w -$8(a6),a4                      ; 0017E
-        movea.w -$6(a6),a5                      ; 00182
+        movea.w DrawBulletHit_Point(a6),a4      ; 0017E
+        movea.w DrawBulletHit_Point+2(a6),a5    ; 00182
 l_031_00186:
         lea.l   (LineEnds).l,a1                 ; 00186
 l_031_0018C:
         movem.w (a2)+,d3-d5                     ; 0018C
         add.w   a4,d3                           ; 00190
         add.w   a5,d4                           ; 00192
-        add.w   -$4(a6),d5                      ; 00194
+        add.w   DrawBulletHit_Point+4(a6),d5    ; 00194
         bsr.w   TurnToView                      ; 00198
         move.w  d6,(a1)+                        ; 0019C
         move.w  d2,(a1)+                        ; 0019E
@@ -160,7 +162,7 @@ l_031_0018C:
         move.l  a2,-(a7)                        ; 001AA
         jsr     (ProjectDrawLine).l             ; 001AC
         movea.l (a7)+,a2                        ; 001B2
-        subq.w  #$1,-$a(a6)                     ; 001B4
+        subq.w  #$1,DrawBulletHit_Crosses(a6)   ; 001B4
         bgt.b   l_031_00186                     ; 001B8
         unlk    a6                              ; 001BA
         rts                                     ; 001BC
@@ -377,15 +379,25 @@ l_031_004C4:
 ; outline (a list of offsets) and colours (a byte per ring: 9 orange for fire, 13 grey for
 ; smoke...), filled as small polygons round the centre.
 ;-------------------------------------------------------------------------------
+; DrawPuffShape's frame: arguments from 8(a6), locals below a6 (after its link)
+DrawPuffShape_Centre    equ     -$8             ; the puff's centre (d0-d2: x, y, z words) (6 bytes)
+DrawPuffShape_Rings     equ     -$A             ; the rings left (11, 8...)
+DrawPuffShape_D7        equ     -$18            ; d7 on entry
+DrawPuffShape_Done      equ     -$1E            ; 1 once the last ring is drawn
+DrawPuffShape_Kind      equ     -$2E            ; the kind (d4)
+DrawPuffShape_Size      equ     -$30            ; the size (d3)
+DrawPuffShape_Colours   equ     -$34            ; the kind's colours (PuffColours3-5...)
+DrawPuffShape_Shape     equ     -$38            ; its outline (PuffShape3-5...)
+DrawPuffShape_D6        equ     -$3C            ; d6 on entry
 DrawPuffShape:
         link.w  a6,#$ffc2                       ; 004CC
-        move.b  d4,-$2e(a6)                     ; 004D0
-        clr.w   -$1e(a6)                        ; 004D4
-        move.w  d6,-$3c(a6)                     ; 004D8
-        move.w  d7,-$18(a6)                     ; 004DC
-        movem.w d0-d2,-$8(a6)                   ; 004E0
-        move.w  d3,-$30(a6)                     ; 004E6
-        move.w  #$b,-$a(a6)                     ; 004EA
+        move.b  d4,DrawPuffShape_Kind(a6)       ; 004D0
+        clr.w   DrawPuffShape_Done(a6)          ; 004D4
+        move.w  d6,DrawPuffShape_D6(a6)         ; 004D8
+        move.w  d7,DrawPuffShape_D7(a6)         ; 004DC
+        movem.w d0-d2,DrawPuffShape_Centre(a6)  ; 004E0
+        move.w  d3,DrawPuffShape_Size(a6)       ; 004E6
+        move.w  #$b,DrawPuffShape_Rings(a6)     ; 004EA
         move.w  #$3,(ScreenPolygon).l           ; 004F0
         subq.b  #$1,d4                          ; 004F8
         ble.b   l_031_00556                     ; 004FA
@@ -395,28 +407,28 @@ DrawPuffShape:
         ble.b   l_031_0052C                     ; 00502
         subq.b  #$1,d4                          ; 00504
         ble.b   l_031_0051A                     ; 00506
-        move.l  #PuffColours5,-$34(a6)          ; 00508
-        move.l  #PuffShape5,-$38(a6)            ; 00510
+        move.l  #PuffColours5,DrawPuffShape_Colours(a6) ; 00508
+        move.l  #PuffShape5,DrawPuffShape_Shape(a6) ; 00510
         bra.b   l_031_00566                     ; 00518
 l_031_0051A:
-        move.l  #PuffColours4,-$34(a6)          ; 0051A
-        move.l  #PuffShape4,-$38(a6)            ; 00522
+        move.l  #PuffColours4,DrawPuffShape_Colours(a6) ; 0051A
+        move.l  #PuffShape4,DrawPuffShape_Shape(a6) ; 00522
         bra.b   l_031_00566                     ; 0052A
 l_031_0052C:
-        move.l  #PuffColours3,-$34(a6)          ; 0052C
-        move.l  #PuffShape3,-$38(a6)            ; 00534
-        move.w  #$8,-$a(a6)                     ; 0053C
+        move.l  #PuffColours3,DrawPuffShape_Colours(a6) ; 0052C
+        move.l  #PuffShape3,DrawPuffShape_Shape(a6) ; 00534
+        move.w  #$8,DrawPuffShape_Rings(a6)     ; 0053C
         bra.b   l_031_00566                     ; 00542
 l_031_00544:
-        move.l  #PuffColours2,-$34(a6)          ; 00544
-        move.l  #PuffShape1,-$38(a6)            ; 0054C
+        move.l  #PuffColours2,DrawPuffShape_Colours(a6) ; 00544
+        move.l  #PuffShape1,DrawPuffShape_Shape(a6) ; 0054C
         bra.b   l_031_00566                     ; 00554
 l_031_00556:
-        move.l  #PuffColours1,-$34(a6)          ; 00556
-        move.l  #PuffShape1,-$38(a6)            ; 0055E
+        move.l  #PuffColours1,DrawPuffShape_Colours(a6) ; 00556
+        move.l  #PuffShape1,DrawPuffShape_Shape(a6) ; 0055E
 l_031_00566:
-        movea.l -$38(a6),a4                     ; 00566
-        move.w  -$a(a6),d4                      ; 0056A
+        movea.l DrawPuffShape_Shape(a6),a4      ; 00566
+        move.w  DrawPuffShape_Rings(a6),d4      ; 0056A
         move.w  d4,d5                           ; 0056E
         add.w   d4,d4                           ; 00570
         add.w   d5,d4                           ; 00572
@@ -427,7 +439,7 @@ l_031_00566:
         ext.w   d0                              ; 00580
         ext.w   d1                              ; 00582
         ext.w   d2                              ; 00584
-        move.w  -$30(a6),d4                     ; 00586
+        move.w  DrawPuffShape_Size(a6),d4       ; 00586
         mulu.w  d4,d0                           ; 0058A
         mulu.w  d4,d1                           ; 0058C
         mulu.w  d4,d2                           ; 0058E
@@ -436,21 +448,21 @@ l_031_00566:
         add.w   d4,d5                           ; 00594
         lea.l   PuffOffsets(pc),a3              ; 00596
         move.w  (a3,d5.w),d3                    ; 0059A
-        move.w  -$18(a6),d4                     ; 0059E
+        move.w  DrawPuffShape_D7(a6),d4         ; 0059E
         asr.w   d4,d0                           ; 005A2
         asr.w   d4,d1                           ; 005A4
         asr.w   d4,d2                           ; 005A6
-        add.w   -$8(a6),d0                      ; 005A8
-        add.w   -$6(a6),d1                      ; 005AC
-        add.w   -$4(a6),d2                      ; 005B0
+        add.w   DrawPuffShape_Centre(a6),d0     ; 005A8
+        add.w   DrawPuffShape_Centre+2(a6),d1   ; 005AC
+        add.w   DrawPuffShape_Centre+4(a6),d2   ; 005B0
         movea.w d0,a4                           ; 005B4
         movea.w d1,a5                           ; 005B6
         move.w  d2,-$2(a6)                      ; 005B8
         move.w  d3,d4                           ; 005BC
-        movea.l -$34(a6),a2                     ; 005BE
-        move.w  -$a(a6),d3                      ; 005C2
+        movea.l DrawPuffShape_Colours(a6),a2    ; 005BE
+        move.w  DrawPuffShape_Rings(a6),d3      ; 005C2
         move.b  (a2,d3.w),d3                    ; 005C6
-        tst.b   -$2e(a6)                        ; 005CA
+        tst.b   DrawPuffShape_Kind(a6)          ; 005CA
         bne.b   l_031_005D2                     ; 005CE
         moveq   #$d,d3                          ; 005D0
 l_031_005D2:
@@ -459,7 +471,7 @@ l_031_005D2:
         movea.l (a2,d4.w),a2                    ; 005DC
         lea.l   (ScreenPolygonPoints).l,a1      ; 005E0
 l_031_005E6:
-        cmpi.b  #$3,-$2e(a6)                    ; 005E6
+        cmpi.b  #$3,DrawPuffShape_Kind(a6)      ; 005E6
         bne.b   l_031_005F6                     ; 005EC
         moveq   #$0,d3                          ; 005EE
         moveq   #$0,d4                          ; 005F0
@@ -471,7 +483,7 @@ l_031_005FA:
         add.w   a4,d3                           ; 005FA
         add.w   a5,d4                           ; 005FC
         add.w   -$2(a6),d5                      ; 005FE
-        move.w  -$18(a6),d7                     ; 00602
+        move.w  DrawPuffShape_D7(a6),d7         ; 00602
         asr.w   d7,d3                           ; 00606
         asr.w   d7,d4                           ; 00608
         asr.w   d7,d5                           ; 0060A
@@ -531,17 +543,17 @@ l_031_00680:
         neg.w   d7                              ; 0068A
         move.w  d6,(a1)+                        ; 0068C
         move.w  d7,(a1)+                        ; 0068E
-        cmpi.b  #$3,-$2e(a6)                    ; 00690
+        cmpi.b  #$3,DrawPuffShape_Kind(a6)      ; 00690
         beq.b   l_031_006CE                     ; 00696
         cmpa.l  #ScreenPolygonLimit,a1          ; 00698
         blt.w   l_031_005E6                     ; 0069E
         bra.b   l_031_006CE                     ; 006A2
 l_031_006A4:
-        move.w  #$1,-$1e(a6)                    ; 006A4
+        move.w  #$1,DrawPuffShape_Done(a6)      ; 006A4
 l_031_006AA:
-        subq.w  #$1,-$a(a6)                     ; 006AA
+        subq.w  #$1,DrawPuffShape_Rings(a6)     ; 006AA
         bge.w   l_031_00566                     ; 006AE
-        move.w  -$1e(a6),d0                     ; 006B2
+        move.w  DrawPuffShape_Done(a6),d0       ; 006B2
         unlk    a6                              ; 006B6
         rts                                     ; 006B8
 l_031_006BA:
@@ -557,12 +569,12 @@ l_031_006C8:
         move.w  #$b3,d7                         ; 006C8
         bra.b   l_031_00680                     ; 006CC
 l_031_006CE:
-        move.b  -$2e(a6),d0                     ; 006CE
+        move.b  DrawPuffShape_Kind(a6),d0       ; 006CE
         beq.b   l_031_006F4                     ; 006D2
         subq.b  #$3,d0                          ; 006D4
         bne.b   l_031_006EC                     ; 006D6
         movem.w (ScreenPolygonPoints).l,d0-d1   ; 006D8
-        move.w  -$3c(a6),d6                     ; 006E0
+        move.w  DrawPuffShape_D6(a6),d6         ; 006E0
         jsr     (DrawBlobRows).l                ; 006E4
         bra.b   l_031_006A4                     ; 006EA
 l_031_006EC:

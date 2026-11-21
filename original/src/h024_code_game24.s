@@ -15,21 +15,32 @@ l_024_00000:
 ; ObjectCollisions - Tests the current object against the others and the scenery near it (hunk
 ; 24): collisions.
 ;-------------------------------------------------------------------------------
+; ObjectCollisions's frame: arguments from 8(a6), locals below a6 (after its link)
+ObjectCollisions_Flags  equ     -$14            ; the current object's flags (+$00; its low byte at Flags+1) (2 bytes)
+ObjectCollisions_Flags2 equ     -$16            ; its +$02
+ObjectCollisions_Zone   equ     -$1A            ; its +$5E
+ObjectCollisions_Class  equ     -$22            ; the other object's type & $F0
+ObjectCollisions_I      equ     -$30            ; the count
+ObjectCollisions_Count  equ     -$32            ; the number of them
+ObjectCollisions_Point1 equ     -$46            ; three offsets into the object's vertex copy ($1AC, $1B2, $1B8; $1E8... for type $20)
+ObjectCollisions_Point2 equ     -$48
+ObjectCollisions_Point3 equ     -$4A
+ObjectCollisions_Shift  equ     -$5A            ; the object's +$7D low nibble (a scale shift)
 ObjectCollisions:
         clr.b   (Hunk24Flag).l                  ; 00006
         moveq   #$0,d0                          ; 0000C
         link.w  a6,#$ffa4                       ; 0000E
         lea.l   (ObjectTable).l,a0              ; 00012
         move.w  (CurrentObjectOffset).l,d0      ; 00018
-        move.b  $5e(a0,d0.w),-$1a(a6)           ; 0001E
+        move.b  $5e(a0,d0.w),ObjectCollisions_Zone(a6) ; 0001E
         andi.b  #$3f,$4(a0,d0.w)                ; 00024
-        move.w  (a0,d0.w),-$14(a6)              ; 0002A
-        move.w  $2(a0,d0.w),-$16(a6)            ; 00030
+        move.w  (a0,d0.w),ObjectCollisions_Flags(a6) ; 0002A
+        move.w  $2(a0,d0.w),ObjectCollisions_Flags2(a6) ; 00030
         move.b  $62(a0,d0.w),d6                 ; 00036
         andi.b  #$f0,d6                         ; 0003A
         cmpi.b  #$20,d6                         ; 0003E
         beq.b   l_024_00000                     ; 00042
-        move.b  d6,-$22(a6)                     ; 00044
+        move.b  d6,ObjectCollisions_Class(a6)   ; 00044
 l_024_00048:
         addi.w  #$200,d0                        ; 00048
         cmpi.w  #$1e00,d0                       ; 0004C
@@ -41,9 +52,9 @@ l_024_00048:
         andi.w  #$600,d5                        ; 00060
         bne.b   l_024_00048                     ; 00064
         move.b  $5e(a0,d0.w),d5                 ; 00066
-        cmp.b   -$1a(a6),d5                     ; 0006A
+        cmp.b   ObjectCollisions_Zone(a6),d5    ; 0006A
         beq.b   l_024_00048                     ; 0006E
-        btst    #$3,-$13(a6)                    ; 00070
+        btst    #$3,ObjectCollisions_Flags+1(a6) ; 00070
         bne.b   l_024_00080                     ; 00076
         btst    #$3,$1(a0,d0.w)                 ; 00078
         beq.b   l_024_00048                     ; 0007E
@@ -59,7 +70,7 @@ l_024_00080:
         movea.l #$a0000,a1                      ; 0009A
         bra.b   l_024_000F6                     ; 000A0
 l_024_000A2:
-        move.b  -$22(a6),d1                     ; 000A2
+        move.b  ObjectCollisions_Class(a6),d1   ; 000A2
         cmpi.b  #$0,d1                          ; 000A6
         beq.b   l_024_000B0                     ; 000AA
         cmp.b   d7,d1                           ; 000AC
@@ -69,7 +80,7 @@ l_024_000B0:
         movea.l #$5000,a2                       ; 000B6
         bra.b   l_024_000F6                     ; 000BC
 l_024_000BE:
-        btst    #$0,-$16(a6)                    ; 000BE
+        btst    #$0,ObjectCollisions_Flags2(a6) ; 000BE
         bne.b   l_024_000EA                     ; 000C4
         btst    #$0,$2(a0,d0.w)                 ; 000C6
         bne.b   l_024_000EA                     ; 000CC
@@ -240,7 +251,7 @@ l_024_002A4:
         addi.w  #$a4,d7                         ; 002A8
         move.b  $7d(a3),d2                      ; 002AC
         andi.w  #$f,d2                          ; 002B0
-        move.w  d2,-$5a(a6)                     ; 002B4
+        move.w  d2,ObjectCollisions_Shift(a6)   ; 002B4
         move.w  $2(a3,d7.w),d4                  ; 002B8
         asr.w   d2,d4                           ; 002BC
         cmp.w   d4,d3                           ; 002BE
@@ -258,20 +269,20 @@ l_024_002D4:
         bra.w   l_024_00048                     ; 002DC
 l_024_002E0:
         move.w  $2(a3,d7.w),d1                  ; 002E0
-        move.w  -$5a(a6),d0                     ; 002E4
+        move.w  ObjectCollisions_Shift(a6),d0   ; 002E4
         asr.w   d0,d1                           ; 002E8
         move.w  d1,-$34(a6)                     ; 002EA
         lea.l   (a5),a4                         ; 002EE
 l_024_002F0:
-        clr.w   -$30(a6)                        ; 002F0
-        move.w  (a4),-$32(a6)                   ; 002F4
+        clr.w   ObjectCollisions_I(a6)          ; 002F0
+        move.w  (a4),ObjectCollisions_Count(a6) ; 002F4
         blt.w   l_024_00574                     ; 002F8
 l_024_002FC:
         move.w  (a4)+,d0                        ; 002FC
         bge.b   l_024_0030E                     ; 002FE
         andi.w  #$fff,d0                        ; 00300
-        move.w  -$32(a6),d1                     ; 00304
-        addq.w  #$1,-$30(a6)                    ; 00308
+        move.w  ObjectCollisions_Count(a6),d1   ; 00304
+        addq.w  #$1,ObjectCollisions_I(a6)      ; 00308
         bra.b   l_024_00314                     ; 0030C
 l_024_0030E:
         move.w  (a4),d1                         ; 0030E
@@ -287,7 +298,7 @@ l_024_00314:
         exg.l   d5,d7                           ; 0032E
         move.w  (a5),d2                         ; 00330
         move.w  $4(a5),d4                       ; 00332
-        move.w  -$5a(a6),d0                     ; 00336
+        move.w  ObjectCollisions_Shift(a6),d0   ; 00336
         asr.w   d0,d2                           ; 0033A
         asr.w   d0,d4                           ; 0033C
         add.w   $c(a3),d2                       ; 0033E
@@ -300,18 +311,18 @@ l_024_00314:
         muls.w  d4,d7                           ; 00352
         add.l   d5,d7                           ; 00354
         bge.w   l_024_00564                     ; 00356
-        tst.w   -$30(a6)                        ; 0035A
+        tst.w   ObjectCollisions_I(a6)          ; 0035A
         beq.b   l_024_002FC                     ; 0035E
         cmpi.b  #$20,$62(a3)                    ; 00360
         beq.b   l_024_0037C                     ; 00366
-        move.w  #$1ac,-$46(a6)                  ; 00368
-        move.w  #$1b2,-$48(a6)                  ; 0036E
-        move.w  #$1b8,-$4a(a6)                  ; 00374
+        move.w  #$1ac,ObjectCollisions_Point1(a6) ; 00368
+        move.w  #$1b2,ObjectCollisions_Point2(a6) ; 0036E
+        move.w  #$1b8,ObjectCollisions_Point3(a6) ; 00374
         bra.b   l_024_0038E                     ; 0037A
 l_024_0037C:
-        move.w  #$1e8,-$46(a6)                  ; 0037C
-        move.w  #$1ee,-$48(a6)                  ; 00382
-        move.w  #$1f4,-$4a(a6)                  ; 00388
+        move.w  #$1e8,ObjectCollisions_Point1(a6) ; 0037C
+        move.w  #$1ee,ObjectCollisions_Point2(a6) ; 00382
+        move.w  #$1f4,ObjectCollisions_Point3(a6) ; 00388
 l_024_0038E:
         lea.l   (ObjectTable).l,a4              ; 0038E
         adda.w  (CurrentObjectOffset).l,a4      ; 00394
@@ -320,8 +331,8 @@ l_024_0038E:
         move.w  $2(a4),d2                       ; 003A2
         andi.w  #$80,d2                         ; 003A6
         beq.w   l_024_004D0                     ; 003AA
-        move.w  -$46(a6),d0                     ; 003AE
-        move.w  -$4a(a6),d1                     ; 003B2
+        move.w  ObjectCollisions_Point1(a6),d0  ; 003AE
+        move.w  ObjectCollisions_Point3(a6),d1  ; 003B2
         move.w  (a3,d0.w),d6                    ; 003B6
         move.w  $4(a3,d0.w),d7                  ; 003BA
         sub.w   (a3,d1.w),d6                    ; 003BE
@@ -331,7 +342,7 @@ l_024_0038E:
         move.w  d7,d3                           ; 003CA
         move.w  (a3,d1.w),d4                    ; 003CC
         move.w  $4(a3,d1.w),d5                  ; 003D0
-        move.w  -$5a(a6),d1                     ; 003D4
+        move.w  ObjectCollisions_Shift(a6),d1   ; 003D4
         asr.w   d1,d4                           ; 003D8
         asr.w   d1,d5                           ; 003DA
         add.w   $c(a3),d4                       ; 003DC
@@ -342,10 +353,10 @@ l_024_0038E:
         muls.w  d5,d6                           ; 003EC
         add.l   d7,d6                           ; 003EE
         blt.w   l_024_004D0                     ; 003F0
-        move.w  -$48(a6),d1                     ; 003F4
+        move.w  ObjectCollisions_Point2(a6),d1  ; 003F4
         move.w  (a3,d1.w),d4                    ; 003F8
         move.w  $4(a3,d1.w),d5                  ; 003FC
-        move.w  -$5a(a6),d1                     ; 00400
+        move.w  ObjectCollisions_Shift(a6),d1   ; 00400
         asr.w   d1,d4                           ; 00404
         asr.w   d1,d5                           ; 00406
         add.w   $c(a3),d4                       ; 00408
@@ -356,8 +367,8 @@ l_024_0038E:
         muls.w  d5,d2                           ; 00418
         add.l   d3,d2                           ; 0041A
         bge.w   l_024_004D0                     ; 0041C
-        move.w  -$48(a6),d0                     ; 00420
-        move.w  -$4a(a6),d1                     ; 00424
+        move.w  ObjectCollisions_Point2(a6),d0  ; 00420
+        move.w  ObjectCollisions_Point3(a6),d1  ; 00424
         move.w  (a3,d0.w),d6                    ; 00428
         move.w  $4(a3,d0.w),d7                  ; 0042C
         sub.w   (a3,d1.w),d6                    ; 00430
@@ -367,7 +378,7 @@ l_024_0038E:
         move.w  d7,d3                           ; 0043C
         move.w  (a3,d1.w),d4                    ; 0043E
         move.w  $4(a3,d1.w),d5                  ; 00442
-        move.w  -$5a(a6),d1                     ; 00446
+        move.w  ObjectCollisions_Shift(a6),d1   ; 00446
         asr.w   d1,d4                           ; 0044A
         asr.w   d1,d5                           ; 0044C
         add.w   $c(a3),d4                       ; 0044E
@@ -378,8 +389,8 @@ l_024_0038E:
         muls.w  d5,d6                           ; 0045E
         add.l   d7,d6                           ; 00460
         bge.b   l_024_004D0                     ; 00462
-        move.w  -$46(a6),d0                     ; 00464
-        move.w  -$4a(a6),d1                     ; 00468
+        move.w  ObjectCollisions_Point1(a6),d0  ; 00464
+        move.w  ObjectCollisions_Point3(a6),d1  ; 00468
         lea.l   (a3,d1.w),a5                    ; 0046C
         move.w  (a3,d0.w),d6                    ; 00470
         move.w  $4(a3,d0.w),d7                  ; 00474
@@ -391,7 +402,7 @@ l_024_0038E:
         asr.w   #$1,d7                          ; 00486
         add.w   d6,d4                           ; 00488
         add.w   d7,d5                           ; 0048A
-        move.w  -$5a(a6),d1                     ; 0048C
+        move.w  ObjectCollisions_Shift(a6),d1   ; 0048C
         asr.w   d1,d4                           ; 00490
         asr.w   d1,d5                           ; 00492
         add.w   $c(a3),d4                       ; 00494
@@ -442,7 +453,7 @@ l_024_0051C:
         move.w  $2(a5),d7                       ; 0051E
         addi.w  #$a4,d7                         ; 00522
         move.w  $2(a3,d7.w),d4                  ; 00526
-        move.w  -$5a(a6),d7                     ; 0052A
+        move.w  ObjectCollisions_Shift(a6),d7   ; 0052A
         asr.w   d7,d4                           ; 0052E
         ext.l   d4                              ; 00530
         cmp.l   d4,d3                           ; 00532
@@ -452,7 +463,7 @@ l_024_0051C:
         move.w  $2(a5),d7                       ; 0053C
         addi.w  #$a4,d7                         ; 00540
         move.w  $2(a3,d7.w),d4                  ; 00544
-        move.w  -$5a(a6),d7                     ; 00548
+        move.w  ObjectCollisions_Shift(a6),d7   ; 00548
         asr.w   d7,d4                           ; 0054C
         addi.w  #$7,d4                          ; 0054E
         ext.l   d4                              ; 00552
@@ -464,7 +475,7 @@ l_024_00558:
         move.w  (a7)+,d0                        ; 0055E
         bra.w   l_024_00A18                     ; 00560
 l_024_00564:
-        tst.w   -$30(a6)                        ; 00564
+        tst.w   ObjectCollisions_I(a6)          ; 00564
         bne.w   l_024_002F0                     ; 00568
 l_024_0056C:
         move.w  (a4)+,d0                        ; 0056C

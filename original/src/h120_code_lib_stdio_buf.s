@@ -131,9 +131,11 @@ _flsbuf_Char            rs.l    1               ; the character to store
 _flsbuf_FP              rs.l    1               ; the stream
 _flsbuf_Byte            equ     -$1             ; the character, to write when unbuffered
 _flsbuf_Result          equ     -$6             ; what write returned
+_flsbuf_Char2           equ     -$A             ; the character (kept)
+_flsbuf_Count           equ     -$E             ; the bytes to write
 _flsbuf:
         link.w  a6,#$fff2                       ; 00120
-        move.l  _flsbuf_Char(a6),-$a(a6)        ; 00124
+        move.l  _flsbuf_Char(a6),_flsbuf_Char2(a6) ; 00124
         movea.l _flsbuf_FP(a6),a0               ; 0012A
         move.b  iob_Flag(a0),d0                 ; 0012E
         andi.b  #$30,d0                         ; 00132
@@ -211,7 +213,7 @@ l_120_001DE:
         move.l  d1,-(a7)                        ; 001F2
         pea.l   _flsbuf_Byte(a6)                ; 001F4
         move.l  d0,-(a7)                        ; 001F8
-        move.l  d1,-$e(a6)                      ; 001FA
+        move.l  d1,_flsbuf_Count(a6)            ; 001FA
         jsr     (write).l                       ; 001FE
         lea.l   $c(a7),a7                       ; 00204
         moveq   #-1,d1                          ; 00208
@@ -263,18 +265,18 @@ l_120_0027E:
         beq.b   l_120_002CC                     ; 00288
         tst.l   iob_WCnt(a1)                    ; 0028A
         bpl.b   l_120_00298                     ; 0028E
-        move.l  iob_Size(a1),-$e(a6)            ; 00290
+        move.l  iob_Size(a1),_flsbuf_Count(a6)  ; 00290
         bra.b   l_120_002A8                     ; 00296
 l_120_00298:
         movea.l _flsbuf_FP(a6),a0               ; 00298
         move.l  iob_Size(a0),d0                 ; 0029C
         sub.l   iob_WCnt(a0),d0                 ; 002A0
-        move.l  d0,-$e(a6)                      ; 002A4
+        move.l  d0,_flsbuf_Count(a6)            ; 002A4
 l_120_002A8:
         moveq   #$0,d0                          ; 002A8
         movea.l _flsbuf_FP(a6),a0               ; 002AA
         move.b  iob_File(a0),d0                 ; 002AE
-        move.l  -$e(a6),-(a7)                   ; 002B2
+        move.l  _flsbuf_Count(a6),-(a7)         ; 002B2
         move.l  iob_Base(a0),-(a7)              ; 002B6
         move.l  d0,-(a7)                        ; 002BA
         jsr     (write).l                       ; 002BC
@@ -284,7 +286,7 @@ l_120_002A8:
 l_120_002CC:
         moveq   #$0,d0                          ; 002CC
         move.l  d0,_flsbuf_Result(a6)           ; 002CE
-        move.l  d0,-$e(a6)                      ; 002D2
+        move.l  d0,_flsbuf_Count(a6)            ; 002D2
 l_120_002D6:
         cmpi.l  #$ffffffff,_flsbuf_Result(a6)   ; 002D6
         bne.b   l_120_002F2                     ; 002DE
@@ -295,7 +297,7 @@ l_120_002D6:
         bra.b   l_120_0030C                     ; 002F0
 l_120_002F2:
         move.l  _flsbuf_Result(a6),d0           ; 002F2
-        cmp.l   -$e(a6),d0                      ; 002F6
+        cmp.l   _flsbuf_Count(a6),d0            ; 002F6
         beq.b   l_120_0030C                     ; 002FA
         movea.l _flsbuf_FP(a6),a0               ; 002FC
         move.b  iob_Flag(a0),d0                 ; 00300
@@ -337,13 +339,13 @@ l_120_00354:
         unlk    a6                              ; 00366
         rts                                     ; 00368
 l_120_0036A:
-        cmpi.l  #$ffffffff,-$a(a6)              ; 0036A
+        cmpi.l  #$ffffffff,_flsbuf_Char2(a6)    ; 0036A
         bne.b   l_120_0037A                     ; 00372
         moveq   #$0,d0                          ; 00374
         unlk    a6                              ; 00376
         rts                                     ; 00378
 l_120_0037A:
-        move.l  -$a(a6),d0                      ; 0037A
+        move.l  _flsbuf_Char2(a6),d0            ; 0037A
         unlk    a6                              ; 0037E
         rts                                     ; 00380
 

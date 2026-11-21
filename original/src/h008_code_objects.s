@@ -1209,6 +1209,20 @@ l_008_00DFE:
 ; near the viewer's cell in an order chosen by the viewer's sub-cell and heading (the tables of
 ; hunk 65), and for each adds its scenery items and the objects in it (AddCellScenery).
 ;-------------------------------------------------------------------------------
+; BuildSceneryList's frame: arguments from 8(a6), locals below a6 (after its link)
+BuildSceneryList_Map    equ     -$4             ; the scenery map (SceneryMap0-2)
+BuildSceneryList_Bits   equ     -$8             ; its bits (SceneryBits0-2)
+BuildSceneryList_Ranges equ     -$C             ; BuildSceneryListData9 (the height band changed) or 10
+BuildSceneryList_List   equ     -$14            ; the list built (SceneryList, or FarSceneryList0/1)
+BuildSceneryList_Order  equ     -$18            ; the cell order tables (BuildSceneryListData1 or 2)
+BuildSceneryList_Offsets equ     -$1C           ; the sub-cell offsets (SubCellOffsets or BuildSceneryListData3)
+BuildSceneryList_Count  equ     -$24            ; the list's count (ObjectListCount or FarList0/1Count)
+BuildSceneryList_CellX  equ     -$26            ; the viewer's cell (ViewCellX, or block ViewBlockX)
+BuildSceneryList_CellZ  equ     -$28
+BuildSceneryList_SubCell equ     -$2A           ; where in it (ViewSubCell, or ViewPlace)
+BuildSceneryList_Order7 equ     -$32            ; the entries picked in BuildSceneryListData7,
+BuildSceneryList_Order5 equ     -$36            ; BuildSceneryListData5
+BuildSceneryList_Order8 equ     -$3A            ; and BuildSceneryListData8
 BuildSceneryList:
         link.w  a6,#$ffc4                       ; 00E44
         clr.b   (SceneryCellCount).l            ; 00E48
@@ -1216,72 +1230,72 @@ BuildSceneryList:
         beq.w   l_008_00EBE                     ; 00E54
         tst.b   (HeightBandChanged).l           ; 00E58
         beq.b   l_008_00E6A                     ; 00E5E
-        move.l  #BuildSceneryListData9,-$c(a6)  ; 00E60
+        move.l  #BuildSceneryListData9,BuildSceneryList_Ranges(a6) ; 00E60
         bra.b   l_008_00E72                     ; 00E68
 l_008_00E6A:
-        move.l  #BuildSceneryListData10,-$c(a6) ; 00E6A
+        move.l  #BuildSceneryListData10,BuildSceneryList_Ranges(a6) ; 00E6A
 l_008_00E72:
-        move.l  #SceneryList,-$14(a6)           ; 00E72
-        move.l  #ObjectListCount,-$24(a6)       ; 00E7A
-        move.l  #SceneryMap2,-$4(a6)            ; 00E82
-        move.l  #SceneryBits2,-$8(a6)           ; 00E8A
-        move.l  #BuildSceneryListData2,-$18(a6) ; 00E92
-        move.l  #BuildSceneryListData3,-$1c(a6) ; 00E9A
-        move.w  (ViewCellX).l,-$26(a6)          ; 00EA2
-        move.w  (ViewCellZ).l,-$28(a6)          ; 00EAA
-        move.b  (ViewSubCell).l,-$2a(a6)        ; 00EB2
+        move.l  #SceneryList,BuildSceneryList_List(a6) ; 00E72
+        move.l  #ObjectListCount,BuildSceneryList_Count(a6) ; 00E7A
+        move.l  #SceneryMap2,BuildSceneryList_Map(a6) ; 00E82
+        move.l  #SceneryBits2,BuildSceneryList_Bits(a6) ; 00E8A
+        move.l  #BuildSceneryListData2,BuildSceneryList_Order(a6) ; 00E92
+        move.l  #BuildSceneryListData3,BuildSceneryList_Offsets(a6) ; 00E9A
+        move.w  (ViewCellX).l,BuildSceneryList_CellX(a6) ; 00EA2
+        move.w  (ViewCellZ).l,BuildSceneryList_CellZ(a6) ; 00EAA
+        move.b  (ViewSubCell).l,BuildSceneryList_SubCell(a6) ; 00EB2
         bra.w   l_008_00F6C                     ; 00EBA
 l_008_00EBE:
-        move.l  #BuildSceneryListData10,-$c(a6) ; 00EBE
+        move.l  #BuildSceneryListData10,BuildSceneryList_Ranges(a6) ; 00EBE
         tst.b   (SceneryMapOne).l               ; 00EC6
         bne.b   l_008_00EEA                     ; 00ECC
         cmpi.l  #$ffff6000,(ViewOffsetY).l      ; 00ECE
         ble.b   l_008_00EEA                     ; 00ED8
-        move.l  #BuildSceneryListData11,-$c(a6) ; 00EDA
+        move.l  #BuildSceneryListData11,BuildSceneryList_Ranges(a6) ; 00EDA
         addq.b  #$1,(SceneryCellCount).l        ; 00EE2
         bra.b   l_008_00EFA                     ; 00EE8
 l_008_00EEA:
         tst.b   (HeightBandChanged).l           ; 00EEA
         beq.b   l_008_00EFA                     ; 00EF0
-        move.l  #BuildSceneryListData9,-$c(a6)  ; 00EF2
+        move.l  #BuildSceneryListData9,BuildSceneryList_Ranges(a6) ; 00EF2
 l_008_00EFA:
         tst.b   (SceneryMapOne).l               ; 00EFA
         bne.b   l_008_00F24                     ; 00F00
-        move.l  #SceneryMap0,-$4(a6)            ; 00F02
-        move.l  #SceneryBits0,-$8(a6)           ; 00F0A
-        move.l  #FarSceneryList0,-$14(a6)       ; 00F12
-        move.l  #FarList0Count,-$24(a6)         ; 00F1A
+        move.l  #SceneryMap0,BuildSceneryList_Map(a6) ; 00F02
+        move.l  #SceneryBits0,BuildSceneryList_Bits(a6) ; 00F0A
+        move.l  #FarSceneryList0,BuildSceneryList_List(a6) ; 00F12
+        move.l  #FarList0Count,BuildSceneryList_Count(a6) ; 00F1A
         bra.b   l_008_00F44                     ; 00F22
 l_008_00F24:
-        move.l  #SceneryMap1,-$4(a6)            ; 00F24
-        move.l  #SceneryBits1,-$8(a6)           ; 00F2C
-        move.l  #FarSceneryList1,-$14(a6)       ; 00F34
-        move.l  #FarList1Count,-$24(a6)         ; 00F3C
+        move.l  #SceneryMap1,BuildSceneryList_Map(a6) ; 00F24
+        move.l  #SceneryBits1,BuildSceneryList_Bits(a6) ; 00F2C
+        move.l  #FarSceneryList1,BuildSceneryList_List(a6) ; 00F34
+        move.l  #FarList1Count,BuildSceneryList_Count(a6) ; 00F3C
 l_008_00F44:
-        move.l  #BuildSceneryListData1,-$18(a6) ; 00F44
-        move.l  #SubCellOffsets,-$1c(a6)                ; 00F4C
-        move.w  (ViewBlockX).l,-$26(a6)         ; 00F54
-        move.w  (ViewBlockZ).l,-$28(a6)         ; 00F5C
-        move.b  (ViewPlace).l,-$2a(a6)          ; 00F64
+        move.l  #BuildSceneryListData1,BuildSceneryList_Order(a6) ; 00F44
+        move.l  #SubCellOffsets,BuildSceneryList_Offsets(a6) ; 00F4C
+        move.w  (ViewBlockX).l,BuildSceneryList_CellX(a6) ; 00F54
+        move.w  (ViewBlockZ).l,BuildSceneryList_CellZ(a6) ; 00F5C
+        move.b  (ViewPlace).l,BuildSceneryList_SubCell(a6) ; 00F64
 l_008_00F6C:
         lea.l   (BuildSceneryListData4).l,a1    ; 00F6C
-        move.b  -$2a(a6),d0                     ; 00F72
+        move.b  BuildSceneryList_SubCell(a6),d0 ; 00F72
         ext.w   d0                              ; 00F76
         move.b  (a1,d0.w),d0                    ; 00F78
         ext.w   d0                              ; 00F7C
         asl.w   #$3,d0                          ; 00F7E
         lea.l   (BuildSceneryListData5).l,a1    ; 00F80
         adda.w  d0,a1                           ; 00F86
-        move.l  a1,-$36(a6)                     ; 00F88
+        move.l  a1,BuildSceneryList_Order5(a6)  ; 00F88
         move.w  d0,d1                           ; 00F8C
         add.w   d0,d0                           ; 00F8E
         lea.l   (BuildSceneryListData7).l,a1    ; 00F90
         adda.w  d0,a1                           ; 00F96
-        move.l  a1,-$32(a6)                     ; 00F98
+        move.l  a1,BuildSceneryList_Order7(a6)  ; 00F98
         add.w   d1,d0                           ; 00F9C
         lea.l   (BuildSceneryListData8).l,a1    ; 00F9E
         adda.w  d0,a1                           ; 00FA4
-        move.l  a1,-$3a(a6)                     ; 00FA6
+        move.l  a1,BuildSceneryList_Order8(a6)  ; 00FA6
         lea.l   (VertexBuffer).l,a1             ; 00FAA
         move.w  #$ffff,d0                       ; 00FB0
         move.w  #$60,d1                         ; 00FB4
@@ -1291,7 +1305,7 @@ l_008_00FBA:
         dbra    d2,l_008_00FBA                  ; 00FBE
         tst.b   (SceneryCellCount).l            ; 00FC2
         bne.b   l_008_00FF8                     ; 00FC8
-        move.b  -$2a(a6),d0                     ; 00FCA
+        move.b  BuildSceneryList_SubCell(a6),d0 ; 00FCA
         ext.w   d0                              ; 00FCE
         lea.l   (BuildSceneryListData6).l,a0    ; 00FD0
         move.b  (a0,d0.w),d0                    ; 00FD6
@@ -1300,7 +1314,7 @@ l_008_00FBA:
         bne.b   l_008_01034                     ; 00FE2
         asl.w   #$4,d0                          ; 00FE4
         move.b  (ViewOctant).l,d1               ; 00FE6
-        movea.l -$36(a6),a0                     ; 00FEC
+        movea.l BuildSceneryList_Order5(a6),a0  ; 00FEC
         ext.w   d1                              ; 00FF0
         move.b  (a0,d1.w),d1                    ; 00FF2
         bra.b   l_008_01054                     ; 00FF6
@@ -1337,7 +1351,7 @@ l_008_01054:
         add.w   d1,d1                           ; 01056
         add.w   d1,d0                           ; 01058
 l_008_0105A:
-        movea.l -$c(a6),a0                      ; 0105A
+        movea.l BuildSceneryList_Ranges(a6),a0  ; 0105A
         move.w  (a0,d0.w),d0                    ; 0105E
         ble.b   l_008_01044                     ; 01062
         adda.w  d0,a0                           ; 01064
@@ -1352,7 +1366,7 @@ l_008_01070:
         cmpi.b  #$14,d0                         ; 0107C
         bgt.b   l_008_010FE                     ; 01080
         ext.w   d0                              ; 01082
-        movea.l -$3a(a6),a2                     ; 01084
+        movea.l BuildSceneryList_Order8(a6),a2  ; 01084
         move.b  (a2,d0.w),d0                    ; 01088
         ext.w   d0                              ; 0108C
         add.w   d0,d0                           ; 0108E
@@ -1366,7 +1380,7 @@ l_008_010A4:
 l_008_010A8:
         move.b  (a2,d0.w),d2                    ; 010A8
         ext.w   d2                              ; 010AC
-        move.w  -$26(a6),d1                     ; 010AE
+        move.w  BuildSceneryList_CellX(a6),d1   ; 010AE
         add.w   d2,d1                           ; 010B2
         blt.b   l_008_010CE                     ; 010B4
         cmp.w   d3,d1                           ; 010B6
@@ -1374,7 +1388,7 @@ l_008_010A8:
 l_008_010BA:
         move.b  $1(a2,d0.w),d2                  ; 010BA
         ext.w   d2                              ; 010BE
-        move.w  -$28(a6),d0                     ; 010C0
+        move.w  BuildSceneryList_CellZ(a6),d0   ; 010C0
         add.w   d2,d0                           ; 010C4
         blt.b   l_008_010D8                     ; 010C6
         cmp.w   d3,d0                           ; 010C8
