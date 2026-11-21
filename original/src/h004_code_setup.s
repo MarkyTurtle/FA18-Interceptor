@@ -506,7 +506,7 @@ l_004_0062C:
         ori.b   #$8,obj_Bits(a2)                ; 0064E
         move.w  #$a4,d0                         ; 00654
         clr.w   obj_X(a2,d0.w)                  ; 00658
-        move.l  $66(a1),obj_Pitch(a2)           ; 0065C
+        move.l  obj_Pitch(a1),obj_Pitch(a2)     ; 0065C
         move.w  $6a(a1),obj_Roll(a2)            ; 00662
         move.w  #$b,d3                          ; 00668
         moveq   #$0,d4                          ; 0066C

@@ -491,7 +491,7 @@ l_032_00546:
 ; SetInverseMatrix).
 ;-------------------------------------------------------------------------------
 SetAttitude:
-        movem.w d4-d6,$66(a1)                   ; 0054C
+        movem.w d4-d6,obj_Pitch(a1)             ; 0054C
         movem.l d1/d4-d6/a1,-(a7)               ; 00552
         move.w  d4,d0                           ; 00556
         move.w  d5,d2                           ; 00558

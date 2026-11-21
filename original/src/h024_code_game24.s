@@ -239,7 +239,7 @@ l_024_00282:
         movea.l d3,a1                           ; 00284
         move.w  d4,-$42(a6)                     ; 00286
         lea.l   (a0,d0.w),a3                    ; 0028A
-        cmpi.b  #$20,$62(a3)                    ; 0028E
+        cmpi.b  #$20,obj_Type(a3)               ; 0028E
         bne.b   l_024_0029E                     ; 00294
         lea.l   (Carrier_00000).l,a4            ; 00296
         bra.b   l_024_002A4                     ; 0029C
@@ -249,7 +249,7 @@ l_024_002A4:
         movea.l (a4)+,a5                        ; 002A4
         move.w  (a5),d7                         ; 002A6
         addi.w  #$a4,d7                         ; 002A8
-        move.b  $7d(a3),d2                      ; 002AC
+        move.b  obj_Scale(a3),d2                ; 002AC
         andi.w  #$f,d2                          ; 002B0
         move.w  d2,ObjectCollisions_Shift(a6)   ; 002B4
         move.w  $2(a3,d7.w),d4                  ; 002B8
@@ -301,8 +301,8 @@ l_024_00314:
         move.w  ObjectCollisions_Shift(a6),d0   ; 00336
         asr.w   d0,d2                           ; 0033A
         asr.w   d0,d4                           ; 0033C
-        add.w   $c(a3),d2                       ; 0033E
-        add.w   $e(a3),d4                       ; 00342
+        add.w   obj_X8(a3),d2                   ; 0033E
+        add.w   obj_Z8(a3),d4                   ; 00342
         sub.w   a2,d2                           ; 00346
         sub.w   -$42(a6),d4                     ; 00348
         neg.w   d2                              ; 0034C
@@ -313,7 +313,7 @@ l_024_00314:
         bge.w   l_024_00564                     ; 00356
         tst.w   ObjectCollisions_I(a6)          ; 0035A
         beq.b   l_024_002FC                     ; 0035E
-        cmpi.b  #$20,$62(a3)                    ; 00360
+        cmpi.b  #$20,obj_Type(a3)               ; 00360
         beq.b   l_024_0037C                     ; 00366
         move.w  #$1ac,ObjectCollisions_Point1(a6) ; 00368
         move.w  #$1b2,ObjectCollisions_Point2(a6) ; 0036E
@@ -345,8 +345,8 @@ l_024_0038E:
         move.w  ObjectCollisions_Shift(a6),d1   ; 003D4
         asr.w   d1,d4                           ; 003D8
         asr.w   d1,d5                           ; 003DA
-        add.w   $c(a3),d4                       ; 003DC
-        add.w   $e(a3),d5                       ; 003E0
+        add.w   obj_X8(a3),d4                   ; 003DC
+        add.w   obj_Z8(a3),d5                   ; 003E0
         sub.w   a2,d4                           ; 003E4
         sub.w   -$42(a6),d5                     ; 003E6
         muls.w  d4,d7                           ; 003EA
@@ -359,8 +359,8 @@ l_024_0038E:
         move.w  ObjectCollisions_Shift(a6),d1   ; 00400
         asr.w   d1,d4                           ; 00404
         asr.w   d1,d5                           ; 00406
-        add.w   $c(a3),d4                       ; 00408
-        add.w   $e(a3),d5                       ; 0040C
+        add.w   obj_X8(a3),d4                   ; 00408
+        add.w   obj_Z8(a3),d5                   ; 0040C
         sub.w   a2,d4                           ; 00410
         sub.w   -$42(a6),d5                     ; 00412
         muls.w  d4,d3                           ; 00416
@@ -381,8 +381,8 @@ l_024_0038E:
         move.w  ObjectCollisions_Shift(a6),d1   ; 00446
         asr.w   d1,d4                           ; 0044A
         asr.w   d1,d5                           ; 0044C
-        add.w   $c(a3),d4                       ; 0044E
-        add.w   $e(a3),d5                       ; 00452
+        add.w   obj_X8(a3),d4                   ; 0044E
+        add.w   obj_Z8(a3),d5                   ; 00452
         sub.w   a2,d4                           ; 00456
         sub.w   -$42(a6),d5                     ; 00458
         muls.w  d4,d7                           ; 0045C
@@ -405,8 +405,8 @@ l_024_0038E:
         move.w  ObjectCollisions_Shift(a6),d1   ; 0048C
         asr.w   d1,d4                           ; 00490
         asr.w   d1,d5                           ; 00492
-        add.w   $c(a3),d4                       ; 00494
-        add.w   $e(a3),d5                       ; 00498
+        add.w   obj_X8(a3),d4                   ; 00494
+        add.w   obj_Z8(a3),d5                   ; 00498
         sub.w   a2,d4                           ; 0049C
         sub.w   -$42(a6),d5                     ; 0049E
         muls.w  d4,d3                           ; 004A2
@@ -442,7 +442,7 @@ l_024_004F6:
 l_024_004FC:
         move.w  -$34(a6),$4e(a4)                ; 004FC
         move.l  obj_Y8(a4),d3                   ; 00502
-        cmpi.b  #$20,$62(a3)                    ; 00506
+        cmpi.b  #$20,obj_Type(a3)               ; 00506
         bne.b   l_024_00516                     ; 0050C
         lea.l   (Carrier_0007C).l,a4            ; 0050E
         bra.b   l_024_0051C                     ; 00514
@@ -545,9 +545,9 @@ CollideWithList:
         asr.l   d7,d3                           ; 00614
         asr.w   d7,d4                           ; 00616
         swap    d7                              ; 00618
-        add.w   $c(a3),d2                       ; 0061A
-        add.l   $10(a3),d3                      ; 0061E
-        add.w   $e(a3),d4                       ; 00622
+        add.w   obj_X8(a3),d2                   ; 0061A
+        add.l   obj_Y8(a3),d3                   ; 0061E
+        add.w   obj_Z8(a3),d4                   ; 00622
         sub.w   a2,d2                           ; 00626
         sub.l   a1,d3                           ; 00628
         sub.w   -$42(a6),d4                     ; 0062A
